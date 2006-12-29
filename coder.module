@@ -106,6 +106,19 @@ function coder_menu($may_cache) {
 }
 
 /**
+ * Implementation of hook_form_alter().
+ */
+function coder_form_alter($form_id, &$form) {
+  if ($form_id == 'system_modules') {
+    if (user_access('view code review')) {
+      foreach ($form['name'] as $name => &$data) {
+        $data['#value'] = l($data['#value'], "admin/coder/$name");
+      }
+    }
+  }
+}
+
+/**
  * Implementation of hook_settings().
  */
 function coder_settings() {
@@ -185,6 +198,10 @@ function coder_settings() {
  * Implementation of code review page
  */
 function coder_page() {
+  if (!user_access('view code review')) {
+    return drupal_access_denied();
+  }
+
   // get this variable once - do we want only active modules?
   $active = variable_get('coder_active_modules', 1);
 
