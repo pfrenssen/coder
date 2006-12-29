@@ -37,7 +37,7 @@ function coder_drupal_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '<\?(?!php)',
-      '#warning' => t('Always use <?php ?> to delimit PHP code, not the <? ?> shorthand'), // #coder_ignore
+      '#warning' => t('Always use &lt;?php ?&gt; to delimit PHP code, not the &lt;? ?&gt; shorthand'), // #coder_ignore
     ),
     array(
       '#type' => 'grep',

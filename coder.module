@@ -235,25 +235,31 @@ function coder_page() {
   // determine which modules are selected
   if ($module = arg(2)) {
     $modules = array($module => $module);
+    $do_includes = 1;
   } else {
     $modules = $active ? $default_coder_modules : variable_get('coder_modules', $default_coder_modules);
   }
   if ($modules) {
     // loop through the selected modules, preparing the code review results
-    $includes = array();
+    $dups = array(); // used to avoid duplicate includes
     foreach ($modules as $name => $checked) {
       if ($checked) {
-        $results = do_coder_reviews($reviews, $name, $files[$name]);
-        $output .= theme('coder', $name, $files[$name], $results);
+        // process this one file
+        unset($includefiles);
+        $filename = $files[$name];
+        $results = do_coder_reviews($reviews, $name, $filename);
+        $output .= theme('coder', $name, $filename, $results);
 
-        // look for include files
-        $path = dirname($files[$name]);
-        $files = system_listing('.*\.inc$', $path, 'name', 0);
-        foreach ($files as $file) {
-          if (!isset($includes[$file->filename])) {
-            $includes[$file->filename] = $file;
-            $results = do_coder_reviews($reviews, $name, $file->filename);
-            $output .= theme('coder', $name, $file->filename, $results);
+        // process the same directory include files
+        if ($do_includes) {
+          $path = dirname($filename);
+          if (!isset($dups[$path])) {
+            $dups[$path] = 1;
+            $includefiles = system_listing('.*\.inc$', $path, 'name', 0);
+            foreach ($includefiles as $file) {
+              $results = do_coder_reviews($reviews, $name, $file->filename);
+              $output .= theme('coder', $name, $file->filename, $results);
+            }
           }
         }
       }
@@ -271,21 +277,29 @@ function coder_page() {
 }
 
 function do_coder_reviews($reviews, $name, $filename) {
+  $results = array();
+
   // get the path to the module file
   if ($filename && $filepath = realpath($filename)) {
     // read the file
     $lines = file($filepath);
 
     // now do all of the code reviews
-    $results = array();
     foreach ($reviews as $review) {
       if ($result = do_coder_review($review, $lines)) {
         $results += $result;
       }
     }
-    ksort($results, SORT_NUMERIC);
-    return $results;
   }
+
+  // always display something
+  if (count($results) == 0) {
+    $results[0] = theme('coder_warning', 0, t('No Problems Found'));
+  } else {
+    ksort($results, SORT_NUMERIC);
+  }
+
+  return $results;
 }
 
 function do_coder_review($review, $lines) {
@@ -350,11 +364,10 @@ function theme_reviews($items, $message = '') {
 }
 
 function theme_coder($name, $filename, $results) {
-  if (count($results) == 0) {
-    $results[0] = theme('coder_warning', 0, t('No Problems Found'));
-  }
   $output  = '<div class="coder"><h2>' . $name . ': ' . $filename . '</h2>';
-  $output .= theme('item_list', $results);
+  if (count($results)) {
+    $output .= theme('item_list', $results);
+  }
   $output .= '</div>';
   return $output;
 }
