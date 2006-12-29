@@ -16,12 +16,12 @@ function coder_drupal_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\s(if|elseif|while|foreach)\(',
+      '#value' => '\s(if|elseif|while|foreach|for)\(',
       '#warning' => t('Control statements should have one space between the control keyword and opening parenthesis'),
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\s\w(?!(if|elseif|while|foreach))\s\(',
+      '#value' => '\s\w(?!(if|elseif|while|foreach|for))\s\(',
       '#warning' => t('Functions should be called with no spaces between the function name'),
     ),
     array(
@@ -49,6 +49,10 @@ function coder_drupal_reviews() {
       '#value' => 'global\s+\$[^_]',
       '#warning' => t('global variables should start with a single underscore followed by the module and another underscore'),
     ),
+    array(
+      '#type' => 'callback',
+      '#value' => _coder_drupal_callback,
+    ),
   );
 
   $reviews = array();
@@ -58,5 +62,18 @@ function coder_drupal_reviews() {
     '#rules' => $rules,
   );
   return $reviews;
+}
+
+function _coder_drupal_callback($lines, &$results, &$tmp) {
+  for ($lineno = -1; $last = array_slice($lines, $lineno); $lineno --) {
+    $lastline = $last[0];
+    if (preg_match('/\S/', $lastline)) {
+      break;
+    }
+  }
+  if ($last && $lastline && preg_match('/\?>/i', $lastline)) {
+    $lineno = count($lines);
+    $results[$lineno] = theme('coder_warning', $lineno, t('the final ?> should be omitted from all code files'));
+  }
 }
 ?>
