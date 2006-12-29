@@ -11,6 +11,9 @@
  * - Handle text in a secure fashion - http://drupal.org/node/28984
  * - Converting 4.6.x modules to 4.7.x - http://drupal.org/node/22218
  * - Converting 4.7.x modules to 5.x - http://drupal.org/node/64279
+ *
+ * Credit also to dries:
+ * - http://cvs.drupal.org/viewcvs/drupal/drupal/scripts/code-style.pl
  */ 
 
 /**
@@ -282,11 +285,34 @@ function do_coder_reviews($reviews, $name, $filename) {
   // get the path to the module file
   if ($filename && $filepath = realpath($filename)) {
     // read the file
-    $lines = file($filepath);
+    $orig_lines = file($filepath);
+
+    // remove comments (original code from code-style.pl)
+    foreach ($orig_lines as $lineno => $line) {
+      // strip comment characters
+      $line = preg_replace('/\/\/[^:].*/', '', $orig_line);
+      $line = preg_replace('/\/\*.*\*\//', '', $line);
+
+      // catch multi-line comments
+      if ($comment) {
+        if (preg_match('/.*\*\//', $line)) {
+          $line = preg_replace('/.*\*\//', '', $line);
+          $comment = 0;
+        } else {
+          $line = '';
+        }
+      }
+      if (preg_match('/\/\*.*/', $line)) {
+        $comment = 1;
+      }
+
+      // save the new line, without the comments
+      $lines[$lineno] = $line;
+    }
 
     // now do all of the code reviews
     foreach ($reviews as $review) {
-      if ($result = do_coder_review($review, $lines)) {
+      if ($result = do_coder_review($review, $orig_lines, $lines)) {
         $results += $result;
       }
     }
@@ -302,19 +328,19 @@ function do_coder_reviews($reviews, $name, $filename) {
   return $results;
 }
 
-function do_coder_review($review, $lines) {
+function do_coder_review($review, $orig_lines, $lines) {
   $results = array();
   if ($review['#rules']) {
     foreach ($review['#rules'] as $rule) {
       switch ($rule['#type']) {
         case 'regex':
-          do_coder_review_regex($rule, $lines, $results, $tmp);
+          do_coder_review_regex($rule, $orig_lines, $lines, $results, $tmp);
           break;
         case 'grep':
-          do_coder_review_grep($rule, $lines, $results, $tmp);
+          do_coder_review_grep($rule, $orig_lines, $lines, $results, $tmp);
           break;
         case 'callback':
-          do_coder_review_callback($rule, $lines, $results, $tmp);
+          do_coder_review_callback($rule, $orig_lines, $lines, $results, $tmp);
           break;
       }
     }
@@ -322,11 +348,11 @@ function do_coder_review($review, $lines) {
   return $results;
 }
 
-function do_coder_review_regex($rule, $lines, &$results, &$tmp) {
+function do_coder_review_regex($rule, $orig_lines, $lines, &$results, &$tmp) {
   if ($regex = $rule['#value']) {
     $regex = '/' . $regex . '/i';
     foreach ($lines as $lineno => $line) {
-      if (preg_match($regex, $line) && strpos($line, '#coder_ignore') === FALSE) {
+      if (preg_match($regex, $line) && strpos($orig_lines[$lineno], '#coder_ignore') === FALSE) {
         global $_coder_errno;
         $key = $lineno + 1 + ($coder_errno ++ / 100000);
         $results[$key] = theme('coder_warning', $lineno + 1, $rule['#warning']);
@@ -335,10 +361,10 @@ function do_coder_review_regex($rule, $lines, &$results, &$tmp) {
   }
 }
 
-function do_coder_review_grep($rule, $lines, &$results, &$tmp) {
+function do_coder_review_grep($rule, $orig_lines, $lines, &$results, &$tmp) {
   if ($regex = $rule['#value']) {
     $regex = '/' . $regex . '/i';
-    foreach ($lines as $lineno => $line) {
+    foreach ($orig_lines as $lineno => $line) {
       if (preg_match($regex, $line)) {
         return;
       }
@@ -347,10 +373,10 @@ function do_coder_review_grep($rule, $lines, &$results, &$tmp) {
   }
 }
 
-function do_coder_review_callback($rule, $lines, &$results, &$tmp) {
+function do_coder_review_callback($rule, $orig_lines, $lines, &$results, &$tmp) {
   if ($function = $rule['#value']) {
     if (function_exists($function)) {
-      call_user_func($function, $lines, &$results, &$tmp);
+      call_user_func($function, $orig_lines, $lines, &$results, &$tmp);
     }
   }
 }

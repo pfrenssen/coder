@@ -29,7 +29,7 @@ function coder_security_reviews() {
   return $reviews;
 }
 
-function _coder_security_callback($lines, &$results, &$tmp) {
+function _coder_security_callback($orig_lines, $lines, &$results, &$tmp) {
   if (!isset($tmp['tokens'])) {
     $source = implode('', $lines);
     $tmp['tokens'] = token_get_all($source);

@@ -16,12 +16,12 @@ function coder_drupal_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\s(if|elseif|while|foreach|for)\(',
+      '#value' => '\s(if|elseif|while|foreach|switch|return|for)\(',
       '#warning' => t('Control statements should have one space between the control keyword and opening parenthesis'),
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\s\w(?!(if|elseif|while|foreach|for))\s\(',
+      '#value' => '\s\w(?!(if|elseif|while|foreach|switch|return|for))\s\(',
       '#warning' => t('Functions should be called with no spaces between the function name'),
     ),
     array(
