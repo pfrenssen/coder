@@ -24,12 +24,12 @@ function coder_init() {
   }
 
   // Load all our module 'on behalfs'.
-  global $coders;
+  global $_coder_coders;
   $path = drupal_get_path('module', 'coder') . '/includes';
   $files = system_listing('coder_.*\.inc$', $path, 'name', 0);
   foreach ($files as $file) {
     require_once('./' . $file->filename);
-    $coders[] = $file->name;
+    $_coder_coders[] = $file->name;
   }
 }
 
@@ -40,9 +40,9 @@ function _coder_reviews() {
   $reviews = array();
 
   // get the review definitions from the include directory
-  global $coders;
-  if ($coders) {
-    foreach ($coders as $coder) {
+  global $_coder_coders;
+  if ($_coder_coders) {
+    foreach ($_coder_coders as $coder) {
       $function = $coder . '_reviews';
       if (function_exists($function)) {
         if ($review = call_user_func($function)) {
@@ -275,6 +275,17 @@ function do_coder_reviews($reviews, $name, $filename) {
 function do_coder_review($review, $lines) {
   $results = array();
   if ($review['#rules']) {
+    // perform all of the grep searches first
+    // so these warnings appear at the top
+    foreach ($review['#rules'] as $rule) {
+      switch ($rule['#type']) {
+        case 'grep':
+          do_coder_review_grep($rule, $lines, $results);
+          break;
+      }
+    }
+
+    // perform the regex searches last
     foreach ($review['#rules'] as $rule) {
       switch ($rule['#type']) {
         case 'regex':
@@ -294,6 +305,18 @@ function do_coder_review_regex($rule, $lines, &$results) {
         $results[] = theme('coder_line', $lineno + 1, $rule['#warning']);
       }
     }
+  }
+}
+
+function do_coder_review_grep($rule, $lines, &$results) {
+  if ($regex = $rule['#value']) {
+    $regex = '/' . $regex . '/i';
+    foreach ($lines as $lineno => $line) {
+      if (preg_match($regex, $line)) {
+        return;
+      }
+    }
+    $results[] = theme('coder_line', 0, $rule['#warning']);
   }
 }
 
