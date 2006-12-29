@@ -264,10 +264,10 @@ function do_coder_reviews($reviews, $name, $filename) {
     $results = array();
     foreach ($reviews as $review) {
       if ($result = do_coder_review($review, $lines)) {
-        $results = array_merge($results, $result);
+        $results += $result;
       }
     }
-    
+    ksort($results, SORT_NUMERIC);
     return $results;
   }
 }
@@ -275,21 +275,13 @@ function do_coder_reviews($reviews, $name, $filename) {
 function do_coder_review($review, $lines) {
   $results = array();
   if ($review['#rules']) {
-    // perform all of the grep searches first
-    // so these warnings appear at the top
-    foreach ($review['#rules'] as $rule) {
-      switch ($rule['#type']) {
-        case 'grep':
-          do_coder_review_grep($rule, $lines, $results);
-          break;
-      }
-    }
-
-    // perform the regex searches last
     foreach ($review['#rules'] as $rule) {
       switch ($rule['#type']) {
         case 'regex':
           do_coder_review_regex($rule, $lines, $results);
+          break;
+        case 'grep':
+          do_coder_review_grep($rule, $lines, $results);
           break;
       }
     }
@@ -302,7 +294,9 @@ function do_coder_review_regex($rule, $lines, &$results) {
     $regex = '/' . $regex . '/i';
     foreach ($lines as $lineno => $line) {
       if (preg_match($regex, $line)) {
-        $results[] = theme('coder_warning', $lineno + 1, $rule['#warning']);
+        global $_coder_errno;
+        $key = $lineno + 1 + ($coder_errno ++ / 100000);
+        $results[$key] = theme('coder_warning', $lineno + 1, $rule['#warning']);
       }
     }
   }
@@ -316,7 +310,7 @@ function do_coder_review_grep($rule, $lines, &$results) {
         return;
       }
     }
-    $results[] = theme('coder_warning', 0, $rule['#warning']);
+    $results[0] = theme('coder_warning', 0, $rule['#warning']);
   }
 }
 
@@ -330,7 +324,7 @@ function theme_reviews($items, $message = '') {
 
 function theme_coder($name, $filename, $results) {
   if (count($results) == 0) {
-    $results[] = theme('coder_warning', 0, t('No Problems Found'));
+    $results[0] = theme('coder_warning', 0, t('No Problems Found'));
   }
   $output  = '<div class="coder"><h2>' . $name . ': ' . $filename . '</h2>';
   $output .= theme('item_list', $results);
