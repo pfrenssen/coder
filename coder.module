@@ -239,7 +239,8 @@ function coder_page() {
   if ($module = arg(2)) {
     $modules = array($module => $module);
     $do_includes = 1;
-  } else {
+  }
+  else {
     $modules = $active ? $default_coder_modules : variable_get('coder_modules', $default_coder_modules);
   }
   if ($modules) {
@@ -288,21 +289,24 @@ function do_coder_reviews($reviews, $name, $filename) {
     $orig_lines = file($filepath);
 
     // remove comments (original code from code-style.pl)
+    $lines = array();
     foreach ($orig_lines as $lineno => $line) {
       // strip comment characters
-      $line = preg_replace('/\/\/[^:].*/', '', $orig_line);
+      $line = preg_replace('/\/\/[^:].*/', '', $line);
       $line = preg_replace('/\/\*.*\*\//', '', $line);
 
       // catch multi-line comments
-      if ($comment) {
+      if (isset($comment)) {
         if (preg_match('/.*\*\//', $line)) {
           $line = preg_replace('/.*\*\//', '', $line);
-          $comment = 0;
-        } else {
+          unset($comment);
+        }
+        else {
           $line = '';
         }
       }
       if (preg_match('/\/\*.*/', $line)) {
+        $line = preg_replace('/\/\*.*/', '', $line);
         $comment = 1;
       }
 
@@ -321,7 +325,8 @@ function do_coder_reviews($reviews, $name, $filename) {
   // always display something
   if (count($results) == 0) {
     $results[0] = theme('coder_warning', 0, t('No Problems Found'));
-  } else {
+  }
+  else {
     ksort($results, SORT_NUMERIC);
   }
 
@@ -352,7 +357,7 @@ function do_coder_review_regex($rule, $orig_lines, $lines, &$results, &$tmp) {
   if ($regex = $rule['#value']) {
     $regex = '/' . $regex . '/i';
     foreach ($lines as $lineno => $line) {
-      if (preg_match($regex, $line) && strpos($orig_lines[$lineno], '#coder_ignore') === FALSE) {
+      if (preg_match($regex, $line)) {
         global $_coder_errno;
         $key = $lineno + 1 + ($coder_errno ++ / 100000);
         $results[$key] = theme('coder_warning', $lineno + 1, $rule['#warning']);

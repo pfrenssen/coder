@@ -32,7 +32,7 @@ function coder_security_reviews() {
 function _coder_security_callback($orig_lines, $lines, &$results, &$tmp) {
   if (!isset($tmp['tokens'])) {
     $source = implode('', $lines);
-    $tmp['tokens'] = token_get_all($source);
+//  $tmp['tokens'] = token_get_all($source);
   }
 
   // TODO: parse the file looking for missing stuff

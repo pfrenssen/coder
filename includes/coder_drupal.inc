@@ -26,18 +26,18 @@ function coder_drupal_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\){', // #coder_ignore
+      '#value' => '\){',
       '#warning' => t('use a space between the closing parenthesis and the open bracket'),
     ),
     array(
       '#type' => 'regex',
-      '#value' => '(\S=>|=>\S)', // #coder_ignore
+      '#value' => '(\S=>|=>\S)',
       '#warning' => t('Arrays should be formatted with a space separating each element and assignment operator'),
     ),
     array(
       '#type' => 'regex',
       '#value' => '<\?(?!php)',
-      '#warning' => t('Always use &lt;?php ?&gt; to delimit PHP code, not the &lt;? ?&gt; shorthand'), // #coder_ignore
+      '#warning' => t('Always use &lt;?php ?&gt; to delimit PHP code, not the &lt;? ?&gt; shorthand'),
     ),
     array(
       '#type' => 'grep',
@@ -52,6 +52,16 @@ function coder_drupal_reviews() {
     array(
       '#type' => 'callback',
       '#value' => _coder_drupal_callback,
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '}\s*else',
+      '#warning' => t('else should be on next line'),
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[,][^ \n\r]',
+      '#warning' => t('missing space after comma'),
     ),
   );
 
