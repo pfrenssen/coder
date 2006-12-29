@@ -29,7 +29,12 @@ function coder_init() {
   // Load all our module 'on behalfs'.
   global $_coder_coders;
   $path = drupal_get_path('module', 'coder') . '/includes';
-  $files = system_listing('coder_.*\.inc$', $path, 'name', 0);
+  if (function_exists('drupal_system_listing')) {
+    $files = drupal_system_listing('coder_.*\.inc$', $path, 'name', 0);
+  }
+  else {
+    $files = system_listing('coder_.*\.inc$', $path, 'name', 0);
+  }
   foreach ($files as $file) {
     require_once('./' . $file->filename);
     $_coder_coders[] = $file->name;
@@ -99,10 +104,21 @@ function coder_menu($may_cache) {
   if ($may_cache) {
     $items[] = array(
       'path' => 'admin/coder',
-      'title' => t('code review'),
+      'title' => t('Code Review'),
       'callback' => 'coder_page',
       'access' => user_access('view code review'),
     );
+    if (function_exists('drupal_system_listing')) {
+      $items[] = array(
+        'path' => 'admin/settings/coder',
+        'title' => t('Code Review'),
+        'description' => t('Select code review plugins and modules'),
+        'callback' => 'drupal_get_form',
+        'callback arguments' => 'coder_admin_settings',
+        'access' => user_access('administer site configuration'),
+        'type' => MENU_NORMAL_ITEM,
+      );
+    }
   }
 
   return $items;
@@ -202,6 +218,13 @@ function coder_settings() {
 }
 
 /**
+ * Implementation of settings page for Drupal 5
+ */
+function coder_admin_settings() {
+  return system_settings_form(coder_settings());
+}
+
+/**
  * Implementation of code review page
  */
 function coder_page() {
@@ -261,7 +284,12 @@ function coder_page() {
           $path = dirname(realpath($filename));
           if (!isset($dups[$path])) {
             $dups[$path] = 1;
-            $includefiles = system_listing('.*\.inc$', $path, 'name', 0);
+            if (function_exists('drupal_system_listing')) {
+              $includefiles = drupal_system_listing('.*\.inc$', $path, 'name', 0);
+            }
+            else {
+              $includefiles = system_listing('.*\.inc$', $path, 'name', 0);
+            }
             foreach ($includefiles as $file) {
               $filename = substr($file->filename, $basepathlen);
               $results = do_coder_reviews($reviews, $name, $filename);
