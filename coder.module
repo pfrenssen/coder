@@ -161,7 +161,7 @@ function coder_settings() {
     if (!$active && $module->status) {
       $name .= ' (active)';
     }
-    $module_options[$module->name] = $name;
+    $module_options[$module->name] = l($name, "admin/coder/$name");
     if ($module->status) {
       $default_coder_modules[] = $module->name;
     }
