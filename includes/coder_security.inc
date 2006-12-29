@@ -8,7 +8,6 @@
  */
 
 function coder_security_reviews() {
-  $xys = $REQUEST_URI;
   $rules = array(
     array(
       '#type' => 'regex',
