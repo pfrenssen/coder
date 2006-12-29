@@ -288,13 +288,15 @@ function do_coder_reviews($reviews, $name, $filename) {
     // read the file
     $orig_lines = file($filepath);
 
-    // remove comments (original code from code-style.pl)
-    $lines = array();
-    foreach ($orig_lines as $lineno => $line) {
-      // strip comment characters
-      $line = preg_replace('/\/\/[^:].*/', '', $line);
-      $line = preg_replace('/\/\*.*\*\//', '', $line);
+    // strip single line comments
+    $lines = preg_replace('/(\/\/[^:].*|\/\*.*\*\/)/', '', $orig_lines);
 
+    // replace strings inside quotes with less complicated strings
+    $lines = preg_replace('/"[^"]*"/', '""', $lines);
+    $lines = preg_replace('/\'[^\']*\'/', '\'\'', $lines);
+
+    // remove multi-comments (original code from code-style.pl)
+    foreach ($lines as $lineno => $line) {
       // catch multi-line comments
       if (isset($comment)) {
         if (preg_match('/.*\*\//', $line)) {
