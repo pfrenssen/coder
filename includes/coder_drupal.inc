@@ -9,7 +9,6 @@
 
 function coder_drupal_reviews() {
   $rules = array(
-/*
     array(
       '#type' => 'regex',
       '#value' => '\t',
@@ -70,7 +69,6 @@ function coder_drupal_reviews() {
       '#value' => '^\s*{',
       '#warning' => t('curly braces { should end a line, not start one'),
     ),
-*/
     array(
       '#type' => 'regex',
       '#value' => '[a-z][A-Z]',
