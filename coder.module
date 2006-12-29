@@ -118,6 +118,10 @@ function coder_form_alter($form_id, &$form) {
   }
 }
 
+function _coder_default_reviews() {
+  return array('drupal', 'security');
+}
+
 /**
  * Implementation of hook_settings().
  */
@@ -142,7 +146,7 @@ function coder_settings() {
     '#type' => 'checkboxes',
     '#options' => $review_options,
     '#description' => t('apply the checked coding reviews'),
-    '#default_value' => variable_get('coder_reviews', array('drupal')),
+    '#default_value' => variable_get('coder_reviews', _coder_default_reviews()),
   );
   
   // get the modules
@@ -208,7 +212,7 @@ function coder_page() {
   // get this once - list of the reviews to perform
   $reviews = array();
   $avail_reviews = _coder_reviews();
-  $selected_reviews = variable_get('coder_reviews', array('drupal'));
+  $selected_reviews = variable_get('coder_reviews', _coder_default_reviews());
   foreach ($selected_reviews as $name => $checked) {
     if ($checked) {
       $reviews[$name] = $avail_reviews[$name];
@@ -278,10 +282,13 @@ function do_coder_review($review, $lines) {
     foreach ($review['#rules'] as $rule) {
       switch ($rule['#type']) {
         case 'regex':
-          do_coder_review_regex($rule, $lines, $results);
+          do_coder_review_regex($rule, $lines, $results, $tmp);
           break;
         case 'grep':
-          do_coder_review_grep($rule, $lines, $results);
+          do_coder_review_grep($rule, $lines, $results, $tmp);
+          break;
+        case 'callback':
+          do_coder_review_callback($rule, $lines, $results, $tmp);
           break;
       }
     }
@@ -289,7 +296,7 @@ function do_coder_review($review, $lines) {
   return $results;
 }
 
-function do_coder_review_regex($rule, $lines, &$results) {
+function do_coder_review_regex($rule, $lines, &$results, &$tmp) {
   if ($regex = $rule['#value']) {
     $regex = '/' . $regex . '/i';
     foreach ($lines as $lineno => $line) {
@@ -302,7 +309,7 @@ function do_coder_review_regex($rule, $lines, &$results) {
   }
 }
 
-function do_coder_review_grep($rule, $lines, &$results) {
+function do_coder_review_grep($rule, $lines, &$results, &$tmp) {
   if ($regex = $rule['#value']) {
     $regex = '/' . $regex . '/i';
     foreach ($lines as $lineno => $line) {
@@ -311,6 +318,14 @@ function do_coder_review_grep($rule, $lines, &$results) {
       }
     }
     $results[0] = theme('coder_warning', 0, $rule['#warning']);
+  }
+}
+
+function do_coder_review_callback($rule, $lines, &$results, &$tmp) {
+  if ($function = $rule['#value']) {
+    if (function_exists($function)) {
+      call_user_func($function, $lines, &$results, &$tmp);
+    }
   }
 }
 
