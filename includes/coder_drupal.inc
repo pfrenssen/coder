@@ -41,6 +41,7 @@ function coder_drupal_reviews() {
     ),
     array(
       '#type' => 'grep',
+      '#original' => 1,
       '#value' => '\$Id',
       '#warning' => t('Include the Id CVS keyword in each file'),
     ),
