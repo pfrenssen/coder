@@ -240,6 +240,7 @@ function coder_page() {
   }
   if ($modules) {
     // loop through the selected modules, preparing the code review results
+    $includes = array();
     foreach ($modules as $name => $checked) {
       if ($checked) {
         $results = do_coder_reviews($reviews, $name, $files[$name]);
@@ -249,8 +250,11 @@ function coder_page() {
         $path = dirname($files[$name]);
         $files = system_listing('.*\.inc$', $path, 'name', 0);
         foreach ($files as $file) {
-          $results = do_coder_reviews($reviews, $name, $file->filename);
-          $output .= theme('coder', $name, $file->filename, $results);
+          if (!isset($includes[$file->filename])) {
+            $includes[$file->filename] = $file;
+            $results = do_coder_reviews($reviews, $name, $file->filename);
+            $output .= theme('coder', $name, $file->filename, $results);
+          }
         }
       }
     }
