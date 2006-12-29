@@ -339,7 +339,7 @@ function do_coder_review($review, $orig_lines, $lines) {
   $results = array();
   if ($review['#rules']) {
     foreach ($review['#rules'] as $rule) {
-      $review_lines = $rule['#original'] ? $orig_lines : $lines;
+      $review_lines = isset($rule['#original']) ? $orig_lines : $lines;
       switch ($rule['#type']) {
         case 'regex':
           do_coder_review_regex($rule, $review_lines, $results, $tmp);
@@ -358,7 +358,10 @@ function do_coder_review($review, $orig_lines, $lines) {
 
 function do_coder_review_regex($rule, $lines, &$results, &$tmp) {
   if ($regex = $rule['#value']) {
-    $regex = '/' . $regex . '/i';
+    $regex = '/' . $regex . '/';
+    if (!isset($rule['#case'])) {
+      $regex .= 'i';
+    }
     foreach ($lines as $lineno => $line) {
       if (preg_match($regex, $line)) {
         global $_coder_errno;
@@ -371,7 +374,10 @@ function do_coder_review_regex($rule, $lines, &$results, &$tmp) {
 
 function do_coder_review_grep($rule, $lines, &$results, &$tmp) {
   if ($regex = $rule['#value']) {
-    $regex = '/' . $regex . '/i';
+    $regex = '/' . $regex . '/';
+    if (!isset($rule['#case'])) {
+      $regex .= 'i';
+    }
     foreach ($lines as $lineno => $line) {
       if (preg_match($regex, $line)) {
         return;
