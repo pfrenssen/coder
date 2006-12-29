@@ -254,16 +254,6 @@ function coder_page() {
   return $output;
 }
 
-function theme_coder($name, $filename, $results) {
-  if (count($results) > 0) {
-    $output  = '<div class="coder"><h2>' . $name . '</h2>';
-    $output .= theme('item_list', $results, NULL, 'ol');
-    $output .= '</div>';
-    return $output;
-  }
-  return '<div class="coder"><h2>' . $name . ': No Problems Detected</h2></div>';
-}
-
 function do_coder_reviews($reviews, $name, $filename) {
   // get the path to the module file
   if ($filename && $filepath = realpath($filename)) {
@@ -286,18 +276,41 @@ function do_coder_review($review, $lines) {
   $results = array();
   if ($review['#rules']) {
     foreach ($review['#rules'] as $rule) {
-      $regex = $rule['#regex'];
-      if ($regex) {
-        $regex = '/' . $regex . '/i';
-        $lineno = 0;
-        foreach ($lines as $line) {
-          $lineno ++;
-          if (preg_match($regex, $line)) {
-            $results[] = 'Line ' . $lineno . ': ' . $rule['#warning'];
-          }
-        }
+      switch ($rule['#type']) {
+        case 'regex':
+          do_coder_review_regex($rule, $lines, $results);
+          break;
       }
     }
   }
   return $results;
+}
+
+function do_coder_review_regex($rule, $lines, &$results) {
+  if ($regex = $rule['#value']) {
+    $regex = '/' . $regex . '/i';
+    foreach ($lines as $lineno => $line) {
+      if (preg_match($regex, $line)) {
+        $results[] = theme('coder_line', $lineno + 1, $rule['#warning']);
+      }
+    }
+  }
+}
+
+/**
+ * Theming functions below...
+ */
+
+function theme_coder($name, $filename, $results) {
+  if (count($results) > 0) {
+    $output  = '<div class="coder"><h2>' . $name . '</h2>';
+    $output .= theme('item_list', $results, NULL, 'ol');
+    $output .= '</div>';
+    return $output;
+  }
+  return '<div class="coder"><h2>' . $name . ': No Problems Detected</h2></div>';
+}
+
+function theme_coder_line($lineno, $warning) {
+  return '<div class="coder_line"># ' . $lineno . ': ' . $warning . '</div>';
 }
