@@ -249,7 +249,6 @@ function coder_page() {
     foreach ($modules as $name => $checked) {
       if ($checked) {
         // process this one file
-        unset($includefiles);
         $filename = $files[$name];
         $results = do_coder_reviews($reviews, $name, $filename);
         $output .= theme('coder', $name, $filename, $results);
