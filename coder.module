@@ -248,7 +248,7 @@ function coder_page() {
       foreach ($reviews as $review) {
         $items[] = l($review['#title'], $review['#link']);
       }
-      $output = '<div class="reviews">' . theme('item_list', $items, NULL, 'ol') . '</div>' . $output;
+      $output = '<div class="reviews">' . theme('reviews', $items, t('The code was checked using the following review guidelines')) . '</div>' . $output;
     }
   }
   return $output;
@@ -302,7 +302,7 @@ function do_coder_review_regex($rule, $lines, &$results) {
     $regex = '/' . $regex . '/i';
     foreach ($lines as $lineno => $line) {
       if (preg_match($regex, $line)) {
-        $results[] = theme('coder_line', $lineno + 1, $rule['#warning']);
+        $results[] = theme('coder_warning', $lineno + 1, $rule['#warning']);
       }
     }
   }
@@ -316,7 +316,7 @@ function do_coder_review_grep($rule, $lines, &$results) {
         return;
       }
     }
-    $results[] = theme('coder_line', 0, $rule['#warning']);
+    $results[] = theme('coder_warning', 0, $rule['#warning']);
   }
 }
 
@@ -324,16 +324,23 @@ function do_coder_review_grep($rule, $lines, &$results) {
  * Theming functions below...
  */
 
-function theme_coder($name, $filename, $results) {
-  if (count($results) > 0) {
-    $output  = '<div class="coder"><h2>' . $name . '</h2>';
-    $output .= theme('item_list', $results, NULL, 'ol');
-    $output .= '</div>';
-    return $output;
-  }
-  return '<div class="coder"><h2>' . $name . ': No Problems Detected</h2></div>';
+function theme_reviews($items, $message = '') {
+  return $message . theme('item_list', $items, NULL, 'ol');
 }
 
-function theme_coder_line($lineno, $warning) {
-  return '<div class="coder_line"># ' . $lineno . ': ' . $warning . '</div>';
+function theme_coder($name, $filename, $results) {
+  if (count($results) == 0) {
+    $results[] = theme('coder_warning', 0, t('No Problems Found'));
+  }
+  $output  = '<div class="coder"><h2>' . $name . ': ' . $filename . '</h2>';
+  $output .= theme('item_list', $results);
+  $output .= '</div>';
+  return $output;
+}
+
+function theme_coder_warning($lineno, $warning) {
+  if ($lineno) {
+    return '<div class="coder_warning">' . t('Line') . ' ' . $lineno . ': ' . $warning . '</div>';
+  }
+  return '<div class="coder_warning">' . $warning . '</div>';
 }
