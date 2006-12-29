@@ -244,6 +244,14 @@ function coder_page() {
       if ($checked) {
         $results = do_coder_reviews($reviews, $name, $files[$name]);
         $output .= theme('coder', $name, $files[$name], $results);
+
+        // look for include files
+        $path = dirname($files[$name]);
+        $files = system_listing('.*\.inc$', $path, 'name', 0);
+        foreach ($files as $file) {
+          $results = do_coder_reviews($reviews, $name, $file->filename);
+          $output .= theme('coder', $name, $file->filename, $results);
+        }
       }
     }
 
@@ -300,7 +308,7 @@ function do_coder_review_regex($rule, $lines, &$results, &$tmp) {
   if ($regex = $rule['#value']) {
     $regex = '/' . $regex . '/i';
     foreach ($lines as $lineno => $line) {
-      if (preg_match($regex, $line)) {
+      if (preg_match($regex, $line) && strpos($line, '#coder_ignore') === FALSE) {
         global $_coder_errno;
         $key = $lineno + 1 + ($coder_errno ++ / 100000);
         $results[$key] = theme('coder_warning', $lineno + 1, $rule['#warning']);

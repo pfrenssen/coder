@@ -37,4 +37,3 @@ function _coder_security_callback($lines, &$results, &$tmp) {
 
   // TODO: parse the file looking for missing stuff
 }
-?>

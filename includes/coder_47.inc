@@ -15,4 +15,3 @@ function coder_47_reviews() {
   );
   return $reviews;
 }
-?>
