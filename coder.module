@@ -138,7 +138,7 @@ function coder_form_alter($form_id, &$form) {
 }
 
 function _coder_default_reviews() {
-  return array('drupal' => 1, 'security' => 1);
+  return drupal_map_assoc(array('drupal', 'security'));
 }
 
 /**
