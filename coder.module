@@ -330,13 +330,20 @@ function do_coder_reviews($coder_args) {
     // read the file
     $orig_lines = file($filepath);
 
-    // strip single line comments
-    $lines = preg_replace('/(\/\/[^:].*|\/\*.*\*\/)/', '', $orig_lines);
-
     // replace strings inside quotes with less complicated strings
-    // TODO: this isn't stripping properly when we have escaped quotes
-    $lines = preg_replace('/"[^"]*"/', '""', $lines);
-    $lines = preg_replace('/\'[^\']*\'/', '\'\'', $lines);
+    // many thanks to http://ad.hominem.org/log/2005/05/quoted_strings.php
+    $lines = $orig_lines;
+    foreach (array('\'', '"') as $c) {
+      // NOTE: please forgive the break from style here
+      // I thought NOT using extra spaces made this more readable
+      $regex = '['.$c.']([^'.$c.'\\\\]*(?:\\\\.[^'.$c.'\\\\]*)*)['.$c.']';
+      $lines = preg_replace("/$regex/", "$c$c", $lines);
+    }
+
+    // strip single line comments
+    // NOTE: do this after quote processing
+    // to avoid removing comments that are actually in quotes
+    $lines = preg_replace('/(\/\/[^:].*|\/\*.*\*\/)/', '', $lines);
 
     // remove multi-comments (original code from code-style.pl)
     foreach ($lines as $lineno => $line) {
