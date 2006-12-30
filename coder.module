@@ -334,6 +334,7 @@ function do_coder_reviews($coder_args) {
     $lines = preg_replace('/(\/\/[^:].*|\/\*.*\*\/)/', '', $orig_lines);
 
     // replace strings inside quotes with less complicated strings
+    // TODO: this isn't stripping properly when we have escaped quotes
     $lines = preg_replace('/"[^"]*"/', '""', $lines);
     $lines = preg_replace('/\'[^\']*\'/', '\'\'', $lines);
 
