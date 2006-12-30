@@ -280,7 +280,8 @@ function coder_page() {
         if ($do_includes) {
           // NOTE: convert to the realpath here so system_listing
           // doesn't return additional paths (i.e., try "module").
-          $path = dirname(realpath($filename));
+          $path = str_replace('\\', '/', dirname(realpath($filename)));
+          $offset = strpos($path, dirname($filename));
           if (!isset($dups[$path])) {
             $dups[$path] = 1;
             if (function_exists('drupal_system_listing')) {
@@ -290,8 +291,7 @@ function coder_page() {
               $includefiles = system_listing('.*\.inc$', $path, 'name', 0);
             }
             foreach ($includefiles as $file) {
-              // TODO: use Drupal partial path instead of full path
-              $filename = $file->filename;
+              $filename = substr($file->filename, $offset);
               $results = do_coder_reviews($reviews, $name, $filename);
               $output .= theme('coder', $name, $filename, $results);
             }
