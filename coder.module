@@ -421,7 +421,7 @@ function do_coder_review_grep($rule, $lines, &$results, &$tmp) {
 function do_coder_review_callback($rule, $orig_lines, $lines, &$results, &$tmp) {
   if ($function = $rule['#value']) {
     if (function_exists($function)) {
-      call_user_func($function, $orig_lines, $lines, &$results, &$tmp);
+      call_user_func_array($function, array($orig_lines, $lines, &$results, &$tmp));
     }
   }
 }
