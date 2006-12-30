@@ -47,7 +47,7 @@ function coder_47_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '\s(strlen|strtolower|strtoupper|substr|ucfirst)\s*\(',
-      '#warning' => t('in most cases, replace the string funciton with the drupal_ equivalent string functions'),
+      '#warning' => t('in most cases, replace the string function with the drupal_ equivalent string functions'),
     ),
     array(
       '#type' => 'regex',

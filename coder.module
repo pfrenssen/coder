@@ -450,7 +450,8 @@ function theme_reviews($items, $message = '') {
 }
 
 function theme_coder($name, $filename, $results) {
-  $output  = '<div class="coder"><h2>' . $name . ': ' . $filename . '</h2>';
+  $title = ($_GET['q'] == "admin/coder/$name") ? $filename : l($name, "admin/coder/$name");
+  $output  = '<div class="coder"><h2>' . $title . '</h2>';
   if (count($results)) {
     $output .= theme('item_list', $results);
   }

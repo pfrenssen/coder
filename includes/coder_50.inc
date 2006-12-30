@@ -38,7 +38,7 @@ function coder_50_reviews() {
       '#type' => 'regex',
       '#original' => 1,
       '#value' => '\$_POST\s*\[\s*[\'"]?op[\'"]?\s*\]',
-      '#warning' => t('$_POST[op] deprecated in favor of $form_values[op]'),
+      '#warning' => t('_POST[op] deprecated in favor of $form_values[op]'),
     ),
     array(
       '#type' => 'callback',
