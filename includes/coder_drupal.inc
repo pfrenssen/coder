@@ -84,7 +84,7 @@ function coder_drupal_reviews() {
   return array('drupal' => $review);
 }
 
-function _coder_drupal_callback($orig_lines, $lines, &$results, &$tmp) {
+function _coder_drupal_callback(&$coder_args, $rule, $lines, &$results) {
   for ($lineno = -1; $last = array_slice($lines, $lineno); $lineno --) {
     $lastline = $last[0];
     if (preg_match('/\S/', $lastline)) {

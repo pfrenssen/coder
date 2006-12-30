@@ -38,11 +38,11 @@ function coder_security_reviews() {
   return array('security' => $review);
 }
 
-function _coder_security_callback($orig_lines, $lines, &$results, &$tmp) {
-  if (!isset($tmp['tokens'])) {
+function _coder_security_callback(&$coder_args, $rule, $lines, &$results) {
+/*
+  if (!isset($coder_args['#tokens'])) {
     $source = implode('', $lines);
-//  $tmp['tokens'] = token_get_all($source);
+    $coder_args['#tokens'] = token_get_all($source);
   }
-
-  // TODO: parse the file looking for missing stuff
+*/
 }

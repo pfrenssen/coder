@@ -40,6 +40,10 @@ function coder_50_reviews() {
       '#value' => '\$_POST\s*\[\s*[\'"]?op[\'"]?\s*\]',
       '#warning' => t('$_POST[op] deprecated in favor of $form_values[op]'),
     ),
+    array(
+      '#type' => 'callback',
+      '#value' => _coder_50_callback,
+    ),
   );
   $review = array(
     '#title' => t('Converting 4.7.x modules to 5.x'),
@@ -47,4 +51,16 @@ function coder_50_reviews() {
     '#rules' => $rules,
   );
   return array('upgrade50' => $review);
+}
+
+function _coder_50_callback(&$coder_args, $rule, $lines, &$results) {
+  // only perform this check on module's (not includes)
+  $filename = $coder_args['#filename'];
+  if (substr($filename, -7) == '.module') {
+    // make sure that a .info file exists
+    $filename = substr(realpath($filename), 0, -7) . '.info';
+    if (!file_exists($filename)) {
+      $results[0] = theme('coder_warning', $lineno, t('All modules now need to have a modulename.info file'));
+    }
+  }
 }

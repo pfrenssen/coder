@@ -273,7 +273,12 @@ function coder_page() {
       if ($checked) {
         // process this one file
         $filename = $files[$name];
-        $results = do_coder_reviews($reviews, $name, $filename);
+        $coder_args = array(
+          '#reviews' => $reviews,
+          '#name' => $name,
+          '#filename' => $filename,
+        );
+        $results = do_coder_reviews($coder_args);
         $output .= theme('coder', $name, $filename, $results);
 
         // process the same directory include files
@@ -292,7 +297,12 @@ function coder_page() {
             }
             foreach ($includefiles as $file) {
               $filename = substr($file->filename, $offset);
-              $results = do_coder_reviews($reviews, $name, $filename);
+              $coder_args = array(
+                '#reviews' => $reviews,
+                '#name' => $name,
+                '#filename' => $filename,
+              );
+              $results = do_coder_reviews($coder_args);
               $output .= theme('coder', $name, $filename, $results);
             }
           }
@@ -311,10 +321,11 @@ function coder_page() {
   return $output;
 }
 
-function do_coder_reviews($reviews, $name, $filename) {
+function do_coder_reviews($coder_args) {
   $results = array();
 
   // get the path to the module file
+  $filename = $coder_args['#filename'];
   if ($filename && $filepath = realpath($filename)) {
     // read the file
     $orig_lines = file($filepath);
@@ -347,9 +358,13 @@ function do_coder_reviews($reviews, $name, $filename) {
       $lines[$lineno] = $line;
     }
 
+    // add the files lines to the arguments
+    $coder_args['#orig_lines'] = $orig_lines;
+    $coder_args['#lines'] = $lines;
+
     // now do all of the code reviews
-    foreach ($reviews as $review) {
-      if ($result = do_coder_review($review, $orig_lines, $lines)) {
+    foreach ($coder_args['#reviews'] as $review) {
+      if ($result = do_coder_review($coder_args, $review)) {
         $results += $result;
       }
     }
@@ -366,20 +381,20 @@ function do_coder_reviews($reviews, $name, $filename) {
   return $results;
 }
 
-function do_coder_review($review, $orig_lines, $lines) {
+function do_coder_review($coder_args, $review) {
   $results = array();
   if ($review['#rules']) {
     foreach ($review['#rules'] as $rule) {
-      $review_lines = isset($rule['#original']) ? $orig_lines : $lines;
+      $lines = $coder_args[isset($rule['#original']) ? '#orig_lines' : '#lines'];
       switch ($rule['#type']) {
         case 'regex':
-          do_coder_review_regex($rule, $review_lines, $results, $tmp);
+          do_coder_review_regex($coder_args, $rule, $lines, $results);
           break;
         case 'grep':
-          do_coder_review_grep($rule, $review_lines, $results, $tmp);
+          do_coder_review_grep($coder_args, $rule, $lines, $results);
           break;
         case 'callback':
-          do_coder_review_callback($rule, $orig_lines, $lines, $results, $tmp);
+          do_coder_review_callback($coder_args, $rule, $lines, $results);
           break;
       }
     }
@@ -387,7 +402,7 @@ function do_coder_review($review, $orig_lines, $lines) {
   return $results;
 }
 
-function do_coder_review_regex($rule, $lines, &$results, &$tmp) {
+function do_coder_review_regex(&$coder_args, $rule, $lines, &$results) {
   if ($regex = $rule['#value']) {
     $regex = '/' . $regex . '/';
     if (!isset($rule['#case'])) {
@@ -403,7 +418,7 @@ function do_coder_review_regex($rule, $lines, &$results, &$tmp) {
   }
 }
 
-function do_coder_review_grep($rule, $lines, &$results, &$tmp) {
+function do_coder_review_grep(&$coder_args, $rule, $lines, &$results) {
   if ($regex = $rule['#value']) {
     $regex = '/' . $regex . '/';
     if (!isset($rule['#case'])) {
@@ -418,10 +433,10 @@ function do_coder_review_grep($rule, $lines, &$results, &$tmp) {
   }
 }
 
-function do_coder_review_callback($rule, $orig_lines, $lines, &$results, &$tmp) {
+function do_coder_review_callback(&$coder_args, $rule, $lines, &$results) {
   if ($function = $rule['#value']) {
     if (function_exists($function)) {
-      call_user_func_array($function, array($orig_lines, $lines, &$results, &$tmp));
+      call_user_func_array($function, array(&$coder_args, $rule, $lines, &$results));
     }
   }
 }
