@@ -26,7 +26,7 @@ function coder_init() {
     return;
   }
 
-  // Load all our module 'on behalfs'.
+  // Load all our module plug-ins
   global $_coder_coders;
   $path = drupal_get_path('module', 'coder') . '/includes';
   if (function_exists('drupal_system_listing')) {
@@ -280,7 +280,6 @@ function coder_page() {
         if ($do_includes) {
           // NOTE: convert to the realpath here so system_listing
           // doesn't return additional paths (i.e., try "module").
-          $basepathlen = strlen(dirname(realpath('')) . base_path());
           $path = dirname(realpath($filename));
           if (!isset($dups[$path])) {
             $dups[$path] = 1;
@@ -291,7 +290,8 @@ function coder_page() {
               $includefiles = system_listing('.*\.inc$', $path, 'name', 0);
             }
             foreach ($includefiles as $file) {
-              $filename = substr($file->filename, $basepathlen);
+              // TODO: use Drupal partial path instead of full path
+              $filename = $file->filename;
               $results = do_coder_reviews($reviews, $name, $filename);
               $output .= theme('coder', $name, $filename, $results);
             }
