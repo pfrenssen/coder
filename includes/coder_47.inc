@@ -8,10 +8,12 @@
  */ 
 
 function coder_47_reviews() {
-  $reviews = array();
-  $reviews['upgrade47'] = array(
+  $rules = array(
+  );
+  $review = array(
     '#title' => t('Converting 4.6.x modules to 4.7.x'),
     '#link' => 'http://drupal.org/node/22218',
+    '#rules' => $rules,
   );
-  return $reviews;
+  return array('upgrade47' => $review);
 }

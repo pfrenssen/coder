@@ -76,14 +76,12 @@ function coder_drupal_reviews() {
       '#warning' => t('do not use mixed case (camelCase), use lower case and _'),
     ),
   );
-
-  $reviews = array();
-  $reviews['drupal'] = array(
+  $review = array(
     '#title' => t('Drupal Coding Standards'),
     '#link' => 'http://drupal.org/node/318',
     '#rules' => $rules,
   );
-  return $reviews;
+  return array('drupal' => $review);
 }
 
 function _coder_drupal_callback($orig_lines, $lines, &$results, &$tmp) {

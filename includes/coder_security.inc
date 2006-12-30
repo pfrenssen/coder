@@ -30,14 +30,12 @@ function coder_security_reviews() {
       '#warning' => t('the use of REQUEST_URI is prone to XSS exploits and does not work on IIS; use request_uri() instead'),
     ),
   );
-
-  $reviews = array();
-  $reviews['security'] = array(
+  $review = array(
     '#title' => t('Handle text in a secure fashion'),
     '#link' => 'http://drupal.org/node/28984',
     '#rules' => $rules,
   );
-  return $reviews;
+  return array('security' => $review);
 }
 
 function _coder_security_callback($orig_lines, $lines, &$results, &$tmp) {
