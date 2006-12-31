@@ -44,6 +44,12 @@ function coder_50_reviews() {
       '#type' => 'callback',
       '#value' => _coder_50_callback,
     ),
+    array(
+      '#type' => 'regex',
+      '#original' => 1,
+      '#value' => '\stheme_add_style\s*\(',
+      '#warning' => t('Replace theme_add_style() with drupal_add_css()'),
+    ),
   );
   $review = array(
     '#title' => t('Converting 4.7.x modules to 5.x'),
