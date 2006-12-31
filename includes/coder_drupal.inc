@@ -36,6 +36,11 @@ function coder_drupal_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#value' => '(\.\'\'|\'\'\.|\.""|\."")',
+      '#warning' => t('string concatenation should be formatted with a space separating the operators (dot .) and terms (\'string\')'),
+    ),
+    array(
+      '#type' => 'regex',
       '#value' => '<\?(?!php)',
       '#warning' => t('Always use &lt;?php ?&gt; to delimit PHP code, not the &lt;? ?&gt; shorthand'),
     ),
