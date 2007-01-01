@@ -130,8 +130,8 @@ function coder_menu($may_cache) {
 function coder_form_alter($form_id, &$form) {
   if ($form_id == 'system_modules') {
     if (user_access('view code review')) {
-      foreach ($form['name'] as $name => &$data) {
-        $data['#value'] = l($data['#value'], "admin/coder/$name");
+      foreach ($form['name'] as $name => $data) {
+        $form['name'][$name]['#value'] = l($data['#value'], "admin/coder/$name");
       }
     }
   }
