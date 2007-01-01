@@ -296,7 +296,7 @@ function coder_page() {
               $includefiles = system_listing('.*\.inc$', $path, 'name', 0);
             }
             foreach ($includefiles as $file) {
-              $filename = substr($file->filename, $offset);
+              $filename = drupal_substr($file->filename, $offset);
               $coder_args = array(
                 '#reviews' => $reviews,
                 '#name' => $name,
@@ -388,7 +388,7 @@ function do_coder_reviews($coder_args) {
 
   // always display something
   if (count($results) == 0) {
-    $results[0] = theme('coder_warning', 0, t('No Problems Found'));
+    _coder_error_msg($results, t('No Problems Found'));
   }
   else {
     ksort($results, SORT_NUMERIC);
@@ -426,12 +426,37 @@ function do_coder_review_regex(&$coder_args, $rule, $lines, &$results) {
     }
     foreach ($lines as $lineno => $line) {
       if (preg_match($regex, $line)) {
-        global $_coder_errno;
-        $key = $lineno + 1 + ($coder_errno ++ / 100000);
-        $results[$key] = theme('coder_warning', $lineno + 1, $rule['#warning']);
+        _coder_error($results, $rule, $lineno, $line);
       }
     }
   }
+}
+
+function _coder_error(&$results, $rule, $lineno = -1, $line = '') {
+  if (isset($rule['#warning_callback'])) {
+    if (function_exists($rule['#warning_callback'])) {
+      $warning = $rule['#warning_callback']();
+    }
+    else { // if this happens, there is an error in the rule definition
+      $warning = t('please !report this !warning',
+        array(
+          '!report' => l('report', 'http://drupal.org/node/add/project_issue/coder/bug'),
+          '!warning' => $rule['#warning_callback'],
+        )
+      );
+    }
+  }
+  else {
+    $warning = t($rule['#warning']);
+  }
+  
+  return _coder_error_msg($results, $warning, $lineno, $line);
+}
+
+function _coder_error_msg(&$results, $warning, $lineno = -1, $line = '') {
+  global $_coder_errno;
+  $key = $lineno + 1 + ($coder_errno ++ / 100000);
+  $results[$key] = theme('coder_warning', $lineno + 1, $warning);
 }
 
 function do_coder_review_grep(&$coder_args, $rule, $lines, &$results) {
@@ -445,7 +470,7 @@ function do_coder_review_grep(&$coder_args, $rule, $lines, &$results) {
         return;
       }
     }
-    $results[0] = theme('coder_warning', 0, $rule['#warning']);
+    _coder_error($results, $rule);
   }
 }
 
@@ -480,4 +505,8 @@ function theme_coder_warning($lineno, $warning) {
     return '<div class="coder_warning">' . t('Line') . ' ' . $lineno . ': ' . $warning . '</div>';
   }
   return '<div class="coder_warning">' . $warning . '</div>';
+}
+
+function theme_drupalapi($function, $version = 'HEAD') {
+  return l($function, "http://api.drupal.org/api/$version/function/$function");
 }
