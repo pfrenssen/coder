@@ -104,14 +104,14 @@ function coder_menu($may_cache) {
   if ($may_cache) {
     $items[] = array(
       'path' => 'admin/coder',
-      'title' => t('Code Review'),
+      'title' => t('Code review'),
       'callback' => 'coder_page',
       'access' => user_access('view code review'),
     );
     if (function_exists('drupal_system_listing')) {
       $items[] = array(
         'path' => 'admin/settings/coder',
-        'title' => t('Code Review'),
+        'title' => t('Code review'),
         'description' => t('Select code review plugins and modules'),
         'callback' => 'drupal_get_form',
         'callback arguments' => 'coder_admin_settings',
