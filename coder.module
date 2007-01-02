@@ -29,12 +29,8 @@ function coder_init() {
   // Load all our module plug-ins
   global $_coder_coders;
   $path = drupal_get_path('module', 'coder') . '/includes';
-  if (function_exists('drupal_system_listing')) {
-    $files = drupal_system_listing('coder_.*\.inc$', $path, 'name', 0);
-  }
-  else {
-    $files = system_listing('coder_.*\.inc$', $path, 'name', 0);
-  }
+  $system_listing = (function_exists('drupal_system_listing')) ? 'drupal_system_listing' : 'system_listing';
+  $files = $system_listing('coder_.*\.inc$', $path, 'name', 0);
   foreach ($files as $file) {
     require_once('./' . $file->filename);
     $_coder_coders[] = $file->name;
@@ -289,12 +285,8 @@ function coder_page() {
           $offset = strpos($path, dirname($filename));
           if (!isset($dups[$path])) {
             $dups[$path] = 1;
-            if (function_exists('drupal_system_listing')) {
-              $includefiles = drupal_system_listing('.*\.inc$', $path, 'name', 0);
-            }
-            else {
-              $includefiles = system_listing('.*\.inc$', $path, 'name', 0);
-            }
+            $system_listing = (function_exists('drupal_system_listing')) ? 'drupal_system_listing' : 'system_listing';
+            $includefiles = $system_listing('.*\.inc$', $path, 'name', 0);
             foreach ($includefiles as $file) {
               $filename = drupal_substr($file->filename, $offset);
               $coder_args = array(
