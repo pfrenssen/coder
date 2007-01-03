@@ -326,17 +326,7 @@ function do_coder_reviews($coder_args) {
     // many thanks to http://ad.hominem.org/log/2005/05/quoted_strings.php
     $lines = $orig_lines;
     foreach (array('\'', '"') as $c) {
-      /**
-       * warning: string concatenation should be formatted with a space
-       * separating the operators (dot .) and terms ('string')
-       *
-       * I broke with coding style because IMHO the extra spaces made this line
-       * less readable, pushing this complicated regex onto multiple lines.
-       *
-       * I also want to make the point that the coder module is making
-       * suggestions.  You can bend or break them if there is good reason.
-       */
-      $regex = '['.$c.']([^'.$c.'\\\\]*(?:\\\\.[^'.$c.'\\\\]*)*)['.$c.']';
+      $regex = '['. $c .']([^'. $c .'\\\\]*(?:\\\\.[^'. $c .'\\\\]*)*)['. $c .']';
       $lines = preg_replace("/$regex/", "$c$c", $lines);
     }
 
@@ -345,21 +335,37 @@ function do_coder_reviews($coder_args) {
     // to avoid removing comments that are actually in quotes
     $lines = preg_replace('/(\/\/[^:].*|\/\*.*\*\/)/', '', $lines);
 
-    // remove multi-comments (original code from code-style.pl)
+    // remove multi-line quotes and comments (original code from code-style.pl)
     foreach ($lines as $lineno => $line) {
-      // catch multi-line comments
-      if (isset($comment)) {
-        if (preg_match('/.*\*\//', $line)) {
-          $line = preg_replace('/.*\*\//', '', $line);
-          unset($comment);
+      if (isset($in_quote)) { // catch end-of multi-line quotes
+        if (preg_match("/[^\\$in_quote]*$in_quote/", $line)) {
+          $line = preg_replace("/[^\\$in_quote]*$in_quote/", '', $line);
+          unset($in_comment);
         }
         else {
           $line = '';
         }
       }
-      if (preg_match('/\/\*.*/', $line)) {
+      elseif (isset($in_comment)) { // catch end-of multi-line comments
+        if (preg_match('/.*\*\//', $line)) {
+          $line = preg_replace('/.*\*\//', '', $line);
+          unset($in_comment);
+        }
+        else {
+          $line = '';
+        }
+      }
+      if (preg_match('/[^\']\'[^\']*$/', $line)) { // start-of multi-line single-quote
+        $line = preg_replace('/([^\'])\'.*/', '($1)', $line);
+        $in_quote = '\'';
+      }
+      elseif (preg_match('/[^"]"[^"]*$/', $line)) { // start of multi-line double-quote
+        $line = preg_replace('/([^"])[^"]".*/', '($1)', $line);
+        $in_quote = '"';
+      }
+      if (preg_match('/\/\*.*/', $line)) { // start of multi-line comment
         $line = preg_replace('/\/\*.*/', '', $line);
-        $comment = 1;
+        $in_comment = 1;
       }
 
       // save the new line, without the comments
