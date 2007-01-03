@@ -338,9 +338,12 @@ function do_coder_reviews($coder_args) {
     // remove multi-line quotes and comments (original code from code-style.pl)
     foreach ($lines as $lineno => $line) {
       if (isset($in_quote)) { // catch end-of multi-line quotes
-        if (preg_match("/[^\\$in_quote]*$in_quote/", $line)) {
-          $line = preg_replace("/[^\\$in_quote]*$in_quote/", '', $line);
-          unset($in_comment);
+        if (preg_match("/^[^\\$in_quote]*$in_quote/", $line)) {
+          // NOTE: this doesn't make sense to me, but appears to work.
+          // Why don't I need to put the quote in the preg_replace replacement
+          // argument?  Where's the extra quote coming from?
+          $line = $quote_line . preg_replace("/^[^\\$in_quote]*$in_quote/", '', $line, 1);
+          unset($in_quote);
         }
         else {
           $line = '';
@@ -356,11 +359,13 @@ function do_coder_reviews($coder_args) {
         }
       }
       if (preg_match('/[^\']\'[^\']*$/', $line)) { // start-of multi-line single-quote
-        $line = preg_replace('/([^\'])\'.*/', '($1)', $line);
+        $quote_line = rtrim(preg_replace('/([^\'])\'.*/', '$1\'', $line, 1));
+        $line = '';
         $in_quote = '\'';
       }
       elseif (preg_match('/[^"]"[^"]*$/', $line)) { // start of multi-line double-quote
-        $line = preg_replace('/([^"])[^"]".*/', '($1)', $line);
+        $quote_line = rtrim(preg_replace('/([^"])[^"]".*/', '$1"', $line, 1));
+        $line = '';
         $in_quote = '"';
       }
       if (preg_match('/\/\*.*/', $line)) { // start of multi-line comment
