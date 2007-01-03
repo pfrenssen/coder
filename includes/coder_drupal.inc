@@ -36,7 +36,7 @@ function coder_drupal_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '(\.\'\'|\'\'\.|\.""|\."")',
+      '#value' => '(\.\s\'\'|\'\'\s\.|\.\s""|\.\s"")',
       '#warning' => 'string concatenation should be formatted with a space separating the operators (dot .) and terms (\'string\')',
     ),
     array(
