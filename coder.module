@@ -28,11 +28,11 @@ function coder_init() {
 
   // Load all our module plug-ins
   global $_coder_coders;
-  $path = drupal_get_path('module', 'coder') . '/includes';
-  $system_listing = (function_exists('drupal_system_listing')) ? 'drupal_system_listing' : 'system_listing';
+  $path = drupal_get_path('module', 'coder') .'/includes';
+  $system_listing = function_exists('drupal_system_listing') ? 'drupal_system_listing' : 'system_listing';
   $files = $system_listing('coder_.*\.inc$', $path, 'name', 0);
   foreach ($files as $file) {
-    require_once('./' . $file->filename);
+    require_once('./'. $file->filename);
     $_coder_coders[] = $file->name;
   }
 }
@@ -47,7 +47,7 @@ function _coder_reviews() {
   global $_coder_coders;
   if ($_coder_coders) {
     foreach ($_coder_coders as $coder) {
-      $function = $coder . '_reviews';
+      $function = $coder .'_reviews';
       if (function_exists($function)) {
         if ($review = call_user_func($function)) {
           $reviews = array_merge($reviews, $review);
@@ -307,7 +307,7 @@ function coder_page() {
       foreach ($reviews as $review) {
         $items[] = l($review['#title'], $review['#link']);
       }
-      $output = '<div class="reviews">' . theme('reviews', $items, t('The code was checked using the following review guidelines')) . '</div>' . $output;
+      $output = '<div class="reviews">'. theme('reviews', $items, t('The code was checked using the following review guidelines')) .'</div>'. $output;
     }
   }
   return $output;
@@ -412,7 +412,7 @@ function do_coder_review($coder_args, $review) {
 
 function do_coder_review_regex(&$coder_args, $rule, $lines, &$results) {
   if ($regex = $rule['#value']) {
-    $regex = '/' . $regex . '/';
+    $regex = '/'. $regex .'/';
     if (!isset($rule['#case'])) {
       $regex .= 'i';
     }
@@ -453,7 +453,7 @@ function _coder_error_msg(&$results, $warning, $lineno = -1, $line = '') {
 
 function do_coder_review_grep(&$coder_args, $rule, $lines, &$results) {
   if ($regex = $rule['#value']) {
-    $regex = '/' . $regex . '/';
+    $regex = '/'. $regex .'/';
     if (!isset($rule['#case'])) {
       $regex .= 'i';
     }
@@ -484,7 +484,7 @@ function theme_reviews($items, $message = '') {
 
 function theme_coder($name, $filename, $results) {
   $title = ($_GET['q'] == "admin/coder/$name") ? $filename : l($name, "admin/coder/$name");
-  $output  = '<div class="coder"><h2>' . $title . '</h2>';
+  $output  = '<div class="coder"><h2>'. $title .'</h2>';
   if (count($results)) {
     $output .= theme('item_list', $results);
   }
@@ -494,9 +494,9 @@ function theme_coder($name, $filename, $results) {
 
 function theme_coder_warning($lineno, $warning) {
   if ($lineno) {
-    return '<div class="coder_warning">' . t('Line') . ' ' . $lineno . ': ' . $warning . '</div>';
+    return '<div class="coder_warning">'. t('Line') .' '. $lineno .': '. $warning .'</div>';
   }
-  return '<div class="coder_warning">' . $warning . '</div>';
+  return '<div class="coder_warning">'. $warning .'</div>';
 }
 
 function theme_drupalapi($function, $version = 'HEAD') {
