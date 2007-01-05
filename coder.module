@@ -423,7 +423,7 @@ function do_coder_review($coder_args, $review) {
 
 function do_coder_review_regex(&$coder_args, $rule, $lines, &$results) {
   if ($regex = $rule['#value']) {
-    $regex = '/'. $regex .'/';
+    $regex = '/'. $regex .'/i';
     foreach ($lines as $lineno => $line) {
       if (preg_match($regex, $line, $matches)) {
         // NOTE: I'd prefer to do this with regex strings, but there are a
@@ -432,7 +432,7 @@ function do_coder_review_regex(&$coder_args, $rule, $lines, &$results) {
         // don't match some regex's
         if ($not = $rule['#not']) {
           foreach ($matches as $match) {
-            if (preg_match('/'. $not .'/', $match)) {
+            if (preg_match('/'. $not .'/i', $match)) {
               continue 2;
             }
           }
@@ -473,7 +473,7 @@ function _coder_error_msg(&$results, $warning, $lineno = -1, $line = '') {
 
 function do_coder_review_grep(&$coder_args, $rule, $lines, &$results) {
   if ($regex = $rule['#value']) {
-    $regex = '/'. $regex .'/';
+    $regex = '/'. $regex .'/i';
     foreach ($lines as $lineno => $line) {
       if (preg_match($regex, $line)) {
         return;

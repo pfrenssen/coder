@@ -78,9 +78,15 @@ function coder_drupal_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '(?-i)([a-z]+[A-Z]+([a-z]*[A-Z]*)*)+',
-      '#not' => '^(stdClass)$',
+      '#value' => '(?-i)(([a-z]+[A-Z]+([a-z]*[A-Z]*)*)|([A-Z]+[a-z]+([A-Z]*[a-z]*)*))',
+      '#not' => '(?-i)^(stdClass|StdClass)$',
       '#warning' => 'do not use mixed case (camelCase), use lower case and _',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '\s(stdclass)\s*\(',
+      '#not' => '^(?-i)stdClass$',
+      '#warning' => 'use stdClass caseCapitalization, it\'s the one exception to the mixed case style standard',
     ),
   );
   $review = array(
