@@ -21,7 +21,8 @@ function coder_drupal_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\s\w(?!(if|elseif|while|foreach|switch|return|for))\s\(',
+      '#value' => '\s(\w+)\s\(',
+      '#not' => '^(if|elseif|while|foreach|switch|return|for)$',
       '#warning' => 'Functions should be called with no spaces between the function name',
     ),
     array(
@@ -50,9 +51,10 @@ function coder_drupal_reviews() {
       '#value' => '\$Id',
       '#warning' => 'Include the Id CVS keyword in each file',
     ),
-    array( // TODO: don't catch $user and other 'core' globals
+    array( // NOTE: permit drupal core globals
       '#type' => 'regex',
-      '#value' => 'global\s+\$[^_]',
+      '#value' => 'global\s+\$(\w+)(,\s\$(\w+))*',
+      '#not' => '^_|^(active_db|base_path|base_root|base_url|conf|custom_theme|db_prefix|db_type|db_url|form_button_counter|form_submitted|form_values|install_locale|installed_profile|last_result|locale|multibyte|pager_page_array|pager_total|pager_total_items|profile|queries|theme|theme_engine|theme_key|timers|user)$',
       '#warning' => 'global variables should start with a single underscore followed by the module and another underscore',
     ),
     array(
@@ -76,8 +78,8 @@ function coder_drupal_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[a-z][A-Z]',
-      '#value' => '(?-i)[a-z][A-Z]',
+      '#value' => '(?-i)(([a-z]+[A-Z]+([a-z]*[A-Z]*)*)|([A-Z]+[a-z]+([A-Z]*[a-z]*)*))',
+      '#not' => '^(stdClass|StdClass)$',
       '#warning' => 'do not use mixed case (camelCase), use lower case and _',
     ),
   );

@@ -425,7 +425,19 @@ function do_coder_review_regex(&$coder_args, $rule, $lines, &$results) {
   if ($regex = $rule['#value']) {
     $regex = '/'. $regex .'/';
     foreach ($lines as $lineno => $line) {
-      if (preg_match($regex, $line)) {
+      if (preg_match($regex, $line, $matches)) {
+        // NOTE: I'd prefer to do this with regex strings, but there are a
+        // couple in coder_drupal.inc that I just can't figure out with this.
+
+        // don't match some regex's
+        if ($not = $rule['#not']) {
+          foreach ($matches as $match) {
+            if (preg_match('/'. $not .'/', $match)) {
+              continue 2;
+            }
+          }
+        }
+
         _coder_error($results, $rule, $lineno, $line);
       }
     }

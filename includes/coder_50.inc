@@ -66,7 +66,7 @@ function _coder_50_callback(&$coder_args, $rule, $lines, &$results) {
   $filename = $coder_args['#filename'];
   if (substr($filename, -7) == '.module') {
     // make sure that a .info file exists
-    $filename = drupal_substr(realpath($filename), 0, -7) . '.info';
+    $filename = drupal_substr(realpath($filename), 0, -7) .'.info';
     if (!file_exists($filename)) {
       $results[0] = theme('coder_warning', $lineno, t('All modules now need to have a modulename.info file'));
     }
