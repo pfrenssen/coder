@@ -77,7 +77,7 @@ function coder_drupal_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '[a-z][A-Z]',
-      '#case' => 1,
+      '#value' => '(?-i)[a-z][A-Z]',
       '#warning' => 'do not use mixed case (camelCase), use lower case and _',
     ),
   );

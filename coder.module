@@ -424,9 +424,6 @@ function do_coder_review($coder_args, $review) {
 function do_coder_review_regex(&$coder_args, $rule, $lines, &$results) {
   if ($regex = $rule['#value']) {
     $regex = '/'. $regex .'/';
-    if (!isset($rule['#case'])) {
-      $regex .= 'i';
-    }
     foreach ($lines as $lineno => $line) {
       if (preg_match($regex, $line)) {
         _coder_error($results, $rule, $lineno, $line);
@@ -465,9 +462,6 @@ function _coder_error_msg(&$results, $warning, $lineno = -1, $line = '') {
 function do_coder_review_grep(&$coder_args, $rule, $lines, &$results) {
   if ($regex = $rule['#value']) {
     $regex = '/'. $regex .'/';
-    if (!isset($rule['#case'])) {
-      $regex .= 'i';
-    }
     foreach ($lines as $lineno => $line) {
       if (preg_match($regex, $line)) {
         return;
