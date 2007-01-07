@@ -96,9 +96,10 @@ function _coder_50_drupal_mail_wrapper_warning() {
 }
 
 function _coder_50_message_na_warning() {
-  return t('The function !message_na() was removed, remove it from your modules as well and replace it with t(\'n/a\')',
+  return t('The function !message_na() was removed, remove it from your modules as well and replace it with !t(\'n/a\')',
     array(
       '!message_na' => theme('drupalapi', 'message_na', '4.7'),
+      '!t' => theme('drupalapi', 't'),
     )
   );
 }

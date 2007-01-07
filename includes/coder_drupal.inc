@@ -109,6 +109,6 @@ function _coder_drupal_callback(&$coder_args, $rule, $lines, &$results) {
     }
   }
   if ($last && $lastline && preg_match('/\?>/i', $lastline)) {
-    _coder_error($results, 'the final ?> should be omitted from all code files', count($lines));
+    _coder_error_msg($results, 'the final ?> should be omitted from all code files', count($lines));
   }
 }
