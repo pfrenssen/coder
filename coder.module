@@ -269,6 +269,10 @@ function coder_page() {
       if ($checked) {
         // process this one file
         $filename = $files[$name];
+        if (!$filename) {
+          drupal_set_message(t('Code Review is only available on module files (%module.module not found)', array('%module' => $name)));
+          continue;
+        }
         $coder_args = array(
           '#reviews' => $reviews,
           '#name' => $name,
@@ -303,12 +307,13 @@ function coder_page() {
     }
 
     // prepend any output with the list of code reviews performed
-    if ($output) {
-      foreach ($reviews as $review) {
-        $items[] = l($review['#title'], $review['#link']);
-      }
-      $output = '<div class="reviews">'. theme('reviews', $items, t('The code was checked using the following review guidelines')) .'</div>'. $output;
+    if (!$output) {
+      $output = t('No modules found');
     }
+    foreach ($reviews as $review) {
+      $items[] = l($review['#title'], $review['#link']);
+    }
+    $output = '<div class="reviews">'. theme('reviews', $items, t('The code was checked using the following review guidelines')) .'</div>'. $output;
   }
   return $output;
 }
