@@ -247,8 +247,9 @@ function coder_page() {
   }
 
   // get the list of the modules
+  $requested_module = arg(2);
   $sql = "SELECT name, filename, status FROM {system} WHERE type = 'module'";
-  if ($active == 1) {
+  if (!$requested_module && $active == 1) {
     $sql .= " AND status=1";
   }
   $result = db_query($sql);
@@ -260,8 +261,8 @@ function coder_page() {
   }
 
   // determine which modules are selected
-  if ($module = arg(2)) {
-    $modules = array($module => $module);
+  if ($requested_module) {
+    $modules = array($requested_module => $requested_module);
     $do_includes = 1;
   }
   else {
