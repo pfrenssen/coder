@@ -51,10 +51,10 @@ function coder_drupal_reviews() {
       '#value' => '\$Id',
       '#warning' => 'Include the Id CVS keyword in each file',
     ),
-    array( // NOTE: permit drupal core globals
+    array(
       '#type' => 'regex',
       '#value' => 'global\s+\$(\w+)(,\s\$(\w+))*',
-      '#not' => '^_|^(active_db|base_path|base_root|base_url|conf|custom_theme|db_prefix|db_type|db_url|form_button_counter|form_submitted|form_values|install_locale|installed_profile|last_result|locale|multibyte|pager_page_array|pager_total|pager_total_items|profile|queries|theme|theme_engine|theme_key|timers|user)$',
+      '#not' => '^_|^('. _coder_drupal_core_global_regex() .')$',
       '#warning' => 'global variables should start with a single underscore followed by the module and another underscore',
     ),
     array(
@@ -111,4 +111,60 @@ function _coder_drupal_callback(&$coder_args, $rule, $lines, &$results) {
   if ($last && $lastline && preg_match('/\?>/i', $lastline)) {
     _coder_error_msg($results, 'the final ?> should be omitted from all code files', count($lines));
   }
+}
+
+function _coder_drupal_core_global_regex() {
+  static $coreglobalregex, $coreglobalvars;
+  if (!isset($coreglobalregex)) {
+    // Note: there's a little extra overhead in formatting this list as an
+    // array, but I think it makes it more readable and maintainable
+    $coreglobalvars = array(
+      // from the Drupal 5 includes/ directory
+      'active_db',
+      'base_path',
+      'base_root',
+      'base_url',
+      'conf',
+      'custom_theme',
+      'db_prefix',
+      'db_type',
+      'db_url',
+      'form_button_counter',
+      'form_submitted',
+      'form_values',
+      'install_locale',
+      'installed_profile',
+      'last_result',
+      'locale',
+      'multibyte',
+      'pager_page_array',
+      'pager_total',
+      'pager_total_items',
+      'profile',
+      'queries',
+      'theme',
+      'theme_engine',
+      'theme_key',
+      'timers',
+      'user',
+
+      // from the Drupal 5 modules/ directory -
+      // Note: IMHO these should not be allowed, but until we fix core,
+      // other modules will need them
+      'channel',
+      'element',
+      'forum_topic_list_header',
+      'id',
+      'image',
+      'item',
+      'items',
+      'last_change',
+      'last_nid',
+      'nid',
+      'recent_activity',
+      'tag',
+    );
+    $coreglobalregex = implode('|', $coreglobalvars);
+  }
+  return $coreglobalregex;
 }
