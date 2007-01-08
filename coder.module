@@ -332,10 +332,35 @@ function do_coder_reviews($coder_args) {
   if ($filename && $filepath = realpath($filename)) {
     // read the file
     $orig_lines = file($filepath);
+    $lines = $orig_lines;
+
+    // strip single line ?_> <_?php
+    // NOTE: I can't put the real strings here in the comments because
+    // php processes them inside comments and breaks the file
+    $lines = preg_replace('/\?'.'>[^<]*(<\?php)/', '', $lines);
+
+    // strip html code inside multi-line ?_> <_?php tags
+    foreach ($lines as $lineno => $line) {
+      if (isset($in_html)) { // catch end-of multi-line embedded html
+        if (preg_match("/^[^<]*<\?php(.*)/", $line, $match)) {
+          $line = $match[1];
+          unset($in_html);
+        }
+        else {
+          $line = '';
+        }
+      }
+      if (preg_match('/^([^>]*)\?'.'>.*/', $line, $match)) { // start-of multi-line embedded html
+        $line = $match[1];
+        $in_html = 1;
+      }
+
+      // save the new line, without the comments
+      $lines[$lineno] = $line;
+    }
 
     // replace strings inside quotes with less complicated strings
     // many thanks to http://ad.hominem.org/log/2005/05/quoted_strings.php
-    $lines = $orig_lines;
     foreach (array('\'', '"') as $c) {
       $regex = '['. $c .']([^'. $c .'\\\\]*(?:\\\\.[^'. $c .'\\\\]*)*)['. $c .']';
       $lines = preg_replace("/$regex/", "$c$c", $lines);
@@ -350,7 +375,8 @@ function do_coder_reviews($coder_args) {
     foreach ($lines as $lineno => $line) {
       if (isset($in_quote)) { // catch end-of multi-line quotes
         if (preg_match("/^[^\\$in_quote]*$in_quote/", $line)) {
-          // NOTE: this doesn't make sense to me, but appears to work.
+          // HELP: This doesn't make sense to me, but appears to work.
+          // Can this be simplified to look line the php code?
           // Why don't I need to put the quote in the preg_replace replacement
           // argument?  Where's the extra quote coming from?
           $line = $quote_line . preg_replace("/^[^\\$in_quote]*$in_quote/", '', $line, 1);

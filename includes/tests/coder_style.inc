@@ -21,10 +21,19 @@ function coder_test_stdclass() {
 }
 
 function coderCamelCase() {
-  $camelCaseVar = 'whatever';
+  $camelCaseVar = 'whatever'; // camel case functions and vars not allowed
 }
 
 function coder_test_two_errors_on_same_line() {
-  if('test=' . $test == 'test='){
+  if('test=' . $test == 'test='){ // there are 3 errors on this line
   }
 }
+
+function coder_test_embedded_php() {
+  ?>This is embedded php and should Not trigger a camelCase error.<?php
+  ?>This second embedded php and should Not trigger
+a camelCase error.<?php
+}
+
+// should generate an error about the trailing php close
+?>
