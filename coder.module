@@ -478,8 +478,11 @@ function _coder_error(&$results, $rule, $lineno = -1, $line = '', $original = ''
 }
 
 function _coder_error_msg(&$results, $warning, $lineno = -1, $line = '') {
+  // Note: The use of the $key allows multiple errors on one line.
+  // This assumes that no line of source has more than 10000 lines of code
+  // and that we have fewer than 10000 errors.
   global $_coder_errno;
-  $key = $lineno + 1 + ($coder_errno ++ / 100000);
+  $key = ($lineno + 1) * 10000 + ($_coder_errno ++);
   $results[$key] = theme('coder_warning', $warning, $lineno + 1, $line);
 }
 

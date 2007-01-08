@@ -23,3 +23,8 @@ function coder_test_stdclass() {
 function coderCamelCase() {
   $camelCaseVar = 'whatever';
 }
+
+function coder_test_two_errors_on_same_line() {
+  if('test=' . $test == 'test='){
+  }
+}
