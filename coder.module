@@ -210,6 +210,15 @@ function coder_settings() {
     '#default_value' => $modules,
   );
 
+  // display the showcode setting
+  // should this even be an option???
+  $form['coder_nocode'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Hide Code Lines'),
+    '#description' => t('Only display line numbers and error messages, do not display code, for more compact reading'),
+    '#default_value' => variable_get('coder_nocode', 0),
+  );
+
   return $form;
 }
 
@@ -443,13 +452,14 @@ function do_coder_review_regex(&$coder_args, $rule, $lines, &$results) {
           }
         }
 
-        _coder_error($results, $rule, $lineno, $line);
+        $orig_line = $coder_args['#orig_lines'][$lineno];
+        _coder_error($results, $rule, $lineno, $orig_line);
       }
     }
   }
 }
 
-function _coder_error(&$results, $rule, $lineno = -1, $line = '') {
+function _coder_error(&$results, $rule, $lineno = -1, $line = '', $original = '') {
   if (isset($rule['#warning_callback'])) {
     if (function_exists($rule['#warning_callback'])) {
       $warning = $rule['#warning_callback']();
@@ -473,7 +483,7 @@ function _coder_error(&$results, $rule, $lineno = -1, $line = '') {
 function _coder_error_msg(&$results, $warning, $lineno = -1, $line = '') {
   global $_coder_errno;
   $key = $lineno + 1 + ($coder_errno ++ / 100000);
-  $results[$key] = theme('coder_warning', $lineno + 1, $warning);
+  $results[$key] = theme('coder_warning', $warning, $lineno + 1, $line);
 }
 
 function do_coder_review_grep(&$coder_args, $rule, $lines, &$results) {
@@ -514,9 +524,12 @@ function theme_coder($name, $filename, $results) {
   return $output;
 }
 
-function theme_coder_warning($lineno, $warning) {
+function theme_coder_warning($warning, $lineno = 0, $line = '') {
   if ($lineno) {
-    return '<div class="coder_warning">'. t('Line') .' '. $lineno .': '. $warning .'</div>';
+    $warning = t('Line @number: @warning', array('@number' => $lineno, '@warning' => $warning));
+    if ($line && !variable_get('coder_nocode', 0)) {
+      $warning .= '<pre>'. check_plain($line) .'</pre>';
+    }
   }
   return '<div class="coder_warning">'. $warning .'</div>';
 }
