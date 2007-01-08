@@ -233,10 +233,6 @@ function coder_admin_settings() {
  * Implementation of code review page
  */
 function coder_page() {
-  if (!user_access('view code review')) {
-    return drupal_access_denied();
-  }
-
   // get this variable once - do we want only active modules?
   $active = variable_get('coder_active_modules', 1);
 
