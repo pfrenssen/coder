@@ -552,7 +552,7 @@ function theme_coder($name, $filename, $results) {
 
 function theme_coder_warning($warning, $lineno = 0, $line = '') {
   if ($lineno) {
-    $warning = t('Line @number: @warning', array('@number' => $lineno, '@warning' => $warning));
+    $warning = t('Line @number: !warning', array('@number' => $lineno, '!warning' => $warning));
     if ($line && !variable_get('coder_nocode', 0)) {
       $warning .= '<pre>'. check_plain($line) .'</pre>';
     }
