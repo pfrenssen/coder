@@ -99,7 +99,7 @@ function coder_menu($may_cache) {
 
   if ($may_cache) {
     $items[] = array(
-      'path' => 'admin/coder',
+      'path' => 'coder',
       'title' => t('Code review'),
       'callback' => 'coder_page',
       'access' => user_access('view code review'),
