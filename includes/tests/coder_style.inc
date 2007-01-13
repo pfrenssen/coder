@@ -39,5 +39,17 @@ function coder_hex_number() {
   $var = 0xFF; // should NOT be camelcase
 }
 
+function coder_multiline_quote() { // from Drupal5 block.module
+  return t('<p>Blocks are boxes of content that may be rendered into certain regions of your web pages, for example, into sidebars. They are usually generated automatically by modules, but administrators can create blocks manually.</p>
+<p>Only enabled blocks are shown. You can position blocks by specifying which area of the page they should appear in (e.g., a sidebar).  Highlighted labels on this page show the regions into which blocks can be rendered. You can specify where within a region a block will appear by adjusting its weight.</p>
+<p>If you want certain blocks to disable themselves temporarily during high server loads, check the "Throttle" box. You can configure the auto-throttle on the <a href="@throttle">throttle configuration page</a> after having enabled the throttle module.</p>
+<p>You can configure the behaviour of each block (for example, specifying on which pages and for what users it will appear) by clicking the "configure" link for each block.</p>', array('@throttle' => url('admin/settings/throttle')));
+}
+
+function coder_break() {
+  print '<br>'; // should generate an error
+  ?><br><?php // should also generate an error
+}
+
 // should generate an error about the trailing php close
 ?>

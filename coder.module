@@ -327,131 +327,195 @@ function coder_page() {
 function do_coder_reviews($coder_args) {
   $results = array();
 
-  // get the path to the module file
-  $filename = $coder_args['#filename'];
-  if ($filename && $filepath = realpath($filename)) {
-    // read the file
-    $orig_lines = file($filepath);
-    $lines = $orig_lines;
-
-    // strip single line ?_> <_?php
-    // NOTE: I can't put the real strings here in the comments because
-    // php processes them inside comments and breaks the file
-    $lines = preg_replace('/\?'.'>[^<]*(<\?php)/', '', $lines);
-
-    // strip html code inside multi-line ?_> <_?php tags
-    foreach ($lines as $lineno => $line) {
-      if (isset($in_html)) { // catch end-of multi-line embedded html
-        if (preg_match("/^[^<]*<\?php(.*)/", $line, $match)) {
-          $line = $match[1];
-          unset($in_html);
-        }
-        else {
-          $line = '';
-        }
-      }
-      if (preg_match('/^([^>]*)\?'.'>.*/', $line, $match)) { // start-of multi-line embedded html
-        $line = $match[1];
-        $in_html = 1;
-      }
-
-      // save the new line, without the comments
-      $lines[$lineno] = $line;
-    }
-
-    // replace strings inside quotes with less complicated strings
-    // many thanks to http://ad.hominem.org/log/2005/05/quoted_strings.php
-    foreach (array('\'', '"') as $c) {
-      $regex = '['. $c .']([^'. $c .'\\\\]*(?:\\\\.[^'. $c .'\\\\]*)*)['. $c .']';
-      $lines = preg_replace("/$regex/", "$c$c", $lines);
-    }
-
-    // strip single line comments
-    // NOTE: do this after quote processing
-    // to avoid removing comments that are actually in quotes
-    $lines = preg_replace('/(\/\/[^:].*|\/\*.*\*\/)/', '', $lines);
-
-    // remove multi-line quotes and comments (original code from code-style.pl)
-    foreach ($lines as $lineno => $line) {
-      if (isset($in_quote)) { // catch end-of multi-line quotes
-        if (preg_match("/^[^\\$in_quote]*$in_quote/", $line)) {
-          // HELP: This doesn't make sense to me, but appears to work.
-          // Can this be simplified to look line the php code?
-          // Why don't I need to put the quote in the preg_replace replacement
-          // argument?  Where's the extra quote coming from?
-          $line = $quote_line . preg_replace("/^[^\\$in_quote]*$in_quote/", '', $line, 1);
-          unset($in_quote);
-        }
-        else {
-          $line = '';
-        }
-      }
-      elseif (isset($in_comment)) { // catch end-of multi-line comments
-        if (preg_match('/.*\*\//', $line)) {
-          $line = preg_replace('/.*\*\//', '', $line);
-          unset($in_comment);
-        }
-        else {
-          $line = '';
-        }
-      }
-      if (preg_match('/[^\']\'[^\']*$/', $line)) { // start-of multi-line single-quote
-        $quote_line = rtrim(preg_replace('/([^\'])\'.*/', '$1\'', $line, 1));
-        $line = '';
-        $in_quote = '\'';
-      }
-      elseif (preg_match('/[^"]"[^"]*$/', $line)) { // start of multi-line double-quote
-        $quote_line = rtrim(preg_replace('/([^"])[^"]".*/', '$1"', $line, 1));
-        $line = '';
-        $in_quote = '"';
-      }
-      if (preg_match('/\/\*.*/', $line)) { // start of multi-line comment
-        $line = preg_replace('/\/\*.*/', '', $line);
-        $in_comment = 1;
-      }
-
-      // save the new line, without the comments
-      $lines[$lineno] = $line;
-    }
-
-    // add the files lines to the arguments
-    $coder_args['#orig_lines'] = $orig_lines;
-    $coder_args['#lines'] = $lines;
-
-    // now do all of the code reviews
+  // read the file
+  if (_coder_read_and_parse_file($coder_args)) {
+    // do all of the code reviews
     foreach ($coder_args['#reviews'] as $review) {
       if ($result = do_coder_review($coder_args, $review)) {
         $results += $result;
       }
     }
-  }
 
-  // always display something
-  if (count($results) == 0) {
-    _coder_error_msg($results, t('No Problems Found'));
+    // always display something
+    if (count($results) == 0) {
+      _coder_error_msg($results, t('No Problems Found'));
+    }
+    else {
+      ksort($results, SORT_NUMERIC);
+    }
   }
   else {
-    ksort($results, SORT_NUMERIC);
+    _coder_error_msg($results, t('Could not read the file'));
   }
 
   return $results;
+}
+
+function _coder_read_and_parse_file(&$coder_args) {
+  // get the path to the module file
+  if ($filepath = realpath($coder_args['#filename'])) {
+    // read the file
+    $content = file_get_contents($filepath);
+    $content_length = drupal_strlen($content);
+
+    // TODO: convert the content string to an array for faster usage
+
+    // parse the file:
+    // - strip comments
+    // - strip quote content // - strip stuff not in php // - break into lines
+    $lineno = 0;
+    for ($pos = 0; $pos < $content_length; $pos ++) {
+      // get the current character
+      $char = $content[$pos];
+      if ($char == "\n") {
+        if ($in_comment == '/') { // end C++ style comments on newline
+          unset($in_comment);
+        }
+
+        // assume that html inside quotes doesn't span newlines
+        unset($in_quote_html);
+
+        // remove blank lines now, so we avoid processing them over-and-over
+        if (trim($orig_lines[$lineno]) == '') {
+          unset($orig_lines[$lineno]);
+        }
+        if (trim($php_lines[$lineno]) == '') {
+          unset($php_lines[$lineno]);
+        }
+        if (trim($html_lines[$lineno]) == '') {
+          unset($html_lines[$lineno]);
+        }
+
+        $lineno ++;
+        continue;
+      }
+      $orig_lines[$lineno] .= $char;
+
+      if ($in_php) {
+        // look for the ending php tag which tags precedence over everything
+        if ($char == '?' && $content[$pos + 1] == '>') {
+          unset($char);
+          unset($in_php);
+          $orig_lines[$lineno] .= '>';
+          $pos ++;
+        }
+
+        // when in a quoted string, look for the trailing quote
+        // strip characters in the string, replacing with '' or ""
+        elseif ($in_quote) {
+          if ($in_backslash) {
+            unset($in_backslash);
+          }
+          elseif ($char == '\\') {
+            $in_backslash = '\\';
+          }
+          elseif ($char == $in_quote && !$in_backslash) {
+            unset($in_quote);
+          }
+          elseif ($char == '<') {
+            $in_quote_html = '>';
+          }
+          if ($in_quote && $in_quote_html) {
+            $html_lines[$lineno] .= $char;
+          }
+          if ($char == $in_quote_html) {
+            unset($in_quote_html);
+          }
+          unset($char); // NOTE: trailing char output with starting one
+        }
+
+        // when in a comment look for the trailing comment
+        elseif ($in_comment) {
+          if ($in_comment == '*' && $char == '*' && $content[$pos + 1] == '/') {
+            unset($in_comment);
+            $orig_lines[$lineno] .= '/';
+            $pos ++;
+          }
+          unset($char); // don't add comments to php output
+        }
+
+        else {
+          switch ($char) {
+            case '\'':
+            case '"':
+              if ($content[$pos - 1] != '\\') {
+                $php_lines[$lineno] .= $char;
+                $in_quote = $char;
+              }
+              break;
+
+            case '/':
+              $next_char = $content[$pos + 1];
+              if ($next_char == '/' || $next_char == '*') {
+                unset($char);
+                $in_comment = $next_char;
+                $orig_lines[$lineno] .= $next_char;
+                $pos ++;
+              }
+              break;
+          }
+        }
+        if (isset($char)) {
+          $php_lines[$lineno] .= $char;
+        }
+      }
+      else {
+        switch ($char) {
+          case '<':
+            if ($content[$pos + 1] == '?') {
+              if ($content[$pos + 2] == ' ') {
+                $in_php = 1;
+                $orig_lines[$lineno] .= '? ';
+                $pos += 2;
+              }
+              elseif (substr($content, $pos + 2, 3) == 'php') {
+                $in_php = 1;
+                $orig_lines[$lineno] .= '?php';
+                $pos += 4;
+              }
+              break;
+            }
+            // FALTHROUGH
+          default:
+            $html_lines[$lineno] .= $char;
+            break;
+        }
+      }
+    }
+
+    // add the files lines to the arguments
+    $coder_args['#orig_lines'] = $orig_lines;
+    $coder_args['#php_lines'] = $php_lines;
+    $coder_args['#html_lines'] = $html_lines;
+    return 1;
+  }
 }
 
 function do_coder_review($coder_args, $review) {
   $results = array();
   if ($review['#rules']) {
     foreach ($review['#rules'] as $rule) {
-      $lines = $coder_args[isset($rule['#original']) ? '#orig_lines' : '#lines'];
-      switch ($rule['#type']) {
-        case 'regex':
-          do_coder_review_regex($coder_args, $rule, $lines, $results);
-          break;
-        case 'grep':
-          do_coder_review_grep($coder_args, $rule, $lines, $results);
-          break;
-        case 'callback':
-          do_coder_review_callback($coder_args, $rule, $lines, $results);
-          break;
+      if (isset($rule['#original'])) {
+        $lines = $coder_args['#orig_lines'];
+      }
+      elseif (isset($rule['#html'])) {
+        $lines = $coder_args['#html_lines'];
+      }
+      else {
+        $lines = $coder_args['#php_lines'];
+      }
+      if ($lines) {
+        switch ($rule['#type']) {
+          case 'regex':
+            do_coder_review_regex($coder_args, $rule, $lines, $results);
+            break;
+          case 'grep':
+            do_coder_review_grep($coder_args, $rule, $lines, $results);
+            break;
+          case 'callback':
+            do_coder_review_callback($coder_args, $rule, $lines, $results);
+            break;
+        }
       }
     }
   }
