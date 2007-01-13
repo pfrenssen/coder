@@ -17,7 +17,7 @@ function coder_test_tab() {
 function coder_test_stdclass() {
   $var = new stdClass(); // this is ok
   $var = new StdClass(); // this is not
-  $var = new stdclassToo(); // should be camelCase rule
+  $var = new stdclassToo(); // should be camelcase rule
 }
 
 function coderCamelCase() {
@@ -33,6 +33,10 @@ function coder_test_embedded_php() {
   ?>This is embedded php and should Not trigger a camelCase error.<?php
   ?>This second embedded php and should Not trigger
 a camelCase error.<?php
+}
+
+function coder_hex_number() {
+  $var = 0xFF; // should NOT be camelcase
 }
 
 // should generate an error about the trailing php close

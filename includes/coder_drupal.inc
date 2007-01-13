@@ -80,7 +80,7 @@ function coder_drupal_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '(?-i)(([a-z]+[A-Z]+([a-z]*[A-Z]*)*)|([A-Z]+[a-z]+([A-Z]*[a-z]*)*))',
-      '#not' => '(?-i)^(stdClass|StdClass)$',
+      '#not' => '(?-i)^(stdClass|StdClass|x[A-F]+)$',
       '#warning' => 'do not use mixed case (camelCase), use lower case and _',
     ),
     array(
