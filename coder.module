@@ -247,7 +247,7 @@ function coder_page() {
   }
 
   // get the list of the modules
-  $requested_module = arg(2);
+  $requested_module = arg(1);
   $sql = "SELECT name, filename, status FROM {system} WHERE type = 'module'";
   if (!$requested_module && $active == 1) {
     $sql .= " AND status=1";
