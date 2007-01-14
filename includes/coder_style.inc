@@ -7,7 +7,7 @@
  * Todo: The rules for this review are not yet complete.
  */
 
-function coder_drupal_reviews() {
+function coder_style_reviews() {
   $br = 'br';
   $rules = array(
     array(
@@ -56,12 +56,12 @@ function coder_drupal_reviews() {
     array(
       '#type' => 'regex',
       '#value' => 'global\s+\$(\w+)(,\s\$(\w+))*',
-      '#not' => '^_|^('. _coder_drupal_core_global_regex() .')$',
+      '#not' => '^_|^('. _coder_style_core_global_regex() .')$',
       '#warning' => 'global variables should start with a single underscore followed by the module and another underscore',
     ),
     array(
       '#type' => 'callback',
-      '#value' => _coder_drupal_callback,
+      '#value' => _coder_style_callback,
     ),
     array(
       '#type' => 'regex',
@@ -115,7 +115,7 @@ function coder_drupal_reviews() {
  * Define the rule callbacks
  */
 
-function _coder_drupal_callback(&$coder_args, $rule, $lines, &$results) {
+function _coder_style_callback(&$coder_args, $rule, $lines, &$results) {
   for ($lineno = -1; $last = array_slice($lines, $lineno); $lineno --) {
     $lastline = $last[0];
     if (preg_match('/\S/', $lastline)) {
@@ -127,7 +127,7 @@ function _coder_drupal_callback(&$coder_args, $rule, $lines, &$results) {
   }
 }
 
-function _coder_drupal_core_global_regex() {
+function _coder_style_core_global_regex() {
   static $coreglobalregex, $coreglobalvars;
   if (!isset($coreglobalregex)) {
     // Note: there's a little extra overhead in formatting this list as an
