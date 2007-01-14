@@ -34,7 +34,7 @@ function coder_50_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#original' => 1,
+      '#source' => 'all',
       '#value' => '\$_POST\s*\[\s*[\'"]?op[\'"]?\s*\]',
       '#warning' => '$_POST[\'op\'] deprecated in favor of $form_values[\'op\']',
     ),
@@ -44,7 +44,7 @@ function coder_50_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#original' => 1,
+      '#source' => 'all',
       '#value' => '\stheme_add_style\s*\(',
       '#warning_callback' => '_coder_50_theme_add_style_warning',
     ),

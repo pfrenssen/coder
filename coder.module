@@ -134,7 +134,7 @@ function coder_form_alter($form_id, &$form) {
 }
 
 function _coder_default_reviews() {
-  return drupal_map_assoc(array('drupal', 'security'));
+  return drupal_map_assoc(array('style', 'security'));
 }
 
 /**
@@ -376,8 +376,8 @@ function _coder_read_and_parse_file(&$coder_args) {
         unset($in_quote_html);
 
         // remove blank lines now, so we avoid processing them over-and-over
-        if (trim($orig_lines[$lineno]) == '') {
-          unset($orig_lines[$lineno]);
+        if (trim($all_lines[$lineno]) == '') {
+          unset($all_lines[$lineno]);
         }
         if (trim($php_lines[$lineno]) == '') {
           unset($php_lines[$lineno]);
@@ -387,16 +387,17 @@ function _coder_read_and_parse_file(&$coder_args) {
         }
 
         $lineno ++;
+        $beginning_of_line = 1;
         continue;
       }
-      $orig_lines[$lineno] .= $char;
+      $all_lines[$lineno] .= $char;
 
       if ($in_php) {
         // look for the ending php tag which tags precedence over everything
         if ($char == '?' && $content[$pos + 1] == '>') {
           unset($char);
           unset($in_php);
-          $orig_lines[$lineno] .= '>';
+          $all_lines[$lineno] .= '>';
           $pos ++;
         }
 
@@ -424,17 +425,36 @@ function _coder_read_and_parse_file(&$coder_args) {
           unset($char); // NOTE: trailing char output with starting one
         }
 
+        elseif ($in_heredoc) {
+          if ($beginning_of_line && $char == $in_heredoc[0] && substr($content, $pos, $in_heredoc_length) == $in_heredoc) {
+            $all_lines[$lineno] .= substr($content, $pos + 1, $in_heredoc_length - 1);
+            unset($in_heredoc);
+            $pos += $in_heredoc_length;
+          }
+          elseif ($char == '<') {
+            $in_heredoc_html = '>';
+          }
+          if ($in_heredoc && $in_heredoc_html) {
+            $html_lines[$lineno] .= $char;
+          }
+          if ($char == $in_heredoc_html) {
+            unset($in_heredoc_html);
+          }
+          unset($char);
+        }
+
         // when in a comment look for the trailing comment
         elseif ($in_comment) {
           if ($in_comment == '*' && $char == '*' && $content[$pos + 1] == '/') {
             unset($in_comment);
-            $orig_lines[$lineno] .= '/';
+            $all_lines[$lineno] .= '/';
             $pos ++;
           }
           unset($char); // don't add comments to php output
         }
 
         else {
+
           switch ($char) {
             case '\'':
             case '"':
@@ -449,8 +469,36 @@ function _coder_read_and_parse_file(&$coder_args) {
               if ($next_char == '/' || $next_char == '*') {
                 unset($char);
                 $in_comment = $next_char;
-                $orig_lines[$lineno] .= $next_char;
+                $all_lines[$lineno] .= $next_char;
                 $pos ++;
+              }
+              break;
+
+            case '<':
+              if ($content[$pos + 1] == '<' && $content[$pos + 2] == '<') {
+                unset($char);
+                $all_lines[$lineno] .= '<<';
+
+                // get the heredoc word
+                // read until the end-of-line
+                for ($pos += 3; $pos < $content_length; $pos ++) {
+                  $char = $content[$pos];
+                  if ($char == "\n") {
+                    $pos --;
+                    if (preg_match('/^\s+(\w+)/', $heredoc, $match)) {
+                      $in_heredoc = $match[1];
+                      $in_heredoc_length = drupal_strlen($in_heredoc);
+                    }
+                    break;
+                  }
+                  $all_lines[$lineno] .= $char;
+                  $heredoc .= $char;
+                }
+                unset($heredoc);
+
+                // replace heredoc's with an empty string
+                $php_lines[$lineno] .= "''";
+                unset($char);
               }
               break;
           }
@@ -465,12 +513,12 @@ function _coder_read_and_parse_file(&$coder_args) {
             if ($content[$pos + 1] == '?') {
               if ($content[$pos + 2] == ' ') {
                 $in_php = 1;
-                $orig_lines[$lineno] .= '? ';
+                $all_lines[$lineno] .= '? ';
                 $pos += 2;
               }
               elseif (substr($content, $pos + 2, 3) == 'php') {
                 $in_php = 1;
-                $orig_lines[$lineno] .= '?php';
+                $all_lines[$lineno] .= '?php';
                 $pos += 4;
               }
               break;
@@ -484,7 +532,7 @@ function _coder_read_and_parse_file(&$coder_args) {
     }
 
     // add the files lines to the arguments
-    $coder_args['#orig_lines'] = $orig_lines;
+    $coder_args['#all_lines'] = $all_lines;
     $coder_args['#php_lines'] = $php_lines;
     $coder_args['#html_lines'] = $html_lines;
     return 1;
@@ -495,11 +543,12 @@ function do_coder_review($coder_args, $review) {
   $results = array();
   if ($review['#rules']) {
     foreach ($review['#rules'] as $rule) {
-      if (isset($rule['#original'])) {
-        $lines = $coder_args['#orig_lines'];
+      if (isset($rule['#original'])) { // deprecated
+        $lines = $coder_args['#all_lines'];
       }
-      elseif (isset($rule['#html'])) {
-        $lines = $coder_args['#html_lines'];
+      elseif (isset($rule['#source'])) { // all, html, comment, or php
+        $source = '#'. $rule['#source'] .'_lines';
+        $lines = $coder_args[$source];
       }
       else {
         $lines = $coder_args['#php_lines'];
@@ -527,9 +576,6 @@ function do_coder_review_regex(&$coder_args, $rule, $lines, &$results) {
     $regex = '/'. $regex .'/i';
     foreach ($lines as $lineno => $line) {
       if (preg_match($regex, $line, $matches)) {
-        // NOTE: I'd prefer to do this with regex strings, but there are a
-        // couple in coder_drupal.inc that I just can't figure out with this.
-
         // don't match some regex's
         if ($not = $rule['#not']) {
           foreach ($matches as $match) {
@@ -539,8 +585,8 @@ function do_coder_review_regex(&$coder_args, $rule, $lines, &$results) {
           }
         }
 
-        $orig_line = $coder_args['#orig_lines'][$lineno];
-        _coder_error($results, $rule, $lineno, $orig_line);
+        $line = $coder_args['#all_lines'][$lineno];
+        _coder_error($results, $rule, $lineno, $line);
       }
     }
   }

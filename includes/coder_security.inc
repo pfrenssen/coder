@@ -25,7 +25,7 @@ function coder_security_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#original' => 1,
+      '#source' => 'all',
       '#value' => '(?-i)\"REQUEST_URI\"|\'REQUEST_URI\'',
       '#warning_callback' => '_coder_security_request_uri_warning',
     ),
