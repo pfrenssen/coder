@@ -598,9 +598,9 @@ function _coder_error(&$results, $rule, $lineno = -1, $line = '', $original = ''
       $warning = $rule['#warning_callback']();
     }
     else { // if this happens, there is an error in the rule definition
-      $warning = t('please !report this !warning',
+      $warning = t('please <a href="@report">report</a> this !warning',
         array(
-          '!report' => l('report', 'http://drupal.org/node/add/project_issue/coder/bug'),
+          '@report' => 'http://drupal.org/node/add/project_issue/coder/bug',
           '!warning' => $rule['#warning_callback'],
         )
       );

@@ -188,9 +188,9 @@ function _coder_style_core_global_regex() {
  */
 
 function _coder_style_xhtml_warning() {
-  return t('use lowercase html tags to comply with !XHTML',
+  return t('use lowercase html tags to comply with <a href="@XHTML">XHTML</a>',
     array(
-      '!XHTML' => l('XHTML', 'http://www.w3.org/TR/xhtml1/#h-4.2'),
+      '@XHTML' => 'http://www.w3.org/TR/xhtml1/#h-4.2',
     )
   );
 }

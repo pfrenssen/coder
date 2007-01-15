@@ -68,7 +68,7 @@ function _coder_50_callback(&$coder_args, $rule, $lines, &$results) {
     // make sure that a .info file exists
     $filename = drupal_substr(realpath($filename), 0, -7) .'.info';
     if (!file_exists($filename)) {
-      $results[0] = theme('coder_warning', $lineno, t('All modules now need to have a modulename.info file'));
+      $results[0] = theme('coder_warning', $lineno, t('All modules now need to have a <a href="@info">modulename.info file</a>', array('@info' => 'http://drupal.org/node/101009')));
     }
   }
 }
