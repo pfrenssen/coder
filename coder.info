@@ -1,0 +1,5 @@
+; $Id$
+name = Coder
+description = Developer Module that assists with code review and version upgrade
+version = "$Name$"
+package = Development
