@@ -173,10 +173,8 @@ function coder_settings() {
   $result = db_query($sql);
   while ($module = db_fetch_object($result)) {
     $name = $module->name;
-    if (!$active && $module->status) {
-      $name .= ' (active)';
-    }
-    $module_options[$module->name] = l($name, "coder/$name");
+    $display_name = (!$active && $module->status) ? $name .' (active)' : $name;
+    $module_options[$module->name] = l($display_name, "coder/$name");
     if ($module->status) {
       $default_coder_modules[] = $module->name;
     }
