@@ -39,7 +39,12 @@ function coder_style_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '(\.\s\'\'|\'\'\s\.|\.\s""|\.\s"")',
-      '#warning' => 'string concatenation should be formatted with a space separating the operators (dot .) and terms (\'string\')',
+      '#warning' => 'string concatenation should be formatted without a space separating the operators (dot .) and a quote',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '([^\'\"\s]\.|\.[^\'\"\=\s])',
+      '#warning' => 'string concatenation should be formatted with a space separating the operators (dot .) and non-quote terms',
     ),
     array(
       '#type' => 'regex',

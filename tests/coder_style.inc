@@ -58,5 +58,15 @@ function coder_heredoc() {
 __EOD__;
 }
 
+function coder_dot() {
+  if ($file = file_check_upload($fieldname . '_upload')) { // not ok
+  }
+  $v .= 'bugger'; // ok
+  $a = $v .'bugger'; // ok
+  $a = $v ."bugger"; // ok
+  $a = $v.'bugger'; // not ok
+  $a = $some_func().'bugger'; // not ok
+}
+
 // should generate an error about the trailing php close
 ?>
