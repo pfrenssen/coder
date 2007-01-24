@@ -48,6 +48,12 @@ function coder_50_reviews() {
       '#value' => '\stheme_add_style\s*\(',
       '#warning_callback' => '_coder_50_theme_add_style_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'all',
+      '#value' => '\sform_render\s*\(',
+      '#warning_callback' => '_coder_50_form_render_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 4.7.x modules to 5.x'),
@@ -127,6 +133,15 @@ function _coder_50_theme_add_style_warning() {
     array(
       '!theme_add_style' => theme('drupalapi', 'theme_add_style', '4.7'),
       '!drupal_add_css' => theme('drupalapi', 'drupal_add_css'),
+    )
+  );
+}
+
+function _coder_50_form_render_warning() {
+  return t('Replace !form_render() with !drupal_render()',
+    array(
+      '!form_render' => theme('drupalapi', 'form_render', '4.7'),
+      '!drupal_render' => theme('drupalapi', 'drupal_render'),
     )
   );
 }
