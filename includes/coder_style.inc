@@ -113,7 +113,7 @@ function coder_style_reviews() {
     '#link' => 'http://drupal.org/node/318',
     '#rules' => $rules,
   );
-  return array('drupal' => $review);
+  return array('style' => $review);
 }
 
 /**
