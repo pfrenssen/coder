@@ -34,6 +34,11 @@ function coder_50_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#value' => '[\s\(]system_listing\s*\(',
+      '#warning_callback' => '_coder_50_system_listing_warning',
+    ),
+    array(
+      '#type' => 'regex',
       '#source' => 'all',
       '#value' => '\$_POST\s*\[\s*[\'"]?op[\'"]?\s*\]',
       '#warning' => '$_POST[\'op\'] deprecated in favor of $form_values[\'op\']',
@@ -124,6 +129,15 @@ function _coder_50_drupal_call_js_warning() {
     array(
       '!drupal_call_js' => theme('drupalapi', 'drupal_call_js', '4.7'),
       '!drupal_add_js' => theme('drupalapi', 'drupal_add_js'),
+    )
+  );
+}
+
+function _coder_50_system_listing_warning() {
+  return t('!system_listing() is now !drupal_system_listing()',
+    array(
+      '!system_listing' => theme('drupalapi', 'system_listing', '4.7'),
+      '!drupal_system_listing' => theme('drupalapi', 'drupal_system_listing'),
     )
   );
 }
