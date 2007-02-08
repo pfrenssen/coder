@@ -29,8 +29,7 @@ function coder_init() {
   // Load all our module plug-ins
   global $_coder_coders;
   $path = drupal_get_path('module', 'coder') .'/includes';
-  $system_listing = function_exists('drupal_system_listing') ? 'drupal_system_listing' : 'system_listing';
-  $files = $system_listing('coder_.*\.inc$', $path, 'name', 0);
+  $files = drupal_system_listing('coder_.*\.inc$', $path, 'name', 0);
   foreach ($files as $file) {
     require_once('./'. $file->filename);
     $_coder_coders[] = $file->name;
@@ -92,17 +91,15 @@ function coder_menu($may_cache) {
       'callback' => 'coder_page',
       'access' => user_access('view code review'),
     );
-    if (function_exists('drupal_system_listing')) {
-      $items[] = array(
-        'path' => 'admin/settings/coder',
-        'title' => t('Code review'),
-        'description' => t('Select code review plugins and modules'),
-        'callback' => 'drupal_get_form',
-        'callback arguments' => 'coder_admin_settings',
-        'access' => user_access('administer site configuration'),
-        'type' => MENU_NORMAL_ITEM,
-      );
-    }
+    $items[] = array(
+      'path' => 'admin/settings/coder',
+      'title' => t('Code review'),
+      'description' => t('Select code review plugins and modules'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => 'coder_admin_settings',
+      'access' => user_access('administer site configuration'),
+      'type' => MENU_NORMAL_ITEM,
+    );
   }
 
   return $items;
@@ -275,14 +272,13 @@ function coder_page() {
 
         // process the same directory include files
         if ($do_includes) {
-          // NOTE: convert to the realpath here so system_listing
+          // NOTE: convert to the realpath here so drupal_system_listing
           // doesn't return additional paths (i.e., try "module").
           $path = str_replace('\\', '/', dirname(realpath($filename)));
           $offset = strpos($path, dirname($filename));
           if (!isset($dups[$path])) {
             $dups[$path] = 1;
-            $system_listing = (function_exists('drupal_system_listing')) ? 'drupal_system_listing' : 'system_listing';
-            $includefiles = $system_listing('.*\.inc$', $path, 'name', 0);
+            $includefiles = drupal_system_listing('.*\.inc$', $path, 'name', 0);
             foreach ($includefiles as $file) {
               $filename = drupal_substr($file->filename, $offset);
               $coder_args = array(
