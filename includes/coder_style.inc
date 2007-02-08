@@ -22,7 +22,7 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\s(\w+)\s\(',
+      '#value' => '[\s\(](\w+)\s\(',
       '#not' => '^(if|elseif|while|foreach|switch|return|for)$',
       '#warning' => 'Functions should be called with no spaces between the function name',
     ),

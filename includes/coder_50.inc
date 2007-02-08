@@ -9,27 +9,27 @@ function coder_50_reviews() {
   $rules = array(
     array(
       '#type' => 'regex',
-      '#value' => '\suser_mail\s*\(',
+      '#value' => '[\s\(]user_mail\s*\(',
       '#warning_callback' => '_coder_50_user_mail_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\suser_mail_wrapper\s*\(',
+      '#value' => '[\s\(]user_mail_wrapper\s*\(',
       '#warning_callback' => '_coder_50_user_mail_wrapper_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\smessage_na\s*\(',
+      '#value' => '[\s\(]message_na\s*\(',
       '#warning_callback' => '_coder_50_message_na_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\smodule_exist\s*\(',
+      '#value' => '[\s\(]module_exist\s*\(',
       '#warning_callback' => '_coder_50_module_exist_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\sdrupal_call_js\s*\(',
+      '#value' => '[\s\(]drupal_call_js\s*\(',
       '#warning_callback' => '_coder_50_drupal_call_js_warning',
     ),
     array(
@@ -45,13 +45,13 @@ function coder_50_reviews() {
     array(
       '#type' => 'regex',
       '#source' => 'all',
-      '#value' => '\stheme_add_style\s*\(',
+      '#value' => '[\s\(]theme_add_style\s*\(',
       '#warning_callback' => '_coder_50_theme_add_style_warning',
     ),
     array(
       '#type' => 'regex',
       '#source' => 'all',
-      '#value' => '\sform_render\s*\(',
+      '#value' => '[\s\(]form_render\s*\(',
       '#warning_callback' => '_coder_50_form_render_warning',
     ),
   );
