@@ -29,8 +29,7 @@ function coder_init() {
   // Load all our module plug-ins
   global $_coder_coders;
   $path = drupal_get_path('module', 'coder') .'/includes';
-  $system_listing = function_exists('drupal_system_listing') ? 'drupal_system_listing' : 'system_listing';
-  $files = $system_listing('coder_.*\.inc$', $path, 'name', 0);
+  $files = drupal_system_listing('coder_.*\.inc$', $path, 'name', 0);
   foreach ($files as $file) {
     require_once('./'. $file->filename);
     $_coder_coders[] = $file->name;
@@ -65,18 +64,6 @@ function _coder_reviews() {
 }
 
 /**
- * Implementation of hook_help()
- */
-function coder_help($section) { 
-  switch ($section) { 
-    case 'admin/modules#description': 
-      return t('Developer Module that assists with code review and version upgrade');
-    default :
-      return;
-  } 
-} 
-
-/**
  * Implementation of hook_cron().
  *
  * TODO: move some of the work here...
@@ -104,17 +91,15 @@ function coder_menu($may_cache) {
       'callback' => 'coder_page',
       'access' => user_access('view code review'),
     );
-    if (function_exists('drupal_system_listing')) {
-      $items[] = array(
-        'path' => 'admin/settings/coder',
-        'title' => t('Code review'),
-        'description' => t('Select code review plugins and modules'),
-        'callback' => 'drupal_get_form',
-        'callback arguments' => 'coder_admin_settings',
-        'access' => user_access('administer site configuration'),
-        'type' => MENU_NORMAL_ITEM,
-      );
-    }
+    $items[] = array(
+      'path' => 'admin/settings/coder',
+      'title' => t('Code review'),
+      'description' => t('Select code review plugins and modules'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => 'coder_admin_settings',
+      'access' => user_access('administer site configuration'),
+      'type' => MENU_NORMAL_ITEM,
+    );
   }
 
   return $items;
@@ -173,10 +158,8 @@ function coder_settings() {
   $result = db_query($sql);
   while ($module = db_fetch_object($result)) {
     $name = $module->name;
-    if (!$active && $module->status) {
-      $name .= ' (active)';
-    }
-    $module_options[$module->name] = l($name, "coder/$name");
+    $display_name = (!$active && $module->status) ? $name .' (active)' : $name;
+    $module_options[$module->name] = l($display_name, "coder/$name");
     if ($module->status) {
       $default_coder_modules[] = $module->name;
     }
@@ -233,6 +216,10 @@ function coder_admin_settings() {
  * Implementation of code review page
  */
 function coder_page() {
+  return drupal_get_form('coder_page_form');
+}
+
+function coder_page_form() {
   // get this variable once - do we want only active modules?
   $active = variable_get('coder_active_modules', 1);
 
@@ -271,6 +258,7 @@ function coder_page() {
   if ($modules) {
     // loop through the selected modules, preparing the code review results
     $dups = array(); // used to avoid duplicate includes
+    $module_weight = 0;
     foreach ($modules as $name => $checked) {
       if ($checked) {
         // process this one file
@@ -285,18 +273,37 @@ function coder_page() {
           '#filename' => $filename,
         );
         $results = do_coder_reviews($coder_args);
-        $output .= theme('coder', $name, $filename, $results);
+
+        // output the results in a collapsible fieldset
+        $form[$name] = array(
+          '#type' => 'fieldset',
+          '#title' => $filename,
+          '#collapsible' => TRUE,
+          '#collapsed' => TRUE,
+          '#weight' => ++ $module_weight,
+        );
+        $weight = 0;
+        if (count($results) == 0) {
+          $results[] = t('No Problems Found');
+          unset($errors);
+        }
+        else {
+          $errors = true;
+        }
+        $form[$name]['output'] = array(
+          '#value' => theme('item_list', $results),
+          '#weight' => ++ $weight,
+        );
 
         // process the same directory include files
         if ($do_includes) {
-          // NOTE: convert to the realpath here so system_listing
+          // NOTE: convert to the realpath here so drupal_system_listing
           // doesn't return additional paths (i.e., try "module").
           $path = str_replace('\\', '/', dirname(realpath($filename)));
           $offset = strpos($path, dirname($filename));
           if (!isset($dups[$path])) {
             $dups[$path] = 1;
-            $system_listing = (function_exists('drupal_system_listing')) ? 'drupal_system_listing' : 'system_listing';
-            $includefiles = $system_listing('.*\.inc$', $path, 'name', 0);
+            $includefiles = drupal_system_listing('.*\.(inc|php)$', $path, 'name', 0);
             foreach ($includefiles as $file) {
               $filename = drupal_substr($file->filename, $offset);
               $coder_args = array(
@@ -305,23 +312,56 @@ function coder_page() {
                 '#filename' => $filename,
               );
               $results = do_coder_reviews($coder_args);
-              $output .= theme('coder', $name, $filename, $results);
+
+              // output the results in a collapsible fieldset
+              $form[$name][$filename] = array(
+                '#type' => 'fieldset',
+                '#title' => $filename,
+                '#collapsible' => TRUE,
+                '#collapsed' => TRUE,
+                '#weight' => ++ $weight,
+              );
+              if (count($results) == 0) {
+                $results[] = t('No Problems Found');
+              }
+              else {
+                $form[$name][$filename]['#collapsed'] = FALSE;
+                $errors = TRUE;
+              }
+              $form[$name][$filename]['output'] = array(
+                '#value' => theme('item_list', $results),
+              );
             }
           }
+        }
+
+        // if there were any errors, then uncollapse the 
+        if ($errors) {
+          $form[$name]['#collapsed'] = FALSE;
         }
       }
     }
 
     // prepend any output with the list of code reviews performed
-    if (!$output) {
-      $output = t('No modules found');
+    if (!$form) {
+      $form = array('#value' => t('No modules found'));
     }
     foreach ($reviews as $review) {
       $items[] = l($review['#title'], $review['#link']);
     }
-    $output = '<div class="reviews">'. theme('reviews', $items, t('The code was checked using the following review guidelines')) .'</div>'. $output;
+    $form['reviews'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Reviews'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+      '#weight' => -1,
+      '#description' => t('The code was checked using the following review guidelines'),
+    );
+    $form['reviews']['output'] = array(
+      '#value' => theme('item_list', $items, NULL, 'ol'),
+    );
   }
-  return $output;
+  return $form;
 }
 
 function do_coder_reviews($coder_args) {
@@ -337,12 +377,7 @@ function do_coder_reviews($coder_args) {
     }
 
     // always display something
-    if (count($results) == 0) {
-      _coder_error_msg($results, t('No Problems Found'));
-    }
-    else {
-      ksort($results, SORT_NUMERIC);
-    }
+    ksort($results, SORT_NUMERIC);
   }
   else {
     _coder_error_msg($results, t('Could not read the file'));
@@ -645,20 +680,6 @@ function do_coder_review_callback(&$coder_args, $rule, $lines, &$results) {
 /**
  * Theming functions below...
  */
-
-function theme_reviews($items, $message = '') {
-  return $message . theme('item_list', $items, NULL, 'ol');
-}
-
-function theme_coder($name, $filename, $results) {
-  $title = ($_GET['q'] == "coder/$name") ? $filename : l($name, "coder/$name");
-  $output  = '<div class="coder"><h2>'. $title .'</h2>';
-  if (count($results)) {
-    $output .= theme('item_list', $results);
-  }
-  $output .= '</div>';
-  return $output;
-}
 
 function theme_coder_warning($warning, $lineno = 0, $line = '') {
   if ($lineno) {

@@ -9,28 +9,33 @@ function coder_50_reviews() {
   $rules = array(
     array(
       '#type' => 'regex',
-      '#value' => '\suser_mail\s*\(',
+      '#value' => '[\s\(]user_mail\s*\(',
       '#warning_callback' => '_coder_50_user_mail_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\suser_mail_wrapper\s*\(',
+      '#value' => '[\s\(]user_mail_wrapper\s*\(',
       '#warning_callback' => '_coder_50_user_mail_wrapper_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\smessage_na\s*\(',
+      '#value' => '[\s\(]message_na\s*\(',
       '#warning_callback' => '_coder_50_message_na_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\smodule_exist\s*\(',
+      '#value' => '[\s\(]module_exist\s*\(',
       '#warning_callback' => '_coder_50_module_exist_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\sdrupal_call_js\s*\(',
+      '#value' => '[\s\(]drupal_call_js\s*\(',
       '#warning_callback' => '_coder_50_drupal_call_js_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]system_listing\s*\(',
+      '#warning_callback' => '_coder_50_system_listing_warning',
     ),
     array(
       '#type' => 'regex',
@@ -45,8 +50,14 @@ function coder_50_reviews() {
     array(
       '#type' => 'regex',
       '#source' => 'all',
-      '#value' => '\stheme_add_style\s*\(',
+      '#value' => '[\s\(]theme_add_style\s*\(',
       '#warning_callback' => '_coder_50_theme_add_style_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'all',
+      '#value' => '[\s\(]form_render\s*\(',
+      '#warning_callback' => '_coder_50_form_render_warning',
     ),
   );
   $review = array(
@@ -122,11 +133,29 @@ function _coder_50_drupal_call_js_warning() {
   );
 }
 
+function _coder_50_system_listing_warning() {
+  return t('!system_listing() is now !drupal_system_listing()',
+    array(
+      '!system_listing' => theme('drupalapi', 'system_listing', '4.7'),
+      '!drupal_system_listing' => theme('drupalapi', 'drupal_system_listing'),
+    )
+  );
+}
+
 function _coder_50_theme_add_style_warning() {
   return t('Replace !theme_add_style() with !drupal_add_css()',
     array(
       '!theme_add_style' => theme('drupalapi', 'theme_add_style', '4.7'),
       '!drupal_add_css' => theme('drupalapi', 'drupal_add_css'),
+    )
+  );
+}
+
+function _coder_50_form_render_warning() {
+  return t('Replace !form_render() with !drupal_render()',
+    array(
+      '!form_render' => theme('drupalapi', 'form_render', '4.7'),
+      '!drupal_render' => theme('drupalapi', 'drupal_render'),
     )
   );
 }

@@ -16,22 +16,22 @@ function coder_47_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\snode_load\s*\(\s*array\s*\(',
+      '#value' => '[\s\(]node_load\s*\(\s*array\s*\(',
       '#warning_callback' => '_coder_47_node_load_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\snode_list\s*\(',
+      '#value' => '[\s\(]node_list\s*\(',
       '#warning_callback' => '_coder_47_node_list_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\smodule_get_node_name\s*\(',
+      '#value' => '[\s\(]module_get_node_name\s*\(',
       '#warning_callback' => '_coder_47_module_get_name_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\sformat_name\s*\(',
+      '#value' => '[\s\(]format_name\s*\(',
       '#warning_callback' => '_coder_47_format_name_warning',
     ),
     array(
@@ -41,39 +41,39 @@ function coder_47_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\smessage_access\s*\(',
+      '#value' => '[\s\(]message_access\s*\(',
       '#warning_callback' => '_coder_47_message_access_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\s(strlen|strtolower|strtoupper|substr|ucfirst)\s*\(',
+      '#value' => '[\s\(](strlen|strtolower|strtoupper|substr|ucfirst)\s*\(',
       '#warning' => 'in most cases, replace the string function with the drupal_ equivalent string functions',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\sconf_url_rewrite\s*\(',
+      '#value' => '[\s\(]conf_url_rewrite\s*\(',
       '#warning_callback' => '_coder_47_conf_url_rewrite_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\snode_delete\s*\(\s*array\s*\(',
+      '#value' => '[\s\(]node_delete\s*\(\s*array\s*\(',
       '#warning_callback' => '_coder_47_node_delete_warning',
     ),
     array(
       '#type' => 'regex',
       '#source' => 'all',
-      '#value' => '\svariable_get\s*\(\s*[\'"]+file_directory_temp[\'"]+\s*,',
+      '#value' => '[\s\(]variable_get\s*\(\s*[\'"]+file_directory_temp[\'"]+\s*,',
       '#warning_callback' => '_coder_47_file_directory_temp_warning',
     ),
     array(
       '#type' => 'regex',
       '#source' => 'all',
-      '#value' => '\svariable_get\s*\(\s*[\'"]+file_directory_path[\'"]+\s*,',
+      '#value' => '[\s\(]variable_get\s*\(\s*[\'"]+file_directory_path[\'"]+\s*,',
       '#warning_callback' => '_coder_47_file_directory_path_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\sarray2object\s*\(',
+      '#value' => '[\s\(]array2object\s*\(',
       '#warning_callback' => '_coder_47_array2object_warning',
     ),
     array(
@@ -83,17 +83,17 @@ function coder_47_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\snode_validate_title\s*\(',
+      '#value' => '[\s\(]node_validate_title\s*\(',
       '#warning_callback' => '_coder_47_node_validate_title_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\stablesort_pager\s*\(',
+      '#value' => '[\s\(]tablesort_pager\s*\(',
       '#warning_callback' => '_coder_47_tablesort_pager_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\sform_(textfield|radio|group|select|checkbox|textarea)\s*\(',
+      '#value' => '[\s\(]form_(textfield|radio|group|select|checkbox|textarea)\s*\(',
       '#warning' => 'replace form_ functions with the forms api',
     ),
   );
