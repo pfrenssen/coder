@@ -42,6 +42,7 @@ function coder_50_reviews() {
       '#source' => 'all',
       '#value' => '\$_POST\s*\[\s*[\'"]?op[\'"]?\s*\]',
       '#warning' => '$_POST[\'op\'] deprecated in favor of $form_values[\'op\']',
+      '#severity' => 'normal',
     ),
     array(
       '#type' => 'callback',
@@ -64,6 +65,7 @@ function coder_50_reviews() {
     '#title' => t('Converting 4.7.x modules to 5.x'),
     '#link' => 'http://drupal.org/node/64279',
     '#rules' => $rules,
+    '#severity' => 'critical',
   );
   return array('upgrade50' => $review);
 }

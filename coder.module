@@ -149,6 +149,12 @@ function _coder_settings_form($settings, &$modules, &$files) {
     '#description' => t('apply the checked coding reviews'),
     '#default_value' => $settings['coder_reviews'],
   );
+  $form['coder_reviews_group']['coder_severity'] = array(
+    '#type' => 'radios',
+    '#options' => array(1 => 'minor (most)', 5 => 'normal', 9 => 'critical (fewest)'),
+    '#description' => t('show warnings at or above the severity warning level'),
+    '#default_value' => $settings['coder_severity'],
+  );
   
   // get the modules
   $sql = "SELECT name, filename, status FROM {system} WHERE type = 'module' ORDER BY weight ASC, filename ASC";
@@ -276,6 +282,7 @@ function coder_page() {
 
 function _coder_get_default_settings($args = '') {
   $settings['coder_reviews'] = variable_get('coder_reviews', _coder_default_reviews());
+  $settings['coder_severity'] = variable_get('coder_severity', 5);
 
   // determine any options based on the passed in URL,
   switch ($args) {
@@ -338,6 +345,7 @@ function coder_page_form() {
         }
         $coder_args = array(
           '#reviews' => $reviews,
+          '#severity' => $settings['coder_severity'],
           '#name' => $name,
           '#filename' => $filename,
         );
@@ -375,11 +383,7 @@ function coder_page_form() {
             $includefiles = drupal_system_listing('.*\.(inc|php)$', $path, 'name', 0);
             foreach ($includefiles as $file) {
               $filename = drupal_substr($file->filename, $offset);
-              $coder_args = array(
-                '#reviews' => $reviews,
-                '#name' => $name,
-                '#filename' => $filename,
-              );
+              $coder_args['#filename'] = $filename;
               $results = do_coder_reviews($coder_args);
 
               // output the results in a collapsible fieldset
@@ -640,31 +644,44 @@ function _coder_read_and_parse_file(&$coder_args) {
   }
 }
 
+function _coder_severity($severity, $default_value = 5) {
+  switch ($severity) {
+    default: return $default_value;
+    case 'minor': return 1;
+    case 'normal': return 5;
+    case 'critical': return 9;
+  }
+}
+
 function do_coder_review($coder_args, $review) {
   $results = array();
   if ($review['#rules']) {
+    $default_severity = _coder_severity($review['#severity']);
     foreach ($review['#rules'] as $rule) {
-      if (isset($rule['#original'])) { // deprecated
-        $lines = $coder_args['#all_lines'];
-      }
-      elseif (isset($rule['#source'])) { // all, html, comment, or php
-        $source = '#'. $rule['#source'] .'_lines';
-        $lines = $coder_args[$source];
-      }
-      else {
-        $lines = $coder_args['#php_lines'];
-      }
-      if ($lines) {
-        switch ($rule['#type']) {
-          case 'regex':
-            do_coder_review_regex($coder_args, $rule, $lines, $results);
-            break;
-          case 'grep':
-            do_coder_review_grep($coder_args, $rule, $lines, $results);
-            break;
-          case 'callback':
-            do_coder_review_callback($coder_args, $rule, $lines, $results);
-            break;
+      $severity = _coder_severity($rules['#severity'], $default_severity);
+      if ($severity >= $coder_args['#severity']) {
+        if (isset($rule['#original'])) { // deprecated
+          $lines = $coder_args['#all_lines'];
+        }
+        elseif (isset($rule['#source'])) { // all, html, comment, or php
+          $source = '#'. $rule['#source'] .'_lines';
+          $lines = $coder_args[$source];
+        }
+        else {
+          $lines = $coder_args['#php_lines'];
+        }
+        if ($lines) {
+          switch ($rule['#type']) {
+            case 'regex':
+              do_coder_review_regex($coder_args, $rule, $lines, $results);
+              break;
+            case 'grep':
+              do_coder_review_grep($coder_args, $rule, $lines, $results);
+              break;
+            case 'callback':
+              do_coder_review_callback($coder_args, $rule, $lines, $results);
+              break;
+          }
         }
       }
     }

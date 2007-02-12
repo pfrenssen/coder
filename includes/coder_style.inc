@@ -100,6 +100,7 @@ function coder_style_reviews() {
       '#source' => 'html',
       '#value' => '<'. $br .'>', // NOTE: use $br only to avoid a warning
       '#warning' => 'use &lt;br /&gt; instead of &lt;br&gt;',
+      '#severity' => 'minor',
     ),
     array(
       '#type' => 'regex',
