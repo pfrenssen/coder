@@ -681,21 +681,42 @@ function _coder_severity($severity_name, $default_value = 5) {
   return $default_value;
 }
 
-function _coder_severity_name($review, $rule) {
+function _coder_severity_name($coder_args, $review, $rule) {
+  // NOTE: warnings in php includes are suspicious because
+  // php includes are frequently 3rd party products
+  if (substr($coder_args['#filename'], -4) == '.php') {
+    return 'minor';
+  }
+
+  // get the severity as defined by the rule
   if (isset($rule['#severity'])) {
     return $rule['#severity'];
   }
+
+  // if it's not defined in the rule, then it can be defined by the review
   if (isset($review['#severity'])) {
     return $review['#severity'];
   }
+
+  // use the default
   return 'normal';
 }
 
 function do_coder_review($coder_args, $review) {
   $results = array();
   if ($review['#rules']) {
+    // skip php include files when the user requested severity is above minor
+    if (drupal_substr($coder_args['#filename'], -4) == '.php') {
+      if ($coder_args['#severity'] > 1) {
+        return;
+      }
+    }
+
+    // get the review's severity, used when the rule severity is not defined
     $default_severity = _coder_severity($review['#severity']);
+
     foreach ($review['#rules'] as $rule) {
+      // perform the review if above the user requested severity
       $severity = _coder_severity($rule['#severity'], $default_severity);
       if ($severity >= $coder_args['#severity']) {
         if (isset($rule['#original'])) { // deprecated
@@ -742,7 +763,7 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
         }
 
         $line = $coder_args['#all_lines'][$lineno];
-        $severity_name = _coder_severity_name($review, $rule);
+        $severity_name = _coder_severity_name($coder_args, $review, $rule);
         _coder_error($results, $rule, $severity_name, $lineno, $line);
       }
     }
@@ -787,7 +808,7 @@ function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
         return;
       }
     }
-    $severity_name = _coder_severity_name($review, $rule);
+    $severity_name = _coder_severity_name($coder_args, $review, $rule);
     _coder_error($results, $rule, $severity_name);
   }
 }
