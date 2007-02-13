@@ -65,10 +65,11 @@ function _coder_reviews() {
 
 /**
  * Implementation of hook_cron().
- *
- * TODO: move some of the work here...
  */
 function coder_cron() {
+  if ($use_cache = variable_get('coder_cache', 0)) {
+    // TODO: move some of the work here... is this really worth it?
+  }
 }
 
 /**
@@ -213,6 +214,13 @@ function _coder_settings_form($settings, &$modules, &$files) {
     '#default_value' => $settings['coder_includes'],
     '#title' => t('review all include files (.inc and .php files)'),
   );
+  if (arg(0) == 'admin') {
+    $form['coder_modules_group']['coder_cache'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => $settings['coder_cache'],
+      '#title' => t('use the experimental coder cache'),
+    );
+  }
 
   // display the modules in a fieldset
   $form['coder_modules_group']['coder_modules_subgroup'] = array(
@@ -301,6 +309,7 @@ function coder_page() {
 function _coder_get_default_settings($args = '') {
   $settings['coder_reviews'] = variable_get('coder_reviews', _coder_default_reviews());
   $settings['coder_severity'] = variable_get('coder_severity', 5);
+  $settings['coder_cache'] = variable_get('coder_cache', 0);
 
   // determine any options based on the passed in URL,
   switch ($args) {
@@ -460,7 +469,28 @@ function coder_page_form() {
 }
 
 function do_coder_reviews($coder_args) {
+  // the cache is still experimental, so users must enable it
+  if ($use_cache = variable_get('coder_cache', 0)) {
+    // cache the results because:
+    $cache_key = 'coder:'.  implode(':', array_keys($coder_args['#reviews'])) .  $coder_args['#severity'] .':'. $coder_args['#filename'];
+    $cache_mtime = filemtime(realpath($coder_args['#filename']));
+    if ($cache_serialized_results = cache_get($cache_key)) {
+      $cache_results = unserialize($cache_serialized_results->data);
+
+      if ($cache_results['mtime'] == $cache_mtime) {
+        return $cache_results['results'];
+      }
+    }
+  }
+
   $results = array();
+
+  // skip php include files when the user requested severity is above minor
+  if (drupal_substr($coder_args['#filename'], -4) == '.php') {
+    if ($coder_args['#severity'] > 1) {
+      return $results;
+    }
+  }
 
   // read the file
   if (_coder_read_and_parse_file($coder_args)) {
@@ -471,11 +501,20 @@ function do_coder_reviews($coder_args) {
       }
     }
 
-    // always display something
+    // sort the results
     ksort($results, SORT_NUMERIC);
   }
   else {
     _coder_error_msg($results, t('Could not read the file'), 'critical');
+  }
+
+  // save the results in the cache
+  if ($use_cache) {
+    $cache_results = array(
+      'mtime' => $cache_mtime,
+      'results' => $results,
+    );
+    cache_set($cache_key, 'cache', serialize($cache_results));
   }
 
   return $results;
@@ -705,13 +744,6 @@ function _coder_severity_name($coder_args, $review, $rule) {
 function do_coder_review($coder_args, $review) {
   $results = array();
   if ($review['#rules']) {
-    // skip php include files when the user requested severity is above minor
-    if (drupal_substr($coder_args['#filename'], -4) == '.php') {
-      if ($coder_args['#severity'] > 1) {
-        return;
-      }
-    }
-
     // get the review's severity, used when the rule severity is not defined
     $default_severity = _coder_severity($review['#severity']);
 
