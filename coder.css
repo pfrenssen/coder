@@ -1,10 +1,10 @@
 /* $Id$ */
 
 .coder-normal {
+  background-color: #ffd;
 }
 
 .coder-minor {
-  background-color: #ffd;
 }
 
 .coder-critical {
