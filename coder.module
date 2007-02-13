@@ -93,6 +93,20 @@ function coder_menu($may_cache) {
       'type' => MENU_NORMAL_ITEM,
     );
     $items[] = array(
+      'path' => 'coder/core',
+      'title' => t('Code review'),
+      'callback' => 'coder_page',
+      'access' => user_access('view code review'),
+      'type' => MENU_NORMAL_ITEM,
+    );
+    $items[] = array(
+      'path' => 'coder/active',
+      'title' => t('Code review'),
+      'callback' => 'coder_page',
+      'access' => user_access('view code review'),
+      'type' => MENU_NORMAL_ITEM,
+    );
+    $items[] = array(
       'path' => 'admin/settings/coder',
       'title' => t('Code review'),
       'description' => t('Select code review plugins and modules'),
@@ -151,7 +165,11 @@ function _coder_settings_form($settings, &$modules, &$files) {
   );
   $form['coder_reviews_group']['coder_severity'] = array(
     '#type' => 'radios',
-    '#options' => array(1 => 'minor (most)', 5 => 'normal', 9 => 'critical (fewest)'),
+    '#options' => array(
+      1 => 'minor (most)',
+      5 => 'normal',
+      9 => 'critical (fewest)'
+    ),
     '#description' => t('show warnings at or above the severity warning level'),
     '#default_value' => $settings['coder_severity'],
   );
@@ -332,6 +350,10 @@ function coder_page_form() {
   }
 
   if ($coder_form = _coder_settings_form($settings, $modules, $files)) {
+    // add style sheet
+    $path = drupal_get_path('module', 'coder');
+    drupal_add_css($path .'/coder.css', 'module');
+
     // loop through the selected modules, preparing the code review results
     $dups = array(); // used to avoid duplicate includes
     $module_weight = 0;
@@ -453,7 +475,7 @@ function do_coder_reviews($coder_args) {
     ksort($results, SORT_NUMERIC);
   }
   else {
-    _coder_error_msg($results, t('Could not read the file'));
+    _coder_error_msg($results, t('Could not read the file'), 'critical');
   }
 
   return $results;
@@ -644,13 +666,29 @@ function _coder_read_and_parse_file(&$coder_args) {
   }
 }
 
-function _coder_severity($severity, $default_value = 5) {
-  switch ($severity) {
-    default: return $default_value;
-    case 'minor': return 1;
-    case 'normal': return 5;
-    case 'critical': return 9;
+function _coder_severity($severity_name, $default_value = 5) {
+  // NOTE: implemented this way in hopes that it is faster than a php switch
+  if (!isset($severity_names)) {
+    $severity_names = array(
+      'minor' => 1,
+      'normal' => 5,
+      'critical' => 9,
+    );
   }
+  if (isset($severity_names[$severity_name])) {
+    return $severity_names[$severity_name];
+  }
+  return $default_value;
+}
+
+function _coder_severity_name($review, $rule) {
+  if (isset($rule['#severity'])) {
+    return $rule['#severity'];
+  }
+  if (isset($review['#severity'])) {
+    return $review['#severity'];
+  }
+  return 'normal';
 }
 
 function do_coder_review($coder_args, $review) {
@@ -658,7 +696,7 @@ function do_coder_review($coder_args, $review) {
   if ($review['#rules']) {
     $default_severity = _coder_severity($review['#severity']);
     foreach ($review['#rules'] as $rule) {
-      $severity = _coder_severity($rules['#severity'], $default_severity);
+      $severity = _coder_severity($rule['#severity'], $default_severity);
       if ($severity >= $coder_args['#severity']) {
         if (isset($rule['#original'])) { // deprecated
           $lines = $coder_args['#all_lines'];
@@ -673,13 +711,13 @@ function do_coder_review($coder_args, $review) {
         if ($lines) {
           switch ($rule['#type']) {
             case 'regex':
-              do_coder_review_regex($coder_args, $rule, $lines, $results);
+              do_coder_review_regex($coder_args, $review, $rule, $lines, $results);
               break;
             case 'grep':
-              do_coder_review_grep($coder_args, $rule, $lines, $results);
+              do_coder_review_grep($coder_args, $review, $rule, $lines, $results);
               break;
             case 'callback':
-              do_coder_review_callback($coder_args, $rule, $lines, $results);
+              do_coder_review_callback($coder_args, $review, $rule, $lines, $results);
               break;
           }
         }
@@ -689,7 +727,7 @@ function do_coder_review($coder_args, $review) {
   return $results;
 }
 
-function do_coder_review_regex(&$coder_args, $rule, $lines, &$results) {
+function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) {
   if ($regex = $rule['#value']) {
     $regex = '/'. $regex .'/i';
     foreach ($lines as $lineno => $line) {
@@ -704,13 +742,14 @@ function do_coder_review_regex(&$coder_args, $rule, $lines, &$results) {
         }
 
         $line = $coder_args['#all_lines'][$lineno];
-        _coder_error($results, $rule, $lineno, $line);
+        $severity_name = _coder_severity_name($review, $rule);
+        _coder_error($results, $rule, $severity_name, $lineno, $line);
       }
     }
   }
 }
 
-function _coder_error(&$results, $rule, $lineno = -1, $line = '', $original = '') {
+function _coder_error(&$results, $rule, $severity_name, $lineno = -1, $line = '', $original = '') {
   if (isset($rule['#warning_callback'])) {
     if (function_exists($rule['#warning_callback'])) {
       $warning = $rule['#warning_callback']();
@@ -728,19 +767,19 @@ function _coder_error(&$results, $rule, $lineno = -1, $line = '', $original = ''
     $warning = t($rule['#warning']);
   }
   
-  return _coder_error_msg($results, $warning, $lineno, $line);
+  return _coder_error_msg($results, $warning, $severity_name, $lineno, $line);
 }
 
-function _coder_error_msg(&$results, $warning, $lineno = -1, $line = '') {
+function _coder_error_msg(&$results, $warning, $severity_name, $lineno = -1, $line = '') {
   // Note: The use of the $key allows multiple errors on one line.
   // This assumes that no line of source has more than 10000 lines of code
   // and that we have fewer than 10000 errors.
   global $_coder_errno;
   $key = ($lineno + 1) * 10000 + ($_coder_errno ++);
-  $results[$key] = theme('coder_warning', $warning, $lineno + 1, $line);
+  $results[$key] = theme('coder_warning', $warning, $severity_name, $lineno + 1, $line);
 }
 
-function do_coder_review_grep(&$coder_args, $rule, $lines, &$results) {
+function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
   if ($regex = $rule['#value']) {
     $regex = '/'. $regex .'/i';
     foreach ($lines as $lineno => $line) {
@@ -748,14 +787,15 @@ function do_coder_review_grep(&$coder_args, $rule, $lines, &$results) {
         return;
       }
     }
-    _coder_error($results, $rule);
+    $severity_name = _coder_severity_name($review, $rule);
+    _coder_error($results, $rule, $severity_name);
   }
 }
 
-function do_coder_review_callback(&$coder_args, $rule, $lines, &$results) {
+function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
   if ($function = $rule['#value']) {
     if (function_exists($function)) {
-      call_user_func_array($function, array(&$coder_args, $rule, $lines, &$results));
+      call_user_func_array($function, array(&$coder_args, $review, $rule, $lines, &$results));
     }
   }
 }
@@ -813,14 +853,18 @@ function theme_coder($name, $filename, $results) {
   return $output;
 }
 
-function theme_coder_warning($warning, $lineno = 0, $line = '') {
+function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') {
   if ($lineno) {
     $warning = t('Line @number: !warning', array('@number' => $lineno, '!warning' => $warning));
     if ($line) {
       $warning .= '<pre>'. check_plain($line) .'</pre>';
     }
   }
-  return '<div class="coder_warning">'. $warning .'</div>';
+  $class = "coder-warning";
+  if ($severity_name) {
+    $class .= " coder-$severity_name";
+  }
+  return '<div class="'. $class .'">'. $warning .'</div>';
 }
 
 function theme_drupalapi($function, $version = 'HEAD') {
