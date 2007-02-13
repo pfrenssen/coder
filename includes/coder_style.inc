@@ -100,6 +100,7 @@ function coder_style_reviews() {
       '#source' => 'html',
       '#value' => '<'. $br .'>', // NOTE: use $br only to avoid a warning
       '#warning' => 'use &lt;br /&gt; instead of &lt;br&gt;',
+      '#severity' => 'minor',
     ),
     array(
       '#type' => 'regex',
@@ -120,7 +121,7 @@ function coder_style_reviews() {
  * Define the rule callbacks
  */
 
-function _coder_style_callback(&$coder_args, $rule, $lines, &$results) {
+function _coder_style_callback(&$coder_args, $review, $rule, $lines, &$results) {
   for ($lineno = -1; $last = array_slice($lines, $lineno); $lineno --) {
     $lastline = $last[0];
     if (preg_match('/\S/', $lastline)) {
@@ -128,7 +129,8 @@ function _coder_style_callback(&$coder_args, $rule, $lines, &$results) {
     }
   }
   if ($last && $lastline && preg_match('/\?>/i', $lastline)) {
-    _coder_error_msg($results, 'the final ?> should be omitted from all code files', count($lines));
+    $severity_name = _coder_severity_name($review, $rule);
+    _coder_error_msg($results, 'the final ?> should be omitted from all code files', $severity_name, count($lines));
   }
 }
 

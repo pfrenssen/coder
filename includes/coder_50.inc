@@ -42,6 +42,7 @@ function coder_50_reviews() {
       '#source' => 'all',
       '#value' => '\$_POST\s*\[\s*[\'"]?op[\'"]?\s*\]',
       '#warning' => '$_POST[\'op\'] deprecated in favor of $form_values[\'op\']',
+      '#severity' => 'normal',
     ),
     array(
       '#type' => 'callback',
@@ -64,6 +65,7 @@ function coder_50_reviews() {
     '#title' => t('Converting 4.7.x modules to 5.x'),
     '#link' => 'http://drupal.org/node/64279',
     '#rules' => $rules,
+    '#severity' => 'critical',
   );
   return array('upgrade50' => $review);
 }
@@ -72,14 +74,15 @@ function coder_50_reviews() {
  * Define the rule callbacks
  */
 
-function _coder_50_callback(&$coder_args, $rule, $lines, &$results) {
+function _coder_50_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // only perform this check on module's (not includes)
   $filename = $coder_args['#filename'];
   if (substr($filename, -7) == '.module') {
     // make sure that a .info file exists
     $filename = drupal_substr(realpath($filename), 0, -7) .'.info';
     if (!file_exists($filename)) {
-      $results[0] = theme('coder_warning', $lineno, t('All modules now need to have a <a href="@info">modulename.info file</a>', array('@info' => 'http://drupal.org/node/101009')));
+      $severity_name = _coder_severity_name($review, $rule);
+      $results[0] = theme('coder_warning', $severity_name, $lineno, t('All modules now need to have a <a href="@info">modulename.info file</a>', array('@info' => 'http://drupal.org/node/101009')));
     }
   }
 }
