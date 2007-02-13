@@ -1,0 +1,12 @@
+/* $Id$ */
+
+.coder-normal {
+}
+
+.coder-minor {
+  background-color: #ffd;
+}
+
+.coder-critical {
+  background-color: #ffe7dd;
+}
