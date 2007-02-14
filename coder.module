@@ -95,14 +95,14 @@ function coder_menu($may_cache) {
     );
     $items[] = array(
       'path' => 'coder/core',
-      'title' => t('Code review'),
+      'title' => t('Core'),
       'callback' => 'coder_page',
       'access' => user_access('view code review'),
       'type' => MENU_NORMAL_ITEM,
     );
     $items[] = array(
       'path' => 'coder/active',
-      'title' => t('Code review'),
+      'title' => t('Active'),
       'callback' => 'coder_page',
       'access' => user_access('view code review'),
       'type' => MENU_NORMAL_ITEM,
