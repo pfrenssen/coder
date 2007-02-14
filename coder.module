@@ -908,7 +908,7 @@ function theme_coder($name, $filename, $results) {
 
 function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') {
   if ($lineno) {
-    $warning = t('Line @number: !warning', array('@number' => $lineno, '!warning' => $warning));
+    $warning = t('Line @number: !warning (severity: @severity)', array('@number' => $lineno, '!warning' => $warning, '@severity' => $severity_name));
     if ($line) {
       $warning .= '<pre>'. check_plain($line) .'</pre>';
     }
