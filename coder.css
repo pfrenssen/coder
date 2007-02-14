@@ -1,5 +1,9 @@
 /* $Id$ */
 
+img.coder {
+  padding: 2px;
+}
+
 .coder-normal {
   background-color: #ffd;
 }

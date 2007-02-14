@@ -343,9 +343,14 @@ function coder_page_form() {
   if (isset($form_values['op'])) {
     $settings = $form_values;
     $settings['coder_modules'] = _coder_settings_modules($form_values);
+    drupal_set_title(t('Code review (submitted options)'));
   }
   else {
-    $settings = _coder_get_default_settings(arg(1));
+    $options = arg(1);
+    $settings = _coder_get_default_settings($options);
+    if ($options) {
+      drupal_set_title(t('Code review (@options)', array('@options' => isset($options) ? $options : 'default options')));
+    }
   }
 
   // get this once - list of the reviews to perform
@@ -909,7 +914,7 @@ function theme_coder($name, $filename, $results) {
 
 function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') {
   if ($lineno) {
-    $warning = t('Line @number: !warning (severity: @severity)', array('@number' => $lineno, '!warning' => $warning, '@severity' => $severity_name));
+    $warning = t('Line @number: !warning', array('@number' => $lineno, '!warning' => $warning));
     if ($line) {
       $warning .= '<pre>'. check_plain($line) .'</pre>';
     }
@@ -918,7 +923,9 @@ function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') 
   if ($severity_name) {
     $class .= " coder-$severity_name";
   }
-  return '<div class="'. $class .'">'. $warning .'</div>';
+  $path = drupal_get_path('module', 'coder');
+  $img = theme('image', $path ."/images/$severity_name.png", t('severity: @severity', array('@severity' => $severity_name)), '', array('align' => 'right', 'class' => 'coder'), FALSE);
+  return '<div class="'. $class .'">'. $img . $warning .'</div>';
 }
 
 function theme_drupalapi($function, $version = 'HEAD') {
