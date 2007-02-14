@@ -107,6 +107,7 @@ function coder_style_reviews() {
       '#source' => 'html',
       '#value' => '(?-i)<[A-Z]+',
       '#warning_callback' => '_coder_style_xhtml_warning',
+      '#severity' => 'minor',
     ),
   );
   $review = array(
