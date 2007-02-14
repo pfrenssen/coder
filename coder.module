@@ -458,6 +458,7 @@ function coder_page_form() {
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       '#weight' => -1,
+      '#prefix' => t('<div>Expand the Settings below to select options for this code review, or change the <a href="@default">default settings</a> for all code reviews.</div>', array('@default' => url('admin/settings/coder'))), 
     );
     $form['settings'][] = $coder_form;
     $form['settings']['submit'] = array(
