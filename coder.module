@@ -67,7 +67,7 @@ function _coder_reviews() {
  * Implementation of hook_cron().
  */
 function coder_cron() {
-  if ($use_cache = variable_get('coder_cache', 0)) {
+  if ($use_cache = variable_get('coder_cache', 1)) {
     // TODO: move some of the work here... is this really worth it?
   }
 }
@@ -309,7 +309,7 @@ function coder_page() {
 function _coder_get_default_settings($args = '') {
   $settings['coder_reviews'] = variable_get('coder_reviews', _coder_default_reviews());
   $settings['coder_severity'] = variable_get('coder_severity', 5);
-  $settings['coder_cache'] = variable_get('coder_cache', 0);
+  $settings['coder_cache'] = variable_get('coder_cache', 1);
 
   // determine any options based on the passed in URL,
   switch ($args) {
@@ -470,7 +470,7 @@ function coder_page_form() {
 
 function do_coder_reviews($coder_args) {
   // the cache is still experimental, so users must enable it
-  if ($use_cache = variable_get('coder_cache', 0)) {
+  if ($use_cache = variable_get('coder_cache', 1)) {
     // cache the results because:
     $cache_key = 'coder:'.  implode(':', array_keys($coder_args['#reviews'])) .  $coder_args['#severity'] .':'. $coder_args['#filename'];
     $cache_mtime = filemtime(realpath($coder_args['#filename']));
