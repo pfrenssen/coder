@@ -474,6 +474,22 @@ function coder_page_form() {
   return $form;
 }
 
+function _coder_modified() {
+  static $_coder_mtime;
+  if (!isset($_coder_mtime)) {
+    $path = drupal_get_path('module', 'coder');
+    $includefiles = drupal_system_listing('.*\.(inc|module)$', $path, 'name', 0);
+    $_coder_mtime = 0;
+    foreach ($includefiles as $file) {
+      $mtime = filemtime(realpath($file->filename));
+      if ($mtime > $_coder_mtime) {
+        $_coder_mtime = $mtime;
+      }
+    }
+  }
+  return $_coder_mtime;
+}
+
 function do_coder_reviews($coder_args) {
   // the cache is still experimental, so users must enable it
   if ($use_cache = variable_get('coder_cache', 1)) {
@@ -483,7 +499,7 @@ function do_coder_reviews($coder_args) {
     if ($cache_serialized_results = cache_get($cache_key)) {
       $cache_results = unserialize($cache_serialized_results->data);
 
-      if ($cache_results['mtime'] == $cache_mtime) {
+      if ($cache_results['mtime'] == $cache_mtime && _coder_modified() < $cache_serialized_results->created) {
         return $cache_results['results'];
       }
     }
