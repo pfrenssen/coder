@@ -207,7 +207,7 @@ function _coder_settings_form($settings, &$modules, &$files) {
   $form['coder_modules_group']['coder_core_modules'] = array(
     '#type' => 'checkbox',
     '#default_value' => $settings['coder_core_modules'],
-    '#title' => t('code review all core modules'),
+    '#title' => t('code review core files (php, modules, and includes)'),
   );
   $form['coder_modules_group']['coder_includes'] = array(
     '#type' => 'checkbox',
@@ -368,9 +368,38 @@ function coder_page_form() {
     $path = drupal_get_path('module', 'coder');
     drupal_add_css($path .'/coder.css', 'module');
 
+    // code review non-module core files
+    $module_weight = 0;
+    if ($settings['coder_core_modules']) {
+      $coder_args = array(
+        '#reviews' => $reviews,
+        '#severity' => $settings['coder_severity'],
+        '#filename' => $filename,
+      );
+
+      $form['core_php'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'core (php)',
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+        '#weight' => ++ $module_weight,
+      );
+      $phpfiles = file_scan_directory('.', '.*\.php', array('.', '..', 'CVS'), 0, FALSE, 'name', 0);
+      _coder_page_form_includes($form, $coder_args, 'core_php', $phpfiles, 2);
+
+      $form['core_includes'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'core (includes)',
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+        '#weight' => ++ $module_weight,
+      );
+      $includefiles = drupal_system_listing('.*\.inc$', 'includes', 'name', 0);
+      _coder_page_form_includes($form, $coder_args, 'core_includes', $includefiles, 0);
+    }
+
     // loop through the selected modules, preparing the code review results
     $dups = array(); // used to avoid duplicate includes
-    $module_weight = 0;
     foreach ($modules as $name => $checked) {
       if ($checked) {
         // process this one file
@@ -395,17 +424,15 @@ function coder_page_form() {
           '#collapsed' => TRUE,
           '#weight' => ++ $module_weight,
         );
-        $weight = 0;
         if (count($results) == 0) {
           $results[] = t('No Problems Found');
-          unset($errors);
         }
         else {
-          $errors = true;
+          $form[$name]['#collapsed'] = FALSE;
         }
         $form[$name]['output'] = array(
           '#value' => theme('coder', $name, $filename, $results),
-          '#weight' => ++ $weight,
+          '#weight' => -1,
         );
 
         // process the same directory include files
@@ -417,36 +444,8 @@ function coder_page_form() {
           if (!isset($dups[$path])) {
             $dups[$path] = 1;
             $includefiles = drupal_system_listing('.*\.(inc|php)$', $path, 'name', 0);
-            foreach ($includefiles as $file) {
-              $filename = drupal_substr($file->filename, $offset);
-              $coder_args['#filename'] = $filename;
-              $results = do_coder_reviews($coder_args);
-
-              // output the results in a collapsible fieldset
-              $form[$name][$filename] = array(
-                '#type' => 'fieldset',
-                '#title' => $filename,
-                '#collapsible' => TRUE,
-                '#collapsed' => TRUE,
-                '#weight' => ++ $weight,
-              );
-              if (count($results) == 0) {
-                $results[] = t('No Problems Found');
-              }
-              else {
-                $form[$name][$filename]['#collapsed'] = FALSE;
-                $errors = TRUE;
-              }
-              $form[$name][$filename]['output'] = array(
-                '#value' => theme('coder', $name, $filename, $results),
-              );
-            }
+            _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset);
           }
-        }
-
-        // if there were any errors, then uncollapse the 
-        if ($errors) {
-          $form[$name]['#collapsed'] = FALSE;
         }
       }
     }
@@ -472,6 +471,33 @@ function coder_page_form() {
     );
   }
   return $form;
+}
+
+function _coder_page_form_includes(&$form, $coder_args, $name, $files, $offset) {
+  foreach ($files as $file) {
+    $filename = drupal_substr($file->filename, $offset);
+    $coder_args['#filename'] = $filename;
+    $results = do_coder_reviews($coder_args);
+
+    // output the results in a collapsible fieldset
+    $form[$name][$filename] = array(
+      '#type' => 'fieldset',
+      '#title' => $filename,
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#weight' => ++ $weight,
+    );
+    if (count($results) == 0) {
+      $results[] = t('No Problems Found');
+    }
+    else {
+      $form[$name][$filename]['#collapsed'] = FALSE;
+      $form[$name]['#collapsed'] = FALSE;
+    }
+    $form[$name][$filename]['output'] = array(
+      '#value' => theme('coder', $name, $filename, $results),
+    );
+  }
 }
 
 function _coder_modified() {
