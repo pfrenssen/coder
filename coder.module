@@ -82,39 +82,68 @@ function coder_perm() {
 /**
  * Implementation of hook_menu().
  */
-function coder_menu($may_cache) {
+function coder_menu($may_cache = TRUE) {
   $items = array();
 
   if ($may_cache) {
-    $items[] = array(
-      'path' => 'coder',
-      'title' => t('Code review'),
-      'callback' => 'coder_page',
-      'access' => user_access('view code review'),
-      'type' => MENU_NORMAL_ITEM,
-    );
-    $items[] = array(
-      'path' => 'coder/core',
-      'title' => t('Core'),
-      'callback' => 'coder_page',
-      'access' => user_access('view code review'),
-      'type' => MENU_NORMAL_ITEM,
-    );
-    $items[] = array(
-      'path' => 'coder/active',
-      'title' => t('Active'),
-      'callback' => 'coder_page',
-      'access' => user_access('view code review'),
-      'type' => MENU_NORMAL_ITEM,
-    );
-    $items[] = array(
-      'path' => 'admin/settings/coder',
-      'title' => t('Code review'),
-      'description' => t('Select code review plugins and modules'),
-      'callback' => 'drupal_get_form',
-      'callback arguments' => 'coder_admin_settings',
-      'access' => user_access('administer site configuration'),
-    );
+    if (substr(VERSION, 0, 1) == '6') {
+      $items['coder'] = array(
+        'title' => t('Code review'),
+        'page callback' => 'coder_page',
+        'access arguments' => array('view code review'),
+        'type' => MENU_NORMAL_ITEM,
+      );
+      $items['coder/core'] = array(
+        'title' => t('Core'),
+        'page callback' => 'coder_page',
+        'access arguments' => array('view code review'),
+        'type' => MENU_NORMAL_ITEM,
+      );
+      $items['coder/active'] = array(
+        'title' => t('Active'),
+        'page callback' => 'coder_page',
+        'access arguments' => array('view code review'),
+        'type' => MENU_NORMAL_ITEM,
+      );
+      $items['admin/settings/coder'] = array(
+        'title' => t('Code review'),
+        'description' => t('Select code review plugins and modules'),
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('coder_admin_settings'),
+        'access arguments' => array('administer site configuration'),
+      );
+    }
+    else {
+      $items[] = array(
+        'path' => 'coder',
+        'title' => t('Code review'),
+        'callback' => 'coder_page',
+        'access' => user_access('view code review'),
+        'type' => MENU_NORMAL_ITEM,
+      );
+      $items[] = array(
+        'path' => 'coder/core',
+        'title' => t('Core'),
+        'callback' => 'coder_page',
+        'access' => user_access('view code review'),
+        'type' => MENU_NORMAL_ITEM,
+      );
+      $items[] = array(
+        'path' => 'coder/active',
+        'title' => t('Active'),
+        'callback' => 'coder_page',
+        'access' => user_access('view code review'),
+        'type' => MENU_NORMAL_ITEM,
+      );
+      $items[] = array(
+        'path' => 'admin/settings/coder',
+        'title' => t('Code review'),
+        'description' => t('Select code review plugins and modules'),
+        'callback' => 'drupal_get_form',
+        'callback arguments' => 'coder_admin_settings',
+        'access' => user_access('administer site configuration'),
+      );
+    }
   }
 
   return $items;
@@ -450,20 +479,17 @@ function coder_page_form() {
       }
     }
 
-    // prepend any output with the list of code reviews performed
-    if (!$form) {
-      $form = array('#value' => t('No modules found'));
-    }
-
     // prepend the settings form
     $form['settings'] = array(
       '#type' => 'fieldset',
       '#title' => t('Settings'),
       '#collapsible' => TRUE,
-      '#collapsed' => TRUE,
+      '#collapsed' => isset($form),
       '#weight' => -1,
-      '#prefix' => t('<div>Expand the Settings below to select options for this code review, or change the <a href="@default">default settings</a> for all code reviews.</div>', array('@default' => url('admin/settings/coder'))), 
     );
+    if ($form['settings']['#collapsed']) {
+      $form['settings']['#prefix'] = t('<div>Expand the Settings below to select options for this code review, or change the <a href="@default">default settings</a> for all code reviews.</div>', array('@default' => url('admin/settings/coder')));
+    }
     $form['settings'][] = $coder_form;
     $form['settings']['submit'] = array(
       '#type' => 'submit',
@@ -938,7 +964,7 @@ function _coder_is_drupal_core_module($module) {
       'watchdog' => 1,
     );
   }
-  return $core[$module->name];
+  return isset($core[$module->name]) ? 1 : 0;
 }
 
 /**

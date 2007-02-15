@@ -66,7 +66,7 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'callback',
-      '#value' => _coder_style_callback,
+      '#value' => '_coder_style_callback',
     ),
     array(
       '#type' => 'regex',
