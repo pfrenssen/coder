@@ -93,17 +93,29 @@ function coder_menu($may_cache = TRUE) {
         'access arguments' => array('view code review'),
         'type' => MENU_NORMAL_ITEM,
       );
+      $items['coder/settings'] = array(
+        'title' => t('Selection Form'),
+        'page callback' => 'coder_page',
+        'access arguments' => array('view code review'),
+        'type' => MENU_DEFAULT_LOCAL_TASK,
+      );
       $items['coder/core'] = array(
         'title' => t('Core'),
         'page callback' => 'coder_page',
         'access arguments' => array('view code review'),
-        'type' => MENU_NORMAL_ITEM,
+        'type' => MENU_LOCAL_TASK,
       );
       $items['coder/active'] = array(
         'title' => t('Active'),
         'page callback' => 'coder_page',
         'access arguments' => array('view code review'),
-        'type' => MENU_NORMAL_ITEM,
+        'type' => MENU_LOCAL_TASK,
+      );
+      $items['coder/default'] = array(
+        'title' => t('Default'),
+        'page callback' => 'coder_page',
+        'access arguments' => array('view code review'),
+        'type' => MENU_LOCAL_TASK,
       );
       $items['admin/settings/coder'] = array(
         'title' => t('Code review'),
@@ -122,18 +134,32 @@ function coder_menu($may_cache = TRUE) {
         'type' => MENU_NORMAL_ITEM,
       );
       $items[] = array(
+        'path' => 'coder/settings',
+        'title' => t('Selection Form'),
+        'callback' => 'coder_page',
+        'access' => user_access('view code review'),
+        'type' => MENU_DEFAULT_LOCAL_TASK,
+      );
+      $items[] = array(
         'path' => 'coder/core',
         'title' => t('Core'),
         'callback' => 'coder_page',
         'access' => user_access('view code review'),
-        'type' => MENU_NORMAL_ITEM,
+        'type' => MENU_LOCAL_TASK,
       );
       $items[] = array(
         'path' => 'coder/active',
         'title' => t('Active'),
         'callback' => 'coder_page',
         'access' => user_access('view code review'),
-        'type' => MENU_NORMAL_ITEM,
+        'type' => MENU_LOCAL_TASK,
+      );
+      $items[] = array(
+        'path' => 'coder/default',
+        'title' => t('Default'),
+        'callback' => 'coder_page',
+        'access' => user_access('view code review'),
+        'type' => MENU_LOCAL_TASK,
       );
       $items[] = array(
         'path' => 'admin/settings/coder',
@@ -222,29 +248,29 @@ function _coder_settings_form($settings, &$modules, &$files) {
   }
 
   // display active modules option
-  $form['coder_modules_group'] = array(
+  $form['coder_what'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Modules'),
+    '#title' => t('What to review'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
-  $form['coder_modules_group']['coder_active_modules'] = array(
+  $form['coder_what']['coder_active_modules'] = array(
     '#type' => 'checkbox',
     '#default_value' => $settings['coder_active_modules'],
-    '#title' => t('code review all active modules'),
+    '#title' => t('active modules'),
   );
-  $form['coder_modules_group']['coder_core_modules'] = array(
+  $form['coder_what']['coder_core_modules'] = array(
     '#type' => 'checkbox',
     '#default_value' => $settings['coder_core_modules'],
-    '#title' => t('code review core files (php, modules, and includes)'),
+    '#title' => t('core files (php, modules, and includes)'),
   );
-  $form['coder_modules_group']['coder_includes'] = array(
+  $form['coder_what']['coder_includes'] = array(
     '#type' => 'checkbox',
     '#default_value' => $settings['coder_includes'],
-    '#title' => t('review all include files (.inc and .php files)'),
+    '#title' => t('module include files (.inc and .php files)'),
   );
   if (arg(0) == 'admin') {
-    $form['coder_modules_group']['coder_cache'] = array(
+    $form['coder_what']['coder_cache'] = array(
       '#type' => 'checkbox',
       '#default_value' => $settings['coder_cache'],
       '#title' => t('use the experimental coder cache'),
@@ -252,7 +278,7 @@ function _coder_settings_form($settings, &$modules, &$files) {
   }
 
   // display the modules in a fieldset
-  $form['coder_modules_group']['coder_modules_subgroup'] = array(
+  $form['coder_what']['coder_modules'] = array(
     '#type' => 'fieldset',
     '#title' => t('Select Specific Modules'),
     '#collapsible' => TRUE,
@@ -269,7 +295,7 @@ function _coder_settings_form($settings, &$modules, &$files) {
   elseif ($settings['coder_core_modules']) {
     $modules = $core_modules;
   }
-  elseif (!is_array($settings['coder_modules'])) {
+  elseif ($settings['coder_active_modules']) {
     $modules = $active_modules;
   }
   else {
@@ -283,7 +309,7 @@ function _coder_settings_form($settings, &$modules, &$files) {
     if (in_array($name, $core_modules)) {
       $classes[] = "coder-core";
     }
-    $form['coder_modules_group']['coder_modules_subgroup']["coder_modules-$name"] = array(
+    $form['coder_what']['coder_modules']["coder_modules-$name"] = array(
       '#type' => 'checkbox',
       '#title' => $checkbox,
       '#default_value' => isset($modules[$name]),
@@ -343,10 +369,8 @@ function _coder_get_default_settings($args = '') {
   // determine any options based on the passed in URL,
   switch ($args) {
     case '':
-      $settings['coder_active_modules'] = variable_get('coder_active_modules', 1);
-      $settings['coder_core_modules'] = variable_get('coder_core_modules', 0);
-      $settings['coder_includes'] = variable_get('coder_includes', 0);
-      $settings['coder_modules'] = variable_get('coder_modules', '');
+    case 'settings':
+      $settings['coder_includes'] = 1;
       break;
 
     case 'active':
@@ -356,6 +380,13 @@ function _coder_get_default_settings($args = '') {
     case 'core':
       $settings['coder_core_modules'] = 1;
       $settings['coder_includes'] = 1;
+      break;
+
+    case 'default':
+      $settings['coder_active_modules'] = variable_get('coder_active_modules', 1);
+      $settings['coder_core_modules'] = variable_get('coder_core_modules', 0);
+      $settings['coder_includes'] = variable_get('coder_includes', 0);
+      $settings['coder_modules'] = variable_get('coder_modules', '');
       break;
 
     default:
@@ -428,52 +459,53 @@ function coder_page_form() {
     }
 
     // loop through the selected modules, preparing the code review results
-    $dups = array(); // used to avoid duplicate includes
-    foreach ($modules as $name => $checked) {
-      if ($checked) {
-        // process this one file
-        $filename = $files[$name];
-        if (!$filename) {
-          drupal_set_message(t('Code Review is only available on module files (%module.module not found)', array('%module' => $name)));
-          continue;
-        }
-        $coder_args = array(
-          '#reviews' => $reviews,
-          '#severity' => $settings['coder_severity'],
-          '#name' => $name,
-          '#filename' => $filename,
-        );
-        $results = do_coder_reviews($coder_args);
+    if (isset($modules)) {
+      $dups = array(); // used to avoid duplicate includes
+      foreach ($modules as $name => $checked) {
+        if ($checked) {
+          // process this one file
+          $filename = $files[$name];
+          if (!$filename) {
+            drupal_set_message(t('Code Review is only available on module files (%module.module not found)', array('%module' => $name)));
+            continue;
+          }
+          $coder_args = array(
+            '#reviews' => $reviews,
+            '#severity' => $settings['coder_severity'],
+            '#filename' => $filename,
+          );
+          $results = do_coder_reviews($coder_args);
 
-        // output the results in a collapsible fieldset
-        $form[$name] = array(
-          '#type' => 'fieldset',
-          '#title' => $filename,
-          '#collapsible' => TRUE,
-          '#collapsed' => TRUE,
-          '#weight' => ++ $module_weight,
-        );
-        if (count($results) == 0) {
-          $results[] = t('No Problems Found');
-        }
-        else {
-          $form[$name]['#collapsed'] = FALSE;
-        }
-        $form[$name]['output'] = array(
-          '#value' => theme('coder', $name, $filename, $results),
-          '#weight' => -1,
-        );
+          // output the results in a collapsible fieldset
+          $form[$name] = array(
+            '#type' => 'fieldset',
+            '#title' => $filename,
+            '#collapsible' => TRUE,
+            '#collapsed' => TRUE,
+            '#weight' => ++ $module_weight,
+          );
+          if (count($results) == 0) {
+            $results[] = t('No Problems Found');
+          }
+          else {
+            $form[$name]['#collapsed'] = FALSE;
+          }
+          $form[$name]['output'] = array(
+            '#value' => theme('coder', $name, $filename, $results),
+            '#weight' => -1,
+          );
 
-        // process the same directory include files
-        if ($settings['coder_includes']) {
-          // NOTE: convert to the realpath here so drupal_system_listing
-          // doesn't return additional paths (i.e., try "module").
-          $path = str_replace('\\', '/', dirname(realpath($filename)));
-          $offset = strpos($path, dirname($filename));
-          if (!isset($dups[$path])) {
-            $dups[$path] = 1;
-            $includefiles = drupal_system_listing('.*\.(inc|php)$', $path, 'name', 0);
-            _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset);
+          // process the same directory include files
+          if ($settings['coder_includes']) {
+            // NOTE: convert to the realpath here so drupal_system_listing
+            // doesn't return additional paths (i.e., try "module").
+            $path = str_replace('\\', '/', dirname(realpath($filename)));
+            $offset = strpos($path, dirname($filename));
+            if (!isset($dups[$path])) {
+              $dups[$path] = 1;
+              $includefiles = drupal_system_listing('.*\.(inc|php)$', $path, 'name', 0);
+              _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset);
+            }
           }
         }
       }
@@ -482,24 +514,26 @@ function coder_page_form() {
     // prepend the settings form
     $form['settings'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Settings'),
+      '#title' => t('Selection Form'),
       '#collapsible' => TRUE,
       '#collapsed' => isset($form),
       '#weight' => -1,
     );
     if ($form['settings']['#collapsed']) {
-      $form['settings']['#prefix'] = t('<div>Expand the Settings below to select options for this code review, or change the <a href="@default">default settings</a> for all code reviews.</div>', array('@default' => url('admin/settings/coder')));
+      $form['settings']['#prefix'] = t('<div>Use the Selection Form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/settings/coder'), '@default' => url('coder/default')));
     }
     $form['settings'][] = $coder_form;
     $form['settings']['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Submit'),
     );
+    $form['#action'] = url('coder');
   }
   return $form;
 }
 
 function _coder_page_form_includes(&$form, $coder_args, $name, $files, $offset) {
+  $coder_args['#name'] = $name;
   foreach ($files as $file) {
     $filename = drupal_substr($file->filename, $offset);
     $coder_args['#filename'] = $filename;
@@ -560,7 +594,7 @@ function do_coder_reviews($coder_args) {
   $results = array();
 
   // skip php include files when the user requested severity is above minor
-  if (drupal_substr($coder_args['#filename'], -4) == '.php') {
+  if ($coder_args['#name'] != 'core_php' && drupal_substr($coder_args['#filename'], -4) == '.php') {
     if ($coder_args['#severity'] > 1) {
       return $results;
     }
@@ -797,7 +831,7 @@ function _coder_severity($severity_name, $default_value = 5) {
 function _coder_severity_name($coder_args, $review, $rule) {
   // NOTE: warnings in php includes are suspicious because
   // php includes are frequently 3rd party products
-  if (substr($coder_args['#filename'], -4) == '.php') {
+  if ($coder_args['#name'] != 'core_php' && substr($coder_args['#filename'], -4) == '.php') {
     return 'minor';
   }
 
