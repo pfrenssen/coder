@@ -264,12 +264,12 @@ function _coder_settings_form($settings, &$system, &$files) {
   );
   $form['coder_what']['coder_active_modules'] = array( // NOTE: should rename var
     '#type' => 'checkbox',
-    '#default_value' => $settings['coder_active_modules'],
+    '#default_value' => isset($settings['coder_active_modules']) ? $settings['coder_active_modules'] : 0,
     '#title' => t('active modules and themes'),
   );
   $form['coder_what']['coder_core'] = array(
     '#type' => 'checkbox',
-    '#default_value' => $settings['coder_core'],
+    '#default_value' => isset($settings['coder_core']) ? $settings['coder_core'] : 0,
     '#title' => t('core files (php, modules, and includes)'),
   );
   $form['coder_what']['coder_includes'] = array(
@@ -292,8 +292,8 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
-  if ($settings['coder_active_modules']) {
-    if ($settings['coder_core']) {
+  if (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
+    if (isset($settings['coder_core']) && $settings['coder_core']) {
       $modules = array_intersect($system_active, $system_core);
       $modules = array_intersect($modules, $system_modules);
     }
@@ -301,14 +301,14 @@ function _coder_settings_form($settings, &$system, &$files) {
       $modules = array_intersect($system_active, $system_modules);
     }
   }
-  elseif ($settings['coder_core']) {
+  elseif (isset($settings['coder_core']) && $settings['coder_core']) {
     $modules = array_intersect($system_core, $system_modules);
   }
-  elseif ($settings['coder_active_modules']) {
+  elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
     $modules = array_intersect($system_active, $system_modules);
   }
   else {
-    $modules = is_array($settings['coder_modules']) ? $settings['coder_modules'] : array();
+    $modules = isset($settings['coder_modules']) && is_array($settings['coder_modules']) ? $settings['coder_modules'] : array();
   }
 
   // display the themes in a fieldset
@@ -318,8 +318,8 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
-  if ($settings['coder_active_modules']) {
-    if ($settings['coder_core']) {
+  if (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
+    if (isset($settings['coder_core']) && $settings['coder_core']) {
       $themes = array_intersect($system_active, $system_core);
       $themes = array_intersect($themes, $system_themes);
     }
@@ -327,14 +327,14 @@ function _coder_settings_form($settings, &$system, &$files) {
       $themes = array_intersect($system_active, $system_themes);
     }
   }
-  elseif ($settings['coder_core']) {
+  elseif (isset($settings['coder_core']) && $settings['coder_core']) {
     $themes = array_intersect($system_core, $system_themes);
   }
-  elseif ($settings['coder_active_modules']) {
+  elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
     $themes = array_intersect($system_active, $system_themes);
   }
   else {
-    $themes = is_array($settings['coder_themes']) ? $settings['coder_themes'] : array();
+    $themes = isset($settings['coder_themes']) && is_array($settings['coder_themes']) ? $settings['coder_themes'] : array();
   }
 
   foreach ($system_links as $name => $link) {
@@ -481,7 +481,7 @@ function coder_page_form() {
 
     // code review non-module core files
     $module_weight = 0;
-    if ($settings['coder_core']) {
+    if (isset($settings['coder_core']) && $settings['coder_core']) {
       $coder_args = array(
         '#reviews' => $reviews,
         '#severity' => $settings['coder_severity'],
