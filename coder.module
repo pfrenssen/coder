@@ -195,7 +195,7 @@ function _coder_default_reviews() {
   return drupal_map_assoc(array('style', 'security'));
 }
 
-function _coder_settings_form($settings, &$modules, &$files) {
+function _coder_settings_form($settings, &$system, &$files) {
   // add the javascript
   $path = drupal_get_path('module', 'coder');
   drupal_add_js($path .'/coder.js');
@@ -230,44 +230,52 @@ function _coder_settings_form($settings, &$modules, &$files) {
     '#default_value' => $settings['coder_severity'],
   );
   
-  // get the modules
-  $sql = "SELECT name, filename, status FROM {system} WHERE type = 'module' ORDER BY weight ASC, filename ASC";
+  // get the modules and theme
+  $sql = "SELECT name, filename, type, status FROM {system} WHERE type='module' OR type='theme' ORDER BY weight ASC, filename ASC";
   $result = db_query($sql);
-  while ($module = db_fetch_object($result)) {
-    $display_name = $module->name;
-    if ($module->status) {
+  $system_modules = array();
+  $system_themes = array();
+  while ($system = db_fetch_object($result)) {
+    $display_name = $system->name;
+    if ($system->status) {
       $display_name .= t(' (active)');
-      $active_modules[$module->name] = $module->name;
+      $system_active[$system->name] = $system->name;
     }
-    if (_coder_is_drupal_core_module($module)) {
+    if (_coder_is_drupal_core($system)) {
       $display_name .= t(' (core)');
-      $core_modules[$module->name] = $module->name;
+      $system_core[$system->name] = $system->name;
     }
-    $all_modules[$module->name] = l($display_name, "coder/$module->name");
-    $files[$module->name] = $module->filename;
+    if ($system->type == 'module') {
+      $system_modules[$system->name] = $system->name;
+    }
+    else {
+      $system_themes[$system->name] = $system->name;
+    }
+    $system_links[$system->name] = l($display_name, "coder/$system->name");
+    $files[$system->name] = $system->filename;
   }
 
-  // display active modules option
+  // display what to review options
   $form['coder_what'] = array(
     '#type' => 'fieldset',
     '#title' => t('What to review'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
-  $form['coder_what']['coder_active_modules'] = array(
+  $form['coder_what']['coder_active_modules'] = array( // NOTE: should rename var
     '#type' => 'checkbox',
     '#default_value' => $settings['coder_active_modules'],
-    '#title' => t('active modules'),
+    '#title' => t('active modules and themes'),
   );
-  $form['coder_what']['coder_core_modules'] = array(
+  $form['coder_what']['coder_core'] = array(
     '#type' => 'checkbox',
-    '#default_value' => $settings['coder_core_modules'],
+    '#default_value' => $settings['coder_core'],
     '#title' => t('core files (php, modules, and includes)'),
   );
   $form['coder_what']['coder_includes'] = array(
     '#type' => 'checkbox',
     '#default_value' => $settings['coder_includes'],
-    '#title' => t('module include files (.inc and .php files)'),
+    '#title' => t('include files (.inc and .php files)'),
   );
   if (arg(0) == 'admin') {
     $form['coder_what']['coder_cache'] = array(
@@ -285,38 +293,75 @@ function _coder_settings_form($settings, &$modules, &$files) {
     '#collapsed' => TRUE,
   );
   if ($settings['coder_active_modules']) {
-    if ($settings['coder_core_modules']) {
-      $modules = array_intersect($active_modules, $core_modules);
+    if ($settings['coder_core']) {
+      $modules = array_intersect($system_active, $system_core);
+      $modules = array_intersect($modules, $system_modules);
     }
     else {
-      $modules = $active_modules;
+      $modules = array_intersect($system_active, $system_modules);
     }
   }
-  elseif ($settings['coder_core_modules']) {
-    $modules = $core_modules;
+  elseif ($settings['coder_core']) {
+    $modules = array_intersect($system_core, $system_modules);
   }
   elseif ($settings['coder_active_modules']) {
-    $modules = $active_modules;
+    $modules = array_intersect($system_active, $system_modules);
   }
   else {
-    $modules = $settings['coder_modules'];
+    $modules = is_array($settings['coder_modules']) ? $settings['coder_modules'] : array();
   }
-  foreach ($all_modules as $name => $checkbox) {
+
+  // display the themes in a fieldset
+  $form['coder_what']['coder_themes'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Select Specific Themes'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  if ($settings['coder_active_modules']) {
+    if ($settings['coder_core']) {
+      $themes = array_intersect($system_active, $system_core);
+      $themes = array_intersect($themes, $system_themes);
+    }
+    else {
+      $themes = array_intersect($system_active, $system_themes);
+    }
+  }
+  elseif ($settings['coder_core']) {
+    $themes = array_intersect($system_core, $system_themes);
+  }
+  elseif ($settings['coder_active_modules']) {
+    $themes = array_intersect($system_active, $system_themes);
+  }
+  else {
+    $themes = is_array($settings['coder_themes']) ? $settings['coder_themes'] : array();
+  }
+
+  foreach ($system_links as $name => $link) {
     $classes = array();
-    if (in_array($name, $active_modules)) {
+    if (in_array($name, $system_active)) {
       $classes[] = "coder-active";
     }
-    if (in_array($name, $core_modules)) {
+    if (in_array($name, $system_core)) {
       $classes[] = "coder-core";
     }
-    $form['coder_what']['coder_modules']["coder_modules-$name"] = array(
+    if (in_array($name, $system_themes)) {
+      $type = 'theme';
+      $default_value = isset($themes[$name]);
+    }
+    else {
+      $type = 'module';
+      $default_value = isset($modules[$name]);
+    }
+    $form['coder_what']["coder_${type}s"]["coder_${type}s-$name"] = array(
       '#type' => 'checkbox',
-      '#title' => $checkbox,
-      '#default_value' => isset($modules[$name]),
+      '#title' => $link,
+      '#default_value' => $default_value,
       '#attributes' => array('class' => implode(' ', $classes)),
     );
   }
 
+  $system = array_merge($modules, $themes);
   return $form;
 }
 
@@ -325,28 +370,31 @@ function _coder_settings_form($settings, &$modules, &$files) {
  */
 function coder_admin_settings() {
   $settings = _coder_get_default_settings();
-  $form = _coder_settings_form($settings, $modules, $files);
+  $form = _coder_settings_form($settings, $system, $files);
   $form['#submit']['coder_settings_form_submit'] = array();
   $form['#submit']['system_settings_form_submit'] = array();
   return system_settings_form($form);
 }
 
 function coder_settings_form_submit($form_id, &$form_values) {
-  variable_set('coder_modules', _coder_settings_modules($form_values));
+  variable_set('coder_modules', _coder_settings_array($form_values, 'module'));
+  variable_set('coder_themes', _coder_settings_array($form_values, 'theme'));
 }
 
-function _coder_settings_modules(&$form_values) {
-  $modules = array();
+function _coder_settings_array(&$form_values, $type) {
+  $typekey = "coder_{$type}s-";
+  $typelen = strlen($typekey);
+  $systems = array();
   foreach ($form_values as $key => $value) {
-    if (substr($key, 0, 14) == 'coder_modules-') {
+    if (substr($key, 0, $typelen) == $typekey) {
       if ($value == 1) {
-        $module = substr($key, 14);
-        $modules[$module] = 1;
+        $system = substr($key, $typelen);
+        $systems[$system] = 1;
       }
       unset($form_values[$key]);
     }
   }
-  return $modules;
+  return $systems;
 }
 
 function coder_page_form_submit($form_id, $form_values) {
@@ -378,19 +426,21 @@ function _coder_get_default_settings($args = '') {
       break;
 
     case 'core':
-      $settings['coder_core_modules'] = 1;
+      $settings['coder_core'] = 1;
       $settings['coder_includes'] = 1;
       break;
 
     case 'default':
       $settings['coder_active_modules'] = variable_get('coder_active_modules', 1);
-      $settings['coder_core_modules'] = variable_get('coder_core_modules', 0);
+      $settings['coder_core'] = variable_get('coder_core', 0);
       $settings['coder_includes'] = variable_get('coder_includes', 0);
-      $settings['coder_modules'] = variable_get('coder_modules', '');
+      $settings['coder_modules'] = variable_get('coder_modules', array());
+      $settings['coder_themes'] = variable_get('coder_themes', array());
       break;
 
     default:
       $settings['coder_includes'] = 1;
+      // TODO: does this need to go into coder_themes sometimes?
       $settings['coder_modules'] = array($args => $args);
       break;
   }
@@ -402,7 +452,8 @@ function coder_page_form() {
   $form_values = $_POST;
   if (isset($form_values['op'])) {
     $settings = $form_values;
-    $settings['coder_modules'] = _coder_settings_modules($form_values);
+    $settings['coder_modules'] = _coder_settings_array($form_values, 'module');
+    $settings['coder_themes'] = _coder_settings_array($form_values, 'theme');
     drupal_set_title(t('Code review (submitted options)'));
   }
   else {
@@ -423,14 +474,14 @@ function coder_page_form() {
     }
   }
 
-  if ($coder_form = _coder_settings_form($settings, $modules, $files)) {
+  if ($coder_form = _coder_settings_form($settings, $system, $files)) {
     // add style sheet
     $path = drupal_get_path('module', 'coder');
     drupal_add_css($path .'/coder.css', 'module');
 
     // code review non-module core files
     $module_weight = 0;
-    if ($settings['coder_core_modules']) {
+    if ($settings['coder_core']) {
       $coder_args = array(
         '#reviews' => $reviews,
         '#severity' => $settings['coder_severity'],
@@ -458,15 +509,15 @@ function coder_page_form() {
       _coder_page_form_includes($form, $coder_args, 'core_includes', $includefiles, 0);
     }
 
-    // loop through the selected modules, preparing the code review results
-    if (isset($modules)) {
+    // loop through the selected modules and themes
+    if (isset($system)) {
       $dups = array(); // used to avoid duplicate includes
-      foreach ($modules as $name => $checked) {
+      foreach ($system as $name => $checked) {
         if ($checked) {
           // process this one file
           $filename = $files[$name];
           if (!$filename) {
-            drupal_set_message(t('Code Review is only available on module files (%module.module not found)', array('%module' => $name)));
+            drupal_set_message(t('Code Review file for %module not found', array('%module' => $name)));
             continue;
           }
           $coder_args = array(
@@ -502,6 +553,9 @@ function coder_page_form() {
             $path = str_replace('\\', '/', dirname(realpath($filename)));
             $offset = strpos($path, dirname($filename));
             if (!isset($dups[$path])) {
+              if (substr($filename, -7) == '.module') {
+                $coder_args['#php_minor'] = 1;
+              }
               $dups[$path] = 1;
               $includefiles = drupal_system_listing('.*\.(inc|php)$', $path, 'name', 0);
               _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset);
@@ -594,7 +648,7 @@ function do_coder_reviews($coder_args) {
   $results = array();
 
   // skip php include files when the user requested severity is above minor
-  if ($coder_args['#name'] != 'core_php' && drupal_substr($coder_args['#filename'], -4) == '.php') {
+  if ($coder_args['#php_minor'] && drupal_substr($coder_args['#filename'], -4) == '.php') {
     if ($coder_args['#severity'] > 1) {
       return $results;
     }
@@ -831,7 +885,7 @@ function _coder_severity($severity_name, $default_value = 5) {
 function _coder_severity_name($coder_args, $review, $rule) {
   // NOTE: warnings in php includes are suspicious because
   // php includes are frequently 3rd party products
-  if ($coder_args['#name'] != 'core_php' && substr($coder_args['#filename'], -4) == '.php') {
+  if ($coder_args['#php_minor'] && substr($coder_args['#filename'], -4) == '.php') {
     return 'minor';
   }
 
@@ -961,10 +1015,11 @@ function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$result
   }
 }
 
-function _coder_is_drupal_core_module($module) {
+function _coder_is_drupal_core($module) {
   static $core;
   if (!isset($core)) {
     $core = array(
+      // modules
       'aggregator' => 1,
       'archive' => 1,
       'block' => 1,
@@ -996,6 +1051,12 @@ function _coder_is_drupal_core_module($module) {
       'upload' => 1,
       'user' => 1,
       'watchdog' => 1,
+
+      // themes
+      'bluemarine' => 1,
+      'chameleon' => 1,
+      'garland' => 1,
+      'pushbutton' => 1,
     );
   }
   return isset($core[$module->name]) ? 1 : 0;

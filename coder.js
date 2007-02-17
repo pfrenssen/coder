@@ -10,23 +10,39 @@ if (Drupal.jsEnabled) {
     function() {
       $("input:checkbox").click(
         function() {
-          core = this.form.elements.namedItem("edit-coder-core-modules");
+          core = this.form.elements.namedItem("edit-coder-core");
           active = this.form.elements.namedItem("edit-coder-active-modules");
           if (this == core || this == active) {
-            what = "input[@id^=edit-coder-modules]";
+            modules = "input[@id^=edit-coder-modules-]";
+            themes = "input[@id^=edit-coder-themes-]";
             if (core.checked || active.checked) {
-              $("input[@id^=edit-coder-modules]").uncheck();
-              if (core.checked) what += '.coder-core';
-              if (active.checked) what += '.coder-active';
-              $(what).check();
+              $(modules).uncheck();
+              $(themes).uncheck();
+              if (core.checked) {
+                modules += '.coder-core';
+                themes += '.coder-core';
+              }
+              if (active.checked) {
+                modules += '.coder-active';
+                themes += '.coder-active';
+              }
+              $(modules).check();
+              $(themes).check();
             }
             else {
-              if (this == active) what += ".coder-active";
-              else what += ".coder-core";
-              $(what).uncheck();
+              if (this == active) {
+                modules += ".coder-active";
+                themes += ".coder-active";
+              }
+              else {
+                modules += ".coder-core";
+                themes += ".coder-core";
+              }
+              $(modules).uncheck();
+              $(themes).uncheck();
             }
           }
-          else if (this.id.substr(0, 18) == "edit-coder-modules") {
+          else if (this.id.substr(0, 19) == "edit-coder-modules-" || this.id.substr(0, 18) == "edit-coder-themes-") {
             core.checked = false;
             active.checked = false;
           }
