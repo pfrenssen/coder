@@ -434,14 +434,13 @@ function coder_page() {
   return drupal_get_form('coder_page_form');
 }
 
-function _coder_get_default_settings($args = '') {
+function _coder_get_default_settings($args = 'default') {
   $settings['coder_reviews'] = variable_get('coder_reviews', _coder_default_reviews());
   $settings['coder_severity'] = variable_get('coder_severity', 5);
   $settings['coder_cache'] = variable_get('coder_cache', 1);
 
   // determine any options based on the passed in URL,
   switch ($args) {
-    case '':
     case 'settings':
       $settings['coder_includes'] = 1;
       break;
