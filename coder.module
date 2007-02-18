@@ -98,6 +98,14 @@ function coder_menu($may_cache = TRUE) {
         'page callback' => 'coder_page',
         'access arguments' => array('view code review'),
         'type' => MENU_DEFAULT_LOCAL_TASK,
+        'weight' => -2,
+      );
+      $items['coder/default'] = array(
+        'title' => t('Default'),
+        'page callback' => 'coder_page',
+        'access arguments' => array('view code review'),
+        'type' => MENU_LOCAL_TASK,
+        'weight' => -1,
       );
       $items['coder/core'] = array(
         'title' => t('Core'),
@@ -111,11 +119,12 @@ function coder_menu($may_cache = TRUE) {
         'access arguments' => array('view code review'),
         'type' => MENU_LOCAL_TASK,
       );
-      $items['coder/default'] = array(
-        'title' => t('Default'),
+      $items['coder/all'] = array(
+        'title' => t('All'),
         'page callback' => 'coder_page',
         'access arguments' => array('view code review'),
         'type' => MENU_LOCAL_TASK,
+        'weight' => 1,
       );
       $items['admin/settings/coder'] = array(
         'title' => t('Code review'),
@@ -139,6 +148,15 @@ function coder_menu($may_cache = TRUE) {
         'callback' => 'coder_page',
         'access' => user_access('view code review'),
         'type' => MENU_DEFAULT_LOCAL_TASK,
+        'weight' => -2,
+      );
+      $items[] = array(
+        'path' => 'coder/default',
+        'title' => t('Default'),
+        'callback' => 'coder_page',
+        'access' => user_access('view code review'),
+        'type' => MENU_LOCAL_TASK,
+        'weight' => -1,
       );
       $items[] = array(
         'path' => 'coder/core',
@@ -155,11 +173,12 @@ function coder_menu($may_cache = TRUE) {
         'type' => MENU_LOCAL_TASK,
       );
       $items[] = array(
-        'path' => 'coder/default',
-        'title' => t('Default'),
+        'path' => 'coder/all',
+        'title' => t('All'),
         'callback' => 'coder_page',
         'access' => user_access('view code review'),
         'type' => MENU_LOCAL_TASK,
+        'weight' => 1,
       );
       $items[] = array(
         'path' => 'admin/settings/coder',
@@ -292,7 +311,10 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
-  if (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
+  if (isset($settings['coder_all'])) {
+    $modules = $system_modules;
+  }
+  elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
     if (isset($settings['coder_core']) && $settings['coder_core']) {
       $modules = array_intersect($system_active, $system_core);
       $modules = array_intersect($modules, $system_modules);
@@ -318,7 +340,10 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
-  if (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
+  if (isset($settings['coder_all'])) {
+    $themes = $system_themes;
+  }
+  elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
     if (isset($settings['coder_core']) && $settings['coder_core']) {
       $themes = array_intersect($system_active, $system_core);
       $themes = array_intersect($themes, $system_themes);
@@ -428,6 +453,12 @@ function _coder_get_default_settings($args = '') {
     case 'core':
       $settings['coder_core'] = 1;
       $settings['coder_includes'] = 1;
+      break;
+
+    case 'all':
+      $settings['coder_core'] = 1;
+      $settings['coder_includes'] = 1;
+      $settings['coder_all'] = 1;
       break;
 
     case 'default':
