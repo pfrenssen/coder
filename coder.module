@@ -76,7 +76,7 @@ function coder_cron() {
  * Implementation of hook_perm().
  */
 function coder_perm() {
-  return array('view code review');
+  return array('view code review', 'view code review all');
 }
 
 /**
@@ -122,7 +122,7 @@ function coder_menu($may_cache = TRUE) {
       $items['coder/all'] = array(
         'title' => t('All'),
         'page callback' => 'coder_page',
-        'access arguments' => array('view code review'),
+        'access arguments' => array('view code review all'),
         'type' => MENU_LOCAL_TASK,
         'weight' => 1,
       );
@@ -176,7 +176,7 @@ function coder_menu($may_cache = TRUE) {
         'path' => 'coder/all',
         'title' => t('All'),
         'callback' => 'coder_page',
-        'access' => user_access('view code review'),
+        'access' => user_access('view code review all'),
         'type' => MENU_LOCAL_TASK,
         'weight' => 1,
       );
