@@ -961,6 +961,9 @@ function do_coder_review($coder_args, $review) {
             case 'grep':
               do_coder_review_grep($coder_args, $review, $rule, $lines, $results);
               break;
+            case 'grep_invert':
+              do_coder_review_grep_invert($coder_args, $review, $rule, $lines, $results);
+              break;
             case 'callback':
               do_coder_review_callback($coder_args, $review, $rule, $lines, $results);
               break;
@@ -973,8 +976,11 @@ function do_coder_review($coder_args, $review) {
 }
 
 function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) {
-  if ($regex = $rule['#value']) {
-    $regex = '/'. $regex .'/i';
+  if (isset($rule['#value'])) {
+    $regex = '/'. $rule['#value'] .'/';
+    if (!isset($rule['#case-sensitive'])) {
+      $regex .= 'i';
+    }
     foreach ($lines as $lineno => $line) {
       if (preg_match($regex, $line, $matches)) {
         // don't match some regex's
@@ -1024,11 +1030,28 @@ function _coder_error_msg(&$results, $warning, $severity_name, $lineno = -1, $li
   $results[$key] = theme('coder_warning', $warning, $severity_name, $lineno + 1, $line);
 }
 
+/**
+ * Searches for a string.
+ */
 function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
-  if ($regex = $rule['#value']) {
-    $regex = '/'. $regex .'/i';
+  if (isset($rule['#value'])) {
     foreach ($lines as $lineno => $line) {
-      if (preg_match($regex, $line)) {
+      if (_coder_search_string($line, $rule)) {
+        $line = $coder_args['#all_lines'][$lineno];
+        $severity_name = _coder_severity_name($coder_args, $review, $rule);
+        _coder_error($results, $rule, $severity_name, $lineno, $line);
+      }
+    }
+  }
+}
+
+/**
+ * Searches for potentially missing string.
+ */
+function do_coder_review_grep_invert(&$coder_args, $review, $rule, $lines, &$results) {
+  if (isset($rule['#value'])) {
+    foreach ($lines as $lineno => $line) {
+      if (_coder_search_string($line, $rule)) {
         return;
       }
     }
@@ -1043,6 +1066,44 @@ function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$result
       call_user_func_array($function, array(&$coder_args, $review, $rule, $lines, &$results));
     }
   }
+}
+
+/**
+ * Search for a string.
+ * 
+ * Uses strpos() and stripos() if available for performance optimization or
+ * preg_match().
+ * 
+ * @param string $line Haystack
+ * @param array $rule Rule to process
+ * 
+ * @return bool True if needle is in haystack.
+ */
+function _coder_search_string($line, $rule) {
+  static $php5;
+  
+  if (!isset($is_php5)) {
+    if (function_exists('stripos')) {
+      $php5 = true;
+    }
+    else {
+      $php5 = false;
+    }
+  }
+  
+  // case-sensitive search with strpos() (supported everywhere)
+  if (isset($rule['#case-sensitive'])) {
+    return strpos($line, $rule['#value']) !== false;
+  }
+  
+  // case-insensitive search with stripos() (supported in PHP 5)
+  if ($php5 && !isset($rule['#case-sensitive'])) {
+    return stripos($line, $rule['#value']) !== false;
+  }
+  
+  // case-insensitive search
+  $regex = '/'. preg_quote($rule['#value']) .'/i';
+  return preg_match($regex, $line);
 }
 
 function _coder_is_drupal_core($module) {
@@ -1106,6 +1167,11 @@ function theme_coder($name, $filename, $results) {
 }
 
 function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') {
+  // Extract description from warning
+  if (is_array($warning)) {
+    $description = $warning['#description'];
+    $warning = $warning['#warning'];
+  }
   if ($lineno) {
     $warning = t('Line @number: !warning', array('@number' => $lineno, '!warning' => $warning));
     if ($line) {
@@ -1117,7 +1183,12 @@ function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') 
     $class .= " coder-$severity_name";
   }
   $path = drupal_get_path('module', 'coder');
-  $img = theme('image', $path ."/images/$severity_name.png", t('severity: @severity', array('@severity' => $severity_name)), '', array('align' => 'right', 'class' => 'coder'), FALSE);
+  $attributes = array('align' => 'right', 'class' => 'coder');
+  if (isset($description)) {
+    $warning .= '<div class="coder-description"><strong>Explanation:</strong><br /><br />'. $description .'</div>';
+    $attributes = array_merge($attributes, array('onclick' => "$('.coder-description', this.parentNode).slideToggle();"));
+  }
+  $img = theme('image', $path ."/images/$severity_name.png", t('severity: @severity', array('@severity' => $severity_name)), '', $attributes, FALSE);
   return '<div class="'. $class .'">'. $img . $warning .'</div>';
 }
 

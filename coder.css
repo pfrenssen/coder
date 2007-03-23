@@ -14,3 +14,20 @@ img.coder {
 .coder-critical {
   background-color: #ffe7dd;
 }
+
+.coder code {
+  font-size: 12px;
+}
+
+code.bad {
+  color: red;
+}
+
+code.good {
+  color: green;
+}
+
+.coder-description {
+  display: none;
+  padding-bottom: 2em;
+}

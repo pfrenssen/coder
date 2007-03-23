@@ -49,12 +49,6 @@ function coder_performance_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\$\w+ (==|!=) \'\'',
-      '#warning_callback' => '_coder_performance_empty_warning',
-      '#source' => 'all',
-    ),
-    array(
-      '#type' => 'regex',
       '#value' => 'preg_match\([\'"].\[(.-.)+\].?.[\'"]',
       '#source' => 'all',
       '#warning_callback' => '_coder_performance_ctype_warning',
@@ -85,7 +79,7 @@ function _coder_performance_double_quotes_warning() {
 
 function _coder_performance_increment_warning() {
   return array(
-    '#warning' => t('<code class="good">++ $i</code> is faster than <code class="bad">$i ++</code>'),
+    '#warning' => t('<code class="good">++$i</code> is faster than <code class="bad">$i++</code>'),
     '#description' => t('When incrementing or decrementing the value of the variable <code>$i++</code> happens to be a tad slower than <code>++$i</code>. This is something PHP specific and does not apply to other languages, so don\'t go modifying your C or Java code thinking it\'ll suddenly become faster, it won\'t. <code>++$i</code> happens to be faster in PHP because instead of 4 opcodes used for <code>$i++</code> you only need 3. Post incrementation actually causes in the creation of a temporary var that is then incremented. While pre-incrementation increases the original value directly. This is one of the optimization that opcode optimized like Zend\'s PHP optimizer. It is a still a good idea to keep in mind since not all opcode optimizers perform this optimization and there are plenty of ISPs and servers running without an opcode optimizer.'),
   );
 }
@@ -133,8 +127,4 @@ function _coder_performance_ctype_warning() {
     '#warning' => t('<code class="good">ctype_digit($foo);</code> and <code class="good">ctype_alpha($foo);</code> are faster than <code class="bad">preg_match(\'/[0-9]+/\', $foo);</code> or <code class="bad">preg_match(\'/[a-z]+/\', $foo);</code>'),
     '#description' => t('Many scripts tend to reply on regular expression to validate the input specified by user. While validating input is a superb idea, doing so via regular expression can be quite slow. In many cases the process of validation merely involved checking the source string against a certain character list such as A-Z or 0-9, etc. Instead of using regex in many instances you can instead use the ctype extension (enabled by default since PHP 4.2.0) to do the same. The ctype extension offers a series of function wrappers around C\'s is*() function that check whether a particular character is within a certain range. Unlike the C function that can only work on one character at a time, PHP\'s can operate on entire strings and is far faster than equivalent regular expressions.'),
   );
-}
-
-function _coder_performance_empty_warning() {
-  return t('if (empty($var)) is faster than if ($var == \'\')');
 }
