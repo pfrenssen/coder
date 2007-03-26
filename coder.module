@@ -622,7 +622,7 @@ function coder_page_form() {
       '#weight' => -1,
     );
     if ($form['settings']['#collapsed']) {
-      $form['settings']['#prefix'] = t('<div>Use the Selection Form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/settings/coder'), '@default' => url('coder/default')));
+      $form['settings']['#prefix'] = t('<div class="coder-settings">Use the Selection Form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/settings/coder'), '@default' => url('coder/default')));
     }
     $form['settings'][] = $coder_form;
     $form['settings']['submit'] = array(
@@ -1201,12 +1201,12 @@ function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') 
     $class .= " coder-$severity_name";
   }
   $path = drupal_get_path('module', 'coder');
-  $attributes = array('align' => 'right', 'class' => 'coder');
+  $title = t('severity: @severity', array('@severity' => $severity_name));
+  $img = theme('image', $path ."/images/$severity_name.png", $title, $title, array('align' => 'right', 'class' => 'coder'), FALSE);
   if (isset($description)) {
-    $warning .= '<div class="coder-description"><strong>Explanation:</strong><br /><br />'. $description .'</div>';
-    $attributes = array_merge($attributes, array('onclick' => "$('.coder-description', this.parentNode).slideToggle();"));
+    $img .= theme('image', $path .'/images/more.png', t('click to read more'), '', array('align' => 'right', 'class' => 'coder-more'), FALSE);
+    $warning .= '<div class="coder-description">Explanation: '. $description .'</div>';
   }
-  $img = theme('image', $path ."/images/$severity_name.png", t('severity: @severity', array('@severity' => $severity_name)), '', $attributes, FALSE);
   return '<div class="'. $class .'">'. $img . $warning .'</div>';
 }
 
