@@ -47,23 +47,20 @@ function coder_performance_reviews() {
       '#value' => 'in_array\(\'\', \$\w+\)',
       '#warning_callback' => '_coder_performance_in_array_warning',
     ),
-
-    /* ctype not available on many systems - http://drupal.org/node/72865
-    array(
-      '#type' => 'regex',
-      '#value' => 'preg_match\([\'"].\[(.-.)+\].?.[\'"]',
-      '#source' => 'all',
-      '#warning_callback' => '_coder_performance_ctype_warning',
-    ), */
   );
   $review = array(
     '#title' => 'Performance Optimization',
     '#link' => 'http://drupal.org/node/110128',
     '#rules' => $rules,
     '#severity' => 'minor',
+    '#description' => t('under development, use with discretion'),
   );
   return array('performance' => $review);
 }
+
+/**
+ * Define the warning callbacks
+ */
 
 function _coder_performance_case_variabletype_warning() {
   return array(
@@ -123,11 +120,3 @@ function _coder_performance_in_array_warning() {
         The bottom search mechanism is roughly 3 times faster.'),
   );
 }
-
-/* ctype not available on many systems - http://drupal.org/node/72865
-function _coder_performance_ctype_warning() {
-  return array(
-    '#warning' => t('<code class="good">ctype_digit($foo);</code> and <code class="good">ctype_alpha($foo);</code> are faster than <code class="bad">preg_match(\'/[0-9]+/\', $foo);</code> or <code class="bad">preg_match(\'/[a-z]+/\', $foo);</code>'),
-    '#description' => t('Many scripts tend to reply on regular expression to validate the input specified by user. While validating input is a superb idea, doing so via regular expression can be quite slow. In many cases the process of validation merely involved checking the source string against a certain character list such as A-Z or 0-9, etc. Instead of using regex in many instances you can instead use the ctype extension (enabled by default since PHP 4.2.0) to do the same. The ctype extension offers a series of function wrappers around C\'s is*() function that check whether a particular character is within a certain range. Unlike the C function that can only work on one character at a time, PHP\'s can operate on entire strings and is far faster than equivalent regular expressions.'),
-  );
-} */

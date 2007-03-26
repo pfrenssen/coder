@@ -37,6 +37,17 @@ function coder_init() {
 }
 
 /**
+ * Implementation of hook_help().
+ */
+function coder_help($section) { 
+  switch ($section) { 
+    case 'coder#disclaimer':
+      return t('Coder provides helpful hints without false positives, but offers no guarantee for creating good code.  You are the final arbitrar.  If in doubt, read the Drupal documentation (see review links below and <a href="@api">api.drupal.org</a>).', array('@api' => 'http://api.drupal.org'));
+    default :
+      return;
+  } 
+} 
+/**
  * Get all of the code review modules
  */
 function _coder_reviews() {
@@ -223,9 +234,12 @@ function _coder_settings_form($settings, &$system, &$files) {
   $reviews = _coder_reviews();
   foreach ($reviews as $name => $review) {
     $review_options[$name] = l($review['#title'], $review['#link']);
+    if (isset($review['#description'])) {
+      $review_options[$name] .= ' ('. $review['#description'] .')';
+    }
   }
 
-  // what review standards should be applied
+  // what reviews should be used?
   $form['coder_reviews_group'] = array(
     '#type' => 'fieldset',
     '#title' => t('Reviews'),
@@ -238,6 +252,8 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#description' => t('apply the checked coding reviews'),
     '#default_value' => $settings['coder_reviews'],
   );
+
+  // what severities should be used?
   $form['coder_reviews_group']['coder_severity'] = array(
     '#type' => 'radios',
     '#options' => array(
@@ -431,7 +447,9 @@ function coder_page_form_submit($form_id, $form_values) {
  * Implementation of code review page
  */
 function coder_page() {
-  return drupal_get_form('coder_page_form');
+  $output  = '<div class="coder-disclaimer">'. coder_help('coder#disclaimer') .'</div>';
+  $output .= drupal_get_form('coder_page_form');
+  return $output;
 }
 
 function _coder_get_default_settings($args = 'default') {
