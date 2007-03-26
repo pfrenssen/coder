@@ -57,7 +57,7 @@ function coder_style_reviews() {
       '#source' => 'all',
       '#value' => '$Id',
       '#case-sensitive' => true,
-      '#warning' => 'Include the CVS keyword $Id$ in each file',
+      '#warning' => 'Include the CVS keyword $Id'.'$ in each file',
     ),
     array(
       '#type' => 'regex',
