@@ -47,7 +47,7 @@ function coder_multiline_quote() { // from Drupal5 block.module
 }
 
 function coder_break() {
-  print '<br>'; // should generate an error
+  print '<br>'; // should generate an error, and will throw performance warning
   ?><br><?php // should also generate an error
 }
 
@@ -63,7 +63,7 @@ function coder_dot() {
   }
   $v .= 'bugger'; // ok
   $a = $v .'bugger'; // ok
-  $a = $v ."bugger"; // ok
+  $a = $v ."bugger"; // ok, but will throw performance warning
   $a = $v.'bugger'; // not ok
   $a = $some_func().'bugger'; // not ok
 }

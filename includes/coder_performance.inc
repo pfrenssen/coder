@@ -11,15 +11,15 @@ function coder_performance_reviews() {
   $rules = array(
     array(
       '#type' => 'regex',
-      '#value' => 'TRUE|FALSE|NULL',
+      '#value' => '[^\w_](TRUE|FALSE|NULL)[^\w_]',
       '#case-sensitive' => true,
       '#warning_callback' => '_coder_performance_case_variabletype_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '(?!\'|\*).*"[^\\\n]+".*(?!\')',
-      '#not' => '\'.+\'',
-      '#source' => 'all',
+      '#value' => '.*', // catch anything
+      '#not' => '\$',
+      '#source' => 'doublequote',
       '#warning_callback' => '_coder_performance_double_quotes_warning',
     ),
     array(
@@ -27,11 +27,11 @@ function coder_performance_reviews() {
       '#value' => '\$\w+\+\+',
       '#warning_callback' => '_coder_performance_increment_warning',
     ),
-    array(
+    /* array( // I don't think this is true, I saw Rasmus explain this
       '#type' => 'regex',
       '#value' => 'for\s*\([^,]+;.+count',
       '#warning_callback' => '_coder_performance_for_count_warning',
-    ),
+    ), */
     array(
       '#type' => 'regex',
       '#value' => '\(strlen\(\$\w+\) <=? \d+\)',
@@ -46,6 +46,11 @@ function coder_performance_reviews() {
       '#type' => 'regex',
       '#value' => 'in_array\(\'\', \$\w+\)',
       '#warning_callback' => '_coder_performance_in_array_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '(\(|\|\||\&\&)\s*(count|sizeof)\(\$\w+\)',
+      '#warning_callback' => '_coder_performance_empty_warning',
     ),
   );
   $review = array(
@@ -78,17 +83,17 @@ function _coder_performance_double_quotes_warning() {
 
 function _coder_performance_increment_warning() {
   return array(
-    '#warning' => t('<code class="good">++$i</code> is faster than <code class="bad">$i++</code>'),
+    '#warning' => t('<code class="good">++ $i</code> is faster than <code class="bad">$i ++</code>'),
     '#description' => t('When incrementing or decrementing the value of the variable <code>$i++</code> happens to be a tad slower than <code>++$i</code>. This is something PHP specific and does not apply to other languages, so don\'t go modifying your C or Java code thinking it\'ll suddenly become faster, it won\'t. <code>++$i</code> happens to be faster in PHP because instead of 4 opcodes used for <code>$i++</code> you only need 3. Post incrementation actually causes in the creation of a temporary var that is then incremented. While pre-incrementation increases the original value directly. This is one of the optimization that opcode optimized like Zend\'s PHP optimizer. It is a still a good idea to keep in mind since not all opcode optimizers perform this optimization and there are plenty of ISPs and servers running without an opcode optimizer.'),
   );
 }
 
-function _coder_performance_for_count_warning() {
+/*function _coder_performance_for_count_warning() {
   return array(
     '#warning' => t('<code class="good">for ($c = 0, $cc = count($foo); $c < $cc; ++$c)</code> is faster than <code class="bad">for ($c = 0; $c < count($foo); ++$c)</code>'),
     '#description' => t('In PHP a <code>for</code> loop with a <code>count()</code> inside the control block is executed on <em>every</em> loop iteration.'),
   );
-}
+}*/
 
 function _coder_performance_string_length_comparison_warning() {
   return array(
@@ -119,4 +124,8 @@ function _coder_performance_in_array_warning() {
         <br />
         The bottom search mechanism is roughly 3 times faster.'),
   );
+}
+
+function _coder_performance_empty_warning() {
+  return t('if (<code class="bad">count($foo)</code>) and if (<code class="bad">sizeof($foo)</code>) are much slower than if (<code class="good">!empty($foo)</code)');
 }
