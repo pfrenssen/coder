@@ -1,0 +1,9 @@
+This is a standalone script developed by sun that only concentrates on
+formatting code and the style review.
+
+This is an alternative approach to the coder module.  Having two different
+modules with different approaches is, in some ways an advantage, since each
+becomes - in effect - a unit test upon the other. This is a great way for them
+to both improve, and maintain accuracy in what is a very detail oriented area!
+
+See http://drupal.org/node/126938.
