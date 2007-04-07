@@ -951,7 +951,21 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
     if (!isset($rule['#case-sensitive'])) {
       $regex .= 'i';
     }
+    $function = $rule['#function'];
     foreach ($lines as $lineno => $line) {
+      // some rules apply only within certain functions
+      if ($function) {
+        if (preg_match('/function (\w+)\(/', $line, $match)) {
+          $current_function = $match[1];
+        }
+        if (preg_match('/^\s*}\s*$/', $line)) {
+          unset($current_function);
+        }
+        if (!isset($current_function) || !preg_match('/'. $function .'/', $current_function)) {
+          continue;
+        }
+      }
+
       if (preg_match($regex, $line, $matches)) {
         // don't match some regex's
         if ($not = $rule['#not']) {
