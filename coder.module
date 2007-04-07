@@ -208,8 +208,8 @@ function coder_menu($may_cache = true) {
 /**
  * Implementation of hook_form_alter().
  */
-function coder_form_alter($form_id, &$form) {
-  if ($form_id == 'system_modules' && $form['#base'] != 'confirm_form') {
+function coder_form_alter(&$form, $form_id) {
+  if ($form_id == 'system_modules') {
     if (user_access('view code review')) {
       foreach ($form['name'] as $name => $data) {
         $form['name'][$name]['#value'] = l($data['#value'], "coder/$name");
@@ -1185,6 +1185,14 @@ function _coder_is_drupal_core($module) {
 /**
  * Theming functions below...
  */
+
+function coder_theme() {
+  return array(
+    'coder' => array('arguments' => array('name', 'filename', 'results')),
+    'coder_warning' => array('arguments' => array('warning', 'severity_name', 'lineno', 'line')),
+    'drupalapi' => array('arguments' => array('function', 'version')),
+  );
+}
 
 function theme_coder($name, $filename, $results) {
   $output = '<div class="coder"><h2>'. basename($filename) .'</h2>';
