@@ -46,7 +46,7 @@ function coder_50_reviews() {
     ),
     array(
       '#type' => 'callback',
-      '#value' => _coder_50_callback,
+      '#value' => '_coder_50_callback',
     ),
     array(
       '#type' => 'regex',

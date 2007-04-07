@@ -53,10 +53,11 @@ function coder_style_reviews() {
       '#warning' => 'Always use &lt;?php ?&gt; to delimit PHP code, not the &lt;? ?&gt; shorthand',
     ),
     array(
-      '#type' => 'grep',
+      '#type' => 'grep_invert',
       '#source' => 'all',
-      '#value' => '\$Id',
-      '#warning' => 'Include the Id CVS keyword in each file',
+      '#value' => '$Id',
+      '#case-sensitive' => true,
+      '#warning' => 'Include the CVS keyword $Id'.'$ in each file',
     ),
     array(
       '#type' => 'regex',
@@ -66,7 +67,7 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'callback',
-      '#value' => _coder_style_callback,
+      '#value' => '_coder_style_callback',
     ),
     array(
       '#type' => 'regex',
@@ -114,6 +115,7 @@ function coder_style_reviews() {
     '#title' => t('Drupal Coding Standards'),
     '#link' => 'http://drupal.org/node/318',
     '#rules' => $rules,
+    '#description' => t('every developer should use'),
   );
   return array('style' => $review);
 }
@@ -196,9 +198,9 @@ function _coder_style_core_global_regex() {
  */
 
 function _coder_style_xhtml_warning() {
-  return t('use lowercase html tags to comply with <a href="@XHTML">XHTML</a>',
+  return t('use lowercase html tags to comply with <a href="@xhtml">XHTML</a>',
     array(
-      '@XHTML' => 'http://www.w3.org/TR/xhtml1/#h-4.2',
+      '@xhtml' => 'http://www.w3.org/TR/xhtml1/#h-4.2',
     )
   );
 }
