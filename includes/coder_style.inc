@@ -187,6 +187,9 @@ function _coder_style_core_global_regex() {
       'nid',
       'recent_activity',
       'tag',
+
+      // from the Drupal 6 includes/ directory
+      'language',
     );
     $coreglobalregex = implode('|', $coreglobalvars);
   }
