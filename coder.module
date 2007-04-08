@@ -1073,7 +1073,7 @@ function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$result
 function _coder_search_string($line, $rule) {
   static $php5;
   
-  if (!isset($is_php5)) {
+  if (!isset($php5)) {
     if (function_exists('stripos')) {
       $php5 = true;
     }
