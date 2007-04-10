@@ -134,11 +134,11 @@ function _coder_6x_hook_theme_warning() {
 }
 
 function _coder_6x_url_l_warning() {
-  return t('!url() and !l() arguments changed, see <a href="@script">original issue patch</a> but be forewarned that the attached script patch is good, but not perfect',
+  return t('!url() and !l() arguments changed, you may use this <a href="@script">conversion script</a> but be forewarned that the script is good, but not perfect',
     array(
       '!url' => theme('drupalapi', 'url'),
       '!l' => theme('drupalapi', 'l'),
-      '@script' => 'http://drupal.org/node/111347',
+      '@script' => 'http://drupal.org/files/issues/replace.php_.txt',
     )
   );
 }
