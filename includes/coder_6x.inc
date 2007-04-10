@@ -6,6 +6,7 @@
  */
 
 function coder_6x_reviews() {
+  $argex = '(([a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'\'|"")';
   $rules = array(
     array(
       '#type' => 'regex',
@@ -32,6 +33,11 @@ function coder_6x_reviews() {
       '#type' => 'regex',
       '#value' => '_profile_alter\s*\(\$',
       '#warning_callback' => '_coder_6x_profile_alter_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(](l|url)\s*\(('. $argex .',\s*){2,}('. $argex .')\s*\)',
+      '#warning_callback' => '_coder_6x_url_l_warning', 
     ),
     array(
       '#type' => 'regex',
@@ -123,6 +129,16 @@ function _coder_6x_hook_theme_warning() {
   return t('new !hook_theme() function is required to register theme_ functions',
     array(
       '!hook_theme' => theme('drupalapi', 'hook_theme'),
+    )
+  );
+}
+
+function _coder_6x_url_l_warning() {
+  return t('!url() and !l() arguments changed, see <a href="@script">original issue patch</a> but be forewarned that the attached script patch is good, but not perfect',
+    array(
+      '!url' => theme('drupalapi', 'url'),
+      '!l' => theme('drupalapi', 'l'),
+      '@script' => 'http://drupal.org/node/111347',
     )
   );
 }
