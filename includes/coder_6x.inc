@@ -134,7 +134,7 @@ function _coder_6x_hook_theme_warning() {
 }
 
 function _coder_6x_url_l_warning() {
-  return t('!url() and !l() arguments changed, you may use this <a href="@script">conversion script</a> but be forewarned that the script is good, but not perfect',
+  return t('!url() and !l() arguments changed, if you have a lot of these use <a href="@script">this conversion script</a>',
     array(
       '!url' => theme('drupalapi', 'url'),
       '!l' => theme('drupalapi', 'l'),
