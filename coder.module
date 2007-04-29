@@ -818,7 +818,7 @@ function _coder_read_and_parse_file(&$coder_args) {
                   $char = $content[$pos];
                   if ($char == "\n") {
                     $pos --;
-                    if (preg_match('/^\s+(\w+)/', $heredoc, $match)) {
+                    if (preg_match('/^\s*(\w+)/', $heredoc, $match)) {
                       $in_heredoc = $match[1];
                       $in_heredoc_length = drupal_strlen($in_heredoc);
                     }

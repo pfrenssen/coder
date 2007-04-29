@@ -56,6 +56,9 @@ function coder_heredoc() {
 <br><!-- a php error and not a camelCase error -->
 <B><!-- an uppercase XHTML error -->
 __EOD__;
+  $var = <<< __EOD__
+<br><!-- and again -->
+__EOD__;
 }
 
 function coder_dot() {
