@@ -39,6 +39,11 @@ function coder_50_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#value' => '[\s\(]node_get_name\s*\(',
+      '#warning_callback' => '_coder_50_node_get_name_warning',
+    ),
+    array(
+      '#type' => 'regex',
       '#source' => 'all',
       '#value' => '\$_POST\s*\[\s*[\'"]?op[\'"]?\s*\]',
       '#warning' => '$_POST[\'op\'] deprecated in favor of $form_values[\'op\']',
@@ -59,7 +64,7 @@ function coder_50_reviews() {
       '#source' => 'all',
       '#value' => '[\s\(]form_render\s*\(',
       '#warning_callback' => '_coder_50_form_render_warning',
-    ),
+
   );
   $review = array(
     '#title' => t('Converting 4.7.x modules to 5.x'),
@@ -160,6 +165,15 @@ function _coder_50_form_render_warning() {
     array(
       '!form_render' => theme('drupalapi', 'form_render', '4.7'),
       '!drupal_render' => theme('drupalapi', 'drupal_render'),
+    )
+  );
+}
+
+function _coder_50_node_get_name_warning() {
+  return t('Replace !node_get_name($node) with !node_get_types(\'name\', $node)',
+    array(
+      '!node_get_name' => theme('drupalapi', 'node_get_name', '4.7'),
+      '!node_get_types' => theme('drupalapi', 'node_get_types'),
     )
   );
 }
