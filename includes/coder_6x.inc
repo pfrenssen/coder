@@ -16,11 +16,6 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '$form\s*\[\s*\'#base\'',
-      '#warning' => 'FormAPI\'s #base property is gone',
-    ),
-    array(
-      '#type' => 'regex',
       '#value' => '_form_alter\s*\(\$',
       '#warning_callback' => '_coder_6x_form_alter_warning',
     ),
@@ -99,6 +94,31 @@ function coder_6x_reviews() {
     array(
       '#type' => 'callback',
       '#value' => '_coder_6x_callback',
+    ),
+    // FAPI Rules
+    array(
+      '#type' => 'regex',
+      '#source' => 'all',
+      '#value' => '(\$form\s*\[\s*[\'"]#base[\'"]|[\'"]#base[\'"]\s*=>)',
+      '#warning' => 'FormAPI\'s #base property is gone, manually populate the $form[\'#submit\'], $form[\'#validate\'], and $form[\'#theme\'] elements with the proper function names',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'all',
+      '#value' => '(\$form\s*\[\s*[\'"]#pre_render[\'"]|[\'"]#pre_render[\'"]\s*=>)',
+      '#warning' => 'FormAPI\'s #pre_render property is gone',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'all',
+      '#value' => '\$form\s*\[\s*[\'"]#validate[\'"]\]\[[\'"]',
+      '#warning' => 'Validation for specific form elements now uses the #element_validate property',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'all',
+      '#value' => '(\$form\s*\[\s*[\'"]#multistep[\'"]|[\'"]#multistep[\'"]\s*=>)',
+      '#warning' => '#multistep is gone, use $form_state instead',
     ),
   );
   $review = array(

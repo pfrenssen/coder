@@ -32,6 +32,16 @@ function _coder_6x_more_tests() {
   $sql = 'UPDATE {file_revisions} SET vid=1'; // an error
   if (db_query('SELECT * FROM {file_revisions}')) { // an error
   } 
+
+  // add FAPI tests
+  $form = array(
+    '#base' => 'my_shared_form_id', // error
+    '#pre_render' => '<div>', // error
+  );
+  $form['#base'] = 'http://example.com';
+  $form['#submit']['my_submit_function'] = array($param1, $param2); // error
+  $form['#submit']['my_validate_function'] = array(); // error
+  $form['#multistep'] = TRUE;
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error
