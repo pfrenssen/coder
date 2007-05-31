@@ -45,6 +45,11 @@ function coder_6x_reviews() {
       '#warning' => '$locale become $language',
     ),
     array(
+      '#type' => 'regex',
+      '#value' => '(taxonomy_node_get_terms|taxonomy_node_get_terms_by_vocabulary|taxonomy_node_delete_revision)\s*\(\$nid',
+      '#warning_callback' => '_coder_6x_taxonomy_node_get_terms_warning',
+    ),
+    array(
       '#type' => 'callback',
       '#value' => '_coder_6x_callback',
     ),
@@ -139,6 +144,16 @@ function _coder_6x_url_l_warning() {
       '!url' => theme('drupalapi', 'url'),
       '!l' => theme('drupalapi', 'l'),
       '@script' => 'http://drupal.org/files/issues/replace.php_.txt',
+    )
+  );
+}
+
+function _coder_6x_taxonomy_node_get_terms_warning() {
+  return t('!taxonomy_node_get_terms(), !taxonomy_node_get_terms_by_vocabulary(), and !taxonomy_node_delete() now take a full $node object, not just a nid (node id).',
+    array(
+      '!taxonomy_node_get_terms' => theme('drupalapi', 'taxonomy_node_get_terms'),
+      '!taxonomy_node_get_terms_by_vocabulary' => theme('drupalapi', 'taxonomy_node_get_terms_by_vocabulary'),
+      '!taxonomy_node_delete' => theme('drupalapi', 'taxonomy_node_delete'),
     )
   );
 }
