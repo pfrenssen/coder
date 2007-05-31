@@ -64,7 +64,7 @@ function coder_50_reviews() {
       '#source' => 'all',
       '#value' => '[\s\(]form_render\s*\(',
       '#warning_callback' => '_coder_50_form_render_warning',
-
+    ),
   );
   $review = array(
     '#title' => t('Converting 4.7.x modules to 5.x'),
