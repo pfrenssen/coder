@@ -1186,3 +1186,7 @@ function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') 
 function theme_drupalapi($function, $version = 'HEAD') {
   return l($function, "http://api.drupal.org/api/$version/function/$function");
 }
+
+function theme_phpapi($function) {
+  return l($function, "http://us.php.net/$function");
+}
