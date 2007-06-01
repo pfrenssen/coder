@@ -61,7 +61,7 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]cache_set\s*\(\s*\'\',\s*\'',
+      '#value' => '[\s\(]cache_set\s*\(\s*[^,]+,\s*\'',
       '#warning_callback' => '_coder_6x_cache_set_warning',
     ),
     array(
