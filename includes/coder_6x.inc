@@ -120,6 +120,22 @@ function coder_6x_reviews() {
       '#value' => '(\$form\s*\[\s*[\'"]#multistep[\'"]|[\'"]#multistep[\'"]\s*=>)',
       '#warning' => '#multistep is gone, use $form_state instead',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '_(validate|submit)\s*\(\s*\$form_id',
+      '#warning_callback' => '_coder_6x_form_validate_and_submit_warning',
+    ),    
+    array(
+      '#type' => 'regex',
+      '#value' => '\$form\[[\'"]#submit[\'"]\]\[[\'"]',
+      '#source' => 'all',
+      '#warning' => '$form[\'#submit\'] and $form[\'#validate\'] no longer support custom parameters',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]form_set_value\s*\([^,]+(,\s*[^,\)]+){0,1}\)',
+      '#warning_callback' => '_coder_6x_form_set_value_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -295,6 +311,23 @@ function _coder_6x_file_check_upload_warning() {
     array(
       '!file_check_upload' => theme('drupalapi', 'file_check_upload'),
       '!file_save_upload' => theme('drupalapi', 'file_save_upload'),
+    )
+  );
+}
+
+function _coder_6x_form_set_value_warning() {
+  return t('!form_set_value() parameters have changed',
+    array(
+      '!form_set_value' => theme('drupalapi', 'form_set_value'),
+    )
+  );
+}
+
+function _coder_6x_form_validate_and_submit_warning() {
+  return t('The number of parameters for form !hook_validate and !hook_submit have changed',
+    array(
+      '!hook_validate' => theme('drupalapi', 'hook_validate'),
+      '!hook_submit' => theme('drupalapi', 'hook_submit'),
     )
   );
 }
