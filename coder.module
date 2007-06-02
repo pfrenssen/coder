@@ -475,7 +475,7 @@ function coder_page_form() {
       $coder_args = array(
         '#reviews' => $reviews,
         '#severity' => $settings['coder_severity'],
-        '#filename' => $filename,
+//      '#filename' => $filename,
       );
 
       $form['core_php'] = array(
@@ -629,7 +629,7 @@ function do_coder_reviews($coder_args) {
     $cache_mtime = filemtime(realpath($coder_args['#filename']));
     if ($cache_results = cache_get($cache_key)) {
       if ($cache_results->data['mtime'] == $cache_mtime && _coder_modified() < $cache_results->created) {
-        return $cache_results['results'];
+        return $cache_results->data['results'];
       }
     }
   }
