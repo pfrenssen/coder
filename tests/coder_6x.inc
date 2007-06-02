@@ -42,6 +42,9 @@ function _coder_6x_more_tests() {
   $form['#submit']['my_submit_function'] = array($param1, $param2); // error
   $form['#submit']['my_validate_function'] = array(); // error
   $form['#multistep'] = TRUE;
+
+  form_set_value($element, 'value', $form_status); // This one is okay
+  form_set_value($element, 'value'); // error
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error
@@ -54,4 +57,16 @@ function _coder_6x_test_mail_alter(&$mailkey, &$to, &$subject, &$body, &$from, &
 }
 
 function _coder_6x_test2_mail_alter(&$message) { // not an error
+}
+
+function coder_node_get_name() {
+  node_get_name('name');
+}
+
+function myform_validate($form_id, $form) { // this will fail.
+}
+
+function myform_submit($form_id, $form) { //this willfail
+  $form['#submit']['newsubmit'] = array();
+  $form['#submit'][] = "newsubmit";
 }
