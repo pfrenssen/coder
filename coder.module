@@ -28,6 +28,7 @@ function coder_init() {
 
   // Load all our module plug-ins
   global $_coder_coders;
+  $_coder_coders = array();
   $path = drupal_get_path('module', 'coder') .'/includes';
   $files = drupal_system_listing('coder_.*\.inc$', $path, 'name', 0);
   foreach ($files as $file) {
@@ -55,7 +56,7 @@ function _coder_reviews() {
 
   // get the review definitions from the include directory
   global $_coder_coders;
-  if ($_coder_coders) {
+  if (count($_coder_coders)) {
     foreach ($_coder_coders as $coder) {
       $function = $coder .'_reviews';
       if (function_exists($function)) {
@@ -360,12 +361,12 @@ function _coder_settings_form($settings, &$system, &$files) {
 function coder_admin_settings() {
   $settings = _coder_get_default_settings();
   $form = _coder_settings_form($settings, $system, $files);
-  $form['#submit']['coder_settings_form_submit'] = array();
-  $form['#submit']['system_settings_form_submit'] = array();
+  $form['#submit'][] = 'coder_settings_form_submit';
+  $form['#submit'][] = 'system_settings_form_submit';
   return system_settings_form($form);
 }
 
-function coder_settings_form_submit($form_id, &$form_values) {
+function coder_settings_form_submit($form_id, &$form_state, &$form_values) {
   variable_set('coder_modules', _coder_settings_array($form_values, 'module'));
   variable_set('coder_themes', _coder_settings_array($form_values, 'theme'));
 }
@@ -386,7 +387,7 @@ function _coder_settings_array(&$form_values, $type) {
   return $systems;
 }
 
-function coder_page_form_submit($form_id, $form_values) {
+function coder_page_form_submit($form_id, &$form_state, $form_values) {
   // HELP: is there a better way to get these to coder_page_form()???
   return false;
 }
@@ -481,7 +482,7 @@ function coder_page_form() {
       $coder_args = array(
         '#reviews' => $reviews,
         '#severity' => $settings['coder_severity'],
-        '#filename' => $filename,
+//      '#filename' => $filename,
       );
 
       $form['core_php'] = array(
@@ -584,6 +585,7 @@ function coder_page_form() {
 
 function _coder_page_form_includes(&$form, $coder_args, $name, $files, $offset) {
   $coder_args['#name'] = $name;
+  $weight = 0;
   foreach ($files as $file) {
     $filename = drupal_substr($file->filename, $offset);
     $coder_args['#filename'] = $filename;
@@ -632,11 +634,9 @@ function do_coder_reviews($coder_args) {
     // cache the results because:
     $cache_key = 'coder:'.  implode(':', array_keys($coder_args['#reviews'])) .  $coder_args['#severity'] .':'. $coder_args['#filename'];
     $cache_mtime = filemtime(realpath($coder_args['#filename']));
-    if ($cache_serialized_results = cache_get($cache_key)) {
-      $cache_results = unserialize($cache_serialized_results->data);
-
-      if ($cache_results['mtime'] == $cache_mtime && _coder_modified() < $cache_serialized_results->created) {
-        return $cache_results['results'];
+    if ($cache_results = cache_get($cache_key)) {
+      if ($cache_results->data['mtime'] == $cache_mtime && ($x = _coder_modified()) < $cache_results->created) {
+        return $cache_results->data['results'];
       }
     }
   }
@@ -644,7 +644,7 @@ function do_coder_reviews($coder_args) {
   $results = array();
 
   // skip php include files when the user requested severity is above minor
-  if ($coder_args['#php_minor'] && drupal_substr($coder_args['#filename'], -4) == '.php') {
+  if (isset($coder_args['#php_minor']) && drupal_substr($coder_args['#filename'], -4) == '.php') {
     if ($coder_args['#severity'] > 1) {
       return $results;
     }
@@ -672,7 +672,7 @@ function do_coder_reviews($coder_args) {
       'mtime' => $cache_mtime,
       'results' => $results,
     );
-    cache_set($cache_key, 'cache', serialize($cache_results));
+    cache_set($cache_key, $cache_results);
   }
 
   return $results;
@@ -682,8 +682,28 @@ function _coder_read_and_parse_file(&$coder_args) {
   // get the path to the module file
   if ($filepath = realpath($coder_args['#filename'])) {
     // read the file
-    $content = file_get_contents($filepath);
+    $content = file_get_contents($filepath) ."\n";
     $content_length = drupal_strlen($content);
+
+    $in_comment = 0;
+    $beginning_of_line = 0;
+    $in_php = 0;
+    $in_quote_html = 0;
+    $in_backslash = 0;
+    $in_quote = 0;
+    $in_heredoc = 0;
+    $in_heredoc_html = '';
+    $heredoc = '';
+    $all_lines = array();
+    $php_lines = array();
+    $html_lines = array();
+    $quote_lines = array();
+    $doublequote_lines = array();
+    $this_all_lines = '';
+    $this_php_lines = '';
+    $this_html_lines = '';
+    $this_quote_lines = '';
+    $this_doublequote_lines = '';
 
     // parse the file:
     // - strip comments
@@ -693,39 +713,53 @@ function _coder_read_and_parse_file(&$coder_args) {
       // get the current character
       $char = $content[$pos];
       if ($char == "\n") {
-        if ($in_comment == '/') { // end C++ style comments on newline
-          unset($in_comment);
+        if ($in_comment && $in_comment == '/') { // end C++ style comments on newline
+          $in_comment = 0;
         }
 
         // assume that html inside quotes doesn't span newlines
-        unset($in_quote_html);
+        $in_quote_html = 0;
 
         // remove blank lines now, so we avoid processing them over-and-over
-        if (trim($all_lines[$lineno]) == '') {
-          unset($all_lines[$lineno]);
-        }
-        if (trim($php_lines[$lineno]) == '') {
-          unset($php_lines[$lineno]);
-        }
-        if (trim($html_lines[$lineno]) == '') {
-          unset($html_lines[$lineno]);
-        }
-        if (trim($doublequote_lines[$lineno]) == '') {
-          unset($doublequote_lines[$lineno]);
+        if ($this_all_lines != '') {
+          if (trim($this_all_lines) != '') {
+            $all_lines[$lineno] = $this_all_lines;
+          }
+          if (trim($this_php_lines) != '') {
+            $php_lines[$lineno] = $this_php_lines;
+          }
+          if (trim($this_html_lines) != '') {
+            $html_lines[$lineno] = $this_html_lines;
+          }
+          if (trim($this_quote_lines) != '') {
+            $quote_lines[$lineno] = $this_quote_lines;
+          }
+          if (trim($this_doublequote_lines) != '') {
+            $doublequote_lines[$lineno] = $this_doublequote_lines;
+          }
         }
 
+        // save this line and start a new line
         $lineno ++;
+        $this_all_lines = '';
+        $this_php_lines = '';
+        $this_html_lines = '';
+        $this_quote_lines = '';
+        $this_doublequote_lines = '';
         $beginning_of_line = 1;
         continue;
       }
-      $all_lines[$lineno] .= $char;
+      if ($this_all_lines != '') {
+        $beginning_of_line = 0;
+      }
+      $this_all_lines .= $char;
 
       if ($in_php) {
         // look for the ending php tag which tags precedence over everything
         if ($char == '?' && $content[$pos + 1] == '>') {
           unset($char);
-          unset($in_php);
-          $all_lines[$lineno] .= '>';
+          $in_php = 0;
+          $this_all_lines .= '>';
           $pos ++;
         }
 
@@ -733,46 +767,46 @@ function _coder_read_and_parse_file(&$coder_args) {
         // strip characters in the string, replacing with '' or ""
         elseif ($in_quote) {
           if ($in_backslash) {
-            unset($in_backslash);
+            $in_backslash = 0;
           }
           elseif ($char == '\\') {
-            $in_backslash = '\\';
+            $in_backslash = 1;
           }
           elseif ($char == $in_quote && !$in_backslash) {
-            unset($in_quote);
+            $in_quote = 0;
           }
           elseif ($char == '<') {
             $in_quote_html = '>';
           }
           if ($in_quote) {
-            $quote_lines[$lineno] .= $char;
+            $this_quote_lines .= $char;
             if ($in_quote == '"') {
-              $doublequote_lines[$lineno] .= $char;
+              $this_doublequote_lines .= $char;
             }
             if ($in_quote_html) {
-              $html_lines[$lineno] .= $char;
+              $this_html_lines .= $char;
             }
           }
           if ($char == $in_quote_html) {
-            unset($in_quote_html);
+            $in_quote_html = 0;
           }
           unset($char); // NOTE: trailing char output with starting one
         }
 
         elseif ($in_heredoc) {
           if ($beginning_of_line && $char == $in_heredoc[0] && substr($content, $pos, $in_heredoc_length) == $in_heredoc) {
-            $all_lines[$lineno] .= substr($content, $pos + 1, $in_heredoc_length - 1);
-            unset($in_heredoc);
+            $this_all_lines .= substr($content, $pos + 1, $in_heredoc_length - 1);
+            $in_heredoc = 0;
             $pos += $in_heredoc_length;
           }
           elseif ($char == '<') {
             $in_heredoc_html = '>';
           }
           if ($in_heredoc && $in_heredoc_html) {
-            $html_lines[$lineno] .= $char;
+            $this_html_lines .= $char;
           }
-          if ($char == $in_heredoc_html) {
-            unset($in_heredoc_html);
+          if ($in_heredoc_html && $char == $in_heredoc_html) {
+            $in_heredoc_html = '';
           }
           unset($char);
         }
@@ -780,8 +814,8 @@ function _coder_read_and_parse_file(&$coder_args) {
         // when in a comment look for the trailing comment
         elseif ($in_comment) {
           if ($in_comment == '*' && $char == '*' && $content[$pos + 1] == '/') {
-            unset($in_comment);
-            $all_lines[$lineno] .= '/';
+            $in_comment = 0;
+            $this_all_lines .= '/';
             $pos ++;
           }
           unset($char); // don't add comments to php output
@@ -792,7 +826,7 @@ function _coder_read_and_parse_file(&$coder_args) {
             case '\'':
             case '"':
               if ($content[$pos - 1] != '\\') {
-                $php_lines[$lineno] .= $char;
+                $this_php_lines .= $char;
                 $in_quote = $char;
               }
               break;
@@ -802,7 +836,7 @@ function _coder_read_and_parse_file(&$coder_args) {
               if ($next_char == '/' || $next_char == '*') {
                 unset($char);
                 $in_comment = $next_char;
-                $all_lines[$lineno] .= $next_char;
+                $this_all_lines .= $next_char;
                 $pos ++;
               }
               break;
@@ -810,7 +844,7 @@ function _coder_read_and_parse_file(&$coder_args) {
             case '<':
               if ($content[$pos + 1] == '<' && $content[$pos + 2] == '<') {
                 unset($char);
-                $all_lines[$lineno] .= '<<';
+                $this_all_lines .= '<<';
 
                 // get the heredoc word
                 // read until the end-of-line
@@ -824,20 +858,20 @@ function _coder_read_and_parse_file(&$coder_args) {
                     }
                     break;
                   }
-                  $all_lines[$lineno] .= $char;
+                  $this_all_lines .= $char;
                   $heredoc .= $char;
                 }
-                unset($heredoc);
+                $heredoc = '';
 
                 // replace heredoc's with an empty string
-                $php_lines[$lineno] .= '\'\'';
+                $this_php_lines .= '\'\'';
                 unset($char);
               }
               break;
           }
         }
         if (isset($char)) {
-          $php_lines[$lineno] .= $char;
+          $this_php_lines .= $char;
         }
       }
       else {
@@ -846,19 +880,19 @@ function _coder_read_and_parse_file(&$coder_args) {
             if ($content[$pos + 1] == '?') {
               if ($content[$pos + 2] == ' ') {
                 $in_php = 1;
-                $all_lines[$lineno] .= '? ';
+                $this_all_lines .= '? ';
                 $pos += 2;
               }
               elseif (substr($content, $pos + 2, 3) == 'php') {
                 $in_php = 1;
-                $all_lines[$lineno] .= '?php';
+                $this_all_lines .= '?php';
                 $pos += 4;
               }
               break;
             }
             // FALTHROUGH
           default:
-            $html_lines[$lineno] .= $char;
+            $this_html_lines .= $char;
             break;
         }
       }
@@ -892,7 +926,7 @@ function _coder_severity($severity_name, $default_value = 5) {
 function _coder_severity_name($coder_args, $review, $rule) {
   // NOTE: warnings in php includes are suspicious because
   // php includes are frequently 3rd party products
-  if ($coder_args['#php_minor'] && substr($coder_args['#filename'], -4) == '.php') {
+  if (isset($coder_args['#php_minor']) && substr($coder_args['#filename'], -4) == '.php') {
     return 'minor';
   }
 
@@ -918,7 +952,7 @@ function do_coder_review($coder_args, $review) {
 
     foreach ($review['#rules'] as $rule) {
       // perform the review if above the user requested severity
-      $severity = _coder_severity($rule['#severity'], $default_severity);
+      $severity = _coder_severity(isset($rule['#severity']) ? $rule['#severity'] : '', $default_severity);
       if ($severity >= $coder_args['#severity']) {
         if (isset($rule['#original'])) { // deprecated
           $lines = $coder_args['#all_lines'];
@@ -958,26 +992,28 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
     if (!isset($rule['#case-sensitive'])) {
       $regex .= 'i';
     }
-    $function = $rule['#function'];
+    $function_regex = isset($rule['#function']) ? '/'. $rule['#function'] .'/' : '';
+    $current_function = '';
+    $not_regex = isset($rule['#not']) ? '/'. $rule['#not'] .'/i' : '';
     foreach ($lines as $lineno => $line) {
       // some rules apply only within certain functions
-      if ($function) {
+      if ($function_regex) {
         if (preg_match('/function (\w+)\(/', $line, $match)) {
           $current_function = $match[1];
         }
         if (preg_match('/^\s*}\s*$/', $line)) {
-          unset($current_function);
+          $current_function = '';
         }
-        if (!isset($current_function) || !preg_match('/'. $function .'/', $current_function)) {
+        if ($current_function != '' || !preg_match($function_regex, $current_function)) {
           continue;
         }
       }
 
       if (preg_match($regex, $line, $matches)) {
         // don't match some regex's
-        if ($not = $rule['#not']) {
+        if ($not_regex) {
           foreach ($matches as $match) {
-            if (preg_match('/'. $not .'/i', $match)) {
+            if (preg_match($not_regex, $match)) {
               continue 2;
             }
           }
@@ -1103,7 +1139,6 @@ function _coder_is_drupal_core($module) {
     $core = array(
       // modules
       'aggregator' => 1,
-      'archive' => 1,
       'block' => 1,
       'blog' => 1,
       'blogapi' => 1,
@@ -1111,33 +1146,35 @@ function _coder_is_drupal_core($module) {
       'color' => 1,
       'comment' => 1,
       'contact' => 1,
+      'dblog' => 1,
       'drupal' => 1,
       'filter' => 1,
       'forum' => 1,
       'help' => 1,
-      'legacy' => 1,
       'locale' => 1,
       'menu' => 1,
       'node' => 1,
-      'page' => 1,
       'path' => 1,
+      'php' => 1,
       'ping' => 1,
       'poll' => 1,
       'profile' => 1,
       'search' => 1,
       'statistics' => 1,
+      'syslog' => 1,
       'system' => 1,
       'taxonomy' => 1,
       'throttle' => 1,
       'tracker' => 1,
       'upload' => 1,
       'user' => 1,
-      'watchdog' => 1,
 
       // themes
       'bluemarine' => 1,
       'chameleon' => 1,
       'garland' => 1,
+      'marvin' => 1,
+      'minnelli' => 1,
       'pushbutton' => 1,
     );
   }
