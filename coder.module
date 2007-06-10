@@ -239,6 +239,7 @@ function _coder_settings_form($settings, &$system, &$files) {
     $system_links[$system->name] = l($display_name, "coder/$system->name");
     $files[$system->name] = $system->filename;
   }
+  asort($system_links);
 
   // display what to review options
   $form['coder_what'] = array(
