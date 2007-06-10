@@ -82,7 +82,8 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]file_save_upload\s*\([^,]+\s*,\s*[^,]+\s*,',
+      '#value' => '((function)!\s+|\()file_save_upload\s*\([^,]+\s*,\s*[^,]+\s*,',
+      '#not' => 'function file_save_upload',
       '#warning_callback' => '_coder_6x_file_check_upload_warning',
     ),
     array(
