@@ -547,7 +547,7 @@ function coder_page_form() {
                 $coder_args['#php_minor'] = 1;
               }
               $dups[$path] = 1;
-              $includefiles = drupal_system_listing('.*\.(inc|php)$', $path, 'name', 0);
+              $includefiles = drupal_system_listing('.*\.(inc|php|install)$', $path, 'name', 0);
               _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset);
             }
           }
@@ -985,26 +985,28 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
     if (!isset($rule['#case-sensitive'])) {
       $regex .= 'i';
     }
-    $function = isset($rule['#function']) ? $rule['#function'] : '';
+    $function_regex = isset($rule['#function']) ? '/'. $rule['#function'] .'/' : '';
+    $current_function = '';
+    $not_regex = isset($rule['#not']) ? '/'. $rule['#not'] .'/i' : '';
     foreach ($lines as $lineno => $line) {
       // some rules apply only within certain functions
-      if ($function) {
+      if ($function_regex) {
         if (preg_match('/function (\w+)\(/', $line, $match)) {
           $current_function = $match[1];
         }
         if (preg_match('/^\s*}\s*$/', $line)) {
-          unset($current_function);
+          $current_function = '';
         }
-        if (!isset($current_function) || !preg_match('/'. $function .'/', $current_function)) {
+        if ($current_function != '' || !preg_match($function_regex, $current_function)) {
           continue;
         }
       }
 
       if (preg_match($regex, $line, $matches)) {
         // don't match some regex's
-        if (isset($rule['#not']) && ($not = $rule['#not'])) {
+        if ($not_regex) {
           foreach ($matches as $match) {
-            if (preg_match('/'. $not .'/i', $match)) {
+            if (preg_match($not_regex, $match)) {
               continue 2;
             }
           }
