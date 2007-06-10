@@ -180,12 +180,20 @@ function _coder_settings_form($settings, &$system, &$files) {
   drupal_add_js($path .'/coder.js');
 
   // create the list of review options from the coder review plug-ins
+  // maintain a secondary list based on #title only, to make sorting possible
   $reviews = _coder_reviews();
   foreach ($reviews as $name => $review) {
     $review_options[$name] = l($review['#title'], $review['#link']);
     if (isset($review['#description'])) {
       $review_options[$name] .= ' ('. $review['#description'] .')';
     }
+    $review_sort[$name] = $review['#title'];
+  }
+
+  // sort the reviews by #title
+  asort($review_sort);
+  foreach ($review_sort as $name => $review) {
+    $review_sort[$name] = $review_options[$name];
   }
 
   // what reviews should be used?
@@ -197,7 +205,7 @@ function _coder_settings_form($settings, &$system, &$files) {
   );
   $form['coder_reviews_group']['coder_reviews'] = array(
     '#type' => 'checkboxes',
-    '#options' => $review_options,
+    '#options' => $review_sort,
     '#description' => t('apply the checked coding reviews'),
     '#default_value' => $settings['coder_reviews'],
   );
