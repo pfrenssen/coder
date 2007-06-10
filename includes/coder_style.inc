@@ -53,13 +53,6 @@ function coder_style_reviews() {
       '#warning' => 'Always use &lt;?php ?&gt; to delimit PHP code, not the &lt;? ?&gt; shorthand',
     ),
     array(
-      '#type' => 'grep_invert',
-      '#source' => 'all',
-      '#value' => '$Id',
-      '#case-sensitive' => true,
-      '#warning' => 'Include the CVS keyword $Id'.'$ in each file',
-    ),
-    array(
       '#type' => 'regex',
       '#value' => 'global\s+\$(\w+)(,\s\$(\w+))*',
       '#not' => '^_|^('. _coder_style_core_global_regex() .')$',
