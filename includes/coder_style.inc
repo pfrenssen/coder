@@ -67,6 +67,7 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'callback',
+      '#source' => 'all',
       '#value' => '_coder_style_callback',
     ),
     array(
@@ -132,7 +133,7 @@ function _coder_style_callback(&$coder_args, $review, $rule, $lines, &$results) 
     }
   }
   if ($last && $lastline && preg_match('/\?>/i', $lastline)) {
-    $severity_name = _coder_severity_name($review, $rule);
+    $severity_name = _coder_severity_name($coder_args, $review, $rule);
     _coder_error_msg($results, 'the final ?> should be omitted from all code files', $severity_name, count($lines));
   }
 }
