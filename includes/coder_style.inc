@@ -3,6 +3,8 @@
 
 /** @file
  * This include file implements coder functionality for Drupal Standards
+ *
+ * Todo: The rules for this review are not yet complete.
  */
 
 function coder_style_reviews() {
@@ -51,6 +53,13 @@ function coder_style_reviews() {
       '#warning' => 'Always use &lt;?php ?&gt; to delimit PHP code, not the &lt;? ?&gt; shorthand',
     ),
     array(
+      '#type' => 'grep_invert',
+      '#source' => 'all',
+      '#value' => '$Id',
+      '#case-sensitive' => true,
+      '#warning' => 'Include the CVS keyword $Id'.'$ in each file',
+    ),
+    array(
       '#type' => 'regex',
       '#value' => 'global\s+\$(\w+)(,\s\$(\w+))*',
       '#not' => '^_|^('. _coder_style_core_global_regex() .')$',
@@ -58,6 +67,7 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'callback',
+      '#source' => 'all',
       '#value' => '_coder_style_callback',
     ),
     array(
@@ -123,7 +133,7 @@ function _coder_style_callback(&$coder_args, $review, $rule, $lines, &$results) 
     }
   }
   if ($last && $lastline && preg_match('/\?>/i', $lastline)) {
-    $severity_name = _coder_severity_name($review, $rule);
+    $severity_name = _coder_severity_name($coder_args, $review, $rule);
     _coder_error_msg($results, 'the final ?> should be omitted from all code files', $severity_name, count($lines));
   }
 }
