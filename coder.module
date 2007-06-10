@@ -366,7 +366,7 @@ function coder_admin_settings() {
   return system_settings_form($form);
 }
 
-function coder_settings_form_submit($form_id, &$form_state, &$form_values) {
+function coder_settings_form_submit($form_id, &$form_values) {
   variable_set('coder_modules', _coder_settings_array($form_values, 'module'));
   variable_set('coder_themes', _coder_settings_array($form_values, 'theme'));
 }
@@ -387,7 +387,7 @@ function _coder_settings_array(&$form_values, $type) {
   return $systems;
 }
 
-function coder_page_form_submit($form_id, &$form_state, $form_values) {
+function coder_page_form_submit($form_id, $form_values) {
   // HELP: is there a better way to get these to coder_page_form()???
   return false;
 }
