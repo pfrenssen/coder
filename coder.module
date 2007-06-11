@@ -17,27 +17,6 @@
  */ 
 
 /**
- * Implementation of hook_init().
- */
-function coder_init() {
-  // hook init is called even on cached pages, but we don't want to
-  // actually do anything in that case.
-  if (!function_exists('drupal_get_path')) {
-    return;
-  }
-
-  // Load all our module plug-ins
-  global $_coder_coders;
-  $_coder_coders = array();
-  $path = drupal_get_path('module', 'coder') .'/includes';
-  $files = drupal_system_listing('coder_.*\.inc$', $path, 'name', 0);
-  foreach ($files as $file) {
-    require_once('./'. $file->filename);
-    $_coder_coders[] = $file->name;
-  }
-}
-
-/**
  * Implementation of hook_help().
  */
 function coder_help($section) { 
@@ -52,27 +31,27 @@ function coder_help($section) {
  * Get all of the code review modules
  */
 function _coder_reviews() {
-  $reviews = array();
+  // get the contributed module review definitions
+  return module_invoke_all('reviews');
+}
 
-  // get the review definitions from the include directory
-  global $_coder_coders;
-  if (count($_coder_coders)) {
-    foreach ($_coder_coders as $coder) {
-      $function = $coder .'_reviews';
+function coder_reviews() {
+  global $_coder_reviews;
+  if (!isset($_coder_reviews)) {
+    $_coder_reviews = array();
+    $path = drupal_get_path('module', 'coder') .'/includes';
+    $files = drupal_system_listing('coder_.*\.inc$', $path, 'name', 0);
+    foreach ($files as $file) {
+      require_once('./'. $file->filename);
+      $function = $file->name .'_reviews';
       if (function_exists($function)) {
         if ($review = call_user_func($function)) {
-          $reviews = array_merge($reviews, $review);
+          $_coder_reviews = array_merge($_coder_reviews, $review);
         }
       }
     }
   }
-
-  // get the contributed module review definitions
-  if ($review = module_invoke_all('reviews')) {
-    $reviews = array_merge($reviews, $review);
-  }
-
-  return $reviews;
+  return $_coder_reviews;
 }
 
 /**
