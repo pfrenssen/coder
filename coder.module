@@ -490,6 +490,7 @@ function coder_page_form() {
     // loop through the selected modules and themes
     if (isset($system)) {
       $dups = array(); // used to avoid duplicate includes
+      $stats = array();
       foreach ($system as $name => $checked) {
         if ($checked) {
           // process this one file
@@ -504,6 +505,8 @@ function coder_page_form() {
             '#filename' => $filename,
           );
           $results = do_coder_reviews($coder_args);
+          $stats[$filename] = $results['#stats'];
+          unset($results['#stats']);
 
           // output the results in a collapsible fieldset
           $form[$name] = array(
@@ -536,10 +539,33 @@ function coder_page_form() {
               }
               $dups[$path] = 1;
               $includefiles = drupal_system_listing('.*\.(inc|php|install)$', $path, 'name', 0);
-              _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset);
+              $stats[$filename]['#includes'] = _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset);
             }
           }
         }
+      }
+      if (count($stats)) {
+        $summary = array('files' => 0, 'minor' => 0, 'normal' => 0, 'critical' => 0);
+        foreach ($stats as $stat) {
+          if (isset($stat['#includes'])) {
+            foreach ($stat['#includes'] as $includestat) {
+              $summary['files'] ++;
+              $summary['minor'] += $includestat['minor'];
+              $summary['normal'] += $includestat['normal'];
+              $summary['critical'] += $includestat['critical'];
+            }
+          }
+          $summary['files'] ++;
+        }
+        $display = array();
+        $display[] = t('Coder found @count projects', array('@count' => count($stats)));
+        $display[] = t('@count files', array('@count' => $summary['files']));
+        foreach (array('critical', 'normal', 'minor') as $severity_name) {
+          if ($summary[$severity_name] > 0) {
+            $display[] = t('@count %severity_name warnings', array('@count' => $summary[$severity_name], '%severity_name' => $severity_name));
+          }
+        }
+        drupal_set_message(implode(', ', $display));
       }
     }
 
@@ -565,12 +591,15 @@ function coder_page_form() {
 }
 
 function _coder_page_form_includes(&$form, $coder_args, $name, $files, $offset) {
+  $stats = array();
   $coder_args['#name'] = $name;
   $weight = 0;
   foreach ($files as $file) {
     $filename = drupal_substr($file->filename, $offset);
     $coder_args['#filename'] = $filename;
     $results = do_coder_reviews($coder_args);
+    $stats[$filename] = $results['#stats'];
+    unset($results['#stats']);
 
     // output the results in a collapsible fieldset
     $form[$name][$filename] = array(
@@ -591,6 +620,7 @@ function _coder_page_form_includes(&$form, $coder_args, $name, $files, $offset) 
       '#value' => theme('coder', $name, $filename, $results),
     );
   }
+  return $stats;
 }
 
 function _coder_modified() {
@@ -622,7 +652,7 @@ function do_coder_reviews($coder_args) {
     }
   }
 
-  $results = array();
+  $results = array('#stats' => array('minor' => 0, 'normal' => 0, 'critical' => 0));
 
   // skip php include files when the user requested severity is above minor
   if (isset($coder_args['#php_minor']) && drupal_substr($coder_args['#filename'], -4) == '.php') {
@@ -636,7 +666,7 @@ function do_coder_reviews($coder_args) {
     // do all of the code reviews
     foreach ($coder_args['#reviews'] as $review) {
       if ($result = do_coder_review($coder_args, $review)) {
-        $results += $result;
+        $results = array_merge($results, $result);
       }
     }
 
@@ -1046,6 +1076,7 @@ function _coder_error_msg(&$results, $warning, $severity_name, $lineno = -1, $li
   global $_coder_errno;
   $key = ($lineno + 1) * 10000 + ($_coder_errno ++);
   $results[$key] = theme('coder_warning', $warning, $severity_name, $lineno + 1, $line);
+  $results['#stats'][$severity_name] ++;
 }
 
 /**
