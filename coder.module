@@ -654,7 +654,7 @@ function do_coder_reviews($coder_args) {
     $cache_mtime = filemtime(realpath($coder_args['#filename']));
     if ($cache_results = cache_get($cache_key)) {
       if ($cache_results->data['mtime'] == $cache_mtime && ($x = _coder_modified()) < $cache_results->created) {
-        return $cache_results->data['results'];
+        return unserialize($cache_results->data['results']);
       }
     }
   }
@@ -690,7 +690,7 @@ function do_coder_reviews($coder_args) {
       'mtime' => $cache_mtime,
       'results' => $results,
     );
-    cache_set($cache_key, $cache_results);
+    cache_set($cache_key, 'cache', serialize($cache_results));
   }
 
   return $results;
