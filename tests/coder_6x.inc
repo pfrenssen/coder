@@ -45,6 +45,14 @@ function _coder_6x_more_tests() {
 
   form_set_value($element, 'value', $form_status); // This one is okay
   form_set_value($element, 'value'); // error
+
+  confirm_form($form, t('Do you really want to delete this?'), "node/$nid", t("Don't do it unless you're really sure!"), t('Delete it'), t('Go back'), 'delete'); // should fail
+
+  confirm_form($form, t('Do you really want to delete this?'), "node/$nid", $options); // is ok
+  confirm_form($form, t('Do you really want to delete this?'), "node/$nid", array()); // also ok
+
+  custom_url_rewrite($url); // not ok
+  custom_url_rewrite_inbound($url); // ok
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error
@@ -69,4 +77,16 @@ function myform_validate($form_id, $form) { // this will fail.
 function myform_submit($form_id, $form) { //this willfail
   $form['#submit']['newsubmit'] = array();
   $form['#submit'][] = "newsubmit";
+}
+
+function mymodule_info($field = 0) {
+}
+
+function mymodule_auth($username, $password, $server) {
+}
+
+function mymodule_help($section) {
+}
+
+function mymodule_help($section, $arg) { // ok
 }
