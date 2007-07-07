@@ -16,6 +16,10 @@
  * - http://cvs.drupal.org/viewcvs/drupal/drupal/scripts/code-style.pl
  */ 
 
+define('SEVERITY_MINOR', 1);
+define('SEVERITY_NORMAL', 5);
+define('SEVERITY_CRITICAL', 9);
+
 /**
  * Implementation of hook_help().
  */
@@ -186,9 +190,9 @@ function _coder_settings_form($settings, &$system, &$files) {
   $form['coder_reviews_group']['coder_severity'] = array(
     '#type' => 'radios',
     '#options' => array(
-      1 => 'minor (most)',
-      5 => 'normal',
-      9 => 'critical (fewest)'
+      SEVERITY_MINOR => 'minor (most)',
+      SEVERITY_NORMAL => 'normal',
+      SEVERITY_CRITICAL => 'critical (fewest)'
     ),
     '#description' => t('show warnings at or above the severity warning level'),
     '#default_value' => $settings['coder_severity'],
@@ -347,9 +351,9 @@ function coder_admin_settings() {
   return system_settings_form($form);
 }
 
-function coder_settings_form_submit($form_id, &$form_state, &$form_values) {
-  variable_set('coder_modules', _coder_settings_array($form_values, 'module'));
-  variable_set('coder_themes', _coder_settings_array($form_values, 'theme'));
+function coder_settings_form_submit(&$form, &$form_state) {
+  variable_set('coder_modules', _coder_settings_array($form, 'module'));
+  variable_set('coder_themes', _coder_settings_array($form, 'theme'));
 }
 
 function _coder_settings_array(&$form_values, $type) {
@@ -368,11 +372,6 @@ function _coder_settings_array(&$form_values, $type) {
   return $systems;
 }
 
-function coder_page_form_submit($form_id, &$form_state, $form_values) {
-  // HELP: is there a better way to get these to coder_page_form()???
-  return false;
-}
-
 /**
  * Implementation of code review page
  */
@@ -384,7 +383,7 @@ function coder_page() {
 
 function _coder_get_default_settings($args = 'default') {
   $settings['coder_reviews'] = variable_get('coder_reviews', _coder_default_reviews());
-  $settings['coder_severity'] = variable_get('coder_severity', 5);
+  $settings['coder_severity'] = variable_get('coder_severity', SEVERITY_NORMAL);
   $settings['coder_cache'] = variable_get('coder_cache', 1);
 
   // determine any options based on the passed in URL,
@@ -425,10 +424,15 @@ function _coder_get_default_settings($args = 'default') {
   return $settings;
 }
 
+function coder_page_form_validate(&$form, &$form_state) {
+  variable_set('_coder_form', $form['#post']);
+}
+
 function coder_page_form() {
-  // HELP: is there a better way to get these from coder_page_form_submit()???
-  $form_values = $_POST;
-  if (isset($form_values['op'])) {
+  // HELP: is there a better way to get these from the validate handler?
+  $form_values = variable_get('_coder_form', array());
+  variable_del('_coder_form');
+  if (count($form_values)) {
     $settings = $form_values;
     $settings['coder_modules'] = _coder_settings_array($form_values, 'module');
     $settings['coder_themes'] = _coder_settings_array($form_values, 'theme');
@@ -652,11 +656,13 @@ function do_coder_reviews($coder_args) {
     }
   }
 
-  $results = array('#stats' => array('minor' => 0, 'normal' => 0, 'critical' => 0));
+  $results = array();
+  $stats = array('minor' => 0, 'normal' => 0, 'critical' => 0);
 
   // skip php include files when the user requested severity is above minor
   if (isset($coder_args['#php_minor']) && drupal_substr($coder_args['#filename'], -4) == '.php') {
     if ($coder_args['#severity'] > 1) {
+      $results['#stats'] = $stats;
       return $results;
     }
   }
@@ -666,12 +672,17 @@ function do_coder_reviews($coder_args) {
     // do all of the code reviews
     foreach ($coder_args['#reviews'] as $review) {
       if ($result = do_coder_review($coder_args, $review)) {
+        foreach ($stats as $key => $value) {
+          $stats[$key] += $result['#stats'][$key];
+        }
+        unset($result['#stats']);
         $results = array_merge($results, $result);
       }
     }
 
     // sort the results
     ksort($results, SORT_NUMERIC);
+    $results['#stats'] = $stats;
   }
   else {
     _coder_error_msg($results, t('Could not read the file'), 'critical');
@@ -929,13 +940,13 @@ function _coder_read_and_parse_file(&$coder_args) {
   }
 }
 
-function _coder_severity($severity_name, $default_value = 5) {
+function _coder_severity($severity_name, $default_value = SEVERITY_NORMAL) {
   // NOTE: implemented this way in hopes that it is faster than a php switch
   if (!isset($severity_names)) {
     $severity_names = array(
-      'minor' => 1,
-      'normal' => 5,
-      'critical' => 9,
+      'minor' => SEVERITY_MINOR,
+      'normal' => SEVERITY_NORMAL,
+      'critical' => SEVERITY_CRITICAL,
     );
   }
   if (isset($severity_names[$severity_name])) {
@@ -966,10 +977,10 @@ function _coder_severity_name($coder_args, $review, $rule) {
 }
 
 function do_coder_review($coder_args, $review) {
-  $results = array();
+  $results = array('#stats' => array('minor' => 0, 'normal' => 0, 'critical' => 0));
   if ($review['#rules']) {
     // get the review's severity, used when the rule severity is not defined
-    $default_severity = _coder_severity($review['#severity']);
+    $default_severity = isset($review['#severity']) ? _coder_severity($review['#severity']) : SEVERITY_NORMAL;
 
     foreach ($review['#rules'] as $rule) {
       // perform the review if above the user requested severity
