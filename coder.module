@@ -243,13 +243,13 @@ function _coder_settings_form($settings, &$system, &$files) {
   );
   $form['coder_what']['coder_includes'] = array(
     '#type' => 'checkbox',
-    '#default_value' => $settings['coder_includes'],
+    '#default_value' => isset($settings['coder_includes']) ? $settings['coder_includes'] : 0,
     '#title' => t('include files (.inc and .php files)'),
   );
   if (arg(0) == 'admin') {
     $form['coder_what']['coder_cache'] = array(
       '#type' => 'checkbox',
-      '#default_value' => $settings['coder_cache'],
+      '#default_value' => isset($settings['coder_cache']) ? $settings['coder_cache'] : 0,
       '#title' => t('use the experimental coder cache'),
     );
   }
@@ -360,7 +360,7 @@ function _coder_settings_array(&$form_values, $type) {
   $typekey = "coder_{$type}s-";
   $typelen = strlen($typekey);
   $systems = array();
-  foreach ($form_values as $key => $value) {
+  foreach ($form_values['#post'] as $key => $value) {
     if (substr($key, 0, $typelen) == $typekey) {
       if ($value == 1) {
         $system = substr($key, $typelen);
@@ -425,15 +425,15 @@ function _coder_get_default_settings($args = 'default') {
 }
 
 function coder_page_form_validate(&$form, &$form_state) {
-  variable_set('_coder_form', $form['#post']);
+  variable_set('_coder_form', $form);
 }
 
 function coder_page_form() {
   // HELP: is there a better way to get these from the validate handler?
   $form_values = variable_get('_coder_form', array());
   variable_del('_coder_form');
-  if (count($form_values)) {
-    $settings = $form_values;
+  if (isset($form_values['#post'])) {
+    $settings = $form_values['#post'];
     $settings['coder_modules'] = _coder_settings_array($form_values, 'module');
     $settings['coder_themes'] = _coder_settings_array($form_values, 'theme');
     drupal_set_title(t('Code review (submitted options)'));
@@ -532,7 +532,7 @@ function coder_page_form() {
           );
 
           // process the same directory include files
-          if ($settings['coder_includes']) {
+          if (!empty($settings['coder_includes'])) {
             // NOTE: convert to the realpath here so drupal_system_listing
             // doesn't return additional paths (i.e., try "module").
             $path = str_replace('\\', '/', dirname(realpath($filename)));
