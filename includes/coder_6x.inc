@@ -137,6 +137,31 @@ function coder_6x_reviews() {
       '#value' => '[\s\(]form_set_value\s*\([^,]+(,\s*[^,\)]+){0,1}\)',
       '#warning_callback' => '_coder_6x_form_set_value_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]confirm_form\s*\([^,]+(,\s*[^,]+){4,}',
+      '#warning_callback' => '_coder_6x_confirm_form_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]custom_url_rewrite\s*\(',
+      '#warning_callback' => '_coder_6x_custom_url_rewrite_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '_(info)\s*\(\s*\$field',
+      '#warning_callback' => '_coder_6x_hook_info_auth_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '_(auth)\s*\(\s*\$user',
+      '#warning_callback' => '_coder_6x_hook_info_auth_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '_(help)\s*\(\s*[^,]+\)',
+      '#warning_callback' => '_coder_6x_hook_help_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -316,6 +341,15 @@ function _coder_6x_file_check_upload_warning() {
   );
 }
 
+function _coder_6x_form_validate_and_submit_warning() {
+  return t('The number of parameters for form !hook_validate and !hook_submit have changed',
+    array(
+      '!hook_validate' => theme('drupalapi', 'hook_validate'),
+      '!hook_submit' => theme('drupalapi', 'hook_submit'),
+    )
+  );
+}
+
 function _coder_6x_form_set_value_warning() {
   return t('!form_set_value() parameters have changed',
     array(
@@ -324,11 +358,36 @@ function _coder_6x_form_set_value_warning() {
   );
 }
 
-function _coder_6x_form_validate_and_submit_warning() {
-  return t('The number of parameters for form !hook_validate and !hook_submit have changed',
+function _coder_6x_confirm_form_warning() {
+  return t('The arguments to !confirm_form() have changed',
     array(
-      '!hook_validate' => theme('drupalapi', 'hook_validate'),
-      '!hook_submit' => theme('drupalapi', 'hook_submit'),
+      '!confirm_form' => theme('drupalapi', 'confirm_form'),
+    )
+  );
+}
+
+function _coder_6x_custom_url_rewrite_warning() {
+  return t('In place of !custom_url_rewrite, use !custom_url_rewrite_inbound() or !custom_url_rewrite_outbound()',
+    array(
+      '!custom_url_rewrite' => theme('drupalapi', 'custom_url_rewrite'),
+      '!custom_url_rewrite_inbound' => theme('drupalapi', 'custom_url_rewrite_inbound'),
+      '!custom_url_rewrite_outbound' => theme('drupalapi', 'custom_url_rewrite_outbound'),
+    )
+  );
+}
+
+function _coder_6x_hook_info_auth_warning() {
+  return t('hook no longer exists, use !hook_form_alter() to swap your own validation handler',
+    array(
+      '!hook_form_alter' => theme('drupalapi', 'hook_form_alter'),
+    )
+  );
+}
+
+function _coder_6x_hook_help_warning() {
+  return t('The arguments to !hook_help have changed',
+    array(
+      '!hook_help' => theme('drupalapi', 'hook_help'),
     )
   );
 }
