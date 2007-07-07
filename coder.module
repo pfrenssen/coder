@@ -23,8 +23,8 @@ define('SEVERITY_CRITICAL', 9);
 /**
  * Implementation of hook_help().
  */
-function coder_help($section) { 
-  switch ($section) { 
+function coder_help($page, $arg) { 
+  switch ($page) { 
     case 'coder#disclaimer':
       return t('Coder provides helpful hints without false positives, but offers no guarantee for creating good code.  You are the final arbitrar.  If in doubt, read the Drupal documentation (see review links below and <a href="@api">api.drupal.org</a>).', array('@api' => 'http://api.drupal.org'));
     default :
@@ -133,7 +133,7 @@ function coder_menu() {
 /**
  * Implementation of hook_form_alter().
  */
-function coder_form_alter(&$form, $form_id) {
+function coder_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'system_modules') {
     if (user_access('view code review')) {
       foreach ($form['name'] as $name => $data) {
@@ -347,7 +347,6 @@ function coder_admin_settings() {
   $settings = _coder_get_default_settings();
   $form = _coder_settings_form($settings, $system, $files);
   $form['#submit'][] = 'coder_settings_form_submit';
-  $form['#submit'][] = 'system_settings_form_submit';
   return system_settings_form($form);
 }
 
@@ -376,7 +375,7 @@ function _coder_settings_array(&$form_values, $type) {
  * Implementation of code review page
  */
 function coder_page() {
-  $output  = '<div class="coder-disclaimer">'. coder_help('coder#disclaimer') .'</div>';
+  $output  = '<div class="coder-disclaimer">'. coder_help('coder#disclaimer', array()) .'</div>';
   $output .= drupal_get_form('coder_page_form');
   return $output;
 }
