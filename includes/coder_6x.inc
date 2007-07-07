@@ -207,6 +207,14 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
             $warning = t('New syntax for .info files, use dependencies[]');
             $results[-1] = theme('coder_warning', $warning, $severity_name, $lineno, $line);
           }
+          if (preg_match('/^core\s*=/', $line)) {
+            $core = TRUE;
+          }
+        }
+        if (!isset($core)) {
+          $severity_name = _coder_severity_name($coder_args, $review, $rule);
+          $warning = t('New syntax for .info files requires core=6.x');
+          $results[-1] = theme('coder_warning', $warning, $severity_name, $lineno, $line);
         }
       }
     }
