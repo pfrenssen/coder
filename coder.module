@@ -349,8 +349,8 @@ function _coder_settings_form($settings, &$system, &$files) {
 function coder_admin_settings() {
   $settings = _coder_get_default_settings();
   $form = _coder_settings_form($settings, $system, $files);
-  $form['#submit'][] = 'coder_settings_form_submit';
-  $form['#submit'][] = 'system_settings_form_submit';
+  $form['#submit']['coder_settings_form_submit'] = array();
+  $form['#submit']['system_settings_form_submit'] = array();
   return system_settings_form($form);
 }
 
