@@ -125,7 +125,7 @@ function _coder_style_callback(&$coder_args, $review, $rule, $lines, &$results) 
       break;
     }
   }
-  if ($last && $lastline && preg_match('/\?>/i', $lastline)) {
+  if ($last && $lastline && preg_match('/\?>\s*$/i', $lastline)) {
     $severity_name = _coder_severity_name($coder_args, $review, $rule);
     _coder_error_msg($results, 'the final ?> should be omitted from all code files', $severity_name, count($lines));
   }
@@ -152,6 +152,7 @@ function _coder_style_core_global_regex() {
       'form_values',
       'install_locale',
       'installed_profile',
+      'language',
       'last_result',
       'locale',
       'multibyte',
@@ -160,11 +161,16 @@ function _coder_style_core_global_regex() {
       'pager_total_items',
       'profile',
       'queries',
+      'sidebar_indicator',
       'theme',
       'theme_engine',
       'theme_key',
+      'theme_path',
       'timers',
       'user',
+      'xrds_services',
+      'xrds_open_elements',
+      'xrds_current_service',
 
       // from the Drupal 5 modules/ directory -
       // Note: IMHO these should not be allowed, but until we fix core,
