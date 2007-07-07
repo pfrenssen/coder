@@ -928,6 +928,25 @@ function _coder_read_and_parse_file(&$coder_args) {
       }
     }
 
+    if (trim($this_all_lines) != '') {
+      $all_lines[$lineno] = $this_all_lines;
+    }
+    if (trim($this_php_lines) != '') {
+      $php_lines[$lineno] = $this_php_lines;
+    }
+    if (trim($this_html_lines) != '') {
+      $html_lines[$lineno] = $this_html_lines;
+    }
+    if (trim($this_quote_lines) != '') {
+      $quote_lines[$lineno] = $this_quote_lines;
+    }
+    if (trim($this_doublequote_lines) != '') {
+      $doublequote_lines[$lineno] = $this_doublequote_lines;
+    }
+    if (trim($this_comment_lines) != '') {
+      $comment_lines[$lineno] = $this_comment_lines;
+    }
+
     // add the files lines to the arguments
     $coder_args['#all_lines'] = $all_lines;
     $coder_args['#php_lines'] = $php_lines;
