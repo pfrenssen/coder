@@ -34,6 +34,10 @@ code.good {
   border: 1px solid #888888;
 }
 
+.coder-description code {
+  background: #edf1f3;
+}
+
 .coder-settings {
   padding-top: 2em;
 }
