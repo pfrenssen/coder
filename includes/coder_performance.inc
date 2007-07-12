@@ -127,5 +127,5 @@ function _coder_performance_in_array_warning() {
 }
 
 function _coder_performance_empty_warning() {
-  return t('if (<code class="bad">count($foo)</code>) and if (<code class="bad">sizeof($foo)</code>) are much slower than if (<code class="good">!empty($foo)</code)');
+  return t('if (<code class="bad">count($foo)</code>) and if (<code class="bad">sizeof($foo)</code>) are much slower than if (<code class="good">!empty($foo)</code>)');
 }
