@@ -17,6 +17,12 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#value' => '^ (  )*[^ \'".]',
+      '#warning' => 'Use an indent of 2 spaces, with no tabs',
+      '#severity' => 'minor',
+    ),
+    array(
+      '#type' => 'regex',
       '#value' => '\s(if|elseif|while|foreach|switch|return|for)\(',
       '#warning' => 'Control statements should have one space between the control keyword and opening parenthesis',
     ),
