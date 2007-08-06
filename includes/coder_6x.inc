@@ -233,7 +233,7 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
 
 function _coder_6x_new_menu_system_warning() {
   return array(
-    '#warning' => t('The menu system has been completely re-hauled in 6.x.'),
+    '#warning' => t('The menu system has been completely over-hauled in 6.x.'),
     '#link' => 'http://drupal.org/node/109131',
   );
 }
