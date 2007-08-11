@@ -136,8 +136,10 @@ function coder_menu() {
 function coder_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'system_modules') {
     if (user_access('view code review')) {
+      $path = drupal_get_path('module', 'coder');
+      drupal_add_css($path .'/coder.css', 'module');
       foreach ($form['name'] as $name => $data) {
-        $form['name'][$name]['#value'] = l($data['#value'], "coder/$name");
+        $form['description'][$name]['#value'] = $data['#value'] .'<div class="admin-coder">'. l(t('Code Review'), "admin/coder/$name") .'</div>';
       }
     }
   }
