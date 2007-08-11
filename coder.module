@@ -673,7 +673,7 @@ function do_coder_reviews($coder_args) {
     // do all of the code reviews
     foreach ($coder_args['#reviews'] as $review) {
       if ($result = do_coder_review($coder_args, $review)) {
-        $results = array_merge($results, $result);
+        $results += $result;
       }
     }
 
