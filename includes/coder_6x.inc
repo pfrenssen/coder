@@ -204,7 +204,7 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
     if (file_exists($filename)) {
       if ($lines = file($filename)) {
         foreach ($lines as $lineno => $line) {
-          if (preg_match('/^dependencies\s*=\s*\w+\s+\w+/', $line)) {
+          if (preg_match('/^dependencies\s*=/', $line)) {
             $severity_name = _coder_severity_name($coder_args, $review, $rule);
             $warning = t('New syntax for .info files, use dependencies[]');
             $results[-1] = theme('coder_warning', $warning, $severity_name, $lineno, $line);
