@@ -675,7 +675,7 @@ function do_coder_reviews($coder_args) {
           $stats[$key] += $result['#stats'][$key];
         }
         unset($result['#stats']);
-        $results = array_merge($results, $result);
+        $results += $result;
       }
     }
 
