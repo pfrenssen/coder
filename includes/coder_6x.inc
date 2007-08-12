@@ -167,7 +167,7 @@ function coder_6x_reviews() {
     array(
       '#type' => 'regex',
       '#source' => 'all',
-      '#value' => '\$form\s*\[\s*[\'"]?op[\'"]?\s*\]|\$form_values\s*\[\s*[\'"]?op[\'"]?\s*\]',
+      '#value' => '\$form(_values)?\s*\[\s*[\'"]?op[\'"]?\s*\]',
       '#warning' => 'replace $form[\'op\'] with $form_state[\'values\'][\'op\']',
     ),
     array(
@@ -189,6 +189,13 @@ function coder_6x_reviews() {
       '#value' => '\$GLOBALS\[[\'"]?db_type[\'"]?\]',
       '#warning_callback' => '_coder_6x_schema_api_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'all',
+      '#function' => '_submit$|_validate$',
+      '#value' => '\$form(_values)?\[[\'"][A-Za-z]',
+      '#warning' => 'use $form_state[\'values\'] instead, which is where the values are stored after a submit',
+    )
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
