@@ -543,7 +543,7 @@ function coder_page_form() {
                 $coder_args['#php_minor'] = 1;
               }
               $dups[$path] = 1;
-              $includefiles = drupal_system_listing('.*\.(inc|php|install)$', $path, 'name', 0);
+              $includefiles = drupal_system_listing('.*\.(inc|php|install|schema)$', $path, 'name', 0);
               $stats[$filename]['#includes'] = _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset);
             }
           }
