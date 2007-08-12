@@ -164,6 +164,12 @@ function coder_6x_reviews() {
       '#value' => '_(help)\s*\(\s*[^,]+\)',
       '#warning_callback' => '_coder_6x_hook_help_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'all',
+      '#value' => '\$form\s*\[\s*[\'"]?op[\'"]?\s*\]|\$form_values\s*\[\s*[\'"]?op[\'"]?\s*\]',
+      '#warning' => 'replace $form[\'op\'] with $form_state[\'values\'][\'op\']',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
