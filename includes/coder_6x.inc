@@ -170,6 +170,18 @@ function coder_6x_reviews() {
       '#value' => '\$form\s*\[\s*[\'"]?op[\'"]?\s*\]|\$form_values\s*\[\s*[\'"]?op[\'"]?\s*\]',
       '#warning' => 'replace $form[\'op\'] with $form_state[\'values\'][\'op\']',
     ),
+    array(
+      '#type' => 'regex',
+      '#function' => '_confirm_submit$',
+      '#value' => 'return [\'"]',
+      '#warning' => 'in confirm_form, use $form_state[\'redirect\'] instead of return (remember to change function prototype to use &$form_state) ',
+    ),
+    array(
+      '#type' => 'regex',
+      '#function' => '_confirm_submit$',
+      '#value' => 'return [\'"]',
+      '#warning' => 'in confirm_form, use $form_state[\'redirect\'] instead of return (remember to change function prototype to use &$form_state) ',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
