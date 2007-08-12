@@ -170,6 +170,13 @@ function coder_6x_reviews() {
       '#value' => '\$form\s*\[\s*[\'"]?op[\'"]?\s*\]|\$form_values\s*\[\s*[\'"]?op[\'"]?\s*\]',
       '#warning' => 'replace $form[\'op\'] with $form_state[\'values\'][\'op\']',
     ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'all',
+      '#function' => '_(un)?install$|_update_[0-9]+$',
+      '#value' => '\$GLOBALS\[[\'"]?db_type[\'"]?\]',
+      '#warning_callback' => '_coder_6x_schema_api_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -462,5 +469,13 @@ function _coder_6x_hook_help_warning() {
     ),
     '#link' => 'http://drupal.org/node/114774#hook-help',
     '#description' => t('Change the first two lines to <code>function yourmodule_help($path, $arg) {'."\n".' switch ($path) { ...</code>.'),
+  );
+}
+
+function _coder_6x_schema_api_warning() {
+  return array(
+    '#warning' => t('A new schema API has been added in 6.x'),
+    '#link' => 'http://drupal.org/node/146843',
+    '#description' => t('This patch caused changes to the format of hook_install(), hook_uninstall(), and hook_update_N(). No longer are switch statements done on $GLOBALS[\'db_type\']; instead, use the variety of schema API functions to perform table manipulation.'),
   );
 }
