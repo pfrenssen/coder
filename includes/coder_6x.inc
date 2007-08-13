@@ -183,7 +183,12 @@ function coder_6x_reviews() {
       '#function' => '_submit$|_validate$',
       '#value' => '\$form(_values)?\[[\'"][A-Za-z]',
       '#warning' => 'use $form_state[\'values\'] instead, which is where the values are stored after a submit',
-    )
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]theme_get_function\s*\(',
+      '#warning_callback' => '_coder_6x_theme_get_function_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -484,5 +489,14 @@ function _coder_6x_schema_api_warning() {
     '#warning' => t('A new schema API has been added in 6.x'),
     '#link' => 'http://drupal.org/node/146843',
     '#description' => t('This patch caused changes to the format of hook_install(), hook_uninstall(), and hook_update_N(). No longer are switch statements done on $GLOBALS[\'db_type\']; instead, use the variety of schema API functions to perform table manipulation.'),
+  );
+}
+
+function _coder_6x_theme_get_function_warning() {
+  return t('!theme_get_function has been deprecated because of template theming; see !theme_get_registry',
+    array(
+      '!theme_get_function' => theme('drupalapi', 'theme_get_function', '5'),
+      '!theme_get_registry' => theme('drupalapi', 'theme_get_registry'),
+    )
   );
 }
