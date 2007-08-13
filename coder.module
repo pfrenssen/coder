@@ -139,7 +139,8 @@ function coder_form_alter(&$form, $form_state, $form_id) {
       $path = drupal_get_path('module', 'coder');
       drupal_add_css($path .'/coder.css', 'module');
       foreach ($form['name'] as $name => $data) {
-        $form['description'][$name]['#value'] = $data['#value'] .'<div class="admin-coder">'. l(t('Code Review'), "admin/coder/$name") .'</div>';
+        $description = isset($form['description'][$name]['#value']) ? $form['description'][$name]['#value'] : $data['#value'];
+        $form['description'][$name]['#value'] = $description .' ('. l(t('Code Review'), "admin/coder/$name") .'</div>' .')';
       }
     }
   }
