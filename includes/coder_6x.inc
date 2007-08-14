@@ -106,12 +106,6 @@ function coder_6x_reviews() {
     array(
       '#type' => 'regex',
       '#source' => 'all',
-      '#value' => '(\$form\s*\[\s*[\'"]#pre_render[\'"]|[\'"]#pre_render[\'"]\s*=>)',
-      '#warning' => 'FormAPI\'s #pre_render property is gone',
-    ),
-    array(
-      '#type' => 'regex',
-      '#source' => 'all',
       '#value' => '\$form\s*\[\s*[\'"]#validate[\'"]\]\[[\'"]',
       '#warning' => 'Validation for specific form elements now uses the #element_validate property',
     ),
