@@ -106,7 +106,7 @@ function _coder_50_user_mail_warning() {
   );
 }
 
-function _coder_50_drupal_mail_wrapper_warning() {
+function _coder_50_user_mail_wrapper_warning() {
   return t('!user_mail_wrapper() changed to !drupal_mail_wrapper()',
     array(
       '!user_mail_wrapper' => theme('drupalapi', 'user_mail_wrapper', '4.7'),
