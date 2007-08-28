@@ -35,6 +35,7 @@ function coder_security_reviews() {
     '#link' => 'http://drupal.org/node/28984',
     '#rules' => $rules,
     '#severity' => 'critical',
+    '#description' => t('very basic, needs work, but what it finds is good'),
   );
   return array('security' => $review);
 }

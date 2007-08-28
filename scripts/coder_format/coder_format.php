@@ -49,40 +49,44 @@ if (!empty($_SERVER['argv'])) {
   // Remove self-reference
   array_shift($_SERVER['argv']);
   
+  $files    = array();
   $undo     = false;
   $file_inc = null;
   
-  foreach ($_SERVER['argv'] as $arg) {
-    switch ($arg) {
+  for ($c = 0, $cc = count($_SERVER['argv']); $c < $cc; ++$c) {
+    switch ($_SERVER['argv'][$c]) {
       case '--undo':
-        $op   = array_shift($_SERVER['argv']);
-        $root = array_shift($_SERVER['argv']);
+        ++$c;
+        $root = $_SERVER['argv'][$c];
         $undo = true;
-        coder_format_recursive($root, true);
         break;
         
       case '--batch-replace':
-        $op   = array_shift($_SERVER['argv']);
-        $root = array_shift($_SERVER['argv']);
+        ++$c;
+        $root = $_SERVER['argv'][$c];
         break;
         
       case '--file-inc':
-        array_shift($_SERVER['argv']);
-        $file_inc = array_shift($_SERVER['argv']);
+        ++$c;
+        $file_inc = $_SERVER['argv'][$c];
+        break;
+      
+      default:
+        $files[] = $_SERVER['argv'][$c];
         break;
     }
   }
   
   if (isset($root)) {
     coder_format_recursive($root, $undo, $file_inc);
-    exit;
   }
-  
-  // Process a single file
-  $sourcefile = array_shift($_SERVER['argv']);
-  $targetfile = array_shift($_SERVER['argv']);
-  
-  coder_format_file($sourcefile, $targetfile);
+  else {
+    // Process a single file
+    $sourcefile = $files[0];
+    $targetfile = $files[1];
+    
+    coder_format_file($sourcefile, $targetfile);
+  }
 }
 
 

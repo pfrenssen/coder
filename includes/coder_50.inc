@@ -39,6 +39,11 @@ function coder_50_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#value' => '[\s\(]node_get_name\s*\(',
+      '#warning_callback' => '_coder_50_node_get_name_warning',
+    ),
+    array(
+      '#type' => 'regex',
       '#source' => 'all',
       '#value' => '\$_POST\s*\[\s*[\'"]?op[\'"]?\s*\]',
       '#warning' => '$_POST[\'op\'] deprecated in favor of $form_values[\'op\']',
@@ -81,8 +86,9 @@ function _coder_50_callback(&$coder_args, $review, $rule, $lines, &$results) {
     // make sure that a .info file exists
     $filename = drupal_substr(realpath($filename), 0, -7) .'.info';
     if (!file_exists($filename)) {
-      $severity_name = _coder_severity_name($review, $rule);
-      $results[0] = theme('coder_warning', $severity_name, $lineno, t('All modules now need to have a <a href="@info">modulename.info file</a>', array('@info' => 'http://drupal.org/node/101009')));
+      $severity_name = _coder_severity_name($coder_args, $review, $rule);
+      $warning = t('All modules now need to have a <a href="@info">modulename.info file</a>', array('@info' => 'http://drupal.org/node/101009'));
+      $results[0] = theme('coder_warning', $warning, $severity_name);
     }
   }
 }
@@ -100,7 +106,7 @@ function _coder_50_user_mail_warning() {
   );
 }
 
-function _coder_50_drupal_mail_wrapper_warning() {
+function _coder_50_user_mail_wrapper_warning() {
   return t('!user_mail_wrapper() changed to !drupal_mail_wrapper()',
     array(
       '!user_mail_wrapper' => theme('drupalapi', 'user_mail_wrapper', '4.7'),
@@ -159,6 +165,15 @@ function _coder_50_form_render_warning() {
     array(
       '!form_render' => theme('drupalapi', 'form_render', '4.7'),
       '!drupal_render' => theme('drupalapi', 'drupal_render'),
+    )
+  );
+}
+
+function _coder_50_node_get_name_warning() {
+  return t('Replace !node_get_name($node) with !node_get_types(\'name\', $node)',
+    array(
+      '!node_get_name' => theme('drupalapi', 'node_get_name', '4.7'),
+      '!node_get_types' => theme('drupalapi', 'node_get_types'),
     )
   );
 }

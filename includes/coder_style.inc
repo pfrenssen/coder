@@ -17,6 +17,12 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#value' => '^ (  )*[^ \'".]',
+      '#warning' => 'Use an indent of 2 spaces, with no tabs',
+      '#severity' => 'minor',
+    ),
+    array(
+      '#type' => 'regex',
       '#value' => '\s(if|elseif|while|foreach|switch|return|for)\(',
       '#warning' => 'Control statements should have one space between the control keyword and opening parenthesis',
     ),
@@ -53,12 +59,6 @@ function coder_style_reviews() {
       '#warning' => 'Always use &lt;?php ?&gt; to delimit PHP code, not the &lt;? ?&gt; shorthand',
     ),
     array(
-      '#type' => 'grep',
-      '#source' => 'all',
-      '#value' => '\$Id',
-      '#warning' => 'Include the Id CVS keyword in each file',
-    ),
-    array(
       '#type' => 'regex',
       '#value' => 'global\s+\$(\w+)(,\s\$(\w+))*',
       '#not' => '^_|^('. _coder_style_core_global_regex() .')$',
@@ -66,6 +66,7 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'callback',
+      '#source' => 'all',
       '#value' => '_coder_style_callback',
     ),
     array(
@@ -114,6 +115,7 @@ function coder_style_reviews() {
     '#title' => t('Drupal Coding Standards'),
     '#link' => 'http://drupal.org/node/318',
     '#rules' => $rules,
+    '#description' => t('every developer should use'),
   );
   return array('style' => $review);
 }
@@ -129,8 +131,8 @@ function _coder_style_callback(&$coder_args, $review, $rule, $lines, &$results) 
       break;
     }
   }
-  if ($last && $lastline && preg_match('/\?>/i', $lastline)) {
-    $severity_name = _coder_severity_name($review, $rule);
+  if ($last && $lastline && preg_match('/\?>\s*$/i', $lastline)) {
+    $severity_name = _coder_severity_name($coder_args, $review, $rule);
     _coder_error_msg($results, 'the final ?> should be omitted from all code files', $severity_name, count($lines));
   }
 }
@@ -156,6 +158,7 @@ function _coder_style_core_global_regex() {
       'form_values',
       'install_locale',
       'installed_profile',
+      'language',
       'last_result',
       'locale',
       'multibyte',
@@ -164,11 +167,16 @@ function _coder_style_core_global_regex() {
       'pager_total_items',
       'profile',
       'queries',
+      'sidebar_indicator',
       'theme',
       'theme_engine',
       'theme_key',
+      'theme_path',
       'timers',
       'user',
+      'xrds_services',
+      'xrds_open_elements',
+      'xrds_current_service',
 
       // from the Drupal 5 modules/ directory -
       // Note: IMHO these should not be allowed, but until we fix core,
@@ -196,9 +204,9 @@ function _coder_style_core_global_regex() {
  */
 
 function _coder_style_xhtml_warning() {
-  return t('use lowercase html tags to comply with <a href="@XHTML">XHTML</a>',
+  return t('use lowercase html tags to comply with <a href="@xhtml">XHTML</a>',
     array(
-      '@XHTML' => 'http://www.w3.org/TR/xhtml1/#h-4.2',
+      '@xhtml' => 'http://www.w3.org/TR/xhtml1/#h-4.2',
     )
   );
 }

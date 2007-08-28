@@ -49,6 +49,11 @@ if (Drupal.jsEnabled) {
           return true;
         }
       );
+      $("img.coder-more").click(
+        function() {
+          $('.coder-description', this.parentNode).slideToggle();
+        }
+      );
     }
   );
 }
