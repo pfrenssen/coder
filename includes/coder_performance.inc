@@ -9,12 +9,12 @@
 
 function coder_performance_reviews() {
   $rules = array(
-    array(
+    /* array(
       '#type' => 'regex',
       '#value' => '[^\w_](TRUE|FALSE|NULL)[^\w_]',
       '#case-sensitive' => true,
       '#warning_callback' => '_coder_performance_case_variabletype_warning',
-    ),
+    ), */
     array(
       '#type' => 'regex',
       '#value' => '.*', // catch anything
