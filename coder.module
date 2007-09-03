@@ -142,7 +142,7 @@ function coder_form_alter($form_id, &$form) {
       $path = drupal_get_path('module', 'coder');
       drupal_add_css($path .'/coder.css', 'module');
       foreach ($form['name'] as $name => $data) {
-        $form['description'][$name]['#value'] = $form['description'][$name]['#value'] . '('. l(t('Code Review'), "coder/$name") .')';
+        $form['description'][$name]['#value'] = $form['description'][$name]['#value'] .'('. l(t('Code Review'), "coder/$name") .')';
       }
     }
   }

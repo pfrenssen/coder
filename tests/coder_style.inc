@@ -22,6 +22,7 @@ function coder_test_stdclass() {
 
 function coderCamelCase() {
   $camelCaseVar = 'whatever'; // camel case functions and vars not allowed
+  $var = $obj->camelCase; // but camel case objects elements are
 }
 
 function coder_test_two_errors_on_same_line() {
