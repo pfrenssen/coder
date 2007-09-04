@@ -543,6 +543,12 @@ function coder_format_string($code = '') {
           $result .= coder_br() . trim($text) .' ';
           break;
         
+        case T_EXTENDS:
+          // Add space before and after 'extends'
+          $result = rtrim($result);
+          $result .= ' '. trim($text) .' ';
+          break;
+        
         case T_AND_EQUAL:
         case T_AS:
         case T_BOOLEAN_AND:
