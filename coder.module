@@ -150,7 +150,7 @@ function coder_form_alter(&$form, $form_state, $form_id) {
  * Helper functions for settings form
  */
 function _coder_default_reviews() {
-  return drupal_map_assoc(array('style', 'comment', 'security'));
+  return drupal_map_assoc(array('style', 'sql', 'comment', 'security'));
 }
 
 function _coder_settings_form($settings, &$system, &$files) {
