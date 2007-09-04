@@ -30,6 +30,6 @@ function coder_sql_reviews() {
     '#rules' => $rules,
     '#description' => t('new review, so use with caution'),
   );
-  return array('style' => $review);
+  return array('sql' => $review);
 }
 
