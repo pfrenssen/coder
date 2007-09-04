@@ -164,7 +164,7 @@ function _coder_settings_form($settings, &$system, &$files) {
   // maintain a secondary list based on #title only, to make sorting possible
   $reviews = _coder_reviews();
   foreach ($reviews as $name => $review) {
-    $review_options[$name] = l($review['#title'], $review['#link']);
+    $review_options[$name] = isset($review['#link']) ? l($review['#title'], $review['#link']) : $review['#title'];
     if (isset($review['#description'])) {
       $review_options[$name] .= ' ('. $review['#description'] .')';
     }
