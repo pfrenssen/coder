@@ -6,7 +6,7 @@
  */
 
 function coder_6x_reviews() {
-  $argex = '(([a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'\'|"")';
+  $argex = '(((\$?)[a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'\'|"")';
   $rules = array(
     array(
       '#type' => 'regex',
@@ -36,7 +36,12 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(](l|url)\s*\(('. $argex .',\s*){2,}('. $argex .')\s*\)',
+      '#value' => '[\s\(]l\s*\(('. $argex .'\s*,\s*){3,}('. $argex .')\s*\)',
+      '#warning_callback' => '_coder_6x_url_l_warning', 
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]url\s*\(('. $argex .'\s*,\s*){2,}('. $argex .')\s*\)',
       '#warning_callback' => '_coder_6x_url_l_warning', 
     ),
     array(
