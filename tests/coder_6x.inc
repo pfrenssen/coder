@@ -7,6 +7,12 @@ function this_is_not_a_menu_hook() {
   return $items;
 }
 
+function _coder_6x_l_tests() {
+  $link = l(t($display_vars['back_to_top']), 'faq', array('fragment' => '')); // this is ok
+  $link = l(t($display_vars['back_to_top']), 'faq', NULL, NULL); // this is not ok
+  $output = l($image, $item['filepath'], $link_attributes, NULL, NULL, FALSE, TRUE); // not ok
+}
+
 function _coder_6x_more_tests() {
   if (taxonomy_node_get_terms($nid)) { // should generate an error
   }
