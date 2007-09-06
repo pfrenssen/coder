@@ -205,6 +205,11 @@ function coder_6x_reviews() {
       '#value' => '[\s\(]db_num_rows\s*\(',
       '#warning_callback' => '_coder_6x_db_num_rows_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]drupal_retrieve_form\s*\('. $argex .'\s*\)',
+      '#warning_callback' => '_coder_6x_drupal_retrieve_form_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -528,3 +533,15 @@ function _coder_6x_db_num_rows_warning() {
     '#description' => t('The db_num_rows() method was removed from the database abstraction layer in 6.x core, as it was a database dependent method.  Use SELECT COUNT(*) or some other appropriate solutions'),
   );
 }
+
+function _coder_6x_drupal_retrieve_form_warning() {
+  return array(
+    '#warning' => t('Parameters for !drupal_retrieve_form() have changed, add $form_state as a second argument',
+      array(
+        '!drupal_retrieve_form' => theme('drupalapi', 'drupal_retrieve_form'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/144132#retrieve-form',
+  );
+}
+
