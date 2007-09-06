@@ -49,6 +49,9 @@ function _coder_6x_more_tests() {
   $form['#submit']['my_validate_function'] = array(); // error
   $form['#multistep'] = TRUE;
 
+  drupal_retrieve_form('testform'); // missing second arg
+  drupal_retrieve_form($form_id, $form_state); // ok
+
   form_set_value($element, 'value', $form_status); // This one is okay
   form_set_value($element, 'value'); // error
 
