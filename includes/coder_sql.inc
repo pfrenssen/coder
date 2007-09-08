@@ -50,5 +50,6 @@ function _coder_sql_db_query_range_warning() {
         '!db_query_range' => theme('drupalapi', 'db_query_range'),
       )
     ),
+    '#link' => 'http://drupal.org/node/1395',
   );
 }
