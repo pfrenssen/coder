@@ -18,5 +18,6 @@ function coder_test_sql() {
   $var = t('insert something');
   $var = t('delete something');
   $sql = 'INSERT INTO node (changed) VALUES (1)';
+  $sql = 'SELECT * FROM {node} LIMIT 10';
   
 }
