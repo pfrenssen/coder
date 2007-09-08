@@ -19,10 +19,16 @@ function coder_sql_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '^(select\s+.*\s+from\s+'. $bad .'|insert\s+into\s+'. $bad .'|update\s+'. $bad .'\s+set|delete\s+from\s'. $bad .')\s+',
+      '#value' => '^(select\s+.*\s+from\s+'. $bad .'|insert\s+into\s+'. $bad .'|update\s+'. $bad .'\s+set|delete\s+from\s'. $bad .')',
       '#source' => 'quote',
       '#warning' => 'table names should be enclosed in {curly_brackets}',
       '#severity' => 'critical',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '^(select\s+.*\s+from\s+'. $table .'|insert\s+into\s+'. $table .'|update\s+'. $table .'\s+set|delete\s+from\s'. $table .')\s+.*[Ll][Ii][Mm][Ii][Tt]\s[0-9]+',
+      '#source' => 'quote',
+      '#warning_callback' => '_coder_sql_db_query_range_warning',
     ),
   );
   $review = array(
@@ -33,3 +39,16 @@ function coder_sql_reviews() {
   return array('sql' => $review);
 }
 
+/**
+ * Define the warning callbacks
+ */
+
+function _coder_sql_db_query_range_warning() {
+  return array(
+    '#warning' => t('Use !db_query_range instead of the SQL LIMIT clause',
+      array(
+        '!db_query_range' => theme('drupalapi', 'db_query_range'),
+      )
+    ),
+  );
+}
