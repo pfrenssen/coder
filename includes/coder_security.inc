@@ -8,6 +8,7 @@
  */
 
 function coder_security_reviews() {
+  $table = '\{[A-Za-z_]+\}'; // table-regex
   $rules = array(
     array(
       '#type' => 'regex',
@@ -29,9 +30,15 @@ function coder_security_reviews() {
       '#value' => '(?-i)\"REQUEST_URI\"|\'REQUEST_URI\'',
       '#warning_callback' => '_coder_security_request_uri_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '^(select\s+.*\s+from\s+'. $table .'|insert\s+into\s+'. $table .'|update\s+'. $table .'\s+set|delete\s+from\s'. $table .')\s+.*\$',
+      '#source' => 'doublequote',
+      '#warning_callback' => '_coder_security_sql_var_warning',
+    ),
   );
   $review = array(
-    '#title' => 'Handle text in a secure fashion',
+    '#title' => 'Drupal Security Checks',
     '#link' => 'http://drupal.org/node/28984',
     '#rules' => $rules,
     '#severity' => 'critical',
@@ -70,5 +77,12 @@ function _coder_security_request_uri_warning() {
     array(
       '!request_uri' => theme('drupalapi', 'request_uri'),
     )
+  );
+}
+
+function _coder_security_sql_var_warning() {
+  return array(
+    '#warning' => t('Never, ever write user data into your SQL'),
+    '#link' => 'http://drupal.org/writing-secure-code',
   );
 }
