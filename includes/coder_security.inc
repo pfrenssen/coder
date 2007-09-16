@@ -82,7 +82,12 @@ function _coder_security_request_uri_warning() {
 
 function _coder_security_sql_var_warning() {
   return array(
-    '#warning' => t('Never, ever write user data into your SQL'),
+    '#warning' => t('In SQL strings, Use !db_query placeholders in place of variables.  This is a protential source of SQL injection attacks when the variable can come from user data.',
+      array(
+        '!db_query' => theme('drupalapi', 'db_query'),
+      )
+    ),
     '#link' => 'http://drupal.org/writing-secure-code',
+    '#description' => t('Use %s and %d variable substitution.  When inserting an array of values use <code>$placeholders = implode(\',\', array_fill(0, count($args), "\'%s\'"));</code>'),
   );
 }
