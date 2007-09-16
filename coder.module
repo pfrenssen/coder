@@ -255,7 +255,7 @@ function _coder_settings_form($settings, &$system, &$files) {
     $form['coder_what']['coder_cache'] = array(
       '#type' => 'checkbox',
       '#default_value' => $settings['coder_cache'],
-      '#title' => t('use the experimental coder cache'),
+      '#title' => t('use the coder cache'),
     );
   }
 
@@ -649,7 +649,6 @@ function _coder_modified() {
 }
 
 function do_coder_reviews($coder_args) {
-  // the cache is still experimental, so users must enable it
   if ($use_cache = variable_get('coder_cache', 1)) {
     // cache the results because:
     $cache_key = 'coder:'.  implode(':', array_keys($coder_args['#reviews'])) .  $coder_args['#severity'] .':'. $coder_args['#filename'];
