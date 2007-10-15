@@ -20,7 +20,13 @@ function coder_comment_reviews() {
       '#value' => '^\*',
       '#warning' => 'indent secondary line of comment one space ',
       '#severity' => 'minor',
-    )
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'comment',
+      '#value' => '^\s+\*\s+@see\s+(\w+[^(]|.$)',
+      '#warning' => '@see should always be at the beginning of a line',
+    ),
   );
   $review = array(
     '#title' => t('Drupal Commenting Standards'),
