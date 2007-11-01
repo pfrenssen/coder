@@ -72,5 +72,10 @@ function coder_dot() {
   $a = $some_func().'bugger'; // not ok
 }
 
+function coder_array_indexes() {
+  $a[hello] = 'this is bad';
+  $a['hello'] = 'this is no';
+}
+
 // should generate an error about the trailing php close
 ?>
