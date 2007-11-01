@@ -22,6 +22,7 @@ function coder_test_stdclass() {
 
 function coderCamelCase() {
   $camelCaseVar = 'whatever'; // camel case functions and vars not allowed
+  $var = $obj->camelCase; // but camel case objects elements are
 }
 
 function coder_test_two_errors_on_same_line() {
@@ -69,6 +70,11 @@ function coder_dot() {
   $a = $v ."bugger"; // ok, but will throw performance warning
   $a = $v.'bugger'; // not ok
   $a = $some_func().'bugger'; // not ok
+}
+
+function coder_array_indexes() {
+  $a[hello] = 'this is bad';
+  $a['hello'] = 'this is no';
 }
 
 // should generate an error about the trailing php close

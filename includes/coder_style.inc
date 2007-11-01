@@ -110,6 +110,11 @@ function coder_style_reviews() {
       '#warning_callback' => '_coder_style_xhtml_warning',
       '#severity' => 'minor',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '\[\s*[a-z]\w+\\s*]',
+      '#warning' => 'use quotes around a string literal array index, this is not only a style issue, but a known performance problem',
+    ),
   );
   $review = array(
     '#title' => t('Drupal Coding Standards'),
