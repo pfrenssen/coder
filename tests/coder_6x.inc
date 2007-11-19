@@ -48,6 +48,7 @@ function _coder_6x_more_tests() {
   $form['#submit']['my_submit_function'] = array($param1, $param2); // error
   $form['#submit']['my_validate_function'] = array(); // error
   $form['#multistep'] = TRUE;
+  $form['#DANGEROUS_SKIP_CHECK'] = TRUE;
 
   drupal_retrieve_form('testform'); // missing second arg
   drupal_retrieve_form($form_id, $form_state); // ok
