@@ -62,6 +62,9 @@ function _coder_6x_more_tests() {
 
   custom_url_rewrite($url); // not ok
   custom_url_rewrite_inbound($url); // ok
+
+  $form_location = variable_get('comment_form_location', COMMENT_FORM_SEPARATE_PAGE); // not ok
+  $form_location = variable_get('comment_form_location_page', COMMENT_FORM_SEPARATE_PAGE); // ok
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error
@@ -94,7 +97,7 @@ function mymodule_info($field = 0) {
 function mymodule_auth($username, $password, $server) {
 }
 
-function mymodule_help($section) {
+function mymodule_help($section) { // not ok
 }
 
 function mymodule_help($section, $arg) { // ok
