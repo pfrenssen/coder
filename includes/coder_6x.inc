@@ -276,6 +276,12 @@ function coder_6x_reviews() {
       '#value' => '[\s\(]db_result\s*\(('. $argex .'\s*,\s*)',
       '#warning' => 'Remove $row argument from db_result() method',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => 'watchdog\s*\(\s*[\'"]debug[\'"]\s*,\s*',
+      '#source' => 'all',
+      '#warning_callback' => '_coder_6x_watchdog_debug_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -711,3 +717,15 @@ function _coder_6x_taxonomy_get_vocabulary_warning() {
     '#link' => 'http://drupal.org/node/114774#taxonomy-load',
   );
 }
+
+function _coder_6x_watchdog_debug_warning() {
+  return array(
+    '#warning' => t('Parameters of !watchdog() changed, you use $severity WATCHDOG_DEBUG instead of $type \'debug\'',
+      array(
+        '!watchdog' => theme('drupalapi', 'watchdog', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#watchdog_logging',
+  );
+}
+
