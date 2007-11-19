@@ -73,6 +73,8 @@ function _coder_6x_more_tests() {
   $user_access_path = 'admin/user/access';
 
   locale_refresh_cache();
+
+  db_next_id();
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error

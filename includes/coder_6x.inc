@@ -258,6 +258,12 @@ function coder_6x_reviews() {
       '#source' => 'all',
       '#warning_callback' => '_coder_6x_locale_refresh_cache_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]db_next_id\s*\(',
+      '#source' => 'all',
+      '#warning_callback' => '_coder_6x_db_next_id_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -654,5 +660,17 @@ function _coder_6x_locale_refresh_cache_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/114774#locale',
+  );
+}
+
+function _coder_6x_db_next_id_warning() {
+  return array(
+    '#warning' => t('!db_next_id is deprecated.  Use !db_last_insert_id instead.',
+      array(
+        '!db_next_id' => theme('drupalapi', 'db_next_id', '5'),
+        '!db_last_insert_id' => theme('drupalapi', 'db_last_insert_id', '6'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#db_last_insert_id',
   );
 }
