@@ -75,6 +75,8 @@ function _coder_6x_more_tests() {
   locale_refresh_cache();
 
   db_next_id();
+
+  menu_set_location();
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error
