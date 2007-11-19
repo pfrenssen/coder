@@ -22,8 +22,11 @@ function _coder_6x_more_tests() {
   }
   $output = strtr(format_plural($num, 'There is currently 1 %type post on your site.', 'There are currently @count %type posts on your site.'), array('%type' => theme('placeholder', $type))); // a valid error
   $output = notstrtr(format_plural($num, 'There is currently 1 %type post on your site.', 'There are currently @count %type posts on your site.'), array('%type' => theme('placeholder', $type))); // not an error
+
   watchdog('user', t('Removed %username user.', array('%username' => $user->name))); // an error
   watchdog('user', 'Removed %username user.', array('%username' => $user->name)); // not an error
+  watchdog('debug', 'My debug message here'); // not ok
+
   $complex = unserialize(cache_get('complex_cid')); // an error
   cache_set('simple_cid', 'cache', $simple); // an error
   $ip = $_SERVER['REMOTE_ADDR']; // an error
