@@ -234,6 +234,12 @@ function coder_6x_reviews() {
       '#function' => '_disable$',
       '#warning_callback' => '_coder_6x_node_access_rebuild_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => 'admin\/logs',
+      '#source' => 'all',
+      '#warning_callback' => '_coder_6x_admin_logs_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -597,5 +603,12 @@ function _coder_6x_node_access_rebuild_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/114774#node_access_rebuild_batch',
+  );
+}
+
+function _coder_6x_admin_logs_warning() {
+  return array(
+    '#warning' => t('admin'.'/logs has been renamed to admin/reports, including all subpages.'),
+    '#link' => 'http://drupal.org/node/114774#locale',
   );
 }

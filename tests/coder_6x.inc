@@ -66,7 +66,7 @@ function _coder_6x_more_tests() {
   $form_location = variable_get('comment_form_location', COMMENT_FORM_SEPARATE_PAGE); // not ok
   $form_location = variable_get('comment_form_location_page', COMMENT_FORM_SEPARATE_PAGE); // ok
 
-  
+  $log_path = 'admin/logs/';
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error
