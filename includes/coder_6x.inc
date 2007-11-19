@@ -222,6 +222,18 @@ function coder_6x_reviews() {
       '#source' => 'quote',
       '#warning_callback' => '_coder_6x_comment_form_location_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]node_access_rebuild\s*\(',
+      '#function' => '_enable$',
+      '#warning_callback' => '_coder_6x_node_access_rebuild_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]node_access_rebuild\s*\(',
+      '#function' => '_disable$',
+      '#warning_callback' => '_coder_6x_node_access_rebuild_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -572,5 +584,18 @@ function _coder_6x_comment_form_location_warning() {
   return array(
     '#warning' => t('Comment settings are now per node type.'),
     '#link' => 'http://drupal.org/node/114774#comment_settings_per_node_type',
+  );
+}
+
+function _coder_6x_node_access_rebuild_warning() {
+  return array(
+    '#warning' => t('!node_access_rebuild should not be called from !hook_enable or !hook_disable functions any more.',
+      array(
+        '!node_access_rebuild' => theme('drupalapi', 'node_access_rebuild', '6'),
+        '!hook_enable' => theme('drupalapi', 'hook_enable', '6'),
+        '!hook_disable' => theme('drupalapi', 'hook_disable', '6'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#node_access_rebuild_batch',
   );
 }

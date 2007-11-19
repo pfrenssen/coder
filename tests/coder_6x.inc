@@ -65,6 +65,8 @@ function _coder_6x_more_tests() {
 
   $form_location = variable_get('comment_form_location', COMMENT_FORM_SEPARATE_PAGE); // not ok
   $form_location = variable_get('comment_form_location_page', COMMENT_FORM_SEPARATE_PAGE); // ok
+
+  
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error
@@ -101,4 +103,12 @@ function mymodule_help($section) { // not ok
 }
 
 function mymodule_help($section, $arg) { // ok
+}
+
+function mymodule_enable() {
+  node_access_rebuild(); // not ok in node access modules
+}
+
+function mymodule_disable() {
+  node_access_rebuild(); // not ok in node access modules
 }
