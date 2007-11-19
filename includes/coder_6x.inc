@@ -270,6 +270,12 @@ function coder_6x_reviews() {
       '#source' => 'all',
       '#warning_callback' => '_coder_6x_menu_set_location_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]taxonomy_get_vocabulary\s*\(',
+      '#source' => 'all',
+      '#warning_callback' => '_coder_6x_taxonomy_get_vocabulary_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -691,5 +697,17 @@ function _coder_6x_menu_set_location_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/114774#menu_set_location',
+  );
+}
+
+function _coder_6x_taxonomy_get_vocabulary_warning() {
+  return array(
+    '#warning' => t('!taxonomy_get_vocabulary is deprecated.  Use !taxonomy_vocabulary_load instead.',
+      array(
+        '!taxonomy_get_vocabulary' => theme('drupalapi', 'taxonomy_get_vocabulary', '5'),
+        '!taxonomy_vocabulary_load' => theme('drupalapi', 'taxonomy_vocabulary_load', '6'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#taxonomy-load',
   );
 }
