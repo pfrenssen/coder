@@ -264,6 +264,12 @@ function coder_6x_reviews() {
       '#source' => 'all',
       '#warning_callback' => '_coder_6x_db_next_id_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]menu_set_location\s*\(',
+      '#source' => 'all',
+      '#warning_callback' => '_coder_6x_menu_set_location_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -672,5 +678,18 @@ function _coder_6x_db_next_id_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/114774#db_last_insert_id',
+  );
+}
+
+function _coder_6x_menu_set_location_warning() {
+  return array(
+    '#warning' => t('!menu_set_location is deprecated.  Use !drupal_set_breadcrumb to set a custom breadcrumb or !menu_set_item to set the current location in the menu tree.',
+      array(
+        '!menu_set_location' => theme('drupalapi', 'menu_set_location', '5'),
+        '!drupal_set_breadcrumb' => theme('drupalapi', 'drupal_set_breadcrumb', '6'),
+        '!menu_set_item' => theme('drupalapi', 'menu_set_item', '6'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#menu_set_location',
   );
 }
