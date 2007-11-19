@@ -77,6 +77,8 @@ function _coder_6x_more_tests() {
   db_next_id();
 
   menu_set_location();
+
+  taxonomy_get_vocabulary($vid);
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error
