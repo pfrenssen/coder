@@ -252,6 +252,12 @@ function coder_6x_reviews() {
       '#source' => 'all',
       '#warning_callback' => '_coder_6x_dangerous_skip_check_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]locale_refresh_cache\s*\(',
+      '#source' => 'all',
+      '#warning_callback' => '_coder_6x_locale_refresh_cache_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -636,5 +642,17 @@ function _coder_6x_dangerous_skip_check_warning() {
   return array(
     '#warning' => t('Support for form property #DANGEROUS_SKIP_CHECK has been removed.'),
     '#link' => 'http://drupal.org/node/114774#choice_check',
+  );
+}
+
+function _coder_6x_locale_refresh_cache_warning() {
+  return array(
+    '#warning' => t('!locale_refresh_cache is deprecated.  Use !cache_clear_all instead.',
+      array(
+        '!locale_refresh_cache' => theme('drupalapi', 'locale_refresh_cache', '5'),
+        '!cache_clear_all' => theme('drupalapi', 'cache_clear_all', '6'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#locale',
   );
 }

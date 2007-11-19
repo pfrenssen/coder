@@ -71,6 +71,8 @@ function _coder_6x_more_tests() {
 
   $permission = user_access('administer access control');
   $user_access_path = 'admin/user/access';
+
+  locale_refresh_cache();
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error
