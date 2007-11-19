@@ -249,32 +249,32 @@ function coder_6x_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '\[\'#DANGEROUS_SKIP_CHECK\'\]',
-      '#source' => 'all',
       '#warning_callback' => '_coder_6x_dangerous_skip_check_warning',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]locale_refresh_cache\s*\(',
-      '#source' => 'all',
       '#warning_callback' => '_coder_6x_locale_refresh_cache_warning',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]db_next_id\s*\(',
-      '#source' => 'all',
       '#warning_callback' => '_coder_6x_db_next_id_warning',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]menu_set_location\s*\(',
-      '#source' => 'all',
       '#warning_callback' => '_coder_6x_menu_set_location_warning',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]taxonomy_get_vocabulary\s*\(',
-      '#source' => 'all',
       '#warning_callback' => '_coder_6x_taxonomy_get_vocabulary_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]db_result\s*\(('. $argex .'\s*,\s*)',
+      '#warning' => 'Remove $row argument from db_result() method',
     ),
   );
   $review = array(
