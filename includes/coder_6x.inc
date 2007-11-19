@@ -240,6 +240,12 @@ function coder_6x_reviews() {
       '#source' => 'all',
       '#warning_callback' => '_coder_6x_admin_logs_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => 'user_access\s*\(\s*\'\s*administer\s+access\s+control\s*\'\s*\)|admin\/user\/access',
+      '#source' => 'all',
+      '#warning_callback' => '_coder_6x_administer_access_control_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -610,5 +616,12 @@ function _coder_6x_admin_logs_warning() {
   return array(
     '#warning' => t('admin'.'/logs has been renamed to admin/reports, including all subpages.'),
     '#link' => 'http://drupal.org/node/114774#locale',
+  );
+}
+
+function _coder_6x_administer_access_control_warning() {
+  return array(
+    '#warning' => t('The "administer access control" permission has been renamed to "administer permissions", and the path \'admin/'.'user/access\' to \'admin/user/permissions\'.'),
+    '#link' => 'http://drupal.org/node/114774#permissions',
   );
 }
