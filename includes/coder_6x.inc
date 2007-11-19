@@ -216,6 +216,12 @@ function coder_6x_reviews() {
       '#source' => 'all',
       '#warning_callback' => '_coder_6x_menu_node_add_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '^comment_form_location$|admin\/content\/comment\/settings',
+      '#source' => 'quote',
+      '#warning_callback' => '_coder_6x_comment_form_location_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -559,5 +565,12 @@ function _coder_6x_menu_node_add_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/114774#node_add_summary',
+  );
+}
+
+function _coder_6x_comment_form_location_warning() {
+  return array(
+    '#warning' => t('Comment settings are now per node type.'),
+    '#link' => 'http://drupal.org/node/114774#comment_settings_per_node_type',
   );
 }
