@@ -246,6 +246,12 @@ function coder_6x_reviews() {
       '#source' => 'all',
       '#warning_callback' => '_coder_6x_administer_access_control_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '\[\'#DANGEROUS_SKIP_CHECK\'\]',
+      '#source' => 'all',
+      '#warning_callback' => '_coder_6x_dangerous_skip_check_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -623,5 +629,12 @@ function _coder_6x_administer_access_control_warning() {
   return array(
     '#warning' => t('The "administer access control" permission has been renamed to "administer permissions", and the path \'admin/'.'user/access\' to \'admin/user/permissions\'.'),
     '#link' => 'http://drupal.org/node/114774#permissions',
+  );
+}
+
+function _coder_6x_dangerous_skip_check_warning() {
+  return array(
+    '#warning' => t('Support for form property #DANGEROUS_SKIP_CHECK has been removed.'),
+    '#link' => 'http://drupal.org/node/114774#choice_check',
   );
 }
