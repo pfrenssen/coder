@@ -67,6 +67,9 @@ function _coder_6x_more_tests() {
   $form_location = variable_get('comment_form_location_page', COMMENT_FORM_SEPARATE_PAGE); // ok
 
   $log_path = 'admin/logs/';
+
+  $permission = user_access('administer access control');
+  $user_access_path = 'admin/user/access';
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error
