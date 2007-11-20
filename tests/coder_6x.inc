@@ -85,6 +85,44 @@ function _coder_6x_more_tests() {
 
   db_result($result, $row);
   db_result($result); // ok
+
+  // book api tests
+  book_admin_orphan(); // deprecated
+  book_content(); // deprecated
+  book_form(); // deprecated
+  book_insert(); // deprecated
+  book_location(); // deprecated
+  book_location_down(); // deprecated
+  book_node_visitor_html_post(); // deprecated
+  book_node_visitor_html_pre(); // deprecated
+  book_recurse(); // deprecated
+  book_toc_recurse(); // deprecated
+  book_tree(); // deprecated
+  book_tree_recurse(); // deprecated
+
+  book_admin_edit($nid); // not ok
+  book_admin_edit($form_state, $node); // ok
+
+  book_toc(); // not ok
+  book_toc($exclude); // not ok
+  book_toc($bid, array(), $depth); // ok
+
+  book_export_html($nid, $depth); // not ok
+  book_export_html($nid); // ok
+
+  book_export(); // not ok
+  book_export($type); // not ok
+  book_export($type, $nid); // ok
+
+  book_outline($nid); // not ok
+  book_outline($node->nid); // not ok
+  book_outline($node); // ok
+
+  book_prev($node); // not ok
+  book_prev($book_link); // ok
+  book_next($node); // not ok
+  book_next($book_link); // ok
+  // end book api tests
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error
