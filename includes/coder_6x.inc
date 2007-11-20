@@ -282,6 +282,103 @@ function coder_6x_reviews() {
       '#source' => 'all',
       '#warning_callback' => '_coder_6x_watchdog_debug_warning',
     ),
+    // Book module rules -  start
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_admin_orphan\s*\(',
+      '#warning_callback' => '_coder_6x_book_admin_orphan_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_content\s*\(',
+      '#warning_callback' => '_coder_6x_book_content_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_form\s*\(',
+      '#warning_callback' => '_coder_6x_book_form_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_insert\s*\(',
+      '#warning_callback' => '_coder_6x_book_insert_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_location\s*\(',
+      '#warning_callback' => '_coder_6x_book_location_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_location_down\s*\(',
+      '#warning_callback' => '_coder_6x_book_location_down_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_node_visitor_html_post\s*\(',
+      '#warning_callback' => '_coder_6x_book_node_visitor_html_post_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_node_visitor_html_pre\s*\(',
+      '#warning_callback' => '_coder_6x_book_node_visitor_html_pre_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_recurse\s*\(',
+      '#warning_callback' => '_coder_6x_book_recurse_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_toc_recurse\s*\(',
+      '#warning_callback' => '_coder_6x_book_toc_recurse_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_tree\s*\(',
+      '#warning_callback' => '_coder_6x_book_tree_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_tree_recurse\s*\(',
+      '#warning_callback' => '_coder_6x_book_tree_recurse_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_admin_edit\s*\(('. $argex .'\s*)\)',
+      '#warning_callback' => '_coder_6x_book_admin_edit_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(](book_toc\s*\(('. $argex .'\s*)\)|book_toc\s*\(\s*\))',
+      '#warning_callback' => '_coder_6x_book_toc_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_export_html\s*\(('. $argex .'\s*,\s*)',
+      '#warning_callback' => '_coder_6x_book_export_html_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(](book_export\s*\(('. $argex .'\s*)\)|book_export\s*\(\s*\))',
+      '#warning_callback' => '_coder_6x_book_export_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_outline\s*\(\$(nid|node->nid)',
+      '#warning_callback' => '_coder_6x_book_outline_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_prev\s*\(\$node',
+      '#warning_callback' => '_coder_6x_book_prev_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]book_next\s*\(\$node',
+      '#warning_callback' => '_coder_6x_book_next_warning',
+    ),
+    // Book module rules -  end
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -729,3 +826,211 @@ function _coder_6x_watchdog_debug_warning() {
   );
 }
 
+function _coder_6x_book_admin_orphan_warning() {
+  return array(
+    '#warning' => t('!book_admin_orphan() is deprecated',
+      array(
+        '!book_admin_orphan' => theme('drupalapi', 'book_admin_orphan', '5')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_content_warning() {
+  return array(
+    '#warning' => t('!book_content() is deprecated',
+      array(
+        '!book_content' => theme('drupalapi', 'book_content', '5')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_form_warning() {
+  return array(
+    '#warning' => t('!book_form() is deprecated',
+      array(
+        '!book_form' => theme('drupalapi', 'book_form', '5')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_insert_warning() {
+  return array(
+    '#warning' => t('!book_insert() is deprecated',
+      array(
+        '!book_insert' => theme('drupalapi', 'book_insert', '5')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_location_warning() {
+  return array(
+    '#warning' => t('!book_location() is deprecated',
+      array(
+        '!book_location' => theme('drupalapi', 'book_location', '5')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_location_down_warning() {
+  return array(
+    '#warning' => t('!book_location_down() is deprecated',
+      array(
+        '!book_location_down' => theme('drupalapi', 'book_location_down', '5')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_node_visitor_html_post_warning() {
+  return array(
+    '#warning' => t('!book_node_visitor_html_post() is deprecated',
+      array(
+        '!book_node_visitor_html_post' => theme('drupalapi', 'book_node_visitor_html_post', '5')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_node_visitor_html_pre_warning() {
+  return array(
+    '#warning' => t('!book_node_visitor_html_pre() is deprecated',
+      array(
+        '!book_node_visitor_html_pre' => theme('drupalapi', 'book_node_visitor_html_pre', '5')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_recurse_warning() {
+  return array(
+    '#warning' => t('!book_recurse() is deprecated',
+      array(
+        '!book_recurse' => theme('drupalapi', 'book_recurse', '5')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_toc_recurse_warning() {
+  return array(
+    '#warning' => t('!book_toc_recurse() is deprecated',
+      array(
+        '!book_toc_recurse' => theme('drupalapi', 'book_toc_recurse', '5')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_tree_warning() {
+  return array(
+    '#warning' => t('!book_tree() is deprecated',
+      array(
+        '!book_tree' => theme('drupalapi', 'book_tree', '5')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_tree_recurse_warning() {
+  return array(
+    '#warning' => t('!book_tree_recurse() is deprecated',
+      array(
+        '!book_tree_recurse' => theme('drupalapi', 'book_tree_recurse', '5')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_admin_edit_warning() {
+  return array(
+    '#warning' => t('Parameters to !book_admin_edit() have changed',
+      array(
+        '!book_admin_edit' => theme('drupalapi', 'book_admin_edit', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_toc_warning() {
+  return array(
+    '#warning' => t('Parameters to !book_toc() have changed',
+      array(
+        '!book_toc' => theme('drupalapi', 'book_toc', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_export_html_warning() {
+  return array(
+    '#warning' => t('Parameters to !book_export_html() have changed',
+      array(
+        '!book_export_html' => theme('drupalapi', 'book_export_html', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_export_warning() {
+  return array(
+    '#warning' => t('Parameters to !book_export() have changed',
+      array(
+        '!book_export' => theme('drupalapi', 'book_export', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_outline_warning() {
+  return array(
+    '#warning' => t('Parameters to !book_outline() have changed',
+      array(
+        '!book_outline' => theme('drupalapi', 'book_outline', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_prev_warning() {
+  return array(
+    '#warning' => t('Parameters to !book_prev() have changed',
+      array(
+        '!book_prev' => theme('drupalapi', 'book_prev', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
+
+function _coder_6x_book_next_warning() {
+  return array(
+    '#warning' => t('Parameters to !book_next() have changed',
+      array(
+        '!book_next' => theme('drupalapi', 'book_next', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#book_module',
+  );
+}
