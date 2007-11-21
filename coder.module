@@ -1255,8 +1255,8 @@ function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') 
   return '<div class="'. $class .'">'. $img . $warning .'</div>';
 }
 
-function theme_drupalapi($function, $version = 'HEAD') {
-  return l($function, "http://api.drupal.org/api/$version/function/$function");
+function theme_drupalapi($function, $version = '') {
+  return l($function, "http://api.drupal.org/api/function/$function/$version");
 }
 
 function theme_phpapi($function) {
