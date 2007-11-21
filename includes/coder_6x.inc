@@ -596,7 +596,7 @@ function _coder_6x_file_check_upload_warning() {
   return array(
     '#warning' => t('!file_check_upload() merged into !file_save_upload()',
       array(
-        '!file_check_upload' => theme('drupalapi', 'file_check_upload', '6'),
+        '!file_check_upload' => theme('drupalapi', 'file_check_upload', '5'),
         '!file_save_upload' => theme('drupalapi', 'file_save_upload', '6'),
       )
     ),
@@ -642,7 +642,7 @@ function _coder_6x_custom_url_rewrite_warning() {
   return array(
     '#warning' => t('In place of !custom_url_rewrite, use !custom_url_rewrite_inbound() or !custom_url_rewrite_outbound()',
       array(
-        '!custom_url_rewrite' => theme('drupalapi', 'custom_url_rewrite', '6'),
+        '!custom_url_rewrite' => theme('drupalapi', 'custom_url_rewrite', '5'),
         '!custom_url_rewrite_inbound' => theme('drupalapi', 'custom_url_rewrite_inbound', '6'),
         '!custom_url_rewrite_outbound' => theme('drupalapi', 'custom_url_rewrite_outbound', '6'),
       )
