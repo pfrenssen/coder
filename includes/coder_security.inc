@@ -26,7 +26,7 @@ function coder_security_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#value' => '(?-i)\"REQUEST_URI\"|\'REQUEST_URI\'',
       '#warning_callback' => '_coder_security_request_uri_warning',
     ),

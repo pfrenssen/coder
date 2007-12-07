@@ -707,6 +707,7 @@ function _coder_read_and_parse_file(&$coder_args) {
     $in_comment = 0;
     $beginning_of_line = 0;
     $in_php = 0;
+    $in_allphp = 0;
     $in_quote_html = 0;
     $in_backslash = 0;
     $in_quote = 0;
@@ -715,12 +716,14 @@ function _coder_read_and_parse_file(&$coder_args) {
     $heredoc = '';
     $all_lines = array();
     $php_lines = array();
+    $allphp_lines = array();
     $html_lines = array();
     $quote_lines = array();
     $doublequote_lines = array();
     $comment_lines = array();
     $this_all_lines = '';
     $this_php_lines = '';
+    $this_allphp_lines = '';
     $this_html_lines = '';
     $this_quote_lines = '';
     $this_doublequote_lines = '';
@@ -749,6 +752,9 @@ function _coder_read_and_parse_file(&$coder_args) {
           if (trim($this_php_lines) != '') {
             $php_lines[$lineno] = $this_php_lines;
           }
+          if (trim($this_allphp_lines) != '') {
+            $allphp_lines[$lineno] = $this_allphp_lines;
+          }
           if (trim($this_html_lines) != '') {
             $html_lines[$lineno] = $this_html_lines;
           }
@@ -767,6 +773,7 @@ function _coder_read_and_parse_file(&$coder_args) {
         $lineno ++;
         $this_all_lines = '';
         $this_php_lines = '';
+        $this_allphp_lines = '';
         $this_html_lines = '';
         $this_quote_lines = '';
         $this_doublequote_lines = '';
@@ -779,7 +786,7 @@ function _coder_read_and_parse_file(&$coder_args) {
       }
       $this_all_lines .= $char;
 
-      if ($in_php) {
+      if ($in_php || $in_allphp) {
         // when in a quoted string, look for the trailing quote
         // strip characters in the string, replacing with '' or ""
         if ($in_quote) {
@@ -807,6 +814,7 @@ function _coder_read_and_parse_file(&$coder_args) {
           if ($char == $in_quote_html) {
             $in_quote_html = 0;
           }
+          $this_allphp_lines .= $char;
           unset($char); // NOTE: trailing char output with starting one
         }
 
@@ -832,6 +840,7 @@ function _coder_read_and_parse_file(&$coder_args) {
         elseif ($char == '?' && $content[$pos + 1] == '>') {
           unset($char);
           $in_php = 0;
+          $in_allphp = 0;
           $this_all_lines .= '>';
           $pos ++;
         }
@@ -893,6 +902,7 @@ function _coder_read_and_parse_file(&$coder_args) {
 
                 // replace heredoc's with an empty string
                 $this_php_lines .= '\'\'';
+                $this_allphp_lines .= '\'\'';
                 unset($char);
               }
               break;
@@ -900,6 +910,7 @@ function _coder_read_and_parse_file(&$coder_args) {
         }
         if (isset($char)) {
           $this_php_lines .= $char;
+          $this_allphp_lines .= $char;
         }
       }
       else {
@@ -908,11 +919,13 @@ function _coder_read_and_parse_file(&$coder_args) {
             if ($content[$pos + 1] == '?') {
               if ($content[$pos + 2] == ' ') {
                 $in_php = 1;
+                $in_allphp = 1;
                 $this_all_lines .= '? ';
                 $pos += 2;
               }
               elseif (substr($content, $pos + 2, 3) == 'php') {
                 $in_php = 1;
+                $in_allphp = 1;
                 $this_all_lines .= '?php';
                 $pos += 4;
               }
@@ -929,6 +942,7 @@ function _coder_read_and_parse_file(&$coder_args) {
     // add the files lines to the arguments
     $coder_args['#all_lines'] = $all_lines;
     $coder_args['#php_lines'] = $php_lines;
+    $coder_args['#allphp_lines'] = $allphp_lines;
     $coder_args['#html_lines'] = $html_lines;
     $coder_args['#quote_lines'] = $quote_lines;
     $coder_args['#doublequote_lines'] = $doublequote_lines;
@@ -986,7 +1000,7 @@ function do_coder_review($coder_args, $review) {
         if (isset($rule['#original'])) { // deprecated
           $lines = $coder_args['#all_lines'];
         }
-        elseif (isset($rule['#source'])) { // all, html, comment, or php
+        elseif (isset($rule['#source'])) { // all, html, comment, allphp or php
           $source = '#'. $rule['#source'] .'_lines';
           $lines = $coder_args[$source];
         }

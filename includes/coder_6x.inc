@@ -77,7 +77,7 @@ function coder_6x_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '\$_SERVER\s*\[\s*[\'"]REMOTE_ADDR[\'"]\s*\]',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#warning_callback' => '_coder_6x_remote_addr_warning',
     ),
     array(
@@ -103,19 +103,19 @@ function coder_6x_reviews() {
     // FAPI Rules
     array(
       '#type' => 'regex',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#value' => '(\$form\s*\[\s*[\'"]#base[\'"]|[\'"]#base[\'"]\s*=>)',
       '#warning' => 'FormAPI\'s #base property is gone, manually populate the $form[\'#submit\'], $form[\'#validate\'], and $form[\'#theme\'] elements with the proper function names',
     ),
     array(
       '#type' => 'regex',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#value' => '\$form\s*\[\s*[\'"]#validate[\'"]\]\[[\'"]',
       '#warning' => 'Validation for specific form elements now uses the #element_validate property',
     ),
     array(
       '#type' => 'regex',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#value' => '(\$form\s*\[\s*[\'"]#multistep[\'"]|[\'"]#multistep[\'"]\s*=>)',
       '#warning' => '#multistep is gone, use $form_state instead',
     ),
@@ -127,7 +127,7 @@ function coder_6x_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '\$form\[[\'"]#submit[\'"]\]\[[\'"]',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#warning' => '$form[\'#submit\'] and $form[\'#validate\'] no longer support custom parameters',
     ),
     array(
@@ -164,7 +164,7 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#value' => '\$form(_values)?\s*\[\s*[\'"]?op[\'"]?\s*\]',
       '#warning' => 'replace $form[\'op\'] with $form_state[\'values\'][\'op\']',
     ),
@@ -182,14 +182,14 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#function' => '_(un)?install$|_update_[0-9]+$',
       '#value' => '\$GLOBALS\[[\'"]?db_type[\'"]?\]',
       '#warning_callback' => '_coder_6x_schema_api_warning',
     ),
     array(
       '#type' => 'regex',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#function' => '_submit$|_validate$',
       '#value' => '\$form(_values)?\[[\'"][A-Za-z]',
       '#warning' => 'use $form_state[\'values\'] instead, which is where the values are stored after a submit',
@@ -279,7 +279,7 @@ function coder_6x_reviews() {
     array(
       '#type' => 'regex',
       '#value' => 'watchdog\s*\(\s*[\'"]debug[\'"]\s*,\s*',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#warning_callback' => '_coder_6x_watchdog_debug_warning',
     ),
     // Book module rules -  start
@@ -382,14 +382,14 @@ function coder_6x_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '\s[\'"]#value[\'"]\s*=>\s*t\s*\(\s*[\'"]Submit[\'"]\s*\)',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#warning' => 'When labelling buttons, make it clear what the button does, "Submit" is too generic.',
       '#severity' => 'minor',
     ),
     array(
       '#type' => 'regex',
       '#function' => '_nodeapi$',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#value' => '(case\s+[\'"]submit[\'"]\s*:)|(==\s*[\'"]submit[\'"])',
       '#warning_callback' => '_coder_6x_nodeapi_submit_warning',
     ),
