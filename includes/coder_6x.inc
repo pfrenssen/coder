@@ -606,12 +606,7 @@ function _coder_6x_file_check_upload_warning() {
 
 function _coder_6x_form_validate_and_submit_warning() {
   return array(
-    '#warning' => t('The number of parameters for form !hook_validate and !hook_submit have changed',
-      array(
-        '!hook_validate' => theme('drupalapi', 'hook_validate', '6'),
-        '!hook_submit' => theme('drupalapi', 'hook_submit', '6'),
-      )
-    ),
+    '#warning' => t('The parameters for form validation and submission functions have changed to $form, &$form_state.'),
     '#link' => 'http://drupal.org/node/144132#process-params',
   );
 }
