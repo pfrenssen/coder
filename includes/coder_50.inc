@@ -44,7 +44,7 @@ function coder_50_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#value' => '\$_POST\s*\[\s*[\'"]?op[\'"]?\s*\]',
       '#warning' => '$_POST[\'op\'] deprecated in favor of $form_values[\'op\']',
       '#severity' => 'normal',

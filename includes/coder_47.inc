@@ -62,13 +62,13 @@ function coder_47_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#value' => '[\s\(]variable_get\s*\(\s*[\'"]+file_directory_temp[\'"]+\s*,',
       '#warning_callback' => '_coder_47_file_directory_temp_warning',
     ),
     array(
       '#type' => 'regex',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#value' => '[\s\(]variable_get\s*\(\s*[\'"]+file_directory_path[\'"]+\s*,',
       '#warning_callback' => '_coder_47_file_directory_path_warning',
     ),
