@@ -134,6 +134,7 @@ function coder_6x_reviews() {
       '#type' => 'regex',
       '#value' => '[\s\(]form_set_value\s*\([^,]+(,\s*[^,\)]+){0,1}\)',
       '#warning_callback' => '_coder_6x_form_set_value_warning',
+      '#not' => 'array\s*\(',
     ),
 /*  from Delete API, which has been reverted
     array(
