@@ -379,6 +379,13 @@ function coder_6x_reviews() {
       '#warning_callback' => '_coder_6x_book_next_warning',
     ),
     // Book module rules -  end
+    array(
+      '#type' => 'regex',
+      '#value' => '\s[\'"]#value[\'"]\s*=>\s*t\s*\(\s*[\'"]Submit[\'"]\s*\)',
+      '#source' => 'all',
+      '#warning' => 'When labelling buttons, make it clear what the button does, "Submit" is too generic.',
+      '#severity' => 'minor',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
