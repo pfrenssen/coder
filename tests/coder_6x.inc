@@ -85,6 +85,8 @@ function _coder_6x_more_tests() {
 
   db_result($result, $row);
   db_result($result); // ok
+  $number = db_result(db_query("SELECT COUNT(*) FROM {flood} WHERE event = '%s' AND hostname = '%s' AND timestamp > %d", $name, ip_address(), time() - 3600)); //ok
+
 
   // book api tests
   book_admin_orphan(); // deprecated
