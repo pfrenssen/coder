@@ -160,7 +160,7 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '_(help)\s*\(\s*[^,]+\)',
+      '#value' => 'function\s+[a-z0-9_]+_(help)\s*\(\s*[^,]+\)',
       '#warning_callback' => '_coder_6x_hook_help_warning',
     ),
     array(
@@ -173,7 +173,7 @@ function coder_6x_reviews() {
       '#type' => 'regex',
       '#function' => '_confirm_submit$',
       '#value' => 'return [\'"]',
-      '#warning' => 'in confirm_form, use $form_state[\'redirect\'] instead of return (remember to change function prototype to use &$form_state) ',
+      '#warning' => 'in confirm_submit, use $form_state[\'redirect\'] instead of return (remember to change function prototype to use &$form_state) ',
     ),
     array(
       '#type' => 'regex',
@@ -281,7 +281,7 @@ function coder_6x_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]db_result\s*\(('. $argex .')\s*,\s*'. $argex. '\);$',
-      '#warning' => 'Remove $row argument from db_result() method',
+      '#warning_callback' => '_coder_6x_db_result_warning',
     ),
     array(
       '#type' => 'regex',
@@ -1059,5 +1059,16 @@ function _coder_6x_nodeapi_submit_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/114774#nodeapi_presave',
+  );
+}
+
+function _coder_6x_db_result_warning() {
+  return array(
+    '#warning' => t('Remove $row argument from !db_result method',
+      array(
+        '!db_result' => theme('drupalapi', 'db_result', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#db-result',
   );
 }
