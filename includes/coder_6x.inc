@@ -219,7 +219,13 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '^comment_form_location$|admin\/content\/comment\/settings',
+      '#value' => 'variable_(get|set|del)\(\s*\'comment_form_location\'\s*(,|\))',
+      '#source' => 'allphp',
+      '#warning_callback' => '_coder_6x_comment_form_location_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => 'admin\/content\/comment\/settings',
       '#source' => 'quote',
       '#warning_callback' => '_coder_6x_comment_form_location_warning',
     ),

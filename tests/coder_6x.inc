@@ -69,6 +69,7 @@ function _coder_6x_more_tests() {
 
   $form_location = variable_get('comment_form_location', COMMENT_FORM_SEPARATE_PAGE); // not ok
   $form_location = variable_get('comment_form_location_page', COMMENT_FORM_SEPARATE_PAGE); // ok
+  $variable_name = 'comment_form_location'.'_abc'; // ok
 
   $log_path = 'admin/logs/';
 
