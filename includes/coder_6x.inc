@@ -274,7 +274,7 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]db_result\s*\(('. $argex .'\s*,\s*)',
+      '#value' => '[\s\(]db_result\s*\(('. $argex .')\s*,\s*'. $argex. '\);$',
       '#warning' => 'Remove $row argument from db_result() method',
     ),
     array(
