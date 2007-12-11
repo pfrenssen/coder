@@ -126,6 +126,13 @@ function _coder_6x_more_tests() {
   book_next($node); // not ok
   book_next($book_link); // ok
   // end book api tests
+
+  drupal_mail($action, $to, $subject, $body, $from); // not ok
+  drupal_mail('action_email', $recipient, $subject, $body, $from); // not ok
+  drupal_mail('action_email', $account->mail, $subject, $body, $from); // not ok
+  drupal_mail('action_email', 'foo@foo.com', $subject, $body, $from); // not ok
+  drupal_mail('system', 'action_email', $recipient, $language, $params); // ok
+  
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // an error
