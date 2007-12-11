@@ -659,6 +659,7 @@ function do_coder_reviews($coder_args) {
 
   $results = array();
   $stats = array('minor' => 0, 'normal' => 0, 'critical' => 0);
+  $results['#stats'] = $stats;
 
   // skip php include files when the user requested severity is above minor
   if (isset($coder_args['#php_minor']) && drupal_substr($coder_args['#filename'], -4) == '.php') {
