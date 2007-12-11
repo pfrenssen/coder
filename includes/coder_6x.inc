@@ -400,6 +400,12 @@ function coder_6x_reviews() {
       '#value' => '(case\s+[\'"]submit[\'"]\s*:)|(==\s*[\'"]submit[\'"])',
       '#warning_callback' => '_coder_6x_nodeapi_submit_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'allphp',
+      '#value' => '[\s\(]drupal_mail\s*\(\s*[^,]+,\s*(\$to|\$recipient|\$[a-zA-Z_]+?\->mail|(\'|").+@.+(\'|"))',
+      '#warning_callback' => '_coder_6x_drupal_mail_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -1070,5 +1076,16 @@ function _coder_6x_db_result_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/114774#db-result',
+  );
+}
+
+function _coder_6x_drupal_mail_warning() {
+  return array(
+    '#warning' => t('Parameters to !drupal_mail() have changed',
+      array(
+        '!drupal_mail' => theme('drupalapi', 'drupal_mail', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/189367',
   );
 }
