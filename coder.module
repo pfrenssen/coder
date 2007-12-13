@@ -40,7 +40,7 @@ function coder_reviews() {
   if (!isset($_coder_reviews)) {
     $_coder_reviews = array();
     $path = drupal_get_path('module', 'coder') .'/includes';
-    $files = drupal_system_listing('coder_.*\.inc$', $path, 'basename', 0);
+    $files = drupal_system_listing('coder_.*\.inc$', $path, 'filename', 0);
     foreach ($files as $file) {
       require_once('./'. $file->filename);
       $function = $file->name .'_reviews';
@@ -492,7 +492,7 @@ function coder_page_form() {
         '#collapsed' => true,
         '#weight' => ++ $module_weight,
       );
-      $includefiles = drupal_system_listing('.*\.inc$', 'includes', 'basename', 0);
+      $includefiles = drupal_system_listing('.*\.inc$', 'includes', 'filename', 0);
       _coder_page_form_includes($form, $coder_args, 'core_includes', $includefiles, 0);
     }
 
@@ -547,7 +547,7 @@ function coder_page_form() {
                 $coder_args['#php_minor'] = 1;
               }
               $dups[$path] = 1;
-              $includefiles = drupal_system_listing('.*\.(inc|php|install|schema)$', $path, 'basename', 0);
+              $includefiles = drupal_system_listing('.*\.(inc|php|install|schema)$', $path, 'filename', 0);
               $stats[$filename]['#includes'] = _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset);
             }
           }
@@ -636,7 +636,7 @@ function _coder_modified() {
   static $_coder_mtime;
   if (!isset($_coder_mtime)) {
     $path = drupal_get_path('module', 'coder');
-    $includefiles = drupal_system_listing('.*\.(inc|module)$', $path .'/includes', 'basename', 0);
+    $includefiles = drupal_system_listing('.*\.(inc|module)$', $path .'/includes', 'filename', 0);
     $_coder_mtime = filemtime(realpath($path .'/coder.module'));
     foreach ($includefiles as $file) {
       $mtime = filemtime(realpath($file->filename));
