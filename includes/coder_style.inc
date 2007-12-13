@@ -86,8 +86,7 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '(?-i)(([a-z]+[A-Z]+([a-z]*[A-Z]*)*)|([A-Z]+[a-z]+([A-Z]*[a-z]*)*))',
-      '#not' => '(?-i)^(stdClass|StdClass|x[A-F]+)$',
+      '#value' => '(?-i)(function\s+|\$)(([a-z]+[A-Z]+([a-z]*[A-Z]*)*)|([A-Z]+[a-z]+([A-Z]*[a-z]*)*))',
       '#warning' => 'do not use mixed case (camelCase), use lower case and _',
     ),
     array(
