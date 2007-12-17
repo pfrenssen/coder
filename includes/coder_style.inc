@@ -112,8 +112,9 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\[\s*[a-z]\w+\\s*]',
+      '#value' => '\[\s*[a-z][a-z0-9_]+\\s*]',
       '#warning' => 'use quotes around a string literal array index, this is not only a style issue, but a known performance problem',
+      '#case-sensitive' => TRUE,
     ),
   );
   $review = array(
