@@ -1039,6 +1039,7 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
     $current_function = '';
     $paren = 0;
     $not_regex = isset($rule['#not']) ? '/'. $rule['#not'] .'/i' : '';
+    $never_regex = isset($rule['#never']) ? '/'. $rule['#never'] .'/i' : '';
     foreach ($lines as $lineno => $line) {
       // some rules apply only within certain functions
       if ($function_regex) {
@@ -1060,6 +1061,11 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
             if (preg_match($not_regex, $match)) {
               continue 2;
             }
+          }
+        }
+        if ($never_regex) {
+          if (preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
+            continue 2;
           }
         }
 
