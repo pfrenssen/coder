@@ -17,6 +17,7 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#never' => '<\?php',
       '#value' => '^ (  )*[^ \'".]',
       '#warning' => 'Use an indent of 2 spaces, with no tabs',
       '#severity' => 'minor',
