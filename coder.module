@@ -1089,7 +1089,7 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
         }
         if ($never_regex) {
           if (preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
-            continue 2;
+            continue;
           }
         }
 
