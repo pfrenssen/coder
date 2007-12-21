@@ -1213,7 +1213,6 @@ function _coder_is_drupal_core($module) {
   if (!isset($core)) {
     $core = array(
       // modules
-      'actions' => 1,
       'aggregator' => 1,
       'block' => 1,
       'blog' => 1,
@@ -1223,7 +1222,6 @@ function _coder_is_drupal_core($module) {
       'comment' => 1,
       'contact' => 1,
       'dblog' => 1,
-      'drupal' => 1,
       'filter' => 1,
       'forum' => 1,
       'help' => 1,
@@ -1244,6 +1242,8 @@ function _coder_is_drupal_core($module) {
       'throttle' => 1,
       'tracker' => 1,
       'translation' => 1,
+      'trigger' => 1,
+      'update' => 1,
       'upload' => 1,
       'user' => 1,
 
