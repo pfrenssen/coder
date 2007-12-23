@@ -265,6 +265,9 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#title' => t('Select Specific Modules'),
     '#collapsible' => true,
     '#collapsed' => true,
+    'checkboxes' => array(
+      '#theme' => 'coder_checkboxes',
+    ),
   );
   if (isset($settings['coder_all'])) {
     $modules = $system_modules;
@@ -294,6 +297,9 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#title' => t('Select Specific Themes'),
     '#collapsible' => true,
     '#collapsed' => true,
+    'checkboxes' => array(
+      '#theme' => 'coder_checkboxes',
+    ),
   );
   if (isset($settings['coder_all'])) {
     $themes = $system_themes;
@@ -333,7 +339,7 @@ function _coder_settings_form($settings, &$system, &$files) {
       $type = 'module';
       $default_value = isset($modules[$name]);
     }
-    $form['coder_what']["coder_${type}s"]["coder_${type}s-$name"] = array(
+    $form['coder_what']["coder_${type}s"]['checkboxes']["coder_${type}s-$name"] = array(
       '#type' => 'checkbox',
       '#title' => $link,
       '#default_value' => $default_value,
@@ -343,6 +349,30 @@ function _coder_settings_form($settings, &$system, &$files) {
 
   $system = array_merge($modules, $themes);
   return $form;
+}
+
+function theme_coder_checkboxes($form) {
+  $total = 0;
+  foreach ($form as $element_id => $element) {
+    if ($element_id[0] != '#') {
+      $total ++;
+    }
+  }
+  $total = ($total % 3) ? ($total / 3 + 1) : ($total / 3);
+  $pos = 0;
+  $rows = array();
+  foreach ($form as $element_id => $element) {
+    if ($element_id[0] != '#') {
+      $pos ++;
+      $row = $pos % $total;
+      $col = $pos / $total;
+      if (!isset($rows[$row])) {
+        $rows[$row] = array();
+      }
+      $rows[$row][$col] = drupal_render($element);
+    }
+  }
+  return theme('table', array(), $rows);
 }
 
 /**
