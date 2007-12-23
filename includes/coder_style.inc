@@ -24,13 +24,13 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\s(if|elseif|while|foreach|switch|return|for)\(',
+      '#value' => '\s(if|elseif|while|foreach|switch|return|for|catch)\(',
       '#warning' => 'Control statements should have one space between the control keyword and opening parenthesis',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(](\w+)\s\(',
-      '#not' => '^(if|elseif|while|foreach|switch|return|for|list)$',
+      '#not' => '^(if|elseif|while|foreach|switch|return|for|list|catch)$',
       '#warning' => 'Functions should be called with no spaces between the function name',
     ),
     array(
