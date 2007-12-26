@@ -356,7 +356,7 @@ function theme_coder_checkboxes($form) {
       $total ++;
     }
   }
-  $total = ($total % 3) ? ($total / 3 + 1) : ($total / 3);
+  $total = (int) (($total % 3) ? (($total + 2) / 3) : ($total / 3));
   $pos = 0;
   $rows = array();
   foreach ($form as $element_id => $element) {
