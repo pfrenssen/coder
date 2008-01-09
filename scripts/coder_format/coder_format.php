@@ -46,7 +46,7 @@
 require_once realpath(dirname($_SERVER['PHP_SELF'])) .'/coder_format.inc';
 
 if (!empty($_SERVER['argv'])) {
-  // Remove self-reference
+  // Remove self-reference.
   array_shift($_SERVER['argv']);
   
   $undo     = false;
@@ -78,7 +78,7 @@ if (!empty($_SERVER['argv'])) {
     exit;
   }
   
-  // Process a single file
+  // Process a single file.
   $sourcefile = array_shift($_SERVER['argv']);
   $targetfile = array_shift($_SERVER['argv']);
   

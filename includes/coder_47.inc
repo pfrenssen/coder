@@ -1,12 +1,14 @@
 <?php
 // $Id$
 
-/** @file
+/** 
+ * @file
  * This include file implements coder functionality for 4.6 -> 4.7 upgrades
- *
- * Todo: The rules for this review have not yet been defined.
  */ 
 
+/**
+ * Implementation of hook_reviews().
+ */
 function coder_47_reviews() {
   $rules = array(
     array(

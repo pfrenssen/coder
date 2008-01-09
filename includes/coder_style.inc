@@ -1,12 +1,14 @@
 <?php
 // $Id$
 
-/** @file
+/**
+ * @file
  * This include file implements coder functionality for Drupal Standards
- *
- * Todo: The rules for this review are not yet complete.
  */
 
+/**
+ * Implementation of hook_reviews().
+ */
 function coder_style_reviews() {
   $br = 'br';
   $rules = array(
@@ -127,9 +129,8 @@ function coder_style_reviews() {
 }
 
 /**
- * Define the rule callbacks
+ * Define the rule callbacks for style
  */
-
 function _coder_style_callback(&$coder_args, $review, $rule, $lines, &$results) {
   for ($lineno = -1; $last = array_slice($lines, $lineno); $lineno --) {
     $lastline = $last[0];

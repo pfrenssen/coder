@@ -1,10 +1,14 @@
 <?php
 // $Id$
 
-/** @file
- * This include file implements coder functionality for 5.x -> 6.x upgrades
+/** 
+ * @file
+ * This include file implements coder functionality for 5.x -> 6.x upgrades.
  */
 
+/**
+ * Implementation of hook_reviews().
+ */
 function coder_6x_reviews() {
   $argex = '(((\$?)[a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'\'|"")';
   $rules = array(
@@ -416,6 +420,9 @@ function coder_6x_reviews() {
   return array('upgrade6x' => $review);
 }
 
+/**
+ * Define the rule callbacks for 6.x, see do_coder_review_callback()
+ */
 function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // only perform this check on module's (not includes)
   $filename = $coder_args['#filename'];
@@ -464,10 +471,6 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
     }
   }
 }
-
-/**
- * Define the rule callbacks
- */
 
 /**
  * Define the warning callbacks

@@ -1,7 +1,15 @@
 <?php
-/** @file
-* This is a comment error
- *This is a comment error
+/**
+ * @file
+ * This file implements tests for the Drupal commenting standards.
+ *
+ * It is never actually called by the coder code, but is read when running
+ * admin/coder/coder
+ */
+
+/** 
+* This is a comment error.
+ *This is a comment error.
  */
 
 /*

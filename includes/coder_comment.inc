@@ -1,10 +1,14 @@
 <?php
 // $Id$ 
 
-/** @file
+/** 
+ * @file
  * This include file implements coder functionality for comments
  */
 
+/**
+ * Implementation of hook_reviews().
+ */
 function coder_comment_reviews() {
   $rules = array(
     array(

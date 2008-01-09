@@ -1,10 +1,14 @@
 <?php
 // $Id$
 
-/** @file
+/**
+ * @file
  * This include file implements coder functionality for SQL strings
  */
 
+/**
+ * Implementation of hook_reviews().
+ */
 function coder_sql_reviews() {
   $table = '\{[A-Za-z_]+\}'; // table-regex
   $bad = '[A-Za-z_]+';

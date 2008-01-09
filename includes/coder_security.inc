@@ -1,12 +1,16 @@
 <?php
 // $Id$
 
-/** @file
- * This include file implements coder functionality for Drupal Standards
+/** 
+ * @file
+ * This include file implements coder functionality for Drupal Standards.
  *
- * Todo: The rules for this review are not yet complete.
+ * @todo The rules for this review are not yet complete.
  */
 
+/**
+ * Implementation of hook_reviews().
+ */
 function coder_security_reviews() {
   $table = '\{[A-Za-z_]+\}'; // table-regex
   $rules = array(
@@ -49,7 +53,7 @@ function coder_security_reviews() {
 
 
 /**
- * Define the warning callbacks
+ * Define the rule callbacks
  */
 
 /* function _coder_security_callback(&$coder_args, $review, $rule, $lines, &$results) {
