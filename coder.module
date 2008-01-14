@@ -407,11 +407,6 @@ function _coder_settings_array(&$form_values, $type) {
   return $systems;
 }
 
-function coder_page_form_submit($form_id, $form_values) {
-  // HELP: is there a better way to get these to coder_page_form()???
-  return false;
-}
-
 /**
  * Implementation of code review page
  */
@@ -464,9 +459,7 @@ function _coder_get_default_settings($args = 'default') {
   return $settings;
 }
 
-function coder_page_form() {
-  // HELP: is there a better way to get these from coder_page_form_submit()???
-  $form_values = $_POST;
+function coder_page_form($form_values = null) {
   if (isset($form_values['op'])) {
     $settings = $form_values;
     $settings['coder_modules'] = _coder_settings_array($form_values, 'module');
@@ -624,7 +617,8 @@ function coder_page_form() {
       '#type' => 'submit',
       '#value' => t('Submit'),
     );
-    $form['#action'] = url('coder');
+    $form['#multistep'] = true;
+    $form['#redirect'] = false;
   }
   return $form;
 }
