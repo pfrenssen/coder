@@ -424,9 +424,10 @@ function coder_admin_settings() {
 /**
  * Callback function for settings page in Drupal 5.
  */
-function coder_settings_form_submit(&$form, &$form_state) {
-  variable_set('coder_modules', _coder_settings_array($form, 'module'));
-  variable_set('coder_themes', _coder_settings_array($form, 'theme'));
+function coder_settings_form_submit($form, &$form_state) {
+  $form_state['storage'] = $form_state['values'];
+  variable_set('coder_modules', _coder_settings_array($form_state, 'module'));
+  variable_set('coder_themes', _coder_settings_array($form_state, 'theme'));
 }
 
 /**
@@ -440,17 +441,17 @@ function coder_settings_form_submit(&$form, &$form_state) {
  * @return 
  *   Settings lookup array in form module/theme name => 1
  */
-function _coder_settings_array(&$form_values, $type) {
+function _coder_settings_array(&$form_state, $type) {
   $typekey = "coder_{$type}s-";
   $typelen = strlen($typekey);
   $systems = array();
-  foreach ($form_values['#post'] as $key => $value) {
+  foreach ($form_state['storage'] as $key => $value) {
     if (substr($key, 0, $typelen) == $typekey) {
       if ($value == 1) {
         $system = substr($key, $typelen);
         $systems[$system] = 1;
       }
-      unset($form_values[$key]);
+      unset($form_state['storage'][$key]);
     }
   }
   return $systems;
@@ -522,10 +523,10 @@ function _coder_get_default_settings($args = 'default') {
 }
 
 /**
- * Implementation of hook_validate().
+ * Implementation of hook_submit().
  */
-function coder_page_form_validate(&$form, &$form_state) {
-  variable_set('_coder_form', $form);
+function coder_page_form_submit($form, &$form_state) {
+  $form_state['storage'] = $form_state['values'];
 }
 
 /**
@@ -534,14 +535,11 @@ function coder_page_form_validate(&$form, &$form_state) {
  * Implements coder's main form, in which a user can select reviews and
  * modules/themes to run them on.
  */
-function coder_page_form() {
-  // HELP: is there a better way to get these from the validate handler?
-  $form_values = variable_get('_coder_form', array());
-  variable_del('_coder_form');
-  if (isset($form_values['#post'])) {
-    $settings = $form_values['#post'];
-    $settings['coder_modules'] = _coder_settings_array($form_values, 'module');
-    $settings['coder_themes'] = _coder_settings_array($form_values, 'theme');
+function coder_page_form($form_state) {
+  if (isset($form_state['storage'])) {
+    $settings = $form_state['storage'];
+    $settings['coder_modules'] = _coder_settings_array($form_state, 'module');
+    $settings['coder_themes'] = _coder_settings_array($form_state, 'theme');
     drupal_set_title(t('Code review (submitted options)'));
   }
   else {
@@ -696,7 +694,6 @@ function coder_page_form() {
       '#type' => 'submit',
       '#value' => t('Submit'),
     );
-    $form['#action'] = url('coder');
   }
   return $form;
 }
