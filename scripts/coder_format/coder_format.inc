@@ -809,8 +809,8 @@ function coder_exec_processors($code, $prefix = '') {
 
 /**
  * Orders preprocessors by weight.
- * @note
- *   Callback function for uasort()
+ *
+ * @see coder_exec_processors()
  */
 function coder_order_processors($a, $b) {
   if (isset($a['#weight']) && isset($b['#weight'])) {
