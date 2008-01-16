@@ -1,0 +1,15 @@
+// $Id$
+
+Coder_format x.x-x.x, xxxx-xx-xx
+--------------------------------
+
+
+Coder_format 6.x-1.x, xxxx-xx-xx
+--------------------------------
+#149826 by sun: Added coder_format Windows installer.
+  Fixed coder_format.php startup script.
+  Fixed wrong quotes in coder_preprocessor_line_breaks_*.
+  Fixed CVS Id in coder_postprocessor_cvs_id().
+  Disabled coder_postprocessor_array_rearrange().
+
+

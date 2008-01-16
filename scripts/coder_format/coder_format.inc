@@ -829,8 +829,8 @@ function coder_preprocessor_line_breaks_win() {
   return array(
     '#title' => 'Convert Windows line breaks to Unix format.',
     '#weight' => 1,
-    '#search' => '/\r\n/',
-    '#replace' => '\n',
+    '#search' => "/\r\n/",
+    '#replace' => "\n",
   );
 }
 
@@ -838,8 +838,8 @@ function coder_preprocessor_line_breaks_mac() {
   return array(
     '#title' => 'Convert Macintosh line breaks to Unix format.',
     '#weight' => 2,
-    '#search' => '/\r/',
-    '#replace' => '\n',
+    '#search' => "/\r/",
+    '#replace' => "\n",
   );
 }
 
@@ -899,7 +899,7 @@ function coder_preprocessor_switch_duplicate_exit() {
  */
 function coder_postprocessor_cvs_id() {
   return array(
-    '#title' => 'If the CVS keyword $Id$ already exists, append a new line after it.',
+    '#title' => 'If the CVS keyword Id already exists, append a new line after it.',
     '#search' => '@^(//.*\$Id.*\$)$@m',
     '#replace' => "$1\n",
   );
@@ -958,7 +958,7 @@ function coder_postprocessor_array_rearrange() {
     // ((.+ => .+, ){3,}) matches all array items, except the last one.
     // (.+ => ([^\(\)]+)) matches the last array item, excluding.
     //   arrays or functions (starting with a left parenthesis) (not supported yet).
-    '#search' => '/^([\040\t]*)(.*?array\()((.+ => .+, ){3,})(.+ => ([^\(\)]+))\)/m',
+    #'#search' => '/^([\040\t]*)(.*?array\()((.+ => .+, ){3,})(.+ => ([^\(\)]+))\)/m',
     '#replace_callback' => 'coder_replace_array_rearrange',
   );
 }
