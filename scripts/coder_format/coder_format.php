@@ -46,7 +46,7 @@
 require_once realpath(dirname($_SERVER['PHP_SELF'])) .'/coder_format.inc';
 
 if (!empty($_SERVER['argv'])) {
-  // Remove self-reference
+  // Remove self-reference.
   array_shift($_SERVER['argv']);
   
   $files    = array();
