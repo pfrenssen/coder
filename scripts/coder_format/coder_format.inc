@@ -727,12 +727,12 @@ function coder_trim_php($code) {
     $code = preg_replace('/<\?php\n/', "<?php\n// \$Id\$\n\n", $code, 1);
   }
   
-  // Remove closing PHP tag/
+  // Remove closing PHP tag.
   if (substr($code, -2) == '?>') {
     $code = rtrim($code, '?>');
   }
   
-  // Append two empty lines/
+  // Append two empty lines.
   $code .= str_repeat(chr(10), 2);
   
   return $code;
@@ -809,8 +809,8 @@ function coder_exec_processors($code, $prefix = '') {
 
 /**
  * Orders preprocessors by weight.
- * @note
- *   Callback function for uasort()
+ *
+ * @see coder_exec_processors()
  */
 function coder_order_processors($a, $b) {
   if (isset($a['#weight']) && isset($b['#weight'])) {
