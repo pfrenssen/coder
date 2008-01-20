@@ -1,7 +1,7 @@
 <?php
 TEST: Multiline arrays
 
--- INPUT --
+--INPUT--
 $var = array(
   'install_page' => array(
     'arguments' => array(
@@ -9,6 +9,16 @@ $var = array(
   ),
 );
 
+--EXPECT--
+$var = array(
+  'install_page' => array(
+    'arguments' => array(
+      'content' => NULL,
+    ),
+  ),
+);
+
+--INPUT--
 $array = array(
   'foo' => 'bar',
   2 => $foo,
@@ -17,6 +27,7 @@ $array = array(
   $bar => 'asdf',
 );
 
+--INPUT--
 $deep = array(
   'foo' => array(
     'croon' => 'asdf',
@@ -28,69 +39,7 @@ $deep = array(
   )
 );
 
-drupal_add_link(array('rel' => 'alternate',
-                      'type' => 'application/rss+xml',
-                      'title' => $title,
-                      'href' => $url));
-
-function node_theme() {
-  return array(
-    'node' => array(
-      'arguments' => array('node' => NULL, 'teaser' => FALSE, 'page' => FALSE),
-      'template' => 'node',
-    ),
-    'node_list' => array(
-      'arguments' => array('items' => NULL, 'title' => NULL),
-    ),
-    'node_search_admin' => array(
-      'arguments' => array('form' => NULL),
-    ),
-    'node_filter_form' => array(
-      'arguments' => array('form' => NULL),
-      'file' => 'node.admin.inc',
-    ),
-    'node_filters' => array(
-      'arguments' => array('form' => NULL),
-      'file' => 'node.admin.inc'
-    ),
-    'node_admin_nodes' => array(
-      'arguments' => array('form' => NULL),
-      'file' => 'node.admin.inc',
-    ),
-    'node_add_list' => array('arguments' => array('content' => NULL),
-      'file' => 'node.pages.inc',
-    ),
-    'node_form' => array(
-      'arguments' => array('form' => NULL),
-      'file' => 'node.pages.inc',
-    ),
-    'node_preview' => array('arguments' => array('node' => NULL), 'file' => 'node.pages.inc'),
-    'node_log_message' => array(
-      'arguments' => array('log' => NULL),
-    ),
-    'node_submitted' => array(
-      'arguments' => array('node' => NULL),
-    ),
-  );
-}
-
--- EXPECT --
-$var = array(
-  'install_page' => array(
-    'arguments' => array(
-      'content' => NULL,
-    ),
-  ),
-);
-
-$array = array(
-  'foo' => 'bar',
-  2 => $foo,
-  0x000000 => 'asdf',
-  "CRIVENS" => 3,
-  $bar => 'asdf',
-);
-
+--EXPECT--
 $deep = array(
   'foo' => array(
     'croon' => 'asdf',
@@ -102,11 +51,20 @@ $deep = array(
   ),
 );
 
+--INPUT--
+drupal_add_link(array('rel' => 'alternate',
+                      'type' => 'application/rss+xml',
+                      'title' => $title,
+                      'href' => $url));
+
+--EXPECT--
 drupal_add_link(array('rel' => 'alternate',
     'type' => 'application/rss+xml',
     'title' => $title,
     'href' => $url,
   ));
+
+--INPUT--
 function node_theme() {
   return array(
     'node' => array(
@@ -119,31 +77,45 @@ function node_theme() {
     'node_search_admin' => array(
       'arguments' => array('form' => NULL),
     ),
-    'node_filter_form' => array(
+    'node_filters' => array(
       'arguments' => array('form' => NULL),
-      'file' => 'node.admin.inc',
+      'file' => 'node.admin.inc'
+    ),
+    'node_form' => array(
+      'arguments' => 123,
+      'file' => 'node.pages.inc',
+    ),
+    'node_preview' => array('arguments' => array('node' => NULL), 'file' => 'node.pages.inc'),
+    'node_log_message' => array(
+      'arguments' => array('log' => NULL)
+    )
+  );
+}
+
+-- EXPECT --
+function node_theme() {
+  return array(
+    'node' => array(
+      'arguments' => array('node' => NULL, 'teaser' => FALSE, 'page' => FALSE),
+      'template' => 'node',
+    ),
+    'node_list' => array(
+      'arguments' => array('items' => NULL, 'title' => NULL),
+    ),
+    'node_search_admin' => array(
+      'arguments' => array('form' => NULL),
     ),
     'node_filters' => array(
       'arguments' => array('form' => NULL),
       'file' => 'node.admin.inc',
     ),
-    'node_admin_nodes' => array(
-      'arguments' => array('form' => NULL),
-      'file' => 'node.admin.inc',
-    ),
-    'node_add_list' => array('arguments' => array('content' => NULL),
-      'file' => 'node.pages.inc',
-    ),
     'node_form' => array(
-      'arguments' => array('form' => NULL),
+      'arguments' => 123,
       'file' => 'node.pages.inc',
     ),
     'node_preview' => array('arguments' => array('node' => NULL), 'file' => 'node.pages.inc'),
     'node_log_message' => array(
       'arguments' => array('log' => NULL),
-    ),
-    'node_submitted' => array(
-      'arguments' => array('node' => NULL),
     ),
   );
 }

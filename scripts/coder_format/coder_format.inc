@@ -1,9 +1,10 @@
 <?php
 // $Id$
 
+
 /**
  * Recursively process .module and .inc files in directory with coder_format_file().
- * 
+ *
  * @param $root
  *   Path to root directory for Drupal installation.
  * @param $undo
@@ -14,18 +15,18 @@
 function coder_format_recursive($root, $undo = false, $file_inc = null) {
   // Convert Windows paths.
   $root = str_replace("\\", '/', $root);
-  
+
   // Check if directory exists.
   if (!file_exists($root)) {
     echo 'ERROR: '. $root .' does not exist!';
     return;
   }
-  
+
   // Trim root directory.
   if (substr($root, -1) == '/') {
     $root = substr($root, 0, -1);
   }
-  
+
   // Include Drupal's file.inc.
   if (!isset($file_inc)) {
     if (!file_exists($root .'/includes/file.inc')) {
@@ -40,12 +41,12 @@ function coder_format_recursive($root, $undo = false, $file_inc = null) {
     }
   }
   require_once (!isset($file_inc) ? $root .'/includes/file.inc' : $file_inc);
-  
+
   if (!$undo) {
     // Fetch files to process.
-    $mask = '.module$|.inc$|.install|.profile$';
+    $mask   = '\.php$|\.module$|\.inc$|\.install|\.profile$';
     $nomask = array('.', '..', 'CVS', '.svn');
-    $files = file_scan_directory($root, $mask, $nomask, 0, true);
+    $files  = file_scan_directory($root, $mask, $nomask, 0, true);
     foreach ($files as $file) {
       // file_copy() assigns $file->filename by reference.
       $sourcefile = $file->filename;
@@ -56,9 +57,9 @@ function coder_format_recursive($root, $undo = false, $file_inc = null) {
   }
   else {
     // Fetch files to process.
-    $mask = '.coder.orig$';
+    $mask   = '.coder.orig$';
     $nomask = array('.', '..', 'CVS', '.svn');
-    $files = file_scan_directory($root, $mask, $nomask, 0, true);
+    $files  = file_scan_directory($root, $mask, $nomask, 0, true);
     foreach ($files as $file) {
       $file->origname = str_replace('.coder.orig', '', $file->filename);
       echo $file->origname ."\n";
@@ -69,11 +70,12 @@ function coder_format_recursive($root, $undo = false, $file_inc = null) {
 
 /**
  * Reads, processes and writes the source code from and to a file.
- * 
+ *
  * @param $sourcefile
  *   Path to source file to read code from.
  * @param $targetfile
  *   Target path to write formatted source code to.
+ *
  * @return
  *   TRUE if successful.
  */
@@ -81,25 +83,15 @@ function coder_format_file($sourcefile = null, $targetfile = null) {
   if (!isset($sourcefile) || !isset($targetfile)) {
     return;
   }
-  
+
   // Read source code from source file.
   $fd = fopen($sourcefile, 'r');
   $code = fread($fd, filesize($sourcefile));
   fclose($fd);
-  
+
   if ($code !== false) {
-    // Preprocess source code.
-    $code = coder_exec_processors($code, 'coder_preprocessor');
-    
-    // Process source code.
-    $code = coder_format_string($code);
-    
-    // Postprocess source code.
-    $code = coder_exec_processors($code, 'coder_postprocessor');
-    
-    // Fix beginning and end of code.
-    $code = coder_trim_php($code);
-    
+    $code = coder_format_string_all($code);
+
     if ($code !== false) {
       // Write formatted source code to target file.
       $fd = fopen($targetfile, 'w');
@@ -108,8 +100,31 @@ function coder_format_file($sourcefile = null, $targetfile = null) {
       return $status;
     }
   }
-  
+
   return false;
+}
+
+/**
+ * Formats source code according to Drupal conventions, also using
+ * post and pre-processors.
+ *
+ * @param
+ *   $code Code to process.
+ */
+function coder_format_string_all($code) {
+  // Preprocess source code.
+  $code = coder_exec_processors($code, 'coder_preprocessor');
+
+  // Process source code.
+  $code = coder_format_string($code);
+
+  // Postprocess source code.
+  $code = coder_exec_processors($code, 'coder_postprocessor');
+
+  // Fix beginning and end of code.
+  $code = coder_trim_php($code);
+
+  return $code;
 }
 
 /**
@@ -166,6 +181,20 @@ function coder_format_file($sourcefile = null, $targetfile = null) {
  *   $inline_if bool
  *      Controls formatting of ? and : for inline ifs until a ; (semicolon) is
  *      processed.
+ *   $in_function_declaration
+ *      Prevents whitespace after & for function declarations, e.g.
+ *      function &foo(). Is true after function token but before first
+ *      parenthesis.
+ *   $in_array
+ *      Array of parenthesis level to whether or not the structure
+ *      is for an array.
+ *   $in_multiline
+ *      Array of parenthesis level to whether or not the structure
+ *      is multiline.
+ *   $after_semicolon
+ *      Whether or not the current line being processed has a semicolon.
+ *   $after_case
+ *      Whether or not the current line being processed has a case/default statement.
  *
  * @param $code
  *      The source code to format.
@@ -175,7 +204,7 @@ function coder_format_file($sourcefile = null, $targetfile = null) {
  */
 function coder_format_string($code = '') {
   global $_coder_indent;
-  
+
   // Indent controls:
   $_coder_indent  = 0;
   $in_case        = false;
@@ -185,17 +214,24 @@ function coder_format_string($code = '') {
   $in_heredoc     = false;
   $first_php_tag  = true;
   $in_do_while    = false;
-  
+
   // Whitespace controls:
-  $in_object   = false;
-  $in_at       = false;
-  $in_php      = false;
-  $in_quote    = false;
-  $inline_if   = false;
-  
-  $result      = '';
-  $lasttoken   = array(0);
-  $tokens      = token_get_all($code);
+  $in_object       = FALSE;
+  $in_at           = FALSE;
+  $in_php          = FALSE;
+  $in_quote        = FALSE;
+  $inline_if       = FALSE;
+  $in_array        = array();
+  $in_multiline    = array();
+  $after_semicolon = FALSE;
+  $after_case      = FALSE;
+
+  // Whether or not a function token was encountered:
+  $in_function_declaration = FALSE;
+
+  $result = '';
+  $lasttoken = array(0);
+  $tokens = token_get_all($code);
 
   // Mask T_ML_COMMENT (PHP4) as T_COMMENT (PHP5).
   // Mask T_DOC_COMMENT (PHP5) as T_ML_COMMENT (PHP4).
@@ -205,7 +241,7 @@ function coder_format_string($code = '') {
   else if (!defined('T_DOC_COMMENT')) {
     define('T_DOC_COMMENT', T_ML_COMMENT);
   }
-  
+
   foreach ($tokens as $token) {
     if (is_string($token)) {
       // Simple 1-character token.
@@ -215,19 +251,20 @@ function coder_format_string($code = '') {
           // Write curly braces at the end of lines followed by a line break if
           // not in quotes (""), object ($foo->{$bar}) or in variables (${foo}).
           // (T_DOLLAR_OPEN_CURLY_BRACES exists but is never assigned.)
-          if (!$in_quote && !$in_object && substr(rtrim($result), -1) != '$') {
+          if (!$in_variable && !$in_quote && !$in_object && substr(rtrim($result), -1) != '$') {
             if ($in_case) {
               ++$braces_in_case;
             }
             ++$_coder_indent;
-            $result = rtrim($result) .' '. $text . coder_br();
+            $result = rtrim($result) .' '. $text;
+            coder_br($result);
           }
           else {
             $in_brace = true;
             $result .= $text;
           }
           break;
-        
+
         case '}':
           if (!$in_quote && !$in_brace && !$in_heredoc) {
             if ($in_case) {
@@ -243,20 +280,22 @@ function coder_format_string($code = '') {
             $result = rtrim($result);
             if (substr($result, -1) != '{') {
               // Avoid line break in empty curly braces.
-              $result .= coder_br();
+              coder_br($result);
             }
-            $result .= $text . coder_br();
+            $result .= $text;
+            coder_br($result);
           }
           else {
             $in_brace = false;
             $result .= $text;
           }
           break;
-        
+
         case ';':
           $result = rtrim($result) . $text;
           if (!$parenthesis && !$in_heredoc) {
-            $result .= coder_br();
+            coder_br($result);
+            $after_semicolon = TRUE;
           }
           else {
             $result .= ' ';
@@ -265,12 +304,12 @@ function coder_format_string($code = '') {
             $inline_if = false;
           }
           break;
-        
+
         case '?':
           $inline_if = true;
           $result .= ' '. $text .' ';
           break;
-        
+
         case ':':
           if ($inline_if) {
             $result .= ' '. $text .' ';
@@ -279,40 +318,71 @@ function coder_format_string($code = '') {
             if ($in_case) {
               ++$_coder_indent;
             }
-            $result = rtrim($result) . $text . coder_br();
+            $result = rtrim($result) . $text;
+            coder_br($result);
           }
           break;
-        
+
         case '(':
           $result .= $text;
           ++$parenthesis;
+          // Not multiline until proven so by whitespace.
+          $in_multiline[$parenthesis] = FALSE;
+          // If the $in_array flag for this parenthesis level was not
+          // set previously, set it to FALSE.
+          if (!isset($in_array[$parenthesis])) {
+            $in_array[$parenthesis] = FALSE;
+          }
+          // Terminate function declaration, as a parenthesis indicates
+          // the beginning of the arguments. This will catch all other
+          // instances of parentheses, but in this case it's not a problem.
+          $in_function_declaration = FALSE;
           break;
-        
+
         case ')':
-          if (!$in_quote && !$in_heredoc && substr(rtrim($result), -1) == ',') {
-            // Fix indent of right parenthesis in multiline arrays by
+          if ($in_array[$parenthesis] && $in_multiline[$parenthesis]) {
+            // Check if a comma insertion is necessary:
+            for ($c = strlen($result) - 1; $c >= 0; $c--) {
+              if ($result[$c] === "\n" || $result[$c] === " ") {
+                continue;
+              }
+              if ($result[$c] === ",") {
+                break;
+              }
+              // We need to add a comma at $c:
+              $result = substr($result, 0, $c + 1) .','. substr($result, $c + 1);
+              break;
+            }
+          }
+          if (!$in_quote && !$in_heredoc && (substr(rtrim($result), -1) == ',' || $in_multiline[$parenthesis])) {
+            // Fix indent of right parenthesis in multiline structures by
             // increasing indent for each parenthesis and decreasing one level.
-            $_coder_indent = $_coder_indent + $parenthesis - 1;
-            $result = rtrim($result) . coder_br() . $text;
-            $_coder_indent = $_coder_indent - $parenthesis + 1;
+            $_coder_indent = $_coder_indent + ($parenthesis - 1);
+            $result = rtrim($result);
+            coder_br($result);
+            $result .= $text;
+            // Undo temporary change.
+            $_coder_indent = $_coder_indent - ($parenthesis - 1);
           }
           else {
             $result .= $text;
           }
           if ($parenthesis) {
+            // Current parenthesis level is not an array anymore.
+            $in_array[$parenthesis] = FALSE;
             --$parenthesis;
           }
           break;
-        
+
         case '@':
           $in_at = true;
           $result .= $text;
           break;
-        
+
         case ',':
           $result .= $text .' ';
           break;
-        
+
         case '.':
           if (substr(rtrim($result), -1) == "'" || substr(rtrim($result), -1) == '"') {
             // Write string concatenation character directly after strings.
@@ -322,7 +392,7 @@ function coder_format_string($code = '') {
             $result = rtrim($result) .' '. $text .' ';
           }
           break;
-        
+
         case '=':
         case '<':
         case '>':
@@ -334,27 +404,39 @@ function coder_format_string($code = '') {
         case '%':
           $result = rtrim($result) .' '. $text .' ';
           break;
-        
+
         case '&':
           if (substr(rtrim($result), -1) == '=' || substr(rtrim($result), -1) == '(' || substr(rtrim($result), -1) == ',') {
             $result .= $text;
           }
           else {
-            $result = rtrim($result) .' '. $text .' ';
+            $result = rtrim($result) .' '. $text;
+            // Ampersands used to declare reference return value for
+            // functions should not have trailing space.
+            if (!$in_function_declaration) {
+              $result .= ' ';
+            }
           }
           break;
 
         case '-':
           $result = rtrim($result);
           // Do not add a space before negative numbers or variables.
-          if (substr($result, -1) == '>' || substr($result, -1) == '=' || substr($result, -1) == ',' || substr($result, -1) == ':') {
+          $c = substr($result, -1);
+          // Do not add a space between closing parenthesis and negative arithmetic operators.
+          if ($c == '(') {
+            $result .= ltrim($text);
+          }
+          // Add a space in front of the following chars, but not after them.
+          elseif ($c == '>' || $c == '=' || $c == ',' || $c == ':' || $c == '?') {
             $result .= ' '. $text;
           }
+          // Default arithmetic operator behavior.
           else {
             $result .= ' '. $text .' ';
           }
           break;
-        
+
         case '"':
           // Toggle quote if the char is not escaped.
           if (rtrim($result) != "\\") {
@@ -366,7 +448,7 @@ function coder_format_string($code = '') {
           }
           $result .= $text;
           break;
-        
+
         default:
           $result .= $text;
           break;
@@ -375,40 +457,43 @@ function coder_format_string($code = '') {
     else {
       // If we get here, then we have found not a single char, but a token.
       // See <http://www.php.net/manual/en/tokens.php> for a reference.
-      
+
       // Fetch token array.
       list($id, $text) = $token;
-      
+
       // Debugging:
       /*
       if ($lasttoken[0] == T_WHITESPACE) {
         $result .= token_name($id);
       }
       */
-      
+
       switch ($id) {
         case T_ARRAY:
           // Write array in lowercase.
           $result .= strtolower(trim($text));
+          // Mark the next parenthesis level (we haven't consumed that token
+          // yet) as an array.
+          $in_array[$parenthesis + 1] = TRUE;
           break;
-        
+
         case T_OPEN_TAG:
         case T_OPEN_TAG_WITH_ECHO:
           $in_php = true;
           // Add a line break between two PHP tags.
           if (substr(rtrim($result), -2) == '?>') {
-            $result .= coder_br();
+            coder_br($result);
           }
           $result .= trim($text);
           if ($first_php_tag) {
-            $result .= coder_br();
-            $first_php_tag = false;
+            coder_br($result);
+            $first_php_tag = FALSE;
           }
           else {
             $result .= ' ';
           }
           break;
-        
+
         case T_CLOSE_TAG:
           $in_php = false;
           // Remove preceding line break for inline PHP output in HTML.
@@ -417,57 +502,80 @@ function coder_format_string($code = '') {
           }
           $result .= trim($text);
           break;
-        
+
         case T_OBJECT_OPERATOR:
           $in_object = true;
           $result .= trim($text);
           break;
-        
+
         case T_CONSTANT_ENCAPSED_STRING:
-          if (substr($result, -2) == '. ') {
-            // Write string concatenation character directly before strings.
+          // Handle special string concatenation case: 'bar' . 'baz'
+          $c = substr($result, -3);
+          if ($c == '". ' || $c == '\'. ') {
+            $result = rtrim($result, ' .');
+            $result .= ' . ';
+          }
+          // Handle special string concatenation case: 'bar'. $foo
+          elseif (substr($result, -2) == '. ') {
             $result = rtrim($result);
           }
           // Move on to T_STRING / T_VARIABLE.
         case T_STRING:
         case T_VARIABLE:
+          // No space after object operator ($foo->bar) and error suppression (@function()).
           if ($in_object || $in_at) {
-            // No space after object operator ($foo->bar) and error suppression (@function()).
-            $result = rtrim($result) . trim($text);
+            $result    = rtrim($result) . trim($text);
             $in_object = false;
-            $in_at = false;
+            $in_at     = false;
           }
           else {
+            // Insert a space after right parenthesis, but not after type casts.
             if (!in_array($lasttoken[0], array(T_ARRAY_CAST, T_BOOL_CAST, T_DOUBLE_CAST, T_INT_CAST, T_OBJECT_CAST, T_STRING_CAST, T_UNSET_CAST))) {
-              // Insert a space after right parenthesis, but not after type casts.
               coder_add_space($result);
             }
             $result .= trim($text);
           }
+          $in_variable = true;
           break;
-        
+
         case T_ENCAPSED_AND_WHITESPACE:
           $result .= $text;
           break;
-        
+
         case T_WHITESPACE:
           // Avoid duplicate line feeds outside arrays.
           $c = $parenthesis ? 0 : 1;
-          
-          for ($c, $cc = substr_count($text, chr(10)); $c < $cc; ++$c) {
+
+          for ($c, $cc = substr_count($text, "\n"); $c < $cc; ++$c) {
+            // Newlines were added; not after semicolon anymore
             if ($parenthesis) {
               // Add extra indent for each parenthesis in multiline definitions (f.e. arrays).
               $_coder_indent = $_coder_indent + $parenthesis;
-              $result = rtrim($result) . coder_br();
+              $result = rtrim($result);
+              coder_br($result);
               $_coder_indent = $_coder_indent - $parenthesis;
             }
             else {
               // Discard any whitespace, just insert a line break.
-              $result .= coder_br();
+              coder_br($result);
             }
           }
+
+          // If there were newlines present inside a parenthesis,
+          // turn on multiline mode.
+          if ($cc && $parenthesis) {
+            $in_multiline[$parenthesis] = TRUE;
+          }
+
+          // If there were newlines present, move inline comments above.
+          if ($cc) {
+            $after_semicolon = FALSE;
+            $after_case = FALSE;
+          }
+          
+          $in_variable = FALSE;
           break;
-        
+
         case T_IF:
         case T_FOR:
         case T_FOREACH:
@@ -481,18 +589,19 @@ function coder_format_string($code = '') {
         case T_REQUIRE_ONCE:
         case T_INCLUDE:
         case T_INCLUDE_ONCE:
+        case T_VAR:
           coder_add_space($result);
           // Append a space.
           $result .= trim($text) .' ';
           break;
-        
+
         case T_DO:
           $result .= trim($text);
           $in_do_while = true;
           break;
-        
+
         case T_WHILE:
-          if ($in_do_while) {
+          if ($in_do_while && substr(rtrim($result), -1) === '}') {
             // Write while after right parenthesis for do {...} while().
             $result = rtrim($result) .' ';
             $in_do_while = false;
@@ -500,40 +609,46 @@ function coder_format_string($code = '') {
           // Append a space.
           $result .= trim($text) .' ';
           break;
-        
+
         case T_ELSE:
         case T_ELSEIF:
           // Write else and else if to a new line.
-          $result = rtrim($result) . coder_br() . trim($text) .' ';
+          $result = rtrim($result);
+          coder_br($result);
+          $result .= trim($text) .' ';
           break;
-        
+
         case T_CASE:
         case T_DEFAULT:
           $braces_in_case = 0;
-          $result = rtrim($result);
+          $result         = rtrim($result);
+          $after_case     = true;
           if (!$in_case) {
             $in_case = true;
             // Add a line break between cases.
             if (substr($result, -1) != '{') {
-              $result .= coder_br();
+              coder_br($result);
             }
           }
           else {
             // Decrease current indent to align multiple cases.
             --$_coder_indent;
           }
-          $result .= coder_br() . trim($text) .' ';
+          coder_br($result);
+          $result .= trim($text) .' ';
           break;
-        
+
         case T_BREAK:
           // Write break to a new line.
-          $result = rtrim($result) . coder_br() . trim($text);
+          $result = rtrim($result);
+          coder_br($result);
+          $result .= trim($text);
           if ($in_case && !$braces_in_case) {
             --$_coder_indent;
             $in_case = false;
           }
           break;
-        
+
         case T_RETURN:
         case T_CONTINUE:
           coder_add_space($result);
@@ -544,23 +659,39 @@ function coder_format_string($code = '') {
             $in_case = false;
           }
           break;
-        
+
+        case T_ABSTRACT:
+        case T_PRIVATE:
+        case T_PUBLIC:
+        case T_PROTECTED:
+          // Class member function properties must be treated similar to
+          // T_FUNCTION, but without line-break after the token. Because more
+          // than one of these tokens can appear in front of a function token,
+          // we need another white-space control variable.
+          coder_br($result);
+          $result .= trim($text) .' ';
+          break;
+          
         case T_FUNCTION:
+          $in_function_declaration = true;
+          // Fall through.
         case T_CLASS:
           // Write function and class to new lines.
           $result = rtrim($result);
           if (substr($result, -1) == '}') {
-            $result .= coder_br();
+            coder_br($result);
           }
-          $result .= coder_br() . trim($text) .' ';
+          coder_br($result);
+          $result .= trim($text) .' ';
           break;
-        
+
         case T_EXTENDS:
-          // Add space before and after 'extends'.
+        case T_INSTANCEOF:
+          // Add space before and after 'extends' and 'instanceof'.
           $result = rtrim($result);
           $result .= ' '. trim($text) .' ';
           break;
-        
+
         case T_AND_EQUAL:
         case T_AS:
         case T_BOOLEAN_AND:
@@ -594,76 +725,96 @@ function coder_format_string($code = '') {
           }
           $result .= trim($text) .' ';
           break;
-        
+
         case T_COMMENT:
         case T_ML_COMMENT:
         case T_DOC_COMMENT:
           if (substr($text, 0, 3) == '/**') {
             // Prepend a new line.
-            $result = rtrim($result) . coder_br() . coder_br();
-            
+            $result = rtrim($result);
+            coder_br($result);
+            coder_br($result);
+
             // Remove carriage returns.
             $text = str_replace("\r", '', $text);
-            
+
             $lines = explode("\n", $text);
             $params_fixed = false;
             for ($l = 0; $l < count($lines); ++$l) {
               $lines[$l] = trim($lines[$l]);
-              
+
               // Add a new line between function description and first parameter description.
               if (!$params_fixed && substr($lines[$l], 0, 8) == '* @param' && $lines[$l - 1] != '*') {
-                $result .= ' *'. coder_br();
+                $result .= ' *';
+                coder_br($result);
                 $params_fixed = true;
               }
               else if (!$params_fixed && substr($lines[$l], 0, 8) == '* @param') {
                 // Do nothing if parameter description is properly formatted.
                 $params_fixed = true;
               }
-              
+
               // Add a new line between function params and return.
               if (substr($lines[$l], 0, 9) == '* @return' && $lines[$l - 1] != '*') {
-                $result .= ' *'. coder_br();
+                $result .= ' *';
+                coder_br($result);
               }
-              
+
               // Add one space indent to get ' *[...]'.
               if ($l > 0) {
                 $result .= ' ';
               }
               $result .= $lines[$l];
               if ($l < count($lines)) {
-                $result .= coder_br();
+                coder_br($result);
               }
             }
           }
           else {
+            // Move the comment above if it's embedded.
+            $statement = false;
+            if ($after_semicolon && !$after_case) {
+              $nl_position     = strrpos(rtrim($result, " \n"), "\n");
+              $statement       = substr($result, $nl_position);
+              $result          = substr($result, 0, $nl_position);
+              $after_semicolon = false;
+              coder_br($result);
+            }
             $result .= trim($text);
             if ($parenthesis) {
               // Add extra indent for each parenthesis in multiline definitions (f.e. arrays).
               $_coder_indent = $_coder_indent + $parenthesis;
-              $result = rtrim($result) . coder_br();
+              $result = rtrim($result);
+              coder_br($result);
               $_coder_indent = $_coder_indent - $parenthesis;
             }
             else {
               // Discard any whitespace, just insert a line break.
-              $result .= coder_br();
+              coder_br($result);
+            }
+            if ($statement) {
+              $result = rtrim($result, "\n ");
+              $result .= $statement;
             }
           }
           break;
-        
+
         case T_INLINE_HTML:
           $result .= $text;
           break;
-        
+
         case T_START_HEREDOC:
-          $result .= trim($text) . coder_br(false);
+          $result .= trim($text);
+          coder_br($result, false);
           $in_heredoc = true;
           break;
-        
+
         case T_END_HEREDOC:
-          $result .= trim($text) . coder_br(false);
+          $result .= trim($text);
+          coder_br($result, false);
           $in_heredoc = false;
           break;
-        
+
         default:
           $result .= trim($text);
           break;
@@ -679,29 +830,46 @@ function coder_format_string($code = '') {
 /**
  * Generate a line feed including current line indent.
  *
+ * This function will also remove all line indentation from the
+ * previous line if no text was added.
+ *
+ * @param &$result
+ *   Result variable to append break and indent to, passed by reference.
  * @param $add_indent
  *   Whether to add current line indent after line feed.
- * @return
- *   The resulting string.
  */
-function coder_br($add_indent = true) {
+function coder_br(&$result, $add_indent = true) {
   global $_coder_indent;
-  
+
+  // Scan result backwards for whitespace.
+  for ($i = strlen($result) - 1; $i >= 0; $i--) {
+    if ($result[$i] == ' ') {
+      continue;
+    }
+    if ($result[$i] == "\n") {
+      $result = rtrim($result, ' ');
+      break;
+    }
+    // Non-whitespace was encountered, no changes necessary.
+    break;
+  }
+
   $output = "\n";
   if ($add_indent && $_coder_indent >= 0) {
     $output .= str_repeat('  ', $_coder_indent);
   }
-  return $output;
+  $result .= $output;
 }
 
 /**
  * Write a space in certain conditions.
- * 
+ *
  * A conditional space is needed after a right parenthesis of an if statement
  * that is not followed by curly braces.
- * 
+ *
  * @param $result
  *   Current result string that will be checked.
+ *
  * @return
  *   Resulting string with or without an additional space.
  */
@@ -720,21 +888,21 @@ function coder_add_space(&$result) {
 function coder_trim_php($code) {
   // Remove surrounding whitespace.
   $code = trim($code);
-  
+
   // Insert CVS keyword Id.
   // Search in the very first 1000 chars, insert only one instance.
   if (strpos(substr($code, 0, 1000), '$Id') === false) {
     $code = preg_replace('/<\?php\n/', "<?php\n// \$Id\$\n\n", $code, 1);
   }
-  
+
   // Remove closing PHP tag.
   if (substr($code, -2) == '?>') {
     $code = rtrim($code, '?>');
   }
-  
+
   // Append two empty lines.
   $code .= str_repeat(chr(10), 2);
-  
+
   return $code;
 }
 
@@ -803,7 +971,7 @@ function coder_exec_processors($code, $prefix = '') {
       $code = preg_replace($task['#search'], $task['#replace'], $code);
     }
   }
-  
+
   return $code;
 }
 
@@ -843,36 +1011,6 @@ function coder_preprocessor_line_breaks_mac() {
   );
 }
 
-function coder_preprocessor_ml_array_add_comma() {
-  // @bug coder.module:1010.
-  return array(
-    '#title' => 'Append a comma to the last value of multiline arrays.',
-    // ^[\040\t]*(?!\*|\/\/)[^\*\/\n]*? matches anything in front of array, but not comments.
-    // \sarray\( prevents matching of in_array() and function calls.
-    // (\n|(?X>!\);).+?,?\n) matches a line break or the first array item.
-    // (.*?[^,;]) matches the rest array items.
-    // ,?(\n\s*)\); matches the end of multiline array, optionally including a comma.
-    '#search' => '/(^[\040\t]*(?!\*|\/\/)[^\*\/\n]*?\sarray\()(\n|(?>!\);).+?,?\n)(.*?[^,;]),?(\n\s*\);)/ism',
-    '#replace' => '$1$2$3,$4',
-    //'#debug' => true,
-  );
-}
-
-function coder_preprocessor_inline_comment() {
-  return array(
-    '#title' => 'Move inline comments above remarked line.',
-    '#weight' => 2,
-    // [\040\t] matches only a space or tab.
-    // (?!case) prevents matching of case statements.
-    // \S prevents matching of lines containing only a comment.
-    // [^:] prevents matching of URL protocols.
-    // [^;\$] prevents matching of CVS keyword Id comment and double slashes.
-    //   in quotes (f.e. "W3C//DTD").
-    '#search' => '@^([\040\t]*)(?!case)(\S.+?)[\040\t]*[^:]//\s*([^;\$]+?)$@m',
-    '#replace' => "$1// $3\n$1$2",
-  );
-}
-
 function coder_preprocessor_php() {
   return array(
     '#title' => 'Always use &lt;?php ?&gt; to delimit PHP code, not the &lt;? ?&gt; shorthands.',
@@ -909,10 +1047,10 @@ function coder_postprocessor_multiple_vars() {
   // @todo Prevent matching of multiple lines separated by a blank line 26/03/2007 sun.
   return array(
     '#title' => 'Align equal signs of multiple variable assignments in the same column.',
-    // \s* matches whitespace including new lines.
+    // \n? * matches whitespace, but only one new line.
     // \$.+? matches variable names.
     // {3,} requires the pattern to match at least 3 times.
-    '#search' => '/^(\s*\$.+? = .+?$){3,}/m',
+    '#search' => '/^(\n? *\$.+? = .+?$){3,}/m',
     '#replace_callback' => 'coder_replace_multiple_vars',
   );
 }
@@ -920,7 +1058,7 @@ function coder_postprocessor_multiple_vars() {
 function coder_replace_multiple_vars($matches) {
   // Retrieve all variable name = variable value pairs.
   preg_match_all('/^(\s*)(\$.+?) (.?)= (.+?$)/m', $matches[0], $vars, PREG_SET_ORDER);
-  
+
   // Determine the longest variable name.
   $maxlength = 0;
   foreach ($vars as $var) {
@@ -928,7 +1066,7 @@ function coder_replace_multiple_vars($matches) {
       $maxlength = strlen($var[2] . $var[3]);
     }
   }
-  
+
   // Realign variable values at the longest variable names.
   $return = '';
   $extra_spaces = 0;
@@ -944,7 +1082,66 @@ function coder_replace_multiple_vars($matches) {
       $return .= "\n";
     }
   }
-  
+
+  return $return;
+}
+
+function coder_postprocessor_indent_multiline_array() {
+  // Still buggy, disabled for now.
+  return array(
+    '#title' => 'Align equal signs of multiline array assignments in the same column.',
+    // ?: prevents capturing
+    // \s* initial whitespace
+    // ([\'"]).+?\1 matches a string key
+    // .+? matches any other key w/o whitespace
+    // \s*=>\s* matches associative array arrow syntax
+    // .+? matches value
+    '#search' => '/^(?:\s*(?:(?:([\'"]).+?\1|.+?)\s*=>\s*.+?|\),\s?)$){3,}/mi',
+    //'#replace_callback' => 'coder_replace_indent_multiline_array',
+  );
+}
+
+function coder_replace_indent_multiline_array($matches) {
+  // Separate out important components of the multiline array:
+  // (\s*) matches existing indent as \1
+  // (([\'"]).+?\2|\$.+?|[+\-]?(?:0x)?[0-9A-F]+) matches key as \2
+  //    ([\'"]).+?\3 matches a quoted key, quote used is \3
+  //    \.+? matches anything else
+  // \),\s*? matches a closing parenthesis in a nested array
+  // \s*=>\s* matches existing indentation and arrow to be discarded
+  // (.+?) matches value as \4
+  // {3,} requires three or more of these lines
+  // mi enables multiline and caseless mode
+  preg_match_all('/^(\s*)(?:(([\'"]).+?\3|\.+?)\s*=>\s*(.+?),?|\),)\s*?$/mi', $matches[0], $vars, PREG_SET_ORDER);
+  // Determine max key length for varying indentations.
+  $maxlengths = array();
+  foreach ($vars as $var) {
+    list(, $indent, $key) = $var;
+    if (!isset($maxlengths[$indent])) {
+      $maxlengths[$indent] = 0;
+    }
+    if (($t = strlen($key)) > $maxlengths[$indent]) {
+      $maxlengths[$indent] = $t;
+    }
+  }
+  // Reconstruct variable array declaration.
+  $return = '';
+  foreach ($vars as $var) {
+    list(, $indent, $key, , $value) = $var;
+    if ($key === null) {
+      $return .= "$indent),\n";
+      continue;
+    }
+    $spaces = str_repeat(' ', $maxlengths[$indent] - strlen($key));
+    if ($value !== 'array(') {
+      $comma = ',';
+    }
+    else {
+      $comma = '';
+    }
+    $return .= "$indent$key$spaces => $value$comma\n";
+  }
+  $return = rtrim($return, "\n");
   return $return;
 }
 
@@ -966,7 +1163,7 @@ function coder_postprocessor_array_rearrange() {
 function coder_replace_array_rearrange($matches) {
   // Retrieve all array items, except the last one.
   preg_match_all('/(.+? => .+?,) /', $matches[3], $items);
-  
+
   // The original line including array(.
   $return = $matches[1] . $matches[2] ."\n";
   foreach ($items[1] as $item) {
@@ -977,7 +1174,7 @@ function coder_replace_array_rearrange($matches) {
   $return .= $matches[1] .'  '. $matches[5] .",\n";
   // Closing parenthesis (on a new line).
   $return .= $matches[1] .')';
-  
+
   return $return;
 }
 

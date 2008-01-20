@@ -13,39 +13,47 @@ class CoderTestFile extends SimpleExpectation {
   var $test;
 
   /* PHP to be parsed */
-  var $input = '';
+  var $input = array();
 
   /* Expected output */
-  var $expect = '';
+  var $expect = array();
 
   /* Actual result */
-  var $actual;
+  var $actual = array();
 
   /* Whether or not <?php and other stuff should be added */
-  var $full;
+  var $full = array();
 
   /**
    * Loads this class from a file.
    *
-   * @param $filename String filename to load
+   * @param string $filename
+   *   A filename to load.
    */
   function load($filename) {
     $this->filename = $filename;
     $fh             = fopen($filename, 'r');
     $state          = '';
     $php_stripped   = FALSE;
+    $line_no        = 0;
+    $unit           = 0;
     
     while (($line = fgets($fh)) !== false) {
       // Normalize newlines.
       $line = rtrim($line, "\n\r");
       // Strip first PHP tag, if existent.
-      if (!$php_stripped && strpos($line, '<?php') === 0) {
+      if (!$php_stripped && !$line_no && strpos($line, '<?php') === 0) {
         $php_stripped = TRUE;
         continue;
       }
+      // Detect INPUT and EXPECT sections.
       if (substr($line, 0, 2) == '--') {
-        // Detected section.
         $state = trim($line, ' -');
+        
+        // If a new INPUT section begins, start a new unit.
+        if ($state == 'INPUT') {
+          $unit++;
+        }
         continue;
       }
       if (!$state) {
@@ -55,31 +63,35 @@ class CoderTestFile extends SimpleExpectation {
         $key = $state;
       }
       switch ($key) {
-        case 'INPUT':
-          $this->input .= $line ."\n";
-          break;
-
-        case 'EXPECT':
-          $this->expect .= $line ."\n";
-          break;
-
         case 'TEST':
           $this->test = $line;
           break;
 
         case 'FULL':
-          $this->full = (bool)$line;
+          $this->full[$unit] = (bool)$line;
+          break;
+
+        case 'INPUT':
+          $this->input[$unit] .= $line ."\n";
+          break;
+
+        case 'EXPECT':
+          $this->expect[$unit] .= $line ."\n";
           break;
       }
     }
     fclose($fh);
-    if ($this->expect === '') {
-      $this->expect = $this->input;
-    }
-    if (!$this->full) {
-      $prepend      = "<?php\n//$". "Id$\n\n";
-      $this->input  = $prepend . trim($this->input, "\n") ."\n\n";
-      $this->expect = $prepend . trim($this->expect, "\n") ."\n\n";
+    foreach (range(1, $unit) as $unit) {
+      // If no EXPECTed code was defined, INPUT shouldn't be altered.
+      if (!isset($this->expect[$unit])) {
+        $this->expect[$unit] = $this->input[$unit];
+      }
+      // If FULL was not defined, add a PHP header to contents.
+      if (!$this->full[$unit]) {
+        $prepend             = "<?php\n// $". "Id$\n\n";
+        $this->input[$unit]  = $prepend . rtrim($this->input[$unit], "\n") ."\n\n";
+        $this->expect[$unit] = $prepend . rtrim($this->expect[$unit], "\n") ."\n\n";
+      }
     }
   }
 
@@ -92,16 +104,28 @@ class CoderTestFile extends SimpleExpectation {
     if ($filename) {
       $this->load($filename);
     }
-    $this->actual = coder_format_string_all($this->input);
     
-    return $this->expect === $this->actual;
+    // Perform test.
+    // Test passes until proven invalid.
+    $valid = TRUE;
+    foreach ($this->input as $unit => $content) {
+      // Parse input and store results.
+      $this->actual[$unit] = coder_format_string_all($this->input[$unit]);
+      
+      // Let this test fail, if a unit fails.
+      if ($this->expect[$unit] !== $this->actual[$unit]) {
+        $valid = FALSE;
+      }
+    }
+    
+    return $valid;
   }
 
   /**
    * Implements SimpleExpectation::testMessage().
    */
   function testMessage() {
-    $message = $this->test .' test at '. htmlspecialchars($this->filename);
+    $message = $this->test .' test in '. htmlspecialchars(basename($this->filename));
     return $message;
   }
 
@@ -111,13 +135,18 @@ class CoderTestFile extends SimpleExpectation {
   function render() {
     drupal_add_css(drupal_get_path('module', 'coder') .'/scripts/coder_format/tests/coder-diff.css', 'module', 'all', false);
     
-    $diff     = new Text_Diff('auto', array(explode("\n", $this->expect), explode("\n", $this->actual)));
-    $renderer = new Text_Diff_Renderer_parallel($this->test .' test at '. htmlspecialchars($this->filename));
+    foreach ($this->input as $unit => $content) {
+      // Do not output passed units.
+      if ($this->expect[$unit] === $this->actual[$unit]) {
+        continue;
+      }
+      
+      $diff     = new Text_Diff('auto', array(explode("\n", $this->expect[$unit]), explode("\n", $this->actual[$unit])));
+      $renderer = new Text_Diff_Renderer_parallel($this->test .' test in '. htmlspecialchars(basename($this->filename)));
+      
+      $message .= $renderer->render($diff);
+    }
     
-    $renderer->original = 'Expected';
-    $renderer->final    = 'Actual';
-    
-    $message .= $renderer->render($diff);
     return $message;
   }
 }
@@ -128,11 +157,12 @@ class CoderTestFile extends SimpleExpectation {
  */
 class Text_Diff_Renderer_parallel extends Text_Diff_Renderer {
   /* String header for left column */
-  var $original = 'Original';
+  var $original = 'Expected';
 
   /* String header for right column */
-  var $final = 'Final';
-  // these are big to ensure entire string is output
+  var $final = 'Actual';
+  
+  // These are big to ensure entire string is output.
   var $_leading_context_lines  = 10000;
   var $_trailing_context_lines = 10000;
   var $title;

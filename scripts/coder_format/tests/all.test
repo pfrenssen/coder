@@ -25,11 +25,14 @@ class CoderFormatTest extends CoderTestCase {
   function test() {
     $dir   = drupal_get_path('module', 'coder') .'/scripts/coder_format/tests/tests';
     $files = array_keys(file_scan_directory($dir, '\.phpt$'));
+    // Order tests alphabetically, but use a weight > 0 to append them after
+    // overall test results.
+    $c = 10;
     foreach ($files as $file) {
       $expectation = new CoderTestFile();
       $result = $this->assert($expectation, $file, '%s');
       if (!$result) {
-        echo $expectation->render();
+        $this->_reporter->writeContent($expectation->render(), $c++);
       }
     }
   }

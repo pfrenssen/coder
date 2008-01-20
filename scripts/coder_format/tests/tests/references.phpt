@@ -2,15 +2,25 @@
 TEST: Assignments by reference
 
 --INPUT--
-// No change:
 function &foo() {
-  echo 'asdf';
+  return;
 }
 
+--INPUT--
+function foo(&$node, $bar, $baz) {
+  return;
+}
 
---EXPECT--
-// No change:
-function &foo() {
-  echo 'asdf';
+--INPUT--
+function foo() {
+  $bar = &$baz;
+  return;
+}
+
+--INPUT--
+function foo($foo, $bar) {
+  if ($foo & $bar) {
+    return $bar = $baz;
+  }
 }
 
