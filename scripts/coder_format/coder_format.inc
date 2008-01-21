@@ -2,7 +2,6 @@
 // $Id$
 
 
-
 /**
  * Recursively process .module and .inc files in directory with coder_format_file().
  *
@@ -192,7 +191,7 @@ function coder_format_string_all($code) {
  *   $in_multiline
  *      Array of parenthesis level to whether or not the structure
  *      is multiline.
- * 
+ *
  * Context flags:
  *   These variables give information about what tokens have just been
  *   processed so that operations can change their behavior depending on
@@ -200,7 +199,7 @@ function coder_format_string_all($code) {
  *   formed result. Most of these are ad hoc and have a very specific
  *   purpose in the program. It would probably be a good idea to generalize
  *   this facility.
- *   
+ *
  *   $after_semicolon
  *      Is the token being processed on the same line as a semicolon? This
  *      allows for the semicolon processor to unconditionally add a newline
@@ -247,35 +246,35 @@ function coder_format_string($code = '') {
   $in_do_while    = false;
 
   // Whitespace controls:
-  $in_object       = FALSE;
-  $in_at           = FALSE;
-  $in_php          = FALSE;
-  $in_quote        = FALSE;
-  $inline_if       = FALSE;
-  $in_array        = array();
-  $in_multiline    = array();
-  
+  $in_object    = FALSE;
+  $in_at        = FALSE;
+  $in_php       = FALSE;
+  $in_quote     = FALSE;
+  $inline_if    = FALSE;
+  $in_array     = array();
+  $in_multiline = array();
+
   // Context flags:
-  $after_semicolon            = FALSE;
-  $after_case                 = FALSE;
-  $after_comment              = FALSE;
-  $after_initial_comment      = FALSE;
-  $after_visibility_modifier  = FALSE;
-  $after_return_in_case       = FALSE;
-  $after_php                  = FALSE;
+  $after_semicolon = FALSE;
+  $after_case = FALSE;
+  $after_comment = FALSE;
+  $after_initial_comment = FALSE;
+  $after_visibility_modifier = FALSE;
+  $after_return_in_case = FALSE;
+  $after_php = FALSE;
 
   // Whether or not a function token was encountered:
   $in_function_declaration = FALSE;
-  
+
   // The position of the last character of the last non-whitespace
   // non-comment token, e.g. it would be:
-  // function foo() {   // bar
+  // function foo() { // bar
   //                ^ this character
   $position_last_significant_token = 0;
 
-  $result = '';
+  $result    = '';
   $lasttoken = array(0);
-  $tokens = token_get_all($code);
+  $tokens    = token_get_all($code);
 
   // Mask T_ML_COMMENT (PHP4) as T_COMMENT (PHP5).
   if (!defined('T_ML_COMMENT')) {
@@ -295,7 +294,7 @@ function coder_format_string($code = '') {
           // Write curly braces at the end of lines followed by a line break if
           // not in quotes (""), object ($foo->{$bar}) or in variables (${foo}).
           // (T_DOLLAR_OPEN_CURLY_BRACES exists but is never assigned.)
-          if (!$in_variable && !$in_quote && !$in_object && substr(rtrim($result), -1) != '$') {
+          if (!$in_variable && !$in_quote && !$in_object && substr(rtrim($result), -1) != '$' || substr(rtrim($result), -1) == ')') {
             if ($in_case) {
               ++$braces_in_case;
             }
@@ -494,17 +493,16 @@ function coder_format_string($code = '') {
           $result .= $text;
           break;
       }
-      
+
       // All text possibilities are significant:
       $position_last_significant_token = strlen(rtrim($result)) - 1;
-      
+
       // Because they are all significant, we cannot possibly be after
       // a comment now.
       $after_comment = FALSE;
       $after_initial_comment = FALSE;
-      
+
       // TODO: Make resetting context flags easier to do.
-      
     }
     else {
       // If we get here, then we have found not a single char, but a token.
@@ -519,6 +517,7 @@ function coder_format_string($code = '') {
         $result .= token_name($id);
       }
       */
+
 
       switch ($id) {
         case T_ARRAY:
@@ -537,13 +536,19 @@ function coder_format_string($code = '') {
           if (substr(rtrim($result), -2) == '?>') {
             coder_br($result);
           }
+          $nl = substr_count($text, "\n");
           $result .= trim($text);
           if ($first_php_tag) {
             coder_br($result);
             $first_php_tag = FALSE;
           }
           else {
-            $result .= ' ';
+            if ($nl) {
+              coder_br($result, $parenthesis);
+            }
+            else {
+              $result .= ' ';
+            }
           }
           break;
 
@@ -611,10 +616,10 @@ function coder_format_string($code = '') {
           // If there were newlines present, move inline comments above.
           if ($cc) {
             $after_semicolon = FALSE;
-            $after_case = FALSE;
-            $after_php = FALSE;
+            $after_case      = FALSE;
+            $after_php       = FALSE;
           }
-          
+
           $in_variable = FALSE;
           break;
 
@@ -718,7 +723,7 @@ function coder_format_string($code = '') {
           $result .= trim($text) .' ';
           $after_visibility_modifier = TRUE;
           break;
-          
+
         case T_FUNCTION:
           $in_function_declaration = TRUE;
           // Fall through.
@@ -858,7 +863,7 @@ function coder_format_string($code = '') {
               $position_last_significant_token = strlen(rtrim($result, " \n")) - 1;
             }
             else {
-              if (strpos($text, '$'.'Id$') === FALSE) {
+              if (strpos($text, '$' . 'Id$') === FALSE) {
                 $after_comment = TRUE;
               }
               else {
@@ -893,7 +898,7 @@ function coder_format_string($code = '') {
 
       // Store last token.
       $lasttoken = $token;
-      
+
       // Excluding comments and whitespace, set the position of the
       // last significant token's last character to the length of the
       // string minus one.
@@ -903,16 +908,16 @@ function coder_format_string($code = '') {
         case T_ML_COMMENT:
         case T_DOC_COMMENT:
           break;
+
         default:
           $position_last_significant_token = strlen(rtrim($result, " \n")) - 1;
           break;
       }
-      
+
       if ($id !== T_COMMENT && $id !== T_ML_COMMENT) {
         $after_comment = FALSE;
       }
       if ($after_initial_comment && $id !== T_WHITESPACE) $after_initial_comment--;
-      
     }
   }
   return $result;
@@ -946,7 +951,7 @@ function coder_br(&$result, $parenthesis = false, $add_indent = true) {
     // Non-whitespace was encountered, no changes necessary.
     break;
   }
-  
+
   if ($parenthesis) {
     // Add extra indent for each parenthesis in multiline definitions (f.e. arrays).
     $_coder_indent = $_coder_indent + $parenthesis;

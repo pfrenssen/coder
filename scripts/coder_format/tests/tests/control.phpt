@@ -76,3 +76,13 @@ function language_url_rewrite(&$path, &$options) {
   }
 }
 
+--INPUT--
+foreach ($update as $key){
+  $foo;
+}
+
+--EXPECT--
+foreach ($update as $key) {
+  $foo;
+}
+

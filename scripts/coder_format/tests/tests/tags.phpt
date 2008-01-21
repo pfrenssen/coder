@@ -19,6 +19,9 @@ function ugly_foo() {
 <?php
 // $Id$
 
-?>
-<a href="<?php print $link; ?>"><?php print $title; ?></a>
+function l() {
+  ?>
+  <a href="<?php print $link; ?>"><?php print $title; ?></a>
+  <?php
+}
 
