@@ -63,6 +63,22 @@ function case_return() {
 }
 
 --INPUT--
+function filter_filter_tips($delta, $format, $long = FALSE) {
+  switch ($delta) {
+    case 1:
+      switch ($long) {
+        case 0:
+          return t('Lines and paragraphs break automatically.');
+        case 1:
+          return t('Lines and paragraphs are automatically recognized. The &lt;br /&gt; line break, &lt;p&gt; paragraph and &lt;/p&gt; close paragraph tags are inserted automatically. If paragraphs are not recognized simply add a couple blank lines.');
+      }
+      break;
+    case 2:
+      return t('Web page addresses and e-mail addresses turn into links automatically.');
+  }
+}
+
+--INPUT--
 function language_url_rewrite(&$path, &$options) {
   switch (variable_get('language_negotiation', LANGUAGE_NEGOTIATION_NONE)) {
     case LANGUAGE_NEGOTIATION_PATH_DEFAULT:
