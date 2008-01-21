@@ -23,6 +23,9 @@ class CoderTestFile extends SimpleExpectation {
 
   /* Whether or not <?php and other stuff should be added */
   var $full = array();
+  
+  /* Whether or not a specific test should be the only one tested */
+  var $only = array();
 
   /**
    * Loads this class from a file.
@@ -52,6 +55,9 @@ class CoderTestFile extends SimpleExpectation {
         
         // If a new INPUT section begins, start a new unit.
         if ($state == 'INPUT') {
+          if ($this->only[$unit]) {
+            break;
+          }
           $unit++;
         }
         continue;
@@ -78,6 +84,10 @@ class CoderTestFile extends SimpleExpectation {
         case 'EXPECT':
           $this->expect[$unit] .= $line ."\n";
           break;
+        
+        case 'ONLY':
+          $this->only[$unit] = TRUE;
+          break;
       }
     }
     fclose($fh);
@@ -92,6 +102,10 @@ class CoderTestFile extends SimpleExpectation {
         $this->input[$unit]  = $prepend . rtrim($this->input[$unit], "\n") ."\n\n";
         $this->expect[$unit] = $prepend . rtrim($this->expect[$unit], "\n") ."\n\n";
       }
+    }
+    if (!empty($this->only[$unit])) {
+      $this->input = array($this->input[$unit]);
+      $this->expect = array($this->expect[$unit]);
     }
   }
 
@@ -182,21 +196,26 @@ class Text_Diff_Renderer_parallel extends Text_Diff_Renderer {
   }
 
   function _context($lines) {
-    return '<tr><td><pre>'. htmlspecialchars(implode("\n", $lines)) .'</pre></td>
-          <td><pre>'. htmlspecialchars(implode("\n", $lines)) .'</pre></td></tr>';
+    return '<tr><td><pre>'. $this->_renderLines($lines) .'</pre></td>
+          <td><pre>'. $this->_renderLines($lines) .'</pre></td></tr>';
   }
 
   function _added($lines) {
-    return '<tr><td>&nbsp;</td><td class="added"><pre>'. htmlspecialchars(implode("\n", $lines)) .'</pre></td></tr>';
+    return '<tr><td>&nbsp;</td><td class="added"><pre>'. $this->_renderLines($lines) .'</pre></td></tr>';
   }
 
   function _deleted($lines) {
-    return '<tr><td class="deleted"><pre>'. htmlspecialchars(implode("\n", $lines)) .'</pre></td><td>&nbsp;</td></tr>';
+    return '<tr><td class="deleted"><pre>'. $this->_renderLines($lines) .'</pre></td><td>&nbsp;</td></tr>';
   }
 
   function _changed($orig, $final) {
-    return '<tr class="changed"><td><pre>'. htmlspecialchars(implode("\n", $orig)) .'</pre></td>
-        <td><pre>'. htmlspecialchars(implode("\n", $final)) .'</pre></td></tr>';
+    return '<tr class="changed"><td><pre>'. $this->_renderLines($orig) .'</pre></td>
+        <td><pre>'. $this->_renderLines($final) .'</pre></td></tr>';
   }
+  
+  function _renderLines($lines) {
+    return str_replace("\n", "<strong>&para;</strong>\n", htmlspecialchars(implode("\n", $lines)."\n"));
+  }
+  
 }
 

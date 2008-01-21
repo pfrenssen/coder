@@ -2,6 +2,21 @@
 TEST: Control structures
 
 --INPUT--
+$i = 0;
+do {
+  $i++;
+} while (false);
+
+--INPUT--
+$i = 0;
+do {
+  $i++;
+  while ($i--) {
+    $i += 2;
+  }
+} while ($i < 20);
+
+--INPUT--
 function menu_tree_page_data($menu_name = 'navigation') {
   // Check whether the current menu has any links set to be expanded.
   if (in_array($menu_name, $expanded)) {

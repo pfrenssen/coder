@@ -29,7 +29,8 @@ function drupal_to_js($var) {
     case 'string':
       return '"'. str_replace(array("\r", "\n", "<", ">", "&"),
         array('\r', '\n', '\x3c', '\x3e', '\x26'),
-        addslashes($var)) .'"';
+        addslashes($var)
+      ) .'"';
 
     default:
       return 'null';

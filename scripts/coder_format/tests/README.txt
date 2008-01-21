@@ -68,6 +68,9 @@ those, additionally specify in the file head:
 
   FULL: 1
 
+For temporary development work, you can add --ONLY-- to the end of a test
+case to make it the test runner only run that one. This is useful for test
+files that contain multiple tests.
 
 -- CONTACT --
 

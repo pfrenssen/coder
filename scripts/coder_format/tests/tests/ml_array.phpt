@@ -2,6 +2,31 @@
 TEST: Multiline arrays
 
 --INPUT--
+$va = array('foo' => 'bar',
+            2 => '23',
+            '32' => 'asd'
+);
+
+--EXPECT--
+$va = array('foo' => 'bar',
+  2 => '23',
+  '32' => 'asd',
+);
+
+-- INPUT --
+$var = array(
+  'install_page' => array(
+    'foo' => NULL,),
+);
+
+-- EXPECT --
+$var = array(
+  'install_page' => array(
+    'foo' => NULL,
+  ),
+);
+
+--INPUT--
 $var = array(
   'install_page' => array(
     'arguments' => array(

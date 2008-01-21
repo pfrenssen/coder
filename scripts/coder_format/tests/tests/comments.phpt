@@ -26,7 +26,6 @@ $string = array(
 // Comment // comment.
 
 --INPUT--
-
 /**
  * This does stuff with FOO//BOO.
  */
@@ -58,10 +57,18 @@ function drupal_page_cache_header($cache) {
     // etag must match
     && $if_none_match == $etag
     // if-modified-since must match
-    && $if_modified_since == $last_modified) {
+    && $if_modified_since == $last_modified
+  ) {
     exit();
   }
 }
+
+-- INPUT --
+$a = 2; // ,
+
+-- EXPECT --
+// ,
+$a = 2;
 
 --INPUT--
 function parse_size($size) {
@@ -100,6 +107,26 @@ function drupal_to_js($var) {
       // Lowercase necessary!
       return $var ? 'true' : 'false';
   }
+}
+
+--INPUT--
+switch ($foo) {
+  case 'bar': // Things
+    break;
+
+  default: // Other things
+    break;
+}
+
+--EXPECT--
+switch ($foo) {
+  case 'bar':
+    // Things
+    break;
+
+  default:
+    // Other things
+    break;
 }
 
 --INPUT--

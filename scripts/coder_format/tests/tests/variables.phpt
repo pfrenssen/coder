@@ -1,9 +1,9 @@
 <?php
-TEST: Variables
+TEST: Variable assignments
 
 --INPUT--
 function db_status_report($phase) {
-  $foo = bar();
+  $foo = 2;
   $t   = get_t();
   $baz = bay();
 
@@ -15,6 +15,9 @@ class CoderTestFile extends SimpleExpectation {
   private $expected;
 
   /* Filename of test */
+  var $filename;
+
+  // Filename of test
   var $filename;
 
   protected function describeException($exception) {

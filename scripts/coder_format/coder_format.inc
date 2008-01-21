@@ -2,6 +2,7 @@
 // $Id$
 
 
+
 /**
  * Recursively process .module and .inc files in directory with coder_format_file().
  *
@@ -191,10 +192,40 @@ function coder_format_string_all($code) {
  *   $in_multiline
  *      Array of parenthesis level to whether or not the structure
  *      is multiline.
+ * 
+ * Context flags:
+ *   These variables give information about what tokens have just been
+ *   processed so that operations can change their behavior depending on
+ *   the preceding context without having to scan backwards on the fully
+ *   formed result. Most of these are ad hoc and have a very specific
+ *   purpose in the program. It would probably be a good idea to generalize
+ *   this facility.
+ *   
  *   $after_semicolon
- *      Whether or not the current line being processed has a semicolon.
+ *      Is the token being processed on the same line as a semicolon? This
+ *      allows for the semicolon processor to unconditionally add a newline
+ *      while allowing things like inline comments on the same line to
+ *      be bubbled up.
  *   $after_case
- *      Whether or not the current line being processed has a case/default statement.
+ *      Is the token being processed on the same line as a case? This
+ *      is a specific override for comment movement behavior that places
+ *      inline comments after a case before the case declaration.
+ *   $after_comment
+ *      Is the line being processed preceded by an inline comment?
+ *      This is used to preserve newlines after comments.
+ *   $after_initial_comment
+ *      Is the line being processed preceded by the // $Id
+ *      (ending dollar sign omitted) comment? This is a workaround to
+ *      prevent the usual double-newline before docblocks for the very
+ *      first docblock.
+ *   $after_visibility_modifier
+ *      Is the token being processed immediately preceded by a
+ *      visibility modifier like public/protected/private? This prevents
+ *      extra newlines added by T_FUNCTION.
+ *   $after_return_in_case
+ *      Whether or not the token is after a return statement in a case.
+ *      This prevents the extra indent after case statements from being
+ *      terminated prematurely for multiline return lines.
  *
  * @param $code
  *      The source code to format.
@@ -223,11 +254,23 @@ function coder_format_string($code = '') {
   $inline_if       = FALSE;
   $in_array        = array();
   $in_multiline    = array();
-  $after_semicolon = FALSE;
-  $after_case      = FALSE;
+  
+  // Context flags:
+  $after_semicolon            = FALSE;
+  $after_case                 = FALSE;
+  $after_comment              = FALSE;
+  $after_initial_comment      = FALSE;
+  $after_visibility_modifier  = FALSE;
+  $after_return_in_case       = FALSE;
 
   // Whether or not a function token was encountered:
   $in_function_declaration = FALSE;
+  
+  // The position of the last character of the last non-whitespace
+  // non-comment token, e.g. it would be:
+  // function foo() {   // bar
+  //                ^ this character
+  $position_last_significant_token = 0;
 
   $result = '';
   $lasttoken = array(0);
@@ -293,6 +336,12 @@ function coder_format_string($code = '') {
 
         case ';':
           $result = rtrim($result) . $text;
+          if ($after_return_in_case) {
+            // We had deferred reduction of indent because we were in
+            // a case statement, now we can reduce it:
+            --$_coder_indent;
+            $after_return_in_case = FALSE;
+          }
           if (!$parenthesis && !$in_heredoc) {
             coder_br($result);
             $after_semicolon = TRUE;
@@ -342,27 +391,18 @@ function coder_format_string($code = '') {
         case ')':
           if ($in_array[$parenthesis] && $in_multiline[$parenthesis]) {
             // Check if a comma insertion is necessary:
-            for ($c = strlen($result) - 1; $c >= 0; $c--) {
-              if ($result[$c] === "\n" || $result[$c] === " ") {
-                continue;
-              }
-              if ($result[$c] === ",") {
-                break;
-              }
+            $c = $position_last_significant_token;
+            if ($result[$c] !== ',') {
               // We need to add a comma at $c:
               $result = substr($result, 0, $c + 1) .','. substr($result, $c + 1);
-              break;
             }
           }
           if (!$in_quote && !$in_heredoc && (substr(rtrim($result), -1) == ',' || $in_multiline[$parenthesis])) {
             // Fix indent of right parenthesis in multiline structures by
             // increasing indent for each parenthesis and decreasing one level.
-            $_coder_indent = $_coder_indent + ($parenthesis - 1);
             $result = rtrim($result);
-            coder_br($result);
+            coder_br($result, $parenthesis - 1);
             $result .= $text;
-            // Undo temporary change.
-            $_coder_indent = $_coder_indent - ($parenthesis - 1);
           }
           else {
             $result .= $text;
@@ -453,6 +493,17 @@ function coder_format_string($code = '') {
           $result .= $text;
           break;
       }
+      
+      // All text possibilities are significant:
+      $position_last_significant_token = strlen(rtrim($result)) - 1;
+      
+      // Because they are all significant, we cannot possibly be after
+      // a comment now.
+      $after_comment = FALSE;
+      $after_initial_comment = FALSE;
+      
+      // TODO: Make resetting context flags easier to do.
+      
     }
     else {
       // If we get here, then we have found not a single char, but a token.
@@ -544,21 +595,11 @@ function coder_format_string($code = '') {
 
         case T_WHITESPACE:
           // Avoid duplicate line feeds outside arrays.
-          $c = $parenthesis ? 0 : 1;
+          $c = ($parenthesis || $after_comment) ? 0 : 1;
 
           for ($c, $cc = substr_count($text, "\n"); $c < $cc; ++$c) {
             // Newlines were added; not after semicolon anymore
-            if ($parenthesis) {
-              // Add extra indent for each parenthesis in multiline definitions (f.e. arrays).
-              $_coder_indent = $_coder_indent + $parenthesis;
-              $result = rtrim($result);
-              coder_br($result);
-              $_coder_indent = $_coder_indent - $parenthesis;
-            }
-            else {
-              // Discard any whitespace, just insert a line break.
-              coder_br($result);
-            }
+            coder_br($result, $parenthesis);
           }
 
           // If there were newlines present inside a parenthesis,
@@ -650,6 +691,11 @@ function coder_format_string($code = '') {
           break;
 
         case T_RETURN:
+          if ($in_case && !$braces_in_case) {
+            // Defer reduction of indent for later.
+            ++$_coder_indent;
+            $after_return_in_case = true;
+          }
         case T_CONTINUE:
           coder_add_space($result);
           $result .= trim($text) .' ';
@@ -668,12 +714,12 @@ function coder_format_string($code = '') {
           // T_FUNCTION, but without line-break after the token. Because more
           // than one of these tokens can appear in front of a function token,
           // we need another white-space control variable.
-          coder_br($result);
           $result .= trim($text) .' ';
+          $after_visibility_modifier = TRUE;
           break;
           
         case T_FUNCTION:
-          $in_function_declaration = true;
+          $in_function_declaration = TRUE;
           // Fall through.
         case T_CLASS:
           // Write function and class to new lines.
@@ -681,7 +727,15 @@ function coder_format_string($code = '') {
           if (substr($result, -1) == '}') {
             coder_br($result);
           }
-          coder_br($result);
+          if (!$after_visibility_modifier) {
+            coder_br($result);
+          }
+          else {
+            // This code only applies to T_FUNCTION; do not add a newline
+            // after public/protected/private/abstract.
+            $after_visibility_modifier = FALSE;
+            $result .= ' ';
+          }
           $result .= trim($text) .' ';
           break;
 
@@ -732,7 +786,15 @@ function coder_format_string($code = '') {
           if (substr($text, 0, 3) == '/**') {
             // Prepend a new line.
             $result = rtrim($result);
-            coder_br($result);
+            if (!$after_initial_comment) {
+              coder_br($result);
+            }
+            else {
+              // This probably will get set below, but it's good to
+              // explicitly turn it off after the initial comment has
+              // influenced behavior and now is not necessary.
+              $after_initial_comment = FALSE;
+            }
             coder_br($result);
 
             // Remove carriage returns.
@@ -773,28 +835,34 @@ function coder_format_string($code = '') {
           else {
             // Move the comment above if it's embedded.
             $statement = false;
-            if ($after_semicolon && !$after_case) {
+            $cc = substr_count($result, "\n", $position_last_significant_token);
+            if ((!$cc || $after_semicolon) && !$after_case) {
               $nl_position     = strrpos(rtrim($result, " \n"), "\n");
               $statement       = substr($result, $nl_position);
               $result          = substr($result, 0, $nl_position);
               $after_semicolon = false;
-              coder_br($result);
+              coder_br($result, $parenthesis);
             }
             $result .= trim($text);
-            if ($parenthesis) {
-              // Add extra indent for each parenthesis in multiline definitions (f.e. arrays).
-              $_coder_indent = $_coder_indent + $parenthesis;
-              $result = rtrim($result);
-              coder_br($result);
-              $_coder_indent = $_coder_indent - $parenthesis;
+            coder_br($result, $parenthesis);
+            if ($statement) {
+              // Newlines are automatically added, so remove these.
+              $result = rtrim($result, "\n ");
+              $result .= rtrim($statement, "\n ");
+              coder_br($result, $parenthesis);
+              // Need to update this, as our comment trickery has just
+              // reshuffled the index.
+              $position_last_significant_token = strlen(rtrim($result, " \n")) - 1;
             }
             else {
-              // Discard any whitespace, just insert a line break.
-              coder_br($result);
-            }
-            if ($statement) {
-              $result = rtrim($result, "\n ");
-              $result .= $statement;
+              if (strpos($text, '$'.'Id$') === FALSE) {
+                $after_comment = TRUE;
+              }
+              else {
+                // Is the number two so that our bottom code doesn't override
+                // our flag immediately.
+                $after_initial_comment = 2;
+              }
             }
           }
           break;
@@ -805,14 +873,14 @@ function coder_format_string($code = '') {
 
         case T_START_HEREDOC:
           $result .= trim($text);
-          coder_br($result, false);
-          $in_heredoc = true;
+          coder_br($result, FALSE, FALSE);
+          $in_heredoc = TRUE;
           break;
 
         case T_END_HEREDOC:
           $result .= trim($text);
-          coder_br($result, false);
-          $in_heredoc = false;
+          coder_br($result, FALSE, FALSE);
+          $in_heredoc = FALSE;
           break;
 
         default:
@@ -822,6 +890,26 @@ function coder_format_string($code = '') {
 
       // Store last token.
       $lasttoken = $token;
+      
+      // Excluding comments and whitespace, set the position of the
+      // last significant token's last character to the length of the
+      // string minus one.
+      switch ($id) {
+        case T_WHITESPACE:
+        case T_COMMENT:
+        case T_ML_COMMENT:
+        case T_DOC_COMMENT:
+          break;
+        default:
+          $position_last_significant_token = strlen(rtrim($result, " \n")) - 1;
+          break;
+      }
+      
+      if ($id !== T_COMMENT && $id !== T_ML_COMMENT) {
+        $after_comment = FALSE;
+      }
+      if ($after_initial_comment && $id !== T_WHITESPACE) $after_initial_comment--;
+      
     }
   }
   return $result;
@@ -835,10 +923,12 @@ function coder_format_string($code = '') {
  *
  * @param &$result
  *   Result variable to append break and indent to, passed by reference.
+ * @param $parenthesis
+ *   Optional integer of parentheses level for extra indents.
  * @param $add_indent
  *   Whether to add current line indent after line feed.
  */
-function coder_br(&$result, $add_indent = true) {
+function coder_br(&$result, $parenthesis = false, $add_indent = true) {
   global $_coder_indent;
 
   // Scan result backwards for whitespace.
@@ -853,12 +943,23 @@ function coder_br(&$result, $add_indent = true) {
     // Non-whitespace was encountered, no changes necessary.
     break;
   }
-
-  $output = "\n";
-  if ($add_indent && $_coder_indent >= 0) {
-    $output .= str_repeat('  ', $_coder_indent);
+  
+  if ($parenthesis) {
+    // Add extra indent for each parenthesis in multiline definitions (f.e. arrays).
+    $_coder_indent = $_coder_indent + $parenthesis;
+    $result = rtrim($result);
+    // This recursive call will only be done once, as $parenthesis is
+    // set to false.
+    coder_br($result, false, $add_indent);
+    $_coder_indent = $_coder_indent - $parenthesis;
   }
-  $result .= $output;
+  else {
+    $output = "\n";
+    if ($add_indent && $_coder_indent >= 0) {
+      $output .= str_repeat('  ', $_coder_indent);
+    }
+    $result .= $output;
+  }
 }
 
 /**
@@ -1024,6 +1125,21 @@ function coder_preprocessor_switch_duplicate_exit() {
     '#title' => 'Either exit a switch case with return *or* break.',
     '#search' => '/(return\s+.+;)\s+break;/',
     //'#replace' => '$1',
+  );
+}
+
+function coder_preprocessor_inline_comment() {
+  return array(
+    '#title' => 'Move inline comments above remarked line.',
+    '#weight' => 2,
+    // [\040\t] matches only a space or tab.
+    // (?!case) prevents matching of case statements.
+    // \S prevents matching of lines containing only a comment.
+    // [^:] prevents matching of URL protocols.
+    // [^;\$] prevents matching of CVS keyword Id comment and double slashes.
+    //   in quotes (f.e. "W3C//DTD").
+    '#search' => '@^([\040\t]*)(?!case)(\S.+?[;,{])[\040\t]*(?!:)//\s*([^;\$]+?)$@m',
+    '#replace' => "$1// $3\n$1$2",
   );
 }
 
