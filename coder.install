@@ -1,0 +1,16 @@
+<?php
+// $Id$
+
+function coder_uninstall() {
+  variable_del('coder_cache');
+  variable_del('coder_reviews');
+  variable_del('coder_severity');
+  variable_del('coder_active_modules');
+  variable_del('coder_core');
+  variable_del('coder_includes');
+  variable_del('coder_modules');
+  variable_del('coder_themes');
+
+  cache_clear_all('coder:', 'cache', true);
+}
+
