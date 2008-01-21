@@ -262,6 +262,7 @@ function coder_format_string($code = '') {
   $after_initial_comment      = FALSE;
   $after_visibility_modifier  = FALSE;
   $after_return_in_case       = FALSE;
+  $after_php                  = FALSE;
 
   // Whether or not a function token was encountered:
   $in_function_declaration = FALSE;
@@ -342,7 +343,7 @@ function coder_format_string($code = '') {
             --$_coder_indent;
             $after_return_in_case = FALSE;
           }
-          if (!$parenthesis && !$in_heredoc) {
+          if (!$parenthesis && !$in_heredoc && !$after_php) {
             coder_br($result);
             $after_semicolon = TRUE;
           }
@@ -531,6 +532,7 @@ function coder_format_string($code = '') {
         case T_OPEN_TAG:
         case T_OPEN_TAG_WITH_ECHO:
           $in_php = true;
+          $after_php = true;
           // Add a line break between two PHP tags.
           if (substr(rtrim($result), -2) == '?>') {
             coder_br($result);
@@ -610,6 +612,7 @@ function coder_format_string($code = '') {
           if ($cc) {
             $after_semicolon = FALSE;
             $after_case = FALSE;
+            $after_php = FALSE;
           }
           
           $in_variable = FALSE;

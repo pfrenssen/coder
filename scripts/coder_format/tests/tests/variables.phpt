@@ -14,7 +14,7 @@ function db_status_report($phase) {
 class CoderTestFile extends SimpleExpectation {
   private $expected;
 
-  /* Filename of test */
+  /** Filename of test */
   var $filename;
 
   // Filename of test

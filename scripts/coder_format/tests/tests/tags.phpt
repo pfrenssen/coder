@@ -15,3 +15,10 @@ function ugly_foo() {
   return $baz;
 }
 
+--INPUT--
+<?php
+// $Id$
+
+?>
+<a href="<?php print $link; ?>"><?php print $title; ?></a>
+
