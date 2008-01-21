@@ -277,10 +277,10 @@ function coder_format_string($code = '') {
   $tokens = token_get_all($code);
 
   // Mask T_ML_COMMENT (PHP4) as T_COMMENT (PHP5).
-  // Mask T_DOC_COMMENT (PHP5) as T_ML_COMMENT (PHP4).
   if (!defined('T_ML_COMMENT')) {
     define('T_ML_COMMENT', T_COMMENT);
   }
+  // Mask T_DOC_COMMENT (PHP5) as T_ML_COMMENT (PHP4).
   else if (!defined('T_DOC_COMMENT')) {
     define('T_DOC_COMMENT', T_ML_COMMENT);
   }
@@ -336,9 +336,9 @@ function coder_format_string($code = '') {
 
         case ';':
           $result = rtrim($result) . $text;
+          // Check if we had deferred reduction of indent because we were in
+          // a case statement. Now we can decrease the indent.
           if ($after_return_in_case) {
-            // We had deferred reduction of indent because we were in
-            // a case statement, now we can reduce it:
             --$_coder_indent;
             $after_return_in_case = FALSE;
           }
@@ -547,11 +547,9 @@ function coder_format_string($code = '') {
 
         case T_CLOSE_TAG:
           $in_php = false;
-          // Remove preceding line break for inline PHP output in HTML.
-          if (substr(rtrim($result), -1) == ';' || substr(rtrim($result), -1) == ':') {
-            $result = rtrim($result) .' ';
-          }
-          $result .= trim($text);
+          // Do not alter a closing PHP tag ($text includes trailing white-space)
+          // at all. Should allow to apply coder_format on phptemplate files.
+          $result .= $text;
           break;
 
         case T_OBJECT_OPERATOR:
@@ -835,7 +833,9 @@ function coder_format_string($code = '') {
           else {
             // Move the comment above if it's embedded.
             $statement = false;
-            $cc = substr_count($result, "\n", $position_last_significant_token);
+            // Some PHP versions throw a warning about wrong parameter count for
+            // substr_count().
+            $cc = substr_count(substr($result, $position_last_significant_token), "\n");
             if ((!$cc || $after_semicolon) && !$after_case) {
               $nl_position     = strrpos(rtrim($result, " \n"), "\n");
               $statement       = substr($result, $nl_position);

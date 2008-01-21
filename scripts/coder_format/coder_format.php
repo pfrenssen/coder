@@ -43,6 +43,9 @@
  * - Encapsulate file and path arguments with double quotes on Windows.
  */
 
+// We are on the command line, so output only real errors.
+error_reporting(E_ERROR | E_WARNING | E_PARSE);
+
 require_once realpath(dirname($_SERVER['PHP_SELF'])) .'/coder_format.inc';
 
 if (!empty($_SERVER['argv'])) {

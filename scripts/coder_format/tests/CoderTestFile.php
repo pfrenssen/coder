@@ -21,8 +21,8 @@ class CoderTestFile extends SimpleExpectation {
   /* Actual result */
   var $actual = array();
 
-  /* Whether or not <?php and other stuff should be added */
-  var $full = array();
+  /* Whether or not <?php and CVS Id should be added */
+  var $full = 0;
   
   /* Whether or not a specific test should be the only one tested */
   var $only = array();
@@ -37,24 +37,19 @@ class CoderTestFile extends SimpleExpectation {
     $this->filename = $filename;
     $fh             = fopen($filename, 'r');
     $state          = '';
-    $php_stripped   = FALSE;
-    $line_no        = 0;
     $unit           = 0;
     
     while (($line = fgets($fh)) !== false) {
       // Normalize newlines.
       $line = rtrim($line, "\n\r");
-      // Strip first PHP tag, if existent.
-      if (!$php_stripped && !$line_no && strpos($line, '<?php') === 0) {
-        $php_stripped = TRUE;
-        continue;
-      }
       // Detect INPUT and EXPECT sections.
       if (substr($line, 0, 2) == '--') {
         $state = trim($line, ' -');
         
         // If a new INPUT section begins, start a new unit.
         if ($state == 'INPUT') {
+          // If previous section has been marked with the keyword 'ONLY', break
+          // immediately to process only the marked section.
           if ($this->only[$unit]) {
             break;
           }
@@ -62,19 +57,21 @@ class CoderTestFile extends SimpleExpectation {
         }
         continue;
       }
+      // Process other keywords only outside of INPUT and EXPECT sections.
       if (!$state) {
-        list($key, $line) = explode(': ', $line, 2);
+        list($keyword, $line) = explode(': ', $line, 2);
       }
+      // Assign previous keyword, if there is no new one.
       else {
-        $key = $state;
+        $keyword = $state;
       }
-      switch ($key) {
+      switch ($keyword) {
         case 'TEST':
           $this->test = $line;
           break;
 
         case 'FULL':
-          $this->full[$unit] = (bool)$line;
+          $this->full = (bool)$line;
           break;
 
         case 'INPUT':
@@ -92,12 +89,12 @@ class CoderTestFile extends SimpleExpectation {
     }
     fclose($fh);
     foreach (range(1, $unit) as $unit) {
-      // If no EXPECTed code was defined, INPUT shouldn't be altered.
+      // If no EXPECTed code was defined, INPUT is expected.
       if (!isset($this->expect[$unit])) {
         $this->expect[$unit] = $this->input[$unit];
       }
-      // If FULL was not defined, add a PHP header to contents.
-      if (!$this->full[$unit]) {
+      // If FULL was *not* defined, add a PHP header to contents.
+      if (!$this->full) {
         $prepend             = "<?php\n// $". "Id$\n\n";
         $this->input[$unit]  = $prepend . rtrim($this->input[$unit], "\n") ."\n\n";
         $this->expect[$unit] = $prepend . rtrim($this->expect[$unit], "\n") ."\n\n";
