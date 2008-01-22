@@ -144,9 +144,12 @@ function coder_format_string_all($code) {
  *   $in_case bool
  *      Is true after case and default. Is false after break and return, if
  *      $braces_in_case is not greater than 0.
- *   $braces_in_case int Count of braces
+ *   $switches int Switch level
+ *      Nested switches need to have extra indents added to them.
+ *   $braces_in_case array Count of braces
  *      The number of currently opened curly braces in a case. This is needed
  *      to support arbitrary function exits inside of a switch control strucure.
+ *      This is an array to allow for nested switches.
  *   $parenthesis int Parenthesis level
  *      The number of currently opened parenthesis. This
  *      - prevents line feeds in brackets (f.e. in arguments of for()).
@@ -238,8 +241,9 @@ function coder_format_string($code = '') {
   // Indent controls:
   $_coder_indent  = 0;
   $in_case        = false;
+  $switches       = 0;
   $parenthesis    = 0;
-  $braces_in_case = 0;
+  $braces_in_case = array();
   $in_brace       = false;
   $in_heredoc     = false;
   $first_php_tag  = true;
@@ -291,12 +295,19 @@ function coder_format_string($code = '') {
       $text = trim($token);
       switch ($text) {
         case '{':
+          // Add a space before and behind a curly brace, if we are in inline
+          // PHP, e.g. <?php if ($foo) { print $foo }
+          if ($after_php) {
+            $text = " $text ";
+          }
           // Write curly braces at the end of lines followed by a line break if
           // not in quotes (""), object ($foo->{$bar}) or in variables (${foo}).
           // (T_DOLLAR_OPEN_CURLY_BRACES exists but is never assigned.)
-          if (!$in_variable && !$in_quote && !$in_object && substr(rtrim($result), -1) != '$' || substr(rtrim($result), -1) == ')') {
+          $c = substr(rtrim($result), -1);
+          if (!$after_php && !$in_quote && (!$in_variable && !$in_object && $c != '$' || $c == ')')) {
             if ($in_case) {
-              ++$braces_in_case;
+              ++$braces_in_case[$switches];
+              $_coder_indent += $switches - 1;
             }
             ++$_coder_indent;
             $result = rtrim($result) .' '. $text;
@@ -310,23 +321,41 @@ function coder_format_string($code = '') {
 
         case '}':
           if (!$in_quote && !$in_brace && !$in_heredoc) {
-            if ($in_case) {
-              --$braces_in_case;
+            if ($switches) {
+              --$braces_in_case[$switches];
             }
             --$_coder_indent;
-            if ($braces_in_case < 0) {
+            if ($braces_in_case[$switches] < 0 && $in_case) {
               // Decrease indent if last case in a switch is not terminated.
               --$_coder_indent;
-              $in_case = false;
-              $braces_in_case = 0;
+              $in_case = FALSE;
             }
-            $result = rtrim($result);
-            if (substr($result, -1) != '{') {
-              // Avoid line break in empty curly braces.
+            if ($braces_in_case[$switches] < 0) {
+              $braces_in_case[$switches] = 0;
+              $switches--;
+            }
+            if ($switches > 0) {
+              $in_case = TRUE;
+            }
+            
+            if (!$after_php) {
+              $result = rtrim($result);
+              if (substr($result, -1) != '{') {
+                // Avoid line break in empty curly braces.
+                coder_br($result);
+              }
+              $result .= $text;
               coder_br($result);
             }
-            $result .= $text;
-            coder_br($result);
+            else {
+              // Add a space before a curly brace, if we are in inline PHP, e.g.
+              // <?php if ($foo) { print $foo }
+              $result = rtrim($result, ' ');
+              if (substr($result, -1) !== "\n") {
+                $result .= ' ';
+              }
+              $result .= $text;
+            }
           }
           else {
             $in_brace = false;
@@ -362,6 +391,9 @@ function coder_format_string($code = '') {
         case ':':
           if ($inline_if) {
             $result .= ' '. $text .' ';
+          }
+          elseif ($after_php) {
+            $result .= $text;
           }
           else {
             if ($in_case) {
@@ -531,11 +563,11 @@ function coder_format_string($code = '') {
         case T_OPEN_TAG:
         case T_OPEN_TAG_WITH_ECHO:
           $in_php = true;
-          $after_php = true;
           // Add a line break between two PHP tags.
-          if (substr(rtrim($result), -2) == '?>') {
+          if (substr(rtrim($result), -2) == '?>' && !$after_php) {
             coder_br($result);
           }
+          $after_php = true;
           $nl = substr_count($text, "\n");
           $result .= trim($text);
           if ($first_php_tag) {
@@ -554,6 +586,10 @@ function coder_format_string($code = '') {
 
         case T_CLOSE_TAG:
           $in_php = false;
+          if ($after_php) {
+            $result = rtrim($result, ' ') .' ';
+            $text = ltrim($text, ' ');
+          }
           // Do not alter a closing PHP tag ($text includes trailing white-space)
           // at all. Should allow to apply coder_format on phptemplate files.
           $result .= $text;
@@ -623,10 +659,12 @@ function coder_format_string($code = '') {
           $in_variable = FALSE;
           break;
 
+        case T_SWITCH:
+          ++$switches;
+          // Purposely fall through.
         case T_IF:
         case T_FOR:
         case T_FOREACH:
-        case T_SWITCH:
         case T_GLOBAL:
         case T_STATIC:
         case T_ECHO:
@@ -667,7 +705,7 @@ function coder_format_string($code = '') {
 
         case T_CASE:
         case T_DEFAULT:
-          $braces_in_case = 0;
+          $braces_in_case[$switches] = 0;
           $result         = rtrim($result);
           $after_case     = true;
           if (!$in_case) {
@@ -690,14 +728,14 @@ function coder_format_string($code = '') {
           $result = rtrim($result);
           coder_br($result);
           $result .= trim($text);
-          if ($in_case && !$braces_in_case) {
+          if ($in_case && !$braces_in_case[$switches]) {
             --$_coder_indent;
-            $in_case = false;
+            $in_case = FALSE;
           }
           break;
 
         case T_RETURN:
-          if ($in_case && !$braces_in_case) {
+          if ($in_case && !$braces_in_case[$switches]) {
             // Defer reduction of indent for later.
             ++$_coder_indent;
             $after_return_in_case = true;
@@ -706,7 +744,7 @@ function coder_format_string($code = '') {
           coder_add_space($result);
           $result .= trim($text) .' ';
           // Decrease indent only if we're not in a control structure inside a case.
-          if ($in_case && !$braces_in_case) {
+          if ($in_case && !$braces_in_case[$switches]) {
             --$_coder_indent;
             $in_case = false;
           }

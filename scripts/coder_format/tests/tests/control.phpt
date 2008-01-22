@@ -69,10 +69,12 @@ function filter_filter_tips($delta, $format, $long = FALSE) {
       switch ($long) {
         case 0:
           return t('Lines and paragraphs break automatically.');
+
         case 1:
-          return t('Lines and paragraphs are automatically recognized. The &lt;br /&gt; line break, &lt;p&gt; paragraph and &lt;/p&gt; close paragraph tags are inserted automatically. If paragraphs are not recognized simply add a couple blank lines.');
+          return t('Lines and paragraphs are automatically recognized.');
       }
       break;
+
     case 2:
       return t('Web page addresses and e-mail addresses turn into links automatically.');
   }
@@ -102,3 +104,36 @@ foreach ($update as $key) {
   $foo;
 }
 
+--INPUT--
+switch ($foo) {
+  case 'foo':
+    if ($foo) {
+      doSomethingElse();
+    }
+    else {
+      doSomething();
+    }
+    break;
+}
+
+--INPUT--
+switch ($foo) {
+  case 'foo':
+    if ($foo) {
+      doSomething();
+    }
+}
+
+--INPUT--
+function foo() {
+  if ($foo) {
+    switch ($foo) {
+      case 'foo':
+        foo();
+        break;
+    }
+  }
+  else {
+    foo();
+  }
+}
