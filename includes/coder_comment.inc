@@ -1,7 +1,7 @@
 <?php
-// $Id$ 
+// $Id$
 
-/** 
+/**
  * @file
  * This include file implements coder functionality for comments
  */

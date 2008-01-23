@@ -1,7 +1,7 @@
 <?php
 // $Id$
 
-/** 
+/**
  * @file
  * This include file implements coder functionality for Drupal Standards.
  *

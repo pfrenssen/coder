@@ -18,7 +18,7 @@
  *
  * Credit also to dries:
  * - http://cvs.drupal.org/viewcvs/drupal/drupal/scripts/code-style.pl
- */ 
+ */
 
 define('SEVERITY_MINOR', 1);
 define('SEVERITY_NORMAL', 5);
@@ -27,14 +27,14 @@ define('SEVERITY_CRITICAL', 9);
 /**
  * Implementation of hook_help().
  */
-function coder_help($page, $arg) { 
-  switch ($page) { 
+function coder_help($page, $arg) {
+  switch ($page) {
     case 'coder#disclaimer':
       return t('Coder provides helpful hints without false positives, but offers no guarantee for creating good code.  You are the final arbitrar.  If in doubt, read the Drupal documentation (see review links below and <a href="@api">api.drupal.org</a>).', array('@api' => 'http://api.drupal.org'));
     default :
       return;
-  } 
-} 
+  }
+}
 
 /**
  * Get all of the code review modules, including contributions.
@@ -139,7 +139,7 @@ function coder_menu() {
 
 /**
  * Implementation of hook_form_alter().
- * 
+ *
  * Modify the module display view by adding a Coder Review link to every
  * module description.
  */
@@ -165,14 +165,14 @@ function _coder_default_reviews() {
 
 /**
  * Build settings form API array for coder.
- * 
+ *
  * Generates a form with the default reviews and default modules/themes to
  * run Coder on.
- * 
+ *
  * @note
  *   Actual forms may have additional sections added to them, this
  *   is simply a base.
- * 
+ *
  * @param $settings
  *   Settings array for coder in the format of _coder_get_default_settings().
  * @param $system
@@ -231,7 +231,7 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#description' => t('show warnings at or above the severity warning level'),
     '#default_value' => $settings['coder_severity'],
   );
-  
+
   // Get the modules and theme.
   $sql = 'SELECT name, filename, type, status FROM {system} WHERE type=\'module\' OR type=\'theme\' ORDER BY weight ASC, filename ASC';
   $result = db_query($sql);
@@ -383,7 +383,7 @@ function _coder_settings_form($settings, &$system, &$files) {
 
 /**
  * Format checkbox field into columns.
- * 
+ *
  * @param $form
  *   Form sub-array to render, usually supplied as callback.
  */
@@ -432,13 +432,13 @@ function coder_settings_form_submit($form, &$form_state) {
 
 /**
  * Generate settings array for either modules or themes.
- * 
+ *
  * @param $form_values
  *   Form array passed to submit function (note: entries that are processed.
  *   are removed for efficiency's sake).
  * @param $type
  *   String type to generate settings for, either 'module' or 'theme'.
- * @return 
+ * @return
  *   Settings lookup array in form module/theme name => 1
  */
 function _coder_settings_array(&$form_state, $type) {
@@ -468,11 +468,11 @@ function coder_page() {
 
 /**
  * Returns a active settings array for coder.
- * 
+ *
  * @note
  *   The name is a misnomer, but is a largely correct characterization
  *   for most of Coder's settings as the variables usually do not exist.
- * 
+ *
  * @param $args
  *   String settings argument, can be 'settings', 'active', 'core', 'all'
  *   and 'default'.
@@ -531,7 +531,7 @@ function coder_page_form_submit($form, &$form_state) {
 
 /**
  * Implementation of hook_form().
- * 
+ *
  * Implements coder's main form, in which a user can select reviews and
  * modules/themes to run them on.
  */
@@ -700,7 +700,7 @@ function coder_page_form($form_state) {
 
 /**
  * Add results to form array for display on form page.
- * 
+ *
  * @param $form
  *   Form array variable to be modified.
  * @param $coder_args
@@ -770,7 +770,7 @@ function _coder_modified() {
 
 /**
  * Perform batch coder reviews for multiple files.
- * 
+ *
  * @param $coder_args
  *   Array of coder arguments, valid arguments are:
  *     - '#reviews' => array list of reviews to perform, see _coder_reviews();
@@ -842,7 +842,7 @@ function do_coder_reviews($coder_args) {
 
 /**
  * Parse and read a file into a format easy to validate.
- * 
+ *
  * @param $coder_args
  *   Coder arguments array variable to add file lines of code (with
  *   trailing newlines. The following array indices are added: '#all_lines',
@@ -1154,7 +1154,7 @@ function _coder_severity($severity_name, $default_value = SEVERITY_NORMAL) {
 
 /**
  * Return string severity for a given error.
- * 
+ *
  * @param $coder_args
  *   Coder settings array, see do_coder_reviews().
  * @param $review
@@ -1187,7 +1187,7 @@ function _coder_severity_name($coder_args, $review, $rule) {
 
 /**
  * Perform code review for a review array.
- * 
+ *
  * @param $coder_args
  *   Array coder settings, must have been prepared with _coder_read_and_parse_file(),
  *   see do_coder_reviews() for format.
@@ -1240,7 +1240,7 @@ function do_coder_review($coder_args, $review) {
 
 /**
  * Implements do_coder_review_* for regex match.
- * 
+ *
  * @param $coder_args
  *   Coder settings array variable, see do_coder_review() for format.
  * @param $review
@@ -1302,7 +1302,7 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
 
 /**
  * Builds an error message based on the rule that failed and other information.
- * 
+ *
  * @param $results
  *   Results array variable to save errors to.
  * @param $rule
@@ -1333,14 +1333,14 @@ function _coder_error(&$results, $rule, $severity_name, $lineno = -1, $line = ''
   else {
     $warning = t($rule['#warning']);
   }
-  
+
   return _coder_error_msg($results, $warning, $severity_name, $lineno, $line);
 }
 
 /**
  * Does the actual saving of error to results array and generating its
  * unique numeric id.
- * 
+ *
  * @param $results
  *   Results array variable to save errors to.
  * @param $warning
@@ -1366,7 +1366,7 @@ function _coder_error_msg(&$results, $warning, $severity_name, $lineno = -1, $li
 
 /**
  * Search for a string.
- * 
+ *
  * @note
  *   See do_coder_review_regex() for arguments.
  */
@@ -1384,7 +1384,7 @@ function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
 
 /**
  * Search for potentially missing string.
- * 
+ *
  * @note
  *   See do_coder_review_regex() for arguments.
  */
@@ -1402,7 +1402,7 @@ function do_coder_review_grep_invert(&$coder_args, $review, $rule, $lines, &$res
 
 /**
  * Allow for an arbitrary callback function to perform a review.
- * 
+ *
  * @note
  *   See do_coder_review_regex() for arguments.
  */
@@ -1416,9 +1416,9 @@ function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$result
 
 /**
  * Search for a string.
- * 
+ *
  * Uses the fastest available php function for searching.
- * 
+ *
  * @param $line
  *   Haystack.
  * @param $rule
@@ -1428,7 +1428,7 @@ function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$result
  */
 function _coder_search_string($line, $rule) {
   static $php5;
-  
+
   if (!isset($php5)) {
     if (function_exists('stripos')) {
       $php5 = true;
@@ -1437,17 +1437,17 @@ function _coder_search_string($line, $rule) {
       $php5 = false;
     }
   }
-  
+
   // Case-sensitive search with strpos() (supported everywhere).
   if (isset($rule['#case-sensitive'])) {
     return strpos($line, $rule['#value']) !== false;
   }
-  
+
   // Case-insensitive search with stripos() (supported in PHP 5).
   if ($php5 && !isset($rule['#case-sensitive'])) {
     return stripos($line, $rule['#value']) !== false;
   }
-  
+
   // Case-insensitive search.
   $regex = '/'. preg_quote($rule['#value']) .'/i';
   return preg_match($regex, $line);
@@ -1523,7 +1523,7 @@ function coder_theme() {
 
 /**
  * Format coder form and results.
- * 
+ *
  * @param $name
  *   Name of module/theme checked, not used.
  * @param $filename
@@ -1542,7 +1542,7 @@ function theme_coder($name, $filename, $results) {
 
 /**
  * Format a coder warning to be included in results.
- * 
+ *
  * @param $warning
  *   Either summary warning description, or an array in format:
  *     - '#warning' => Summary warning description;
@@ -1587,7 +1587,7 @@ function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') 
 
 /**
  * Format link to Drupal API.
- * 
+ *
  * @param $function
  *   Function to link to.
  * @param $version
@@ -1599,7 +1599,7 @@ function theme_drupalapi($function, $version = '') {
 
 /**
  * Format link to PHP documentation.
- * 
+ *
  * @param $function
  *   Function to link to.
  */

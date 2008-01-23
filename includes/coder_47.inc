@@ -1,10 +1,10 @@
 <?php
 // $Id$
 
-/** 
+/**
  * @file
  * This include file implements coder functionality for 4.6 -> 4.7 upgrades
- */ 
+ */
 
 /**
  * Implementation of hook_reviews().

@@ -1,7 +1,7 @@
 <?php
 // $Id$
 
-/** 
+/**
  * @file
  * This include file implements coder functionality for 5.x -> 6.x upgrades.
  */
@@ -41,12 +41,12 @@ function coder_6x_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]l\s*\(('. $argex .'\s*,\s*){3,}('. $argex .')\s*\)',
-      '#warning_callback' => '_coder_6x_url_l_warning', 
+      '#warning_callback' => '_coder_6x_url_l_warning',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]url\s*\(('. $argex .'\s*,\s*){2,}('. $argex .')\s*\)',
-      '#warning_callback' => '_coder_6x_url_l_warning', 
+      '#warning_callback' => '_coder_6x_url_l_warning',
     ),
     array(
       '#type' => 'regex',
@@ -97,7 +97,7 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\{file_revisions\}', 
+      '#value' => '\{file_revisions\}',
       '#warning' => 'The {'.'file_revisions} table is now {upload}',
     ),
     array(
@@ -127,7 +127,7 @@ function coder_6x_reviews() {
       '#type' => 'regex',
       '#value' => '_(validate|submit)\s*\(\s*\$form_id',
       '#warning_callback' => '_coder_6x_form_validate_and_submit_warning',
-    ),    
+    ),
     array(
       '#type' => 'regex',
       '#value' => '\$form\[[\'"]#submit[\'"]\]\[[\'"]',
