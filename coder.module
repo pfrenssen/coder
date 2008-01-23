@@ -14,19 +14,19 @@
  *
  * Credit also to dries:
  * - http://cvs.drupal.org/viewcvs/drupal/drupal/scripts/code-style.pl
- */ 
+ */
 
 /**
  * Implementation of hook_help().
  */
-function coder_help($section) { 
-  switch ($section) { 
+function coder_help($section) {
+  switch ($section) {
     case 'coder#disclaimer':
       return t('Coder provides helpful hints without false positives, but offers no guarantee for creating good code.  You are the final arbitrar.  If in doubt, read the Drupal documentation (see review links below and <a href="@api">api.drupal.org</a>).', array('@api' => 'http://api.drupal.org'));
     default :
       return;
-  } 
-} 
+  }
+}
 /**
  * Get all of the code review modules
  */
@@ -202,7 +202,7 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#description' => t('show warnings at or above the severity warning level'),
     '#default_value' => $settings['coder_severity'],
   );
-  
+
   // get the modules and theme
   $sql = 'SELECT name, filename, type, status FROM {system} WHERE type=\'module\' OR type=\'theme\' ORDER BY weight ASC, filename ASC';
   $result = db_query($sql);
@@ -860,7 +860,7 @@ function _coder_read_and_parse_file(&$coder_args) {
           unset($char);
         }
 
-        // look for the ending php tag 
+        // look for the ending php tag
         elseif ($char == '?' && $content[$pos + 1] == '>') {
           unset($char);
           $in_php = 0;
@@ -1118,7 +1118,7 @@ function _coder_error(&$results, $rule, $severity_name, $lineno = -1, $line = ''
   else {
     $warning = t($rule['#warning']);
   }
-  
+
   return _coder_error_msg($results, $warning, $severity_name, $lineno, $line);
 }
 
@@ -1172,18 +1172,18 @@ function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$result
 
 /**
  * Search for a string.
- * 
+ *
  * Uses strpos() and stripos() if available for performance optimization or
  * preg_match().
- * 
+ *
  * @param string $line Haystack
  * @param array $rule Rule to process
- * 
+ *
  * @return bool True if needle is in haystack.
  */
 function _coder_search_string($line, $rule) {
   static $php5;
-  
+
   if (!isset($php5)) {
     if (function_exists('stripos')) {
       $php5 = true;
@@ -1192,17 +1192,17 @@ function _coder_search_string($line, $rule) {
       $php5 = false;
     }
   }
-  
+
   // case-sensitive search with strpos() (supported everywhere)
   if (isset($rule['#case-sensitive'])) {
     return strpos($line, $rule['#value']) !== false;
   }
-  
+
   // case-insensitive search with stripos() (supported in PHP 5)
   if ($php5 && !isset($rule['#case-sensitive'])) {
     return stripos($line, $rule['#value']) !== false;
   }
-  
+
   // case-insensitive search
   $regex = '/'. preg_quote($rule['#value']) .'/i';
   return preg_match($regex, $line);
