@@ -5,83 +5,77 @@
 /**
  * Recursively process .module and .inc files in directory with coder_format_file().
  *
- * @param $root
- *   Path to root directory for Drupal installation.
+ * @param $directory
+ *   Path to a directory to process recursively.
  * @param $undo
  *   Boolean whether or not to undo batch replacements.
- * @param $file_inc
- *   Path to Drupal's file.inc, default is $root/includes/file.inc
  */
-function coder_format_recursive($root, $undo = false, $file_inc = null) {
-  // Convert Windows paths.
-  $root = str_replace("\\", '/', $root);
+function coder_format_recursive($directory, $undo = false) {
+  // Convert Windows paths (only cosmetical).
+  $directory = str_replace('\\', '/', $directory);
 
   // Check if directory exists.
-  if (!file_exists($root)) {
-    echo 'ERROR: '. $root .' does not exist!';
-    return;
+  if (!file_check_directory($directory)) {
+    drupal_set_message(t('%directory not found.', array('%directory' => $directory)), 'error');
+    return FALSE;
   }
 
-  // Trim root directory.
-  if (substr($root, -1) == '/') {
-    $root = substr($root, 0, -1);
-  }
-
-  // Include Drupal's file.inc.
-  if (!isset($file_inc)) {
-    if (!file_exists($root .'/includes/file.inc')) {
-      echo 'ERROR: '. $root .'/includes/file.inc not found!';
-      return;
-    }
-  }
-  else {
-    if (!file_exists($file_inc)) {
-      echo 'ERROR: '. $file_inc .' not found!';
-      return;
-    }
-  }
-  require_once (!isset($file_inc) ? $root .'/includes/file.inc' : $file_inc);
-
-  if (!$undo) {
-    // Fetch files to process.
-    $mask   = '\.php$|\.module$|\.inc$|\.install|\.profile$';
-    $nomask = array('.', '..', 'CVS', '.svn');
-    $files  = file_scan_directory($root, $mask, $nomask, 0, true);
-    foreach ($files as $file) {
-      // file_copy() assigns $file->filename by reference.
-      $sourcefile = $file->filename;
-      echo $file->filename ."\n";
-      file_copy($file->filename, $file->filename .'.coder.orig');
-      coder_format_file($sourcefile, $sourcefile);
-    }
-  }
-  else {
-    // Fetch files to process.
-    $mask   = '.coder.orig$';
-    $nomask = array('.', '..', 'CVS', '.svn');
-    $files  = file_scan_directory($root, $mask, $nomask, 0, true);
-    foreach ($files as $file) {
-      $file->origname = str_replace('.coder.orig', '', $file->filename);
-      echo $file->origname ."\n";
-      file_move($file->filename, $file->origname, FILE_EXISTS_REPLACE);
-    }
+  // Fetch files to process.
+  $mask   = '\.php$|\.module$|\.inc$|\.install|\.profile$';
+  $nomask = array('.', '..', 'CVS', '.svn');
+  $files  = file_scan_directory($directory, $mask, $nomask, 0, true);
+  foreach ($files as $file) {
+    coder_format_file($file->filename, $undo);
   }
 }
 
 /**
- * Reads, processes and writes the source code from and to a file.
+ * Reads, backups, processes and writes the source code from and to a file.
  *
- * @param $sourcefile
- *   Path to source file to read code from.
- * @param $targetfile
- *   Target path to write formatted source code to.
+ * @param $filename
+ *   Path to a file to process or restore. Pass original filename to restore an
+ *   already processed file.
+ * @param $undo
+ *   Whether to restore a processed file. Always restores the last backup.
  *
  * @return
- *   TRUE if successful.
+ *   TRUE on success.
  */
-function coder_format_file($sourcefile = null, $targetfile = null) {
-  if (!isset($sourcefile) || !isset($targetfile)) {
-    return;
+function coder_format_file($filename, $undo = FALSE) {
+  // Restore a processed file.
+  if ($undo) {
+    // Do nothing if no backup file exists at all.
+    if (!file_exists($filename .'.coder.orig')) {
+      return;
+    }
+    // Save original filename.
+    $original = $filename;
+    // Retrieve the file's directory.
+    $basename = file_check_path($filename);
+    // Find all backups.
+    $mask  = '^'. preg_quote($basename) .'(\.coder\.orig)+$';
+    $nomask = array('.', '..', 'CVS', '.svn');
+    $backups = file_scan_directory($filename, $mask, $nomask, 0, FALSE);
+    // Find the latest backup to restore.
+    ksort($backups);
+    $latest = array_pop($backups);
+    // Restore latest backup.
+    if (file_move($latest->filename, $original, FILE_EXISTS_REPLACE)) {
+      drupal_set_message(t('%file restored.', array('%file' => $original)));
+      return TRUE;
+    }
+    else {
+      drupal_set_message(t('%file could not be restored.', array('%file' => $original)), 'error');
+      return FALSE;
+    }
+  }
+
+  // Backup original file.
+  // file_copy() replaces source filepath with target filepath.
+  $sourcefile = $filename;
+  if (!file_copy($filename, $filename .'.coder.orig', FILE_EXISTS_RENAME)) {
+    drupal_set_message(t('%file could not be backup.', array('%file' => $filename)), 'error');
+    return FALSE;
   }
 
   // Read source code from source file.
@@ -94,14 +88,22 @@ function coder_format_file($sourcefile = null, $targetfile = null) {
 
     if ($code !== false) {
       // Write formatted source code to target file.
-      $fd = fopen($targetfile, 'w');
+      $fd = fopen($sourcefile, 'w');
       $status = fwrite($fd, $code);
       fclose($fd);
+
+      drupal_set_message(t('%file processed.', array('%file' => $sourcefile)));
       return $status;
     }
+    else {
+      drupal_set_message(t('An error occurred while processing %file.', array('%file' => $sourcefile)), 'error');
+      return FALSE;
+    }
   }
-
-  return false;
+  else {
+    drupal_set_message(t('%file could not be opened.', array('%file' => $sourcefile)), 'error');
+    return FALSE;
+  }
 }
 
 /**
@@ -1351,58 +1353,5 @@ function coder_postprocessor_if_curly_braces() {
 
 /**
  * @} End of "defgroup coder_postprocessor".
- */
-
-/**
- * @defgroup coder_format_stub_functions
- * @{
- */
-if (!function_exists('variable_get')) {
-  function variable_get($name, $default) {
-    global $conf;
-
-    return isset($conf[$name]) ? $conf[$name] : $default;
-  }
-}
-if (!function_exists('variable_set')) {
-  function variable_set($name, $value) {
-    global $conf;
-
-    $conf[$name] = $value;
-  }
-}
-if (!function_exists('t')) {
-  function t($string, $args = 0) {
-    if (!$args) {
-      return $string;
-    }
-    else {
-      return strtr($string, $args);
-    }
-  }
-}
-if (!function_exists('drupal_set_message')) {
-  function drupal_set_message($message = NULL, $type = 'status') {
-    echo $message;
-  }
-}
-if (!function_exists('watchdog')) {
-  function watchdog($type, $message, $severity = 0, $link = null) {
-    return;
-  }
-}
-if (!function_exists('check_plain')) {
-  function check_plain($text) {
-    return htmlspecialchars($text, ENT_QUOTES);
-  }
-}
-if (!function_exists('conf_path')) {
-  function conf_path() {
-    return "sites/default";
-  }
-}
-
-/**
- * @} End of "defgroup coder_format_stub_functions".
  */
 
