@@ -433,7 +433,7 @@ function coder_settings_form_submit($form, &$form_state) {
 /**
  * Generate settings array for either modules or themes.
  *
- * @param $form_values
+ * @param $form_state
  *   Form array passed to submit function (note: entries that are processed.
  *   are removed for efficiency's sake).
  * @param $type
@@ -638,8 +638,8 @@ function coder_page_form($form_state) {
 
           // Process the same directory include files.
           if (!empty($settings['coder_includes'])) {
-            // NOTE: Convert to the realpath here so drupal_system_listing.
-            // Doesn't return additional paths (i.e., try "module").
+            // NOTE: Convert to the realpath here so drupal_system_listing
+            // doesn't return additional paths (i.e., try "module").
             $path = str_replace('\\', '/', dirname(realpath($filename)));
             $offset = strpos($path, dirname($filename));
             if (!isset($dups[$path])) {
