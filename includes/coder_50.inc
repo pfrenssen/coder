@@ -1,10 +1,19 @@
 <?php
 // $Id$
 
-/** @file
- * This include file implements coder functionality for 4.7 -> 5.0 upgrades
+/**
+ * @file
+ * This include file implements coder functionality for 4.7 -> 5.x upgrades.
+ *
+ * @note
+ *   It is inappropriately named coder_50 instead of coder_5, due to confussion
+ *   of the new numbering standard that began with Drupal 5, yet it's not worth
+ *   changing all the names at this point.
  */
 
+/**
+ * Implementation of hook_reviews().
+ */
 function coder_50_reviews() {
   $rules = array(
     array(
@@ -76,14 +85,13 @@ function coder_50_reviews() {
 }
 
 /**
- * Define the rule callbacks
+ * Define the rule callbacks for 5.x, see do_coder_review_callback().
  */
-
 function _coder_50_callback(&$coder_args, $review, $rule, $lines, &$results) {
-  // only perform this check on module's (not includes)
+  // Only perform this check on module's (not includes).
   $filename = $coder_args['#filename'];
   if (substr($filename, -7) == '.module') {
-    // make sure that a .info file exists
+    // Make sure that a .info file exists.
     $filename = drupal_substr(realpath($filename), 0, -7) .'.info';
     if (!file_exists($filename)) {
       $severity_name = _coder_severity_name($coder_args, $review, $rule);
@@ -94,7 +102,7 @@ function _coder_50_callback(&$coder_args, $review, $rule, $lines, &$results) {
 }
 
 /**
- * Define the warning callbacks
+ * Define the warning callbacks.
  */
 
 function _coder_50_user_mail_warning() {

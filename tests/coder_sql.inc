@@ -1,11 +1,13 @@
 <?php
 // $Id$
 
-/** @file
- * This include file implements tests for the Drupal SQL
+/**
+ * @file
+ * This include file implements tests for the Drupal SQL as defined by
+ * http://drupal.org/node/2497
  *
  * It is never actually called by the coder code, but is read when running
- * admin/coder/coder
+ * admin/coder/coder.
  */
 
 function coder_test_sql() {

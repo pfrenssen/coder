@@ -1,12 +1,14 @@
 <?php
 // $Id$
 
-/** @file
- * This include file implements coder functionality for Drupal Standards
- *
- * Todo: The rules for this review are not yet complete.
+/**
+ * @file
+ * This include file implements coder functionality for Drupal Standards.
  */
 
+/**
+ * Implementation of hook_reviews().
+ */
 function coder_style_reviews() {
   $br = 'br';
   $rules = array(
@@ -99,7 +101,7 @@ function coder_style_reviews() {
     array(
       '#type' => 'regex',
       '#source' => 'html',
-      '#value' => '<'. $br .'>', // NOTE: use $br only to avoid a warning
+      '#value' => '<'. $br .'>', // NOTE: use $br only to avoid a warning.
       '#warning' => 'use &lt;br /&gt; instead of &lt;br&gt;',
       '#severity' => 'minor',
     ),
@@ -127,9 +129,8 @@ function coder_style_reviews() {
 }
 
 /**
- * Define the rule callbacks
+ * Define the rule callbacks for style.
  */
-
 function _coder_style_callback(&$coder_args, $review, $rule, $lines, &$results) {
   for ($lineno = -1; $last = array_slice($lines, $lineno); $lineno --) {
     $lastline = $last[0];
@@ -147,9 +148,9 @@ function _coder_style_core_global_regex() {
   static $coreglobalregex, $coreglobalvars;
   if (!isset($coreglobalregex)) {
     // Note: there's a little extra overhead in formatting this list as an
-    // array, but I think it makes it more readable and maintainable
+    // array, but I think it makes it more readable and maintainable.
     $coreglobalvars = array(
-      // from the Drupal 5 includes/ directory
+      // From the Drupal 5 includes/ directory.
       'active_db',
       'base_path',
       'base_root',
@@ -184,9 +185,9 @@ function _coder_style_core_global_regex() {
       'xrds_open_elements',
       'xrds_current_service',
 
-      // from the Drupal 5 modules/ directory -
+      // From the Drupal 5 modules/ directory -
       // Note: IMHO these should not be allowed, but until we fix core,
-      // other modules will need them
+      // other modules will need them.
       'channel',
       'element',
       'forum_topic_list_header',
@@ -206,7 +207,7 @@ function _coder_style_core_global_regex() {
 }
 
 /**
- * Define the warning callbacks
+ * Define the warning callbacks.
  */
 
 function _coder_style_xhtml_warning() {

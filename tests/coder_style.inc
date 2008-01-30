@@ -1,33 +1,35 @@
 <?php
 // $Id$
 
-/** @file
- * This include file implements tests for the Drupal Standards
+/**
+ * @file
+ * This include file implements tests for the Drupal Standards as defined
+ * at http://drupal.org/coding-standards
  *
  * It is never actually called by the coder code, but is read when running
- * admin/coder/coder
+ * admin/coder/coder.
  */
 
 function coder_test_tab() {
-  // tab in	comment - is this ok?
-  $var = 'tab in	quote'; // is this ok?
+  // Tab in	comment - is this ok?
+  $var = 'tab in	quote'; // Is this ok?
 	$var = 'tab error';
 }
 
 function coder_test_stdclass() {
-  $var = new stdClass(); // this is ok
-  $var = new StdClass(); // this is not
-  $var = new stdclassToo(); // should be camelcase rule
+  $var = new stdClass(); // This is ok.
+  $var = new StdClass(); // This is not.
+  $var = new stdclassToo(); // Should be camelcase rule.
 }
 
 function coderCamelCase() {
-  $camelCaseVar = 'whatever'; // camel case functions and vars not allowed
-  $var = $obj->camelCase; // but camel case objects elements are
-  new camcelCase(); // is ok
+  $camelCaseVar = 'whatever'; // Camel case functions and vars not allowed.
+  $var = $obj->camelCase; // But camel case objects elements are.
+  new camcelCase(); // Is ok.
 }
 
 function coder_test_two_errors_on_same_line() {
-  if('test=' . $test == 'test='){ // there are 3 errors on this line
+  if('test=' . $test == 'test='){ // There are 3 errors on this line.
   }
 }
 
@@ -38,10 +40,10 @@ a camelCase error.<?php
 }
 
 function coder_hex_number() {
-  $var = 0xFF; // should NOT be camelcase
+  $var = 0xFF; // Should NOT be camelcase.
 }
 
-function coder_multiline_quote() { // from Drupal5 block.module
+function coder_multiline_quote() { // From Drupal5 block.module.
   return t('<p>Blocks are boxes of content that may be rendered into certain regions of your web pages, for example, into sidebars. They are usually generated automatically by modules, but administrators can create blocks manually.</p>
 <p>Only enabled blocks are shown. You can position blocks by specifying which area of the page they should appear in (e.g., a sidebar).  Highlighted labels on this page show the regions into which blocks can be rendered. You can specify where within a region a block will appear by adjusting its weight.</p>
 <p>If you want certain blocks to disable themselves temporarily during high server loads, check the "Throttle" box. You can configure the auto-throttle on the <a href="@throttle">throttle configuration page</a> after having enabled the throttle module.</p>
@@ -49,8 +51,8 @@ function coder_multiline_quote() { // from Drupal5 block.module
 }
 
 function coder_break() {
-  print '<br>'; // should generate an error, and will throw performance warning
-  ?><br><?php // should also generate an error
+  print '<br>'; // Should generate an error, and will throw performance warning.
+  ?><br><?php // Should also generate an error.
 }
 
 function coder_heredoc() {
@@ -64,13 +66,13 @@ __EOD__;
 }
 
 function coder_dot() {
-  if ($file = file_check_upload($fieldname . '_upload')) { // not ok
+  if ($file = file_check_upload($fieldname . '_upload')) { // Not ok.
   }
-  $v .= 'bugger'; // ok
-  $a = $v .'bugger'; // ok
-  $a = $v ."bugger"; // ok, but will throw performance warning
-  $a = $v.'bugger'; // not ok
-  $a = $some_func().'bugger'; // not ok
+  $v .= 'bugger'; // Ok.
+  $a = $v .'bugger'; // Ok.
+  $a = $v ."bugger"; // Ok, but will throw performance warning.
+  $a = $v.'bugger'; // Not ok.
+  $a = $some_func().'bugger'; // Not ok.
 }
 
 function coder_array_indexes() {
@@ -78,5 +80,5 @@ function coder_array_indexes() {
   $a['hello'] = 'this is no';
 }
 
-// should generate an error about the trailing php close
+// Should generate an error about the trailing php close.
 ?>
