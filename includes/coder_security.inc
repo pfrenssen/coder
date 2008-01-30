@@ -53,7 +53,7 @@ function coder_security_reviews() {
 
 
 /**
- * Define the rule callbacks
+ * Define the rule callbacks.
  */
 
 /* function _coder_security_callback(&$coder_args, $review, $rule, $lines, &$results) {
@@ -64,7 +64,7 @@ function coder_security_reviews() {
 } */
 
 /**
- * Define the warning callbacks
+ * Define the warning callbacks.
  */
 
 function _coder_security_l_check_plain_warning() {

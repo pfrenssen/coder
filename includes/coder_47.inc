@@ -3,7 +3,7 @@
 
 /**
  * @file
- * This include file implements coder functionality for 4.6 -> 4.7 upgrades
+ * This include file implements coder functionality for 4.6 -> 4.7 upgrades.
  */
 
 /**
@@ -110,7 +110,7 @@ function coder_47_reviews() {
 }
 
 /**
- * Define the warning callbacks
+ * Define the warning callbacks.
  */
 
 function _coder_47_hook_node_info_warning() {

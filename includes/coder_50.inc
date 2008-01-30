@@ -85,13 +85,13 @@ function coder_50_reviews() {
 }
 
 /**
- * Define the rule callbacks for 5.x, see do_coder_review_callback()
+ * Define the rule callbacks for 5.x, see do_coder_review_callback().
  */
 function _coder_50_callback(&$coder_args, $review, $rule, $lines, &$results) {
-  // only perform this check on module's (not includes)
+  // Only perform this check on module's (not includes).
   $filename = $coder_args['#filename'];
   if (substr($filename, -7) == '.module') {
-    // make sure that a .info file exists
+    // Make sure that a .info file exists.
     $filename = drupal_substr(realpath($filename), 0, -7) .'.info';
     if (!file_exists($filename)) {
       $severity_name = _coder_severity_name($coder_args, $review, $rule);
@@ -102,7 +102,7 @@ function _coder_50_callback(&$coder_args, $review, $rule, $lines, &$results) {
 }
 
 /**
- * Define the warning callbacks
+ * Define the warning callbacks.
  */
 
 function _coder_50_user_mail_warning() {

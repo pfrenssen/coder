@@ -3,7 +3,7 @@
 
 /**
  * @file
- * This include file implements coder functionality for comments
+ * This include file implements coder functionality for comments.
  */
 
 /**

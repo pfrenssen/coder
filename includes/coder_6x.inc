@@ -104,7 +104,7 @@ function coder_6x_reviews() {
       '#type' => 'callback',
       '#value' => '_coder_6x_callback',
     ),
-    // FAPI Rules
+    // FAPI Rules.
     array(
       '#type' => 'regex',
       '#source' => 'allphp',
@@ -140,7 +140,7 @@ function coder_6x_reviews() {
       '#warning_callback' => '_coder_6x_form_set_value_warning',
       '#not' => 'array\s*\(',
     ),
-/*  from Delete API, which has been reverted
+/*  From Delete API, which has been reverted.
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]confirm_form\s*\([^,]+(,\s*[^,]+){4,}',
@@ -293,7 +293,7 @@ function coder_6x_reviews() {
       '#source' => 'allphp',
       '#warning_callback' => '_coder_6x_watchdog_debug_warning',
     ),
-    // Book module rules -  start
+    // Book module rules -  start.
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]book_admin_orphan\s*\(',
@@ -389,7 +389,7 @@ function coder_6x_reviews() {
       '#value' => '[\s\(]book_next\s*\(\$node',
       '#warning_callback' => '_coder_6x_book_next_warning',
     ),
-    // Book module rules -  end
+    // Book module rules -  end.
     array(
       '#type' => 'regex',
       '#value' => '\s[\'"]#value[\'"]\s*=>\s*t\s*\(\s*[\'"]Submit[\'"]\s*\)',
@@ -421,13 +421,13 @@ function coder_6x_reviews() {
 }
 
 /**
- * Define the rule callbacks for 6.x, see do_coder_review_callback()
+ * Define the rule callbacks for 6.x, see do_coder_review_callback().
  */
 function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
-  // only perform this check on module's (not includes)
+  // Only perform this check on module's (not includes).
   $filename = $coder_args['#filename'];
   if (substr($filename, -7) == '.module') {
-    // if there are any theme functions, make sure that a hook_theme exists
+    // If there are any theme functions, make sure that a hook_theme exists.
     $theme = false;
     $hook_theme = false;
     foreach ($lines as $lineno => $line) {
@@ -448,7 +448,7 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
       $results[0] = theme('coder_warning', $warning, $severity_name, $theme_lineno, $theme_line);
     }
 
-    // read the .info file
+    // Read the .info file.
     $filename = drupal_substr(realpath($filename), 0, -7) .'.info';
     if (file_exists($filename)) {
       if ($lines = file($filename)) {
@@ -473,7 +473,7 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
 }
 
 /**
- * Define the warning callbacks
+ * Define the warning callbacks.
  */
 
 function _coder_6x_new_menu_system_warning() {
