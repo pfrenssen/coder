@@ -284,7 +284,7 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]db_result\s*\(('. $argex .')\s*,\s*'. $argex. '\);$',
+      '#value' => '[\s\(]db_result\s*\(('. $argex .')\s*,\s*'. $argex .'\);$',
       '#warning_callback' => '_coder_6x_db_result_warning',
     ),
     array(
