@@ -128,6 +128,7 @@ function coder_style_reviews() {
       '#source' => 'all',
       '#value' => '\s+$',
       '#warning' => 'There should be no trailing spaces',
+      '#severity' => 'minor',
     ),
   );
   $review = array(

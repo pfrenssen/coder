@@ -21,5 +21,5 @@ function coder_test_sql() {
   $var = t('delete something');
   $sql = 'INSERT INTO node (changed) VALUES (1)';
   $sql = 'SELECT * FROM {node} LIMIT 10';
-  $sql = "SELECT * FROM {node} WHERE nid=$nid"; // unsecure  
+  $sql = "SELECT * FROM {node} WHERE nid=$nid"; // unsecure
 }
