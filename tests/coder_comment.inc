@@ -7,7 +7,7 @@
  * admin/coder/coder
  */
 
-/** 
+/**
 * This is a comment error.
  *This is a comment error.
  */

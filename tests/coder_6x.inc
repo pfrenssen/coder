@@ -48,7 +48,7 @@ function _coder_6x_more_tests() {
 
   $sql = 'UPDATE {file_revisions} SET vid=1'; // An error.
   if (db_query('SELECT * FROM {file_revisions}')) { // An error.
-  } 
+  }
 
   // Add FAPI tests.
   $form = array(
