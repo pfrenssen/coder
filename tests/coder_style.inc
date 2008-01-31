@@ -80,5 +80,21 @@ function coder_array_indexes() {
   $a['hello'] = 'this is no';
 }
 
+function coder_trailing_spaces() {
+  $left = 'this is bad';
+  $left = 'this is ok';
+}
+
+function coder_control_structures() {
+  if($a == 1){ }
+  if ($a == 1) {
+  }else {
+  }
+  if ($a == 1) { $b = 2;
+  }
+  if ($a == 1) {$b = 2;
+  }
+}
+
 // Should generate an error about the trailing php close.
 ?>
