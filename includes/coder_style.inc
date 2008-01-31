@@ -118,6 +118,17 @@ function coder_style_reviews() {
       '#warning' => 'use quotes around a string literal array index, this is not only a style issue, but a known performance problem',
       '#case-sensitive' => TRUE,
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '\s(if|elseif|while|foreach|switch|return|for|catch)\s*\(.*\) \s*{\s*[^\s]+',
+      '#warning' => 'The control statement should be on a separate line from the control conditional',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'all',
+      '#value' => '\s+$',
+      '#warning' => 'There should be no trailing spaces',
+    ),
   );
   $review = array(
     '#title' => t('Drupal Coding Standards'),
