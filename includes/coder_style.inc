@@ -126,7 +126,7 @@ function coder_style_reviews() {
     array(
       '#type' => 'regex',
       '#source' => 'all',
-      '#value' => '\s+$',
+      '#value' => '[ \t]+$',
       '#warning' => 'There should be no trailing spaces',
       '#severity' => 'minor',
     ),
