@@ -795,14 +795,11 @@ function do_coder_reviews($coder_args) {
     }
   }
 
-  $results = array();
-  $stats = array('minor' => 0, 'normal' => 0, 'critical' => 0);
-  $results['#stats'] = $stats;
+  $results = array('#stats' => array('minor' => 0, 'normal' => 0, 'critical' => 0));
 
   // Skip php include files when the user requested severity is above minor.
   if (isset($coder_args['#php_minor']) && drupal_substr($coder_args['#filename'], -4) == '.php') {
     if ($coder_args['#severity'] > 1) {
-      $results['#stats'] = $stats;
       return $results;
     }
   }
@@ -812,17 +809,17 @@ function do_coder_reviews($coder_args) {
     // Do all of the code reviews.
     foreach ($coder_args['#reviews'] as $review) {
       if ($result = do_coder_review($coder_args, $review)) {
-        foreach ($stats as $key => $value) {
-          $stats[$key] += $result['#stats'][$key];
+        foreach (array('critical', 'normal', 'minor') as $severity_level) {
+          if (isset($result['#stats'][$severity_level])) {
+            $results['#stats'][$severity_level] += $result['#stats'][$severity_level];
+          }
         }
-        unset($result['#stats']);
         $results += $result;
       }
     }
 
     // Sort the results.
     ksort($results, SORT_NUMERIC);
-    $results['#stats'] = $stats;
   }
   else {
     _coder_error_msg($results, t('Could not read the file'), 'critical');
