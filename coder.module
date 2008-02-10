@@ -805,6 +805,11 @@ function do_coder_reviews($coder_args) {
     // Do all of the code reviews.
     foreach ($coder_args['#reviews'] as $review) {
       if ($result = do_coder_review($coder_args, $review)) {
+        foreach (array('critical', 'normal', 'minor') as $severity_level) {
+          if (isset($result['#stats'][$severity_level])) {
+            $results['#stats'][$severity_level] += $result['#stats'][$severity_level];
+          }
+        }
         $results += $result;
       }
     }
