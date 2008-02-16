@@ -205,7 +205,7 @@ function _coder_47_array2object_warning() {
 }
 
 function _coder_47_hook_onload_warning() {
-  return t('!hook_onload replaced by javascript addLoadEvent()',
+  return t('!hook_onload() replaced by javascript addLoadEvent()',
     array(
       '!hook_onload' => theme('drupalapi', 'hook_onload', '4.6'),
     )

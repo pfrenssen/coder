@@ -56,7 +56,7 @@ function coder_sql_reviews() {
 
 function _coder_sql_db_query_range_warning() {
   return array(
-    '#warning' => t('Use !db_query_range instead of the SQL LIMIT clause',
+    '#warning' => t('Use !db_query_range() instead of the SQL LIMIT clause',
       array(
         '!db_query_range' => theme('drupalapi', 'db_query_range'),
       )

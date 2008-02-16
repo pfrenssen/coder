@@ -86,7 +86,7 @@ function _coder_security_request_uri_warning() {
 
 function _coder_security_sql_var_warning() {
   return array(
-    '#warning' => t('In SQL strings, Use !db_query placeholders in place of variables.  This is a protential source of SQL injection attacks when the variable can come from user data.',
+    '#warning' => t('In SQL strings, Use !db_query() placeholders in place of variables.  This is a protential source of SQL injection attacks when the variable can come from user data.',
       array(
         '!db_query' => theme('drupalapi', 'db_query'),
       )
