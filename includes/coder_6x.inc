@@ -455,7 +455,7 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
         foreach ($lines as $lineno => $line) {
           if (preg_match('/^dependencies\s*=/', $line)) {
             $severity_name = _coder_severity_name($coder_args, $review, $rule);
-            $warning = t('New syntax for <a href="!uri">.info files</a>, use dependencies[]', array('uri' => 'http://drupal.org/node/114774#info'));
+            $warning = t('New syntax for <a href="!uri">.info files</a>, use dependencies[]', array('!uri' => 'http://drupal.org/node/114774#info'));
             $results[-1] = theme('coder_warning', $warning, $severity_name, $lineno, $line);
           }
           if (preg_match('/^core\s*=/', $line)) {
@@ -464,7 +464,7 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
         }
         if (!isset($core)) {
           $severity_name = _coder_severity_name($coder_args, $review, $rule);
-          $warning = t('New syntax for <a href="!uri">.info files</a> files requires core=6.x', array('uri' => 'http://drupal.org/node/114774#info'));
+          $warning = t('New syntax for <a href="!uri">.info files</a> files requires core=6.x', array('!uri' => 'http://drupal.org/node/114774#info'));
           $results[-1] = theme('coder_warning', $warning, $severity_name, $lineno, $line);
         }
       }
