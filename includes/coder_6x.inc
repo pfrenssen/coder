@@ -578,7 +578,7 @@ function _coder_6x_format_plural_warning() {
 
 function _coder_6x_watchdog_warning() {
   return array(
-    '#warning' => t('Parameters of !watchdog() changed, you no longer need to use !t',
+    '#warning' => t('Parameters of !watchdog() changed, you <em>must</em> remove calls to !t()',
       array(
         '!watchdog' => theme('drupalapi', 'watchdog', '6'),
         '!t' => theme('drupalapi', 't', '6'),
