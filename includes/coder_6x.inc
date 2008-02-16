@@ -566,7 +566,7 @@ function _coder_6x_taxonomy_node_get_terms_warning() {
 
 function _coder_6x_format_plural_warning() {
   return array(
-    '#warning' => t('!format_plural() accepts replacements, you no longer need to use !strtr',
+    '#warning' => t('!format_plural() accepts replacements, you no longer need to use !strtr()',
       array(
         '!format_plural' => theme('drupalapi', 'format_plural', '6'),
         '!strtr' => theme('phpapi', 'strtr'),
@@ -590,7 +590,7 @@ function _coder_6x_watchdog_warning() {
 
 function _coder_6x_cache_set_warning() {
   return array(
-    '#warning' => t('Changes to !cache_set parameter order',
+    '#warning' => t('Changes to !cache_set() parameter order',
       array(
         '!cache_set' => theme('drupalapi', 'cache_set', '6'),
       )
@@ -601,7 +601,7 @@ function _coder_6x_cache_set_warning() {
 
 function _coder_6x_cache_get_warning() {
   return array(
-    '#warning' => t('!cache_set and !cache_get automatically (un)serialize complex data types',
+    '#warning' => t('!cache_set() and !cache_get() automatically (un)serialize complex data types',
       array(
         '!cache_set' => theme('drupalapi', 'cache_set', '6'),
         '!cache_get' => theme('drupalapi', 'cache_get', '6'),
@@ -665,7 +665,7 @@ function _coder_6x_confirm_form_warning() {
 
 function _coder_6x_custom_url_rewrite_warning() {
   return array(
-    '#warning' => t('In place of !custom_url_rewrite, use !custom_url_rewrite_inbound() or !custom_url_rewrite_outbound()',
+    '#warning' => t('In place of !custom_url_rewrite(), use !custom_url_rewrite_inbound() or !custom_url_rewrite_outbound()',
       array(
         '!custom_url_rewrite' => theme('drupalapi', 'custom_url_rewrite', '5'),
         '!custom_url_rewrite_inbound' => theme('drupalapi', 'custom_url_rewrite_inbound', '6'),
@@ -689,7 +689,7 @@ function _coder_6x_hook_info_auth_warning() {
 
 function _coder_6x_hook_help_warning() {
   return array(
-    '#warning' => t('The arguments to !hook_help have changed',
+    '#warning' => t('The arguments to !hook_help() have changed',
       array(
         '!hook_help' => theme('drupalapi', 'hook_help', '6'),
       )
@@ -708,7 +708,7 @@ function _coder_6x_schema_api_warning() {
 }
 
 function _coder_6x_theme_get_function_warning() {
-  return t('!theme_get_function has been deprecated because of template theming; see !theme_get_registry',
+  return t('!theme_get_function() has been deprecated because of template theming; see !theme_get_registry()',
     array(
       '!theme_get_function' => theme('drupalapi', 'theme_get_function', '5'),
       '!theme_get_registry' => theme('drupalapi', 'theme_get_registry', '6'),
@@ -718,7 +718,7 @@ function _coder_6x_theme_get_function_warning() {
 
 function _coder_6x_db_num_rows_warning() {
   return array(
-    '#warning' => t('!db_num_rows has been deprecated',
+    '#warning' => t('!db_num_rows() has been deprecated',
       array(
         '!db_num_rows' => theme('drupalapi', 'db_num_rows', '5'),
       )
@@ -759,7 +759,7 @@ function _coder_6x_comment_form_location_warning() {
 
 function _coder_6x_node_access_rebuild_warning() {
   return array(
-    '#warning' => t('!node_access_rebuild should not be called from !hook_enable or !hook_disable functions any more.',
+    '#warning' => t('!node_access_rebuild() should not be called from !hook_enable() or !hook_disable() functions any more.',
       array(
         '!node_access_rebuild' => theme('drupalapi', 'node_access_rebuild', '6'),
         '!hook_enable' => theme('drupalapi', 'hook_enable', '6'),
@@ -793,7 +793,7 @@ function _coder_6x_dangerous_skip_check_warning() {
 
 function _coder_6x_locale_refresh_cache_warning() {
   return array(
-    '#warning' => t('!locale_refresh_cache is deprecated.  Use !cache_clear_all instead.',
+    '#warning' => t('!locale_refresh_cache() is deprecated.  Use !cache_clear_all() instead.',
       array(
         '!locale_refresh_cache' => theme('drupalapi', 'locale_refresh_cache', '5'),
         '!cache_clear_all' => theme('drupalapi', 'cache_clear_all', '6'),
@@ -805,7 +805,7 @@ function _coder_6x_locale_refresh_cache_warning() {
 
 function _coder_6x_db_next_id_warning() {
   return array(
-    '#warning' => t('!db_next_id is deprecated.  Use !db_last_insert_id instead.',
+    '#warning' => t('!db_next_id() is deprecated.  Use !db_last_insert_id() instead.',
       array(
         '!db_next_id' => theme('drupalapi', 'db_next_id', '5'),
         '!db_last_insert_id' => theme('drupalapi', 'db_last_insert_id', '6'),
@@ -817,7 +817,7 @@ function _coder_6x_db_next_id_warning() {
 
 function _coder_6x_menu_set_location_warning() {
   return array(
-    '#warning' => t('!menu_set_location is deprecated.  Use !drupal_set_breadcrumb to set a custom breadcrumb or !menu_set_item to set the current location in the menu tree.',
+    '#warning' => t('!menu_set_location() is deprecated.  Use !drupal_set_breadcrumb() to set a custom breadcrumb or !menu_set_item() to set the current location in the menu tree.',
       array(
         '!menu_set_location' => theme('drupalapi', 'menu_set_location', '5'),
         '!drupal_set_breadcrumb' => theme('drupalapi', 'drupal_set_breadcrumb', '6'),
@@ -830,7 +830,7 @@ function _coder_6x_menu_set_location_warning() {
 
 function _coder_6x_taxonomy_get_vocabulary_warning() {
   return array(
-    '#warning' => t('!taxonomy_get_vocabulary is deprecated.  Use !taxonomy_vocabulary_load instead.',
+    '#warning' => t('!taxonomy_get_vocabulary() is deprecated.  Use !taxonomy_vocabulary_load() instead.',
       array(
         '!taxonomy_get_vocabulary' => theme('drupalapi', 'taxonomy_get_vocabulary', '5'),
         '!taxonomy_vocabulary_load' => theme('drupalapi', 'taxonomy_vocabulary_load', '6'),
@@ -1073,7 +1073,7 @@ function _coder_6x_nodeapi_submit_warning() {
 
 function _coder_6x_db_result_warning() {
   return array(
-    '#warning' => t('Remove $row argument from !db_result method',
+    '#warning' => t('Remove $row argument from !db_result() method',
       array(
         '!db_result' => theme('drupalapi', 'db_result', '6')
       )
