@@ -81,7 +81,7 @@ function coder_array_indexes() {
 }
 
 function coder_trailing_spaces() {
-  $left = 'this is bad';
+  $left = 'this is bad';   
   $left = 'this is ok';
 }
 
@@ -95,7 +95,6 @@ function coder_control_structures() {
   if ($a == 1) {$b = 2;
   }
 }
-
 
 // Should generate an error about the trailing php close.
 ?>
