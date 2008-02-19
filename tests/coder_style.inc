@@ -81,7 +81,7 @@ function coder_array_indexes() {
 }
 
 function coder_trailing_spaces() {
-  $left = 'this is bad';
+  $left = 'this is bad';   
   $left = 'this is ok';
 }
 
