@@ -426,6 +426,11 @@ function coder_6x_reviews() {
       '#value' => '[\s\(]user_authenticate\s*\(('. $argex .'\s*,\s*)('. $argex .')\s*\)',
       '#warning_callback' => '_coder_6x_user_authenticate_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => 'function\s+[a-z0-9_]+_(access)\s*\(('. $argex .'\s*,\s*)('. $argex .')\s*\)',
+      '#warning_callback' => '_coder_6x_hook_access_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -1134,4 +1139,13 @@ function _coder_6x_user_authenticate_warning() {
   );
 }
 
-
+function _coder_6x_hook_access_warning() {
+  return array(
+    '#warning' => t('Parameters to !hook_access() have changed',
+      array(
+        '!hook_access' => theme('drupalapi', 'hook_access', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#hook_access',
+  );
+}
