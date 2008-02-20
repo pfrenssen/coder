@@ -130,6 +130,11 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#value' => '_(prerender)\s*\(\s*\$form_id',
+      '#warning_callback' => '_coder_6x_form_prerender_warning',
+    ),
+    array(
+      '#type' => 'regex',
       '#value' => '\$form\[[\'"]#submit[\'"]\]\[[\'"]',
       '#source' => 'allphp',
       '#warning' => '$form[\'#submit\'] and $form[\'#validate\'] no longer support custom parameters',
@@ -638,6 +643,13 @@ function _coder_6x_form_validate_and_submit_warning() {
   return array(
     '#warning' => t('The parameters for form validation and submission functions have changed to $form, &$form_state.'),
     '#link' => 'http://drupal.org/node/144132#process-params',
+  );
+}
+
+function _coder_6x_form_prerender_warning() {
+  return array(
+    '#warning' => t('The parameters for form prerender functions have changed to $form.'),
+    '#link' => 'http://drupal.org/node/144132#pre-render',
   );
 }
 
