@@ -421,6 +421,11 @@ function coder_6x_reviews() {
       '#source' => 'quote',
       '#warning_callback' => '_coder_6x_drupal_install_schema_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]user_authenticate\s*\(('. $argex .'\s*,\s*)('. $argex .')\s*\)',
+      '#warning_callback' => '_coder_6x_user_authenticate_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -1117,3 +1122,16 @@ function _coder_6x_drupal_install_schema_warning() {
     '#link' => 'http://drupal.org/node/146862',
   );
 }
+
+function _coder_6x_user_authenticate_warning() {
+  return array(
+    '#warning' => t('Parameters to !user_authenticate have changed',
+      array(
+        '!user_authenticate' => theme('drupalapi', 'user_authenticate', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#user_authenticate',
+  );
+}
+
+
