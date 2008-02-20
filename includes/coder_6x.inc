@@ -415,6 +415,12 @@ function coder_6x_reviews() {
       '#value' => '[\s\(]drupal_mail\s*\(\s*[^,]+,\s*(\$to|\$recipient|\$[a-zA-Z_]+?\->mail|(\'|").+@.+(\'|"))',
       '#warning_callback' => '_coder_6x_drupal_mail_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '^(create\s+table\s+|drop\s+table\s+)',
+      '#source' => 'quote',
+      '#warning_callback' => '_coder_6x_drupal_install_schema_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -1102,5 +1108,12 @@ function _coder_6x_drupal_mail_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/189367',
+  );
+}
+
+function _coder_6x_drupal_install_schema_warning() {
+  return array(
+    '#warning' => t('Use the new Schema API to create and drop tables rather than db_query()'),
+    '#link' => 'http://drupal.org/node/146862',
   );
 }
