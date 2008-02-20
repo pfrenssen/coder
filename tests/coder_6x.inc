@@ -140,6 +140,10 @@ function _coder_6x_more_tests() {
   drupal_mail('action_email', $account->mail, $subject, $body, $from); // Not ok.
   drupal_mail('action_email', 'foo@foo.com', $subject, $body, $from); // Not ok.
   drupal_mail('system', 'action_email', $recipient, $language, $params); // Ok.
+
+  user_authenticate($name, $pass); // Not ok.
+  user_authenticate($array); // Ok.
+  user_authenticate(array('name' => $name, 'pass' => $pass)); // Ok.
   
 }
 
