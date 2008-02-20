@@ -162,6 +162,9 @@ function coder_node_get_name() {
 function myform_validate($form_id, $form) { // This will fail.
 }
 
+function myform_prerender($form_id, $form) { // This will fail.
+}
+
 function myform_submit($form_id, $form) { // This will fail.
   $form['#submit']['newsubmit'] = array();
   $form['#submit'][] = "newsubmit";
