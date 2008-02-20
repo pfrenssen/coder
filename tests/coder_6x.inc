@@ -193,3 +193,6 @@ function mymodule_enable() {
 function mymodule_disable() {
   node_access_rebuild(); // Not ok in node access modules.
 }
+
+function mymodule_access($op, $node) { // Not ok.
+}
