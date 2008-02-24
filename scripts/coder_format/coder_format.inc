@@ -1146,7 +1146,7 @@ function coder_preprocessor_line_breaks_win() {
   return array(
     '#title' => 'Convert Windows line breaks to Unix format.',
     '#weight' => 1,
-    '#search' => "/\r\n/",
+    '#search' => "@\r\n@",
     '#replace' => "\n",
   );
 }
@@ -1155,7 +1155,7 @@ function coder_preprocessor_line_breaks_mac() {
   return array(
     '#title' => 'Convert Macintosh line breaks to Unix format.',
     '#weight' => 2,
-    '#search' => "/\r/",
+    '#search' => "@\r@",
     '#replace' => "\n",
   );
 }
@@ -1163,7 +1163,7 @@ function coder_preprocessor_line_breaks_mac() {
 function coder_preprocessor_php() {
   return array(
     '#title' => 'Always use &lt;?php ?&gt; to delimit PHP code, not the &lt;? ?&gt; shorthands.',
-    '#search' => '/<\?(\s)/',
+    '#search' => '@<\?(\s)@',
     '#replace' => "<?php$1",
   );
 }
@@ -1171,8 +1171,16 @@ function coder_preprocessor_php() {
 function coder_preprocessor_switch_duplicate_exit() {
   return array(
     '#title' => 'Either exit a switch case with return *or* break.',
-    '#search' => '/(return\s+.+;)\s+break;/',
-    //'#replace' => '$1',
+    '#search' => '@
+      (return   # match a return
+        \s+     # - followed by some white-space
+        .+      # - followed by any characters
+        ;       # - followed by a semicolon
+      )
+      \s+       # match white-space (required)
+      break;    # match a directly following "break;"
+      @mx',
+    '#replace' => '$1',
   );
 }
 
@@ -1180,13 +1188,17 @@ function coder_preprocessor_inline_comment() {
   return array(
     '#title' => 'Move inline comments above remarked line.',
     '#weight' => 2,
-    // [\040\t] matches only a space or tab.
-    // (?!case) prevents matching of case statements.
-    // \S prevents matching of lines containing only a comment.
-    // [^:] prevents matching of URL protocols.
-    // [^;\$] prevents matching of CVS keyword Id comment and double slashes.
-    //   in quotes (f.e. "W3C//DTD").
-    '#search' => '@^([\040\t]*)(?!case)(\S.+?[;,{])[\040\t]*(?!:)//\s*([^;\$]+?)$@m',
+    '#search' => '@
+      ^([\040\t]*)  # match spaces or tabs only.
+      (?!case)      # do not match case statements.
+      (\S.+?        # do not match lines containing only a comment.
+        [;,{]       # match the TRICKY lines only.
+      )
+      [\040\t]*     # match spaces or tabs only.
+      (?!:)         # do not match URL protocols.
+      //\s*         # match inline comment token.
+      ([^;\$]+?)$   # fetch comment, but do not match CVS keyword Id, nested comments, and comment tokens in quotes (f.e. "W3C//DTD").
+      @mx',
     '#replace' => "$1// $3\n$1$2",
   );
 }
@@ -1202,26 +1214,41 @@ function coder_preprocessor_inline_comment() {
 function coder_postprocessor_cvs_id() {
   return array(
     '#title' => 'If the CVS keyword Id already exists, append a new line after it.',
-    '#search' => '@^(//.*\$Id.*\$)$@m',
+    '#search' => '@
+      ^(          # match start of a line
+        //.*      # match an inline comment followed by any characters
+        \$Id.*\$  # match a CVS Id tag
+      )$          # match end of a line
+      @mx',
     '#replace' => "$1\n",
   );
 }
 
 function coder_postprocessor_multiple_vars() {
-  // @todo Prevent matching of multiple lines separated by a blank line 26/03/2007 sun.
   return array(
     '#title' => 'Align equal signs of multiple variable assignments in the same column.',
-    // \n? * matches whitespace, but only one new line.
-    // \$.+? matches variable names.
-    // {3,} requires the pattern to match at least 3 times.
-    '#search' => '/^(\n? *\$.+? = .+?$){3,}/m',
+    '#search' => '@
+      ^(          # match start of a line
+        \n?\ *    # match white-space, but only one new line
+        \$.+?     # match a variable name
+        \ =\      # match a variable assignment
+        .+?$      # match a variable value
+      ){3,}       # require the pattern to match at least 3 times
+      @mx',
     '#replace_callback' => 'coder_replace_multiple_vars',
   );
 }
 
 function coder_replace_multiple_vars($matches) {
   // Retrieve all variable name = variable value pairs.
-  preg_match_all('/^(\s*)(\$.+?) (.?)= (.+?$)/m', $matches[0], $vars, PREG_SET_ORDER);
+  $regex = '@
+    ^           # match start of a line
+    (\s*)       # match a single optional white-space char
+    (\$.+?)     # match a variable name
+    \ (.?)=\    # match a variable assignment
+    (.+?$)      # match a variable value including end of line
+    @mx';
+  preg_match_all($regex, $matches[0], $vars, PREG_SET_ORDER);
 
   // Determine the longest variable name.
   $maxlength = 0;
@@ -1254,13 +1281,20 @@ function coder_postprocessor_indent_multiline_array() {
   // Still buggy, disabled for now.
   return array(
     '#title' => 'Align equal signs of multiline array assignments in the same column.',
-    // ?: prevents capturing
-    // \s* initial whitespace
-    // ([\'"]).+?\1 matches a string key
-    // .+? matches any other key w/o whitespace
-    // \s*=>\s* matches associative array arrow syntax
-    // .+? matches value
-    '#search' => '/^(?:\s*(?:(?:([\'"]).+?\1|.+?)\s*=>\s*.+?|\),\s?)$){3,}/mi',
+    '#search' => '@
+      ^                   # match start of a line
+      (?:\s*              # require initial white-space
+        (?:
+          (?:
+            ([\'"]).+?\1  # capture a string key
+            |.+?          # or any other key without white-space
+          )
+          \s*=>\s*        # require associative array arrow syntax
+          .+?             # match an array value
+          |\),\s?         # or a closing brace followed by a comma and a single optional white-space char
+        )$                # require end of a line
+      ){3,}               # require the pattern to match at least 3 times
+      @mix',
     //'#replace_callback' => 'coder_replace_indent_multiline_array',
   );
 }
@@ -1343,11 +1377,16 @@ function coder_replace_array_rearrange($matches) {
 }
 
 function coder_postprocessor_if_curly_braces() {
-  // @todo This is just a starting point for manual replacement at the moment.
+  // This post-processor relies on the fact that coder_format already
+  // re-formatted if statements without curly braces to be on one line.
   return array(
     '#title' => 'Use curly braces even in situations where they are technically optional.',
-    '#search' => '/if \(.+\) [^\{]+;/',
-    //'#replace_callback' => 'coder_replace_if_curly_braces',
+    '#search' => '@
+      (\s*)           # match leading white-space, including newline
+      (if\ \(.+\)\ )  # match if statement
+      ([^\{].+;)      # match conditional executed code not starting with a curly brace, delimited by a semicolon.
+      @x',
+    '#replace' => '$1$2{$1  $3$1}',
   );
 }
 

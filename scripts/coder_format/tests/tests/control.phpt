@@ -47,6 +47,37 @@ function format_case() {
 }
 
 --INPUT--
+function case_double_exit() {
+  switch ($moo) {
+    case 'foo':
+      return $bar = $baz;
+      break;
+
+    case 'fee':
+    default:
+      if ($moo == $bar) {
+        return $bay;
+      }
+      break;
+  }
+}
+
+--EXPECT--
+function case_double_exit() {
+  switch ($moo) {
+    case 'foo':
+      return $bar = $baz;
+
+    case 'fee':
+    default:
+      if ($moo == $bar) {
+        return $bay;
+      }
+      break;
+  }
+}
+
+--INPUT--
 function case_return() {
   switch ($moo) {
     case 'foo':
@@ -137,3 +168,24 @@ function foo() {
     foo();
   }
 }
+
+--INPUT--
+function if_curly_braces($bar) {
+  if ($foo = hook_foo($bar)) return;
+  if ($foo = hook_foo($bar)) $bar = $foo;
+  if ($foo = hook_foo($bar))
+    return $bar = $foo;
+}
+--EXPECT--
+function if_curly_braces($bar) {
+  if ($foo = hook_foo($bar)) {
+    return;
+  }
+  if ($foo = hook_foo($bar)) {
+    $bar = $foo;
+  }
+  if ($foo = hook_foo($bar)) {
+    return $bar = $foo;
+  }
+}
+
