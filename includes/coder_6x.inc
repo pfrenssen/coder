@@ -91,9 +91,9 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '((function)!\s+|\()file_save_upload\s*\([^,]+\s*,\s*[^,]+\s*,',
+      '#value' => '[\s\(]file_save_upload\s*\([^,]+\s*,\s*(\$dest|\$destination|\'\')\s*',
       '#not' => 'function file_save_upload',
-      '#warning_callback' => '_coder_6x_file_check_upload_warning',
+      '#warning_callback' => '_coder_6x_file_save_upload_warning',
     ),
     array(
       '#type' => 'regex',
@@ -648,6 +648,17 @@ function _coder_6x_file_check_upload_warning() {
     '#warning' => t('!file_check_upload() merged into !file_save_upload()',
       array(
         '!file_check_upload' => theme('drupalapi', 'file_check_upload', '5'),
+        '!file_save_upload' => theme('drupalapi', 'file_save_upload', '6'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#file-check-upload',
+  );
+}
+
+function _coder_6x_file_save_upload_warning() {
+  return array(
+    '#warning' => t('Parameters for !file_save_upload() have changed',
+      array(
         '!file_save_upload' => theme('drupalapi', 'file_save_upload', '6'),
       )
     ),

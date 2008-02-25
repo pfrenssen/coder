@@ -41,9 +41,12 @@ function _coder_6x_more_tests() {
 
   if ($file = file_check_upload('picture_upload')) { // An error.
     $file = file_save_upload('picture_upload', $destination, FILE_EXISTS_REPLACE); // An error.
+    $file = file_save_upload('picture_upload', $dest); // An error.
+    $file = file_save_upload('picture_upload', 'abc'); // An error.
+    $file = file_save_upload('picture_upload', array('foo')); // Ok.
   }
 
-  if ($file = file_save_upload('picture_upload', $validators)) { // Ok.
+  if ($file = file_save_upload('picture_upload', $validators, $dest)) { // Ok.
   }
 
   $sql = 'UPDATE {file_revisions} SET vid=1'; // An error.
