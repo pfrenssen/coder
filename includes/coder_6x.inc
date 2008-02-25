@@ -431,6 +431,13 @@ function coder_6x_reviews() {
       '#value' => 'function\s+[a-z0-9_]+_(access)\s*\(('. $argex .'\s*,\s*)('. $argex .')\s*\)',
       '#warning_callback' => '_coder_6x_hook_access_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'allphp',
+      '#value' => '(node|user|menu|menu_link|taxonomy_vocabulary|contact|filter_format|forum_term|aggregator_feed|aggregator_category)_load\(arg\([0-9]\)\)',
+      '#warning_callback' => '_coder_6x_menu_get_object_warning',
+    ),
+
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -1160,3 +1167,15 @@ function _coder_6x_hook_access_warning() {
     '#link' => 'http://drupal.org/node/114774#hook_access',
   );
 }
+
+function _coder_6x_menu_get_object_warning() {
+  return array(
+    '#warning' => t('Use !menu_get_object() to get an object based on your path',
+      array(
+        '!menu_get_object' => theme('drupalapi', 'menu_get_object', '6')
+      )
+    ),
+    '#link' => 'http://drupal.org/node/114774#menu_get_object',
+  );
+}
+

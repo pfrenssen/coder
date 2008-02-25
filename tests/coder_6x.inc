@@ -147,7 +147,9 @@ function _coder_6x_more_tests() {
   user_authenticate($name, $pass); // Not ok.
   user_authenticate($array); // Ok.
   user_authenticate(array('name' => $name, 'pass' => $pass)); // Ok.
-  
+
+  $node = node_load(arg(1)); // Not ok.
+
 }
 
 function _coder_6x_test_link_alter($node, &$links) { // An error.
