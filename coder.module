@@ -420,7 +420,7 @@ function coder_admin_settings() {
   $form = _coder_settings_form($settings, $system, $files);
   $form['help'] = array(
     '#type' => 'markup',
-    '#value' => t('After setting these defaults, visit <a href="@url">coder</a> to perform code reviews.', array('@url' => url('coder'))),
+    '#value' => t('After setting these defaults, use <a href="@url">coder</a> to perform code reviews.', array('@url' => url('coder'))),
     '#weight' => -1,
   );
   $form['#submit']['coder_settings_form_submit'] = array();
