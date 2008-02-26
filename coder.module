@@ -418,6 +418,11 @@ function theme_coder_checkboxes($form) {
 function coder_admin_settings() {
   $settings = _coder_get_default_settings();
   $form = _coder_settings_form($settings, $system, $files);
+  $form['help'] = array(
+    '#type' => 'markup',
+    '#value' => t('After setting these defaults, visit <a href="@url">coder</a> to perform code reviews.', array('@url' => url('coder'))),
+    '#weight' => -1,
+  );
   $form['#submit']['coder_settings_form_submit'] = array();
   $form['#submit']['system_settings_form_submit'] = array();
   return system_settings_form($form);
