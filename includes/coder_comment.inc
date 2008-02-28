@@ -16,7 +16,15 @@ function coder_comment_reviews() {
       '#source' => 'comment',
       '#value' => '$Id',
       '#case-sensitive' => true,
-      '#warning' => 'Include the CVS keyword $Id'.'$ in each file',
+      '#warning_callback' => '_coder_comment_Id_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'comment',
+      '#value' => '^.*\$Id.*$',
+      '#not' => '^\/\/\s+\$Id\$|^\/\/\s+\$Id$',
+      '#case-sensitive' => true,
+      '#warning_callback' => '_coder_comment_Id_warning',
     ),
     array(
       '#type' => 'regex',
@@ -78,4 +86,11 @@ function coder_comment_reviews() {
     '#description' => t('every developer should use'),
   );
   return array('comment' => $review);
+}
+
+function _coder_comment_Id_warning() {
+  return array(
+    '#warning' => t('Include the CVS keyword $Id$ in each file.  This should be in the format <code>// $Id$</code> or <code>// $Id$</code>'),
+    '#link' => 'http://drupal.org/coding-standards',
+  );
 }
