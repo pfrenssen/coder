@@ -22,7 +22,7 @@ function coder_comment_reviews() {
       '#type' => 'regex',
       '#source' => 'comment',
       '#value' => '^.*\$Id.*$',
-      '#not' => '^\/\/\s+\$Id\$|^\/\/\s+\$Id$]+\$',
+      '#not' => '^\/\/\s+\$Id\$|^\/\/\s+\$Id'.':[^\$]+\$',
       '#case-sensitive' => true,
       '#warning_callback' => '_coder_comment_Id_warning',
     ),
