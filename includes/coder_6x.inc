@@ -477,9 +477,9 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
     }
 
     // Read the .info file.
-    $filename = drupal_substr(realpath($filename), 0, -7) .'.info';
-    if (file_exists($filename)) {
-      if ($lines = file($filename)) {
+    $infofilename = drupal_substr(realpath($filename), 0, -7) .'.info';
+    if (file_exists($infofilename)) {
+      if ($lines = file($infofilename)) {
         foreach ($lines as $lineno => $line) {
           if (preg_match('/^dependencies\s*=/', $line)) {
             $severity_name = _coder_severity_name($coder_args, $review, $rule);
@@ -497,16 +497,26 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
         }
       }
     }
-  }
-  // check that there is a translations directory and not a po directory
-  $dir = dirname($filename);
-  if (file_exists($dir .'/po') && !file_exists($dir .'/translations')) {
-    $severity_name = _coder_severity_name($coder_args, $review, $rule);
-    $warning = array(
-      '#warning' => t('Translations moved from ./po to ./translations'),
-      '#link' => 'http://drupal.org/node/114774#translations_directory',
-    );
-    $results[-2] = theme('coder_warning', $warning, $severity_name, -1, $dir));
+
+    // Check that there is a translations directory and not a po directory
+    static $checked_dirs;
+    $dir = dirname($filename);
+    if (!isset($checked_dirs[$dir])) {
+      if (file_exists($dir .'/po') && !file_exists($dir .'/translations')) {
+        $severity_name = _coder_severity_name($coder_args, $review, $rule);
+        $warning = array(
+          '#warning' => t('Translations moved from ./po to ./translations'),
+          '#link' => 'http://drupal.org/node/114774#translations_directory',
+        );
+        $results[-2] = theme('coder_warning', $warning, $severity_name, 0, $dir);
+
+        // only display this warning once per ./po directory
+        if (!isset($checked_dirs)) {
+          $checked_dirs = array();
+        }
+        $checked_dirs[$dir] = $dir;
+      }
+    }
   }
 }
 
