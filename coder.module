@@ -1,6 +1,10 @@
 <?php
 // $Id$
 
+if (module_exists('drush')) {
+  include_once(drupal_get_path('coder') .'coder.drush.inc');
+}
+
 /**
  * @file
  * Developer Module that assists with code review and version upgrade that
@@ -1534,6 +1538,11 @@ function coder_theme() {
  *   Array list of results HTML to display. See do_coder_reviews() for format.
  */
 function theme_coder($name, $filename, $results) {
+  // theme the output for the Drupal shell
+  if (function_exists('coder_is_drush') && coder_is_drush()) {
+    return theme_drush_coder($name, $filename, $results);
+  }
+
   $output = '<div class="coder"><h2>'. basename($filename) .'</h2>';
   if (!empty($results)) {
     $output .= theme('item_list', $results);
@@ -1558,6 +1567,11 @@ function theme_coder($name, $filename, $results) {
  *   String contents of line.
  */
 function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') {
+  // theme the output for the Drupal shell
+  if (function_exists('coder_is_drush') && coder_is_drush()) {
+    return theme_drush_coder_warning($warning, $severity_name, $lineno, $line);
+  }
+
   // Extract description from warning.
   if (is_array($warning)) {
     $description = isset($warning['#description']) ? $warning['#description'] : '';
