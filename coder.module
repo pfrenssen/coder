@@ -2,7 +2,7 @@
 // $Id$
 
 if (module_exists('drush')) {
-  include_once(drupal_get_path('coder') .'coder.drush.inc');
+  include_once(drupal_get_path('module', 'coder') .'/coder.drush.inc');
 }
 
 /**
