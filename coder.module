@@ -678,6 +678,10 @@ function coder_page_form($form_values = null) {
           }
         }
         drupal_set_message(implode(', ', $display));
+
+        if (function_exists('coder_is_drush') && coder_is_drush()) {
+          print coder_print_drush_messages();
+        }
       }
     }
 
@@ -794,7 +798,7 @@ function do_coder_reviews($coder_args) {
     $cache_key = 'coder:'.  implode(':', array_keys($coder_args['#reviews'])) .  $coder_args['#severity'] .':'. $coder_args['#filename'];
     $cache_mtime = filemtime(realpath($coder_args['#filename']));
     if ($cache_results = cache_get($cache_key)) {
-      if ($cache_results->data['mtime'] == $cache_mtime && ($x = _coder_modified()) < $cache_results->created) {
+      if ($cache_results->data['mtime'] == $cache_mtime && _coder_modified() < $cache_results->created) {
         return unserialize($cache_results->data['results']);
       }
     }

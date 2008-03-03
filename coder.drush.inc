@@ -25,6 +25,7 @@ function coder_drush_review() {
         case 'all':
         case 'default':
           $settings = _coder_get_default_settings($arg);
+          $settings['coder_includes'] = TRUE;
           break;
         case 'major':
         case 'minor':
@@ -40,6 +41,7 @@ function coder_drush_review() {
             unset($settings['coder_core']);
             unset($settings['coder_all']);
             $settings['coder_modules-'. $arg] = 1;
+            $settings['coder_includes'] = TRUE;
           }
           break;
       }
@@ -56,7 +58,7 @@ function coder_drush_review() {
       $settings['coder_reviews'] = $reviews;
     }
     if (count($output)) {
-      print implode(', ', $output) ."\n\n";
+      drush_print(implode(', ', $output) ."\n");
     }
   }
   $settings['op'] = 'drush';
@@ -73,7 +75,8 @@ function coder_is_drush() {
 
 function theme_drush_coder($name, $filename, $results) {
   if (!empty($results)) {
-    print $filename .":\n ". implode("\n ", $results) ."\n\n";
+    $output = $filename .":\n ". implode("\n ", $results) ."\n";
+    drush_print($output);
   }
 }
 
@@ -81,4 +84,10 @@ function theme_drush_coder_warning($warning, $severity_name, $lineno = 0, $line 
   $output  = $lineno ? '+'. $lineno .': ' : '';
   $output .= is_array($warning) ? $warning['#warning'] : $warning;
   return strip_tags($output);
+}
+
+function coder_print_drush_messages() {
+  foreach (drupal_get_messages() as $messages) {
+    drush_print(strip_tags(implode("\n", $messages)));
+  }
 }
