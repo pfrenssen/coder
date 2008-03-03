@@ -115,7 +115,7 @@ function coder_6x_reviews() {
       '#type' => 'regex',
       '#source' => 'allphp',
       '#value' => '\$form\s*\[\s*[\'"]#validate[\'"]\]\[[\'"]',
-      '#warning' => 'Validation for specific form elements now uses the #element_validate property',
+      '#warning_callback' => '_coder_6x_formapi_element_validate_warning',
     ),
     array(
       '#type' => 'regex',
@@ -137,7 +137,7 @@ function coder_6x_reviews() {
       '#type' => 'regex',
       '#value' => '\$form\[[\'"]#submit[\'"]\]\[[\'"]',
       '#source' => 'allphp',
-      '#warning' => '$form[\'#submit\'] and $form[\'#validate\'] no longer support custom parameters',
+      '#warning_callback' => '_coder_6x_formapi_custom_params_warning',
     ),
     array(
       '#type' => 'regex',
@@ -673,6 +673,13 @@ function _coder_6x_file_save_upload_warning() {
   );
 }
 
+function _coder_6x_formapi_element_validate_warning() {
+  return array(
+      '#warning' => 'Validation for specific form elements now uses the #element_validate property',
+      '#link' => 'http://drupal.org/node/144132#element-validate',
+  );
+}
+
 function _coder_6x_form_validate_and_submit_warning() {
   return array(
     '#warning' => t('The parameters for form validation and submission functions have changed to $form, &$form_state.'),
@@ -684,6 +691,13 @@ function _coder_6x_form_prerender_warning() {
   return array(
     '#warning' => t('The parameters for form prerender functions have changed to $form.'),
     '#link' => 'http://drupal.org/node/144132#pre-render',
+  );
+}
+
+function _coder_6x_formapi_custom_params_warning() {
+  return array(
+    '#warning' => '$form[\'#submit\'] and $form[\'#validate\'] no longer support custom parameters',
+    '#link' => 'http://drupal.org/node/144132#custom-params',
   );
 }
 
