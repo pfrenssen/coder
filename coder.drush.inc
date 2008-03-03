@@ -5,7 +5,7 @@
 function coder_drush_command() {
   $items['coder'] = array(
     'callback' => 'coder_drush_review',
-    'description' => 'Run coder review.'
+    'description' => t('Run code reviews'),
   );
   return $items;
 }
@@ -23,7 +23,13 @@ function coder_drush_review() {
         case 'active':
         case 'core':
         case 'all':
+        case 'default':
           $settings = _coder_get_default_settings($arg);
+          break;
+        case 'major':
+        case 'minor':
+        case 'critical':
+          $severity_name = $arg;
           break;
         default:
           if (isset($avail_reviews[$arg])) {
@@ -38,13 +44,18 @@ function coder_drush_review() {
           break;
       }
     }
+    $output = array();
+    if (isset($severity_name)) {
+      $output[] = t('Severity @severity_name', array('@severity_name' => $severity_name));
+      $settings['coder_severity'] = _coder_severity($severity_name);
+    }
     if (count($reviews)) {
-      $settings['coder_reviews'] = $reviews;
-
-      $output = array();
       foreach ($reviews as $review) {
         $output[] = $avail_reviews[$review]['#title'];
       }
+      $settings['coder_reviews'] = $reviews;
+    }
+    if (count($output)) {
       print implode(', ', $output) ."\n\n";
     }
   }
@@ -61,7 +72,7 @@ function coder_is_drush() {
 }
 
 function theme_drush_coder($name, $filename, $results) {
-  if (!empty($results) && $results[0] != t('No Problems Found')) {
+  if (!empty($results)) {
     print $filename .":\n ". implode("\n ", $results) ."\n\n";
   }
 }

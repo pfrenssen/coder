@@ -35,8 +35,8 @@ function coder_help($page, $arg) {
   switch ($page) {
     case 'coder#disclaimer':
       return t('Coder provides helpful hints without false positives, but offers no guarantee for creating good code.  You are the final arbitrar.  If in doubt, read the Drupal documentation (see review links below and <a href="@api">api.drupal.org</a>).', array('@api' => 'http://api.drupal.org'));
-    default :
-      return;
+    case 'drush:coder':
+      return t('coder [<styles>] [minor|major|critical] [active|core|all|default|<modules>]');
   }
 }
 
