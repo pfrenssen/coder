@@ -10,6 +10,19 @@ function coder_drush_command() {
   return $items;
 }
 
+function _coder_drush_get_default_settings($arg = 'default') {
+  $settings = _coder_get_default_settings($arg);
+  if (isset($settings['coder_modules'])) {
+    foreach ($settings['coder_modules'] as $key => $value) {
+      if ($value == 1) {
+        $settings['coder_modules-'. $key] = 1;
+      }
+    }
+    unset($settings['coder_modules']);
+  }
+  return $settings;
+}
+
 function coder_drush_review() {
   _coder_drush_set_option('drush');
 
@@ -17,7 +30,7 @@ function coder_drush_review() {
   $args = func_get_args();
   $reviews = array();
   $modules = array();
-  $settings = _coder_get_default_settings();
+  $settings = _coder_drush_get_default_settings();
   if (count($args)) {
     $avail_reviews = _coder_reviews();
     foreach ($args as $arg) {
@@ -29,7 +42,7 @@ function coder_drush_review() {
         case 'core':
         case 'all':
         case 'default':
-          $settings = _coder_get_default_settings($arg);
+          $settings = _coder_drush_get_default_settings($arg);
           $settings['coder_includes'] = TRUE;
           break;
         case 'major':
@@ -40,6 +53,9 @@ function coder_drush_review() {
         default:
           if (isset($avail_reviews[$arg])) {
             $reviews[$arg] = $arg;
+          }
+          elseif ($arg[0] == '-' && $arg[1] == '-') {
+            unset($settings['coder_modules-'. substr($arg, 2)]);
           }
           else {
             unset($settings['coder_active_modules']);
