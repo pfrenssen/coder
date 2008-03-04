@@ -10,6 +10,17 @@ function coder_drush_command() {
   return $items;
 }
 
+function _coder_set_form_modules(&$settings) {
+  if (isset($settings['coder_modules'])) {
+    foreach ($settings['coder_modules'] as $key => $value) {
+      if ($value == 1) {
+        $settings['coder_modules-'. $key] = 1;
+      }
+    }
+    unset($settings['coder_modules']);
+  }
+}
+
 function coder_drush_review() {
   _coder_drush_set_option('drush');
 
@@ -41,8 +52,9 @@ function coder_drush_review() {
           if (isset($avail_reviews[$arg])) {
             $reviews[$arg] = $arg;
           }
-          elseif ($arg[0] == '-' && $arg[1] == '-') {
-            unset($settings['coder_modules-'. substr($arg, 2)]);
+          elseif (substr($arg, 0, 3) == 'no-') {
+            _coder_set_form_modules($settings);
+            unset($settings['coder_modules-'. substr($arg, 3)]);
           }
           else {
             unset($settings['coder_active_modules']);
@@ -55,14 +67,7 @@ function coder_drush_review() {
           break;
       }
     }
-    if (isset($settings['coder_modules'])) {
-      foreach ($settings['coder_modules'] as $key => $value) {
-        if ($value == 1) {
-          $settings['coder_modules-'. $key] = 1;
-        }
-      }
-      unset($settings['coder_modules']);
-    }
+    _coder_set_form_modules($settings);
     $output = array();
     if (isset($severity_name)) {
       $output[] = t('Severity @severity_name', array('@severity_name' => $severity_name));
