@@ -32,7 +32,7 @@ function coder_help($section) {
     case 'coder#disclaimer':
       return t('Coder provides helpful hints without false positives, but offers no guarantee for creating good code.  You are the final arbitrar.  If in doubt, read the Drupal documentation (see review links below and <a href="@api">api.drupal.org</a>).', array('@api' => 'http://api.drupal.org'));
     case 'drush:coder':
-      return t('coder [<styles>] [minor|major|critical] [active|core|all|default|<modules>]');
+      return t('coder [summary] [<styles>] [minor|major|critical] [active|core|all|default|<modules>]');
   }
 }
 /**
@@ -564,6 +564,8 @@ function coder_page_form($form_values = null) {
   }
 
   if ($coder_form = _coder_settings_form($settings, $system, $files)) {
+    $stats = array();
+
     // Add style sheet.
     $path = drupal_get_path('module', 'coder');
     drupal_add_css($path .'/coder.css', 'module');
@@ -585,7 +587,7 @@ function coder_page_form($form_values = null) {
         '#weight' => ++ $module_weight,
       );
       $phpfiles = file_scan_directory('.', '.*\.php', array('.', '..', 'CVS'), 0, false, 'name', 0);
-      _coder_page_form_includes($form, $coder_args, 'core_php', $phpfiles, 2);
+      $stats['core']['#includes'] = _coder_page_form_includes($form, $coder_args, 'core_php', $phpfiles, 2);
 
       $form['core_includes'] = array(
         '#type' => 'fieldset',
@@ -595,20 +597,19 @@ function coder_page_form($form_values = null) {
         '#weight' => ++ $module_weight,
       );
       $includefiles = drupal_system_listing('.*\.inc$', 'includes', 'filename', 0);
-      _coder_page_form_includes($form, $coder_args, 'core_includes', $includefiles, 0);
+      $stats['core']['#includes'] = _coder_page_form_includes($form, $coder_args, 'core_includes', $includefiles, 0);
     }
 
     // Loop through the selected modules and themes.
     if (isset($system)) {
       // Used to avoid duplicate includes.
       $dups = array();
-      $stats = array();
       foreach ($system as $name => $checked) {
         if ($checked) {
           // Process this one file.
           $filename = $files[$name];
           if (!$filename) {
-            drupal_set_message(t('Code Review file for %module not found', array('%module' => $name)));
+            drupal_set_message(t('Code Review file for %module not found', array('%module' => $name)), 'error');
             continue;
           }
           $coder_args = array(
@@ -679,7 +680,7 @@ function coder_page_form($form_values = null) {
         }
         drupal_set_message(implode(', ', $display));
 
-        if (function_exists('coder_is_drush') && coder_is_drush()) {
+        if (function_exists('_coder_drush_is_option') && _coder_drush_is_option('drush')) {
           print coder_print_drush_messages();
         }
       }
@@ -1505,7 +1506,7 @@ function _coder_is_drupal_core($module) {
  */
 function theme_coder($name, $filename, $results) {
   // theme the output for the Drupal shell
-  if (function_exists('coder_is_drush') && coder_is_drush()) {
+  if (function_exists('_coder_drush_is_option') && _coder_drush_is_option('drush')) {
     return theme_drush_coder($name, $filename, $results);
   }
 
@@ -1534,7 +1535,7 @@ function theme_coder($name, $filename, $results) {
  */
 function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') {
   // theme the output for the Drupal shell
-  if (function_exists('coder_is_drush') && coder_is_drush()) {
+  if (function_exists('_coder_drush_is_option') && _coder_drush_is_option('drush')) {
     return theme_drush_coder_warning($warning, $severity_name, $lineno, $line);
   }
 

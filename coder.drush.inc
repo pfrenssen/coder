@@ -11,6 +11,8 @@ function coder_drush_command() {
 }
 
 function coder_drush_review() {
+  _coder_drush_set_option('drush');
+
   // process command line arguments
   $args = func_get_args();
   $reviews = array();
@@ -20,6 +22,9 @@ function coder_drush_review() {
     $avail_reviews = _coder_reviews();
     foreach ($args as $arg) {
       switch ($arg) {
+        case 'summary':
+          _coder_drush_set_option($arg);
+          break;
         case 'active':
         case 'core':
         case 'all':
@@ -57,37 +62,46 @@ function coder_drush_review() {
       }
       $settings['coder_reviews'] = $reviews;
     }
-    if (count($output)) {
+    if (count($output) && !_coder_drush_is_option('summary')) {
       drush_print(implode(', ', $output) ."\n");
     }
   }
   $settings['op'] = 'drush';
 
-  global $_coder_is_drush;
-  $_coder_is_drush = TRUE;
   coder_page_form($settings);
 }
 
-function coder_is_drush() {
-  global $_coder_is_drush;
-  return isset($_coder_is_drush);
-}
-
 function theme_drush_coder($name, $filename, $results) {
-  if (!empty($results)) {
-    $output = $filename .":\n ". implode("\n ", $results) ."\n";
-    drush_print($output);
+  if (!_coder_drush_is_option('summary') && !empty($results)) {
+    drush_print($filename .":\n ". implode("\n ", $results) ."\n");
   }
 }
 
 function theme_drush_coder_warning($warning, $severity_name, $lineno = 0, $line = '') {
   $output  = $lineno ? '+'. $lineno .': ' : '';
   $output .= is_array($warning) ? $warning['#warning'] : $warning;
-  return strip_tags($output);
+  return _coder_drush_output($output);
 }
 
 function coder_print_drush_messages() {
-  foreach (drupal_get_messages() as $messages) {
-    drush_print(strip_tags(implode("\n", $messages)));
+  foreach (drupal_get_messages() as $type => $messages) {
+    drush_print(t(ucfirst($type) .' Messages') .":\n ". _coder_drush_output(implode("\n ", $messages)) ."\n");
   }
+}
+
+function _coder_drush_output($output) {
+  return html_entity_decode(strip_tags($output));
+}
+
+function _coder_drush_set_option($option) {
+  global $_coder_drush_options;
+  if (!isset($_coder_drush_options)) {
+    $_coder_drush_options = array();
+  }
+  $_coder_drush_options[$option] = TRUE;
+}
+
+function _coder_drush_is_option($option) {
+  global $_coder_drush_options;
+  return isset($_coder_drush_options[$option]);
 }
