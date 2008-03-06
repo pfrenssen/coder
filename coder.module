@@ -300,7 +300,8 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#collapsible' => true,
     '#collapsed' => true,
     'checkboxes' => array(
-      '#theme' => 'coder_checkboxes',
+      '#theme' => 'cols',
+      '#cols' => 2,
     ),
   );
   if (isset($settings['coder_all'])) {
@@ -385,34 +386,35 @@ function _coder_settings_form($settings, &$system, &$files) {
   return $form;
 }
 
-/**
- * Format checkbox field into columns.
- *
- * @param $form
- *   Form sub-array to render, usually supplied as callback.
- */
-function theme_coder_checkboxes($form) {
-  $total = 0;
-  foreach ($form as $element_id => $element) {
-    if ($element_id[0] != '#') {
-      $total ++;
-    }
-  }
-  $total = (int) (($total % 3) ? (($total + 2) / 3) : ($total / 3));
-  $pos = 0;
-  $rows = array();
-  foreach ($form as $element_id => $element) {
-    if ($element_id[0] != '#') {
-      $pos ++;
-      $row = $pos % $total;
-      $col = $pos / $total;
-      if (!isset($rows[$row])) {
-        $rows[$row] = array();
+if (!function_exists('theme_cols')) {
+  /**
+   * Implement theme_cols to theme the radiobuttons and checkboxes form
+   * elements in a table column.
+   */
+  function theme_cols($form) {
+    $total = 0;
+    $cols = isset($form['#cols']) ? $form['#cols'] : 3;
+    foreach ($form as $element_id => $element) {
+      if ($element_id[0] != '#') {
+        $total ++;
       }
-      $rows[$row][$col] = drupal_render($element);
     }
+    $total = (int) (($total % $cols) ? (($total + $cols - 1) / $cols) : ($total / $cols));
+    $pos = 0;
+    $rows = array();
+    foreach ($form as $element_id => $element) {
+      if ($element_id[0] != '#') {
+        $pos ++;
+        $row = $pos % $total;
+        $col = $pos / $total;
+        if (!isset($rows[$row])) {
+          $rows[$row] = array();
+        }
+        $rows[$row][$col] = drupal_render($element);
+      }
+    }
+    return theme('table', array(), $rows);
   }
-  return theme('table', array(), $rows);
 }
 
 /**
@@ -649,15 +651,16 @@ function coder_page_form($form_state) {
           if (!empty($settings['coder_includes'])) {
             // NOTE: Convert to the realpath here so drupal_system_listing
             // doesn't return additional paths (i.e., try "module").
-            $path = str_replace('\\', '/', dirname(realpath($filename)));
-            $offset = strpos($path, dirname($filename));
-            if (!isset($dups[$path])) {
-              if (substr($filename, -7) == '.module') {
-                $coder_args['#php_minor'] = 1;
+            if ($path = str_replace('\\', '/', dirname(realpath($filename)))) {
+              $offset = strpos($path, dirname($filename));
+              if (!isset($dups[$path])) {
+                if (substr($filename, -7) == '.module') {
+                  $coder_args['#php_minor'] = 1;
+                }
+                $dups[$path] = 1;
+                $includefiles = drupal_system_listing('.*\.(inc|php|install|test)$', $path, 'filename', 0);
+                $stats[$filename]['#includes'] = _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset);
               }
-              $dups[$path] = 1;
-              $includefiles = drupal_system_listing('.*\.(inc|php|install|test)$', $path, 'filename', 0);
-              $stats[$filename]['#includes'] = _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset);
             }
           }
         }
