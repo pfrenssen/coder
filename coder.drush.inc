@@ -34,6 +34,7 @@ function coder_drush_review() {
     foreach ($args as $arg) {
       switch ($arg) {
         case 'summary':
+        case 'no-empty':
           _coder_drush_set_option($arg);
           break;
         case 'active':
@@ -67,7 +68,6 @@ function coder_drush_review() {
           break;
       }
     }
-    _coder_set_form_modules($settings);
     $output = array();
     if (isset($severity_name)) {
       $output[] = t('Severity @severity_name', array('@severity_name' => $severity_name));
@@ -83,13 +83,14 @@ function coder_drush_review() {
       drush_print(implode(', ', $output) ."\n");
     }
   }
+  _coder_set_form_modules($settings);
   $settings['op'] = 'drush';
 
   coder_page_form($settings);
 }
 
 function theme_drush_coder($name, $filename, $results) {
-  if (!_coder_drush_is_option('summary') && !empty($results)) {
+  if (!_coder_drush_is_option('summary') && !empty($results) && (count($results) > 1 || !_coder_drush_is_option('no-empty'))) {
     drush_print($filename .":\n ". implode("\n ", $results) ."\n");
   }
 }
