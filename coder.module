@@ -333,7 +333,7 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#collapsible' => true,
     '#collapsed' => true,
     'checkboxes' => array(
-      '#theme' => 'coder_checkboxes',
+      '#theme' => 'cols',
     ),
   );
   if (isset($settings['coder_all'])) {
@@ -1529,7 +1529,7 @@ function coder_theme() {
   return array(
     'coder' => array('arguments' => array('name', 'filename', 'results')),
     'coder_warning' => array('arguments' => array('warning', 'severity_name', 'lineno', 'line')),
-    'coder_checkboxes' => array('arguments' => array('form')),
+    'cols' => array('arguments' => array('form')),
     'drupalapi' => array('arguments' => array('function', 'version')),
   );
 }
