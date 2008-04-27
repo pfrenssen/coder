@@ -22,4 +22,5 @@ function coder_test_sql() {
   $sql = 'INSERT INTO node (changed) VALUES (1)';
   $sql = 'SELECT * FROM {node} LIMIT 10';
   $sql = "SELECT * FROM {node} WHERE nid=$nid"; // unsecure
+  $sql = "SELECT * FROM {false_accounts} WHERE uids REGEXP '^%s,|,%s,|,%s$'"; // is OK
 }
