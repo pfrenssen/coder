@@ -177,6 +177,8 @@ function myform_prerender($form_id, $form) { // This will fail.
 function myform_submit($form_id, $form) { // This will fail.
   $form['#submit']['newsubmit'] = array();
   $form['#submit'][] = "newsubmit";
+  return $foo; // Not ok.
+  return 'my/path'; // Not ok.
 }
 
 function mymodule_info($field = 0) {

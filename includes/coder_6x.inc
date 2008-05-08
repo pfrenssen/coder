@@ -437,6 +437,12 @@ function coder_6x_reviews() {
       '#value' => '(node|user|menu|menu_link|taxonomy_vocabulary|contact|filter_format|forum_term|aggregator_feed|aggregator_category)_load\(arg\([0-9]\)\)',
       '#warning_callback' => '_coder_6x_menu_get_object_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#function' => '_submit$',
+      '#value' => '\s+return\s+('. $argex .');',
+      '#warning_callback' => '_coder_6x_form_submit_warning',
+    ),
 
   );
   $review = array(
@@ -1190,6 +1196,13 @@ function _coder_6x_menu_get_object_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/114774#menu_get_object',
+  );
+}
+
+function _coder_6x_form_submit_warning() {
+  return array(
+    '#warning' => t('Submit handlers use $form_state rather than returning urls'),
+    '#link' => 'http://drupal.org/node/144132#redirect',
   );
 }
 
