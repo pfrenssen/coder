@@ -92,47 +92,47 @@ function coder_menu() {
   $items = array();
 
   $items['coder'] = array(
-    'title' => t('Code review'),
+    'title' => 'Code review',
     'page callback' => 'coder_page',
     'access arguments' => array('view code review'),
     'type' => MENU_NORMAL_ITEM,
   );
   $items['coder/settings'] = array(
-    'title' => t('Selection Form'),
+    'title' => 'Selection Form',
     'page callback' => 'coder_page',
     'access arguments' => array('view code review'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -2,
   );
   $items['coder/default'] = array(
-    'title' => t('Default'),
+    'title' => 'Default',
     'page callback' => 'coder_page',
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
     'weight' => -1,
   );
   $items['coder/core'] = array(
-    'title' => t('Core'),
+    'title' => 'Core',
     'page callback' => 'coder_page',
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
   );
   $items['coder/active'] = array(
-    'title' => t('Active'),
+    'title' => 'Active',
     'page callback' => 'coder_page',
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
   );
   $items['coder/all'] = array(
-    'title' => t('All'),
+    'title' => 'All',
     'page callback' => 'coder_page',
     'access arguments' => array('view code review all'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
   );
   $items['admin/settings/coder'] = array(
-    'title' => t('Code review'),
-    'description' => t('Select code review plugins and modules'),
+    'title' => 'Code review',
+    'description' => 'Select code review plugins and modules',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('coder_admin_settings'),
     'access arguments' => array('administer site configuration'),
