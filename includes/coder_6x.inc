@@ -503,6 +503,17 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
         }
       }
     }
+
+    // Check that there is a translations directory and not a po directory.
+    $dir = dirname($filename);
+    if (file_exists($dir .'/po') && !file_exists($dir .'/translations')) {
+      $severity_name = _coder_severity_name($coder_args, $review, $rule);
+      $warning = array(
+        '#warning' => t('Translations moved from ./po to ./translations'),
+        '#link' => 'http://drupal.org/node/114774#translations_directory',
+      );
+      $results[-2] = theme('coder_warning', $warning, $severity_name, -1, $dir);
+    }
   }
 }
 
