@@ -26,4 +26,11 @@ function coder_test_sql() {
   $sql = "SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type='%s' AND (r.title REGEXP '^[^[:alpha:]].*$')";
   $sql = "SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type='%s' AND (r.title REGEXP '^[^[:alpha:]].*$') AND nid=$nid";
   $sql = "SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=$type AND (r.title REGEXP '^[^[:alpha:]].*$')";
+
+  // Back tick usage tests.
+  $sql = 'SELECT * FROM {node} WHERE title=`abc`';
+  $sql = 'INSERT INTO {foo} (nid, title) VALUES ("1", `abc`)';
+  $sql = 'INSERT INTO {foo} VALUES ("1", `abc`)';
+  $sql = 'UPDATE {foo} SET nid="1", title=`abc`';
+  $sql = 'DELETE FROM {foo} WHERE nid="1" AND title=`abc`';
 }
