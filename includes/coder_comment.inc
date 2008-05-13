@@ -91,6 +91,36 @@ function coder_comment_reviews() {
       '#warning_callback' => '_coder_comment_invalid_file_block',
       '#severity' => 'minor',
     ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'comment',
+      '#value' => 'Implementation\s+of\s+hook_\w+\(\)\s*$',
+      '#warning' => 'Missing period',
+      '#severity' => 'minor',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'comment',
+      '#value' => 'Implementation\s+of\s+hook_\w+\s*\.*$',
+      '#warning' => 'Missing parenthesis after function name',
+      '#severity' => 'minor',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'comment',
+      '#value' => '^.*\s+of\s+hook_\w+',
+      '#not' => '^\s\*\sImplementation\s+of\s+hook_\w+',
+      '#warning' => 'Format should be <code>* Implementation of hook_foo().</code>',
+      '#severity' => 'minor',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'comment',
+      '#value' => 'implementation\s+of\s+hook_\w+',
+      '#warning' => '\'Implementation\' should be at the start of the sentence and begin with a capitialized letter',
+      '#severity' => 'minor',
+      '#case-sensitive' => true,
+    ),
   );
   $review = array(
     '#title' => t('Drupal Commenting Standards'),

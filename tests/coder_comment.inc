@@ -33,3 +33,14 @@
  * @see some_function(),
  * @see some_function(), some-template.tpl.php, not_ok.tpl.php.
  */
+
+/*
+ * Implementation of hook_foo().
+ * Implementation of hook_foo()
+ * implementation of hook_foo().
+ * Implementation of hook_foo
+ * Implementation of hook_foo.
+ * Implemetation of hook_foo().
+ */
+// Implementation of hook_foo().
+/* Implementation of hook_foo(). */
