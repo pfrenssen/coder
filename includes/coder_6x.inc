@@ -443,6 +443,13 @@ function coder_6x_reviews() {
       '#value' => '\s+return\s+('. $argex .');',
       '#warning_callback' => '_coder_6x_form_submit_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#function' => '_menu$',
+      '#source' => 'allphp',
+      '#value' => '\'title\'\s*=>\s*t\(|\'description\'\s*=>\s*t\(',
+      '#warning_callback' => '_coder_6x_menu_localization_warning',
+    ),
 
   );
   $review = array(
@@ -1217,3 +1224,10 @@ function _coder_6x_form_submit_warning() {
   );
 }
 
+
+function _coder_6x_menu_localization_warning() {
+  return array(
+    '#warning' => t('Menu item titles and descriptions should now no longer be wrapped in t() calls.'),
+    '#link' => 'http://drupal.org/node/140311',
+  );
+}

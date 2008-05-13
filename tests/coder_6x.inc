@@ -203,3 +203,18 @@ function mymodule_disable() {
 
 function mymodule_access($op, $node) { // Not ok.
 }
+
+function coder_6x_tests_menu() {
+  $items = array();
+
+  $items['test_good'] = array(
+    'title' => 'My title', // Ok.
+    'description' => 'My description', // Ok.
+  );
+
+  $items['test_bad'] = array(
+    'title' => t('My title'), // Not Ok.
+    'description' => t('My description'), // Not Ok.
+  );
+
+}
