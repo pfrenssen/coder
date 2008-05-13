@@ -52,7 +52,7 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '([^\'\"\s0-9]\.|\.[^\'\"\=\s0-9])',
+      '#value' => '([^\(\'\"\s0-9]\.|\.[^\)\'\"\=\s0-9])',
       '#warning' => 'string concatenation should be formatted with a space separating the operators (dot .) and non-quote terms',
     ),
     array(

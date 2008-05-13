@@ -73,6 +73,8 @@ function coder_dot() {
   $a = $v ."bugger"; // Ok, but will throw performance warning.
   $a = $v.'bugger'; // Not ok.
   $a = $some_func().'bugger'; // Not ok.
+
+  $a = 1.0 * .1 * 1. * (0.1) * (1.) * (.1) * (1.0); // Ok.
 }
 
 function coder_array_indexes() {
