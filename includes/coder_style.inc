@@ -130,6 +130,12 @@ function coder_style_reviews() {
       '#warning' => 'There should be no trailing spaces',
       '#severity' => 'minor',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(](strlen|strtolower|strtoupper|substr|ucfirst)\s*\(',
+      '#warning' => 'in most cases, replace the string function with the drupal_ equivalent string functions',
+      '#severity' => 'minor',
+    ),
   );
   $review = array(
     '#title' => t('Drupal Coding Standards'),
