@@ -22,6 +22,7 @@ function coder_test_sql() {
   $sql = 'INSERT INTO node (changed) VALUES (1)';
   $sql = 'SELECT * FROM {node} LIMIT 10';
   $sql = "SELECT * FROM {node} WHERE nid=$nid"; // unsecure
+  $sql = "SELECT * FROM {false_accounts} WHERE uids REGEXP '^%s,|,%s,|,%s$'"; // is OK
   $sql = "SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type='%s' AND (r.title REGEXP '^[^[:alpha:]].*$')";
   $sql = "SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type='%s' AND (r.title REGEXP '^[^[:alpha:]].*$') AND nid=$nid";
   $sql = "SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=$type AND (r.title REGEXP '^[^[:alpha:]].*$')";
