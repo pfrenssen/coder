@@ -33,4 +33,10 @@ function coder_test_sql() {
   $sql = 'INSERT INTO {foo} VALUES ("1", `abc`)';
   $sql = 'UPDATE {foo} SET nid="1", title=`abc`';
   $sql = 'DELETE FROM {foo} WHERE nid="1" AND title=`abc`';
+
+  // Unquoted %s placeholder tests.
+  $sql = 'SELECT * FROM {foo} WHERE name=%s';
+  $sql = 'INSERT INTO {foo} (%s)';
+  $sql = 'INSERT INTO {foo} (1,%s)';
+  $sql = 'INSERT INTO {foo} (1, %s)';
 }
