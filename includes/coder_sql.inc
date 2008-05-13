@@ -45,7 +45,7 @@ function coder_sql_reviews() {
       '#type' => 'regex',
       '#value' => '^(select\s+.*\s+from\s+'. $table .'\s+.+?=\s*`|insert\s+into\s+'. $table .'\s+.+?VALUES\s*(\(\s*`|\(.*?,\s*`)|update\s+'. $table .'\s+set\s+.+?=\s*`|delete\s+from\s'. $table .'\s+.+?=\s*`)',
       '#source' => 'quote',
-      '#warning' => 'Don\'t use back ticks to quote values'
+      '#warning' => 'Don\'t use back ticks to quote values as it is not compliant with ANSI SQL'
     ),
   );
   $review = array(
