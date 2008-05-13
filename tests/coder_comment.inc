@@ -12,6 +12,10 @@
  */
 
 /**
+ * @file this is not ok.
+ */
+
+/**
 * This is a comment error.
  *This is a comment error.
  */
