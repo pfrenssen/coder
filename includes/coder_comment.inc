@@ -78,6 +78,19 @@ function coder_comment_reviews() {
       '#warning' => '@see references should be separated by ", "',
       '#severity' => 'minor',
     ),
+    array(
+      '#type' => 'grep_invert',
+      '#source' => 'comment',
+      '#value' => '@'.'file',
+      '#warning_callback' => '_coder_comment_missing_file_block',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'comment',
+      '#value' => '@'.'file\s+.+$',
+      '#warning_callback' => '_coder_comment_invalid_file_block',
+      '#severity' => 'minor',
+    ),
   );
   $review = array(
     '#title' => t('Drupal Commenting Standards'),
@@ -92,5 +105,19 @@ function _coder_comment_Id_warning() {
   return array(
     '#warning' => t('Include the CVS keyword $Id'.'$ in each file.  This should be in the format <code>// $Id'.'$</code> or <code>// $Id'.'$</code>'),
     '#link' => 'http://drupal.org/coding-standards',
+  );
+}
+
+function _coder_comment_missing_file_block() {
+  return array(
+    '#warning' => t('@'.'file block missing'),
+    '#link' => 'http://drupal.org/node/1354#files',
+  );
+}
+
+function _coder_comment_invalid_file_block() {
+  return array(
+    '#warning' => t('@'.'file description should be on the following line'),
+    '#link' => 'http://drupal.org/node/1354#files',
   );
 }
