@@ -1250,8 +1250,8 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
     $function_regex = isset($rule['#function']) ? '/'. $rule['#function'] .'/' : '';
     $current_function = '';
     $paren = 0;
-    $regexflags = isset($rule['#case-sensitive']) ? '' : 'i';
-    $regex = '/'. $rule['#value'] .'/'. $regexflags;
+    $not_regex = isset($rule['#not']) ? '/'. $rule['#not'] .'/'. $regexflags : '';
+    $never_regex = isset($rule['#never']) ? '/'. $rule['#never'] .'/'. $regexflags : '';
     foreach ($lines as $lineno => $line) {
       // Some rules apply only within certain functions.
       if ($function_regex) {
