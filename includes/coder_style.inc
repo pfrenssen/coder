@@ -114,12 +114,6 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\[\s*[a-z][a-z0-9_]+\\s*]',
-      '#warning' => 'use quotes around a string literal array index, this is not only a style issue, but a known performance problem',
-      '#case-sensitive' => TRUE,
-    ),
-    array(
-      '#type' => 'regex',
       '#value' => '\s(if|elseif|while|foreach|switch|return|for|catch)\s*\(.*\) \s*{\s*[^\s]+',
       '#warning' => 'The control statement should be on a separate line from the control conditional',
     ),
@@ -135,6 +129,13 @@ function coder_style_reviews() {
       '#value' => '[\s\(](strlen|strtolower|strtoupper|substr|ucfirst)\s*\(',
       '#warning' => 'in most cases, replace the string function with the drupal_ equivalent string functions',
       '#severity' => 'minor',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '\[\s*[A-Za-z][A-Za-z0-9_]*\s*]',
+      '#not' => '\[\s*[A-Z][A-Z0-9_]*\s*]',
+      '#warning' => 'use quotes around a string literal array index, this is not only a style issue, but a known performance problem',
+      '#case-sensitive' => TRUE,
     ),
   );
   $review = array(

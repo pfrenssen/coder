@@ -10,6 +10,11 @@
  * admin/coder/coder.
  */
 
+function coder_array_ticks() {
+  $some_array[FOO_BAR] = $baz; // This is ok.
+  $some_array[foo] = $baz; // This is not.
+}
+
 function coder_test_tab() {
   // Tab in	comment - is this ok?
   $var = 'tab in	quote'; // Is this ok?
