@@ -913,25 +913,25 @@ function _coder_read_and_parse_file(&$coder_args) {
 
         // Remove blank lines now, so we avoid processing them over-and-over.
         if ($this_all_lines != '') {
-          if (trim($this_all_lines) != '') {
+          if (trim($this_all_lines, "\r\n") != '') {
             $all_lines[$lineno] = $this_all_lines;
           }
-          if (trim($this_php_lines) != '') {
+          if (trim($this_php_lines, "\r\n") != '') {
             $php_lines[$lineno] = $this_php_lines;
           }
-          if (trim($this_allphp_lines) != '') {
+          if (trim($this_allphp_lines, "\r\n") != '') {
             $allphp_lines[$lineno] = $this_allphp_lines;
           }
-          if (trim($this_html_lines) != '') {
+          if (trim($this_html_lines, "\r\n") != '') {
             $html_lines[$lineno] = $this_html_lines;
           }
-          if (trim($this_quote_lines) != '') {
+          if (trim($this_quote_lines, "\r\n") != '') {
             $quote_lines[$lineno] = $this_quote_lines;
           }
-          if (trim($this_doublequote_lines) != '') {
+          if (trim($this_doublequote_lines, "\r\n") != '') {
             $doublequote_lines[$lineno] = $this_doublequote_lines;
           }
-          if (trim($this_comment_lines) != '') {
+          if (trim($this_comment_lines, "\r\n") != '') {
             $comment_lines[$lineno] = $this_comment_lines;
           }
         }
