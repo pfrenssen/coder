@@ -139,7 +139,7 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s=>]+(true|false|null)[\s;,\n\r]+',
+      '#value' => '[\s=>]+(true|false|null)[\)\s;,\n\r]+',
       '#case-sensitive' => TRUE,
       '#warning' => 'Use uppercase for PHP constants, e.g. NULL, TRUE, FALSE',
     ),
