@@ -469,18 +469,18 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
   $filename = $coder_args['#filename'];
   if (substr($filename, -7) == '.module') {
     // If there are any theme functions, make sure that a hook_theme exists.
-    $theme = false;
-    $hook_theme = false;
+    $theme = FALSE;
+    $hook_theme = FALSE;
     foreach ($lines as $lineno => $line) {
       if (preg_match('/function theme_/', $line)) {
         if (!$theme) {
-          $theme = true;
+          $theme = TRUE;
           $theme_line = $line;
           $theme_lineno = $lineno;
         }
       }
       if (preg_match('/function \w+_theme\(/', $line)) {
-        $hook_theme = true;
+        $hook_theme = TRUE;
       }
     }
     if ($theme && !$hook_theme) {

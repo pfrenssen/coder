@@ -214,8 +214,8 @@ function _coder_settings_form($settings, &$system, &$files) {
   $form['coder_reviews_group'] = array(
     '#type' => 'fieldset',
     '#title' => t('Reviews'),
-    '#collapsible' => true,
-    '#collapsed' => false,
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
   );
   $form['coder_reviews_group']['coder_reviews'] = array(
     '#type' => 'checkboxes',
@@ -266,8 +266,8 @@ function _coder_settings_form($settings, &$system, &$files) {
   $form['coder_what'] = array(
     '#type' => 'fieldset',
     '#title' => t('What to review'),
-    '#collapsible' => true,
-    '#collapsed' => false,
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
   );
   // NOTE: Should rename var.
   $form['coder_what']['coder_active_modules'] = array(
@@ -297,8 +297,8 @@ function _coder_settings_form($settings, &$system, &$files) {
   $form['coder_what']['coder_modules'] = array(
     '#type' => 'fieldset',
     '#title' => t('Select Specific Modules'),
-    '#collapsible' => true,
-    '#collapsed' => true,
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
     'checkboxes' => array(
       '#theme' => 'cols',
       '#cols' => 2,
@@ -330,8 +330,8 @@ function _coder_settings_form($settings, &$system, &$files) {
   $form['coder_what']['coder_themes'] = array(
     '#type' => 'fieldset',
     '#title' => t('Select Specific Themes'),
-    '#collapsible' => true,
-    '#collapsed' => true,
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
     'checkboxes' => array(
       '#theme' => 'cols',
     ),
@@ -588,18 +588,18 @@ function coder_page_form($form_state) {
       $form['core_php'] = array(
         '#type' => 'fieldset',
         '#title' => 'core (php)',
-        '#collapsible' => true,
-        '#collapsed' => true,
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
         '#weight' => ++ $module_weight,
       );
-      $phpfiles = file_scan_directory('.', '.*\.php', array('.', '..', 'CVS'), 0, false, 'name', 0);
+      $phpfiles = file_scan_directory('.', '.*\.php', array('.', '..', 'CVS'), 0, FALSE, 'name', 0);
       _coder_page_form_includes($form, $coder_args, 'core_php', $phpfiles, 2);
 
       $form['core_includes'] = array(
         '#type' => 'fieldset',
         '#title' => 'core (includes)',
-        '#collapsible' => true,
-        '#collapsed' => true,
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
         '#weight' => ++ $module_weight,
       );
       $includefiles = drupal_system_listing('.*\.inc$', 'includes', 'filename', 0);
@@ -632,15 +632,15 @@ function coder_page_form($form_state) {
           $form[$name] = array(
             '#type' => 'fieldset',
             '#title' => $filename,
-            '#collapsible' => true,
-            '#collapsed' => true,
+            '#collapsible' => TRUE,
+            '#collapsed' => TRUE,
             '#weight' => ++ $module_weight,
           );
           if (empty($results)) {
             $results[] = t('No Problems Found');
           }
           else {
-            $form[$name]['#collapsed'] = false;
+            $form[$name]['#collapsed'] = FALSE;
           }
           $form[$name]['output'] = array(
             '#value' => theme('coder', $name, $filename, $results),
@@ -698,7 +698,7 @@ function coder_page_form($form_state) {
     $form['settings'] = array(
       '#type' => 'fieldset',
       '#title' => t('Selection Form'),
-      '#collapsible' => true,
+      '#collapsible' => TRUE,
       '#collapsed' => isset($form),
       '#weight' => -1,
     );
@@ -747,16 +747,16 @@ function _coder_page_form_includes(&$form, $coder_args, $name, $files, $offset) 
     $form[$name][$filename] = array(
       '#type' => 'fieldset',
       '#title' => $filename,
-      '#collapsible' => true,
-      '#collapsed' => true,
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
       '#weight' => ++ $weight,
     );
     if (empty($results)) {
       $results[] = t('No Problems Found');
     }
     else {
-      $form[$name][$filename]['#collapsed'] = false;
-      $form[$name]['#collapsed'] = false;
+      $form[$name][$filename]['#collapsed'] = FALSE;
+      $form[$name]['#collapsed'] = FALSE;
     }
     $form[$name][$filename]['output'] = array(
       '#value' => theme('coder', $name, $filename, $results),
@@ -1442,21 +1442,21 @@ function _coder_search_string($line, $rule) {
 
   if (!isset($php5)) {
     if (function_exists('stripos')) {
-      $php5 = true;
+      $php5 = TRUE;
     }
     else {
-      $php5 = false;
+      $php5 = FALSE;
     }
   }
 
   // Case-sensitive search with strpos() (supported everywhere).
   if (isset($rule['#case-sensitive'])) {
-    return strpos($line, $rule['#value']) !== false;
+    return strpos($line, $rule['#value']) !== FALSE;
   }
 
   // Case-insensitive search with stripos() (supported in PHP 5).
   if ($php5 && !isset($rule['#case-sensitive'])) {
-    return stripos($line, $rule['#value']) !== false;
+    return stripos($line, $rule['#value']) !== FALSE;
   }
 
   // Case-insensitive search.
@@ -1598,9 +1598,9 @@ function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') 
   }
   $path = drupal_get_path('module', 'coder');
   $title = t('severity: @severity', array('@severity' => $severity_name));
-  $img = theme('image', $path ."/images/$severity_name.png", $title, $title, array('align' => 'right', 'class' => 'coder'), false);
+  $img = theme('image', $path ."/images/$severity_name.png", $title, $title, array('align' => 'right', 'class' => 'coder'), FALSE);
   if (!empty($description)) {
-    $img .= theme('image', $path .'/images/more.png', t('click to read more'), '', array('align' => 'right', 'class' => 'coder-more'), false);
+    $img .= theme('image', $path .'/images/more.png', t('click to read more'), '', array('align' => 'right', 'class' => 'coder-more'), FALSE);
     $warning .= '<div class="coder-description">Explanation: '. $description .'</div>';
   }
   return '<div class="'. $class .'">'. $img . $warning .'</div>';

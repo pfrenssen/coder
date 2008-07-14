@@ -137,6 +137,12 @@ function coder_style_reviews() {
       '#warning' => 'use quotes around a string literal array index, this is not only a style issue, but a known performance problem',
       '#case-sensitive' => TRUE,
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s=>]+(true|false|null)[\s;,\n\r]+',
+      '#case-sensitive' => TRUE,
+      '#warning' => 'Use uppercase for PHP constants, e.g. NULL, TRUE, FALSE',
+    ),
   );
   $review = array(
     '#title' => t('Drupal Coding Standards'),
