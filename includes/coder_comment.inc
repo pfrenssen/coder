@@ -15,7 +15,7 @@ function coder_comment_reviews() {
       '#type' => 'grep_invert',
       '#source' => 'comment',
       '#value' => '$Id',
-      '#case-sensitive' => true,
+      '#case-sensitive' => TRUE,
       '#warning_callback' => '_coder_comment_Id_warning',
     ),
     array(
@@ -23,7 +23,7 @@ function coder_comment_reviews() {
       '#source' => 'comment',
       '#value' => '^.*\$Id.*$',
       '#not' => '^\/\/\s+\$Id\$|^\/\/\s+\$Id'.':[^\$]+\$',
-      '#case-sensitive' => true,
+      '#case-sensitive' => TRUE,
       '#warning_callback' => '_coder_comment_Id_warning',
     ),
     array(
@@ -119,7 +119,7 @@ function coder_comment_reviews() {
       '#value' => 'implementation\s+of\s+hook_\w+',
       '#warning' => '\'Implementation\' should be at the start of the sentence and begin with a capitialized letter',
       '#severity' => 'minor',
-      '#case-sensitive' => true,
+      '#case-sensitive' => TRUE,
     ),
   );
   $review = array(

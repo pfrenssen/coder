@@ -103,5 +103,15 @@ function coder_control_structures() {
   }
 }
 
+function coder_lowercase_true() {
+  $a = TRUE; // Ok.
+  $atrue = "true"; // Ok.
+  $a = true; // Not ok.
+  $a =true; // Not ok.
+  if ($a == true) { // Not ok.
+    return false; // Not ok.
+  }
+}
+
 // Should generate an error about the trailing php close.
 ?>
