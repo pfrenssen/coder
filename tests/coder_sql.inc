@@ -39,4 +39,9 @@ function coder_test_sql() {
   $sql = 'INSERT INTO {foo} (%s)';
   $sql = 'INSERT INTO {foo} (1,%s)';
   $sql = 'INSERT INTO {foo} (1, %s)';
+
+  // Variables withing db_query queries.
+  db_query("SELECT * FROM {foo} WHERE name=$name");
+  db_query("INSERT INTO {foo} SET name='$name'");
+  update_sql("INSERT INTO {foo} SET name='$name'");
 }
