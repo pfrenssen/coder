@@ -36,8 +36,8 @@ function coder_security_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '^(select\s+.*\s+from\s+'. $table .'|insert\s+into\s+'. $table .'|update\s+'. $table .'\s+set|delete\s+from\s'. $table .')\s+.*\$[^\']',
-      '#source' => 'doublequote',
+      '#value' => 'db_query\s*\(\s*"(select\s+.*\s+from\s+'. $table .'|insert\s+into\s+'. $table .'|update\s+'. $table .'\s+set|delete\s+from\s'. $table .')\s+.*\$[^\'].*".*\)',
+      '#source' => 'allphp',
       '#warning_callback' => '_coder_security_sql_var_warning',
     ),
     array(
