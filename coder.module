@@ -148,7 +148,7 @@ function coder_menu() {
  * module description.
  */
 function coder_form_alter(&$form, $form_state, $form_id) {
-  if ($form_id == 'system_modules' && isset($form['#theme']) && $form['#theme'] != 'confirm_form') {
+  if ($form_id == 'system_modules' && (!isset($form['#theme']) || $form['#theme'] != 'confirm_form')) {
     if (user_access('view code review')) {
       $path = drupal_get_path('module', 'coder');
       drupal_add_css($path .'/coder.css', 'module');
