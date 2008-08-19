@@ -36,7 +36,7 @@ function coder_help($page, $arg) {
     case 'coder#disclaimer':
       return t('Coder provides helpful hints without false positives, but offers no guarantee for creating good code.  You are the final arbitrar.  If in doubt, read the Drupal documentation (see review links below and <a href="@api">api.drupal.org</a>).', array('@api' => 'http://api.drupal.org'));
     case 'drush:coder':
-      return t('coder [summary] [<styles>] [minor|major|critical] [active|core|all|default|<modules>] [no-<module>]');
+      return t('coder [summary] [@reviews] [minor|major|critical] [active|core|all|default|<modules>] [no-<module>]', array('@reviews' => implode('|', array_keys(_coder_reviews()))));
   }
 }
 
@@ -1544,7 +1544,7 @@ function coder_theme() {
  */
 function theme_coder($name, $filename, $results) {
   // theme the output for the Drupal shell
-  if (function_exists('coder_is_drush') && coder_is_drush()) {
+  if (function_exists('_coder_drush_is_option') && _coder_drush_is_option('drush')) {
     return theme_drush_coder($name, $filename, $results);
   }
 
@@ -1573,7 +1573,7 @@ function theme_coder($name, $filename, $results) {
  */
 function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') {
   // theme the output for the Drupal shell
-  if (function_exists('coder_is_drush') && coder_is_drush()) {
+  if (function_exists('_coder_drush_is_option') && _coder_drush_is_option('drush')) {
     return theme_drush_coder_warning($warning, $severity_name, $lineno, $line);
   }
 

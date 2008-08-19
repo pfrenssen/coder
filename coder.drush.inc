@@ -88,7 +88,8 @@ function coder_drush_review() {
   _coder_set_form_modules($settings);
   $settings['op'] = 'drush';
 
-  coder_page_form($settings);
+  $form_state['storage'] = $settings;
+  coder_page_form($form_state);
 }
 
 function theme_drush_coder($name, $filename, $results) {
