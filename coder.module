@@ -406,7 +406,7 @@ function _coder_settings_form($settings, &$system, &$files) {
     // Display the modules in a fieldset.
     $form['coder_what']['coder_modules'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Select Specific Modules'),
+      '#title' => t('Select specific modules'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       'checkboxes' => array(
@@ -440,7 +440,7 @@ function _coder_settings_form($settings, &$system, &$files) {
     // Display the themes in a fieldset.
     $form['coder_what']['coder_themes'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Select Specific Themes'),
+      '#title' => t('Select specific themes'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       'checkboxes' => array(
@@ -826,7 +826,7 @@ function coder_page_form($form_state) {
     // Prepend the settings form.
     $form['settings'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Selection Form'),
+      '#title' => t('Selection form'),
       '#collapsible' => TRUE,
       '#collapsed' => isset($form),
       '#weight' => -1,
