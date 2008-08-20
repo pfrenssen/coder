@@ -8,6 +8,7 @@ function coder_uninstall() {
   variable_del('coder_active_modules');
   variable_del('coder_core');
   variable_del('coder_includes');
+  variable_del('coder_includes_exclusions');
   variable_del('coder_modules');
   variable_del('coder_themes');
 

@@ -381,7 +381,19 @@ function _coder_settings_form($settings, &$system, &$files) {
     $form['coder_what']['coder_includes'] = array(
       '#type' => 'checkbox',
       '#default_value' => isset($settings['coder_includes']) ? $settings['coder_includes'] : 0,
-      '#title' => t('include files (.inc and .php files)'),
+      '#title' => t('include files (.inc, .php, .test, and .install files)'),
+    );
+    $form['coder_what']['coder_includes_exclusion_fieldset'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('include file exclusions'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+    $form['coder_what']['coder_includes_exclusion_fieldset']['coder_includes_exclusions'] = array(
+      '#rows' => 3,
+      '#type' => 'textarea',
+      '#default_value' => $settings['coder_includes_exclusions'],
+      '#description' => t('List file names or paths, one per line, which should be excluded (only valid if "include files" is checked above).  For example, modules/system/*.php will exclude all php files in the modules/system directory.'),
     );
     if (arg(0) == 'admin') {
       $form['coder_what']['coder_cache'] = array(
@@ -390,7 +402,6 @@ function _coder_settings_form($settings, &$system, &$files) {
         '#title' => t('use the coder cache'),
       );
     }
-
 
     // Display the modules in a fieldset.
     $form['coder_what']['coder_modules'] = array(
@@ -625,12 +636,14 @@ function _coder_get_default_settings($args = 'default') {
       $settings['coder_active_modules'] = variable_get('coder_active_modules', 1);
       $settings['coder_core'] = variable_get('coder_core', 0);
       $settings['coder_includes'] = variable_get('coder_includes', 0);
+      $settings['coder_includes_exclusions'] = variable_get('coder_includes_exclusions', '');
       $settings['coder_modules'] = variable_get('coder_modules', array());
       $settings['coder_themes'] = variable_get('coder_themes', array());
       break;
 
     default:
       $settings['coder_includes'] = 1;
+      $settings['coder_includes_exclusions'] = variable_get('coder_includes_exclusions', '');
       // TODO: Does this need to go into coder_themes sometimes?
       $settings['coder_modules'] = array($args => $args);
       break;
@@ -698,7 +711,7 @@ function coder_page_form($form_state) {
         '#weight' => ++ $module_weight,
       );
       $phpfiles = file_scan_directory('.', '.*\.php', array('.', '..', 'CVS'), 0, FALSE, 'name', 0);
-      _coder_page_form_includes($form, $coder_args, 'core_php', $phpfiles, 2);
+      _coder_page_form_includes($form, $coder_args, 'core_php', $phpfiles, 2, 0, $settings['coder_includes_exclusions']);
 
       $form['core_includes'] = array(
         '#type' => 'fieldset',
@@ -708,7 +721,7 @@ function coder_page_form($form_state) {
         '#weight' => ++ $module_weight,
       );
       $includefiles = drupal_system_listing('.*\.inc$', 'includes', 'filename', 0);
-      _coder_page_form_includes($form, $coder_args, 'core_includes', $includefiles, 0);
+      _coder_page_form_includes($form, $coder_args, 'core_includes', $includefiles, 0, $settings['coder_includes_exclusions']);
     }
 
     // Loop through the selected modules and themes.
@@ -770,7 +783,7 @@ function coder_page_form($form_state) {
                 }
                 $dups[$path] = 1;
                 $includefiles = drupal_system_listing('.*\.(inc|php|install|test)$', $path, 'filename', 0);
-                $stats[$filename]['#includes'] = _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset);
+                $stats[$filename]['#includes'] = _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset, $settings['coder_includes_exclusions']);
               }
             }
           }
@@ -844,15 +857,21 @@ function coder_page_form($form_state) {
  *   file_scan_directory().
  * @param $offset
  *   Integer offset to munge filenames with.
+ * @param $exclusions
+ *   Exclusions that should be ignored in $files.
  * @return
  *   Statistics array in form: string filename => array value of
  *   '#stats' from do_coder_reviews().
  */
-function _coder_page_form_includes(&$form, $coder_args, $name, $files, $offset) {
+function _coder_page_form_includes(&$form, $coder_args, $name, $files, $offset, $exclusions) {
   $stats = array();
   $coder_args['#name'] = $name;
   $weight = 0;
+  $exclusions = str_replace(array("\r\n", "\r", "\n", '/', '*', '.'), array('|', '|', '|', '\\/', '.*', '\\.'), $exclusions);
   foreach ($files as $file) {
+    if (!empty($exclusions) && preg_match("/$exclusions/", $file->filename)) {
+      continue; // don't review this files.
+    }
     $filename = drupal_substr($file->filename, $offset);
     $coder_args['#filename'] = $filename;
     $results = do_coder_reviews($coder_args);
