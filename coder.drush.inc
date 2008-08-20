@@ -60,12 +60,18 @@ function coder_drush_review() {
             unset($settings['coder_modules-'. substr($arg, 3)]);
           }
           else {
+            if (_coder_drush_is_patch_arg($arg)) {
+              $settings['coder_patches'] = 1;
+              $settings['coder_patch_link'] = $arg;
+            }
+            else {
+              $settings['coder_modules-'. $arg] = 1;
+              $settings['coder_includes'] = TRUE;
+            }
             unset($settings['coder_active_modules']);
             unset($settings['coder_core']);
             unset($settings['coder_all']);
             unset($settings['coder_modules']);
-            $settings['coder_modules-'. $arg] = 1;
-            $settings['coder_includes'] = TRUE;
           }
           break;
       }
@@ -90,6 +96,20 @@ function coder_drush_review() {
 
   $form_state['storage'] = $settings;
   coder_page_form($form_state);
+}
+
+function _coder_drush_is_patch_arg(&$arg) {
+  if (substr($arg, 0, 7) == 'http://' || is_file(realpath($arg))) {
+    return TRUE;
+  }
+  // @NOTE: relies on http://drupal.org/node/297611
+  if (isset($_SERVER['OLDPWD'])) {
+    $path = $_SERVER['OLDPWD'] .'/'. $arg;
+    if (is_file($path)) {
+      $arg = $path;
+      return TRUE;
+    }
+  }
 }
 
 function theme_drush_coder($name, $filename, $results) {

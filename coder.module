@@ -130,6 +130,13 @@ function coder_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
   );
+  $items['coder/patches'] = array(
+    'title' => t('Patches'),
+    'page callback' => 'coder_page',
+    'access arguments' => array('view code review'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  );
   $items['admin/settings/coder'] = array(
     'title' => 'Code review',
     'description' => 'Select code review plugins and modules',
@@ -236,153 +243,247 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#default_value' => $settings['coder_severity'],
   );
 
-  // Get the modules and theme.
-  $sql = 'SELECT name, filename, type, status FROM {system} WHERE type=\'module\' OR type=\'theme\' ORDER BY weight ASC, filename ASC';
-  $result = db_query($sql);
-  $system_modules = array();
-  $system_themes = array();
-  while ($system = db_fetch_object($result)) {
-    $display_name = $system->name;
-    if ($system->status) {
-      $display_name .= t(' (active)');
-      $system_active[$system->name] = $system->name;
-    }
-    if (_coder_is_drupal_core($system)) {
-      $display_name .= t(' (core)');
-      $system_core[$system->name] = $system->name;
-    }
-    if ($system->type == 'module') {
-      $system_modules[$system->name] = $system->name;
-    }
-    else {
-      $system_themes[$system->name] = $system->name;
-    }
-    $system_links[$system->name] = l($display_name, "coder/$system->name");
-    $files[$system->name] = $system->filename;
-  }
-  asort($system_links);
-
-  // Display what to review options.
-  $form['coder_what'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('What to review'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-  );
-  // NOTE: Should rename var.
-  $form['coder_what']['coder_active_modules'] = array(
-    '#type' => 'checkbox',
-    '#default_value' => isset($settings['coder_active_modules']) ? $settings['coder_active_modules'] : 0,
-    '#title' => t('active modules and themes'),
-  );
-  $form['coder_what']['coder_core'] = array(
-    '#type' => 'checkbox',
-    '#default_value' => isset($settings['coder_core']) ? $settings['coder_core'] : 0,
-    '#title' => t('core files (php, modules, and includes)'),
-  );
-  $form['coder_what']['coder_includes'] = array(
-    '#type' => 'checkbox',
-    '#default_value' => isset($settings['coder_includes']) ? $settings['coder_includes'] : 0,
-    '#title' => t('include files (.inc and .php files)'),
-  );
-  if (arg(0) == 'admin') {
-    $form['coder_what']['coder_cache'] = array(
-      '#type' => 'checkbox',
-      '#default_value' => isset($settings['coder_cache']) ? $settings['coder_cache'] : 0,
-      '#title' => t('use the coder cache'),
+  if ($settings['coder_patches']) {
+    // Display what to review options.
+    $form['coder_what'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('What to review'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
     );
-  }
+    $form['coder_what']['coder_patch_help'] = array(
+      '#value' => '<p>'. t('All patches must be in unified format.  It\'s also preferable for the patch to be created with the "-p" option, which shows the function closest to the code change.  Without this, some function dependent tests may not be triggered.  Coder offers no guarantee that the patch will apply cleanly or will function correctly.') .'</p>',
+      '#weight' => -4,
+    );
+    $form['coder_what']['coder_patch_link'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Link to patch'),
+      '#default_value' => isset($settings['coder_patch_link']) ? $settings['coder_patch_link'] : '',
+      '#weight' => -3,
+    );
+    $form['coder_what']['coder_patch_help'] = array(
+      '#value' => '<p>'. t('Or') .'</p>',
+      '#weight' => -2,
+    );
+    $form['coder_what']['coder_patch_text'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Patch text'),
+      '#rows' => 20,
+      '#weight' => -1,
+      '#default_value' => isset($settings['coder_patch_text']) ? $settings['coder_patch_text'] : '',
+      '#attributes' => array('wrap' => 'OFF'),
+    );
+    $form['coder_patches'] = array(
+      '#type' => 'value',
+      '#value' => 1,
+    );
 
-  // Display the modules in a fieldset.
-  $form['coder_what']['coder_modules'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Select Specific Modules'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    'checkboxes' => array(
-      '#theme' => 'cols',
-      '#cols' => 2,
-    ),
-  );
-  if (isset($settings['coder_all'])) {
-    $modules = $system_modules;
-  }
-  elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
-    if (isset($settings['coder_core']) && $settings['coder_core']) {
-      $modules = array_intersect($system_active, $system_core);
-      $modules = array_intersect($modules, $system_modules);
+    $in_patch = 0;
+    $patch = $link_contents = $textarea_contents = '';
+    $patches = array();
+    if (!empty($settings['coder_patch_link'])) {
+      $link_contents = file_get_contents($settings['coder_patch_link']);
     }
-    else {
+    if (!empty($settings['coder_patch_text'])) {
+      $textarea_contents = $settings['coder_patch_text'];
+    }
+    $patch_contents = $link_contents ."\n". $textarea_contents;
+    $lines = preg_split("/(\r\n|\n)/", $patch_contents);
+    foreach ($lines as $line) {
+      if ($line == '') {
+        continue;
+      }
+      if (preg_match("/^\+\+\+\s+([\w\.\-\/]+\s)/", $line, $matches)) {
+        if ($patch) {
+          $patches[$filename .": ". $patch_line_numbers] = $patch;
+          $system[$filename .": ". $patch_line_numbers] = $filename;
+          $patch = '';
+        }
+        $filename = $matches[1];
+      }
+      else if (preg_match("/^(@@\s+\-\d+,\d+\s+\+\d+,\d+\s+@@)\s*(function\s([\w]+).*?)*$/", $line, $matches)) {
+        if ($patch) {
+          $patches[$filename .": ". $patch_line_numbers] = $patch;
+          $system[$filename .": ". $patch_line_numbers] = $filename;
+          $patch = '';
+        }
+        if ($matches[3]) {
+          $current_function = $matches[3];
+          $patch = 'function '. $current_function ."() {\n";
+        }
+        $patch_line_numbers = $matches[1];
+      }
+      else if (preg_match("/^\+[^\+]+/", $line)) {
+        $patch .= ltrim($line, '+') ."\n";
+        $in_patch = 1;
+      }
+      else if (preg_match("/^\s/", $line)) {
+        $patch .= substr($line, 1) ."\n";
+        $in_patch = 1;
+      }
+      else {
+        $in_patch = 0;
+      }
+    }
+    if ($patch) {
+      $patches[$filename .": ". $patch_line_numbers] = $patch;
+      $system[$filename .": ". $patch_line_numbers] = $filename;
+      $patch = '';
+    }
+    $files = $patches;
+  }
+  else {
+    // Get the modules and theme.
+    $sql = 'SELECT name, filename, type, status FROM {system} WHERE type=\'module\' OR type=\'theme\' ORDER BY weight ASC, filename ASC';
+    $result = db_query($sql);
+    $system_modules = array();
+    $system_themes = array();
+    while ($system = db_fetch_object($result)) {
+      $display_name = $system->name;
+      if ($system->status) {
+        $display_name .= t(' (active)');
+        $system_active[$system->name] = $system->name;
+      }
+      if (_coder_is_drupal_core($system)) {
+        $display_name .= t(' (core)');
+        $system_core[$system->name] = $system->name;
+      }
+      if ($system->type == 'module') {
+        $system_modules[$system->name] = $system->name;
+      }
+      else {
+        $system_themes[$system->name] = $system->name;
+      }
+      $system_links[$system->name] = l($display_name, "coder/$system->name");
+      $files[$system->name] = $system->filename;
+    }
+    asort($system_links);
+
+
+    // Display what to review options.
+    $form['coder_what'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('What to review'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+    );
+    // NOTE: Should rename var.
+    $form['coder_what']['coder_active_modules'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => isset($settings['coder_active_modules']) ? $settings['coder_active_modules'] : 0,
+      '#title' => t('active modules and themes'),
+    );
+    $form['coder_what']['coder_core'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => isset($settings['coder_core']) ? $settings['coder_core'] : 0,
+      '#title' => t('core files (php, modules, and includes)'),
+    );
+    $form['coder_what']['coder_includes'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => isset($settings['coder_includes']) ? $settings['coder_includes'] : 0,
+      '#title' => t('include files (.inc and .php files)'),
+    );
+    if (arg(0) == 'admin') {
+      $form['coder_what']['coder_cache'] = array(
+        '#type' => 'checkbox',
+        '#default_value' => isset($settings['coder_cache']) ? $settings['coder_cache'] : 0,
+        '#title' => t('use the coder cache'),
+      );
+    }
+
+
+    // Display the modules in a fieldset.
+    $form['coder_what']['coder_modules'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Select Specific Modules'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      'checkboxes' => array(
+        '#theme' => 'cols',
+        '#cols' => 2,
+      ),
+    );
+    if (isset($settings['coder_all'])) {
+      $modules = $system_modules;
+    }
+    elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
+      if (isset($settings['coder_core']) && $settings['coder_core']) {
+        $modules = array_intersect($system_active, $system_core);
+        $modules = array_intersect($modules, $system_modules);
+      }
+      else {
+        $modules = array_intersect($system_active, $system_modules);
+      }
+    }
+
+    elseif (isset($settings['coder_core']) && $settings['coder_core']) {
+      $modules = array_intersect($system_core, $system_modules);
+    }
+    elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
       $modules = array_intersect($system_active, $system_modules);
     }
-  }
-  elseif (isset($settings['coder_core']) && $settings['coder_core']) {
-    $modules = array_intersect($system_core, $system_modules);
-  }
-  elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
-    $modules = array_intersect($system_active, $system_modules);
-  }
-  else {
-    $modules = isset($settings['coder_modules']) && is_array($settings['coder_modules']) ? $settings['coder_modules'] : array();
-  }
-
-  // Display the themes in a fieldset.
-  $form['coder_what']['coder_themes'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Select Specific Themes'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    'checkboxes' => array(
-      '#theme' => 'cols',
-    ),
-  );
-  if (isset($settings['coder_all'])) {
-    $themes = $system_themes;
-  }
-  elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
-    if (isset($settings['coder_core']) && $settings['coder_core']) {
-      $themes = array_intersect($system_active, $system_core);
-      $themes = array_intersect($themes, $system_themes);
-    }
     else {
+      $modules = isset($settings['coder_modules']) && is_array($settings['coder_modules']) ? $settings['coder_modules'] : array();
+    }
+
+    // Display the themes in a fieldset.
+    $form['coder_what']['coder_themes'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Select Specific Themes'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      'checkboxes' => array(
+        '#theme' => 'cols',
+      ),
+    );
+    if (isset($settings['coder_all'])) {
+      $themes = $system_themes;
+    }
+    elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
+      if (isset($settings['coder_core']) && $settings['coder_core']) {
+        $themes = array_intersect($system_active, $system_core);
+        $themes = array_intersect($themes, $system_themes);
+      }
+      else {
+        $themes = array_intersect($system_active, $system_themes);
+      }
+    }
+    elseif (isset($settings['coder_core']) && $settings['coder_core']) {
+      $themes = array_intersect($system_core, $system_themes);
+    }
+    elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
       $themes = array_intersect($system_active, $system_themes);
     }
-  }
-  elseif (isset($settings['coder_core']) && $settings['coder_core']) {
-    $themes = array_intersect($system_core, $system_themes);
-  }
-  elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
-    $themes = array_intersect($system_active, $system_themes);
-  }
-  else {
-    $themes = isset($settings['coder_themes']) && is_array($settings['coder_themes']) ? $settings['coder_themes'] : array();
-  }
-
-  foreach ($system_links as $name => $link) {
-    $classes = array();
-    if (in_array($name, $system_active)) {
-      $classes[] = 'coder-active';
-    }
-    if (in_array($name, $system_core)) {
-      $classes[] = 'coder-core';
-    }
-    if (in_array($name, $system_themes)) {
-      $type = 'theme';
-      $default_value = isset($themes[$name]);
-    }
     else {
-      $type = 'module';
-      $default_value = isset($modules[$name]);
+      $themes = isset($settings['coder_themes']) && is_array($settings['coder_themes']) ? $settings['coder_themes'] : array();
     }
-    $form['coder_what']["coder_${type}s"]['checkboxes']["coder_${type}s-$name"] = array(
-      '#type' => 'checkbox',
-      '#title' => $link,
-      '#default_value' => $default_value,
-      '#attributes' => array('class' => implode(' ', $classes)),
-    );
-  }
 
-  $system = array_merge($modules, $themes);
+    foreach ($system_links as $name => $link) {
+      $classes = array();
+      if (in_array($name, $system_active)) {
+        $classes[] = 'coder-active';
+      }
+      if (in_array($name, $system_core)) {
+        $classes[] = 'coder-core';
+      }
+      if (in_array($name, $system_themes)) {
+        $type = 'theme';
+        $default_value = isset($themes[$name]);
+      }
+      else {
+        $type = 'module';
+        $default_value = isset($modules[$name]);
+      }
+      $form['coder_what']["coder_${type}s"]['checkboxes']["coder_${type}s-$name"] = array(
+        '#type' => 'checkbox',
+        '#title' => $link,
+        '#default_value' => $default_value,
+        '#attributes' => array('class' => implode(' ', $classes)),
+      );
+    }
+
+    $system = array_merge($modules, $themes);
+  }
   return $form;
 }
 
@@ -516,6 +617,10 @@ function _coder_get_default_settings($args = 'default') {
       $settings['coder_all'] = 1;
       break;
 
+    case 'patches':
+      $settings['coder_patches'] = 1;
+      break;
+
     case 'default':
       $settings['coder_active_modules'] = variable_get('coder_active_modules', 1);
       $settings['coder_core'] = variable_get('coder_core', 0);
@@ -611,6 +716,7 @@ function coder_page_form($form_state) {
       // Used to avoid duplicate includes.
       $dups = array();
       $stats = array();
+      $patch = '';
       foreach ($system as $name => $checked) {
         if ($checked) {
           // Process this one file.
@@ -619,10 +725,15 @@ function coder_page_form($form_state) {
             drupal_set_message(t('Code Review file for %module not found', array('%module' => $name)));
             continue;
           }
+          if ($settings['coder_patches']) {
+            $patch = $filename;
+            $filename = $name;
+          }
           $coder_args = array(
             '#reviews' => $reviews,
             '#severity' => $settings['coder_severity'],
             '#filename' => $filename,
+            '#patch' => $patch,
           );
           $results = do_coder_reviews($coder_args);
           $stats[$filename] = $results['#stats'];
@@ -679,8 +790,13 @@ function coder_page_form($form_state) {
           $summary['files'] ++;
         }
         $display = array();
-        $display[] = t('Coder found @count projects', array('@count' => count($stats)));
-        $display[] = t('@count files', array('@count' => $summary['files']));
+        if ($settings['coder_patches']) {
+          $display[] = t('Coder found @count patches', array('@count' => count($stats)));
+        }
+        else {
+          $display[] = t('Coder found @count projects', array('@count' => count($stats)));
+          $display[] = t('@count files', array('@count' => $summary['files']));
+        }
         foreach (array('critical', 'normal', 'minor') as $severity_name) {
           if ($summary[$severity_name] > 0) {
             $display[] = t('@count %severity_name warnings', array('@count' => $summary[$severity_name], '%severity_name' => $severity_name));
@@ -792,6 +908,7 @@ function _coder_modified() {
  *     - '#reviews' => array list of reviews to perform, see _coder_reviews();
  *     - '#severity' => integer magic number, see constants SEVERITY_*;
  *     - '#filename' => string filename to check,
+ *     - '#patch' => string patch lines to check,
  * @return
  *   Array of results, in form:
  *     - '#stats' => Array with error counts for all severities, in form
@@ -800,7 +917,7 @@ function _coder_modified() {
  *     - integer ID => HTML error for display.
  */
 function do_coder_reviews($coder_args) {
-  if ($use_cache = variable_get('coder_cache', 1)) {
+  if ($use_cache = variable_get('coder_cache', 1) && empty($coder_args['#patch'])) {
     // Load the cached results if they exist.
     $cache_key = 'coder:'.  implode(':', array_keys($coder_args['#reviews'])) .  $coder_args['#severity'] .':'. $coder_args['#filename'];
     $cache_mtime = filemtime(realpath($coder_args['#filename']));
@@ -867,15 +984,29 @@ function do_coder_reviews($coder_args) {
  */
 function _coder_read_and_parse_file(&$coder_args) {
   // Get the path to the module file.
-  if ($filepath = realpath($coder_args['#filename'])) {
-    // Read the file.
-    $content = file_get_contents($filepath) ."\n";
+  if (!empty($coder_args['#patch']) || ($filepath = realpath($coder_args['#filename']))) {
+    $in_php = 0;
+    $in_allphp = 0;
+    $in_comment = 0;
+
+    if (empty($coder_args['#patch'])) {
+      $content = file_get_contents($filepath) ."\n";
+    }
+    else {
+      $content = $coder_args['#patch'];
+      if (preg_match("/^\s*\*/", $content)) {
+        $in_comment = '*';
+      }
+      else {
+        $content = preg_replace('/^(function\s.*?(\r\n|\n)+)(\s*\*)/', '${1}/*', $content);
+        $in_php = 1;
+        $in_allphp = 1;
+      }
+    }
     $content_length = drupal_strlen($content);
 
     $in_comment = 0;
     $beginning_of_line = 0;
-    $in_php = 0;
-    $in_allphp = 0;
     $in_quote_html = 0;
     $in_backslash = 0;
     $in_quote = 0;
@@ -1216,6 +1347,21 @@ function do_coder_review($coder_args, $review) {
     $default_severity = isset($review['#severity']) ? _coder_severity($review['#severity']) : SEVERITY_NORMAL;
 
     foreach ($review['#rules'] as $rule) {
+      // Ignore rules based on file extensions.
+      $filename = empty($coder_args['#patch']) ? $coder_args['#filename'] : 'coder.patch';
+      if (isset($rule['#filename'])) {
+        $regex = '/'. $rule['#filename'] .'/i';
+        if (!preg_match($regex, $filename, $matches)) {
+          continue;
+        }
+      }
+      if (isset($rule['#filename-not'])) {
+        $regex = '/'. $rule['#filename-not'] .'/i';
+        if (preg_match($regex, $filename, $matches)) {
+          continue;
+        }
+      }
+
       // Perform the review if above the user requested severity.
       $severity = _coder_severity(isset($rule['#severity']) ? $rule['#severity'] : '', $default_severity);
       if ($severity >= $coder_args['#severity']) {
