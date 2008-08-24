@@ -939,10 +939,12 @@ function do_coder_reviews($coder_args) {
   if ($use_cache = variable_get('coder_cache', 1) && empty($coder_args['#patch'])) {
     // Load the cached results if they exist.
     $cache_key = 'coder:'.  implode(':', array_keys($coder_args['#reviews'])) .  $coder_args['#severity'] .':'. $coder_args['#filename'];
-    $cache_mtime = filemtime(realpath($coder_args['#filename']));
-    if ($cache_results = cache_get($cache_key)) {
-      if ($cache_results->data['mtime'] == $cache_mtime && _coder_modified() < $cache_results->created) {
-        return $cache_results->data['results'];
+    if (file_exists($filepath = realpath($coder_args['#filename']))) {
+      $cache_mtime = filemtime($filepath);
+      if ($cache_results = cache_get($cache_key)) {
+        if ($cache_results->data['mtime'] == $cache_mtime && _coder_modified() < $cache_results->created) {
+          return $cache_results->data['results'];
+        }
       }
     }
   }
@@ -1003,7 +1005,7 @@ function do_coder_reviews($coder_args) {
  */
 function _coder_read_and_parse_file(&$coder_args) {
   // Get the path to the module file.
-  if (!empty($coder_args['#patch']) || ($filepath = realpath($coder_args['#filename']))) {
+  if (!empty($coder_args['#patch']) || (($filepath = realpath($coder_args['#filename'])) && file_exists($filepath))) {
     $in_php = 0;
     $in_allphp = 0;
     $in_comment = 0;
