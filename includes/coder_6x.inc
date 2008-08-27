@@ -20,6 +20,12 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#function' => '_menu$',
+      '#value' => '(for|foreach|while)\s*\(',
+      '#warning_callback' => '_coder_6x_new_menu_loop_warning',
+    ),
+    array(
+      '#type' => 'regex',
       '#value' => '_form_alter\s*\(\$',
       '#warning_callback' => '_coder_6x_form_alter_warning',
     ),
@@ -531,6 +537,13 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
 function _coder_6x_new_menu_system_warning() {
   return array(
     '#warning' => t('The menu system has been completely over-hauled in 6.x.'),
+    '#link' => 'http://drupal.org/node/103114',
+  );
+}
+
+function _coder_6x_new_menu_loop_warning() {
+  return array(
+    '#warning' => t('The menu system has been completely over-hauled in 6.x, and if you are looping, you are probably doing something wrong.'),
     '#link' => 'http://drupal.org/node/103114',
   );
 }
