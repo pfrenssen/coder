@@ -109,6 +109,8 @@ function coder_6x_reviews() {
     array(
       '#type' => 'callback',
       '#value' => '_coder_6x_callback',
+      // @NOTE: This is not used.  It only exists to catch potential errors in this code.
+      '#warning_callback' => '_coder_6x_callback_warning',
     ),
     // FAPI Rules.
     array(
@@ -491,8 +493,9 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
     }
     if ($theme && !$hook_theme) {
       $severity_name = _coder_severity_name($coder_args, $review, $rule);
-      $warning = _coder_6x_hook_theme_warning();
-      $results[0] = theme('coder_warning', $warning, $severity_name, $theme_lineno, $theme_line);
+      $tmprule = $rule;
+      $tmprule['#warning_callback'] = '_coder_6x_hook_theme_warning';
+      _coder_error($results, $tmprule, $severity_name, $theme_lineno, $theme_line);
     }
 
     // Read the .info file.
@@ -502,8 +505,9 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
         foreach ($lines as $lineno => $line) {
           if (preg_match('/^dependencies\s*=/', $line)) {
             $severity_name = _coder_severity_name($coder_args, $review, $rule);
-            $warning = t('New syntax for <a href="!uri">.info files</a>, use dependencies[]', array('!uri' => 'http://drupal.org/node/114774#info'));
-            $results[-1] = theme('coder_warning', $warning, $severity_name, $lineno, $line);
+            $tmprule = $rule;
+            $tmprule['#warning_callback'] = '_coder_6x_dependency_warning';
+            _coder_error($results, $tmprule, $severity_name, $lineno, $line);
           }
           if (preg_match('/^core\s*=/', $line)) {
             $core = TRUE;
@@ -511,8 +515,9 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
         }
         if (!isset($core)) {
           $severity_name = _coder_severity_name($coder_args, $review, $rule);
-          $warning = t('New syntax for <a href="!uri">.info files</a> files requires core=6.x', array('!uri' => 'http://drupal.org/node/114774#info'));
-          $results[-1] = theme('coder_warning', $warning, $severity_name, $lineno, $line);
+          $tmprule = $rule;
+          $tmprule['#warning_callback'] = '_coder_6x_core_warning';
+          _coder_error($results, $tmprule, $severity_name, $lineno, $line);
         }
       }
     }
@@ -521,11 +526,9 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
     $dir = dirname($filename);
     if (file_exists($dir .'/po') && !file_exists($dir .'/translations')) {
       $severity_name = _coder_severity_name($coder_args, $review, $rule);
-      $warning = array(
-        '#warning' => t('Translations moved from ./po to ./translations'),
-        '#link' => 'http://drupal.org/node/114774#translations_directory',
-      );
-      $results[-2] = theme('coder_warning', $warning, $severity_name, -1, $dir);
+      $tmprule = $rule;
+      $tmprule['#warning_callback'] = '_coder_6x_translations_warning';
+      _coder_error($results, $tmprule, $severity_name, -1, $dir);
     }
   }
 }
@@ -533,6 +536,27 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
 /**
  * Define the warning callbacks.
  */
+
+function _coder_6x_core_warning() {
+  return array(
+    '#warning' => t('New syntax for .info files files requires core=6.x'),
+    '#link' => 'http://drupal.org/node/114774#info',
+  );
+}
+
+function _coder_6x_dependency_warning() {
+  return array(
+    '#warning' => t('New syntax for .info files, use dependencies[]'),
+    '#link' => 'http://drupal.org/node/114774#info',
+  );
+}
+
+function _coder_6x_translations_warning() {
+  return array(
+    '#warning' => t('Translations moved from ./po to ./translations'),
+    '#link' => 'http://drupal.org/node/114774#translations_directory',
+  );
+}
 
 function _coder_6x_new_menu_system_warning() {
   return array(

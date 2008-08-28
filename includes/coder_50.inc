@@ -61,6 +61,7 @@ function coder_50_reviews() {
     array(
       '#type' => 'callback',
       '#value' => '_coder_50_callback',
+      '#warning_callback' => '_coder_50_callback_warning',
     ),
     array(
       '#type' => 'regex',
@@ -95,8 +96,7 @@ function _coder_50_callback(&$coder_args, $review, $rule, $lines, &$results) {
     $filename = drupal_substr(realpath($filename), 0, -7) .'.info';
     if (!file_exists($filename)) {
       $severity_name = _coder_severity_name($coder_args, $review, $rule);
-      $warning = t('All modules now need to have a <a href="@info">modulename.info file</a>', array('@info' => 'http://drupal.org/node/101009'));
-      $results[0] = theme('coder_warning', $warning, $severity_name);
+      _coder_error($results, $rule, $severity_name);
     }
   }
 }
@@ -104,6 +104,10 @@ function _coder_50_callback(&$coder_args, $review, $rule, $lines, &$results) {
 /**
  * Define the warning callbacks.
  */
+
+function _coder_50_callback_warning() {
+  return t('All modules now need to have a <a href="@info">modulename.info file</a>', array('@info' => 'http://drupal.org/node/101009'));
+}
 
 function _coder_50_user_mail_warning() {
   return t('!user_mail() is replaced by !drupal_mail()',

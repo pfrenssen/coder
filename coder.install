@@ -15,3 +15,9 @@ function coder_uninstall() {
   cache_clear_all('coder:', 'cache', true);
 }
 
+function coder_update_1() {
+  $ret = array();
+  // This update adds a theming function, so we need to clear the entire cache.
+  $ret[] = update_sql("DELETE FROM {cache}");
+  return $ret;
+}

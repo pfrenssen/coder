@@ -961,6 +961,7 @@ function do_coder_reviews($coder_args) {
   // Read the file.
   if (_coder_read_and_parse_file($coder_args)) {
     // Do all of the code reviews.
+    $errors = array();
     foreach ($coder_args['#reviews'] as $review) {
       if ($result = do_coder_review($coder_args, $review)) {
         foreach (array('critical', 'normal', 'minor') as $severity_level) {
@@ -968,7 +969,14 @@ function do_coder_reviews($coder_args) {
             $results['#stats'][$severity_level] += $result['#stats'][$severity_level];
           }
         }
-        $results += $result;
+        $errors += $result;
+      }
+    }
+
+    // Theme the error messages.
+    foreach ($errors as $key => $error) {
+      if (is_numeric($key)) {
+        $results[$key] = theme('coder_warning_msg', $error);
       }
     }
 
@@ -976,7 +984,7 @@ function do_coder_reviews($coder_args) {
     ksort($results, SORT_NUMERIC);
   }
   else {
-    _coder_error_msg($results, t('Could not read the file'), 'critical');
+    $results[] = theme('coder_warning', t('Could not read the file'), 'critical');
   }
 
   // Save the results in the cache.
@@ -1494,51 +1502,13 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
  * @param $original
  *   Deprecated.
  */
-function _coder_error(&$results, $rule, $severity_name, $lineno = -1, $line = '', $original = '') {
-  if (isset($rule['#warning_callback'])) {
-    if (function_exists($rule['#warning_callback'])) {
-      $warning = $rule['#warning_callback']();
-    }
-    else { // If this happens, there is an error in the rule definition.
-      $warning = t('please <a href="@report">report</a> this !warning',
-        array(
-          '@report' => 'http://drupal.org/node/add/project_issue/coder/bug',
-          '!warning' => $rule['#warning_callback'],
-        )
-      );
-    }
-  }
-  else {
-    $warning = t($rule['#warning']);
-  }
-
-  return _coder_error_msg($results, $warning, $severity_name, $lineno, $line);
-}
-
-/**
- * Does the actual saving of error to results array and generating its
- * unique numeric id.
- *
- * @param $results
- *   Results array variable to save errors to.
- * @param $warning
- *   Warning array/string to be themed, returned from '#warning_callback' or
- *   is a translated string from the rule. See theme_coder_warning() for
- *   array format.
- * @param $severity_name
- *   String severity of error.
- * @param $lineno
- *   Integer line number error occured on.
- * @param $line
- *   String line contents.
- */
-function _coder_error_msg(&$results, $warning, $severity_name, $lineno = -1, $line = '') {
+function _coder_error(&$results, $rule, $severity_name, $lineno = -1, $line = '') {
   // Note: The use of the $key allows multiple errors on one line.
   // This assumes that no line of source has more than 10000 lines of code
   // and that we have fewer than 10000 errors.
   global $_coder_errno;
   $key = ($lineno + 1) * 10000 + ($_coder_errno ++);
-  $results[$key] = theme('coder_warning', $warning, $severity_name, $lineno + 1, $line);
+  $results[$key] = array('rule' => $rule, 'severity_name' => $severity_name, 'lineno' => $lineno, 'line' => $line);
   $results['#stats'][$severity_name] ++;
 }
 
@@ -1685,6 +1655,26 @@ function _coder_is_drupal_core($module) {
   return isset($core[$module->name]) ? 1 : 0;
 }
 
+/**
+ * Implementation of hook_simpletest().
+ */
+function coder_simpletest() {
+  return array_keys(file_scan_directory(drupal_get_path('module', 'coder') .'/tests', '\.test'));
+}
+
+/**
+ * Helper function to run the review on the code snippet.
+ */
+function coder_test($code, $review, $severity = SEVERITY_MINOR) {
+  $coder_args = array(
+    '#severity' => $severity,
+    '#filename' => 'snippet',
+    '#patch' => $code,
+  );
+  _coder_read_and_parse_file($coder_args);
+  return do_coder_review($coder_args, $reviews['style']);
+}
+
 // Theming functions
 
 /**
@@ -1694,6 +1684,7 @@ function coder_theme() {
   return array(
     'coder' => array('arguments' => array('name', 'filename', 'results')),
     'coder_warning' => array('arguments' => array('warning', 'severity_name', 'lineno', 'line')),
+    'coder_warning_msg' => array('arguments' => array('error')),
     'cols' => array('arguments' => array('form')),
     'drupalapi' => array('arguments' => array('function', 'version')),
   );
@@ -1721,6 +1712,37 @@ function theme_coder($name, $filename, $results) {
   }
   $output .= '</div>';
   return $output;
+}
+
+/**
+ * Format a coder warning to be included in results, creating the text.
+ *
+ * @param $results
+ *   Results array variable to save errors to.
+ * @param $error
+ *   Error array from _coder_error().
+ */
+function theme_coder_warning_msg($error) {
+  if (isset($error['rule']['#warning_callback'])) {
+    if (function_exists($error['rule']['#warning_callback'])) {
+      $warning = $error['rule']['#warning_callback']();
+    }
+    else { // If this happens, there is an error in the rule definition.
+      $warning = t('please <a href="@report">report</a> this !warning',
+        array(
+          '@report' => 'http://drupal.org/node/add/project_issue/coder/bug',
+          '!warning' => $error['rule']['#warning_callback'],
+        )
+      );
+    }
+  }
+  else {
+    $warning = t($error['rule']['#warning']);
+  }
+
+  // @TODO: we can combine theme_coder_warning() and theme_coder_warning_msg(),
+  // But let's do this on the 7.x upgrade in case anyone's actually using it.
+  return theme('coder_warning', $warning, $error['severity_name'], $error['lineno'], $error['line']);
 }
 
 /**
