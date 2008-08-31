@@ -192,12 +192,6 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#function' => '_confirm_submit$',
-      '#value' => 'return [\'"]',
-      '#warning' => 'in confirm_form, use $form_state[\'redirect\'] instead of return (remember to change function prototype to use &$form_state) ',
-    ),
-    array(
-      '#type' => 'regex',
       '#source' => 'allphp',
       '#function' => '_(un)?install$|_update_[0-9]+$',
       '#value' => '\$GLOBALS\[[\'"]?db_type[\'"]?\]',
