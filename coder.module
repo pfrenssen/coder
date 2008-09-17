@@ -381,7 +381,7 @@ function _coder_settings_form($settings, &$system, &$files) {
     $form['coder_what']['coder_includes'] = array(
       '#type' => 'checkbox',
       '#default_value' => isset($settings['coder_includes']) ? $settings['coder_includes'] : 0,
-      '#title' => t('include files (.inc, .php, .test, and .install files)'),
+      '#title' => t('include files (.inc, .php, .test, .js, and .install files)'),
     );
     $form['coder_what']['coder_includes_exclusion_fieldset'] = array(
       '#type' => 'fieldset',
@@ -426,12 +426,14 @@ function _coder_settings_form($settings, &$system, &$files) {
         $modules = array_intersect($system_active, $system_modules);
       }
     }
-
     elseif (isset($settings['coder_core']) && $settings['coder_core']) {
       $modules = array_intersect($system_core, $system_modules);
     }
     elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
       $modules = array_intersect($system_active, $system_modules);
+    }
+    elseif (isset($settings['coder_contrib']) && $settings['coder_contrib']) {
+      $modules = array_diff($system_modules, array_intersect($system_core, $system_modules));
     }
     else {
       $modules = isset($settings['coder_modules']) && is_array($settings['coder_modules']) ? $settings['coder_modules'] : array();
@@ -464,6 +466,9 @@ function _coder_settings_form($settings, &$system, &$files) {
     }
     elseif (isset($settings['coder_active_modules']) && $settings['coder_active_modules']) {
       $themes = array_intersect($system_active, $system_themes);
+    }
+    elseif (isset($settings['coder_contrib']) && $settings['coder_contrib']) {
+      $themes = array_diff($system_themes, array_intersect($system_core, $system_themes));
     }
     else {
       $themes = isset($settings['coder_themes']) && is_array($settings['coder_themes']) ? $settings['coder_themes'] : array();
@@ -602,13 +607,13 @@ function coder_page() {
  * @return
  *   Associative array of settings in form setting name => setting value.
  */
-function _coder_get_default_settings($args = 'default') {
+function _coder_get_default_settings($arg = 'default') {
   $settings['coder_reviews'] = variable_get('coder_reviews', _coder_default_reviews());
   $settings['coder_severity'] = variable_get('coder_severity', SEVERITY_NORMAL);
   $settings['coder_cache'] = variable_get('coder_cache', 1);
 
   // Determine any options based on the passed in URL.
-  switch ($args) {
+  switch ($arg) {
     case 'settings':
       $settings['coder_includes'] = 1;
       break;
@@ -628,6 +633,11 @@ function _coder_get_default_settings($args = 'default') {
       $settings['coder_all'] = 1;
       break;
 
+    case 'contrib':
+      $settings['coder_includes'] = 1;
+      $settings['coder_contrib'] = 1;
+      break;
+
     case 'patches':
       $settings['coder_patches'] = 1;
       break;
@@ -645,7 +655,7 @@ function _coder_get_default_settings($args = 'default') {
       $settings['coder_includes'] = 1;
       $settings['coder_includes_exclusions'] = variable_get('coder_includes_exclusions', '');
       // TODO: Does this need to go into coder_themes sometimes?
-      $settings['coder_modules'] = array($args => $args);
+      $settings['coder_modules'] = array($arg => $arg);
       break;
   }
   return $settings;
@@ -672,10 +682,10 @@ function coder_page_form($form_state) {
     drupal_set_title(t('Code review (submitted options)'));
   }
   else {
-    $options = arg(1);
-    $settings = _coder_get_default_settings($options);
-    if ($options) {
-      drupal_set_title(t('Code review (@options)', array('@options' => isset($options) ? $options : 'default options')));
+    $arg = arg(1);
+    $settings = _coder_get_default_settings($arg);
+    if ($arg) {
+      drupal_set_title(t('Code review (@options)', array('@options' => isset($arg) ? $arg : 'default options')));
     }
   }
 
@@ -776,13 +786,13 @@ function coder_page_form($form_state) {
             // NOTE: Convert to the realpath here so drupal_system_listing
             // doesn't return additional paths (i.e., try "module").
             if ($path = str_replace('\\', '/', dirname(realpath($filename)))) {
-              $offset = strpos($path, dirname($filename));
               if (!isset($dups[$path])) {
                 if (substr($filename, -7) == '.module') {
                   $coder_args['#php_minor'] = 1;
                 }
                 $dups[$path] = 1;
-                $includefiles = drupal_system_listing('.*\.(inc|php|install|test)$', $path, 'filename', 0);
+                $includefiles = drupal_system_listing('.*\.(inc|php|js|install|test)$', dirname($filename), 'filename', 0);
+                $offset = strpos($filename, dirname($filename));
                 $stats[$filename]['#includes'] = _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset, $settings['coder_includes_exclusions']);
               }
             }
@@ -1062,7 +1072,7 @@ function _coder_read_and_parse_file(&$coder_args) {
     // - Strip quote content,
     // - Strip stuff not in php,
     // - Break into lines.
-    $lineno = 0;
+    $lineno = 1;
     for ($pos = 0; $pos < $content_length; $pos ++) {
       // Get the current character.
       $char = $content[$pos];
@@ -1376,16 +1386,18 @@ function do_coder_review($coder_args, $review) {
     $default_severity = isset($review['#severity']) ? _coder_severity($review['#severity']) : SEVERITY_NORMAL;
 
     foreach ($review['#rules'] as $rule) {
-      // Ignore rules based on file extensions.
+      // Ignore rules that don't match the file extension.
       $filename = empty($coder_args['#patch']) ? $coder_args['#filename'] : 'coder.patch';
-      if (isset($rule['#filename'])) {
+      if (!empty($rule['#filename'])) {
         $regex = '/'. $rule['#filename'] .'/i';
         if (!preg_match($regex, $filename, $matches)) {
           continue;
         }
       }
-      if (isset($rule['#filename-not'])) {
-        $regex = '/'. $rule['#filename-not'] .'/i';
+      // Ignore rules that do match the file extension, javascript files are excluded by default.
+      $not = empty($rule['#filename-not']) ? (empty($rule['#filename']) || !preg_match('/\\\.js\$/i', $rule['#filename'], $matches) ? '\.js$' : null) : $rule['#filename-not'];
+      if ($not) {
+        $regex = '/'. $not .'/i';
         if (preg_match($regex, $filename, $matches)) {
           continue;
         }
@@ -1445,20 +1457,24 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
     $regexflags = isset($rule['#case-sensitive']) ? '' : 'i';
     $regex = '/'. $rule['#value'] .'/'. $regexflags;
     $function_regex = isset($rule['#function']) ? '/'. $rule['#function'] .'/' : '';
+    $function_not_regex = isset($rule['#function-not']) ? '/'. $rule['#function-not'] .'/' : '';
     $current_function = '';
     $paren = 0;
     $not_regex = isset($rule['#not']) ? '/'. $rule['#not'] .'/'. $regexflags : '';
     $never_regex = isset($rule['#never']) ? '/'. $rule['#never'] .'/'. $regexflags : '';
     foreach ($lines as $lineno => $line) {
       // Some rules apply only within certain functions.
-      if ($function_regex) {
+      if ($function_regex || $function_not_regex) {
         if (preg_match('/function (\w+)\(/', $line, $match)) {
           $current_function = $match[1];
         }
         if (preg_match('/([{}])/', $line, $match)) {
           $paren += ($match[0] == '{') ? 1 : -1;
         }
-        if ($paren < 0 || $current_function == '' || !preg_match($function_regex, $current_function)) {
+        if ($paren < 0 || $current_function == ''
+            || ($function_regex && !preg_match($function_regex, $current_function))
+            || ($function_not_regex && preg_match($function_not_regex, $current_function))
+           ) {
           continue;
         }
       }

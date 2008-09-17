@@ -41,6 +41,7 @@ function coder_drush_review() {
           break;
         case 'active':
         case 'core':
+        case 'contrib':
         case 'all':
         case 'default':
           $settings = _coder_get_default_settings($arg);
