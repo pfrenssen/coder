@@ -19,21 +19,48 @@ function coder_i18n_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]l\s*\(\s*["\']',
+      '#value' => '[\s\(]l\s*\(\s*[\'"]',
       '#function' => '_install$',
       '#warning_callback' => '_coder_i18n_in_install_l_without_st',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]t\s*\(\s*["\']',
+      '#value' => '[\s\(]t\s*\(\s*[\'"]',
       '#function' => '_install$',
       '#warning_callback' => '_coder_i18n_in_install_t',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]alert\s*\(\s*["\']',
+      '#value' => '[\s\(]alert\s*\(\s*[\'"]',
       '#filename' => '\.js$',
       '#warning' => 'Javascript strings should be passed through Drupal.t().',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '#title\s*=>\s*[\'"][\'"]',
+      '#warning_callback' => '_coder_i18n_fapi_title_without_t',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => 'form_error\s*\(\s*\$[a-z_]+[a-z0-9_]*\s*,\s*[\'"]',
+      '#warning_callback' => '_coder_i18n_form_error_without_t',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\'"]title[\'"]\s*=>\s*[\'"][^<]',
+      '#warning_callback' => '_coder_i18n_in_hook_links_without_t',
+      '#source' => 'allphp',
+      '#function' => '_link$',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => 'drupal_set_title\s*\(\s*[\'"]',
+      '#warning_callback' => '_coder_i18n_drupal_set_title_without_t',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => 'drupal_set_message\s*\(\s*[\'"]',
+      '#warning_callback' => '_coder_i18n_drupal_set_message_without_t',
     ),
   );
   $review = array(
@@ -84,3 +111,58 @@ function _coder_i18n_in_install_t() {
     ),
   );
 }
+
+function _coder_i18n_fapi_title_without_t() {
+  return array(
+    '#warning' => t('The FAPI #title should be enclosed within !t() so that it is translatable.',
+      array(
+        '!l' => theme('drupalapi', 'l'),
+        '!t' => theme('drupalapi', 't'),
+      )
+    ),
+  );
+}
+
+function _coder_i18n_form_error_without_t() {
+  return array(
+    '#warning' => t('The $message argument to !form_error() should be enclosed within !t() so that it is translatable.',
+      array(
+        '!form_error' => theme('drupalapi', 'form_error'),
+        '!t' => theme('drupalapi', 't'),
+      )
+    ),
+  );
+}
+
+function _coder_i18n_in_hook_links_without_t() {
+  return array(
+    '#warning' => t("The 'title' option should be enclosed within !t() so that it is translatable.",
+      array(
+        '!t' => theme('drupalapi', 't'),
+      )
+    ),
+  );
+}
+
+function _coder_i18n_drupal_set_message_without_t() {
+  return array(
+    '#warning' => t('The $message argument to !drupal_set_message() should be enclosed within !t() so that it is translatable.',
+      array(
+        '!drupal_set_message' => theme('drupalapi', 'drupal_set_message'),
+        '!t' => theme('drupalapi', 't'),
+      )
+    ),
+  );
+}
+
+function _coder_i18n_drupal_set_title_without_t() {
+  return array(
+    '#warning' => t('The $title argument to !drupal_set_title() should be enclosed within !t() so that it is translatable.',
+      array(
+        '!drupal_set_title' => theme('drupalapi', 'drupal_set_title'),
+        '!t' => theme('drupalapi', 't'),
+      )
+    ),
+  );
+}
+
