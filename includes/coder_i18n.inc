@@ -10,6 +10,7 @@
  * Implementation of hook_reviews().
  */
 function coder_i18n_reviews() {
+  $argex = '(((\$?)[a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'\'|"")';
   $rules = array(
     array(
       '#type' => 'regex',
@@ -42,7 +43,7 @@ function coder_i18n_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => 'form_error\s*\(\s*\$[a-z_]+[a-z0-9_]*\s*,\s*[\'"]',
+      '#value' => 'form_error\s*\(\s*'. $argex .'*\s*,\s*[\'"]',
       '#warning_callback' => '_coder_i18n_form_error_without_t',
     ),
     array(
