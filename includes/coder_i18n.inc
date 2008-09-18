@@ -43,7 +43,7 @@ function coder_i18n_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => 'form_error\s*\(\s*'. $argex .'*\s*,\s*[\'"]',
+      '#value' => 'form_error\s*\(\s*'. $argex .'\s*,\s*[\'"]',
       '#warning_callback' => '_coder_i18n_form_error_without_t',
     ),
     array(
@@ -62,6 +62,11 @@ function coder_i18n_reviews() {
       '#type' => 'regex',
       '#value' => 'drupal_set_message\s*\(\s*[\'"]',
       '#warning_callback' => '_coder_i18n_drupal_set_message_without_t',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => 'watchdog\s*\(\s*'. $argex .'\s*,\s*s?t\(',
+      '#warning_callback' => '_coder_i18n_watchdog_with_t',
     ),
   );
   $review = array(
@@ -161,6 +166,17 @@ function _coder_i18n_drupal_set_title_without_t() {
     '#warning' => t('The $title argument to !drupal_set_title() should be enclosed within !t() so that it is translatable.',
       array(
         '!drupal_set_title' => theme('drupalapi', 'drupal_set_title'),
+        '!t' => theme('drupalapi', 't'),
+      )
+    ),
+  );
+}
+
+function _coder_i18n_watchdog_with_t() {
+  return array(
+    '#warning' => t('The $message argument to !watchdog() should NOT be enclosed within !t(), so that it can be properly translated later into the language of the administrator viewing the logs.',
+      array(
+        '!watchdog' => theme('drupalapi', 'watchdog'),
         '!t' => theme('drupalapi', 't'),
       )
     ),
