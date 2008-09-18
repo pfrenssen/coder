@@ -68,6 +68,14 @@ function coder_i18n_reviews() {
       '#value' => 'watchdog\s*\(\s*'. $argex .'\s*,\s*s?t\(',
       '#warning_callback' => '_coder_i18n_watchdog_with_t',
     ),
+    // @NOTE: Add duplicate of the 6.x upgrade rule.
+    array(
+      '#type' => 'regex',
+      '#function' => '_menu$',
+      '#source' => 'allphp',
+      '#value' => '\'title\'\s*=>\s*t\(|\'description\'\s*=>\s*t\(',
+      '#warning_callback' => '_coder_i18n_menu_with_t',
+    ),
   );
   $review = array(
     '#title' => t('Internationalization'),
@@ -174,7 +182,7 @@ function _coder_i18n_drupal_set_title_without_t() {
 
 function _coder_i18n_watchdog_with_t() {
   return array(
-    '#warning' => t('The $message argument to !watchdog() should NOT be enclosed within !t(), so that it can be properly translated later into the language of the administrator viewing the logs.',
+    '#warning' => t('The $message argument to !watchdog() should NOT be enclosed within !t(), so that it can be properly translated at display time.',
       array(
         '!watchdog' => theme('drupalapi', 'watchdog'),
         '!t' => theme('drupalapi', 't'),
@@ -183,3 +191,13 @@ function _coder_i18n_watchdog_with_t() {
   );
 }
 
+function _coder_i18n_menu_with_t() {
+  return array(
+    '#warning' => t('Menu item titles and descriptions should NOT be enclosed within !t().',
+      array(
+        '!t' => theme('drupalapi', 't'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/140311',
+  );
+}
