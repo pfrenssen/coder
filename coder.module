@@ -981,13 +981,11 @@ function do_coder_reviews($coder_args) {
   }
 
   // Save the results in the cache.
-  if ($use_cache) {
-    $cache_results = array(
-      'mtime' => $cache_mtime,
-      'results' => $results,
-    );
-    cache_set($cache_key, $cache_results, 'cache_coder');
-  }
+  $cache_results = array(
+    'mtime' => $cache_mtime,
+    'results' => $results,
+  );
+  cache_set($cache_key, $cache_results, 'cache_coder');
 
   return $results;
 }
