@@ -1,6 +1,10 @@
 <?php
 // $Id$
 
+function coder_install() {
+  drupal_install_schema('coder');
+}
+
 function coder_uninstall() {
   variable_del('coder_cache');
   variable_del('coder_reviews');
@@ -12,12 +16,68 @@ function coder_uninstall() {
   variable_del('coder_modules');
   variable_del('coder_themes');
 
-  cache_clear_all('coder:', 'cache', true);
+  drupal_uninstall_schema('coder');
+}
+
+function _coder_cache_schema() {
+  // Use our own cache table because we can create lots of entries, that slow down and clutter the default cache.
+  return array(
+    'description' => t("Coder cache table for improving display of result sets that haven't changed"),
+    'fields' => array(
+      'cid' => array(
+        'description' => t('Primary Key: Unique cache ID.'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => ''),
+      'data' => array(
+        'description' => t('A collection of data to cache.'),
+        'type' => 'blob',
+        'not null' => FALSE,
+        'size' => 'big'),
+      'expire' => array(
+        'description' => t('A Unix timestamp indicating when the cache entry should expire, or 0 for never.'),
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0),
+      'created' => array(
+        'description' => t('A Unix timestamp indicating when the cache entry was created.'),
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0),
+      'headers' => array(
+        'description' => t('Any custom HTTP headers to be added to cached data.'),
+        'type' => 'text',
+        'not null' => FALSE),
+      'serialized' => array(
+        'description' => t('A flag to indicate whether content is serialized (1) or not (0).'),
+        'type' => 'int',
+        'size' => 'small',
+        'not null' => TRUE,
+        'default' => 0)
+      ),
+    'indexes' => array('expire' => array('expire')),
+    'primary key' => array('cid'),
+    );
+}
+
+function coder_schema() {
+  $schema['cache_coder'] = _coder_cache_schema();
+  return $schema;
 }
 
 function coder_update_1() {
   $ret = array();
   // This update adds a theming function, so we need to clear the entire cache.
   $ret[] = update_sql("DELETE FROM {cache}");
+  return $ret;
+}
+
+function coder_update_2() {
+  $ret = array();
+  // Create the new coder cache table.
+  db_create_table($ret, 'cache_coder', _coder_cache_schema());
+  // Clear coder entries from the default cache.
+  cache_clear_all('coder:', 'cache', true);
   return $ret;
 }
