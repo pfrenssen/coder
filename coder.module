@@ -234,7 +234,7 @@ function _coder_settings_form($settings, &$system, &$files) {
     '#default_value' => $settings['coder_severity'],
   );
 
-  if ($settings['coder_patches']) {
+  if (!empty($settings['coder_patches'])) {
     // Display what to review options.
     $form['coder_what'] = array(
       '#type' => 'fieldset',
@@ -383,7 +383,7 @@ function _coder_settings_form($settings, &$system, &$files) {
     $form['coder_what']['coder_includes_exclusion_fieldset']['coder_includes_exclusions'] = array(
       '#rows' => 3,
       '#type' => 'textarea',
-      '#default_value' => $settings['coder_includes_exclusions'],
+      '#default_value' => isset($settings['coder_includes_exclusions']) ? $settings['coder_includes_exclusions'] : '',
       '#description' => t('List file names or paths, one per line, which should be excluded (only valid if "include files" is checked above).  For example, modules/system/*.php will exclude all php files in the modules/system directory.'),
     );
 
@@ -687,6 +687,9 @@ function coder_page_form($form_state) {
     $path = drupal_get_path('module', 'coder');
     drupal_add_css($path .'/coder.css', 'module');
 
+    // Get the includes_exclusions settings once, it is used multiple times.
+    $coder_includes_exclusions = isset($settings['coder_includes_exclusions']) ? $settings['coder_includes_exclusions'] : '';
+
     // Code review non-module core files.
     $module_weight = 0;
     if (isset($settings['coder_core']) && $settings['coder_core']) {
@@ -704,7 +707,7 @@ function coder_page_form($form_state) {
         '#weight' => ++ $module_weight,
       );
       $phpfiles = file_scan_directory('.', '.*\.php', array('.', '..', 'CVS'), 0, FALSE, 'name', 0);
-      _coder_page_form_includes($form, $coder_args, 'core_php', $phpfiles, 2, 0, $settings['coder_includes_exclusions']);
+      _coder_page_form_includes($form, $coder_args, 'core_php', $phpfiles, 2, 0, $coder_includes_exclusions);
 
       $form['core_includes'] = array(
         '#type' => 'fieldset',
@@ -714,7 +717,7 @@ function coder_page_form($form_state) {
         '#weight' => ++ $module_weight,
       );
       $includefiles = drupal_system_listing('.*\.inc$', 'includes', 'filename', 0);
-      _coder_page_form_includes($form, $coder_args, 'core_includes', $includefiles, 0, $settings['coder_includes_exclusions']);
+      _coder_page_form_includes($form, $coder_args, 'core_includes', $includefiles, 0, $coder_includes_exclusions);
     }
 
     // Loop through the selected modules and themes.
@@ -731,7 +734,7 @@ function coder_page_form($form_state) {
             drupal_set_message(t('Code Review file for %module not found', array('%module' => $name)));
             continue;
           }
-          if ($settings['coder_patches']) {
+          if (!empty($settings['coder_patches'])) {
             $patch = $filename;
             $filename = $name;
           }
@@ -776,7 +779,7 @@ function coder_page_form($form_state) {
                 $dups[$path] = 1;
                 $includefiles = drupal_system_listing('.*\.(inc|php|js|install|test)$', dirname($filename), 'filename', 0);
                 $offset = strpos($filename, dirname($filename));
-                $stats[$filename]['#includes'] = _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset, $settings['coder_includes_exclusions']);
+                $stats[$filename]['#includes'] = _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset, $coder_includes_exclusions);
               }
             }
           }
@@ -796,12 +799,12 @@ function coder_page_form($form_state) {
           $summary['files'] ++;
         }
         $display = array();
-        if ($settings['coder_patches']) {
-          $display[] = t('Coder found @count patches', array('@count' => count($stats)));
-        }
-        else {
+        if (empty($settings['coder_patches'])) {
           $display[] = t('Coder found @count projects', array('@count' => count($stats)));
           $display[] = t('@count files', array('@count' => $summary['files']));
+        }
+        else {
+          $display[] = t('Coder found @count patches', array('@count' => count($stats)));
         }
         foreach (array('critical', 'normal', 'minor') as $severity_name) {
           if ($summary[$severity_name] > 0) {
@@ -1767,10 +1770,9 @@ function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') 
   // Extract description from warning.
   if (is_array($warning)) {
     $description = isset($warning['#description']) ? $warning['#description'] : '';
-    $link = $warning['#link'];
     $warning = $warning['#warning'];
-    if (isset($link)) {
-      $warning .= '  ('. l('Drupal Docs', $link) .')';
+    if (isset($warning['#link'])) {
+      $warning .= '  ('. l('Drupal Docs', $warning['#link']) .')';
     }
   }
   if ($lineno) {
