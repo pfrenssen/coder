@@ -1,0 +1,35 @@
+<?php
+define(CODER_OK, 1);
+define(CODER_NOT_OK, 0);
+
+class CoderTestCase extends DrupalTestCase {
+  function runCoderTests($snippets) {
+    $reviews = coder_reviews();
+    foreach ($snippets as $code => $status) {
+      $coder_args = array(
+        '#severity' => SEVERITY_MINOR,
+        '#filename' => 'coder_security.test',
+        '#patch' => $code,
+      );
+      _coder_read_and_parse_file($coder_args);
+      $results = do_coder_review($coder_args, $reviews['style']);
+
+      if ($status == CODER_OK) {
+        unset($results['#stats']);
+        if (count($results) == 0) {
+          $this->assertTrue(TRUE, 'Expect NO warning: '. $code);
+        }
+        else {
+          $warnings = array();
+          foreach ($results as $error) {
+            $warnings[] = _coder_warning($error['rule']);
+          }
+          $this->assertTrue(FALSE, 'Expect NO warning: '. $code .': '. implode('; ', $warning));
+        }
+      }
+      else {
+        $this->assertTrue(count($results) > 0, 'Expect a warning: '. $code);
+      }
+    }
+  }
+}

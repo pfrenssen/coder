@@ -1720,26 +1720,27 @@ function theme_coder($name, $filename, $results) {
  *   Error array from _coder_error().
  */
 function theme_coder_warning_msg($error) {
-  if (isset($error['rule']['#warning_callback'])) {
-    if (function_exists($error['rule']['#warning_callback'])) {
-      $warning = $error['rule']['#warning_callback']();
-    }
-    else { // If this happens, there is an error in the rule definition.
-      $warning = t('please <a href="@report">report</a> this !warning',
-        array(
-          '@report' => 'http://drupal.org/node/add/project_issue/coder/bug',
-          '!warning' => $error['rule']['#warning_callback'],
-        )
-      );
-    }
-  }
-  else {
-    $warning = t($error['rule']['#warning']);
-  }
-
   // @TODO: we can combine theme_coder_warning() and theme_coder_warning_msg(),
   // But let's do this on the 7.x upgrade in case anyone's actually using it.
-  return theme('coder_warning', $warning, $error['severity_name'], $error['lineno'], $error['line']);
+  return theme('coder_warning', _coder_warning($error['rule']), $error['severity_name'], $error['lineno'], $error['line']);
+}
+
+/**
+ * Return the formatted warning message from the $rule.
+ */
+function _coder_warning($rule) {
+  if (isset($rule['#warning_callback'])) {
+    if (function_exists($rule['#warning_callback'])) {
+      return $rule['#warning_callback']();
+    }
+    return t('please <a href="@report">report</a> this !warning',
+      array(
+        '@report' => 'http://drupal.org/node/add/project_issue/coder/bug',
+        '!warning' => $rule['#warning_callback'],
+      )
+    );
+  }
+  return t($rule['#warning']);
 }
 
 /**

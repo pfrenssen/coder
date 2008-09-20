@@ -17,6 +17,8 @@ function coder_security_reviews() {
     array(
       '#type' => 'regex',
       '#value' => 'l\(check_plain\(',
+      '#not' => '[\'"]html[\'"]\s*=>\s*(TRUE|1)',
+      '#source' => 'allphp',
       '#warning_callback' => '_coder_security_l_check_plain_warning',
     ),
 /*  array(

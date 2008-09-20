@@ -1,0 +1,29 @@
+<?php
+require_once(dirname(__FILE__) .'/coder_test_case.tinc');
+
+class CoderSecurityTest extends CoderTestCase {
+  function get_info() {
+    return array(
+      'name' => t('Coder Security Tests'),
+      'desc' => t('Tests for the coder security review.'),
+      'group' => 'Coder'
+    );
+  }
+  
+  function setUp() {
+  }
+
+  function testStyle() {
+    $snippets = array(
+      '$var = l(check_plain($input), "path/to/drupal");' => CODER_NOT_OK,
+      '$var = l(check_plain($input), "path/to/drupal", array("html" => FALSE);' => CODER_NOT_OK,
+      '$var = l(check_plain($input), "path/to/drupal", array("html" => $value);' => CODER_NOT_OK,
+      '$var = l(check_plain($input), "path/to/drupal", array("html" => 0);' => CODER_NOT_OK,
+      '$var = l(check_plain($input), "path/to/drupal", array("html" => TRUE);' => CODER_OK,
+      '$var = l(check_plain($input), "path/to/drupal", array(\'html\' => TRUE);' => CODER_OK,
+      '$var = l(check_plain($input), "path/to/drupal", array("html" => 1);' => CODER_OK,
+      '$var = l(check_plain($input), "path/to/drupal", array(\'html\' => 1);' => CODER_OK,
+    );
+    $this->runCoderTests($snippets);
+  }
+}
