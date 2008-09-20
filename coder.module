@@ -1380,7 +1380,7 @@ function do_coder_review($coder_args, $review) {
         }
       }
       // Ignore rules that do match the file extension, javascript files are excluded by default.
-      $not = empty($rule['#filename-not']) ? (empty($rule['#filename']) || !preg_match('/\\\.js\$/i', $rule['#filename'], $matches) ? '\.js$' : null) : $rule['#filename-not'];
+      $not = isset($rule['#filename-not']) ? $rule['#filename-not'] : (empty($rule['#filename']) || !preg_match('/\\\.js\$/i', $rule['#filename'], $matches) ? '\.js$' : null);
       if ($not) {
         $regex = '/'. $not .'/i';
         if (preg_match($regex, $filename, $matches)) {
