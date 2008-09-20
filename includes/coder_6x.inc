@@ -204,6 +204,7 @@ function coder_6x_reviews() {
       '#source' => 'allphp',
       '#function' => '_submit$|_validate$',
       '#value' => '\$form(_values)?\[[\'"][A-Za-z]',
+      '#never' => '[\s\(]form_error\(',
       '#warning' => 'use $form_state[\'values\'] instead, which is where the values are stored after a submit',
     ),
     array(
