@@ -89,7 +89,7 @@ function coder_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
   $items['coder/settings'] = array(
-    'title' => 'Selection Form',
+    'title' => 'Selection form',
     'page callback' => 'coder_page',
     'access arguments' => array('view code review'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
@@ -829,7 +829,7 @@ function coder_page_form($form_state) {
       '#weight' => -1,
     );
     if ($form['settings']['#collapsed']) {
-      $form['settings']['#prefix'] = t('<div class="coder-settings">Use the Selection Form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/settings/coder'), '@default' => url('coder/default')));
+      $form['settings']['#prefix'] = t('<div class="coder-settings">Use the Selection form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/settings/coder'), '@default' => url('coder/default')));
     }
     $form['settings'][] = $coder_form;
     $form['settings']['submit'] = array(
