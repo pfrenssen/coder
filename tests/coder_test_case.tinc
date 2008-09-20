@@ -24,7 +24,7 @@ class CoderTestCase extends DrupalTestCase {
           foreach ($results as $error) {
             $warnings[] = _coder_warning($error['rule']);
           }
-          $this->assertTrue(FALSE, 'Expect NO warning: '. $code .': '. implode('; ', $warning));
+          $this->assertTrue(FALSE, 'Expect NO warning: '. $code .': '. implode('; ', $warnings));
         }
       }
       else {
