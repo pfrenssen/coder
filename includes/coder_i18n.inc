@@ -76,6 +76,12 @@ function coder_i18n_reviews() {
       '#value' => '\'title\'\s*=>\s*t\(|\'description\'\s*=>\s*t\(',
       '#warning_callback' => '_coder_i18n_menu_with_t',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]t\s*\(\s*[\'"](\s+|.*\s+[\'"]\s*[,\)])',
+      '#source' => 'allphp',
+      '#warning_callback' => '_coder_i18n_space_starts_or_ends_t',
+    ),
   );
   $review = array(
     '#title' => t('Internationalization'),
@@ -199,5 +205,16 @@ function _coder_i18n_menu_with_t() {
       )
     ),
     '#link' => 'http://drupal.org/node/140311',
+  );
+}
+
+function _coder_i18n_space_starts_or_ends_t() {
+  return array(
+    '#warning' => t('The $string argument to !t() should not begin or end with a space.',
+      array(
+        '!t' => theme('drupalapi', 't'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/304150',
   );
 }
