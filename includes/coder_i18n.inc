@@ -43,7 +43,7 @@ function coder_i18n_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => 'form_error\s*\(\s*'. $argex .'\s*,\s*[\'"]',
+      '#value' => '[\s\(]form_error\s*\(\s*'. $argex .'\s*,\s*[\'"]',
       '#warning_callback' => '_coder_i18n_form_error_without_t',
     ),
     array(
@@ -55,17 +55,17 @@ function coder_i18n_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => 'drupal_set_title\s*\(\s*[\'"]',
+      '#value' => '[\s\(]drupal_set_title\s*\(\s*[\'"]',
       '#warning_callback' => '_coder_i18n_drupal_set_title_without_t',
     ),
     array(
       '#type' => 'regex',
-      '#value' => 'drupal_set_message\s*\(\s*[\'"]',
+      '#value' => '[\s\(]drupal_set_message\s*\(\s*[\'"]',
       '#warning_callback' => '_coder_i18n_drupal_set_message_without_t',
     ),
     array(
       '#type' => 'regex',
-      '#value' => 'watchdog\s*\(\s*'. $argex .'\s*,\s*s?t\(',
+      '#value' => '[\s\(]watchdog\s*\(\s*'. $argex .'\s*,\s*s?t\(',
       '#warning_callback' => '_coder_i18n_watchdog_with_t',
     ),
     // @NOTE: Add duplicate of the 6.x upgrade rule.
