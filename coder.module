@@ -332,11 +332,11 @@ function _coder_settings_form($settings, &$system, &$files) {
     while ($system = db_fetch_object($result)) {
       $display_name = $system->name;
       if ($system->status) {
-        $display_name .= t(' (active)');
+        $display_name .= ' ('. t('active') .')';
         $system_active[$system->name] = $system->name;
       }
       if (_coder_is_drupal_core($system)) {
-        $display_name .= t(' (core)');
+        $display_name .= ' ('. t('core'). ')';
         $system_core[$system->name] = $system->name;
       }
       if ($system->type == 'module') {
