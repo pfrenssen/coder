@@ -1,0 +1,62 @@
+<?php
+require_once(dirname(__FILE__) .'/coder_test_case.tinc');
+
+class CoderSQLTest extends CoderTestCase {
+  function get_info() {
+    return array(
+      'name' => t('Coder SQL Tests'),
+      'desc' => t('Tests for the coder SQL review.'),
+      'group' => 'Coder'
+    );
+  }
+  
+  function setUp() {
+  }
+
+  function testSQL() {
+    $snippets = array(
+      // Check for lower case keywords.
+      '  $sql = "select * from {node}";' => CODER_NOT_OK,
+      '  $sql = "insert into {node} (changed) VALUES (%d)";' => CODER_NOT_OK,
+      '  $sql = "delete from {node}";' => CODER_NOT_OK,
+      '  $sql = "update {node} set changed = now()";' => CODER_NOT_OK,
+      '  $var = t("select something from this");' => CODER_NOT_OK,
+      '  $var = t("update something");' => CODER_OK,
+      '  $var = t("insert something");' => CODER_OK,
+      '  $var = t("delete something");' => CODER_OK,
+      // Check for missing {node}.
+      '  $sql = "INSERT INTO node (changed) VALUES (1)";' => CODER_NOT_OK,
+      // Check for LIMIT clause.
+      '  $sql = "SELECT * FROM {node} LIMIT 10";' => CODER_NOT_OK,
+      // Check for insecure variable replacement.
+      '  $sql = "SELECT * FROM {node} WHERE nid=$nid";' => CODER_NOT_OK,
+      '  $sql = "SELECT * FROM {false_accounts} WHERE uids REGEXP \'^%s,|,%s,|,%s$\'";' => CODER_OK,
+      '  $sql = "SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=\'%s\' AND (r.title REGEXP \'^[^[:alpha:]].*$\')";' => CODER_OK,
+      '  $sql = "SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=\'%s\' AND (r.title REGEXP \'^[^[:alpha:]].*$\') AND nid=$nid";' => CODER_NOT_OK,
+      '  $sql = "SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=$type AND (r.title REGEXP \'^[^[:alpha:]].*$\')";' => CODER_NOT_OK,
+      '  db_query("SELECT * FROM {foo} WHERE name=$name");' => CODER_NOT_OK,
+      '  db_query("INSERT INTO {foo} SET name=\'$name\'");' => CODER_NOT_OK,
+      '  update_sql("INSERT INTO {foo} SET name=\'$name\'");' => CODER_NOT_OK,
+      // Back tick usage tests.
+      '  $sql = "SELECT * FROM {node} WHERE title=`abc`";' => CODER_NOT_OK,
+      '  $sql = "INSERT INTO {foo} (nid, title) VALUES ("1", `abc`)";' => CODER_NOT_OK,
+      '  $sql = "INSERT INTO {foo} VALUES ("1", `abc`)";' => CODER_NOT_OK,
+      '  $sql = "UPDATE {foo} SET nid="1", title=`abc`";' => CODER_NOT_OK,
+      '  $sql = "DELETE FROM {foo} WHERE nid="1" AND title=`abc`";' => CODER_NOT_OK,
+      // Unquoted %s placeholder tests.
+      '  $sql = "SELECT * FROM {foo} WHERE name=%s";' => CODER_NOT_OK,
+      '  $sql = "INSERT INTO {foo} (%s)";' => CODER_NOT_OK,
+      '  $sql = "INSERT INTO {foo} (1,%s)";' => CODER_NOT_OK,
+      '  $sql = "INSERT INTO {foo} (1, %s)";' => CODER_NOT_OK,
+      '  $sql = "SELECT * FROM {foo} WHERE name=\'%s\'";' => CODER_OK,
+      '  $sql = "INSERT INTO {foo} (\'%s\')";' => CODER_OK,
+      '  $sql = "INSERT INTO {foo} (1,\'%s\')";' => CODER_OK,
+      '  $sql = "INSERT INTO {foo} (1, \'%s\')";' => CODER_OK,
+      '  $sql = "SELECT * FROM {foo} WHERE name=%d";' => CODER_OK,
+      '  $sql = "INSERT INTO {foo} (%d)";' => CODER_OK,
+      '  $sql = "INSERT INTO {foo} (1,%d)";' => CODER_OK,
+      '  $sql = "INSERT INTO {foo} (1, %d)";' => CODER_OK,
+    );
+    $this->runCoderTests($snippets);
+  }
+}
