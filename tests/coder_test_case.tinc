@@ -14,6 +14,7 @@ class CoderTestCase extends DrupalTestCase {
       _coder_read_and_parse_file($coder_args);
       $results = do_coder_review($coder_args, $reviews['style']);
 
+      $code = str_replace(array('%s', '%d'), array('%%s', '%%d'), $code);
       if ($status == CODER_OK) {
         unset($results['#stats']);
         if (count($results) == 0) {
