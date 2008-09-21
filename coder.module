@@ -1162,7 +1162,7 @@ function _coder_read_and_parse_file(&$coder_args) {
         }
 
         // Look for the ending php tag.
-        elseif ($char == '?' && $content[$pos + 1] == '>') {
+        elseif ($char == '?' && $content[$pos + 1] == '>' && $in_comment != '*') {
           unset($char);
           $in_php = 0;
           $in_allphp = 0;
