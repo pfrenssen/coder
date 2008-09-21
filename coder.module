@@ -122,7 +122,7 @@ function coder_menu() {
     'weight' => 1,
   );
   $items['coder/patches'] = array(
-    'title' => t('Patches'),
+    'title' => 'Patches',
     'page callback' => 'coder_page',
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
@@ -1773,7 +1773,7 @@ function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') 
     $description = isset($warning['#description']) ? $warning['#description'] : '';
     $warning = $warning['#warning'];
     if (isset($warning['#link'])) {
-      $warning .= '  ('. l('Drupal Docs', $warning['#link']) .')';
+      $warning .= '  ('. l(t('Drupal Docs'), $warning['#link']) .')';
     }
   }
   if ($lineno) {
