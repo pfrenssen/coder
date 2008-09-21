@@ -1,0 +1,23 @@
+<?php
+require_once(dirname(__FILE__) .'/coder_test_case.tinc');
+
+class CoderUpgrade6xTest extends CoderTestCase {
+  function get_info() {
+    return array(
+      'name' => t('Coder Upgrade 6.x Tests'),
+      'desc' => t('Tests for the coder upgrade6x review.'),
+      'group' => 'Coder'
+    );
+  }
+  
+  function setUp() {
+  }
+
+  function testStyle() {
+    $snippets = array(
+      '  function my_module_forms($args) {' => CODER_NOT_OK,
+      '  function my_module_forms($form_id, $args) {' => CODER_OK,
+    );
+    $this->runCoderTests($snippets);
+  }
+}

@@ -453,7 +453,11 @@ function coder_6x_reviews() {
       '#value' => '\'title\'\s*=>\s*t\(|\'description\'\s*=>\s*t\(',
       '#warning_callback' => '_coder_6x_menu_localization_warning',
     ),
-
+    array(
+      '#type' => 'regex',
+      '#value' => 'function\s+\w+_forms\(\s*\$w+\)',
+      '#warning_callback' => '_coder_6x_hook_forms_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -1261,5 +1265,16 @@ function _coder_6x_menu_localization_warning() {
   return array(
     '#warning' => t('Menu item titles and descriptions should now no longer be wrapped in t() calls.'),
     '#link' => 'http://drupal.org/node/140311',
+  );
+}
+
+function _coder_6x_hook_forms_warning() {
+  return array(
+    '#warning' => t('The arguments to !hook_forms() have changed',
+      array(
+        '!hook_forms' => theme('drupalapi', 'hook_forms', '6'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/144132#hook-forms',
   );
 }
