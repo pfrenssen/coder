@@ -57,6 +57,6 @@ class CoderSQLTest extends CoderTestCase {
       '  $sql = "INSERT INTO {foo} (1,%d)";' => CODER_OK,
       '  $sql = "INSERT INTO {foo} (1, %d)";' => CODER_OK,
     );
-    $this->runCoderTests($snippets);
+    $this->runCoderTests($snippets, 'sql');
   }
 }

@@ -13,7 +13,7 @@ class CoderSecurityTest extends CoderTestCase {
   function setUp() {
   }
 
-  function testStyle() {
+  function testSecurity() {
     $snippets = array(
       '$var = l(check_plain($input), "path/to/drupal");' => CODER_NOT_OK,
       '$var = l(check_plain($input), "path/to/drupal", array("html" => FALSE);' => CODER_NOT_OK,
@@ -24,6 +24,6 @@ class CoderSecurityTest extends CoderTestCase {
       '$var = l(check_plain($input), "path/to/drupal", array("html" => 1);' => CODER_OK,
       '$var = l(check_plain($input), "path/to/drupal", array(\'html\' => 1);' => CODER_OK,
     );
-    $this->runCoderTests($snippets);
+    $this->runCoderTests($snippets, 'security');
   }
 }

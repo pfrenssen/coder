@@ -18,6 +18,6 @@ class CoderUpgrade6xTest extends CoderTestCase {
       '  function my_module_forms($args) {' => CODER_NOT_OK,
       '  function my_module_forms($form_id, $args) {' => CODER_OK,
     );
-    $this->runCoderTests($snippets);
+    $this->runCoderTests($snippets, 'style');
   }
 }

@@ -3,34 +3,41 @@ define(CODER_OK, 1);
 define(CODER_NOT_OK, 0);
 
 class CoderTestCase extends DrupalTestCase {
-  function runCoderTests($snippets) {
-    $reviews = coder_reviews();
+  function runCoderTests($snippets, $type) {
     foreach ($snippets as $code => $status) {
-      $coder_args = array(
-        '#severity' => SEVERITY_MINOR,
-        '#filename' => 'coder_security.test',
-        '#patch' => $code,
-      );
-      _coder_read_and_parse_file($coder_args);
-      $results = do_coder_review($coder_args, $reviews['style']);
+      // Run the coder review on the code snippet.
+      $results = coder_test($code, $type);
 
+      // Display the test results.
       $code = str_replace(array('%s', '%d'), array('%%s', '%%d'), $code);
       if ($status == CODER_OK) {
-        unset($results['#stats']);
         if (count($results) == 0) {
           $this->assertTrue(TRUE, 'Expect NO warning: '. $code);
         }
         else {
-          $warnings = array();
-          foreach ($results as $error) {
-            $warnings[] = _coder_warning($error['rule']);
-          }
-          $this->assertTrue(FALSE, 'Expect NO warning: '. $code .': '. implode('; ', $warnings));
+          $this->assertTrue(FALSE, 'Expect NO warning: '. $code .': '. $this->getWarnings($results));
         }
       }
       else {
-        $this->assertTrue(count($results) > 0, 'Expect a warning: '. $code);
+        if (count($results) <= 1) {
+          $this->assertTrue(count($results) == 1, 'Expect a warning: '. $code);
+        }
+        else {
+          $this->assertTrue(FALSE, 'Expected a warning, but received many: '. $code .': '. $this->getWarnings($results));
+        }
       }
     }
+  }
+
+  function getWarnings($results) {
+    $warnings = array();
+    foreach ($results as $error) {
+      $warning = _coder_warning($error['rule']);
+      if (is_array($warning)) {
+        $warning = $warning['#warning'];
+      }
+      $warnings[] = $warning;
+    }
+    return implode('; ', $warnings);
   }
 }

@@ -933,7 +933,7 @@ function _coder_modified() {
  *     - integer ID => HTML error for display.
  */
 function do_coder_reviews($coder_args) {
-  if (empty($coder_args['#patch'])) {
+  if (empty($coder_args['#patch']) && empty($coder_args['#test'])) {
     // Load the cached results if they exist.
     $cache_key = 'coder:'.  implode(':', array_keys($coder_args['#reviews'])) .  $coder_args['#severity'] .':'. $coder_args['#filename'];
     if (file_exists($filepath = realpath($coder_args['#filename']))) {
@@ -1008,15 +1008,12 @@ function do_coder_reviews($coder_args) {
  */
 function _coder_read_and_parse_file(&$coder_args) {
   // Get the path to the module file.
-  if (!empty($coder_args['#patch']) || (($filepath = realpath($coder_args['#filename'])) && file_exists($filepath))) {
+  if (!empty($coder_args['#patch']) || !empty($coder_args['#test']) || (($filepath = realpath($coder_args['#filename'])) && file_exists($filepath))) {
     $in_php = 0;
     $in_allphp = 0;
     $in_comment = 0;
 
-    if (empty($coder_args['#patch'])) {
-      $content = file_get_contents($filepath) ."\n";
-    }
-    else {
+    if (!empty($coder_args['#patch'])) {
       $content = $coder_args['#patch'];
       if (preg_match("/^\s*\*/", $content)) {
         $in_comment = '*';
@@ -1026,6 +1023,14 @@ function _coder_read_and_parse_file(&$coder_args) {
         $in_php = 1;
         $in_allphp = 1;
       }
+    }
+    elseif (!empty($coder_args['#test'])) {
+      $content = $coder_args['#test'];
+      $in_php = 1;
+      $in_allphp = 1;
+    }
+    else {
+      $content = file_get_contents($filepath) ."\n";
     }
     $content_length = drupal_strlen($content);
 
@@ -1269,6 +1274,9 @@ function _coder_read_and_parse_file(&$coder_args) {
     }
     if (trim($this_php_lines) != '') {
       $php_lines[$lineno] = $this_php_lines;
+    }
+    if (trim($this_allphp_lines) != '') {
+      $allphp_lines[$lineno] = $this_allphp_lines;
     }
     if (trim($this_html_lines) != '') {
       $html_lines[$lineno] = $this_html_lines;
@@ -1666,14 +1674,17 @@ function coder_simpletest() {
 /**
  * Helper function to run the review on the code snippet.
  */
-function coder_test($code, $review, $severity = SEVERITY_MINOR) {
+function coder_test($code, $type, $severity = SEVERITY_MINOR) {
   $coder_args = array(
     '#severity' => $severity,
     '#filename' => 'snippet',
-    '#patch' => $code,
+    '#test' => $code,
   );
   _coder_read_and_parse_file($coder_args);
-  return do_coder_review($coder_args, $reviews['style']);
+  $reviews = coder_reviews();
+  $results = do_coder_review($coder_args, $reviews[$type]);
+  unset($results['#stats']);
+  return $results;
 }
 
 // Theming functions
