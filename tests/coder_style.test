@@ -68,6 +68,6 @@ class CoderStyleTest extends CoderTestCase {
       "  \$var = <<< __EOD__\n<B>\n__EOD__;" => CODER_NOT_OK,
       "  \$var = <<< __EOD__\n<br/>\n__EOD__;" => CODER_OK,
     );
-    $this->runCoderTests($snippets);
+    $this->runCoderTests($snippets, 'style');
   }
 }
