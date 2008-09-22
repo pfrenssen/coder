@@ -1,0 +1,32 @@
+<?php
+require_once(dirname(__FILE__) .'/coder_test_case.tinc');
+
+class CoderI18NTest extends CoderTestCase {
+  function get_info() {
+    return array(
+      'name' => t('Coder I18N Tests'),
+      'desc' => t('Tests for the coder I18N review.'),
+      'group' => 'Coder'
+    );
+  }
+  
+  function setUp() {
+  }
+
+  function testI18N() {
+    $snippets = array(
+      '  $var = t("Your rating");' => CODER_OK,
+      '  $var = t(" Your rating");' => CODER_NOT_OK,
+      '  $var = t("Your rating ");' => CODER_NOT_OK,
+      '  $var = t("Your rating") ."hello ";' => CODER_OK,
+      '  $var = t("Your rating") ." hello";' => CODER_OK,
+      "  \$var = t('Your rating');" => CODER_OK,
+      "  \$var = t(' Your rating');" => CODER_NOT_OK,
+      "  \$var = t('Your rating ');" => CODER_NOT_OK,
+      "  \$var = t('Your rating') .'hello ';" => CODER_OK,
+      "  \$var = t('Your rating') .' hello';" => CODER_OK,
+      "  'titleUser' => t('Your rating') .': '," => CODER_OK,
+    );
+    $this->runCoderTests($snippets, 'i18n');
+  }
+}
