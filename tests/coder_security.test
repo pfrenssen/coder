@@ -23,6 +23,15 @@ class CoderSecurityTest extends CoderTestCase {
       '$var = l(check_plain($input), "path/to/drupal", array(\'html\' => TRUE);' => CODER_OK,
       '$var = l(check_plain($input), "path/to/drupal", array("html" => 1);' => CODER_OK,
       '$var = l(check_plain($input), "path/to/drupal", array(\'html\' => 1);' => CODER_OK,
+      // Check for insecure SQL variable replacement.
+      '  $results = db_query("SELECT * FROM {node} WHERE nid=$nid");' => CODER_NOT_OK,
+      '  $results = db_query("SELECT * FROM {false_accounts} WHERE uids REGEXP \'^%s,|,%s,|,%s$\'");' => CODER_OK,
+      '  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=\'%s\' AND (r.title REGEXP \'^[^[:alpha:]].*$\')");' => CODER_OK,
+      '  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=\'%s\' AND (r.title REGEXP \'^[^[:alpha:]].*$\') AND nid=$nid");' => CODER_NOT_OK,
+      '  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=$type AND (r.title REGEXP \'^[^[:alpha:]].*$\')");' => CODER_NOT_OK,
+      '  $results = db_query("SELECT * FROM {foo} WHERE name=$name");' => CODER_NOT_OK,
+      '  db_query("INSERT INTO {foo} SET name=\'$name\'");' => CODER_NOT_OK,
+      '  update_sql("INSERT INTO {foo} SET name=\'$name\'");' => CODER_OK,
     );
     $this->runCoderTests($snippets, 'security');
   }

@@ -38,14 +38,14 @@ function coder_security_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '(db_query|db_query_range)\s*\(\s*"(select\s+.*\s+from\s+'. $table .'|insert\s+into\s+'. $table .'|update\s+'. $table .'\s+set|delete\s+from\s'. $table .')\s+[^"]*\$[^\'].*".*\)',
-      '#not' => '\$placeholder',
+      '#value' => '(db_query|db_query_range)\s*\(\s*"(select\s+.*\s+from\s+'. $table .'|insert\s+into\s+'. $table .'|update\s+'. $table .'\s+set|delete\s+from\s'. $table .')\s+[^"]*\$[a-z0-9_]+',
+      '#never' => '\$placeholder',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_security_sql_var_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '^(select\s+.*\s+from\s+'. $table .'|insert\s+into\s+'. $table .'|update\s+'. $table .'\s+set|delete\s+from\s'. $table .')\s+.*?(\s+|\(|=|,)\%s',
+      '#value' => '^(select\s+.*\s+from\s+'. $table .'|insert\s+into\s+'. $table .'|update\s+'. $table .'\s+set|delete\s+from\s'. $table .')\s+[^\']*?(\s+|\(|=|,)\%s',
       '#source' => 'quote',
       '#warning_callback' => '_coder_6x_unquoted_sql_placeholders',
     ),
@@ -107,6 +107,6 @@ function _coder_security_sql_var_warning() {
 
 function _coder_6x_unquoted_sql_placeholders() {
   return array(
-    '#warning' => t('SQL query handling data in a potentially insecure way by using the %s placeholder without wrapping it in single quotes.  This is a potential source of SQL injection attacks when the value can come from user data.'),
+    '#warning' => t('SQL query handling data in a potentially insecure way by using the %%s placeholder without wrapping it in single quotes.  This is a potential source of SQL injection attacks when the value can come from user data.'),
   );
 }
