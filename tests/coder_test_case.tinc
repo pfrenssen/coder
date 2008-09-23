@@ -2,7 +2,7 @@
 define(CODER_OK, 1);
 define(CODER_NOT_OK, 0);
 
-class CoderTestCase extends DrupalTestCase {
+class CoderTestCase extends DrupalWebTestCase {
   function runCoderTests($snippets, $type) {
     foreach ($snippets as $code => $status) {
       // Run the coder review on the code snippet.

@@ -2,10 +2,10 @@
 require_once(dirname(__FILE__) .'/coder_test_case.tinc');
 
 class CoderSQLTest extends CoderTestCase {
-  function get_info() {
+  function getInfo() {
     return array(
       'name' => t('Coder SQL Tests'),
-      'desc' => t('Tests for the coder SQL review.'),
+      'description' => t('Tests for the coder SQL review.'),
       'group' => 'Coder'
     );
   }

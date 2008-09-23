@@ -18,10 +18,10 @@ if (is_dir('Text/Diff')) {
  * Coder Format tests.
  */
 class CoderFormatTest extends CoderTestCase {
-  function get_info() {
+  function getInfo() {
     return array(
       'name'  => 'Full coder_format tests',
-      'desc'  => t('Tests all of the functionality of the coder_format script.'),
+      'description'  => t('Tests all of the functionality of the coder_format script.'),
       'group' => 'Coder Format Tests',
     );
   }
