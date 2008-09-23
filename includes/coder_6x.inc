@@ -267,7 +267,8 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\[\'#DANGEROUS_SKIP_CHECK\'\]',
+      '#source' => 'allphp',
+      '#value' => '(\$form\s*\[\s*[\'"]#DANGEROUS_SKIP_CHECK[\'"]|[\'"]#DANGEROUS_SKIP_CHECK[\'"]\s*=>)',
       '#warning_callback' => '_coder_6x_dangerous_skip_check_warning',
     ),
     array(
