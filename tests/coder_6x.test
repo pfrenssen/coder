@@ -13,11 +13,11 @@ class CoderUpgrade6xTest extends CoderTestCase {
   function setUp() {
   }
 
-  function testStyle() {
+  function testUpgrade6x() {
     $snippets = array(
       '  function my_module_forms($args) {' => CODER_NOT_OK,
       '  function my_module_forms($form_id, $args) {' => CODER_OK,
     );
-    $this->runCoderTests($snippets, 'style');
+    $this->runCoderTests($snippets, 'upgrade6x');
   }
 }

@@ -455,7 +455,7 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => 'function\s+\w+_forms\(\s*\$w+\)',
+      '#value' => 'function\s+[a-z0-9_]+_(forms)\s*\(\s*[^,]+\)',
       '#warning_callback' => '_coder_6x_hook_forms_warning',
     ),
   );
