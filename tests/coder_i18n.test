@@ -26,6 +26,11 @@ class CoderI18NTest extends CoderTestCase {
       "  \$var = t('Your rating') .'hello ';" => CODER_OK,
       "  \$var = t('Your rating') .' hello';" => CODER_OK,
       "  'titleUser' => t('Your rating') .': '," => CODER_OK,
+      "  \$var = t('This isn't a false positive ');" => CODER_NOT_OK,
+      "  \$var = t('This isn\\'t a \"false\" positive ');" => CODER_NOT_OK,
+      "  \$var = t('This is a false positive') . implode(', ', \$array);" => CODER_OK,
+      "  \$var = t('This is a \\'false\\\" positive');" => CODER_OK,
+      "  \$var = t('This is a \"false\" positive');" => CODER_OK,
     );
     $this->runCoderTests($snippets, 'i18n');
   }
