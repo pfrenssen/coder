@@ -24,8 +24,9 @@ class CoderStyleTest extends CoderTestCase {
       '	$var = "tab in line";' => CODER_NOT_OK,
       // Check that stdClass is OK.
       '  $var = new stdClass();' => CODER_OK,
-      '  $var = new StdClass();' => CODER_OK, // should this be OK or not?
-      '  $var = new stdclassToo();' => CODER_NOT_OK,
+      '  $var = $obj->camelCase();' => CODER_OK,
+      '  $camelCase = "1";' => CODER_NOT_OK,
+      '  function camelCase() {' => CODER_NOT_OK,
       // Check camelCase within Embedded php.
       '  ?>This is embedded php and should Not trigger a camelCase error.<?php' => CODER_OK,
       "  ?>This second embedded php and should Not trigger\na camelCase error.<?php" => CODER_OK,
@@ -50,7 +51,7 @@ class CoderStyleTest extends CoderTestCase {
       '  $left = "trailing spaces follow";   ' => CODER_NOT_OK,
       '  $left = "no trailing spaces";' => CODER_OK,
       // Check control structures.
-      '  if($a == 1){ }' => CODER_NOT_OK,
+      '  if ($a == 1) { }' => CODER_NOT_OK,
       '  if ($a == 1) {' => CODER_OK,
       '  }else {' => CODER_NOT_OK,
       '  if ($a == 1) { $b = 2;' => CODER_NOT_OK,
