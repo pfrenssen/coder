@@ -459,6 +459,12 @@ function coder_6x_reviews() {
       '#value' => 'function\s+[a-z0-9_]+_(forms)\s*\(\s*[^,]+\)',
       '#warning_callback' => '_coder_6x_hook_forms_warning',
     ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'allphp',
+      '#value' => '\$form\s*\[\s*[\'"]#pre_render[\'"]\s*\]\[\s*[\'"].*[\'"]\s*\]\s*=',
+      '#warning_callback' => '_coder_6x_formapi_prerender_warning',
+    ),
   );
   $review = array(
     '#title' => t('Converting 5.x modules to 6.x'),
@@ -751,6 +757,13 @@ function _coder_6x_form_validate_and_submit_warning() {
 function _coder_6x_form_prerender_warning() {
   return array(
     '#warning' => t('The parameters for form prerender functions have changed to $form.'),
+    '#link' => 'http://drupal.org/node/144132#pre-render',
+  );
+}
+
+function _coder_6x_formapi_prerender_warning() {
+  return array(
+    '#warning' => t('The form API for the #pre_render property has changed structure.'),
     '#link' => 'http://drupal.org/node/144132#pre-render',
   );
 }
