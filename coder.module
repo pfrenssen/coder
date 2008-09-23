@@ -1067,7 +1067,7 @@ function _coder_read_and_parse_file(&$coder_args) {
       // Get the current character.
       $char = $content[$pos];
       if ($char == "\n") {
-        if ($in_comment && $in_comment == '/') { // End C++ style comments on newline.
+        if ($in_comment === '/') { // End C++ style comments on newline.
           $in_comment = 0;
         }
 
@@ -1167,7 +1167,7 @@ function _coder_read_and_parse_file(&$coder_args) {
         }
 
         // Look for the ending php tag.
-        elseif ($char == '?' && $content[$pos + 1] == '>' && $in_comment != '*') {
+        elseif ($char == '?' && $content[$pos + 1] == '>' && $in_comment !== '*') {
           unset($char);
           $in_php = 0;
           $in_allphp = 0;
