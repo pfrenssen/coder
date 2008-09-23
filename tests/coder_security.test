@@ -32,6 +32,19 @@ class CoderSecurityTest extends CoderTestCase {
       '  $results = db_query("SELECT * FROM {foo} WHERE name=$name");' => CODER_NOT_OK,
       '  db_query("INSERT INTO {foo} SET name=\'$name\'");' => CODER_NOT_OK,
       '  update_sql("INSERT INTO {foo} SET name=\'$name\'");' => CODER_OK,
+      // Unquoted %s placeholder tests.
+      '  $sql = "SELECT * FROM {foo} WHERE name=%s";' => CODER_NOT_OK,
+      '  $sql = "INSERT INTO {foo} (%s)";' => CODER_NOT_OK,
+      '  $sql = "INSERT INTO {foo} (1,%s)";' => CODER_NOT_OK,
+      '  $sql = "INSERT INTO {foo} (1, %s)";' => CODER_NOT_OK,
+      '  $sql = "SELECT * FROM {foo} WHERE name=\'%s\'";' => CODER_OK,
+      '  $sql = "INSERT INTO {foo} (\'%s\')";' => CODER_OK,
+      '  $sql = "INSERT INTO {foo} (1,\'%s\')";' => CODER_OK,
+      '  $sql = "INSERT INTO {foo} (1, \'%s\')";' => CODER_OK,
+      '  $sql = "SELECT * FROM {foo} WHERE name=%d";' => CODER_OK,
+      '  $sql = "INSERT INTO {foo} (%d)";' => CODER_OK,
+      '  $sql = "INSERT INTO {foo} (1,%d)";' => CODER_OK,
+      '  $sql = "INSERT INTO {foo} (1, %d)";' => CODER_OK,
     );
     $this->runCoderTests($snippets, 'security');
   }

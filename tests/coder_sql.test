@@ -34,19 +34,6 @@ class CoderSQLTest extends CoderTestCase {
       '  $sql = "INSERT INTO {foo} VALUES ("1", `abc`)";' => CODER_NOT_OK,
       '  $sql = "UPDATE {foo} SET nid="1", title=`abc`";' => CODER_NOT_OK,
       '  $sql = "DELETE FROM {foo} WHERE nid="1" AND title=`abc`";' => CODER_NOT_OK,
-      // Unquoted %s placeholder tests.
-      '  $sql = "SELECT * FROM {foo} WHERE name=%s";' => CODER_NOT_OK,
-      '  $sql = "INSERT INTO {foo} (%s)";' => CODER_NOT_OK,
-      '  $sql = "INSERT INTO {foo} (1,%s)";' => CODER_NOT_OK,
-      '  $sql = "INSERT INTO {foo} (1, %s)";' => CODER_NOT_OK,
-      '  $sql = "SELECT * FROM {foo} WHERE name=\'%s\'";' => CODER_OK,
-      '  $sql = "INSERT INTO {foo} (\'%s\')";' => CODER_OK,
-      '  $sql = "INSERT INTO {foo} (1,\'%s\')";' => CODER_OK,
-      '  $sql = "INSERT INTO {foo} (1, \'%s\')";' => CODER_OK,
-      '  $sql = "SELECT * FROM {foo} WHERE name=%d";' => CODER_OK,
-      '  $sql = "INSERT INTO {foo} (%d)";' => CODER_OK,
-      '  $sql = "INSERT INTO {foo} (1,%d)";' => CODER_OK,
-      '  $sql = "INSERT INTO {foo} (1, %d)";' => CODER_OK,
     );
     $this->runCoderTests($snippets, 'sql');
   }
