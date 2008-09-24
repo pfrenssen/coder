@@ -61,7 +61,7 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '(taxonomy_node_get_terms|taxonomy_node_get_terms_by_vocabulary|taxonomy_node_delete_revision)\s*\(\$(nid|node->nid)',
+      '#value' => '(taxonomy_node_get_terms|taxonomy_node_get_terms_by_vocabulary|taxonomy_node_save|taxonomy_node_delete)\s*\(\s*(\d+|\$(nid|node->nid))',
       '#warning_callback' => '_coder_6x_taxonomy_node_get_terms_warning',
     ),
     array(
@@ -660,10 +660,11 @@ function _coder_6x_url_l_warning() {
 
 function _coder_6x_taxonomy_node_get_terms_warning() {
   return array(
-    '#warning' => t('!taxonomy_node_get_terms(), !taxonomy_node_get_terms_by_vocabulary(), and !taxonomy_node_delete() now take a full $node object, not just a nid (node id).',
+    '#warning' => t('!taxonomy_node_get_terms(), !taxonomy_node_get_terms_by_vocabulary(), !taxonomy_node_save and !taxonomy_node_delete() now take a full $node object, not just a nid (node id).',
       array(
         '!taxonomy_node_get_terms' => theme('drupalapi', 'taxonomy_node_get_terms', '6'),
         '!taxonomy_node_get_terms_by_vocabulary' => theme('drupalapi', 'taxonomy_node_get_terms_by_vocabulary', '6'),
+        '!taxonomy_node_save' => theme('drupalapi', 'taxonomy_node_save', '6'),
         '!taxonomy_node_delete' => theme('drupalapi', 'taxonomy_node_delete', '6'),
       )
     ),
