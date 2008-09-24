@@ -66,7 +66,7 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]strtr\s*\(format_plural\s*\(',
+      '#value' => '[\s\(]strtr\s*\(\s*format_plural\s*\(',
       '#warning_callback' => '_coder_6x_format_plural_warning',
     ),
     array(
