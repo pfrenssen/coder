@@ -231,7 +231,13 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => 'variable_(get|set|del)\(\s*\'comment_form_location\'\s*(,|\))',
+      '#value' => 'variable_(get|set|del)\(\s*[\'"]comment_form_location[\'"]\s*(,|\))',
+      '#source' => 'allphp',
+      '#warning_callback' => '_coder_6x_comment_form_location_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '=\s*[\'"]comment_form_location[\'"]\s*;',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_6x_comment_form_location_warning',
     ),
