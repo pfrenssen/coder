@@ -76,13 +76,18 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]cache_set\s*\(\s*[^,]+,\s*\'',
+      '#value' => '[\s\(]cache_set\s*\(\s*[^,]+,\s*([\'"]|\$table)',
       '#warning_callback' => '_coder_6x_cache_set_warning',
     ),
     array(
       '#type' => 'regex',
+      '#value' => '[\s\(]cache_set\s*\(\s*[^\)]+,\s*serialize\s*\(\s*',
+      '#warning_callback' => '_coder_6x_cache_serialize_warning',
+    ),
+    array(
+      '#type' => 'regex',
       '#value' => '[\s\(]unserialize\s*\(\s*cache_get\s*\(',
-      '#warning_callback' => '_coder_6x_cache_get_warning',
+      '#warning_callback' => '_coder_6x_cache_serialize_warning',
     ),
     array(
       '#type' => 'regex',
@@ -701,7 +706,7 @@ function _coder_6x_cache_set_warning() {
   );
 }
 
-function _coder_6x_cache_get_warning() {
+function _coder_6x_cache_serialize_warning() {
   return array(
     '#warning' => t('!cache_set() and !cache_get() automatically (un)serialize complex data types',
       array(
