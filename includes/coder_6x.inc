@@ -134,6 +134,13 @@ function coder_6x_reviews() {
     array(
       '#type' => 'regex',
       '#source' => 'allphp',
+      '#function' => '_elements$',
+      '#value' => '\s*[\'"]#validate[\'"]\s*=>\s*',
+      '#warning_callback' => '_coder_6x_formapi_element_validate_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'allphp',
       '#value' => '(\$form\s*\[\s*[\'"]#multistep[\'"]|[\'"]#multistep[\'"]\s*=>)',
       '#warning' => '#multistep is gone, use $form_state instead',
     ),
@@ -199,12 +206,6 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#function' => '_confirm_submit$',
-      '#value' => 'return [\'"]',
-      '#warning' => 'in confirm_submit, use $form_state[\'redirect\'] instead of return (remember to change function prototype to use &$form_state) ',
-    ),
-    array(
-      '#type' => 'regex',
       '#source' => 'allphp',
       '#function' => '_(un)?install$|_update_[0-9]+$',
       '#value' => '\$GLOBALS\[[\'"]?db_type[\'"]?\]',
@@ -261,13 +262,7 @@ function coder_6x_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]node_access_rebuild\s*\(',
-      '#function' => '_enable$',
-      '#warning_callback' => '_coder_6x_node_access_rebuild_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]node_access_rebuild\s*\(',
-      '#function' => '_disable$',
+      '#function' => '_disable$|_enable$',
       '#warning_callback' => '_coder_6x_node_access_rebuild_warning',
     ),
     array(
@@ -418,7 +413,7 @@ function coder_6x_reviews() {
     // Book module rules -  end.
     array(
       '#type' => 'regex',
-      '#value' => '\s[\'"]#value[\'"]\s*=>\s*t\s*\(\s*[\'"]Submit[\'"]\s*\)',
+      '#value' => '\s*[\'"]#value[\'"]\s*=>\s*t\s*\(\s*[\'"]Submit[\'"]\s*\)',
       '#source' => 'allphp',
       '#warning' => 'When labelling buttons, make it clear what the button does, "Submit" is too generic.',
       '#severity' => 'minor',
@@ -438,7 +433,7 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '^(create\s+table\s+|drop\s+table\s+)',
+      '#value' => '^(create\s+table\s+|alter\s+table\s+|drop\s+table\s+)',
       '#source' => 'quote',
       '#warning_callback' => '_coder_6x_drupal_install_schema_warning',
     ),
@@ -1247,7 +1242,7 @@ function _coder_6x_drupal_mail_warning() {
 
 function _coder_6x_drupal_install_schema_warning() {
   return array(
-    '#warning' => t('Use the new Schema API to create and drop tables rather than db_query()'),
+    '#warning' => t('Use the new Schema API to create, alter and drop tables rather than db_query()'),
     '#link' => 'http://drupal.org/node/146862',
   );
 }
@@ -1287,7 +1282,7 @@ function _coder_6x_menu_get_object_warning() {
 
 function _coder_6x_form_submit_warning() {
   return array(
-    '#warning' => t('Submit handlers use $form_state rather than returning urls'),
+    '#warning' => t('Submit handlers use $form_state[\'redirect\'] rather than returning urls'),
     '#link' => 'http://drupal.org/node/144132#redirect',
   );
 }

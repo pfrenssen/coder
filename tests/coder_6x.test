@@ -38,6 +38,12 @@ class CoderUpgrade6xTest extends CoderTestCase {
       "  function myform_submit(\$form, &\$form_state) {\n \$form['#submit'][] = 'newsubmit';\n}" => CODER_OK,
       '  function mymodule_form_alter($form_id, &$form) {' => CODER_NOT_OK,
       '  function mymodule_form_alter(&$form, $form_state, $form_id) {' => CODER_OK,
+      '  $op = $form_values[\'op\'];' => CODER_NOT_OK,
+      '  $op = $form[\'op\'];' => CODER_NOT_OK,
+      "  function myform_submit() {\n  \$a = \$form_values['foo'];\n}" => CODER_NOT_OK,
+      "  function myform_submit() {\n  \$a = \$form['foo'];\n}" => CODER_NOT_OK,
+      "  function myform_validate() {\n  \$a = \$form_values['foo'];\n}" => CODER_NOT_OK,
+      "  function myform_validate() {\n  \$a = \$form['foo'];\n}" => CODER_NOT_OK,
       // FAPI tests.
       '  $form[\'#base\'] = \'http://example.com\';' => CODER_NOT_OK,
       '  \'#base\' => \'my_shared_form_id\',' => CODER_NOT_OK,
@@ -49,6 +55,11 @@ class CoderUpgrade6xTest extends CoderTestCase {
       '  $form[\'#pre_render\'][\'my_render_function\'] = array();' => CODER_NOT_OK,
       '  $form[\'#submit\'][\'my_submit_function\'] = array($param1, $param2);' => CODER_NOT_OK,
       '  $form[\'#submit\'][\'my_validate_function\'] = array();' => CODER_NOT_OK,
+      '  $form[\'#validate\'][\'my_custom_validate\'] = array();' => CODER_NOT_OK,
+      '  $form[\'#validate\'][] = \'my_custom_validate\';' => CODER_OK,
+      "  function mymodule_elements() {\n  return array('my_custom_form_element' => array(\n    '#custom_property' => 'foo',\n    '#validate' => array('my_element_validate' => array()),\n  )\n);\n}" => CODER_NOT_OK,
+      "  function mymodule_elements() {\n  return array('my_custom_form_element' => array(\n    '#custom_property' => 'foo',\n    '#element_validate' => array('my_element_validate'),\n  );\n);\n}" => CODER_OK,
+      '  $form[\'abc\'] = array("#value" => t("Submit"));' => CODER_NOT_OK,
       // Menu changes.
       "  function mymodule_menu() {\n  \$items = array();\n}" => CODER_OK,
       "  function mymodule_menu() {\n  \$items[] = array();\n}" => CODER_NOT_OK,
@@ -58,6 +69,9 @@ class CoderUpgrade6xTest extends CoderTestCase {
       "  function mymodule_menu() {\n  \$items['test'] = array('title' => 'my title');\n}" => CODER_OK,
       "  function mymodule_menu() {\n  \$items['test'] = array('description' => 'my description');\n}" => CODER_OK,
       "  function mymodule_menu() {\n  \$items['node/add/foo'] = array();\n}" => CODER_NOT_OK,
+      "  function mymodule_menu() {\n  for (\$i=0; \$i<1; \$i++) {\n  }\n}" => CODER_NOT_OK,
+      "  function mymodule_menu() {\n  foreach (\$a as \$b) {\n  }\n}" => CODER_NOT_OK,
+      "  function mymodule_menu() {\n  while (\$a > \$b) {\n  }\n}" => CODER_NOT_OK,
       "  function not_a_menu_hook() {\n  \$items[] = array();\n}" => CODER_OK,
       '  if ($node = node_load(arg(1))) {' => CODER_NOT_OK,
       '  if ($user = user_load(arg(1))) {' => CODER_NOT_OK,
@@ -69,6 +83,19 @@ class CoderUpgrade6xTest extends CoderTestCase {
       '  if ($term = forum_term_load(arg(1))) {' => CODER_NOT_OK,
       '  if ($feed = aggregator_feed_load(arg(1))) {' => CODER_NOT_OK,
       '  if ($category = aggregator_category_load(arg(1))) {' => CODER_NOT_OK,
+      '  menu_set_location();' => CODER_NOT_OK,
+      // Database changes.
+      "  function mymodule_install() {\n  \$type = \$GLOBALS['db_type'];\n}" => CODER_NOT_OK,
+      "  function mymodule_uninstall() {\n  \$type = \$GLOBALS['db_type'];\n}" => CODER_NOT_OK,
+      "  function mymodule_update_1() {\n  \$type = \$GLOBALS['db_type'];\n}" => CODER_NOT_OK,
+      '  db_next_id();' => CODER_NOT_OK,
+      '  db_num_rows();' => CODER_NOT_OK,
+      '  db_result($result, $row);' => CODER_NOT_OK,
+      '  db_result($result);' => CODER_OK,
+      '  $number = db_result(db_query("SELECT COUNT(*) FROM {flood} WHERE event = \'%s\' AND hostname = \'%s\' AND timestamp > %d", $name, ip_address(), time() - 3600));' => CODER_OK,
+      '  $sql = "CREATE TABLE foo ()";' => CODER_NOT_OK,
+      '  $sql = "DROP TABLE foo";' => CODER_NOT_OK,
+      '  $sql = "ALTER TABLE foo";' => CODER_NOT_OK,
       // File handling changes.
       '  if ($file = file_check_upload(\'picture_upload\')) {' => CODER_NOT_OK,
       '  $file = file_save_upload(\'picture_upload\', $destination, FILE_EXISTS_REPLACE); ' => CODER_NOT_OK,
@@ -95,6 +122,7 @@ class CoderUpgrade6xTest extends CoderTestCase {
       '  $url = url($path, $options);' => CODER_OK,
       '  $url = url($path, array(\'absolute\' => TRUE));' => CODER_OK,
       // Taxonomy changes.
+      '  taxonomy_get_vocabulary($vid);' => CODER_NOT_OK,
       '  taxonomy_node_get_terms($nid);' => CODER_NOT_OK,
       '  taxonomy_node_get_terms($node->nid);' => CODER_NOT_OK,
       '  taxonomy_node_get_terms(123);' => CODER_NOT_OK,
@@ -114,10 +142,6 @@ class CoderUpgrade6xTest extends CoderTestCase {
       // format_plural() changes.
       '  strtr(format_plural($num, \'1 %type post\', \'@count %type posts\'), array(\'%type\' => theme(\'placeholder\', $type)));' => CODER_NOT_OK,
       '  format_plural($num, \'1 %type post\', \'@count %type posts\', array(\'%type\' => $type));' => CODER_OK,
-      // db_result() changes.
-      '  db_result($result, $row);' => CODER_NOT_OK,
-      '  db_result($result);' => CODER_OK,
-      '  $number = db_result(db_query("SELECT COUNT(*) FROM {flood} WHERE event = \'%s\' AND hostname = \'%s\' AND timestamp > %d", $name, ip_address(), time() - 3600));' => CODER_OK,
       // watchdog() changes.
       '  watchdog(\'debug\', \'My debug message.\');' => CODER_NOT_OK,
       '  watchdog(\'user\', t(\'Removed user.\'));' => CODER_NOT_OK,
@@ -148,6 +172,9 @@ class CoderUpgrade6xTest extends CoderTestCase {
       "  function mymodule_enable() {\n  node_access_rebuild();\n}" => CODER_NOT_OK,
       "  function mymodule_disable() {\n  node_access_rebuild();\n}" => CODER_NOT_OK,
       "  function mymodule_function() {\n  node_access_rebuild();\n}" => CODER_OK,
+      // nodeapi changes.
+      "  function mymodule_nodeapi() {\n  switch (\$op) {\n    case 'submit': return;\n  }\n}" => CODER_NOT_OK,
+      "  function mymodule_nodeapi() {\n  if (\$op == 'submit') {\n  }\n}" => CODER_NOT_OK,
       // hook functions parameter changes.
       '  function mymodule_access($op, $node) {' => CODER_NOT_OK,
       '  function mymodule_access($op, $node, $account) {' => CODER_OK,
@@ -195,9 +222,7 @@ class CoderUpgrade6xTest extends CoderTestCase {
       '  function mymodule_info($field = 0) {' => CODER_NOT_OK,
       // Miscellaneous deprecated functions.
       '  locale_refresh_cache();' => CODER_NOT_OK,
-      '  db_next_id();' => CODER_NOT_OK,
-      '  menu_set_location();' => CODER_NOT_OK,
-      '  taxonomy_get_vocabulary($vid);' => CODER_NOT_OK,
+      '  theme_get_function();' => CODER_NOT_OK,
       // Miscellaneous variable name and path changes.
       '  custom_url_rewrite($url);' => CODER_NOT_OK,
       '  custom_url_rewrite_inbound($url);' => CODER_OK,
@@ -212,6 +237,7 @@ class CoderUpgrade6xTest extends CoderTestCase {
       '  $user_access_path = \'admin/user/access\';' => CODER_NOT_OK,
       '  $permission = user_access(\'administer access control\');' => CODER_NOT_OK,
       '  $ip = $_SERVER[\'REMOTE_ADDR\'];' => CODER_NOT_OK,
+      '  global $locale;' => CODER_NOT_OK,
     );
     $this->runCoderTests($snippets, 'upgrade6x');
   }
