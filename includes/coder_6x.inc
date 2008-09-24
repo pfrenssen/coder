@@ -103,6 +103,7 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#source' => 'allphp',
       '#value' => '\{file_revisions\}',
       '#warning' => 'The {'.'file_revisions} table is now {upload}',
     ),
