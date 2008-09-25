@@ -2,39 +2,43 @@
 require_once(dirname(__FILE__) .'/coder_test_case.tinc');
 
 class CoderSQLTest extends CoderTestCase {
+  function __construct($id = NULL) {
+    parent::__construct('sql', $id);
+  }
+  
   function getInfo() {
     return array(
       'name' => t('Coder SQL Tests'),
       'description' => t('Tests for the coder SQL review.'),
-      'group' => 'Coder'
+      'group' => t('Coder'),
     );
   }
   
-  function setUp() {
+  function testSQLLowerCaseKeywords() {
+    $this->assertCoderFail('  $sql = "select * from {node}";');
+    $this->assertCoderFail('  $sql = "insert into {node} (changed) VALUES (%d)";');
+    $this->assertCoderFail('  $sql = "delete from {node}";');
+    $this->assertCoderFail('  $sql = "update {node} set changed = now()";');
+    $this->assertCoderFail('  $var = t("select something from this");');
+    $this->assertCoderPass('  $var = t("update something");');
+    $this->assertCoderPass('  $var = t("insert something");');
+    $this->assertCoderPass('  $var = t("delete something");');
   }
 
-  function testSQL() {
-    $snippets = array(
-      // Check for lower case keywords.
-      '  $sql = "select * from {node}";' => CODER_NOT_OK,
-      '  $sql = "insert into {node} (changed) VALUES (%d)";' => CODER_NOT_OK,
-      '  $sql = "delete from {node}";' => CODER_NOT_OK,
-      '  $sql = "update {node} set changed = now()";' => CODER_NOT_OK,
-      '  $var = t("select something from this");' => CODER_NOT_OK,
-      '  $var = t("update something");' => CODER_OK,
-      '  $var = t("insert something");' => CODER_OK,
-      '  $var = t("delete something");' => CODER_OK,
-      // Check for missing {node}.
-      '  $sql = "INSERT INTO node (changed) VALUES (1)";' => CODER_NOT_OK,
-      // Check for LIMIT clause.
-      '  $sql = "SELECT * FROM {node} LIMIT 10";' => CODER_NOT_OK,
-      // Back tick usage tests.
-      '  $sql = "SELECT * FROM {node} WHERE title=`abc`";' => CODER_NOT_OK,
-      '  $sql = "INSERT INTO {foo} (nid, title) VALUES ("1", `abc`)";' => CODER_NOT_OK,
-      '  $sql = "INSERT INTO {foo} VALUES ("1", `abc`)";' => CODER_NOT_OK,
-      '  $sql = "UPDATE {foo} SET nid="1", title=`abc`";' => CODER_NOT_OK,
-      '  $sql = "DELETE FROM {foo} WHERE nid="1" AND title=`abc`";' => CODER_NOT_OK,
-    );
-    $this->runCoderTests($snippets, 'sql');
+  function testSQLBracketNode() {
+    $this->assertCoderFail('  $sql = "INSERT INTO node (changed) VALUES (1)";');
+    $this->assertCoderPass('  $sql = "INSERT INTO {node} (changed) VALUES (1)";');
+  }
+
+  function testSQLLimit() {
+    $this->assertCoderFail('  $sql = "SELECT * FROM {node} LIMIT 10";');
+  }
+
+  function testSQLBackTick() {
+    $this->assertCoderFail('  $sql = "SELECT * FROM {node} WHERE title=`abc`";');
+    $this->assertCoderFail('  $sql = "INSERT INTO {foo} (nid, title) VALUES ("1", `abc`)";');
+    $this->assertCoderFail('  $sql = "INSERT INTO {foo} VALUES ("1", `abc`)";');
+    $this->assertCoderFail('  $sql = "UPDATE {foo} SET nid="1", title=`abc`";');
+    $this->assertCoderFail('  $sql = "DELETE FROM {foo} WHERE nid="1" AND title=`abc`";');
   }
 }

@@ -2,50 +2,52 @@
 require_once(dirname(__FILE__) .'/coder_test_case.tinc');
 
 class CoderSecurityTest extends CoderTestCase {
+  function __construct($id = NULL) {
+    parent::__construct('security', $id);
+  }
+  
   function getInfo() {
     return array(
       'name' => t('Coder Security Tests'),
       'description' => t('Tests for the coder security review.'),
-      'group' => 'Coder'
+      'group' => t('Coder'),
     );
   }
   
-  function setUp() {
+  function testSecurityCheckPlain() {
+    $this->assertCoderFail('$var = l(check_plain($input), "path/to/drupal");');
+    $this->assertCoderFail('$var = l(check_plain($input), "path/to/drupal", array("html" => FALSE);');
+    $this->assertCoderFail('$var = l(check_plain($input), "path/to/drupal", array("html" => $value);');
+    $this->assertCoderFail('$var = l(check_plain($input), "path/to/drupal", array("html" => 0);');
+    $this->assertCoderPass('$var = l(check_plain($input), "path/to/drupal", array("html" => TRUE);');
+    $this->assertCoderPass('$var = l(check_plain($input), "path/to/drupal", array(\'html\' => TRUE);');
+    $this->assertCoderPass('$var = l(check_plain($input), "path/to/drupal", array("html" => 1);');
+    $this->assertCoderPass('$var = l(check_plain($input), "path/to/drupal", array(\'html\' => 1);');
   }
 
-  function testSecurity() {
-    $snippets = array(
-      '$var = l(check_plain($input), "path/to/drupal");' => CODER_NOT_OK,
-      '$var = l(check_plain($input), "path/to/drupal", array("html" => FALSE);' => CODER_NOT_OK,
-      '$var = l(check_plain($input), "path/to/drupal", array("html" => $value);' => CODER_NOT_OK,
-      '$var = l(check_plain($input), "path/to/drupal", array("html" => 0);' => CODER_NOT_OK,
-      '$var = l(check_plain($input), "path/to/drupal", array("html" => TRUE);' => CODER_OK,
-      '$var = l(check_plain($input), "path/to/drupal", array(\'html\' => TRUE);' => CODER_OK,
-      '$var = l(check_plain($input), "path/to/drupal", array("html" => 1);' => CODER_OK,
-      '$var = l(check_plain($input), "path/to/drupal", array(\'html\' => 1);' => CODER_OK,
-      // Check for insecure SQL variable replacement.
-      '  $results = db_query("SELECT * FROM {node} WHERE nid=$nid");' => CODER_NOT_OK,
-      '  $results = db_query("SELECT * FROM {false_accounts} WHERE uids REGEXP \'^%s,|,%s,|,%s$\'");' => CODER_OK,
-      '  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=\'%s\' AND (r.title REGEXP \'^[^[:alpha:]].*$\')");' => CODER_OK,
-      '  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=\'%s\' AND (r.title REGEXP \'^[^[:alpha:]].*$\') AND nid=$nid");' => CODER_NOT_OK,
-      '  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=$type AND (r.title REGEXP \'^[^[:alpha:]].*$\')");' => CODER_NOT_OK,
-      '  $results = db_query("SELECT * FROM {foo} WHERE name=$name");' => CODER_NOT_OK,
-      '  db_query("INSERT INTO {foo} SET name=\'$name\'");' => CODER_NOT_OK,
-      '  update_sql("INSERT INTO {foo} SET name=\'$name\'");' => CODER_OK,
-      // Unquoted %s placeholder tests.
-      '  $sql = "SELECT * FROM {foo} WHERE name=%s";' => CODER_NOT_OK,
-      '  $sql = "INSERT INTO {foo} (%s)";' => CODER_NOT_OK,
-      '  $sql = "INSERT INTO {foo} (1,%s)";' => CODER_NOT_OK,
-      '  $sql = "INSERT INTO {foo} (1, %s)";' => CODER_NOT_OK,
-      '  $sql = "SELECT * FROM {foo} WHERE name=\'%s\'";' => CODER_OK,
-      '  $sql = "INSERT INTO {foo} (\'%s\')";' => CODER_OK,
-      '  $sql = "INSERT INTO {foo} (1,\'%s\')";' => CODER_OK,
-      '  $sql = "INSERT INTO {foo} (1, \'%s\')";' => CODER_OK,
-      '  $sql = "SELECT * FROM {foo} WHERE name=%d";' => CODER_OK,
-      '  $sql = "INSERT INTO {foo} (%d)";' => CODER_OK,
-      '  $sql = "INSERT INTO {foo} (1,%d)";' => CODER_OK,
-      '  $sql = "INSERT INTO {foo} (1, %d)";' => CODER_OK,
-    );
-    $this->runCoderTests($snippets, 'security');
+  function testSecuritySQLVariableInjection() {
+    $this->assertCoderFail('  $results = db_query("SELECT * FROM {node} WHERE nid=$nid");');
+    $this->assertCoderPass('  $results = db_query("SELECT * FROM {false_accounts} WHERE uids REGEXP \'^%s,|,%s,|,%s$\'");');
+    $this->assertCoderPass('  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=\'%s\' AND (r.title REGEXP \'^[^[:alpha:]].*$\')");');
+    $this->assertCoderFail('  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=\'%s\' AND (r.title REGEXP \'^[^[:alpha:]].*$\') AND nid=$nid");');
+    $this->assertCoderFail('  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=$type AND (r.title REGEXP \'^[^[:alpha:]].*$\')");');
+    $this->assertCoderFail('  $results = db_query("SELECT * FROM {foo} WHERE name=$name");');
+    $this->assertCoderFail('  db_query("INSERT INTO {foo} SET name=\'$name\'");');
+    $this->assertCoderPass('  update_sql("INSERT INTO {foo} SET name=\'$name\'");');
+  }
+
+  function testSecuritySQLUnquotedPlaceholders() {
+    $this->assertCoderFail('  $sql = "SELECT * FROM {foo} WHERE name=%s";');
+    $this->assertCoderFail('  $sql = "INSERT INTO {foo} (%s)";');
+    $this->assertCoderFail('  $sql = "INSERT INTO {foo} (1,%s)";');
+    $this->assertCoderFail('  $sql = "INSERT INTO {foo} (1, %s)";');
+    $this->assertCoderPass('  $sql = "SELECT * FROM {foo} WHERE name=\'%s\'";');
+    $this->assertCoderPass('  $sql = "INSERT INTO {foo} (\'%s\')";');
+    $this->assertCoderPass('  $sql = "INSERT INTO {foo} (1,\'%s\')";');
+    $this->assertCoderPass('  $sql = "INSERT INTO {foo} (1, \'%s\')";');
+    $this->assertCoderPass('  $sql = "SELECT * FROM {foo} WHERE name=%d";');
+    $this->assertCoderPass('  $sql = "INSERT INTO {foo} (%d)";');
+    $this->assertCoderPass('  $sql = "INSERT INTO {foo} (1,%d)";');
+    $this->assertCoderPass('  $sql = "INSERT INTO {foo} (1, %d)";');
   }
 }
