@@ -33,7 +33,10 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail('  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=$type AND (r.title REGEXP \'^[^[:alpha:]].*$\')");');
     $this->assertCoderFail('  $results = db_query("SELECT * FROM {foo} WHERE name=$name");');
     $this->assertCoderFail('  db_query("INSERT INTO {foo} SET name=\'$name\'");');
-    $this->assertCoderPass('  update_sql("INSERT INTO {foo} SET name=\'$name\'");');
+    $this->assertCoderFail('  $sql = "INSERT INTO {foo} SET name=\'$name\'";');
+    // @NOTE: this rule passes if run from the .install file, but we can't test for that.
+//  $this->assertCoderPass('  update_sql("INSERT INTO {foo} SET name=\'$name\'");');
+    $this->assertCoderPass('  db_result(db_query("SELECT filename FROM {system} WHERE name = \'%s\'", "ad_$detail->adtype"));');
   }
 
   function testSecuritySQLUnquotedPlaceholders() {
