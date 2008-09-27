@@ -36,9 +36,9 @@ class CoderSQLTest extends CoderTestCase {
 
   function testSQLBackTick() {
     $this->assertCoderFail('  $sql = "SELECT * FROM {node} WHERE title=`abc`";');
-    $this->assertCoderFail('  $sql = "INSERT INTO {foo} (nid, title) VALUES ("1", `abc`)";');
-    $this->assertCoderFail('  $sql = "INSERT INTO {foo} VALUES ("1", `abc`)";');
-    $this->assertCoderFail('  $sql = "UPDATE {foo} SET nid="1", title=`abc`";');
-    $this->assertCoderFail('  $sql = "DELETE FROM {foo} WHERE nid="1" AND title=`abc`";');
+    $this->assertCoderFail('  $sql = "INSERT INTO {foo} (nid, title) VALUES (\'1\', `abc`)";');
+    $this->assertCoderFail('  $sql = "INSERT INTO {foo} VALUES (\'1\', `abc`)";');
+    $this->assertCoderFail('  $sql = "UPDATE {foo} SET nid=\'1\', title=`abc`";');
+    $this->assertCoderFail('  $sql = "DELETE FROM {foo} WHERE nid=\'1\' AND title=`abc`";');
   }
 }
