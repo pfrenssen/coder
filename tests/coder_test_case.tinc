@@ -7,6 +7,15 @@ class CoderTestCase extends DrupalWebTestCase {
     $this->review_name = $review_name;
   }
 
+  function setUp() {
+    // Only do the setUp once per test case, not once per function call.
+    static $run_once;
+    if (!isset($run_once)) {
+      parent::setUp();
+      $run_once = TRUE;
+    }
+  }
+
   protected function assertCoderPass($code) {
     // Run the coder review on the code snippet.
     $results = coder_test($code, $this->review_name);
