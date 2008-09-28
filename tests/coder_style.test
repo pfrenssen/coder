@@ -1,0 +1,87 @@
+<?php
+require_once(dirname(__FILE__) .'/coder_test_case.tinc');
+
+class CoderStyleTest extends CoderTestCase {
+  function __construct($id = NULL) {
+    parent::__construct('style', $id);
+  }
+  
+  function getInfo() {
+    return array(
+      'name' => t('Coder Style Tests'),
+      'description' => t('Tests for the coder style review.'),
+      'group' => t('Coder'),
+    );
+  }
+
+  function testStyleArrayIndex() {
+    $this->assertCoderPass('$some_array[FOO_BAR] = $baz;');
+    $this->assertCoderFail('$some_array[foo_bar] = $baz;');
+    $this->assertCoderFail('  $a[hello] = "hello";');
+    $this->assertCoderPass('  $a[\'hello\'] = "hello";');
+  }
+
+  function testStyleTabs() {
+    $this->assertCoderPass('// Tab in	comment');
+    $this->assertCoderPass('$var = "tab in	double quote"');
+    $this->assertCoderPass('$var = \'tab in	single quote\'');
+    $this->assertCoderFail('	$var = "tab in line";');
+  }
+
+  function testStyleCamelCase() {
+    $this->assertCoderPass('  $var = new stdClass();');
+    $this->assertCoderPass('  $var = $obj->camelCase();');
+    $this->assertCoderFail('  $camelCase = "1";');
+    $this->assertCoderFail('  function camelCase() {');
+    $this->assertCoderPass('  ?>This is embedded php and should Not trigger a camelCase error.<?php');
+    $this->assertCoderPass("  ?>This second embedded php and should Not trigger\na camelCase error.<?php");
+    $this->assertCoderPass('  $var = 0xFF;');
+  }
+
+  function testStyleBr() {
+    $this->assertCoderFail('  print "<br>";');
+    $this->assertCoderFail('  ?><br><?php');
+  }
+
+  function testStyleConstants() {
+    $this->assertCoderPass('  $a = TRUE;');
+    $this->assertCoderPass('  $atrue = "true";');
+    $this->assertCoderFail('  $a = true;');
+    $this->assertCoderFail('  $a =true;');
+    $this->assertCoderFail('  if ($a == true) {');
+    $this->assertCoderFail('    return false;');
+  }
+
+  function testStyleClosingPhp() {
+    $this->assertCoderFail("  print 'hello';\n?>");
+  }
+
+  function testStyleTrailingSpaces() {
+    $this->assertCoderFail('  $left = "trailing spaces follow";   ');
+    $this->assertCoderPass('  $left = "no trailing spaces";');
+  }
+
+  function testStyleControlStructures() {
+    $this->assertCoderFail('  if ($a == 1) { }');
+    $this->assertCoderPass('  if ($a == 1) {');
+    $this->assertCoderFail('  }else {');
+    $this->assertCoderFail('  if ($a == 1) { $b = 2;');
+    $this->assertCoderFail('  if ($a == 1) {$b = 2;');
+  }
+
+  function testStyleStringConcatentation() {
+    $this->assertCoderFail('  if ($file = file_check_upload($fieldname . "_upload")) {');
+    $this->assertCoderPass('  $v .= \'bugger\';');
+    $this->assertCoderPass('  $a = $v .\'bugger\';');
+    $this->assertCoderPass('  $a = $v ."bugger";');
+    $this->assertCoderFail('  $a = $v.\'bugger\';');
+    $this->assertCoderFail('  $a = $some_func().\'bugger\';');
+    $this->assertCoderPass('  $a = 1.0 * .1 * 1. * (0.1) * (1.) * (.1) * (1.0);');
+  }
+
+  function testStyleHerdocStrings() {
+    $this->assertCoderFail("  \$var = <<< __EOD__\n<br>\n__EOD__;");
+    $this->assertCoderFail("  \$var = <<< __EOD__\n<B>\n__EOD__;");
+    $this->assertCoderPass("  \$var = <<< __EOD__\n<br/>\n__EOD__;");
+  }
+}
