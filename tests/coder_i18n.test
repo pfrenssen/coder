@@ -31,5 +31,18 @@ class CoderI18NTest extends CoderTestCase {
     $this->assertCoderPass("  \$var = t('This is a false positive') . implode(', ', \$array);");
     $this->assertCoderPass("  \$var = t('This is a \\'false\\\" positive');");
     $this->assertCoderPass("  \$var = t('This is a \"false\" positive');");
+    $this->assertCoderPass("  \$var = t('Your rating') . t('pass');");
+    $this->assertCoderFail("  \$var = t('Your rating') . t(' fail');");
+    $this->assertCoderFail("  \$var = t('Your rating') . t('fail ');");
+    $this->assertCoderFail("  \$var = t('Your rating') . t(' fail ');");
+    $this->assertCoderFail("  \$var = t(' Your rating ') . t(' fail ');");
+    $this->assertCoderFail("  \$var = t(' Your rating') . t('fail');");
+    $this->assertCoderFail("  \$var = t('Your rating ') . t('fail');");
+    $this->assertCoderFail("  \$var = t(' Your rating ') . t('fail');");
+    $this->assertCoderFail("  \$var = t('Your rating ') . t('fail ');");
+    $this->assertCoderFail("  \$var = t(' Your rating ') . t('fail ');");
+    $this->assertCoderFail("  \$var = t('Your rating ') . t(' fail');");
+    $this->assertCoderFail("  \$description[] = t('until !until ', array('!until' => date_format_date(\$until, 'custom', \$format)));");
+    $this->assertCoderFail("  \$description[] = t('except !dates ', array('!dates' => implode(', ', \$values)));");
   }
 }

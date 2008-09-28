@@ -78,8 +78,8 @@ function coder_i18n_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]t\s*\(\s*[\'"](\s+|.*\s+[\'"]\s*[,\)])',
-      '#never' => '[\s\(]t\s*\(\s*[\'"][^\s].*([\'"]\s+[^,\)])*.*[^\s][\'"][,\)]',
+      '#value' => '[\s\(](t|st|get_t)\s*\(\s*[\'"](\s+|[^\)]*?\s+[\'"]\s*[,\)])',
+      '#not' => '[\s\(](t|st|get_t)\s*\(\s*[\'"][^\s].*?([\'"]\s+[^,\)])*.*[^\s][\'"][,\)]',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_i18n_space_starts_or_ends_t',
     ),
