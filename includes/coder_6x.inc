@@ -498,14 +498,14 @@ function _coder_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
     $theme = FALSE;
     $hook_theme = FALSE;
     foreach ($lines as $lineno => $line) {
-      if (preg_match('/function theme_/', $line)) {
+      if (preg_match('/function theme_/', $line[0])) {
         if (!$theme) {
           $theme = TRUE;
-          $theme_line = $line;
+          $theme_line = $line[0];
           $theme_lineno = $lineno;
         }
       }
-      if (preg_match('/function \w+_theme\(/', $line)) {
+      if (preg_match('/function \w+_theme\(/', $line[0])) {
         $hook_theme = TRUE;
       }
     }
