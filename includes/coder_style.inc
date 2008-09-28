@@ -159,7 +159,7 @@ function coder_style_reviews() {
  */
 function _coder_style_callback(&$coder_args, $review, $rule, $lines, &$results) {
   for ($lineno = -1; $last = array_slice($lines, $lineno); $lineno --) {
-    $lastline = $last[0];
+    $lastline = $last[0][0];
     if (preg_match('/\S/', $lastline)) {
       break;
     }

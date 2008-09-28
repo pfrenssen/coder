@@ -999,10 +999,13 @@ function do_coder_reviews($coder_args) {
  *
  * @param $coder_args
  *   Coder arguments array variable to add file lines of code (with
- *   trailing newlines. The following array indices are added: '#all_lines',
- *   '#php_lines', '#allphp_lines', '#html_lines', '#quote_lines',
- *   '#doublequote_lines', '#comment_lines'. Their names should be
- *   self explanatory.
+ *   trailing newlines. The following array indices are added:
+ *     '#all_array_lines', '#php_array_lines', '#allphp_array_lines',
+ *     '#html_array_lines', '#quote_array_lines', '#doublequote_array_lines',
+ *     '#comment_array_lines', and #all_lines.
+ *   The _array_ variants are multidimensional arrays, the first index for
+ *   the line number, and the second index for each occurance within the line.
+ *   #all_lines is a simple array, with each line from the file as an index.
  * @return
  *   Integer 1 if success.
  */
@@ -1043,6 +1046,7 @@ function _coder_read_and_parse_file(&$coder_args) {
     $in_heredoc_html = '';
     $heredoc = '';
     $all_lines = array();
+    $full_lines = array();
     $php_lines = array();
     $allphp_lines = array();
     $html_lines = array();
@@ -1053,8 +1057,11 @@ function _coder_read_and_parse_file(&$coder_args) {
     $this_php_lines = '';
     $this_allphp_lines = '';
     $this_html_lines = '';
-    $this_quote_lines = '';
-    $this_doublequote_lines = '';
+    $this_quote_lines = array('');
+    $this_quote_index = -1;
+    $this_quote_sep = FALSE;
+    $this_doublequote_lines = array('');
+    $this_doublequote_index = -1;
     $this_comment_lines = '';
 
     // Parse the file:
@@ -1077,25 +1084,38 @@ function _coder_read_and_parse_file(&$coder_args) {
         // Remove blank lines now, so we avoid processing them over-and-over.
         if ($this_all_lines != '') {
           if (trim($this_all_lines, "\r\n") != '') {
-            $all_lines[$lineno] = $this_all_lines;
+            $all_lines[$lineno] = array($this_all_lines);
+            $full_lines[$lineno] = $this_all_lines;
           }
           if (trim($this_php_lines, "\r\n") != '') {
-            $php_lines[$lineno] = $this_php_lines;
+            $php_lines[$lineno] = array($this_php_lines);
           }
           if (trim($this_allphp_lines, "\r\n") != '') {
-            $allphp_lines[$lineno] = $this_allphp_lines;
+            $allphp_lines[$lineno] = array($this_allphp_lines);
           }
           if (trim($this_html_lines, "\r\n") != '') {
-            $html_lines[$lineno] = $this_html_lines;
+            $html_lines[$lineno] = array($this_html_lines);
           }
-          if (trim($this_quote_lines, "\r\n") != '') {
-            $quote_lines[$lineno] = $this_quote_lines;
+          $quotes = array();
+          foreach ($this_quote_lines as $quote_line) {
+            if (trim($quote_line, "\r\n") != '') {
+              $quotes[] = $quote_line;
+            }
           }
-          if (trim($this_doublequote_lines, "\r\n") != '') {
-            $doublequote_lines[$lineno] = $this_doublequote_lines;
+          if (count($quotes)) {
+            $quote_lines[$lineno] = $quotes;
+          }
+          $quotes = array();
+          foreach ($this_doublequote_lines as $quote_line) {
+            if (trim($quote_line, "\r\n") != '') {
+              $quotes[] = $quote_line;
+            }
+          }
+          if (count($quotes)) {
+            $doublequote_lines[$lineno] = $quotes;
           }
           if (trim($this_comment_lines, "\r\n") != '') {
-            $comment_lines[$lineno] = $this_comment_lines;
+            $comment_lines[$lineno] = array($this_comment_lines);
           }
         }
 
@@ -1105,8 +1125,11 @@ function _coder_read_and_parse_file(&$coder_args) {
         $this_php_lines = '';
         $this_allphp_lines = '';
         $this_html_lines = '';
-        $this_quote_lines = '';
-        $this_doublequote_lines = '';
+        $this_quote_lines = array('');
+        $this_doublequote_lines = array('');
+        $this_quote_index = -1;
+        $this_quote_sep = FALSE;
+        $this_doublequote_index = -1;
         $this_comment_lines = '';
         $beginning_of_line = 1;
         continue;
@@ -1133,9 +1156,9 @@ function _coder_read_and_parse_file(&$coder_args) {
             $in_quote_html = '>';
           }
           if ($in_quote) {
-            $this_quote_lines .= $char;
+            $this_quote_lines[$this_quote_index] .= $char;
             if ($in_quote == '"') {
-              $this_doublequote_lines .= $char;
+              $this_doublequote_lines[$this_doublequote_index] .= $char;
             }
             if ($in_quote_html) {
               $this_html_lines .= $char;
@@ -1189,11 +1212,27 @@ function _coder_read_and_parse_file(&$coder_args) {
 
         else {
           switch ($char) {
+            case ',':
+            case ')':
+            case '(':
+              // Look for separators which force a new quote string.
+              if ($this_quote_index < 0 || $this_quote_lines[$this_quote_index]) {
+                $this_quote_sep = TRUE;
+              }
+              break;
+
             case '\'':
             case '"':
               if ($content[$pos - 1] != '\\') {
                 $this_php_lines .= $char;
                 $in_quote = $char;
+                if ($this_quote_sep) {
+                  $this_quote_index ++;
+                  if ($char == '"') {
+                    $this_doublequote_index ++;
+                  }
+                }
+                $this_quote_sep = FALSE;
               }
               break;
 
@@ -1270,35 +1309,49 @@ function _coder_read_and_parse_file(&$coder_args) {
     }
 
     if (trim($this_all_lines) != '') {
-      $all_lines[$lineno] = $this_all_lines;
+      $all_lines[$lineno] = array($this_all_lines);
+      $full_lines[$lineno] = $this_all_lines;
     }
     if (trim($this_php_lines) != '') {
-      $php_lines[$lineno] = $this_php_lines;
+      $php_lines[$lineno] = array($this_php_lines);
     }
     if (trim($this_allphp_lines) != '') {
-      $allphp_lines[$lineno] = $this_allphp_lines;
+      $allphp_lines[$lineno] = array($this_allphp_lines);
     }
     if (trim($this_html_lines) != '') {
-      $html_lines[$lineno] = $this_html_lines;
+      $html_lines[$lineno] = array($this_html_lines);
     }
-    if (trim($this_quote_lines) != '') {
-      $quote_lines[$lineno] = $this_quote_lines;
+    $quotes = array();
+    foreach ($this_quote_lines as $quote_line) {
+      if (trim($quote_line, "\r\n") != '') {
+        $quotes[] = $quote_line;
+      }
     }
-    if (trim($this_doublequote_lines) != '') {
-      $doublequote_lines[$lineno] = $this_doublequote_lines;
+    if (count($quotes)) {
+      $quote_lines[$lineno] = $quotes;
+    }
+    $quotes = array();
+    foreach ($this_doublequote_lines as $quote_line) {
+      if (trim($quote_line, "\r\n") != '') {
+        $quotes[] = $quote_line;
+      }
+    }
+    if (count($quotes)) {
+      $doublequote_lines[$lineno] = $quotes;
     }
     if (trim($this_comment_lines) != '') {
-      $comment_lines[$lineno] = $this_comment_lines;
+      $comment_lines[$lineno] = array($this_comment_lines);
     }
 
     // Add the files lines to the arguments.
-    $coder_args['#all_lines'] = $all_lines;
-    $coder_args['#php_lines'] = $php_lines;
-    $coder_args['#allphp_lines'] = $allphp_lines;
-    $coder_args['#html_lines'] = $html_lines;
-    $coder_args['#quote_lines'] = $quote_lines;
-    $coder_args['#doublequote_lines'] = $doublequote_lines;
-    $coder_args['#comment_lines'] = $comment_lines;
+    $coder_args['#all_array_lines'] = $all_lines;
+    $coder_args['#php_array_lines'] = $php_lines;
+    $coder_args['#allphp_array_lines'] = $allphp_lines;
+    $coder_args['#html_array_lines'] = $html_lines;
+    $coder_args['#quote_array_lines'] = $quote_lines;
+    $coder_args['#doublequote_array_lines'] = $doublequote_lines;
+    $coder_args['#comment_array_lines'] = $comment_lines;
+    $coder_args['#all_lines'] = $full_lines;
     return 1;
   }
 }
@@ -1399,15 +1452,12 @@ function do_coder_review($coder_args, $review) {
       // Perform the review if above the user requested severity.
       $severity = _coder_severity(isset($rule['#severity']) ? $rule['#severity'] : '', $default_severity);
       if ($severity >= $coder_args['#severity']) {
-        if (isset($rule['#original'])) { // Deprecated.
-          $lines = $coder_args['#all_lines'];
-        }
-        elseif (isset($rule['#source'])) { // Values: all, html, comment, allphp or php.
-          $source = '#'. $rule['#source'] .'_lines';
+        if (isset($rule['#source'])) { // Values: all, html, comment, allphp or php.
+          $source = '#'. $rule['#source'] .'_array_lines';
           $lines = $coder_args[$source];
         }
         else {
-          $lines = $coder_args['#php_lines'];
+          $lines = $coder_args['#php_array_lines'];
         }
         if ($lines) {
           switch ($rule['#type']) {
@@ -1455,41 +1505,43 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
     $paren = 0;
     $not_regex = isset($rule['#not']) ? '/'. $rule['#not'] .'/'. $regexflags : '';
     $never_regex = isset($rule['#never']) ? '/'. $rule['#never'] .'/'. $regexflags : '';
-    foreach ($lines as $lineno => $line) {
-      // Some rules apply only within certain functions.
-      if ($function_regex || $function_not_regex) {
-        if (preg_match('/function (\w+)\(/', $line, $match)) {
-          $current_function = $match[1];
-        }
-        if (preg_match('/([{}])/', $line, $match)) {
-          $paren += ($match[0] == '{') ? 1 : -1;
-        }
-        if ($paren < 0 || $current_function == ''
-            || ($function_regex && !preg_match($function_regex, $current_function))
-            || ($function_not_regex && preg_match($function_not_regex, $current_function))
-           ) {
-          continue;
-        }
-      }
-
-      if (preg_match($regex, $line, $matches)) {
-        // Don't match some regex's.
-        if ($not_regex) {
-          foreach ($matches as $match) {
-            if (preg_match($not_regex, $match)) {
-              continue 2;
-            }
+    foreach ($lines as $lineno => $line_array) {
+      foreach ($line_array as $line) {
+        // Some rules apply only within certain functions.
+        if ($function_regex || $function_not_regex) {
+          if (preg_match('/function (\w+)\(/', $line, $match)) {
+            $current_function = $match[1];
           }
-        }
-        if ($never_regex) {
-          if (preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
+          if (preg_match('/([{}])/', $line, $match)) {
+            $paren += ($match[0] == '{') ? 1 : -1;
+          }
+          if ($paren < 0 || $current_function == ''
+              || ($function_regex && !preg_match($function_regex, $current_function))
+              || ($function_not_regex && preg_match($function_not_regex, $current_function))
+             ) {
             continue;
           }
         }
 
-        $line = $coder_args['#all_lines'][$lineno];
-        $severity_name = _coder_severity_name($coder_args, $review, $rule);
-        _coder_error($results, $rule, $severity_name, $lineno, $line);
+        if (preg_match($regex, $line, $matches)) {
+          // Don't match some regex's.
+          if ($not_regex) {
+            foreach ($matches as $match) {
+              if (preg_match($not_regex, $match)) {
+                continue 2;
+              }
+            }
+          }
+          if ($never_regex) {
+            if (preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
+              continue;
+            }
+          }
+
+          $line = $coder_args['#all_lines'][$lineno];
+          $severity_name = _coder_severity_name($coder_args, $review, $rule);
+          _coder_error($results, $rule, $severity_name, $lineno, $line);
+        }
       }
     }
   }
@@ -1529,11 +1581,13 @@ function _coder_error(&$results, $rule, $severity_name, $lineno = -1, $line = ''
  */
 function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
   if (isset($rule['#value'])) {
-    foreach ($lines as $lineno => $line) {
-      if (_coder_search_string($line, $rule)) {
-        $line = $coder_args['#all_lines'][$lineno];
-        $severity_name = _coder_severity_name($coder_args, $review, $rule);
-        _coder_error($results, $rule, $severity_name, $lineno, $line);
+    foreach ($lines as $lineno => $line_array) {
+      foreach ($line_array as $line) {
+        if (_coder_search_string($line, $rule)) {
+          $line = $coder_args['#all_lines'][$lineno];
+          $severity_name = _coder_severity_name($coder_args, $review, $rule);
+          _coder_error($results, $rule, $severity_name, $lineno, $line);
+        }
       }
     }
   }
@@ -1547,9 +1601,11 @@ function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
  */
 function do_coder_review_grep_invert(&$coder_args, $review, $rule, $lines, &$results) {
   if (isset($rule['#value'])) {
-    foreach ($lines as $lineno => $line) {
-      if (_coder_search_string($line, $rule)) {
-        return;
+    foreach ($lines as $lineno => $line_array) {
+      foreach ($line_array as $line) {
+        if (_coder_search_string($line, $rule)) {
+          return;
+        }
       }
     }
     $severity_name = _coder_severity_name($coder_args, $review, $rule);
