@@ -16,7 +16,7 @@ class CoderTestCase extends DrupalWebTestCase {
     }
   }
 
-  function runTest($code, $type, $severity = SEVERITY_MINOR) {
+  function runTest($code, $severity = SEVERITY_MINOR) {
     $reviews = coder_reviews();
     $ext = variable_get('coder_php_ext', array('inc', 'php', 'install', 'test'));
     $coder_args = array(
@@ -27,14 +27,14 @@ class CoderTestCase extends DrupalWebTestCase {
       '#include_extensions' => _coder_get_reviews_extensions($ext, $reviews),
     );
     _coder_read_and_parse_file($coder_args);
-    $results = do_coder_review($coder_args, $reviews[$type]);
+    $results = do_coder_review($coder_args, $reviews[$this->review_name]);
     unset($results['#stats']);
     return $results;
   }
 
   protected function assertCoderPass($code) {
     // Run the coder review on the code snippet.
-    $results = $this->runTest($code, $this->review_name);
+    $results = $this->runTest($code);
 
     // Display the test results.
     $message = 'Pass:'. str_replace(array('%s', '%d'), array('%%s', '%%d'), $code);
@@ -48,7 +48,7 @@ class CoderTestCase extends DrupalWebTestCase {
 
   protected function assertCoderFail($code) {
     // Run the coder review on the code snippet.
-    $results = $this->runTest($code, $this->review_name);
+    $results = $this->runTest($code);
 
     // Display the test results.
     $message = 'Fail:'. str_replace(array('%s', '%d'), array('%%s', '%%d'), $code);
