@@ -206,9 +206,10 @@ function _coder_i18n_l_without_t() {
 
 function _coder_i18n_in_install_l_without_st() {
   return array(
-    '#warning' => t('The $text argument to !l() should be enclosed within !st() so that it is translatable from within the install.',
+    '#warning' => t('The $text argument to !l() should be enclosed within !get_t() or !st() so that it is translatable from within the install.',
       array(
         '!l' => theme('drupalapi', 'l'),
+        '!get_t' => theme('drupalapi', 'get_t'),
         '!st' => theme('drupalapi', 'st'),
       )
     ),
