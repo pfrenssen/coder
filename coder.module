@@ -1216,7 +1216,7 @@ function _coder_read_and_parse_file(&$coder_args) {
             case ')':
             case '(':
               // Look for separators which force a new quote string.
-              if ($this_quote_index < 0 || $this_quote_lines[$this_quote_index]) {
+              if ($this_quote_index < 0 || !empty($this_quote_lines[$this_quote_index])) {
                 $this_quote_sep = TRUE;
               }
               break;
@@ -1227,9 +1227,9 @@ function _coder_read_and_parse_file(&$coder_args) {
                 $this_php_lines .= $char;
                 $in_quote = $char;
                 if ($this_quote_sep) {
-                  $this_quote_index ++;
+                  $this_quote_lines[++ $this_quote_index] = '';
                   if ($char == '"') {
-                    $this_doublequote_index ++;
+                    $this_doublequote_lines[++ $this_doublequote_index] = '';
                   }
                 }
                 $this_quote_sep = FALSE;
