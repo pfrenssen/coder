@@ -350,7 +350,6 @@ function _coder_settings_form($settings, &$system, &$files) {
     }
     asort($system_links);
 
-
     // Display what to review options.
     $form['coder_what'] = array(
       '#type' => 'fieldset',
@@ -369,10 +368,11 @@ function _coder_settings_form($settings, &$system, &$files) {
       '#default_value' => isset($settings['coder_core']) ? $settings['coder_core'] : 0,
       '#title' => t('core files (php, modules, and includes)'),
     );
+    $ext = variable_get('coder_php_ext', array('inc', 'php', 'install', 'test'));
     $form['coder_what']['coder_includes'] = array(
       '#type' => 'checkbox',
       '#default_value' => isset($settings['coder_includes']) ? $settings['coder_includes'] : 0,
-      '#title' => t('include files (.inc, .php, .test, .js, and .install files)'),
+      '#title' => t('include files (@ext)', array('@ext' => implode(' | ', $ext))),
     );
     $form['coder_what']['coder_includes_exclusion_fieldset'] = array(
       '#type' => 'fieldset',
@@ -653,6 +653,25 @@ function coder_page_form_submit($form, &$form_state) {
 }
 
 /**
+ * Return the extensions used by the reviews, that aren's part of the default extensions.
+ */
+function _coder_get_reviews_extensions($defaults, $reviews) {
+  $extensions = array();
+  foreach ($reviews as $review) {
+    foreach ($review['#rules'] as $rule) {
+      if (isset($rule['#filename'])) {
+        foreach ($rule['#filename'] as $ext) {
+          if (!in_array($ext, $defaults) && !in_array($ext, $extensions)) {
+            $extensions[] = $ext;
+          }
+        }
+      }
+    }
+  }
+  return $extensions;
+}
+
+/**
  * Implementation of hook_form().
  *
  * Implements coder's main form, in which a user can select reviews and
@@ -723,6 +742,11 @@ function coder_page_form($form_state) {
 
     // Loop through the selected modules and themes.
     if (isset($system)) {
+      // Determine which file extensions to include, based on the rules.
+      $php_extensions = variable_get('coder_php_ext', array('inc', 'php', 'install', 'test'));
+      $include_extensions = _coder_get_reviews_extensions($php_extensions, $reviews);
+      $includes = array_merge($php_extensions, $include_extensions);
+
       // Used to avoid duplicate includes.
       $dups = array();
       $stats = array();
@@ -744,6 +768,8 @@ function coder_page_form($form_state) {
             '#severity' => $settings['coder_severity'],
             '#filename' => $filename,
             '#patch' => $patch,
+            '#php_extensions' => $php_extensions,
+            '#include_extensions' => $include_extensions,
           );
           $results = do_coder_reviews($coder_args);
           $stats[$filename] = $results['#stats'];
@@ -778,7 +804,8 @@ function coder_page_form($form_state) {
                   $coder_args['#php_minor'] = 1;
                 }
                 $dups[$path] = 1;
-                $includefiles = drupal_system_listing('.*\.(inc|php|js|install|test)$', dirname($filename), 'filename', 0);
+                $regex = '\.('. implode('|', $includes) .')$';
+                $includefiles = drupal_system_listing($regex, dirname($filename), 'filename', 0);
                 $offset = strpos($filename, dirname($filename));
                 $stats[$filename]['#includes'] = _coder_page_form_includes($form, $coder_args, $name, $includefiles, $offset, $coder_includes_exclusions);
               }
@@ -1010,6 +1037,23 @@ function do_coder_reviews($coder_args) {
  *   Integer 1 if success.
  */
 function _coder_read_and_parse_file(&$coder_args) {
+  // If this isn't a php file, then don't try to parse it.
+  $regex = '/\.('. implode('|', array_merge(array('module'), $coder_args['#php_extensions'])) .')$/';
+  if (!preg_match($regex, $coder_args['#filename'])) {
+    if ((($filepath = realpath($coder_args['#filename'])) && file_exists($filepath))) {
+      $full_lines = file($filepath);
+      if ($full_lines[0] != '<?php') {
+        foreach ($full_lines as $lineno => $line) {
+          if (($line = trim($line, "\r\n")) != '') {
+            $all_lines[$lineno] = $line;
+          }
+        }
+        $coder_args['#all_lines'] = $all_lines;
+        return 1;
+      }
+    }
+  }
+
   // Get the path to the module file.
   if (!empty($coder_args['#patch']) || !empty($coder_args['#test']) || (($filepath = realpath($coder_args['#filename'])) && file_exists($filepath))) {
     $in_php = 0;
@@ -1018,7 +1062,7 @@ function _coder_read_and_parse_file(&$coder_args) {
 
     if (!empty($coder_args['#patch'])) {
       $content = $coder_args['#patch'];
-      if (preg_match("/^\s*\*/", $content)) {
+      if (preg_match('/^\s*\*/', $content)) {
         $in_comment = '*';
       }
       else {
@@ -1434,16 +1478,17 @@ function do_coder_review($coder_args, $review) {
     foreach ($review['#rules'] as $rule) {
       // Ignore rules that don't match the file extension.
       $filename = empty($coder_args['#patch']) ? $coder_args['#filename'] : 'coder.patch';
-      if (!empty($rule['#filename'])) {
-        $regex = '/'. $rule['#filename'] .'/i';
+      if ($filename_includes = isset($rule['#filename']) ? $rule['#filename'] : (isset($rule['#filename-not']) ? $coder_args['#php_extensions'] : null)) {
+        $regex = '/\.('. implode('|', $filename_includes) .')$/i';
         if (!preg_match($regex, $filename, $matches)) {
           continue;
         }
       }
+
       // Ignore rules that do match the file extension, javascript files are excluded by default.
-      $not = isset($rule['#filename-not']) ? $rule['#filename-not'] : (empty($rule['#filename']) || !preg_match('/\\\.js\$/i', $rule['#filename'], $matches) ? '\.js$' : null);
+      $not = isset($rule['#filename-not']) ? $rule['#filename-not'] : (isset($rule['#filename']) ? null : $coder_args['#include_extensions']);
       if ($not) {
-        $regex = '/'. $not .'/i';
+        $regex = '/\.('. implode('|', $not) .')$/i';
         if (preg_match($regex, $filename, $matches)) {
           continue;
         }
@@ -1457,23 +1502,21 @@ function do_coder_review($coder_args, $review) {
           $lines = $coder_args[$source];
         }
         else {
-          $lines = $coder_args['#php_array_lines'];
+          $lines = isset($coder_args['#php_array_lines']) ? $coder_args['#php_array_lines'] : array();
         }
-        if ($lines) {
-          switch ($rule['#type']) {
-            case 'regex':
-              do_coder_review_regex($coder_args, $review, $rule, $lines, $results);
-              break;
-            case 'grep':
-              do_coder_review_grep($coder_args, $review, $rule, $lines, $results);
-              break;
-            case 'grep_invert':
-              do_coder_review_grep_invert($coder_args, $review, $rule, $lines, $results);
-              break;
-            case 'callback':
-              do_coder_review_callback($coder_args, $review, $rule, $lines, $results);
-              break;
-          }
+        switch ($rule['#type']) {
+          case 'regex':
+            do_coder_review_regex($coder_args, $review, $rule, $lines, $results);
+            break;
+          case 'grep':
+            do_coder_review_grep($coder_args, $review, $rule, $lines, $results);
+            break;
+          case 'grep_invert':
+            do_coder_review_grep_invert($coder_args, $review, $rule, $lines, $results);
+            break;
+          case 'callback':
+            do_coder_review_callback($coder_args, $review, $rule, $lines, $results);
+            break;
         }
       }
     }
@@ -1731,13 +1774,16 @@ function coder_simpletest() {
  * Helper function to run the review on the code snippet.
  */
 function coder_test($code, $type, $severity = SEVERITY_MINOR) {
+  $reviews = coder_reviews();
+  $ext = variable_get('coder_php_ext', array('inc', 'php', 'install', 'test'));
   $coder_args = array(
     '#severity' => $severity,
     '#filename' => 'snippet',
     '#test' => $code,
+    '#php_extensions' => $ext,
+    '#include_extensions' => _coder_get_reviews_extensions($ext, $reviews),
   );
   _coder_read_and_parse_file($coder_args);
-  $reviews = coder_reviews();
   $results = do_coder_review($coder_args, $reviews[$type]);
   unset($results['#stats']);
   return $results;
