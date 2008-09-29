@@ -1770,25 +1770,6 @@ function coder_simpletest() {
   return array_keys(file_scan_directory(drupal_get_path('module', 'coder') .'/tests', '\.test'));
 }
 
-/**
- * Helper function to run the review on the code snippet.
- */
-function coder_test($code, $type, $severity = SEVERITY_MINOR) {
-  $reviews = coder_reviews();
-  $ext = variable_get('coder_php_ext', array('inc', 'php', 'install', 'test'));
-  $coder_args = array(
-    '#severity' => $severity,
-    '#filename' => 'snippet',
-    '#test' => $code,
-    '#php_extensions' => $ext,
-    '#include_extensions' => _coder_get_reviews_extensions($ext, $reviews),
-  );
-  _coder_read_and_parse_file($coder_args);
-  $results = do_coder_review($coder_args, $reviews[$type]);
-  unset($results['#stats']);
-  return $results;
-}
-
 // Theming functions
 
 /**
