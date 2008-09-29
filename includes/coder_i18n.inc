@@ -65,7 +65,7 @@ function coder_i18n_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]watchdog\s*\(\s*'. $argex .'\s*,\s*(t|st|get_t)\(',
+      '#value' => '[\s\(]watchdog\s*\(\s*'. $argex .'\s*,\s*(t|st)\(',
       '#warning_callback' => '_coder_i18n_watchdog_with_t',
     ),
     // @NOTE: Add duplicate of the 6.x upgrade rule.
@@ -78,8 +78,8 @@ function coder_i18n_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(](t|st|get_t)\s*\(\s*[\'"](\s+|[^\)]*?\s+[\'"]\s*[,\)])',
-      '#not' => '[\s\(](t|st|get_t)\s*\(\s*[\'"][^\s].*?([\'"]\s+[^,\)])*.*[^\s][\'"][,\)]',
+      '#value' => '[\s\(](t|st)\s*\(\s*[\'"](\s+|[^\)]*?\s+[\'"]\s*[,\)])',
+      '#not' => '[\s\(](t|st)\s*\(\s*[\'"][^\s].*?([\'"]\s+[^,\)])*.*[^\s][\'"][,\)]',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_i18n_space_starts_or_ends_t',
     ),
@@ -206,10 +206,9 @@ function _coder_i18n_l_without_t() {
 
 function _coder_i18n_in_install_l_without_st() {
   return array(
-    '#warning' => t('The $text argument to !l() should be enclosed within !get_t() or !st() so that it is translatable from within the install.',
+    '#warning' => t('The $text argument to !l() should be enclosed within !st() so that it is translatable from within the install.',
       array(
         '!l' => theme('drupalapi', 'l'),
-        '!get_t' => theme('drupalapi', 'get_t'),
         '!st' => theme('drupalapi', 'st'),
       )
     ),
@@ -218,9 +217,8 @@ function _coder_i18n_in_install_l_without_st() {
 
 function _coder_i18n_in_install_t() {
   return array(
-    '#warning' => t('Use !get_t() or !st() instead of !t() in !hook_install(), !hook_uninstall() and !hook_update_N()',
+    '#warning' => t('Use !st() instead of !t() in !hook_install(), !hook_uninstall() and !hook_update_N()',
       array(
-        '!get_t' => theme('drupalapi', 'get_t'),
         '!st' => theme('drupalapi', 'st'),
         '!t' => theme('drupalapi', 't'),
         '!hook_install' => theme('drupalapi', 'hook_install'),
