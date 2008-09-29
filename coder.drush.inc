@@ -114,7 +114,7 @@ function _coder_drush_is_patch_arg(&$arg) {
 }
 
 function theme_drush_coder($name, $filename, $results) {
-  if (!_coder_drush_is_option('summary') && !empty($results) && (count($results) > 1 || !_coder_drush_is_option('no-empty'))) {
+  if (!_coder_drush_is_option('summary') && !empty($results) && ((count($results) && !isset($results[0])) || !_coder_drush_is_option('no-empty'))) {
     drush_print($filename .":\n ". implode("\n ", $results) ."\n");
   }
 }
