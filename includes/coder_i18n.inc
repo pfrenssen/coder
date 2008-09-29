@@ -65,7 +65,7 @@ function coder_i18n_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]watchdog\s*\(\s*'. $argex .'\s*,\s*s?t\(',
+      '#value' => '[\s\(]watchdog\s*\(\s*'. $argex .'\s*,\s*(t|st|get_t)\(',
       '#warning_callback' => '_coder_i18n_watchdog_with_t',
     ),
     // @NOTE: Add duplicate of the 6.x upgrade rule.

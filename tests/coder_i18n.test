@@ -44,5 +44,9 @@ class CoderI18NTest extends CoderTestCase {
     $this->assertCoderFail("  \$var = t('Your rating ') . t(' fail');");
     $this->assertCoderFail("  \$description[] = t('until !until ', array('!until' => date_format_date(\$until, 'custom', \$format)));");
     $this->assertCoderFail("  \$description[] = t('except !dates ', array('!dates' => implode(', ', \$values)));");
+    $this->assertCoderPass("  watchdog('name', 'Your message.');");
+    $this->assertCoderFail("  watchdog('name', t('Your message.'));");
+    $this->assertCoderFail("  watchdog('name', st('Your message.'));");
+    $this->assertCoderFail("  watchdog('name', get_t('Your message.'));");
   }
 }
