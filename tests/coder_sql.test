@@ -41,4 +41,10 @@ class CoderSQLTest extends CoderTestCase {
     $this->assertCoderFail('  $sql = "UPDATE {foo} SET nid=\'1\', title=`abc`";');
     $this->assertCoderFail('  $sql = "DELETE FROM {foo} WHERE nid=\'1\' AND title=`abc`";');
   }
+
+  function testSQLNotEquals() {
+    $this->assertCoderFail('  $sql = "SELECT * FROM {node} WHERE nid != 10";');
+    $this->assertCoderPass('  $sql = "SELECT * FROM {node} WHERE nid = 10";');
+    $this->assertCoderPass('  $sql = "SELECT * FROM {node} WHERE nid <> 10";');
+  }
 }
