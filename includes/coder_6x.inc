@@ -151,7 +151,7 @@ function coder_6x_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '_(validate|submit)\s*\(\s*\$form\s*,\s*\$form_state',
+      '#value' => '_(validate|submit)\s*\(\s*\$form\s*,\s*\$form_state\s*\)[^;]',
       '#warning_callback' => '_coder_6x_form_validate_and_submit_warning',
     ),
     array(

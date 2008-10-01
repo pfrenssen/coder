@@ -27,6 +27,7 @@ class CoderUpgrade6xTest extends CoderTestCase {
     $this->assertCoderPass('  function myform_prerender($form) {');
     $this->assertCoderFail('  function myform_validate($form_id, $form_values) {');
     $this->assertCoderFail('  function myform_validate($form, $form_state) {');
+    $this->assertCoderPass('  function myform_validate($form, $form_state);');
     $this->assertCoderPass('  function myform_validate($form, &$form_state) {');
     $this->assertCoderFail('  function myform_submit($form_id, $form_values) {');
     $this->assertCoderFail('  function myform_submit($form, $form_state) {');
