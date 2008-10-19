@@ -144,6 +144,11 @@ function coder_style_reviews() {
       '#case-sensitive' => TRUE,
       '#warning' => 'Use uppercase for PHP constants, e.g. NULL, TRUE, FALSE',
     ),
+    array(
+      '#type' => 'regex',
+      '#value' => '\s+else\s+if\s*\(',
+      '#warning' => 'Use "elseif" in place of "else if"',
+    ),
   );
   $review = array(
     '#title' => t('Drupal Coding Standards'),

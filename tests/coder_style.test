@@ -67,6 +67,8 @@ class CoderStyleTest extends CoderTestCase {
     $this->assertCoderFail('  }else {');
     $this->assertCoderFail('  if ($a == 1) { $b = 2;');
     $this->assertCoderFail('  if ($a == 1) {$b = 2;');
+    $this->assertCoderFail('  else if ($a == 1) {');
+    $this->assertCoderPass('  elseif ($a == 1) {');
   }
 
   function testStyleStringConcatentation() {
