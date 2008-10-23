@@ -92,12 +92,13 @@ function coder_style_reviews() {
       '#type' => 'regex',
       '#value' => '(?-i)(function\s+|\$)(([a-z]+[A-Z]+([a-z]*[A-Z]*)*)|([A-Z]+[a-z]+([A-Z]*[a-z]*)*))',
       '#warning' => 'do not use mixed case (camelCase), use lower case and _',
+      '#filename-not' => array('test'),
     ),
     array(
       '#type' => 'regex',
       '#value' => '\s(stdclass)\s*\(',
       '#not' => '^(?-i)stdClass$',
-      '#warning' => 'use stdClass caseCapitalization, it\'s the one exception to the mixed case style standard',
+      '#warning' => "use stdClass caseCapitalization, it's the one exception to the mixed case style standard",
     ),
     array(
       '#type' => 'regex',
