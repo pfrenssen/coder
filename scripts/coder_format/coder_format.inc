@@ -458,13 +458,8 @@ function coder_format_string($code = '') {
           break;
 
         case '.':
-          if (substr(rtrim($result), -1) == "'" || substr(rtrim($result), -1) == '"') {
-            // Write string concatenation character directly after strings.
-            $result = rtrim($result) . $text .' ';
-          }
-          else {
-            $result = rtrim($result) .' '. $text .' ';
-          }
+          // Starting from 7.x, string concatenations follow PEAR's standard.
+          $result = rtrim($result) . ' ' . $text . ' ';
           break;
 
         case '=':
@@ -515,10 +510,6 @@ function coder_format_string($code = '') {
           // Toggle quote if the char is not escaped.
           if (rtrim($result) != "\\") {
             $in_quote = $in_quote ? false : true;
-          }
-          if (substr($result, -3) == ' . ') {
-            // Write string concatenation character directly before strings.
-            $result = rtrim($result);
           }
           $result .= $text;
           break;
@@ -603,17 +594,6 @@ function coder_format_string($code = '') {
           break;
 
         case T_CONSTANT_ENCAPSED_STRING:
-          // Handle special string concatenation case: 'bar' . 'baz'
-          $c = substr($result, -3);
-          if ($c == '". ' || $c == '\'. ') {
-            $result = rtrim($result, ' .');
-            $result .= ' . ';
-          }
-          // Handle special string concatenation case: 'bar'. $foo
-          elseif (substr($result, -2) == '. ') {
-            $result = rtrim($result);
-          }
-          // Move on to T_STRING / T_VARIABLE.
         case T_STRING:
         case T_VARIABLE:
           // No space after object operator ($foo->bar) and error suppression (@function()).

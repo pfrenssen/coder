@@ -4,8 +4,9 @@ Coder_format x.x-x.x, xxxx-xx-xx
 --------------------------------
 
 
-Coder_format 6.x-1.x, xxxx-xx-xx
+Coder_format 7.x-1.x, xxxx-xx-xx
 --------------------------------
+#246568 by sun: Updated for new string concatenation standard.
 #272089 by sun: Fixed outdated installation instructions for coder_format tests.
 #208767 by ezyang, sun: Improved coder_format to re-format Drupal 6 core without
   wrong formattings
