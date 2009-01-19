@@ -709,7 +709,8 @@ function coder_format_string($code = '') {
           // Write break to a new line.
           $result = rtrim($result);
           coder_br($result);
-          $result .= trim($text);
+          // Trailing space needed for 'break 3;'.
+          $result .= trim($text) . ' ';
           if ($in_case && !$braces_in_case[$switches]) {
             --$_coder_indent;
             $in_case = FALSE;
