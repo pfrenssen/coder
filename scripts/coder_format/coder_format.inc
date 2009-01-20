@@ -596,9 +596,15 @@ function coder_format_string($code = '') {
         case T_CONSTANT_ENCAPSED_STRING:
         case T_STRING:
         case T_VARIABLE:
+          // Boolean constants (TRUE, FALSE, NULL) are T_STRINGs, but must be
+          // written uppercase.
+          $text = trim($text);
+          if ($text == 'true' || $text == 'false' || $text == 'null') {
+            $text = strtoupper($text);
+          }
           // No space after object operator ($foo->bar) and error suppression (@function()).
           if ($in_object || $in_at) {
-            $result    = rtrim($result) . trim($text);
+            $result    = rtrim($result) . $text;
             $in_object = false;
             $in_at     = false;
           }
@@ -607,9 +613,14 @@ function coder_format_string($code = '') {
             if (!in_array($lasttoken[0], array(T_ARRAY_CAST, T_BOOL_CAST, T_DOUBLE_CAST, T_INT_CAST, T_OBJECT_CAST, T_STRING_CAST, T_UNSET_CAST))) {
               coder_add_space($result);
             }
-            $result .= trim($text);
+            $result .= $text;
           }
           $in_variable = true;
+          break;
+
+        case T_CONST:
+          // Constants are written uppercase.
+          $result = rtrim($result) . strtoupper(trim($text));
           break;
 
         case T_ENCAPSED_AND_WHITESPACE:
