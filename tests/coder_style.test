@@ -78,12 +78,21 @@ class CoderStyleTest extends CoderTestCase {
   }
 
   function testStyleStringConcatentation() {
-    $this->assertCoderFail('  if ($file = file_check_upload($fieldname . "_upload")) {');
-    $this->assertCoderPass('  $v .= \'bugger\';');
-    $this->assertCoderPass('  $a = $v .\'bugger\';');
-    $this->assertCoderPass('  $a = $v ."bugger";');
-    $this->assertCoderFail('  $a = $v.\'bugger\';');
-    $this->assertCoderFail('  $a = $some_func().\'bugger\';');
+    $this->assertCoderPass('  if ($file = file_check_upload($fieldname . "_upload")) {');
+    $this->assertCoderFail('  if ($file = file_check_upload($fieldname ."_upload")) {');
+    $this->assertCoderPass('  $v .= \'string\';');
+    $this->assertCoderPass('  $a = $v . \'string\';');
+    $this->assertCoderPass('  $a = $v . "string";');
+    $this->assertCoderPass('  $a = "string" . $v;');
+    $this->assertCoderPass('  $a = \'string\' . $v;');
+    $this->assertCoderFail('  $a = "string". $v;');
+    $this->assertCoderFail('  $a = \'string\'. $v;');
+    $this->assertCoderFail('  $a = $v. \'string\';');
+    $this->assertCoderFail('  $a = $v. "string";');
+    $this->assertCoderFail('  $a = $v .\'string\';');
+    $this->assertCoderFail('  $a = $v ."string";');
+    $this->assertCoderFail('  $a = $v.\'string\';');
+    $this->assertCoderFail('  $a = $some_func(). \'string\';');
     $this->assertCoderPass('  $a = 1.0 * .1 * 1. * (0.1) * (1.) * (.1) * (1.0);');
   }
 

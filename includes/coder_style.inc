@@ -47,13 +47,8 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '(\.\'\'|\'\'\.|\.""|\."")',
-      '#warning' => 'String concatenation should be formatted with a space separating the operators (dot .) and a quote',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '([^\(\'\"\s0-9]\.|\.[^\)\'\"\=\s0-9])',
-      '#warning' => 'String concatenation should be formatted with a space separating the operators (dot .) and non-quote terms',
+      '#value' => '(\.\'\'|\'\'\.|\.""|""\.|[^\(\'\"\s0-9]\.|\.[^\)\'\"\=\s0-9])',
+      '#warning' => 'String concatenation should be formatted with a space separating the operators (dot .) and the surrounding terms',
     ),
     array(
       '#type' => 'regex',
