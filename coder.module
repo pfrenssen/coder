@@ -14,7 +14,7 @@
  *
  * Credit also to dries:
  * - http://cvs.drupal.org/viewcvs/drupal/drupal/scripts/code-style.pl
- */ 
+ */
 
 define('SEVERITY_MINOR', 1);
 define('SEVERITY_NORMAL', 5);
@@ -23,8 +23,8 @@ define('SEVERITY_CRITICAL', 9);
 /**
  * Implementation of hook_help().
  */
-function coder_help($page, $arg) { 
-  switch ($page) { 
+function coder_help($page, $arg) {
+  switch ($page) {
     case 'coder#disclaimer':
       return t('Coder provides helpful hints without false positives, but offers no guarantee for creating good code.  You are the final arbitrar.  If in doubt, read the Drupal documentation (see review links below and <a href="@api">api.drupal.org</a>).', array('@api' => 'http://api.drupal.org'));
     default :
