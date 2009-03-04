@@ -1,11 +1,17 @@
 <?php
-require_once(dirname(__FILE__) .'/coder_test_case.tinc');
+// $Id$
+
+/**
+ * @file
+ * Set of simpletests for the coding style standards review.
+ */
+require_once DRUPAL_ROOT . '/coder_test_case.tinc';
 
 class CoderStyleTest extends CoderTestCase {
   function __construct($id = NULL) {
     parent::__construct('style', $id);
   }
-  
+
   function getInfo() {
     return array(
       'name' => t('Coder Style Tests'),
@@ -67,6 +73,8 @@ class CoderStyleTest extends CoderTestCase {
     $this->assertCoderFail('  }else {');
     $this->assertCoderFail('  if ($a == 1) { $b = 2;');
     $this->assertCoderFail('  if ($a == 1) {$b = 2;');
+    $this->assertCoderFail('  else if ($a == 1) {');
+    $this->assertCoderPass('  elseif ($a == 1) {');
   }
 
   function testStyleStringConcatentation() {

@@ -1,0 +1,282 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Set of simpletests for the coder 5.x to 6.x api upgrade review.
+ */
+require_once DRUPAL_ROOT . '/coder_test_case.tinc';
+
+class CoderUpgrade6xTest extends CoderTestCase {
+  function __construct($id = NULL) {
+    parent::__construct('upgrade6x', $id);
+  }
+
+  function getInfo() {
+    return array(
+      'name' => t('Coder Upgrade 6.x Tests'),
+      'description' => t('Tests for the coder upgrade6x review.'),
+      'group' => t('Coder'),
+    );
+  }
+
+  function testUpgrade6x() {
+    $this->assertCoderFail('  function my_module_forms($args) {');
+    $this->assertCoderPass('  function my_module_forms($form_id, $args) {');
+    $this->assertCoderPass('  drupal_retrieve_form(\'testform\', $form_state);');
+    $this->assertCoderFail('  drupal_retrieve_form(\'testform\');');
+    $this->assertCoderPass('  drupal_retrieve_form($form_id, $form_state);');
+    $this->assertCoderFail('  drupal_retrieve_form($form_id);');
+    $this->assertCoderPass('  form_set_value($element, \'value\', $form_state);');
+    $this->assertCoderFail('  form_set_value($element, \'value\');');
+    $this->assertCoderFail('  function myform_prerender($form_id, $form) {');
+    $this->assertCoderPass('  function myform_prerender($form) {');
+    $this->assertCoderFail('  function myform_validate($form_id, $form_values) {');
+    $this->assertCoderFail('  function myform_validate($form, $form_state) {');
+    $this->assertCoderPass('  function myform_validate($form, $form_state);');
+    $this->assertCoderPass('  function myform_validate($form, &$form_state) {');
+    $this->assertCoderFail('  function myform_submit($form_id, $form_values) {');
+    $this->assertCoderFail('  function myform_submit($form, $form_state) {');
+    $this->assertCoderPass('  function myform_submit($form, &$form_state) {');
+    $this->assertCoderFail("  function myform_submit(\$form, &\$form_state) {\n  return \$foo;\n}");
+    $this->assertCoderFail("  function myform_submit(\$form, &\$form_state) {\n  return 'my/path';\n}");
+    $this->assertCoderFail("  function myform_submit(\$form, &\$form_state) {\n \$form['#submit']['newsubmit'] = array();\n}");
+    $this->assertCoderPass("  function myform_submit(\$form, &\$form_state) {\n \$form['#submit'][] = 'newsubmit';\n}");
+    $this->assertCoderFail('  function mymodule_form_alter($form_id, &$form) {');
+    $this->assertCoderPass('  function mymodule_form_alter(&$form, $form_state, $form_id) {');
+    $this->assertCoderFail('  $op = $form_values[\'op\'];');
+    $this->assertCoderFail('  $op = $form[\'op\'];');
+    $this->assertCoderFail("  function myform_submit() {\n  \$a = \$form_values['foo'];\n}");
+    $this->assertCoderFail("  function myform_submit() {\n  \$a = \$form['foo'];\n}");
+    $this->assertCoderFail("  function myform_validate() {\n  \$a = \$form_values['foo'];\n}");
+    $this->assertCoderFail("  function myform_validate() {\n  \$a = \$form['foo'];\n}");
+  }
+
+  function testUpgrade6xFAPI() {
+    $this->assertCoderFail('  $form[\'#base\'] = \'http://example.com\';');
+    $this->assertCoderFail('  \'#base\' => \'my_shared_form_id\',');
+    $this->assertCoderFail('  $form[\'#multistep\'] = TRUE;');
+    $this->assertCoderFail('  \'#multistep\' => TRUE,');
+    $this->assertCoderFail('  $form[\'#DANGEROUS_SKIP_CHECK\'] = TRUE;');
+    $this->assertCoderFail('  \'#DANGEROUS_SKIP_CHECK\' => TRUE,');
+    $this->assertCoderPass('  $form[\'#pre_render\'][] = \'my_render_function\';');
+    $this->assertCoderFail('  $form[\'#pre_render\'][\'my_render_function\'] = array();');
+    $this->assertCoderFail('  $form[\'#submit\'][\'my_submit_function\'] = array($param1, $param2);');
+    $this->assertCoderFail('  $form[\'#submit\'][\'my_validate_function\'] = array();');
+    $this->assertCoderFail('  $form[\'#validate\'][\'my_custom_validate\'] = array();');
+    $this->assertCoderPass('  $form[\'#validate\'][] = \'my_custom_validate\';');
+    $this->assertCoderFail("  function mymodule_elements() {\n  return array('my_custom_form_element' => array(\n    '#custom_property' => 'foo',\n    '#validate' => array('my_element_validate' => array()),\n  )\n);\n}");
+    $this->assertCoderPass("  function mymodule_elements() {\n  return array('my_custom_form_element' => array(\n    '#custom_property' => 'foo',\n    '#element_validate' => array('my_element_validate'),\n  );\n);\n}");
+    $this->assertCoderFail('  $form[\'abc\'] = array("#value" => t("Submit"));');
+  }
+
+  function testUpgrade6xMenu() {
+    $this->assertCoderPass("  function mymodule_menu() {\n  \$items = array();\n}");
+    $this->assertCoderFail("  function mymodule_menu() {\n  \$items[] = array();\n}");
+    $this->assertCoderFail("  function mymodule_menu() {\n  if (\$may_cache) {\n  }\n}");
+    $this->assertCoderFail("  function mymodule_menu() {\n  \$items['test'] = array('title' => t('my title'));\n}");
+    $this->assertCoderFail("  function mymodule_menu() {\n  \$items['test'] = array('description' => t('my description'));\n}");
+    $this->assertCoderPass("  function mymodule_menu() {\n  \$items['test'] = array('title' => 'my title');\n}");
+    $this->assertCoderPass("  function mymodule_menu() {\n  \$items['test'] = array('description' => 'my description');\n}");
+    $this->assertCoderFail("  function mymodule_menu() {\n  \$items['node/add/foo'] = array();\n}");
+    $this->assertCoderFail("  function mymodule_menu() {\n  for (\$i=0; \$i<1; \$i++) {\n  }\n}");
+    $this->assertCoderFail("  function mymodule_menu() {\n  foreach (\$a as \$b) {\n  }\n}");
+    $this->assertCoderFail("  function mymodule_menu() {\n  while (\$a > \$b) {\n  }\n}");
+    $this->assertCoderPass("  function not_a_menu_hook() {\n  \$items[] = array();\n}");
+    $this->assertCoderFail('  if ($node = node_load(arg(1))) {');
+    $this->assertCoderFail('  if ($user = user_load(arg(1))) {');
+    $this->assertCoderFail('  if ($menu = menu_load(arg(1))) {');
+    $this->assertCoderFail('  if ($menu_link = menu_link_load(arg(1))) {');
+    $this->assertCoderFail('  if ($vocab = taxonomy_vocabulary_load(arg(1))) {');
+    $this->assertCoderFail('  if ($contact = contact_load(arg(1))) {');
+    $this->assertCoderFail('  if ($format = filter_format_load(arg(1))) {');
+    $this->assertCoderFail('  if ($term = forum_term_load(arg(1))) {');
+    $this->assertCoderFail('  if ($feed = aggregator_feed_load(arg(1))) {');
+    $this->assertCoderFail('  if ($category = aggregator_category_load(arg(1))) {');
+    $this->assertCoderFail('  menu_set_location();');
+  }
+
+  function testUpgrade6xDatabase() {
+    $this->assertCoderFail("  function mymodule_install() {\n  \$type = \$GLOBALS['db_type'];\n}");
+    $this->assertCoderFail("  function mymodule_uninstall() {\n  \$type = \$GLOBALS['db_type'];\n}");
+    $this->assertCoderFail("  function mymodule_update_1() {\n  \$type = \$GLOBALS['db_type'];\n}");
+    $this->assertCoderFail('  db_next_id();');
+    $this->assertCoderFail('  db_num_rows();');
+    $this->assertCoderFail('  db_result($result, $row);');
+    $this->assertCoderPass('  db_result($result);');
+    $this->assertCoderPass('  $number = db_result(db_query("SELECT COUNT(*) FROM {flood} WHERE event = \'%s\' AND hostname = \'%s\' AND timestamp > %d", $name, ip_address(), REQUEST_TIME - 3600));');
+    $this->assertCoderFail('  $sql = "CREATE TABLE foo ()";');
+    $this->assertCoderFail('  $sql = "DROP TABLE foo";');
+    $this->assertCoderFail('  $sql = "ALTER TABLE foo";');
+  }
+
+  function testUpgrade6xFile() {
+    $this->assertCoderFail('  if ($file = file_check_upload(\'picture_upload\')) {');
+    $this->assertCoderFail('  $file = file_save_upload(\'picture_upload\', $destination, FILE_EXISTS_REPLACE); ');
+    $this->assertCoderFail('  $file = file_save_upload(\'picture_upload\', $dest); ');
+    $this->assertCoderFail('  $file = file_save_upload(\'picture_upload\', \'abc\'); ');
+    $this->assertCoderFail('  $file = file_save_upload(\'picture_upload\', "abc"); ');
+    $this->assertCoderPass('  $file = file_save_upload(\'picture_upload\', array(\'foo\')); ');
+    $this->assertCoderPass('  if ($file = file_save_upload(\'picture_upload\', $validators, $dest)) {');
+    $this->assertCoderFail('  $sql = \'UPDATE {file_revisions} SET vid=1');
+    $this->assertCoderFail('  if (db_query(\'SELECT * FROM {file_revisions}\')) {');
+  }
+
+  function testUpgrade6xLinkUrl() {
+    $this->assertCoderFail('  $link = l($text, $path, $attributes, NULL, NULL, FALSE, TRUE);');
+    $this->assertCoderFail('  $link = l($text, $path, $attributes, NULL);');
+    $this->assertCoderFail('  $link = l($image, $item[\'filepath\'], $link_attributes, NULL, NULL, FALSE, TRUE);');
+    $this->assertCoderFail('  $link = l(t($display_vars[\'back_to_top\']), \'faq\', NULL, NULL);');
+    $this->assertCoderPass('  $link = l(t($display_vars[\'back_to_top\']), \'faq\', array(\'fragment\' => \'\'));');
+    $this->assertCoderPass('  $link = l($text, $path, $options);');
+    $this->assertCoderPass('  $link = l($text, $path, array(\'absolute\' => TRUE));');
+    $this->assertCoderFail('  $url = url($path, NULL, NULL, FALSE);');
+    $this->assertCoderFail('  $url = url($path, $query, NULL);');
+    $this->assertCoderFail('  $url = url($item[\'filepath\'], $query, NULL, FALSE);');
+    $this->assertCoderFail('  $url = url(\'faq\', NULL, NULL);');
+    $this->assertCoderPass('  $url = url(\'faq\', array(\'absolute\' => TRUE));');
+    $this->assertCoderPass('  $url = url($path, $options);');
+    $this->assertCoderPass('  $url = url($path, array(\'absolute\' => TRUE));');
+  }
+
+  function testUpgrade6xTaxonomy() {
+    $this->assertCoderFail('  taxonomy_get_vocabulary($vid);');
+    $this->assertCoderFail('  taxonomy_node_get_terms($nid);');
+    $this->assertCoderFail('  taxonomy_node_get_terms($node->nid);');
+    $this->assertCoderFail('  taxonomy_node_get_terms(123);');
+    $this->assertCoderPass('  taxonomy_node_get_terms($node);');
+    $this->assertCoderFail('  taxonomy_node_get_terms_by_vocabulary($nid);');
+    $this->assertCoderFail('  taxonomy_node_get_terms_by_vocabulary($node->nid);');
+    $this->assertCoderFail('  taxonomy_node_get_terms_by_vocabulary(123);');
+    $this->assertCoderPass('  taxonomy_node_get_terms_by_vocabulary($node);');
+    $this->assertCoderFail('  taxonomy_node_delete($nid);');
+    $this->assertCoderFail('  taxonomy_node_delete($node->nid);');
+    $this->assertCoderFail('  taxonomy_node_delete(123);');
+    $this->assertCoderPass('  taxonomy_node_delete($node);');
+    $this->assertCoderFail('  taxonomy_node_save($nid);');
+    $this->assertCoderFail('  taxonomy_node_save($node->nid);');
+    $this->assertCoderFail('  taxonomy_node_save(123);');
+    $this->assertCoderPass('  taxonomy_node_save($node);');
+  }
+
+  function testUpgrade6xFormatPlural() {
+    $this->assertCoderFail('  strtr(format_plural($num, \'1 %type post\', \'@count %type posts\'), array(\'%type\' => theme(\'placeholder\', $type)));');
+    $this->assertCoderPass('  format_plural($num, \'1 %type post\', \'@count %type posts\', array(\'%type\' => $type));');
+  }
+
+  function testUpgrade6xWatdog() {
+    $this->assertCoderFail('  watchdog(\'debug\', \'My debug message.\');');
+    $this->assertCoderFail('  watchdog(\'user\', t(\'Removed user.\'));');
+    $this->assertCoderFail('  watchdog(\'user\', t(\'Removed %username user.\', array(\'%username\' => $user->name)));');
+    $this->assertCoderPass('  watchdog(\'user\', \'Removed %username user.\', array(\'%username\' => $user->name));');
+  }
+
+  function testUpgrade6xDrupalMail() {
+    $this->assertCoderFail('  drupal_mail($action, $to, $subject, $body, $from);');
+    $this->assertCoderFail('  drupal_mail(\'action_email\', $recipient, $subject, $body, $from);');
+    $this->assertCoderFail('  drupal_mail(\'action_email\', $account->mail, $subject, $body, $from);');
+    $this->assertCoderFail('  drupal_mail(\'action_email\', "foo@foo.com", $subject, $body, $from);');
+    $this->assertCoderPass('  drupal_mail(\'system\', "action_email", $recipient, $language, $params);');
+  }
+
+  function testUpgrade6xUserAuthenticate() {
+    $this->assertCoderFail('  user_authenticate($name, $pass);');
+    $this->assertCoderFail('  user_authenticate("name", \'pass\');');
+    $this->assertCoderPass('  user_authenticate($array);');
+    $this->assertCoderPass('  user_authenticate(array(\'name\' => $name, \'pass\' => $pass));');
+  }
+
+  function testUpgrade6xCache() {
+    $this->assertCoderFail('  cache_set(\'simple_cid\', \'cache\', $simple);');
+    $this->assertCoderFail('  cache_set(\'simple_cid\', "cache", $simple);');
+    $this->assertCoderFail('  cache_set(\'simple_cid\', $table, $simple);');
+    $this->assertCoderFail('  cache_set(\'complex_cid\', $tbl, serialize($complex));');
+    $this->assertCoderFail('  cache_set(\'complex_cid\', serialize($complex));');
+    $this->assertCoderPass('  cache_set(\'simple_cid\', $simple);');
+    $this->assertCoderPass('  cache_set(\'simple_cid\', $simple, "cache");');
+    $this->assertCoderFail('  $complex = unserialize(cache_get(\'complex_cid\'));');
+    $this->assertCoderPass('  $complex = cache_get(\'complex_cid\');');
+  }
+
+  function testUpgrade6xNodeAccessRebuild() {
+    $this->assertCoderFail("  function mymodule_enable() {\n  node_access_rebuild();\n}");
+    $this->assertCoderFail("  function mymodule_disable() {\n  node_access_rebuild();\n}");
+    $this->assertCoderPass("  function mymodule_function() {\n  node_access_rebuild();\n}");
+  }
+
+  function testUpgrade6xNodeAPI() {
+    $this->assertCoderFail("  function mymodule_nodeapi() {\n  switch (\$op) {\n    case 'submit': return;\n  }\n}");
+    $this->assertCoderFail("  function mymodule_nodeapi() {\n  if (\$op == 'submit') {\n  }\n}");
+  }
+
+  function testUpgrade6xHooks() {
+    $this->assertCoderFail('  function mymodule_access($op, $node) {');
+    $this->assertCoderPass('  function mymodule_access($op, $node, $account) {');
+    $this->assertCoderFail('  function mymodule_help($section) {');
+    $this->assertCoderPass('  function mymodule_help($section, $arg) {');
+    $this->assertCoderFail('  function mymodule_mail_alter(&$mailkey, &$to, &$subject, &$body, &$from, &$headers) {');
+    $this->assertCoderPass('  function mymodule_mail_alter(&$message) {');
+    $this->assertCoderFail('  function mymodule_link_alter($node, &$links) {');
+    $this->assertCoderPass('  function mymodule_link_alter(&$links, $node) {');
+    $this->assertCoderFail('  function mymodule_profile_alter($account, &$fields) {');
+    $this->assertCoderPass('  function mymodule_profile_alter(&$account) {');
+  }
+
+  function testUpgrade6xBookAPI() {
+    $this->assertCoderFail('  book_admin_orphan();');
+    $this->assertCoderFail('  book_content();');
+    $this->assertCoderFail('  book_form();');
+    $this->assertCoderFail('  book_insert();');
+    $this->assertCoderFail('  book_location();');
+    $this->assertCoderFail('  book_location_down();');
+    $this->assertCoderFail('  book_node_visitor_html_post();');
+    $this->assertCoderFail('  book_node_visitor_html_pre();');
+    $this->assertCoderFail('  book_recurse();');
+    $this->assertCoderFail('  book_toc_recurse();');
+    $this->assertCoderFail('  book_tree();');
+    $this->assertCoderFail('  book_tree_recurse();');
+    // Book API tests - function arguments changed.
+    $this->assertCoderFail('  book_admin_edit($nid);');
+    $this->assertCoderPass('  book_admin_edit($form_state, $node);');
+    $this->assertCoderFail('  book_toc();');
+    $this->assertCoderFail('  book_toc($exclude);');
+    $this->assertCoderPass('  book_toc($bid, array(), $depth);');
+    $this->assertCoderFail('  book_export_html($nid, $depth);');
+    $this->assertCoderPass('  book_export_html($nid);');
+    $this->assertCoderFail('  book_export();');
+    $this->assertCoderFail('  book_export($type);');
+    $this->assertCoderPass('  book_export($type, $nid);');
+    $this->assertCoderFail('  book_outline($nid);');
+    $this->assertCoderFail('  book_outline($node->nid);');
+    $this->assertCoderPass('  book_outline($node);');
+    $this->assertCoderFail('  book_prev($node);');
+    $this->assertCoderPass('  book_prev($book_link);');
+    $this->assertCoderFail('  book_next($node);');
+    $this->assertCoderPass('  book_next($book_link);');
+  }
+
+  function testUpgrade6xDeprecatedHooks() {
+    $this->assertCoderFail('  function mymodule_auth($username, $password, $server) {');
+    $this->assertCoderFail('  function mymodule_info($field = 0) {');
+    // Miscellaneous deprecated functions.
+    $this->assertCoderFail('  locale_refresh_cache();');
+    $this->assertCoderFail('  theme_get_function();');
+  }
+
+  function testUpgrade6xDeprecatedMisc() {
+    $this->assertCoderFail('  custom_url_rewrite($url);');
+    $this->assertCoderPass('  custom_url_rewrite_inbound($url);');
+    $this->assertCoderFail('  $form_localtion = variable_get(\'comment_form_location\', COMMENT_FORM_SEPARATE_PAGE);');
+    $this->assertCoderFail('  $form_localtion = variable_set(\'comment_form_location\', COMMENT_FORM_SEPARATE_PAGE);');
+    $this->assertCoderFail('  $form_localtion = variable_del(\'comment_form_location\');');
+    $this->assertCoderPass('  $form_localtion = variable_get(\'comment_form_location_page\', COMMENT_FORM_SEPARATE_PAGE);');
+    $this->assertCoderFail('  $variable_name = \'comment_form_location\';');
+    $this->assertCoderPass('  $variable_name = \'comment_form_location\' . \'_abc\';');
+    $this->assertCoderFail('  $path = \'admin/content/comment/settings\';');
+    $this->assertCoderFail('  $log_path = \'admin/logs/\';');
+    $this->assertCoderFail('  $user_access_path = \'admin/user/access\';');
+    $this->assertCoderFail('  $permission = user_access(\'administer access control\');');
+    $this->assertCoderFail('  $ip = $_SERVER[\'REMOTE_ADDR\'];');
+    $this->assertCoderFail('  global $locale;');
+  }
+}

@@ -1,13 +1,12 @@
 // $Id$
-
-if (Drupal.jsEnabled) {
+(function ($) {
   jQuery.fn.extend({
     check : function() { return this.each(function() { this.checked = true; }); },
     uncheck : function() { return this.each(function() { this.checked = false; }); }
   });
 
-  $(document).ready(
-    function() {
+  Drupal.behaviors.coderFormHandler = {
+    attach: function (context) {
       $("input:checkbox").click(
         function() {
           core = this.form.elements.namedItem("edit-coder-core");
@@ -55,5 +54,5 @@ if (Drupal.jsEnabled) {
         }
       );
     }
-  );
-}
+  };
+})(jQuery);

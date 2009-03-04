@@ -1,0 +1,60 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Set of simpletests for the internationalization standards review.
+ */
+require_once DRUPAL_ROOT . '/coder_test_case.tinc';
+
+class CoderI18NTest extends CoderTestCase {
+  function __construct($id = NULL) {
+    parent::__construct('i18n', $id);
+  }
+
+  function getInfo() {
+    return array(
+      'name' => t('Coder I18N Tests'),
+      'description' => t('Tests for the coder I18N review.'),
+      'group' => t('Coder'),
+    );
+  }
+
+  function testI18NSpaces() {
+    $this->assertCoderPass('  $var = t("Your rating");');
+    $this->assertCoderFail('  $var = t(" Your rating");');
+    $this->assertCoderFail('  $var = t("Your rating ");');
+    $this->assertCoderPass('  $var = t("Your rating") ."hello ";');
+    $this->assertCoderPass('  $var = t("Your rating") ." hello";');
+    $this->assertCoderPass("  \$var = t('Your rating');");
+    $this->assertCoderFail("  \$var = t(' Your rating');");
+    $this->assertCoderFail("  \$var = t('Your rating ');");
+    $this->assertCoderPass("  \$var = t('Your rating') .'hello ';");
+    $this->assertCoderPass("  \$var = t('Your rating') .' hello';");
+    $this->assertCoderPass("  'titleUser' => t('Your rating') .': ',");
+    $this->assertCoderFail("  \$var = t('This isn't a false positive ');");
+    $this->assertCoderFail("  \$var = t('This isn\\'t a \"false\" positive ');");
+    $this->assertCoderPass("  \$var = t('This is a false positive') . implode(', ', \$array);");
+    $this->assertCoderPass("  \$var = t('This is a \\'false\\\" positive');");
+    $this->assertCoderPass("  \$var = t('This is a \"false\" positive');");
+    $this->assertCoderPass("  \$var = t('Your rating') . t('pass');");
+    $this->assertCoderFail("  \$var = t('Your rating') . t(' fail');");
+    $this->assertCoderFail("  \$var = t('Your rating') . t('fail ');");
+    $this->assertCoderFail("  \$var = t('Your rating') . t(' fail ');");
+    $this->assertCoderFail("  \$var = t(' Your rating ') . t(' fail ');");
+    $this->assertCoderFail("  \$var = t(' Your rating') . t('fail');");
+    $this->assertCoderFail("  \$var = t('Your rating ') . t('fail');");
+    $this->assertCoderFail("  \$var = t(' Your rating ') . t('fail');");
+    $this->assertCoderFail("  \$var = t('Your rating ') . t('fail ');");
+    $this->assertCoderFail("  \$var = t(' Your rating ') . t('fail ');");
+    $this->assertCoderFail("  \$var = t('Your rating ') . t(' fail');");
+    $this->assertCoderFail("  \$description[] = t('until !until ', array('!until' => date_format_date(\$until, 'custom', \$format)));");
+    $this->assertCoderFail("  \$description[] = t('except !dates ', array('!dates' => implode(', ', \$values)));");
+  }
+
+  function testExtraTs() {
+    $this->assertCoderPass("  watchdog('name', 'Your message.');");
+    $this->assertCoderFail("  watchdog('name', t('Your message.'));");
+    $this->assertCoderFail("  watchdog('name', st('Your message.'));");
+  }
+}

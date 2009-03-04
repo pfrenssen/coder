@@ -1,12 +1,14 @@
 <?php
 // $Id$
 
-/** @file
- * This include file implements coder functionality for 4.6 -> 4.7 upgrades
- *
- * Todo: The rules for this review have not yet been defined.
- */ 
+/**
+ * @file
+ * This include file implements coder functionality for 4.6 -> 4.7 upgrades.
+ */
 
+/**
+ * Implementation of hook_reviews().
+ */
 function coder_47_reviews() {
   $rules = array(
     array(
@@ -62,13 +64,13 @@ function coder_47_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#value' => '[\s\(]variable_get\s*\(\s*[\'"]+file_directory_temp[\'"]+\s*,',
       '#warning_callback' => '_coder_47_file_directory_temp_warning',
     ),
     array(
       '#type' => 'regex',
-      '#source' => 'all',
+      '#source' => 'allphp',
       '#value' => '[\s\(]variable_get\s*\(\s*[\'"]+file_directory_path[\'"]+\s*,',
       '#warning_callback' => '_coder_47_file_directory_path_warning',
     ),
@@ -108,7 +110,7 @@ function coder_47_reviews() {
 }
 
 /**
- * Define the warning callbacks
+ * Define the warning callbacks.
  */
 
 function _coder_47_hook_node_info_warning() {
@@ -203,7 +205,7 @@ function _coder_47_array2object_warning() {
 }
 
 function _coder_47_hook_onload_warning() {
-  return t('!hook_onload replaced by javascript addLoadEvent()',
+  return t('!hook_onload() replaced by javascript addLoadEvent()',
     array(
       '!hook_onload' => theme('drupalapi', 'hook_onload', '4.6'),
     )

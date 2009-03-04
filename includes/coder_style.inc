@@ -1,12 +1,14 @@
 <?php
 // $Id$
 
-/** @file
- * This include file implements coder functionality for Drupal Standards
- *
- * Todo: The rules for this review are not yet complete.
+/**
+ * @file
+ * This include file implements coder functionality for Drupal Standards.
  */
 
+/**
+ * Implementation of hook_reviews().
+ */
 function coder_style_reviews() {
   $br = 'br';
   $rules = array(
@@ -17,20 +19,21 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#never' => '<\?php',
       '#value' => '^ (  )*[^ \'".]',
       '#warning' => 'Use an indent of 2 spaces, with no tabs',
       '#severity' => 'minor',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '\s(if|elseif|while|foreach|switch|return|for)\(',
+      '#value' => '\s(if|elseif|while|foreach|switch|return|for|catch)\(',
       '#warning' => 'Control statements should have one space between the control keyword and opening parenthesis',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(](\w+)\s\(',
-      '#not' => '^(if|elseif|while|foreach|switch|return|for)$',
-      '#warning' => 'Functions should be called with no spaces between the function name',
+      '#not' => '^(if|elseif|while|foreach|switch|return|for|list|catch)$',
+      '#warning' => 'Functions should be called with no spaces between the function name and opening parentheses',
     ),
     array(
       '#type' => 'regex',
@@ -44,13 +47,13 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '(\.\s\'\'|\'\'\s\.|\.\s""|\.\s"")',
-      '#warning' => 'string concatenation should be formatted without a space separating the operators (dot .) and a quote',
+      '#value' => '(\.\'\'|\'\'\.|\.""|\."")',
+      '#warning' => 'String concatenation should be formatted with a space separating the operators (dot .) and a quote',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '([^\'\"\s0-9]\.|\.[^\'\"\=\s0-9])',
-      '#warning' => 'string concatenation should be formatted with a space separating the operators (dot .) and non-quote terms',
+      '#value' => '([^\(\'\"\s0-9]\.|\.[^\)\'\"\=\s0-9])',
+      '#warning' => 'String concatenation should be formatted with a space separating the operators (dot .) and non-quote terms',
     ),
     array(
       '#type' => 'regex',
@@ -61,13 +64,14 @@ function coder_style_reviews() {
     array(
       '#type' => 'regex',
       '#value' => 'global\s+\$(\w+)(,\s\$(\w+))*',
-      '#not' => '^_|^('. _coder_style_core_global_regex() .')$',
+      '#not' => '^_|^(' . _coder_style_core_global_regex() . ')$',
       '#warning' => 'global variables should start with a single underscore followed by the module and another underscore',
     ),
     array(
       '#type' => 'callback',
       '#source' => 'all',
-      '#value' => '_coder_style_callback',
+      '#value' => '_coder_style_closing_php_callback',
+      '#warning' => 'the final ?> should be omitted from all code files',
     ),
     array(
       '#type' => 'regex',
@@ -86,20 +90,20 @@ function coder_style_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '(?-i)(([a-z]+[A-Z]+([a-z]*[A-Z]*)*)|([A-Z]+[a-z]+([A-Z]*[a-z]*)*))',
-      '#not' => '(?-i)^(stdClass|StdClass|x[A-F]+)$',
+      '#value' => '(?-i)(function\s+|\$)(([a-z]+[A-Z]+([a-z]*[A-Z]*)*)|([A-Z]+[a-z]+([A-Z]*[a-z]*)*))',
       '#warning' => 'do not use mixed case (camelCase), use lower case and _',
+      '#filename-not' => array('test'),
     ),
     array(
       '#type' => 'regex',
       '#value' => '\s(stdclass)\s*\(',
       '#not' => '^(?-i)stdClass$',
-      '#warning' => 'use stdClass caseCapitalization, it\'s the one exception to the mixed case style standard',
+      '#warning' => "use stdClass caseCapitalization, it's the one exception to the mixed case style standard",
     ),
     array(
       '#type' => 'regex',
       '#source' => 'html',
-      '#value' => '<'. $br .'>', // NOTE: use $br only to avoid a warning
+      '#value' => '<' . $br . '>', // NOTE: use $br only to avoid a warning.
       '#warning' => 'use &lt;br /&gt; instead of &lt;br&gt;',
       '#severity' => 'minor',
     ),
@@ -109,6 +113,48 @@ function coder_style_reviews() {
       '#value' => '(?-i)<[A-Z]+',
       '#warning_callback' => '_coder_style_xhtml_warning',
       '#severity' => 'minor',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '\s(if|elseif|while|foreach|switch|return|for|catch)\s*\(.*\) \s*{\s*[^\s]+',
+      '#warning' => 'The control statement should be on a separate line from the control conditional',
+    ),
+    array(
+      '#type' => 'regex',
+      '#filename' => array('tpl.php'),
+      '#value' => '\s(if|elseif)\s*\(.*\) \s*{\s*[^\s]+',
+      '#warning' => 'The control statement should use ":" syntax instead of curly braces.',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'all',
+      '#value' => '[ \t]+$',
+      '#warning' => 'There should be no trailing spaces',
+      '#severity' => 'minor',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(](strlen|strtolower|strtoupper|substr|ucfirst)\s*\(',
+      '#warning' => 'in most cases, replace the string function with the drupal_ equivalent string functions',
+      '#severity' => 'minor',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '\[\s*[A-Za-z][A-Za-z0-9_]*\s*]',
+      '#not' => '\[\s*[A-Z][A-Z0-9_]*\s*]',
+      '#warning' => 'use quotes around a string literal array index, this is not only a style issue, but a known performance problem',
+      '#case-sensitive' => TRUE,
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s=>]+(true|false|null)[\)\s;,\n\r]+',
+      '#case-sensitive' => TRUE,
+      '#warning' => 'Use uppercase for PHP constants, e.g. NULL, TRUE, FALSE',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '\s+else\s+if\s*\(',
+      '#warning' => 'Use "elseif" in place of "else if"',
     ),
   );
   $review = array(
@@ -121,19 +167,18 @@ function coder_style_reviews() {
 }
 
 /**
- * Define the rule callbacks
+ * Define the rule callbacks for style.
  */
-
-function _coder_style_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_style_closing_php_callback(&$coder_args, $review, $rule, $lines, &$results) {
   for ($lineno = -1; $last = array_slice($lines, $lineno); $lineno --) {
-    $lastline = $last[0];
+    $lastline = $last[0][0];
     if (preg_match('/\S/', $lastline)) {
       break;
     }
   }
   if ($last && $lastline && preg_match('/\?>\s*$/i', $lastline)) {
     $severity_name = _coder_severity_name($coder_args, $review, $rule);
-    _coder_error_msg($results, 'the final ?> should be omitted from all code files', $severity_name, count($lines));
+    _coder_error($results, $rule, $severity_name, count($lines));
   }
 }
 
@@ -141,9 +186,9 @@ function _coder_style_core_global_regex() {
   static $coreglobalregex, $coreglobalvars;
   if (!isset($coreglobalregex)) {
     // Note: there's a little extra overhead in formatting this list as an
-    // array, but I think it makes it more readable and maintainable
+    // array, but I think it makes it more readable and maintainable.
     $coreglobalvars = array(
-      // from the Drupal 5 includes/ directory
+      // From the Drupal 5 includes/ directory.
       'active_db',
       'base_path',
       'base_root',
@@ -178,9 +223,9 @@ function _coder_style_core_global_regex() {
       'xrds_open_elements',
       'xrds_current_service',
 
-      // from the Drupal 5 modules/ directory -
+      // From the Drupal 5 modules/ directory -
       // Note: IMHO these should not be allowed, but until we fix core,
-      // other modules will need them
+      // other modules will need them.
       'channel',
       'element',
       'forum_topic_list_header',
@@ -200,7 +245,7 @@ function _coder_style_core_global_regex() {
 }
 
 /**
- * Define the warning callbacks
+ * Define the warning callbacks.
  */
 
 function _coder_style_xhtml_warning() {
