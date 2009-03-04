@@ -5,7 +5,7 @@
  * @file
  * Set of simpletests for the sql standards review.
  */
-require_once DRUPAL_ROOT . '/coder_test_case.tinc';
+require_once dirname(__FILE__) . '/coder_test_case.tinc';
 
 class CoderSQLTest extends CoderTestCase {
   function __construct($id = NULL) {
