@@ -3,5 +3,4 @@ name = Coder
 description = Developer Module that assists with code review and version upgrade
 package = Development
 core = 7.x
-files[] = coder.install
 files[] = coder.module
