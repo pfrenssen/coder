@@ -1200,8 +1200,14 @@ function _coder_read_and_parse_file(&$coder_args) {
             $in_quote_html = '>';
           }
           if ($in_quote) {
+            if ($this_quote_index == -1) {
+              $this_quote_index = 0;
+            }
             $this_quote_lines[$this_quote_index] .= $char;
             if ($in_quote == '"') {
+              if ($this_doublequote_index == -1) {
+                $this_doublequote_index = 0;
+              }
               $this_doublequote_lines[$this_doublequote_index] .= $char;
             }
             if ($in_quote_html) {
@@ -1865,9 +1871,9 @@ function theme_coder_warning($warning, $severity_name, $lineno = 0, $line = '') 
   // Extract description from warning.
   if (is_array($warning)) {
     $description = isset($warning['#description']) ? $warning['#description'] : '';
-    $link = $warning['#link'];
     $warning = $warning['#warning'];
-    if (isset($link)) {
+    if (isset($warning['#link'])) {
+      $link = $warning['#link'];
       $warning .= '  ('. l(t('Drupal Docs'), $link) .')';
     }
   }
