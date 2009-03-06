@@ -9,26 +9,26 @@
 /**
  * Implementation of hook_reviews().
  */
-function coder_i18n_reviews() {
+function coder_review_i18n_reviews() {
   $argex = '(((\$?)[a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'\'|"")';
   $rules = array(
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]l\s*\(\s*["\']',
       '#filename-not' => array('install'),
-      '#warning_callback' => '_coder_i18n_l_without_t',
+      '#warning_callback' => '_coder_review_i18n_l_without_t',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]l\s*\(\s*[\'"]',
       '#function' => '_install$',
-      '#warning_callback' => '_coder_i18n_in_install_l_without_st',
+      '#warning_callback' => '_coder_review_i18n_in_install_l_without_st',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]t\s*\(\s*[\'"]',
       '#function' => '_install$',
-      '#warning_callback' => '_coder_i18n_in_install_t',
+      '#warning_callback' => '_coder_review_i18n_in_install_t',
     ),
     array(
       '#type' => 'regex',
@@ -39,34 +39,34 @@ function coder_i18n_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '#title\s*=>\s*[\'"][\'"]',
-      '#warning_callback' => '_coder_i18n_fapi_title_without_t',
+      '#warning_callback' => '_coder_review_i18n_fapi_title_without_t',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]form_error\s*\(\s*' . $argex . '\s*,\s*[\'"]',
-      '#warning_callback' => '_coder_i18n_form_error_without_t',
+      '#warning_callback' => '_coder_review_i18n_form_error_without_t',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\'"]title[\'"]\s*=>\s*[\'"][^<]',
-      '#warning_callback' => '_coder_i18n_in_hook_links_without_t',
+      '#warning_callback' => '_coder_review_i18n_in_hook_links_without_t',
       '#source' => 'allphp',
       '#function' => '_link$',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]drupal_set_title\s*\(\s*[\'"]',
-      '#warning_callback' => '_coder_i18n_drupal_set_title_without_t',
+      '#warning_callback' => '_coder_review_i18n_drupal_set_title_without_t',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]drupal_set_message\s*\(\s*[\'"]',
-      '#warning_callback' => '_coder_i18n_drupal_set_message_without_t',
+      '#warning_callback' => '_coder_review_i18n_drupal_set_message_without_t',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]watchdog\s*\(\s*' . $argex . '\s*,\s*(t|st)\(',
-      '#warning_callback' => '_coder_i18n_watchdog_with_t',
+      '#warning_callback' => '_coder_review_i18n_watchdog_with_t',
     ),
     // @NOTE: Add duplicate of the 6.x upgrade rule.
     array(
@@ -74,19 +74,19 @@ function coder_i18n_reviews() {
       '#function' => '_menu$',
       '#source' => 'allphp',
       '#value' => '\'title\'\s*=>\s*t\(|\'description\'\s*=>\s*t\(',
-      '#warning_callback' => '_coder_i18n_menu_with_t',
+      '#warning_callback' => '_coder_review_i18n_menu_with_t',
     ),
     array(
       '#type' => 'regex',
       '#value' => '[\s\(](t|st)\s*\(\s*[\'"](\s+|[^\)]*?\s+[\'"]\s*[,\)])',
       '#not' => '[\s\(](t|st)\s*\(\s*[\'"][^\s].*?([\'"]\s+[^,\)])*.*[^\s][\'"][,\)]',
       '#source' => 'allphp',
-      '#warning_callback' => '_coder_i18n_space_starts_or_ends_t',
+      '#warning_callback' => '_coder_review_i18n_space_starts_or_ends_t',
     ),
     array(
       '#type' => 'callback',
       '#filename' => array('po'),
-      '#value' => '_coder_translation_callback',
+      '#value' => '_coder_review_translation_callback',
     ),
   );
   $review = array(
@@ -99,8 +99,8 @@ function coder_i18n_reviews() {
 /**
  * Define the rule callbacks for style.
  */
-function _coder_translation_callback(&$coder_args, $review, $rule, $lines, &$results) {
-  $severity_name = _coder_severity_name($coder_args, $review, $rule);
+function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines, &$results) {
+  $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
 
   // Parse the translation file into msgid/msgstr pairs.
   $translations = array();
@@ -126,7 +126,7 @@ function _coder_translation_callback(&$coder_args, $review, $rule, $lines, &$res
       $rule = array(
         '#warning' => "The first letter in the translation text should have the same capitalization as it's original text.",
       );
-      _coder_error($results, $rule, $severity_name, $lineno, $msgstr);
+      _coder_review_error($results, $rule, $severity_name, $lineno, $msgstr);
     }
 
     // Check the translation trailing periods.
@@ -134,7 +134,7 @@ function _coder_translation_callback(&$coder_args, $review, $rule, $lines, &$res
       $rule = array(
         '#warning' => 'The translation text should end in a period when the same original text also ends in a period.',
       );
-      _coder_error($results, $rule, $severity_name, $lineno, $msgstr);
+      _coder_review_error($results, $rule, $severity_name, $lineno, $msgstr);
     }
 
     // Check punctuation characters.
@@ -144,7 +144,7 @@ function _coder_translation_callback(&$coder_args, $review, $rule, $lines, &$res
           $rule = array(
             '#warning' => 'Punctuation characters (.,:;?!) from the original text should exist in the translation.',
           );
-          _coder_error($results, $rule, $severity_name, $lineno, $msgstr);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $msgstr);
         }
       }
     }
@@ -154,7 +154,7 @@ function _coder_translation_callback(&$coder_args, $review, $rule, $lines, &$res
           $rule = array(
             '#warning' => 'Punctuations characters (.,:;?!) in the translation should also exist in the original text.',
           );
-          _coder_error($results, $rule, $severity_name, $lineno, $msgstr);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $msgstr);
         }
       }
     }
@@ -166,7 +166,7 @@ function _coder_translation_callback(&$coder_args, $review, $rule, $lines, &$res
           $rule = array(
             '#warning' => 'HTML from the original text should also exist in the translation.'
           );
-          _coder_error($results, $rule, $severity_name, $lineno, $msgstr);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $msgstr);
         }
       }
     }
@@ -178,7 +178,7 @@ function _coder_translation_callback(&$coder_args, $review, $rule, $lines, &$res
           $rule = array(
             '#warning' => 'If placeholders like !name, @name or %name exist in the original text, they must also exist in the translation.',
           );
-          _coder_error($results, $rule, $severity_name, $lineno, $msgstr);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $msgstr);
         }
       }
     }
@@ -193,7 +193,7 @@ function _coder_translation_callback(&$coder_args, $review, $rule, $lines, &$res
  * Define the warning callbacks.
  */
 
-function _coder_i18n_l_without_t() {
+function _coder_review_i18n_l_without_t() {
   return array(
     '#warning' => t('The $text argument to !l() should be enclosed within !t() so that it is translatable.',
       array(
@@ -204,7 +204,7 @@ function _coder_i18n_l_without_t() {
   );
 }
 
-function _coder_i18n_in_install_l_without_st() {
+function _coder_review_i18n_in_install_l_without_st() {
   return array(
     '#warning' => t('The $text argument to !l() should be enclosed within !st() so that it is translatable from within the install.',
       array(
@@ -215,7 +215,7 @@ function _coder_i18n_in_install_l_without_st() {
   );
 }
 
-function _coder_i18n_in_install_t() {
+function _coder_review_i18n_in_install_t() {
   return array(
     '#warning' => t('Use !st() instead of !t() in !hook_install(), !hook_uninstall() and !hook_update_N()',
       array(
@@ -229,7 +229,7 @@ function _coder_i18n_in_install_t() {
   );
 }
 
-function _coder_i18n_fapi_title_without_t() {
+function _coder_review_i18n_fapi_title_without_t() {
   return array(
     '#warning' => t('The FAPI #title should be enclosed within !t() so that it is translatable.',
       array(
@@ -240,7 +240,7 @@ function _coder_i18n_fapi_title_without_t() {
   );
 }
 
-function _coder_i18n_form_error_without_t() {
+function _coder_review_i18n_form_error_without_t() {
   return array(
     '#warning' => t('The $message argument to !form_error() should be enclosed within !t() so that it is translatable.',
       array(
@@ -251,7 +251,7 @@ function _coder_i18n_form_error_without_t() {
   );
 }
 
-function _coder_i18n_in_hook_links_without_t() {
+function _coder_review_i18n_in_hook_links_without_t() {
   return array(
     '#warning' => t("The 'title' option should be enclosed within !t() so that it is translatable.",
       array(
@@ -261,7 +261,7 @@ function _coder_i18n_in_hook_links_without_t() {
   );
 }
 
-function _coder_i18n_drupal_set_message_without_t() {
+function _coder_review_i18n_drupal_set_message_without_t() {
   return array(
     '#warning' => t('The $message argument to !drupal_set_message() should be enclosed within !t() so that it is translatable.',
       array(
@@ -272,7 +272,7 @@ function _coder_i18n_drupal_set_message_without_t() {
   );
 }
 
-function _coder_i18n_drupal_set_title_without_t() {
+function _coder_review_i18n_drupal_set_title_without_t() {
   return array(
     '#warning' => t('The $title argument to !drupal_set_title() should be enclosed within !t() so that it is translatable.',
       array(
@@ -283,7 +283,7 @@ function _coder_i18n_drupal_set_title_without_t() {
   );
 }
 
-function _coder_i18n_watchdog_with_t() {
+function _coder_review_i18n_watchdog_with_t() {
   return array(
     '#warning' => t('The $message argument to !watchdog() should NOT be enclosed within !t(), so that it can be properly translated at display time.',
       array(
@@ -294,7 +294,7 @@ function _coder_i18n_watchdog_with_t() {
   );
 }
 
-function _coder_i18n_menu_with_t() {
+function _coder_review_i18n_menu_with_t() {
   return array(
     '#warning' => t('Menu item titles and descriptions should NOT be enclosed within !t().',
       array(
@@ -305,7 +305,7 @@ function _coder_i18n_menu_with_t() {
   );
 }
 
-function _coder_i18n_space_starts_or_ends_t() {
+function _coder_review_i18n_space_starts_or_ends_t() {
   return array(
     '#warning' => t('The $string argument to !t() should not begin or end with a space.',
       array(

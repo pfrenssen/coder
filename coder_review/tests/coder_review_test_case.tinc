@@ -1,5 +1,12 @@
 <?php
-class CoderTestCase extends DrupalWebTestCase {
+// $Id$
+
+/**
+ * @file
+ * Main coder test suite.
+ */
+
+class CoderReviewTestCase extends DrupalWebTestCase {
   protected $review_name;
 
   function __construct($review_name, $id = NULL) {
@@ -17,22 +24,22 @@ class CoderTestCase extends DrupalWebTestCase {
   }
 
   function runTest($code, $severity = SEVERITY_MINOR) {
-    $reviews = coder_reviews();
-    $ext = variable_get('coder_php_ext', array('inc', 'php', 'install', 'test'));
+    $reviews = coder_review_reviews();
+    $ext = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
     $coder_args = array(
       '#severity' => $severity,
       '#filename' => 'snippet',
       '#test' => $code,
       '#php_extensions' => $ext,
-      '#include_extensions' => _coder_get_reviews_extensions($ext, $reviews),
+      '#include_extensions' => _coder_review_get_reviews_extensions($ext, $reviews),
     );
-    _coder_read_and_parse_file($coder_args);
+    _coder_review_read_and_parse_file($coder_args);
     $results = do_coder_review($coder_args, $reviews[$this->review_name]);
     unset($results['#stats']);
     return $results;
   }
 
-  protected function assertCoderPass($code) {
+  protected function assertCoderReviewPass($code) {
     // Run the coder review on the code snippet.
     $results = $this->runTest($code);
 
@@ -46,7 +53,7 @@ class CoderTestCase extends DrupalWebTestCase {
     }
   }
 
-  protected function assertCoderFail($code) {
+  protected function assertCoderReviewFail($code) {
     // Run the coder review on the code snippet.
     $results = $this->runTest($code);
 
@@ -63,7 +70,7 @@ class CoderTestCase extends DrupalWebTestCase {
   private function getWarnings($results) {
     $warnings = array();
     foreach ($results as $error) {
-      $warning = _coder_warning($error['rule']);
+      $warning = _coder_review_warning($error['rule']);
       if (is_array($warning)) {
         $warning = $warning['#warning'];
       }

@@ -9,7 +9,7 @@
 /**
  * Implementation of hook_reviews().
  */
-function coder_sql_reviews() {
+function coder_review_sql_reviews() {
   $table = '\{[A-Za-z_]+\}'; // table-regex
   $bad = '[A-Za-z_]+';
   $rules = array(
@@ -33,7 +33,7 @@ function coder_sql_reviews() {
       '#type' => 'regex',
       '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s' . $table . ')\s+.*[Ll][Ii][Mm][Ii][Tt]\s[0-9]+',
       '#source' => 'quote',
-      '#warning_callback' => '_coder_sql_db_query_range_warning',
+      '#warning_callback' => '_coder_review_sql_db_query_range_warning',
     ),
     array(
       '#type' => 'regex',
@@ -53,7 +53,7 @@ function coder_sql_reviews() {
       '#function' => '_update_[0-9]+$',
       '#source' => 'allphp',
       '#value' => 'db_query\s*\(\s*[\'"](UPDATE|INSERT|DELETE)\s+',
-      '#warning_callback' => '_coder_sql_db_query_in_install_function',
+      '#warning_callback' => '_coder_review_sql_db_query_in_install_function',
     ),
   );
   $review = array(
@@ -68,7 +68,7 @@ function coder_sql_reviews() {
  * Define the warning callbacks
  */
 
-function _coder_sql_db_query_range_warning() {
+function _coder_review_sql_db_query_range_warning() {
   return array(
     '#warning' => t('Use !db_query_range() instead of the SQL LIMIT clause',
       array(
@@ -79,7 +79,7 @@ function _coder_sql_db_query_range_warning() {
   );
 }
 
-function _coder_sql_db_query_in_install_function() {
+function _coder_review_sql_db_query_in_install_function() {
   return array(
     '#warning' => t('Use !update_sql() instead of !db_query() in !hook_update_N()',
       array(

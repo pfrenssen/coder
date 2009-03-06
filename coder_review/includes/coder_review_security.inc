@@ -11,7 +11,7 @@
 /**
  * Implementation of hook_reviews().
  */
-function coder_security_reviews() {
+function coder_review_security_reviews() {
   $table = '\{[A-Za-z_]+\}'; // table-regex
   $rules = array(
     array(
@@ -19,22 +19,22 @@ function coder_security_reviews() {
       '#value' => 'l\(check_plain\(.*',
       '#never' => '[\'"]html[\'"]\s*=>\s*(TRUE|1)',
       '#source' => 'allphp',
-      '#warning_callback' => '_coder_security_l_check_plain_warning',
+      '#warning_callback' => '_coder_review_security_l_check_plain_warning',
     ),
 /*  array(
       '#type' => 'callback',
-      '#value' => _coder_security_callback,
+      '#value' => _coder_review_security_callback,
     ), */
     array(
       '#type' => 'regex',
       '#value' => '(?-i)\$REQUEST_URI',
-      '#warning_callback' => '_coder_security_request_uri_warning',
+      '#warning_callback' => '_coder_review_security_request_uri_warning',
     ),
     array(
       '#type' => 'regex',
       '#source' => 'allphp',
       '#value' => '(?-i)\"REQUEST_URI\"|\'REQUEST_URI\'',
-      '#warning_callback' => '_coder_security_request_uri_warning',
+      '#warning_callback' => '_coder_review_security_request_uri_warning',
     ),
     array(
       '#type' => 'regex',
@@ -42,7 +42,7 @@ function coder_security_reviews() {
       '#not' => '\$placeholder',
       '#never' => '[\s\(]update_sql\(',
       '#source' => 'quote',
-      '#warning_callback' => '_coder_security_sql_var_warning',
+      '#warning_callback' => '_coder_review_security_sql_var_warning',
     ),
     array(
       '#type' => 'regex',
@@ -66,7 +66,7 @@ function coder_security_reviews() {
  * Define the rule callbacks.
  */
 
-/* function _coder_security_callback(&$coder_args, $review, $rule, $lines, &$results) {
+/* function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &$results) {
   if (!isset($coder_args['#tokens'])) {
     $source = implode('', $lines);
     $coder_args['#tokens'] = token_get_all($source);
@@ -77,7 +77,7 @@ function coder_security_reviews() {
  * Define the warning callbacks.
  */
 
-function _coder_security_l_check_plain_warning() {
+function _coder_review_security_l_check_plain_warning() {
   return t('!l() already contains a !check_plain() call by default',
     array(
       '!l' => theme('drupalapi', 'l'),
@@ -86,7 +86,7 @@ function _coder_security_l_check_plain_warning() {
   );
 }
 
-function _coder_security_request_uri_warning() {
+function _coder_review_security_request_uri_warning() {
   return t('the use of REQUEST_URI is prone to XSS exploits and does not work on IIS; use !request_uri() instead',
     array(
       '!request_uri' => theme('drupalapi', 'request_uri'),
@@ -94,7 +94,7 @@ function _coder_security_request_uri_warning() {
   );
 }
 
-function _coder_security_sql_var_warning() {
+function _coder_review_security_sql_var_warning() {
   return array(
     '#warning' => t('In SQL strings, Use !db_query() placeholders in place of variables.  This is a potential source of SQL injection attacks when the variable can come from user data.',
       array(

@@ -9,7 +9,7 @@
 /**
  * Implementation of hook_reviews().
  */
-function coder_style_reviews() {
+function coder_review_style_reviews() {
   $br = 'br';
   $rules = array(
     array(
@@ -59,13 +59,13 @@ function coder_style_reviews() {
     array(
       '#type' => 'regex',
       '#value' => 'global\s+\$(\w+)(,\s\$(\w+))*',
-      '#not' => '^_|^(' . _coder_style_core_global_regex() . ')$',
+      '#not' => '^_|^(' . _coder_review_style_core_global_regex() . ')$',
       '#warning' => 'global variables should start with a single underscore followed by the module and another underscore',
     ),
     array(
       '#type' => 'callback',
       '#source' => 'all',
-      '#value' => '_coder_style_closing_php_callback',
+      '#value' => '_coder_review_style_closing_php_callback',
       '#warning' => 'the final ?> should be omitted from all code files',
     ),
     array(
@@ -106,7 +106,7 @@ function coder_style_reviews() {
       '#type' => 'regex',
       '#source' => 'html',
       '#value' => '(?-i)<[A-Z]+',
-      '#warning_callback' => '_coder_style_xhtml_warning',
+      '#warning_callback' => '_coder_review_style_xhtml_warning',
       '#severity' => 'minor',
     ),
     array(
@@ -164,7 +164,7 @@ function coder_style_reviews() {
 /**
  * Define the rule callbacks for style.
  */
-function _coder_style_closing_php_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_style_closing_php_callback(&$coder_args, $review, $rule, $lines, &$results) {
   for ($lineno = -1; $last = array_slice($lines, $lineno); $lineno --) {
     $lastline = $last[0][0];
     if (preg_match('/\S/', $lastline)) {
@@ -172,12 +172,12 @@ function _coder_style_closing_php_callback(&$coder_args, $review, $rule, $lines,
     }
   }
   if ($last && $lastline && preg_match('/\?>\s*$/i', $lastline)) {
-    $severity_name = _coder_severity_name($coder_args, $review, $rule);
-    _coder_error($results, $rule, $severity_name, count($lines));
+    $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
+    _coder_review_error($results, $rule, $severity_name, count($lines));
   }
 }
 
-function _coder_style_core_global_regex() {
+function _coder_review_style_core_global_regex() {
   static $coreglobalregex, $coreglobalvars;
   if (!isset($coreglobalregex)) {
     // Note: there's a little extra overhead in formatting this list as an
@@ -243,7 +243,7 @@ function _coder_style_core_global_regex() {
  * Define the warning callbacks.
  */
 
-function _coder_style_xhtml_warning() {
+function _coder_review_style_xhtml_warning() {
   return t('use lowercase html tags to comply with <a href="@xhtml">XHTML</a>',
     array(
       '@xhtml' => 'http://www.w3.org/TR/xhtml1/#h-4.2',

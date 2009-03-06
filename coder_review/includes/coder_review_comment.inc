@@ -9,14 +9,14 @@
 /**
  * Implementation of hook_reviews().
  */
-function coder_comment_reviews() {
+function coder_review_comment_reviews() {
   $rules = array(
     array(
       '#type' => 'grep_invert',
       '#source' => 'comment',
       '#value' => '$Id',
       '#case-sensitive' => TRUE,
-      '#warning_callback' => '_coder_comment_Id_warning',
+      '#warning_callback' => '_coder_review_comment_Id_warning',
       '#filename-not' => array('patch'),
     ),
     array(
@@ -25,7 +25,7 @@ function coder_comment_reviews() {
       '#value' => '^.*\$Id.*$',
       '#not' => '^\/\/\s+\$Id\$|^\/\/\s+\$Id' . ':[^\$]+\$',
       '#case-sensitive' => TRUE,
-      '#warning_callback' => '_coder_comment_Id_warning',
+      '#warning_callback' => '_coder_review_comment_Id_warning',
     ),
     array(
       '#type' => 'regex',
@@ -83,14 +83,14 @@ function coder_comment_reviews() {
       '#type' => 'grep_invert',
       '#source' => 'comment',
       '#value' => '@' . 'file',
-      '#warning_callback' => '_coder_comment_missing_file_block',
+      '#warning_callback' => '_coder_review_comment_missing_file_block',
       '#filename-not' => array('patch'),
     ),
     array(
       '#type' => 'regex',
       '#source' => 'comment',
       '#value' => '@' . 'file\s+.+$',
-      '#warning_callback' => '_coder_comment_invalid_file_block',
+      '#warning_callback' => '_coder_review_comment_invalid_file_block',
       '#severity' => 'minor',
     ),
     array(
@@ -133,21 +133,21 @@ function coder_comment_reviews() {
   return array('comment' => $review);
 }
 
-function _coder_comment_Id_warning() {
+function _coder_review_comment_Id_warning() {
   return array(
     '#warning' => t('Include the CVS keyword $Id' . '$ in each file.  This should be in the format <code>// $Id' . '$</code> or <code>// $Id' . '$</code>'),
     '#link' => 'http://drupal.org/coding-standards',
   );
 }
 
-function _coder_comment_missing_file_block() {
+function _coder_review_comment_missing_file_block() {
   return array(
     '#warning' => t('@' . 'file block missing'),
     '#link' => 'http://drupal.org/node/1354#files',
   );
 }
 
-function _coder_comment_invalid_file_block() {
+function _coder_review_comment_invalid_file_block() {
   return array(
     '#warning' => t('@' . 'file description should be on the following line'),
     '#link' => 'http://drupal.org/node/1354#files',

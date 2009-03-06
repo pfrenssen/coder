@@ -1,0 +1,17 @@
+; $Id$
+name = Coder Review
+description = Developer Module that assists with code review and version upgrade
+package = Development
+core = 7.x
+dependencies[] = coder
+files[] = coder_review.install
+files[] = coder_review.module
+files[] = coder_review.drush.inc
+files[] = includes/coder_review_47.inc
+files[] = includes/coder_review_5x.inc
+files[] = includes/coder_review_6x.inc
+files[] = includes/coder_review_comment.inc
+files[] = includes/coder_review_i18n.inc
+files[] = includes/coder_review_security.inc
+files[] = includes/coder_review_sql.inc
+files[] = includes/coder_review_style.inc
