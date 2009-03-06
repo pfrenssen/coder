@@ -730,6 +730,8 @@ function coder_review_page_form($form_state) {
       $coder_args = array(
         '#reviews' => $reviews,
         '#severity' => $settings['coder_severity'],
+        '#php_extensions' => array(),
+        '#include_extensions' => array(),
 //      '#filename' => $filename,
       );
 
