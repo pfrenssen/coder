@@ -21,7 +21,7 @@ class CoderTestCase extends DrupalWebTestCase {
     $ext = variable_get('coder_php_ext', array('inc', 'php', 'install', 'test'));
     $coder_args = array(
       '#severity' => $severity,
-      '#filename' => 'snippet',
+      '#filename' => 'snippet.php',
       '#test' => $code,
       '#php_extensions' => $ext,
       '#include_extensions' => _coder_get_reviews_extensions($ext, $reviews),
