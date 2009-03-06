@@ -832,7 +832,7 @@ function coder_page_form($form_state) {
           $display[] = t('@count files', array('@count' => $summary['files']));
         }
         else {
-          $display[] = t('Coder found @count patches', array('@count' => count($stats)));
+          $display[] = t('Coder found @count patch hunks', array('@count' => count($stats)));
         }
         foreach (array('critical', 'normal', 'minor') as $severity_name) {
           if ($summary[$severity_name] > 0) {
