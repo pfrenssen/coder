@@ -58,7 +58,7 @@ function coder_review_reviews() {
     $path = drupal_get_path('module', 'coder_review') . '/includes';
     $files = drupal_system_listing('/coder_review_.*\.inc$/', $path, 'filepath', 0);
     foreach ($files as $file) {
-      require_once DRUPAL_ROOT . '/' . $path . '/' . $file->filename;
+      require_once DRUPAL_ROOT . '/' . $file->filename;
       $function = $file->name . '_reviews';
       if (drupal_function_exists($function)) {
         if ($review = call_user_func($function)) {
@@ -102,6 +102,7 @@ function coder_review_menu() {
   $items['admin/build/coder/review/default'] = array(
     'title' => 'Default',
     'page callback' => 'coder_review_page',
+    'page arguments' => array('default'),
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
     'weight' => -1,
@@ -109,18 +110,21 @@ function coder_review_menu() {
   $items['admin/build/coder/review/core'] = array(
     'title' => 'Core',
     'page callback' => 'coder_review_page',
+    'page arguments' => array('core'),
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
   );
   $items['admin/build/coder/review/active'] = array(
     'title' => 'Active',
     'page callback' => 'coder_review_page',
+    'page arguments' => array('active'),
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
   );
   $items['admin/build/coder/review/all'] = array(
     'title' => 'All',
     'page callback' => 'coder_review_page',
+    'page arguments' => array('all'),
     'access arguments' => array('view code review all'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
@@ -128,6 +132,7 @@ function coder_review_menu() {
   $items['admin/build/coder/review/patches'] = array(
     'title' => 'Patches',
     'page callback' => 'coder_review_page',
+    'page arguments' => array('patches'),
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 2,
@@ -592,9 +597,9 @@ function _coder_review_settings_array(&$form_state, $type) {
 /**
  * Implementation of code review page.
  */
-function coder_review_page() {
+function coder_review_page($type = '') {
   $output  = '<div class="coder-disclaimer">' . coder_review_help('coder#disclaimer', array()) . '</div>';
-  $output .= drupal_get_form('coder_review_page_form');
+  $output .= drupal_get_form('coder_review_page_form', $type);
   return $output;
 }
 
@@ -696,7 +701,7 @@ function _coder_review_get_reviews_extensions($defaults, $reviews) {
  * Implements coder_review's main form, in which a user can select reviews and
  * modules/themes to run them on.
  */
-function coder_review_page_form($form_state) {
+function coder_review_page_form($form_state, $arg = '') {
   if (isset($form_state['storage'])) {
     $settings = $form_state['storage'];
     $settings['coder_modules'] = _coder_review_settings_array($form_state, 'module');
@@ -704,7 +709,6 @@ function coder_review_page_form($form_state) {
     drupal_set_title(t('Code review (submitted options)'), PASS_THROUGH);
   }
   else {
-    $arg = arg(1);
     $settings = _coder_review_get_default_settings($arg);
     if ($arg) {
       drupal_set_title(t('Code review (@options)', array('@options' => isset($arg) ? $arg : 'default options')), PASS_THROUGH);
