@@ -10,6 +10,7 @@ files[] = coder_review.drush.inc
 files[] = includes/coder_review_47.inc
 files[] = includes/coder_review_5x.inc
 files[] = includes/coder_review_6x.inc
+files[] = includes/coder_review_7x.inc
 files[] = includes/coder_review_comment.inc
 files[] = includes/coder_review_i18n.inc
 files[] = includes/coder_review_security.inc
