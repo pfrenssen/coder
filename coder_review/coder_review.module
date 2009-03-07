@@ -92,61 +92,66 @@ function coder_review_perm() {
 function coder_review_menu() {
   $items = array();
 
-  $items['coder_review'] = array(
-    'title' => 'Code review',
-    'page callback' => 'coder_review_page',
-    'access arguments' => array('view code review'),
-    'type' => MENU_NORMAL_ITEM,
-  );
-  $items['coder_review/settings'] = array(
-    'title' => 'Selection form',
+  $items['admin/build/coder/review'] = array(
+    'title' => 'Review',
     'page callback' => 'coder_review_page',
     'access arguments' => array('view code review'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -2,
   );
-  $items['coder_review/default'] = array(
+  $items['admin/build/coder/review/default'] = array(
     'title' => 'Default',
     'page callback' => 'coder_review_page',
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
     'weight' => -1,
   );
-  $items['coder_review/core'] = array(
+  $items['admin/build/coder/review/core'] = array(
     'title' => 'Core',
     'page callback' => 'coder_review_page',
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
   );
-  $items['coder_review/active'] = array(
+  $items['admin/build/coder/review/active'] = array(
     'title' => 'Active',
     'page callback' => 'coder_review_page',
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
   );
-  $items['coder_review/all'] = array(
+  $items['admin/build/coder/review/all'] = array(
     'title' => 'All',
     'page callback' => 'coder_review_page',
     'access arguments' => array('view code review all'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
   );
-  $items['coder_review/patches'] = array(
+  $items['admin/build/coder/review/patches'] = array(
     'title' => 'Patches',
     'page callback' => 'coder_review_page',
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 2,
   );
-  $items['admin/settings/coder_review'] = array(
-    'title' => 'Code review',
+  $items['admin/settings/coder/review'] = array(
+    'title' => 'Review',
     'description' => 'Select code review plugins and modules',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('coder_review_admin_settings'),
     'access arguments' => array('administer site configuration'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0,
   );
 
   return $items;
+}
+
+/**
+ * Implementation of hook_menu_alter().
+ */
+function coder_review_menu_alter(&$callbacks) {
+  $callbacks['admin/build/coder']['page callback'] = 'coder_review_page';
+  $callbacks['admin/settings/coder']['page callback'] = 'drupal_get_form';
+  $callbacks['admin/settings/coder']['page arguments'] = array('coder_review_admin_settings');
 }
 
 /**
@@ -652,7 +657,7 @@ function _coder_review_get_default_settings($arg = 'default') {
     default:
       $settings['coder_includes'] = 1;
       $settings['coder_includes_exclusions'] = variable_get('coder_includes_exclusions', '');
-      // TODO: Does this need to go into coder_themes sometimes?
+      // TODO: Does this need to go into coder_review_themes sometimes?
       $settings['coder_modules'] = array($arg => $arg);
       break;
   }
@@ -667,7 +672,7 @@ function coder_review_page_form_submit($form, &$form_state) {
 }
 
 /**
- * Return the extensions used by the reviews, that aren's part of the default extensions.
+ * Return the extensions used by the reviews, that aren't part of the default extensions.
  */
 function _coder_review_get_reviews_extensions($defaults, $reviews) {
   $extensions = array();
@@ -910,7 +915,7 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
   $exclusions = str_replace(array("\r\n", "\r", "\n", '/', '*', '.'), array('|', '|', '|', '\\/', '.*', '\\.'), $exclusions);
   foreach ($files as $file) {
     if (!empty($exclusions) && preg_match("/$exclusions/", $file->filepath)) {
-      continue; // don't review this files.
+      continue; // Don't review this files.
     }
     $filename = drupal_substr($file->filepath, $offset);
     $coder_args['#filename'] = $filename;

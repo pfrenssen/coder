@@ -1,3 +1,51 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Installation file for the coder module.
+ */
+
+function coder_menu() {
+  $items = array();
+
+  if (!module_exists('coder_review') && !module_exists('coder_upgrade')) {
+    $items['admin/settings/coder'] = array(
+      'title' => 'Coder',
+      'page callback' => 'coder_display_required_module_message',
+      'description' => 'Select code review plugins and modules',
+      'access arguments' => array('administer site configuration'),
+    );
+
+    $items['admin/build/coder'] = array(
+      'title' => 'Coder',
+      'page callback' => 'coder_display_required_module_message',
+      'description' => 'Select code review plugins and modules',
+      'access arguments' => array('administer site configuration'),
+    );
+  }
+  else {
+    $items['admin/settings/coder'] = array(
+      'title' => 'Coder',
+      'description' => 'Select code review plugins and modules',
+      'access arguments' => array('administer site configuration'),
+    );
+
+    $items['admin/build/coder'] = array(
+      'title' => 'Coder',
+      'description' => 'Select code review plugins and modules',
+      'access arguments' => array('administer site configuration'),
+    );
+  }
+
+  return $items;
+}
+
+function coder_display_required_module_message() {
+  $message = t('Please enable the "coder review" or "coder upgrade" module.');
+  $build['coder_message'] = array(
+    '#markup' => $message,
+  );
+
+  return drupal_get_page($build);
+}
