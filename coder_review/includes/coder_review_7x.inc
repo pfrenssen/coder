@@ -11,6 +11,9 @@
  */
 function coder_review_7x_reviews() {
   $argex = '(((\$?)[a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'\'|"")';
+
+  $taxonomy_tables = '\{(term_data|term_hierarchy|term_node|term_relation|term_synonym|vocabulary|vocabulary_node_types)\}';
+
   $rules = array(
     // Core Functions Removed
       array(
@@ -103,8 +106,8 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#taxonomy_get_tree --- taxonomy_get_tree()
       array(
         '#type' => 'regex',
-        '#source' => 'allphp',
-        '#value' => '\{(term_data|term_hierarchy|term_node|term_relation|term_synonym|vocabulary|vocabulary_node_types)\}',
+        '#source' => 'quote',
+        '#value' => '^(select\s+.*\s+from\s+' . $taxonomy_tables .  '|insert\s+into\s+' .  $taxonomy_tables . '|update\s+' .  $taxonomy_tables . '\s+set|delete\s+from\s+' . $taxonomy_tables . ')',
         '#warning_callback' => '_coder_review_7x_taxonomy_tables_warning',
       ),
       // http://drupal.org/node/224333#taxonomy_term_load_multiple --- taxonomy_term_load() and taxonomy_term_load_multiple()
@@ -292,7 +295,7 @@ function _coder_review_7x_hook_user_op_warning() {
   return array(
     '#warning' => t('The $op parameter has been removed from !hook_user()',
       array(
-        '!hook_user()' => theme('drupalapi', 'hook_user', '6'),
+        '!hook_user()' => theme('drupalapi', 'hook_user', '7'),
       )
     ),
     '#link' => 'http://drupal.org/node/224333#remove_op',
@@ -303,7 +306,18 @@ function _coder_review_7x_hook_nodeapi_op_warning() {
   return array(
     '#warning' => t('The $op parameter has been removed from !hook_nodeapi()',
       array(
-        '!hook_nodeapi()' => theme('drupalapi', 'hook_nodeapi', '6'),
+        '!hook_nodeapi()' => theme('drupalapi', 'hook_nodeapi', '7'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#remove_op',
+  );
+}
+
+function _coder_review_7x_hook_block_op_warning() {
+  return array(
+    '#warning' => t('The $op parameter has been removed from !hook_block()',
+      array(
+        '!hook_block()' => theme('drupalapi', 'hook_block', '7'),
       )
     ),
     '#link' => 'http://drupal.org/node/224333#remove_op',

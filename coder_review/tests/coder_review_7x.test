@@ -71,6 +71,13 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testTaxonomy7x() {
+    $this->assertCoderReviewFail('  db_query("SELECT * FROM {term_data}")');
+    $this->assertCoderReviewFail('  db_query("SELECT * FROM {term_hierarchy}")');
+    $this->assertCoderReviewFail('  db_query("SELECT * FROM {term_node}")');
+    $this->assertCoderReviewFail('  db_query("SELECT * FROM {term_relation}")');
+    $this->assertCoderReviewFail('  db_query("SELECT * FROM {term_synonym}")');
+    $this->assertCoderReviewFail('  db_query("SELECT * FROM {vocabulary}")');
+    $this->assertCoderReviewFail('  db_query("SELECT * FROM {vocabulary_node_types}")');
   }
 
   function testJavascript7x() {
