@@ -15,12 +15,12 @@ function coder_review_7x_reviews() {
     // Core Functions Removed
       array(
         '#type' => 'regex',
-        '#value' => 'referer_uri\s*\(',
+        '#value' => '[\s\(]referer_uri\s*\(',
         '#warning_callback' => '_coder_review_7x_referer_uri_warning',
       ),
       array(
         '#type' => 'regex',
-        '#value' => 'drupal_clone\s*\(',
+        '#value' => '[\s\(]drupal_clone\s*\(',
         '#warning_callback' => '_coder_review_7x_drupal_clone_warning',
       ),
 
@@ -57,7 +57,7 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#schema-translation --- Schema descriptions are no longer translated
       array(
         '#type' => 'regex',
-        '#value' => 'db_rewrite_sql\s*\(',
+        '#value' => '[\s\(]db_rewrite_sql\s*\(',
         '#warning_callback' => '_coder_review_7x_db_rewrite_sql_warning',
       ),
 
@@ -67,12 +67,23 @@ function coder_review_7x_reviews() {
 
     // Block
       // http://drupal.org/node/224333#block_optional --- Block module now optional
-      // http://drupal.org/node/224333#remove_op --- Remove $op from hook_block
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#function' => '_block$',
+        '#value' => '[\s\(](switch\s*\(\$op\)\s*{|if\s*\(\$op\s)',
+        '#warning_callback' => '_coder_review_7x_hook_block_op_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => 'function\s+[a-z0-9_]+_(block)\s*\(\s*\$op\s*,',
+        '#warning_callback' => '_coder_review_7x_hook_block_op_warning',
+      ),
 
     // Comment
       array(
         '#type' => 'regex',
-        '#value' => '_comment_load\s*\(',
+        '#value' => '[\s\(]_comment_load\s*\(',
         '#warning_callback' => '_coder_review_7x_comment_load_warning',
       ),
       // Any menu items that are using the %_comment wildcard will need to change to %comment.
@@ -131,7 +142,7 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#file_scan_directory_nomatch --- file_scan_directory() now uses a preg regular expression for the no match parameter
       array(
         '#type' => 'regex',
-        '#value' => 'file_set_status\s*\(',
+        '#value' => '[\s\(]file_set_status\s*\(',
         '#warning_callback' => '_coder_review_7x_file_set_status_warning',
       ),
       // http://drupal.org/node/224333#file_validate_extensions --- file_validate_extensions() enforces check for uid=1
@@ -141,22 +152,39 @@ function coder_review_7x_reviews() {
     // User API
       array(
         '#type' => 'regex',
-        '#value' => 'user_delete\s*\(',
+        '#value' => '[\s\(]user_delete\s*\(',
         '#warning_callback' => '_coder_review_7x_user_delete_warning',
+      ),
+      // http://drupal.org/node/224333#logout_path --- Changed log out path from 'logout' to 'user/logout' for consistency
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#function' => '_user$',
+        '#value' => '[\s\(](switch\s*\(\$op\)\s*{|if\s*\(\$op\s)',
+        '#warning_callback' => '_coder_review_7x_hook_user_op_warning',
       ),
       array(
         '#type' => 'regex',
-        '#value' => 'hook_user_delete\s*\(',
-        '#warning_callback' => '_coder_review_7x_hook_user_delete_warning',
+        '#value' => 'function\s+[a-z0-9_]+_(user)\s*\(\s*\$op\s*,',
+        '#warning_callback' => '_coder_review_7x_hook_user_op_warning',
       ),
-      // http://drupal.org/node/224333#logout_path --- Changed log out path from 'logout' to 'user/logout' for consistency
-      // http://drupal.org/node/224333#remove_op --- Remove $op from hook_nodeapi and hook_user
 
     // Node API
       // http://drupal.org/node/224333#node_links --- Move node links into $node->content
       // http://drupal.org/node/224333#node_load_multiple --- node_load() and node_load_multiple()
       // http://drupal.org/node/224333#node_type_base --- In hook_node_info() change 'module' back to 'base' and change  'node' to 'node_content'
-      // http://drupal.org/node/224333#remove_op --- Remove $op from hook_nodeapi and hook_user
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#function' => '_nodeapi$',
+        '#value' => '[\s\(](switch\s*\(\$op\)\s*{|if\s*\(\$op\s)',
+        '#warning_callback' => '_coder_review_7x_hook_nodeapi_op_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => 'function\s+[a-z0-9_]+_(nodeapi)\s*\(\s*&' . $argex . '\s*,\s*\$op\s*,',
+        '#warning_callback' => '_coder_review_7x_hook_nodeapi_op_warning',
+      ),
   );
   $review = array(
     '#title' => t('Converting 6.x modules to 7.x'),
@@ -184,10 +212,10 @@ function _coder_review_7x_referer_uri_warning() {
 
 function _coder_review_7x_drupal_clone_warning() {
   return array(
-    '#warning' => t('!drupal_clone() has been removed and the PHP 5 !clone() should be used instead.',
+    '#warning' => t('!drupal_clone() has been removed and the PHP 5 !clone should be used instead.',
       array(
         '!drupal_clone' => theme('drupalapi', 'drupal_clone', '6'),
-        '!clone' => theme('phpapi', 'clone'),
+        '!clone' => l('clone', 'http://us.php.net/language.oop5.cloning'),
       )
     ),
     '#link' => 'http://drupal.org/node/224333#drupal_clone',
@@ -260,14 +288,24 @@ function _coder_review_7x_user_delete_warning() {
   );
 }
 
-function _coder_review_7x_hook_user_delete_warning() {
+function _coder_review_7x_hook_user_op_warning() {
   return array(
-    '#warning' => t('!hook_user_delete() replaced by !hook_user_cancel()',
+    '#warning' => t('The $op parameter has been removed from !hook_user()',
       array(
-        '!hook_user_delete()' => theme('drupalapi', 'hook_user_delete', '6'),
-        '!hook_user_cancel()' => theme('drupalapi', 'hook_user_cancel', '7'),
+        '!hook_user()' => theme('drupalapi', 'hook_user', '6'),
       )
     ),
-    '#link' => 'http://drupal.org/node/224333#user_cancel',
+    '#link' => 'http://drupal.org/node/224333#remove_op',
+  );
+}
+
+function _coder_review_7x_hook_nodeapi_op_warning() {
+  return array(
+    '#warning' => t('The $op parameter has been removed from !hook_nodeapi()',
+      array(
+        '!hook_nodeapi()' => theme('drupalapi', 'hook_nodeapi', '6'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#remove_op',
   );
 }

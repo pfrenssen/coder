@@ -1,0 +1,109 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Set of simpletests for the coder 6.x to 7.x api upgrade review.
+ */
+require_once dirname(__FILE__) . '/coder_review_test_case.tinc';
+
+class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
+  function __construct($id = NULL) {
+    parent::__construct('upgrade7x', $id);
+  }
+
+  function getInfo() {
+    return array(
+      'name' => t('Coder Upgrade 7.x Tests'),
+      'description' => t('Tests for the coder upgrade7x review.'),
+      'group' => t('Coder'),
+    );
+  }
+
+  function testCoreFunctionsRemoved7x() {
+    $this->assertCoderReviewFail('  $referer = referer_uri();');
+    $this->assertCoderReviewFail('  if (referer_uri()) {');
+    $this->assertCoderReviewPass('  $referer = foo_referer_uri();');
+
+    $this->assertCoderReviewFail('  $clone = drupal_clone($node);');
+    $this->assertCoderReviewFail('  if (drupal_clone($node)) {');
+    $this->assertCoderReviewPass('  $clone = clone $node;');
+    $this->assertCoderReviewPass('  $clone = foo_drupal_clone($node);');
+  }
+
+  function testModule7x() {
+  }
+
+  function testSystem7x() {
+    $this->assertCoderReviewFail('  $foo = $_SESSION["foo"];');
+    $this->assertCoderReviewFail('  $foo = $_SESSION[' . "'foo'" . '];');
+    $this->assertCoderReviewFail('  if ($_SESSION["foo"]) {');
+  }
+
+  function testPermissions7x() {
+  }
+
+  function testDatabase7x() {
+    $this->assertCoderReviewFail('  $sql = db_rewrite_sql("SELECT n.nid FROM {node}");');
+  }
+
+  function testMenu7x() {
+  }
+
+  function testBlock7x() {
+    $this->assertCoderReviewFail("  function mymodule_block(\$op, \$delta, \$edit) {\n}");
+    $this->assertCoderReviewPass("  function mymodule_block(\$delta, \$edit) {\n}");
+    $this->assertCoderReviewFail("  function mymodule_block(\$delta, \$edit) {\n  if (\$op == 'list') {\n  }\n}");
+    $this->assertCoderReviewFail("  function mymodule_block(\$delta, \$edit) {\n  switch (\$op) {\n  case 'list':\n  }\n}");
+  }
+
+  function testComments7x() {
+    $this->assertCoderReviewFail('  $comment = _comment_load($cid);');
+    $this->assertCoderReviewFail('  if (_comment_load($cid)) {');
+    $this->assertCoderReviewPass('  $comment = comment_load($cid);');
+    $this->assertCoderReviewPass('  if (comment_load($cid)) {');
+  }
+
+  function testActions7x() {
+  }
+
+  function testInput7x() {
+  }
+
+  function testTaxonomy7x() {
+  }
+
+  function testJavascript7x() {
+  }
+
+  function testCss7x() {
+  }
+
+  function testTheming7x() {
+  }
+
+  function testForm7x() {
+  }
+
+  function testFile7x() {
+    $this->assertCoderReviewFail('  file_set_status($file, FILE_STATUS_PERMANENT);');
+  }
+
+  function testUser7x() {
+    $this->assertCoderReviewFail('  user_delete($edit, $uid);');
+    $this->assertCoderReviewPass('  foo_user_delete($edit, $uid);');
+    $this->assertCoderReviewPass('  function foo_user_delete($edit, $uid) {\n  }');
+
+    $this->assertCoderReviewPass("  function mymodule_user(\$edit, &\$user) {\n}");
+    $this->assertCoderReviewFail("  function mymodule_user(\$edit, &\$user) {\n  if (\$op == 'load') {\n  }\n}");
+    $this->assertCoderReviewFail("  function mymodule_user(\$edit, &\$user) {\n  switch (\$op) {\n  case 'load':\n  }\n}");
+  }
+
+  function testNode7x() {
+    $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$op, \$teaser, \$page) {\n}");
+    $this->assertCoderReviewPass("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n}");
+    $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n  if (\$op == 'list') {\n  }\n}");
+    $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n  switch (\$op) {\n  case 'list':\n  }\n}");
+  }
+
+}
