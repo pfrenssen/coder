@@ -103,7 +103,7 @@ function coder_review_6x_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]file_save_upload\s*\([^,]+\s*,\s*(\$dest|\$destination|\'\'|"")\s*',
-      '#never' => 'function file_save_upload',
+      '#never' => 'function\s+file_save_upload',
       '#warning_callback' => '_coder_review_6x_file_save_upload_warning',
     ),
     array(
