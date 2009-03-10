@@ -104,6 +104,17 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  function mymodule_user(\$edit, &\$user) {\n}");
     $this->assertCoderReviewFail("  function mymodule_user(\$edit, &\$user) {\n  if (\$op == 'load') {\n  }\n}");
     $this->assertCoderReviewFail("  function mymodule_user(\$edit, &\$user) {\n  switch (\$op) {\n  case 'load':\n  }\n}");
+
+    $this->assertCoderReviewFail("  drupal_goto('logout');");
+    $this->assertCoderReviewPass("  drupal_goto('user/logout');");
+    $this->assertCoderReviewFail("  \$form_state['redirect'] = 'logout';");
+    $this->assertCoderReviewFail("  l('my text', 'logout');");
+    $this->assertCoderReviewFail("  l(t('my text'), 'logout');");
+    $this->assertCoderReviewFail("  l(\$text, 'logout');");
+    $this->assertCoderReviewPass("  \$form_state['redirect'] = 'user/logout';");
+    $this->assertCoderReviewPass("  l('my text', 'user/logout');");
+    $this->assertCoderReviewPass("  l(t('my text'), 'user/logout');");
+    $this->assertCoderReviewPass("  l(\$text, 'user/logout');");
   }
 
   function testNode7x() {

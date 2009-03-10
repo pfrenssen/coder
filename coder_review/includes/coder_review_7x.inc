@@ -158,7 +158,12 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]user_delete\s*\(',
         '#warning_callback' => '_coder_review_7x_user_delete_warning',
       ),
-      // http://drupal.org/node/224333#logout_path --- Changed log out path from 'logout' to 'user/logout' for consistency
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => '[\'"]logout[\'"]',
+        '#warning_callback' => '_coder_review_7x_user_logout_warning',
+      ),
       array(
         '#type' => 'regex',
         '#source' => 'allphp',
@@ -323,3 +328,12 @@ function _coder_review_7x_hook_block_op_warning() {
     '#link' => 'http://drupal.org/node/224333#remove_op',
   );
 }
+
+function _coder_review_7x_user_logout_warning() {
+  return array(
+    '#warning' => t("Log out path changed from 'logout' to 'user/logout'"),
+    '#link' => 'http://drupal.org/node/224333#logout_path',
+  );
+}
+
+
