@@ -69,6 +69,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testActions7x() {
+    $this->assertCoderReviewFail('  actions_synchronize($actions_in_code);');
+    $this->assertCoderReviewFail('  actions_synchronize($foo, $delete_orphans);');
+    $this->assertCoderReviewPass('  actions_synchronize($delete_orphans);');
   }
 
   function testInput7x() {

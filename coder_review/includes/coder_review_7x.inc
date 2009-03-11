@@ -98,7 +98,11 @@ function coder_review_7x_reviews() {
 
 
     // Actions
-      // http://drupal.org/node/224333#actions_synchronize --- Parameters for actions_synchronize() have changed
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]actions_synchronize\s*\((\$actions|[^,]+,)',
+        '#warning_callback' => '_coder_review_7x_actions_synchronize_warning',
+      ),
 
     // Input Sanitization & Input Formats
       // http://drupal.org/node/224333#check_markup_params --- Parameters to check_markup() have changed
@@ -348,5 +352,16 @@ function _coder_review_7x_time_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/224333#time',
+  );
+}
+
+function _coder_review_7x_actions_synchronize_warning() {
+  return array(
+    '#warning' => t('Parameters for !actions_synchronize() have changed',
+      array(
+        '!actions_synchronize()' => theme('drupalapi', 'actions_synchronize', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#actions_synchronize',
   );
 }
