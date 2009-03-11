@@ -1153,6 +1153,19 @@ function _coder_review_read_and_parse_file(&$coder_args) {
         // Assume that html inside quotes doesn't span newlines.
         $in_quote_html = 0;
 
+        // Remove coder's simpletests assertions as they validly contain bad
+        // code, for testing the review rules.
+        if (preg_match('/assertCoderReview(Fail|Pass)/', $this_all_lines)) {
+          $lineno++;
+          $this_all_lines = '';
+          $this_php_lines = '';
+          $this_allphp_lines = '';
+          $this_html_lines = '';
+          $this_comment_lines = '';
+          $this_quote_lines = array('');
+          continue;
+        }
+
         // Remove blank lines now, so we avoid processing them over-and-over.
         if ($this_all_lines != '') {
           if (trim($this_all_lines, "\r\n") != '') {
