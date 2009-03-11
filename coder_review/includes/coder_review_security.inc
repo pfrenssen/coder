@@ -16,7 +16,7 @@ function coder_review_security_reviews() {
   $rules = array(
     array(
       '#type' => 'regex',
-      '#value' => 'l\(check_plain\(.*',
+      '#value' => '[\s\(]l\(check_plain\(.*',
       '#never' => '[\'"]html[\'"]\s*=>\s*(TRUE|1)',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_review_security_l_check_plain_warning',
