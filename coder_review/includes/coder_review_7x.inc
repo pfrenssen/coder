@@ -39,8 +39,12 @@ function coder_review_7x_reviews() {
         '#value' => '$_SESSION',
         '#warning_callback' => '_coder_review_7x_session_warning',
       ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]time\s*\([\w\d\'"]*\)',
+        '#warning_callback' => '_coder_review_7x_time_warning',
+      ),
       // http://drupal.org/node/224333#variable_get_default_null --- Default parameter when getting variables
-      // http://drupal.org/node/224333#time --- Use defined constant REQUEST_TIME instead of time()
       // http://drupal.org/node/224333#rebuild-functions --- Rebuild functions have changed names
       // http://drupal.org/node/224333#hook_modules_action --- New hooks: hook_modules_installed, hook_modules_enabled, hook_modules_disabled, and hook_modules_uninstalled</a>
       // http://drupal.org/node/224333#module_implements_not_module_list --- use module_implements not module_list when calling hook implementations
@@ -223,7 +227,7 @@ function _coder_review_7x_drupal_clone_warning() {
     '#warning' => t('!drupal_clone() has been removed and the PHP 5 !clone should be used instead.',
       array(
         '!drupal_clone' => theme('drupalapi', 'drupal_clone', '6'),
-        '!clone' => l('clone', 'http://us.php.net/language.oop5.cloning'),
+        '!clone' => l(t('!clone', array('!clone' => 'clone')), 'http://us.php.net/language.oop5.cloning'),
       )
     ),
     '#link' => 'http://drupal.org/node/224333#drupal_clone',
@@ -331,9 +335,18 @@ function _coder_review_7x_hook_block_op_warning() {
 
 function _coder_review_7x_user_logout_warning() {
   return array(
-    '#warning' => t("Log out path changed from 'logout' to 'user/logout'"),
+    '#warning' => t('Log out path changed from \'logout\' to \'user/logout\''),
     '#link' => 'http://drupal.org/node/224333#logout_path',
   );
 }
 
-
+function _coder_review_7x_time_warning() {
+  return array(
+    '#warning' => t('For improved performance, it is highly recommended that time() is replaced with REQUEST_TIME',
+      array(
+        '!time()' => theme('phpapi', 'time'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#time',
+  );
+}
