@@ -175,7 +175,7 @@ function coder_review_form_alter(&$form, $form_state, $form_id) {
           foreach ($modules as $name => $data) {
             if (!preg_match('/^#/', $name)) {
               $description = $data['description']['#markup'];
-              $form['modules'][$package][$name]['description']['#markup'] = $description . ' (' . l(t('Code Review'), "coder_review/$name") . ')';
+              $form['modules'][$package][$name]['description']['#markup'] = $description . ' (' . l(t('Code Review'), "admin/build/coder/review/$name") . ')';
             }
           }
         }
@@ -371,7 +371,7 @@ function _coder_review_settings_form($settings, &$system, &$files) {
       else {
         $system_themes[$system->name] = $system->name;
       }
-      $system_links[$system->name] = l($display_name, "coder_review/$system->name");
+      $system_links[$system->name] = l($display_name, "admin/build/coder/review/$system->name");
       $files[$system->name] = $system->filename;
     }
     asort($system_links);
