@@ -21,10 +21,12 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testCoreFunctionsRemoved7x() {
+    // http://drupal.org/node/224333#referer_uri
     $this->assertCoderReviewFail('  $referer = referer_uri();');
     $this->assertCoderReviewFail('  if (referer_uri()) {');
     $this->assertCoderReviewPass('  $referer = foo_referer_uri();');
 
+    // http://drupal.org/node/224333#drupal_clone
     $this->assertCoderReviewFail('  $clone = drupal_clone($node);');
     $this->assertCoderReviewFail('  if (drupal_clone($node)) {');
     $this->assertCoderReviewPass('  $clone = clone $node;');
@@ -32,52 +34,128 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testModule7x() {
+    // http://drupal.org/node/224333#api_php
+    // http://drupal.org/node/224333#absolute_includes
+    // http://drupal.org/node/224333#update_php
+    // http://drupal.org/node/224333#registry
   }
 
   function testSystem7x() {
+    // http://drupal.org/node/224333#drupal_set_session
     $this->assertCoderReviewFail('  $foo = $_SESSION["foo"];');
     $this->assertCoderReviewFail('  $foo = $_SESSION[' . "'foo'" . '];');
     $this->assertCoderReviewFail('  if ($_SESSION["foo"]) {');
 
+    // http://drupal.org/node/224333#time
     $this->assertCoderReviewFail('  $time = time();');
     $this->assertCoderReviewFail('  $time = foo(time());');
     $this->assertCoderReviewPass('  $time = foo_time();');
+
+    // http://drupal.org/node/224333#variable_get_default_null
+    // http://drupal.org/node/224333#rebuild-functions
+    // http://drupal.org/node/224333#hook_modules_action
+    // http://drupal.org/node/224333#module_implements_not_module_list
+    // http://drupal.org/node/224333#drupal_http_request_parameters
+    // http://drupal.org/node/224333#moved_statistics_settings
+
   }
 
   function testPermissions7x() {
+    // http://drupal.org/node/224333#descriptions-permissions
+    // http://drupal.org/node/224333#descriptions-permissions
+    // http://drupal.org/node/224333#bypass_node_access
+    // http://drupal.org/node/224333#moved_statistics_settings
+    // http://drupal.org/node/224333#sorting-permissions
+    // http://drupal.org/node/224333#permission-tables
   }
 
   function testDatabase7x() {
+    // http://drupal.org/node/224333#db_rewrite_sql
     $this->assertCoderReviewFail('  $sql = db_rewrite_sql("SELECT n.nid FROM {node}");');
+
+    // http://drupal.org/node/224333#dbtng
+    // http://drupal.org/node/224333#schema-translation
   }
 
   function testMenu7x() {
+    // http://drupal.org/node/224333#menu-file-path
+    // http://drupal.org/node/224333#menu_callback_array
   }
 
   function testBlock7x() {
+    // http://drupal.org/node/224333#remove_op
     $this->assertCoderReviewFail("  function mymodule_block(\$op, \$delta, \$edit) {\n}");
     $this->assertCoderReviewPass("  function mymodule_block(\$delta, \$edit) {\n}");
     $this->assertCoderReviewFail("  function mymodule_block(\$delta, \$edit) {\n  if (\$op == 'list') {\n  }\n}");
     $this->assertCoderReviewFail("  function mymodule_block(\$delta, \$edit) {\n  switch (\$op) {\n  case 'list':\n  }\n}");
+
+    // http://drupal.org/node/224333#block_optional
   }
 
   function testComments7x() {
+    // http://drupal.org/node/224333#comment-load
     $this->assertCoderReviewFail('  $comment = _comment_load($cid);');
     $this->assertCoderReviewFail('  if (_comment_load($cid)) {');
     $this->assertCoderReviewPass('  $comment = comment_load($cid);');
     $this->assertCoderReviewPass('  if (comment_load($cid)) {');
+    // Any menu items that are using the %_comment wildcard will need to change to %comment.
+    $this->assertCoderReviewFail('  function mymodule_menu() {\n$items[\'foo/%_comment\'] = array();\n}');
+    $this->assertCoderReviewFail('  function mymodule_menu_alter() {\n$items[\'foo/%_comment\'] = array();\n}');
+    $this->assertCoderReviewPass('  function mymodule_menu() {\n$items[\'foo/%comment\'] = array();\n}');
+    $this->assertCoderReviewPass('  function mymodule_menu_alter() {\n$items[\'foo/%comment\'] = array();\n}');
+    $this->assertCoderReviewPass('  $foo = \'foo/%_comment\';');
+
+    // http://drupal.org/node/224333#comment_status
+    $this->assertCoderReviewFail(' db_query(\'SELECT cid FROM {comments} WHERE status = 0\');');
+    $this->assertCoderReviewPass(' db_query(\'SELECT cid FROM {my)comments} WHERE status = 0\');');
   }
 
   function testActions7x() {
+    // http://drupal.org/node/224333#actions_synchronize
     $this->assertCoderReviewFail('  actions_synchronize($actions_in_code);');
     $this->assertCoderReviewFail('  actions_synchronize($foo, $delete_orphans);');
     $this->assertCoderReviewPass('  actions_synchronize($delete_orphans);');
   }
 
   function testInput7x() {
+    // http://drupal.org/node/224333#check_markup_params
+    $this->assertCoderReviewFail('  check_markup($body, $format, $check);');
+    $this->assertCoderReviewFail('  check_markup($body, $format, FALSE);');
+    $this->assertCoderReviewFail('  check_markup($body, $format, TRUE);');
+    $this->assertCoderReviewPass('  check_markup($body, $format, $langcode);');
+    $this->assertCoderReviewPass('  check_markup($body, $format, "en");');
+    $this->assertCoderReviewPass('  check_markup($body, $format, $langcode, FALSE);');
+    $this->assertCoderReviewPass('  check_markup($body, $format);');
+
+    // http://drupal.org/node/224333#drupal_set_title
+    $this->assertCoderReviewFail('  drupal_set_title(check_plain($text));');
+    $this->assertCoderReviewPass('  drupal_set_title($text);');
+    $this->assertCoderReviewFail('  drupal_set_title(t("%test"));');
+    $this->assertCoderReviewFail('  drupal_set_title(t("@test"));');
+    $this->assertCoderReviewFail('  drupal_set_title(t("foo %test"));');
+    $this->assertCoderReviewFail('  drupal_set_title(t("foo @test"));');
+    $this->assertCoderReviewPass('  drupal_set_title(t("test @ 10"));');
+    $this->assertCoderReviewPass('  drupal_set_title(t("test 10% foo"));');
+    $this->assertCoderReviewPass('  drupal_set_title(t("%test"), PASS_THROUGH);');
+    $this->assertCoderReviewPass('  drupal_set_title(t("@test"), PASS_THROUGH);');
+    $this->assertCoderReviewPass('  drupal_set_title(t("test"));');
+
+    // http://drupal.org/node/224333#hook_filter_params
+    $this->assertCoderReviewFail('  function mymodule_filter($op, $delta, $format, $text, $cache_id) {');
+    $this->assertCoderReviewFail('  function mymodule_filter($op, $delta = 0, $format = -1, $text = \'\', $cache_id = 0) {');
+    $this->assertCoderReviewPass('  function mymodule_filter($op, $delta, $format, $text, $langcode, $cache_id) {');
+    $this->assertCoderReviewPass('  function mymodule_filter($op, $delta = 0, $format = -1, $text = \'\', $langcode = \'\', $cache_id = 0) {');
+
+    // http://drupal.org/node/224333#input_format
+    $this->assertCoderReviewFail('  $form[\'format\'] = filter_form($edit[\'format\']);');
+    $this->assertCoderReviewFail('  $form[\'comment\'][\'filter\'] = filter_form(FILTER_FORMAT_DEFAULT);');
+    $this->assertCoderReviewPass('  $format = filter_form(FILTER_FORMAT_DEFAULT);');
   }
 
   function testTaxonomy7x() {
+    // http://drupal.org/node/224333#taxonomy_get_tree
+
+    // http://drupal.org/node/224333#taxonomy_tables
     $this->assertCoderReviewFail('  db_query("SELECT * FROM {term_data}")');
     $this->assertCoderReviewFail('  db_query("SELECT * FROM {term_hierarchy}")');
     $this->assertCoderReviewFail('  db_query("SELECT * FROM {term_node}")');
@@ -85,33 +163,68 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  db_query("SELECT * FROM {term_synonym}")');
     $this->assertCoderReviewFail('  db_query("SELECT * FROM {vocabulary}")');
     $this->assertCoderReviewFail('  db_query("SELECT * FROM {vocabulary_node_types}")');
+
+    // http://drupal.org/node/224333#taxonomy_term_load_multiple
+    // http://drupal.org/node/224333#term_functions
+    // http://drupal.org/node/224333#term_hooks
+    // http://drupal.org/node/224333#taxonomy_crud
+    // http://drupal.org/node/224333#taxonomy_hooks
   }
 
   function testJavascript7x() {
+    // http://drupal.org/node/224333#drupal-behaviors
+    // http://drupal.org/node/224333#drupal_add_js_css_reset
+    // http://drupal.org/node/224333#drupal_add_js_options
+    // http://drupal.org/node/224333#drupal_add_js_weight
+    // http://drupal.org/node/224333#hook_js_alter
+    // http://drupal.org/node/224333#javascript_compatibility
+    // http://drupal.org/node/224333#drupal_add_js_external
   }
 
   function testCss7x() {
+    // http://drupal.org/node/224333#drupal_add_js_options
+    // http://drupal.org/node/224333#drupal_add_js_css_reset
   }
 
   function testTheming7x() {
+    // http://drupal.org/node/224333#drupal_render_theming
+    // http://drupal.org/node/224333#rebuild-functions
   }
 
   function testForm7x() {
+    // http://drupal.org/node/224333#drupal_render_theming
+    // http://drupal.org/node/224333#node_form
+    // http://drupal.org/node/224333#process-functions
+    // http://drupal.org/node/224333#markup
   }
 
   function testFile7x() {
+    // http://drupal.org/node/224333#unmanaged_files
+    // http://drupal.org/node/224333#user_picture
+    // http://drupal.org/node/224333#file_load_multiple
+    // http://drupal.org/node/224333#file_scan_directory_array-itize
+    // http://drupal.org/node/224333#file_scan_directory_nomatch
+
+    // http://drupal.org/node/224333#file_set_status
     $this->assertCoderReviewFail('  file_set_status($file, FILE_STATUS_PERMANENT);');
+
+    // http://drupal.org/node/224333#file_validate_extensions
+    // http://drupal.org/node/224333#remove_FILE_STATUS_TEMPORARY
+    // http://drupal.org/node/224333#preg_match
   }
 
   function testUser7x() {
+    // http://drupal.org/node/224333#user_cancel
     $this->assertCoderReviewFail('  user_delete($edit, $uid);');
     $this->assertCoderReviewPass('  foo_user_delete($edit, $uid);');
-    $this->assertCoderReviewPass('  function foo_user_delete($edit, $uid) {\n  }');
+    $this->assertCoderReviewPass('  function foo_user_delete($edit, $uid) {');
 
+    // http://drupal.org/node/224333#remove_op
     $this->assertCoderReviewPass("  function mymodule_user(\$edit, &\$user) {\n}");
     $this->assertCoderReviewFail("  function mymodule_user(\$edit, &\$user) {\n  if (\$op == 'load') {\n  }\n}");
     $this->assertCoderReviewFail("  function mymodule_user(\$edit, &\$user) {\n  switch (\$op) {\n  case 'load':\n  }\n}");
 
+    // http://drupal.org/node/224333#logout_path
     $this->assertCoderReviewFail('  drupal_goto(\'logout\');');
     $this->assertCoderReviewPass("  drupal_goto('user/logout');");
     $this->assertCoderReviewFail('  $form_state[\'redirect\'] = \'logout\';');
@@ -125,6 +238,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testNode7x() {
+    // http://drupal.org/node/224333#node_links
+    // http://drupal.org/node/224333#node_load_multiple
+    // http://drupal.org/node/224333#node_type_base
+
+    // http://drupal.org/node/224333#remove_op
     $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$op, \$teaser, \$page) {\n}");
     $this->assertCoderReviewPass("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n}");
     $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n  if (\$op == 'list') {\n  }\n}");

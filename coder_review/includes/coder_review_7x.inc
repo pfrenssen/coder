@@ -93,7 +93,13 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]_comment_load\s*\(',
         '#warning_callback' => '_coder_review_7x_comment_load_warning',
       ),
-      // Any menu items that are using the %_comment wildcard will need to change to %comment.
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#function' => '_menu$|_menu_alter$',
+        '#value' => '%_comment',
+        '#warning_callback' => '_coder_review_7x_comment_wildcard_warning',
+      ),
       // http://drupal.org/node/224333#comment_status --- Comment status values in the database have flipped so they match node status
 
 
@@ -105,10 +111,28 @@ function coder_review_7x_reviews() {
       ),
 
     // Input Sanitization & Input Formats
-      // http://drupal.org/node/224333#check_markup_params --- Parameters to check_markup() have changed
-      // http://drupal.org/node/224333#drupal_set_title --- drupal_set_title() uses check_plain() by default
-      // http://drupal.org/node/224333#hook_filter_params --- Parameters to hook_filter() have changed
-      // http://drupal.org/node/224333#input_format --- New #input_format to assign input format selection to fields. Changes 'body' field location in node, comment, block, etc.
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]check_markup\s*\((' . $argex . '\s*,\s*){2}(\$check|FALSE|TRUE)',
+        '#warning_callback' => '_coder_review_7x_check_markup_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => '[\s\(]drupal_set_title\s*\(\s*(check_plain\s*\(|t\s*\(\s*[\'"][^@%]*(@\w|\%\w))',
+        '#never' => 'PASS_THROUGH',
+        '#warning_callback' => '_coder_review_7x_drupal_set_title_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => 'function\s+\w+_filter\s*\(([^,]+?,\s*){4}' . $argex . '[^,]*\)',
+        '#warning_callback' => '_coder_review_7x_hook_filter_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '\$form\[.+?=\s*filter_form\(',
+        '#warning_callback' => '_coder_review_7x_input_format_warning',
+      ),
 
     // Taxonomy
       // http://drupal.org/node/224333#taxonomy_get_tree --- taxonomy_get_tree()
@@ -131,9 +155,11 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#drupal_add_js_weight --- Replace 'core', 'module' and 'theme' with 'file' in drupal_add_js()
       // http://drupal.org/node/224333#hook_js_alter --- New hook_js_alter to alter JavaScript
       // http://drupal.org/node/224333#javascript_compatibility --- JavaScript should be compatible with other libraries than jQuery
+      // http://drupal.org/node/224333#drupal_add_js_external
 
     // CSS
       // http://drupal.org/node/224333#drupal_add_js_options --- Changed parameters for drupal_add_js() and drupal_add_css()
+      // http://drupal.org/node/224333#drupal_add_js_css_reset --- Ability to reset JavaScript/CSS
 
     // Theming
       // http://drupal.org/node/224333#drupal_render_theming --- drupal_render theming properties changed
@@ -273,10 +299,17 @@ function _coder_review_7x_comment_load_warning() {
   );
 }
 
+function _coder_review_7x_comment_wildcard_warning() {
+  return array(
+    '#warning' => t('%_comment wildcard has been renamed to %comment'),
+    '#link' => 'http://drupal.org/node/224333#comment-load',
+  );
+}
+
 function _coder_review_7x_taxonomy_tables_warning() {
   return array(
     '#warning' => t("Taxonomy DB table names have changed to begin with 'taxonomy_'"),
-    '#link' => 'http://drupal.org/node/224333#file_set_status',
+    '#link' => 'http://drupal.org/node/224333#taxonomy_tables',
   );
 }
 
@@ -365,3 +398,47 @@ function _coder_review_7x_actions_synchronize_warning() {
     '#link' => 'http://drupal.org/node/224333#actions_synchronize',
   );
 }
+
+function _coder_review_7x_check_markup_warning() {
+  return array(
+    '#warning' => t('Parameters for !check_markup() have changed',
+      array(
+        '!check_markup()' => theme('drupalapi', 'check_markup', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#check_markup_params',
+  );
+}
+
+function _coder_review_7x_drupal_set_title_warning() {
+  return array(
+    '#warning' => t('!drupal_set_title() now uses !check_plain() by default',
+      array(
+        '!drupal_set_title()' => theme('drupalapi', 'drupal_set_title', 7),
+        '!check_plain()' => theme('drupalapi', 'check_plain', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#drupal_set_title',
+  );
+}
+
+function _coder_review_7x_hook_filter_warning() {
+  return array(
+    '#warning' => t('Parameters for !hook_filter() have changed',
+      array(
+        '!hook_filter()' => theme('drupalapi', 'hook_filter', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#hook_filter_params',
+  );
+}
+
+function _coder_review_7x_input_format_warning() {
+  return array(
+    '#warning' => t('New #input_format to assign input format selection to fields.'),
+    '#link' => 'http://drupal.org/node/224333#input_format',
+  );
+}
+
+
+
