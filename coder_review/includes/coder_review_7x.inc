@@ -11,7 +11,6 @@
  */
 function coder_review_7x_reviews() {
   $argex = '(((\$?)[a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'\'|"")';
-
   $taxonomy_tables = '\{(term_data|term_hierarchy|term_node|term_relation|term_synonym|vocabulary|vocabulary_node_types)\}';
 
   $rules = array(
@@ -100,7 +99,12 @@ function coder_review_7x_reviews() {
         '#value' => '%_comment',
         '#warning_callback' => '_coder_review_7x_comment_wildcard_warning',
       ),
-      // http://drupal.org/node/224333#comment_status --- Comment status values in the database have flipped so they match node status
+      array(
+        '#type' => 'regex',
+        '#source' => 'quote',
+        '#value' => '\{comments\}\s+WHERE\s+.*?\s*status\s*(!=|=|<>|>|<)\s*(0|1)',
+        '#warning_callback' => '_coder_review_7x_comment_status_warning',
+      ),
 
 
     // Actions
@@ -440,5 +444,10 @@ function _coder_review_7x_input_format_warning() {
   );
 }
 
-
+function _coder_review_7x_comment_status_warning() {
+  return array(
+    '#warning' => t('Comment status values in the database have flipped so they match node status. We recommend you use constants like COMMENT_NOT_PUBLISHED in the future.'),
+    '#link' => 'http://drupal.org/node/224333#comment_status',
+  );
+}
 

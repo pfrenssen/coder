@@ -107,7 +107,10 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#comment_status
     $this->assertCoderReviewFail(' db_query(\'SELECT cid FROM {comments} WHERE status = 0\');');
-    $this->assertCoderReviewPass(' db_query(\'SELECT cid FROM {my)comments} WHERE status = 0\');');
+    $this->assertCoderReviewFail(' db_query(\'SELECT cid FROM {comments} WHERE status != 0\');');
+    $this->assertCoderReviewFail(' db_query(\'SELECT cid FROM {comments} WHERE status <> 0\');');
+    $this->assertCoderReviewPass(' db_query(\'SELECT cid FROM {comments} WHERE status = :status\', array(\':status\' => COMMENT_NOT_PUBLISHED));');
+    $this->assertCoderReviewPass(' db_query(\'SELECT cid FROM {my_comments} WHERE status = 0\');');
   }
 
   function testActions7x() {
