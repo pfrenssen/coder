@@ -37,7 +37,10 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#api_php
     // http://drupal.org/node/224333#absolute_includes
     // http://drupal.org/node/224333#update_php
+
     // http://drupal.org/node/224333#registry
+    $this->assertCoderReviewFail('  if (function_exists(\'my_function\')) {');
+    $this->assertCoderReviewPass('  if (drupal_function_exists(\'my_function\')) {');
   }
 
   function testSystem7x() {
@@ -52,7 +55,10 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  $time = foo_time();');
 
     // http://drupal.org/node/224333#variable_get_default_null
+
     // http://drupal.org/node/224333#rebuild-functions
+    $this->assertCoderReviewFail('  drupal_rebuild_code_registry();');
+
     // http://drupal.org/node/224333#hook_modules_action
     // http://drupal.org/node/224333#module_implements_not_module_list
     // http://drupal.org/node/224333#drupal_http_request_parameters
@@ -170,7 +176,21 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#taxonomy_term_load_multiple
     // http://drupal.org/node/224333#term_functions
     // http://drupal.org/node/224333#term_hooks
+
     // http://drupal.org/node/224333#taxonomy_crud
+    $this->assertCoderReviewFail('  taxonomy_get_term($tid);');
+    $this->assertCoderReviewPass('  mytaxonomy_get_term($tid);');
+    $this->assertCoderReviewFail('  taxonomy_save_term($term);');
+    $this->assertCoderReviewPass('  mytaxonomy_save_term($term);');
+    $this->assertCoderReviewFail('  taxonomy_term_save(array(\'tid\' => 123));');
+    $this->assertCoderReviewFail('  taxonomy_del_term($tid);');
+    $this->assertCoderReviewPass('  mytaxonomy_del_term($tid);');
+    $this->assertCoderReviewFail('  taxonomy_save_vocabulary($vocab);');
+    $this->assertCoderReviewPass('  mytaxonomy_save_vocabulary($vocab);');
+    $this->assertCoderReviewFail('  taxonomy_vocabulary_save(array(\'tid\' => 123));');
+    $this->assertCoderReviewFail('  taxonomy_del_vocabulary($vocab);');
+    $this->assertCoderReviewPass('  mytaxonomy_del_vocabulary($vocab);');
+
     // http://drupal.org/node/224333#taxonomy_hooks
   }
 
@@ -191,7 +211,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   function testTheming7x() {
     // http://drupal.org/node/224333#drupal_render_theming
+
     // http://drupal.org/node/224333#rebuild-functions
+    $this->assertCoderReviewFail('  drupal_rebuild_theme_registry();');
   }
 
   function testForm7x() {
@@ -210,9 +232,13 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#file_set_status
     $this->assertCoderReviewFail('  file_set_status($file, FILE_STATUS_PERMANENT);');
+    $this->assertCoderReviewPass('  myfile_set_status($file, FILE_STATUS_PERMANENT);');
 
     // http://drupal.org/node/224333#file_validate_extensions
     // http://drupal.org/node/224333#remove_FILE_STATUS_TEMPORARY
+    $this->assertCoderReviewFail('  $file->status = FILE_STATUS_TEMPORARY;');
+    $this->assertCoderReviewPass('  $file->status = MY_FILE_STATUS_TEMPORARY;');
+
     // http://drupal.org/node/224333#preg_match
   }
 

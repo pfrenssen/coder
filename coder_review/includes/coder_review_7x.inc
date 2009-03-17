@@ -14,6 +14,14 @@ function coder_review_7x_reviews() {
   $taxonomy_tables = '\{(term_data|term_hierarchy|term_node|term_relation|term_synonym|vocabulary|vocabulary_node_types)\}';
 
   $rules = array(
+   // .info file parsing and checking
+      array(
+        '#type' => 'callback',
+        '#value' => '_coder_review_7x_info_file_review_callback',
+        // @NOTE: this warning_callback isn't used.  It only exists to catch
+        // potential errors in the code.
+        '#warning_callback' => '_coder_review_7x_info_file_review_callback_warning',
+      ),
     // Core Functions Removed
       array(
         '#type' => 'regex',
@@ -31,6 +39,12 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#absolute_includes --- Use absolute path (constructed from DRUPAL_ROOT) when including a file
       // http://drupal.org/node/224333#update_php --- Update functions in .install files must include a Doxygen style comment
       // http://drupal.org/node/224333#registry --- Module .info files must now specify all loadable code files explicitly.
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]function_exists\s*\(',
+        '#warning_callback' => '_coder_review_7x_function_exists_warning',
+      ),
+
 
     // System
       array(
@@ -44,7 +58,11 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_time_warning',
       ),
       // http://drupal.org/node/224333#variable_get_default_null --- Default parameter when getting variables
-      // http://drupal.org/node/224333#rebuild-functions --- Rebuild functions have changed names
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]drupal_rebuild_code_registry\s*\(',
+        '#warning_callback' => '_coder_review_7x_code_registry_rebuild_function_warning',
+      ),
       // http://drupal.org/node/224333#hook_modules_action --- New hooks: hook_modules_installed, hook_modules_enabled, hook_modules_disabled, and hook_modules_uninstalled</a>
       // http://drupal.org/node/224333#module_implements_not_module_list --- use module_implements not module_list when calling hook implementations
       // http://drupal.org/node/224333#drupal_http_request_parameters --- Parameters for drupal_http_request() have changed
@@ -147,9 +165,44 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_taxonomy_tables_warning',
       ),
       // http://drupal.org/node/224333#taxonomy_term_load_multiple --- taxonomy_term_load() and taxonomy_term_load_multiple()
-      // http://drupal.org/node/224333#term_functions --- Standardised and renamed taxonomy term save/load/delete functions</a>
-      // http://drupal.org/node/224333#term_hooks --- Added taxonomy term hooks
-      // http://drupal.org/node/224333#taxonomy_crud --- Taxonomy CRUD functions renamed and refactored 
+      // ? http://drupal.org/node/224333#term_functions --- Standardised and renamed taxonomy term save/load/delete functions</a>
+      // ? http://drupal.org/node/224333#term_hooks --- Added taxonomy term hooks
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]taxonomy_get_term\s*\(',
+        '#warning_callback' => '_coder_review_7x_taxonomy_get_term_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]taxonomy_save_term\s*\(',
+        '#warning_callback' => '_coder_review_7x_taxonomy_save_term_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]taxonomy_term_save\s*\(\s*array\s*\(',
+        '#warning_callback' => '_coder_review_7x_taxonomy_save_term_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]taxonomy_del_term\s*\(',
+        '#warning_callback' => '_coder_review_7x_taxonomy_del_term_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]taxonomy_save_vocabulary\s*\(',
+        '#warning_callback' => '_coder_review_7x_taxonomy_save_vocabulary_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]taxonomy_vocabulary_save\s*\(\s*array\s*\(',
+        '#warning_callback' => '_coder_review_7x_taxonomy_save_vocabulary_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]taxonomy_del_vocabulary\s*\(',
+        '#warning_callback' => '_coder_review_7x_taxonomy_del_vocabulary_warning',
+      ),
+
       // http://drupal.org/node/224333#taxonomy_hooks --- New hooks: hook_taxonomy_term_load(), hook_taxonomy_term_insert(), hook_taxonomy_term_update(), hook_taxonomy_term_delete() and hook_taxonomy_vocabulary_load(), hook_taxonomy_vocabulary_insert(), hook_taxonomy_vocabulary_update(), hook_taxonomy_vocabulary_delete()
 
     // Javascript
@@ -167,7 +220,11 @@ function coder_review_7x_reviews() {
 
     // Theming
       // http://drupal.org/node/224333#drupal_render_theming --- drupal_render theming properties changed
-      // http://drupal.org/node/224333#rebuild-functions --- Rebuild functions have changed names
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]drupal_rebuild_theme_registry\s*\(',
+        '#warning_callback' => '_coder_review_7x_theme_rebuild_function_warning',
+      ),
 
     // Form API
       // http://drupal.org/node/224333#drupal_render_theming --- drupal_render theming properties changed
@@ -187,7 +244,12 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_file_set_status_warning',
       ),
       // http://drupal.org/node/224333#file_validate_extensions --- file_validate_extensions() enforces check for uid=1
-      // http://drupal.org/node/224333#remove_FILE_STATUS_TEMPORARY --- Removed FILE_STATUS_TEMPORARY
+      array(
+        '#type' => 'regex',
+        '#value' => '[^\w]FILE_STATUS_TEMPORARY[^\w]',
+        '#warning_callback' => '_coder_review_7x_file_status_temporary_warning',
+      ),
+
       // http://drupal.org/node/224333#preg_match --- file_scan_directory() and drupal_system_listing() use preg regular expressions
 
     // User API
@@ -239,6 +301,37 @@ function coder_review_7x_reviews() {
     '#severity' => 'critical',
   );
   return array('upgrade7x' => $review);
+}
+
+/**
+ * Define the rule callbacks for 7.x, see do_coder_review_callback().
+ */
+function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+  // Only perform this check for module's (not includes).
+  $filename = $coder_args['#filename'];
+  if (substr($filename, -7) == '.module') {
+
+    // @NOTE: no simpletest for this.
+    // Read the .info file.
+    $files_line = FALSE;
+    $filename = drupal_substr(realpath($filename), 0, -7) . '.info';
+    if (file_exists($filename)) {
+      if ($lines = file($filename)) {
+        foreach ($lines as $lineno => $line) {
+          if (preg_match('/^files\s*\[\s*\]\s*=/', $line)) {
+            $files_line = TRUE;
+          }
+        }
+        if (empty($files_line)) {
+          $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
+          $tmprule = $rule;
+          $tmprule['#warning_callback'] = '_coder_review_7x_info_files_warning';
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
+        }
+      }
+    }
+
+  }
 }
 
 /**
@@ -451,3 +544,112 @@ function _coder_review_7x_comment_status_warning() {
   );
 }
 
+function _coder_review_7x_file_status_temporary_warning() {
+  return array(
+    '#warning' => t('Removed FILE_STATUS_TEMPORARY constant.'),
+    '#link' => 'http://drupal.org/node/224333#remove_FILE_STATUS_TEMPORARY',
+  );
+}
+
+function _coder_review_7x_theme_rebuild_function_warning() {
+  return array(
+    '#warning' => t('!drupal_rebuild_theme_registry() function has been renamed to !drupal_theme_rebuild()',
+      array(
+        '!drupal_rebuild_theme_registry()' => theme('drupalapi', 'drupal_rebuild_theme_registry', 6),
+        '!drupal_theme_rebuild()' => theme('drupalapi', 'drupal_theme_rebuild', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#rebuild-functions',
+  );
+}
+
+function _coder_review_7x_code_registry_rebuild_function_warning() {
+  return array(
+    '#warning' => t('!drupal_rebuild_code_registry() function has been renamed to !registry_rebuild()',
+      array(
+        '!drupal_rebuild_code_registry()' => theme('drupalapi', 'drupal_rebuild_code_registry', 6),
+        '!registry_rebuild()' => theme('drupalapi', 'registry_rebuild', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#rebuild-functions',
+  );
+}
+
+function _coder_review_7x_taxonomy_get_term_warning() {
+  return array(
+    '#warning' => t('!taxonomy_get_term() function has been renamed to !taxonomy_term_load()',
+      array(
+        '!taxonomy_get_term()' => theme('drupalapi', 'taxonomy_get_term', 6),
+        '!taxonomy_term_load()' => theme('drupalapi', 'taxonomy_term_load', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#taxonomy_crud',
+  );
+}
+
+function _coder_review_7x_taxonomy_save_term_warning() {
+  return array(
+    '#warning' => t('!taxonomy_save_term() function has been renamed to !taxonomy_term_save() and takes a term object as a parameter instead of any array.',
+      array(
+        '!taxonomy_save_term()' => theme('drupalapi', 'taxonomy_save_term', 6),
+        '!taxonomy_term_save()' => theme('drupalapi', 'taxonomy_term_save', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#taxonomy_crud',
+  );
+}
+
+function _coder_review_7x_taxonomy_del_term_warning() {
+  return array(
+    '#warning' => t('!taxonomy_del_term() function has been renamed to !taxonomy_term_delete()',
+      array(
+        '!taxonomy_del_term()' => theme('drupalapi', 'taxonomy_del_term', 6),
+        '!taxonomy_term_delete()' => theme('drupalapi', 'taxonomy_term_delete', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#taxonomy_crud',
+  );
+}
+
+function _coder_review_7x_taxonomy_save_vocabulary_warning() {
+  return array(
+    '#warning' => t('!taxonomy_save_vocabulary() function has been renamed to !taxonomy_vocabulary_save() and takes a vocabulary object as a parameter instead of any array.',
+      array(
+        '!taxonomy_save_vocabulary()' => theme('drupalapi', 'taxonomy_save_vocabulary', 6),
+        '!taxonomy_vocabulary_save()' => theme('drupalapi', 'taxonomy_vocabulary_save', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#taxonomy_crud',
+  );
+}
+
+function _coder_review_7x_taxonomy_del_vocabulary_warning() {
+  return array(
+    '#warning' => t('!taxonomy_del_vocabulary() function has been renamed to !taxonomy_vocabulary_delete()',
+      array(
+        '!taxonomy_del_vocabulary()' => theme('drupalapi', 'taxonomy_del_vocabulary', 6),
+        '!taxonomy_vocabulary_delete()' => theme('drupalapi', 'taxonomy_vocabulary_delete', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#taxonomy_crud',
+  );
+}
+
+function _coder_review_7x_info_files_warning() {
+  return array(
+    '#warning' => t('Module .info files must now specify all loadable code files explicitly.'),
+    '#link' => 'http://drupal.org/node/224333#registry',
+  );
+}
+
+function _coder_review_7x_function_exists_warning() {
+  return array(
+    '#warning' => t('Please use the !drupal_function_exists() function instead of !function_exists()',
+      array(
+        '!function_exists()' => theme('phpapi', 'function_exists'),
+        '!drupal_function_exists()' => theme('drupalapi', 'drupal_function_exists', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#registry',
+  );
+}
