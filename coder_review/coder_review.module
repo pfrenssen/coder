@@ -188,7 +188,7 @@ function coder_review_form_alter(&$form, $form_state, $form_id) {
  * Helper functions for settings form.
  */
 function _coder_review_default_reviews() {
-  return drupal_map_assoc(array('style', 'sql', 'comment', 'security'));
+  return drupal_map_assoc(array('style', 'sql', 'comment', 'security', 'i18n'));
 }
 
 /**
@@ -736,10 +736,11 @@ function coder_review_page_form($form_state, $arg = '') {
     // Code review non-module core files.
     $module_weight = 0;
     if (isset($settings['coder_core']) && $settings['coder_core']) {
+      $php_extensions = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
       $coder_args = array(
         '#reviews' => $reviews,
         '#severity' => $settings['coder_severity'],
-        '#php_extensions' => array(),
+        '#php_extensions' => $php_extensions,
         '#include_extensions' => array(),
 //      '#filename' => $filename,
       );
@@ -919,10 +920,12 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
   $exclusions = str_replace(array("\r\n", "\r", "\n", '/', '*', '.'), array('|', '|', '|', '\\/', '.*', '\\.'), $exclusions);
   foreach ($files as $file) {
     if (!empty($exclusions) && preg_match("/$exclusions/", $file->filepath)) {
-      continue; // Don't review this files.
+      continue; // Don't review this file.
     }
     $filename = drupal_substr($file->filepath, $offset);
+    $php_extensions = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
     $coder_args['#filename'] = $filename;
+    $coder_args['#php_extensions'] = $php_extensions;
     $results = do_coder_reviews($coder_args);
     $stats[$filename] = $results['#stats'];
     unset($results['#stats']);
