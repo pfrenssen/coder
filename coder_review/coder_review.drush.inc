@@ -22,7 +22,7 @@ function coder_review_drush_help($path, $arg) {
 function coder_review_drush_command() {
   $items['coder review'] = array(
     'callback' => 'coder_review_drush_review',
-    'description' => t('Run code reviews'),
+    'description' => dt('Run code reviews'),
   );
   return $items;
 }
@@ -94,7 +94,7 @@ function coder_review_drush_review() {
     }
     $output = array();
     if (isset($severity_name)) {
-      $output[] = t('Severity @severity_name', array('@severity_name' => $severity_name));
+      $output[] = dt('Severity @severity_name', array('@severity_name' => $severity_name));
       $settings['coder_severity'] = _coder_review_severity($severity_name);
     }
     if (count($reviews)) {
@@ -142,7 +142,7 @@ function theme_drush_coder_review_warning($warning, $severity_name, $lineno = 0,
 
 function coder_review_print_drush_messages() {
   foreach (drupal_get_messages() as $type => $messages) {
-    drush_print(t(ucfirst($type) . ' Messages') . ":\n " . _coder_review_drush_output(implode("\n ", $messages)) . "\n");
+    drush_print(dt(ucfirst($type) . ' Messages') . ":\n " . _coder_review_drush_output(implode("\n ", $messages)) . "\n");
   }
 }
 
