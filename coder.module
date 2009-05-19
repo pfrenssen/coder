@@ -304,7 +304,7 @@ function _coder_settings_form($settings, &$system, &$files) {
         }
         $patch_line_numbers = $matches[1];
       }
-      else if (preg_match("/^\+[^\+]+/", $line)) {
+      else if (preg_match("/^\+(?!\+)/", $line)) {
         $patch .= ltrim($line, '+') ."\n";
         $in_patch = 1;
       }
