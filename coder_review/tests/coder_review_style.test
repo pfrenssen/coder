@@ -92,6 +92,9 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  $a = $v .\'string\';');
     $this->assertCoderReviewFail('  $a = $v ."string";');
     $this->assertCoderReviewFail('  $a = $v.\'string\';');
+    $this->assertCoderReviewFail('  $a = $v .  \'string\';');
+    $this->assertCoderReviewFail('  $a = $v .  "string";');
+    $this->assertCoderReviewFail('  $a = $v  . \'string\';');
     $this->assertCoderReviewFail('  $a = $some_func(). \'string\';');
     $this->assertCoderReviewPass('  $a = 1.0 * .1 * 1. * (0.1) * (1.) * (.1) * (1.0);');
   }

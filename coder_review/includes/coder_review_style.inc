@@ -47,7 +47,7 @@ function coder_review_style_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '(\.\'\'|\'\'\.|\.""|""\.|[^\(\s0-9]\.|\.[^\)\=\s0-9])',
+      '#value' => '(\.(?:|\s{2,})[^\)\=\s0-9]|[^\(\s0-9](?:|\s{2,})\.)',
       '#warning' => 'String concatenation should be formatted with a space separating the operators (dot .) and the surrounding terms',
     ),
     array(
