@@ -45,11 +45,13 @@ function coder_style_reviews() {
       '#value' => '(\S=>|=>\S)',
       '#warning' => 'Arrays should be formatted with a space separating each element and assignment operator',
     ),
+    /* Commenting out for string concatentation style change.
     array(
       '#type' => 'regex',
       '#value' => '(\.\s\'\'|\'\'\s\.|\.\s""|\.\s"")',
       '#warning' => 'string concatenation should be formatted without a space separating the operators (dot .) and a quote',
     ),
+    */
     array(
       '#type' => 'regex',
       '#value' => '([^\(\'\"\s0-9]\.|\.[^\)\'\"\=\s0-9])',
