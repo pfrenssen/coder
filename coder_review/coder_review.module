@@ -330,7 +330,7 @@ function _coder_review_settings_form($settings, &$system, &$files) {
         }
         $patch_line_numbers = $matches[1];
       }
-      elseif (preg_match("/^\+[^\+]+/", $line)) {
+      elseif (preg_match("/^\+(?!\+)/", $line)) {
         $patch .= ltrim($line, '+') . "\n";
         $in_patch = 1;
       }
