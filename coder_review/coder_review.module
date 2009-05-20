@@ -323,8 +323,8 @@ function _coder_review_settings_form($settings, &$system, &$files) {
           $patch = '';
         }
         if ($matches[3]) {
-          $current_function = $matches[3];
-          $patch = 'function ' . $current_function . "() {\n";
+          $function_current = $matches[3];
+          $patch = 'function ' . $function_current . "() {\n";
         }
         $patch_line_numbers = $matches[1];
       }
@@ -1592,26 +1592,45 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
   if (isset($rule['#value']) && !empty($lines)) {
     $regexflags = isset($rule['#case-sensitive']) ? '' : 'i';
     $regex = '/' . $rule['#value'] . '/' . $regexflags;
+    $class_regex = isset($rule['#class']) ? '/'. $rule['#class'] .'/' : '';
+    $class_not_regex = isset($rule['#class-not']) ? '/'. $rule['#class-not'] .'/' : '';
+    $class_current = '';
+    $class_paren = 0;
     $function_regex = isset($rule['#function']) ? '/' . $rule['#function'] . '/' : '';
     $function_not_regex = isset($rule['#function-not']) ? '/' . $rule['#function-not'] . '/' : '';
-    $current_function = '';
-    $paren = 0;
+    $function_current = '';
+    $function_paren = 0;
     $not_regex = isset($rule['#not']) ? '/' . $rule['#not'] . '/' . $regexflags : '';
     $never_regex = isset($rule['#never']) ? '/' . $rule['#never'] . '/' . $regexflags : '';
     foreach ($lines as $lineno => $line_array) {
       foreach ($line_array as $line) {
         // Some rules apply only within certain functions.
         if ($function_regex || $function_not_regex) {
-          if (preg_match('/function (\w+)\(/', $line, $match)) {
-            $current_function = $match[1];
+          if (preg_match('/function (\w+)\s*\(/', $line, $match)) {
+            $function_current = $match[1];
           }
           if (preg_match('/([{}])/', $line, $match)) {
-            $paren += ($match[0] == '{') ? 1 : -1;
+            $function_paren += ($match[0] == '{') ? 1 : -1;
           }
-          if ($paren < 0 || $current_function == ''
-              || ($function_regex && !preg_match($function_regex, $current_function))
-              || ($function_not_regex && preg_match($function_not_regex, $current_function))
+          if ($function_paren < 0 || $function_current == ''
+              || ($function_regex && !preg_match($function_regex, $function_current))
+              || ($function_not_regex && preg_match($function_not_regex, $function_current))
               ) {
+            continue;
+          }
+        }
+        // Some rules apply only within certain classes.
+        if ($class_regex || $class_not_regex) {
+          if (preg_match('/class (\w+)/', $line, $match) || preg_match('/interface (\w+)/', $line, $match)) {
+            $class_current = $match[1];
+          }
+          if (preg_match('/([{}])/', $line, $match)) {
+            $class_paren += ($match[0] == '{') ? 1 : -1;
+          }
+          if ($class_paren < 0 || ($class_regex && $class_current == '')
+            || ($class_regex && !preg_match($class_regex, $class_current))
+            || ($class_not_regex && preg_match($class_not_regex, $class_current))
+            ) {
             continue;
           }
         }
