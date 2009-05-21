@@ -166,6 +166,9 @@ function coder_style_reviews() {
  * Define the rule callbacks for style.
  */
 function _coder_style_closing_php_callback(&$coder_args, $review, $rule, $lines, &$results) {
+  if (empty($lines)) {
+    return;
+  }
   for ($lineno = -1; $last = array_slice($lines, $lineno); $lineno --) {
     $lastline = $last[0][0];
     if (preg_match('/\S/', $lastline)) {
