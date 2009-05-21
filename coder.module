@@ -897,7 +897,9 @@ function _coder_page_form_includes(&$form, $coder_args, $name, $files, $offset, 
       continue; // don't review this files.
     }
     $filename = drupal_substr($file->filename, $offset);
+    $php_extensions = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
     $coder_args['#filename'] = $filename;
+    $coder_args['#php_extensions'] = $php_extensions;
     $results = do_coder_reviews($coder_args);
     $stats[$filename] = $results['#stats'];
     unset($results['#stats']);
