@@ -1547,7 +1547,7 @@ function do_coder_review($coder_args, $review) {
  *   Results array variable to save errors to.
  */
 function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) {
-  if (isset($rule['#value'])) {
+  if (isset($rule['#value']) && !empty($lines)) {
     $regexflags = isset($rule['#case-sensitive']) ? '' : 'i';
     $regex = '/'. $rule['#value'] .'/'. $regexflags;
     $class_regex = isset($rule['#class']) ? '/'. $rule['#class'] .'/' : '';
