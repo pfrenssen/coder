@@ -1937,9 +1937,9 @@ function theme_coder_review_warning($warning, $severity_name, $lineno = 0, $line
   // Extract description from warning.
   if (is_array($warning)) {
     $description = isset($warning['#description']) ? $warning['#description'] : '';
+    $link = $warning['#link'];
     $warning = $warning['#warning'];
-    if (isset($warning['#link'])) {
-      $link = $warning['#link'];
+    if (isset($link)) {
       $warning .= '  (' . l(t('Drupal Docs'), $link) . ')';
     }
   }
