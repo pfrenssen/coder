@@ -61,7 +61,7 @@ function coder_review_comment_reviews() {
       '#type' => 'regex',
       '#source' => 'comment',
       '#value' => '\@see\s*.*',
-      '#not' => '^\@see\s*[a-zA-Z0-9_\.\-]+\(\)',
+      '#not' => '^\@see\s*[a-zA-Z0-9_\.\-:]+\(\)',
       '#warning' => '@see should always be followed by a function name with ()',
       '#severity' => 'minor',
     ),
