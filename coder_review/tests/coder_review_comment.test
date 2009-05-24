@@ -69,6 +69,7 @@ class CoderReviewCommentTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail($this->comment_header . "/**\n * @see some_function().");
     $this->assertCoderReviewFail($this->comment_header . "/**\n * @see some_function(), foo.tpl.php.");
     $this->assertCoderReviewFail($this->comment_header . "/**\n * @see\n * some_function()");
+    $this->assertCoderReviewFail($this->comment_header . "// @see some_function()");
   }
 
 }
