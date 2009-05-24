@@ -5,9 +5,9 @@
  * @file
  * Set of simpletests for the commenting standards review.
  */
-require_once dirname(__FILE__) . '/coder_review_test_case.tinc';
+require_once dirname(__FILE__) . '/coder_test_case.tinc';
 
-class CoderReviewCommentTest extends CoderReviewTestCase {
+class CoderCommentTest extends CoderTestCase {
   function __construct($id = NULL) {
     parent::__construct('comment', $id);
   }
