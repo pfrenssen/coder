@@ -284,23 +284,29 @@ function _coder_settings_form($settings, &$system, &$files) {
       if ($line == '') {
         continue;
       }
-      if (preg_match("/^\+\+\+\s+([\w\.\-\/]+\s)/", $line, $matches)) {
-        if ($patch) {
+      if (preg_match("/^\+\+\+\s+([\w\.\-\/]+)\s*.*?$/", $line, $matches)) {
+        if (!empty($patch)) {
           $patches[$filename .": ". $patch_line_numbers] = $patch;
           $system[$filename .": ". $patch_line_numbers] = $filename;
           $patch = '';
         }
         $filename = $matches[1];
       }
-      else if (preg_match("/^(@@\s+\-\d+,\d+\s+\+\d+,\d+\s+@@)\s*(function\s([\w]+).*?)*$/", $line, $matches)) {
-        if ($patch) {
+      elseif (preg_match("/^(@@\s+\-\d+,\d+\s+\+\d+,\d+\s+@@)\s*((function|(protected|private|public)*\s*class)\s([\w]+).*?)*$/", $line, $matches)) {
+        if (!empty($patch)) {
           $patches[$filename .": ". $patch_line_numbers] = $patch;
           $system[$filename .": ". $patch_line_numbers] = $filename;
           $patch = '';
         }
-        if ($matches[3]) {
-          $function_current = $matches[3];
-          $patch = 'function '. $function_current ."() {\n";
+        if (isset($matches[3]) && isset($matches[4])) {
+          if ($matches[3] == 'function') {
+            $function_current = $matches[4];
+            $patch = 'function ' . $function_current . "() {\n";
+          }
+          else {
+            $class_current = $matches[4];
+            $patch = $matches[2] . "\n";
+          }
         }
         $patch_line_numbers = $matches[1];
       }
@@ -316,7 +322,7 @@ function _coder_settings_form($settings, &$system, &$files) {
         $in_patch = 0;
       }
     }
-    if ($patch) {
+    if (!empty($patch)) {
       $patches[$filename .": ". $patch_line_numbers] = $patch;
       $system[$filename .": ". $patch_line_numbers] = $filename;
       $patch = '';
