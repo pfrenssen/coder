@@ -95,6 +95,7 @@ function coder_style_reviews() {
       '#value' => '(?-i)(function\s+|\$)(([a-z]+[A-Z]+([a-z]*[A-Z]*)*)|([A-Z]+[a-z]+([A-Z]*[a-z]*)*))',
       '#warning' => 'do not use mixed case (camelCase), use lower case and _',
       '#class-not' => '.+',
+      '#filename-not' => array('test'), // Add this line too for patch files, where we don't have have class context.
     ),
     array(
       '#type' => 'regex',
