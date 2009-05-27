@@ -1527,13 +1527,22 @@ function _coder_review_severity_name($coder_args, $review, $rule) {
  */
 function do_coder_review($coder_args, $review) {
   $results = array('#stats' => array('minor' => 0, 'normal' => 0, 'critical' => 0));
+  $allowed_extensions = array_merge($coder_args['#php_extensions'], $coder_args['#include_extensions'], array('module'));
   if ($review['#rules']) {
     // Get the review's severity, used when the rule severity is not defined.
     $default_severity = isset($review['#severity']) ? _coder_review_severity($review['#severity']) : SEVERITY_NORMAL;
 
+    // Get filename of current file.
+    $filename = empty($coder_args['#patch']) ? $coder_args['#filename'] : 'coder_review.patch';
+    $is_patch = 0;
+    // Handle special case filename for patch files, if available.
+    if ($coder_args['#patch'] && preg_match('/(.+?):/', $coder_args['#filename'], $matches)) {
+      $filename = empty($matches) ? 'coder_review.patch' : $matches[1];
+      $is_patch = 1;
+    }
+
     foreach ($review['#rules'] as $rule) {
       // Ignore rules that don't match the file extension.
-      $filename = empty($coder_args['#patch']) ? $coder_args['#filename'] : 'coder_review.patch';
       if ($filename_includes = isset($rule['#filename']) ? $rule['#filename'] : (isset($rule['#filename-not']) ? $coder_args['#php_extensions'] : NULL)) {
         $regex = '/\.(' . implode('|', $filename_includes) . ')$/i';
         if (!preg_match($regex, $filename, $matches)) {
@@ -1545,7 +1554,17 @@ function do_coder_review($coder_args, $review) {
       $not = isset($rule['#filename-not']) ? $rule['#filename-not'] : (isset($rule['#filename']) ? NULL : $coder_args['#include_extensions']);
       if ($not) {
         $regex = '/\.(' . implode('|', $not) . ')$/i';
-        if (preg_match($regex, $filename, $matches)) {
+        // Check filename.  If a patch, also check the .patch extension.
+        if (preg_match($regex, $filename, $matches) || ($is_patch && preg_match($regex, 'coder_review.patch', $matches))) {
+          continue;
+        }
+      }
+
+      // If it's a patch, it can contain any sort of file, so ensure the file
+      // being processed is either php or one of the supported extensions.
+      if ($is_patch) {
+        $regex = '/\.(' . implode('|', $allowed_extensions) . ')$/i';
+        if (!preg_match($regex, $filename, $matches)) {
           continue;
         }
       }
