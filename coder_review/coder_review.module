@@ -154,6 +154,7 @@ function coder_review_menu() {
  */
 function coder_review_menu_alter(&$callbacks) {
   $callbacks['admin/development/coder']['page callback'] = 'coder_review_page';
+  $callbacks['admin/settings/coder']['page callback'] = 'drupal_get_form';
   $callbacks['admin/settings/coder']['page arguments'] = array('coder_review_admin_settings');
 }
 
@@ -547,14 +548,14 @@ function theme_coder_review_table_cols($form) {
 }
 
 /**
- * Implementation of settings page for Drupal 5.
+ * Implementation of settings page.
  */
 function coder_review_admin_settings() {
   $settings = _coder_review_get_default_settings();
   $form = _coder_review_settings_form($settings, $system, $files);
   $form['help'] = array(
     '#type' => 'markup',
-    '#markup' => t('After setting these defaults, use <a href="@url">coder review</a> to perform code reviews.', array('@url' => url('coder_review'))),
+    '#markup' => t('After setting these defaults, use <a href="@url">coder review</a> to perform code reviews.', array('@url' => url('admin/development/coder/review'))),
     '#weight' => -1,
   );
   $form['#submit'][] = 'coder_review_settings_form_submit';
@@ -562,7 +563,7 @@ function coder_review_admin_settings() {
 }
 
 /**
- * Callback function for settings page in Drupal 5.
+ * Callback function for settings page.
  */
 function coder_review_settings_form_submit($form, &$form_state) {
   $form_state['storage'] = $form_state['values'];

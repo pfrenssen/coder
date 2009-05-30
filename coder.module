@@ -13,7 +13,7 @@ function coder_menu() {
     $items['admin/settings/coder'] = array(
       'title' => 'Coder',
       'page callback' => 'coder_display_required_module_message',
-      'description' => 'Select code review plugins and modules',
+      'description' => 'Select code review plugins and modules, and upgrade directories.',
       'access arguments' => array('administer site configuration'),
     );
 
@@ -27,7 +27,7 @@ function coder_menu() {
   else {
     $items['admin/settings/coder'] = array(
       'title' => 'Coder',
-      'description' => 'Select code review plugins and modules',
+      'description' => 'Select code review plugins and modules, and upgrade directories.',
       'access arguments' => array('administer site configuration'),
     );
 
