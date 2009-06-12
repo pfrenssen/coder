@@ -6,7 +6,7 @@ class CoderI18NTest extends CoderTestCase {
     parent::__construct('i18n', $id);
   }
   
-  function getInfo() {
+  public static function getInfo() {
     return array(
       'name' => t('Coder I18N Tests'),
       'description' => t('Tests for the coder I18N review.'),

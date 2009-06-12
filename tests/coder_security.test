@@ -6,7 +6,7 @@ class CoderSecurityTest extends CoderTestCase {
     parent::__construct('security', $id);
   }
   
-  function getInfo() {
+  public static function getInfo() {
     return array(
       'name' => t('Coder Security Tests'),
       'description' => t('Tests for the coder security review.'),

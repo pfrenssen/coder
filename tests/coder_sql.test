@@ -6,7 +6,7 @@ class CoderSQLTest extends CoderTestCase {
     parent::__construct('sql', $id);
   }
   
-  function getInfo() {
+  public static function getInfo() {
     return array(
       'name' => t('Coder SQL Tests'),
       'description' => t('Tests for the coder SQL review.'),

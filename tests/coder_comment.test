@@ -12,7 +12,7 @@ class CoderCommentTest extends CoderTestCase {
     parent::__construct('comment', $id);
   }
 
-  function getInfo() {
+  public static function getInfo() {
     return array(
       'name' => t('Coder Comment Style Tests'),
       'description' => t('Tests for the coder commenting standards review.'),
