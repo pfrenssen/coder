@@ -12,7 +12,7 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     parent::__construct('style', $id);
   }
 
-  function getInfo() {
+  public static function getInfo() {
     return array(
       'name' => t('Coder Style Tests'),
       'description' => t('Tests for the coder style review.'),

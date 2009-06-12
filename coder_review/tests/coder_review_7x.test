@@ -12,7 +12,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     parent::__construct('upgrade7x', $id);
   }
 
-  function getInfo() {
+  public static function getInfo() {
     return array(
       'name' => t('Coder Upgrade 7.x Tests'),
       'description' => t('Tests for the coder upgrade7x review.'),

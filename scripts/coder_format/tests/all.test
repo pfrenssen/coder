@@ -18,7 +18,7 @@ if (is_dir('Text/Diff')) {
  * Coder Format tests.
  */
 class CoderFormatTest extends CoderReviewTestCase {
-  function getInfo() {
+  public static function getInfo() {
     return array(
       'name'  => 'Full coder_format tests',
       'description'  => t('Tests all of the functionality of the coder_format script.'),
