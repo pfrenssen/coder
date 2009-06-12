@@ -47,5 +47,5 @@ function coder_display_required_module_message() {
     '#markup' => $message,
   );
 
-  return drupal_get_page($build);
+  return $build;
 }
