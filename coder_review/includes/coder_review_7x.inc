@@ -78,7 +78,13 @@ function coder_review_7x_reviews() {
 
     // Database
       // http://drupal.org/node/224333#dbtng --- A completely new database API has been added
-      // http://drupal.org/node/224333#schema-translation --- Schema descriptions are no longer translated
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#function' => '_schema$',
+        '#value' => '[\'"]description[\'"]\s*=>\s*(t|st)\(',
+        '#warning_callback' => '_coder_review_7x_schema_translation_warning',
+      ),
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]db_rewrite_sql\s*\(',
@@ -280,7 +286,20 @@ function coder_review_7x_reviews() {
     // Node API
       // http://drupal.org/node/224333#node_links --- Move node links into $node->content
       // http://drupal.org/node/224333#node_load_multiple --- node_load() and node_load_multiple()
-      // http://drupal.org/node/224333#node_type_base --- In hook_node_info() change 'module' back to 'base' and change  'node' to 'node_content'
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#function' => '_node_info$',
+        '#value' => '[\'"](module)[\'"]\s*=>\s*[\'"].*?[\'"]',
+        '#warning_callback' => '_coder_review_7x_hook_node_info_module_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#function' => '_node_info$',
+        '#value' => '[\'"](module|base)[\'"]\s*=>\s*[\'"]node[\'"]',
+        '#warning_callback' => '_coder_review_7x_hook_node_info_node_content_warning',
+      ),
       array(
         '#type' => 'regex',
         '#source' => 'allphp',
@@ -292,6 +311,11 @@ function coder_review_7x_reviews() {
         '#type' => 'regex',
         '#value' => 'function\s+[a-z0-9_]+_(nodeapi)\s*\(\s*&' . $argex . '\s*,\s*\$op\s*,',
         '#warning_callback' => '_coder_review_7x_hook_nodeapi_op_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]node_invoke_nodeapi\s*\(',
+        '#warning_callback' => '_coder_review_7x_node_invoke_nodeapi_warning',
       ),
   );
   $review = array(
@@ -361,6 +385,18 @@ function _coder_review_7x_drupal_clone_warning() {
   );
 }
 
+function _coder_review_7x_node_invoke_nodeapi_warning() {
+  return array(
+    '#warning' => t('!node_invoke_nodeapi() has been removed and !module_invoke_all(\'node_\' . $hook, $node); should be used instead.',
+      array(
+        '!node_invoke_nodeapi' => theme('drupalapi', 'node_invoke_nodeapi', '6'),
+        '!module_invoke_all' => theme('drupalapi', 'module_invoke_all', '6'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#node_invoke_nodeapi',
+  );
+}
+
 function _coder_review_7x_session_warning() {
   return array(
     '#warning' => t('Use !drupal_set_session() instead of $_SESSION',
@@ -381,6 +417,17 @@ function _coder_review_7x_db_rewrite_sql_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/224333#db_rewrite_sql',
+  );
+}
+
+function _coder_review_7x_schema_translation_warning() {
+  return array(
+    '#warning' => t('Schema descriptions are no longer translated in !hook_schema()',
+      array(
+        '!hook_schema()' => theme('drupalapi', 'hook_schema', '6'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#schema-translation',
   );
 }
 
@@ -453,6 +500,28 @@ function _coder_review_7x_hook_nodeapi_op_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/224333#remove_op',
+  );
+}
+
+function _coder_review_7x_hook_node_info_node_content_warning() {
+  return array(
+    '#warning' => t('For content types managed by the node module, change "node" to "node_content" in !hook_node_info()',
+      array(
+        '!hook_node_info()' => theme('drupalapi', 'hook_node_info', '7'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#node_type_base',
+  );
+}
+
+function _coder_review_7x_hook_node_info_module_warning() {
+  return array(
+    '#warning' => t('Change "module" to "base" in !hook_node_info()',
+      array(
+        '!hook_node_info()' => theme('drupalapi', 'hook_node_info', '7'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#node_type_base',
   );
 }
 

@@ -31,6 +31,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  if (drupal_clone($node)) {');
     $this->assertCoderReviewPass('  $clone = clone $node;');
     $this->assertCoderReviewPass('  $clone = foo_drupal_clone($node);');
+    $this->assertCoderReviewFail('  node_invoke_nodeapi($node, $hook);');
   }
 
   function testModule7x() {
@@ -80,7 +81,14 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  $sql = db_rewrite_sql("SELECT n.nid FROM {node}");');
 
     // http://drupal.org/node/224333#dbtng
+
     // http://drupal.org/node/224333#schema-translation
+    $this->assertCoderReviewFail("  function mymodule_schema() {\n \$schema['table'] = array(\n  'description' => t('My table description.'));\n}");
+    $this->assertCoderReviewFail("  function mymodule_schema() {\n \$schema['table'] = array(\n  'description' => st('My table description.'));\n}");
+    $this->assertCoderReviewFail("  function mymodule_schema() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => t('My field description.'))));\n}");
+    $this->assertCoderReviewFail("  function mymodule_schema() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => st('My field description.'))));\n}");
+    $this->assertCoderReviewPass("  function mymodule_schema() {\n \$schema['table'] = array(\n  'description' => 'My table description.');\n}");
+    $this->assertCoderReviewPass("  function mymodule_schema() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => 'My field description.')));\n}");
   }
 
   function testMenu7x() {
@@ -269,13 +277,22 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   function testNode7x() {
     // http://drupal.org/node/224333#node_links
     // http://drupal.org/node/224333#node_load_multiple
+
     // http://drupal.org/node/224333#node_type_base
+    $this->assertCoderReviewFail("  function mymodule_node_info() {\n  return array('blog' => array('name' => t('Blog entry'), 'module' => 'blog'));\n}");
+    $this->assertCoderReviewPass("  function mymodule_node_info() {\n  return array('blog' => array('name' => t('Blog entry'), 'base' => 'blog'));\n}");
+    $this->assertCoderReviewPass("  function mymodule_node_info() {\n  return array('blog' => array('name' => t('Blog entry, module'), 'base' => 'blog'));\n}");
+    $this->assertCoderReviewFail("  function mymodule_node_info() {\n  return array('blog' => array('name' => t('Blog entry'), 'base' => 'node'));\n}");
+    $this->assertCoderReviewPass("  function mymodule_node_info() {\n  return array('blog' => array('name' => t('Blog entry'), 'base' => 'node_content'));\n}");
 
     // http://drupal.org/node/224333#remove_op
     $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$op, \$teaser, \$page) {\n}");
     $this->assertCoderReviewPass("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n}");
     $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n  if (\$op == 'list') {\n  }\n}");
     $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n  switch (\$op) {\n  case 'list':\n  }\n}");
+
+    // http://drupal.org/node/224333#node_invoke_nodeapi
+    $this->assertCoderReviewPass('  module_invoke_all("node_" . $hook, $node);');
   }
 
 }
