@@ -68,8 +68,8 @@ function coder_review_comment_reviews() {
     array(
       '#type' => 'regex',
       '#source' => 'comment',
-      '#value' => '\@see.*$',
-      '#not' => '^\@see\s+([\w\.\-\(\)\?\/:\&=]+,\s)*[\w\.\-\(\)\?\/:\&=]+$',
+      '#value' => '\@see\s*\w+.*$',
+      '#not' => '^\@see\s+([\w\.\-\(\)\?\/:\&=]+,\s)*[\w\.\-\(\)\?\/:\&=]+?[\w\(\)\/]$',
       '#warning' => '@see references should be separated by "," followed by a single space and with no trailing punctuation',
       '#severity' => 'minor',
     ),
