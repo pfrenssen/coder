@@ -28,47 +28,48 @@ class CoderCommentTest extends CoderTestCase {
   }
 
   function testIdCommentLine() {
-    $this->assertCoderReviewPass('// $Id$' . "\n". $this->file_line);
-    $this->assertCoderReviewPass('// $Id$' . "\n" . $this->file_line);
-    $this->assertCoderReviewFail('/* $Id$ */' . "\n" . $this->file_line);
+    $this->assertCoderPass('// $Id$' . "\n". $this->file_line);
+    $this->assertCoderPass('// $Id$' . "\n" . $this->file_line);
+    $this->assertCoderFail('/* $Id$ */' . "\n" . $this->file_line);
   }
 
   function testGeneralCommentStyle() {
-    $this->assertCoderReviewPass($this->comment_header . "/**\n * Comment.\n");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n* Comment.\n");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n *Comment.\n");
+    $this->assertCoderPass($this->comment_header . "/**\n * Comment.\n");
+    $this->assertCoderFail($this->comment_header . "/**\n* Comment.\n");
+    $this->assertCoderFail($this->comment_header . "/**\n *Comment.\n");
   }
 
   function testHookImplementationComment() {
-    $this->assertCoderReviewPass($this->comment_header . "/**\n * Implementation of hook_foo().\n */");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * Implementation of hook_foo()\n */");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * Implementation of hook_foo\n */");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * Implementation of hook_foo.\n */");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * implementation of hook_foo().\n */");
-    $this->assertCoderReviewFail($this->comment_header . '// Implementation of hook_foo().');
-    $this->assertCoderReviewFail($this->comment_header . "/* Implementation of hook_foo().\n */");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * Implemetation of hook_foo().\n */");
+    $this->assertCoderPass($this->comment_header . "/**\n * Implementation of hook_foo().\n */");
+    $this->assertCoderFail($this->comment_header . "/**\n * Implementation of hook_foo()\n */");
+    $this->assertCoderFail($this->comment_header . "/**\n * Implementation of hook_foo\n */");
+    $this->assertCoderFail($this->comment_header . "/**\n * Implementation of hook_foo.\n */");
+    $this->assertCoderFail($this->comment_header . "/**\n * implementation of hook_foo().\n */");
+    $this->assertCoderFail($this->comment_header . '// Implementation of hook_foo().');
+    $this->assertCoderFail($this->comment_header . "/* Implementation of hook_foo().\n */");
+    $this->assertCoderFail($this->comment_header . "/**\n * Implemetation of hook_foo().\n */");
   }
 
   function testFileDoxygenComment() {
-    $this->assertCoderReviewPass($this->id_line . "/**\n * @file\n * File description.");
-    $this->assertCoderReviewFail($this->id_line . "/**\n * @file File description.");
-    $this->assertCoderReviewFail($this->id_line . "/**\n * @file File description.");
+    $this->assertCoderPass($this->id_line . "/**\n * @file\n * File description.");
+    $this->assertCoderFail($this->id_line . "/**\n * @file File description.");
+    $this->assertCoderFail($this->id_line . "/**\n * @file File description.");
   }
 
   function testSeeDoxygenComment() {
-    $this->assertCoderReviewPass($this->comment_header . "/**\n * @see some_function()");
-    $this->assertCoderReviewPass($this->comment_header . "/**\n * @see some_function(), foo.tpl.php");
-    $this->assertCoderReviewPass($this->comment_header . "/**\n * @see some_function(), foo.tpl.php, bar.tpl.php");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * foo bar @see some_function()");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * @see some_function");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * @see some_function, foo.tpl.php");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * @see some_function() foo.tpl.php");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * @see some_function(), foo.tpl.php bar.tpl.php");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * @see some_function(),");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * @see some_function().");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * @see some_function(), foo.tpl.php.");
-    $this->assertCoderReviewFail($this->comment_header . "/**\n * @see\n * some_function()");
+    $this->assertCoderPass($this->comment_header . "/**\n * @see some_function()");
+    $this->assertCoderPass($this->comment_header . "/**\n * @see some_function(), foo.tpl.php");
+    $this->assertCoderPass($this->comment_header . "/**\n * @see some_function(), foo.tpl.php, bar.tpl.php");
+    $this->assertCoderFail($this->comment_header . "/**\n * foo bar @see some_function()");
+    $this->assertCoderFail($this->comment_header . "/**\n * @see some_function");
+    $this->assertCoderFail($this->comment_header . "/**\n * @see some_function, foo.tpl.php");
+    $this->assertCoderFail($this->comment_header . "/**\n * @see some_function() foo.tpl.php");
+    $this->assertCoderFail($this->comment_header . "/**\n * @see some_function(),foo.tpl.php");
+    $this->assertCoderFail($this->comment_header . "/**\n * @see some_function(), foo.tpl.php bar.tpl.php");
+    $this->assertCoderFail($this->comment_header . "/**\n * @see some_function(),");
+    $this->assertCoderFail($this->comment_header . "/**\n * @see some_function().");
+    $this->assertCoderFail($this->comment_header . "/**\n * @see some_function(), foo.tpl.php.");
+    $this->assertCoderFail($this->comment_header . "/**\n * @see\n * some_function()");
   }
 
 }
