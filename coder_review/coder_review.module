@@ -1537,7 +1537,7 @@ function do_coder_review($coder_args, $review) {
     $filename = empty($coder_args['#patch']) ? $coder_args['#filename'] : 'coder_review.patch';
     $is_patch = 0;
     // Handle special case filename for patch files, if available.
-    if ($coder_args['#patch'] && preg_match('/(.+?):/', $coder_args['#filename'], $matches)) {
+    if (!empty($coder_args['#patch']) && preg_match('/(.+?):/', $coder_args['#filename'], $matches)) {
       $filename = empty($matches) ? 'coder_review.patch' : $matches[1];
       $is_patch = 1;
     }
