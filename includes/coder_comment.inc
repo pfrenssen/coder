@@ -46,37 +46,39 @@ function coder_comment_reviews() {
       '#type' => 'regex',
       '#source' => 'comment',
       '#value' => '.*\@see\s*',
-      '#not' => '^\s*\*\s*\@see.*$',
+      '#not' => '^(\s*\*|\/\/)\s*\@see.*$',
       '#warning' => '@see should always be at the beginning of a line, never inline in other comments.',
       '#severity' => 'minor',
     ),
     array(
       '#type' => 'regex',
       '#source' => 'comment',
+      '#value' => '\/\/\s*\@see\s*',
+      '#warning_callback' => '_coder_comment_see_comment_style_warning',
+      '#severity' => 'minor',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'comment',
       '#value' => '\@see\s*.*',
-      '#not' => '^\@see\s*[a-zA-Z_\.\-]+\(\)',
-      '#warning' => '@see should always be followed by a function name with ()',
+      '#not' => '^\@see\s+((\w+\(\)|[\w\.\-\?\/:\&=]+\.[\w\.\->\?\/:\&=]+)[,\s]+)*(\w+\(\)|[\w\.\->\?\/:\&=]+\.[\w\.\->\?\/:\&=]+)\W*$',
+      '#warning' => '@see should always be followed by a filename, a url or a function name with ()',
       '#severity' => 'minor',
     ),
     array(
       '#type' => 'regex',
       '#source' => 'comment',
-      '#value' => '\@see\s*.*?[\.\,;]+\s*$',
-      '#warning' => '@see should have no trailing punctuation',
+      '#value' => '\@see\s*\w+.*$',
+      '#not' => '^\@see\s+([\w\.\-\(\)\?\/:\&=]+,\s)*[\w\.\-\(\)\?\/:\&=]+?[\w\(\)\/]$',
+      '#warning' => '@see references should be separated by "," followed by a single space and with no trailing punctuation',
       '#severity' => 'minor',
     ),
     array(
       '#type' => 'regex',
       '#source' => 'comment',
-      '#value' => '\@see\s*[a-zA-Z_\.]+\(\)(\s+[a-zA-Z_\.\-]+)+',
-      '#warning' => '@see references should be separated from the function name by ", "',
-      '#severity' => 'minor',
-    ),
-    array(
-      '#type' => 'regex',
-      '#source' => 'comment',
-      '#value' => '\@see\s*[a-zA-Z_\.]+\(\),.*?(\s+[a-zA-Z_\.\-]+){2,}',
-      '#warning' => '@see references should be separated by ", "',
+      '#value' => '\@see\s.*$',
+      '#not' => '^\@see [^\s]',
+      '#warning' => '@see should be separated from the references by one space only',
       '#severity' => 'minor',
     ),
     array(
@@ -153,3 +155,11 @@ function _coder_comment_invalid_file_block() {
     '#link' => 'http://drupal.org/node/1354#files',
   );
 }
+
+function _coder_comment_see_comment_style_warning() {
+  return array(
+    '#warning' => t('@' . 'see should always be in a comment block rather than as an inline comment.'),
+    '#link' => 'http://drupal.org/node/1354',
+  );
+}
+
