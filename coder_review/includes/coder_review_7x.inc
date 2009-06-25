@@ -33,48 +33,52 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]drupal_clone\s*\(',
         '#warning_callback' => '_coder_review_7x_drupal_clone_warning',
       ),
+      // http://drupal.org/node/224333#node_view --- node_view was removed in favor of node_build
+      // http://drupal.org/node/224333#comment_validate_removed --- comment_validate() has been removed
 
     // Module Info / Install
       // http://drupal.org/node/224333#api_php --- Code documentation to module.api.php
-      // http://drupal.org/node/224333#absolute_includes --- Use absolute path (constructed from DRUPAL_ROOT) when including a file
       // http://drupal.org/node/224333#update_php --- Update functions in .install files must include a Doxygen style comment
       // http://drupal.org/node/224333#registry --- Module .info files must now specify all loadable code files explicitly.
+
+
+    // System
+      // http://drupal.org/node/224333#absolute_includes --- Use absolute path (constructed from DRUPAL_ROOT) when including a file
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]function_exists\s*\(',
         '#warning_callback' => '_coder_review_7x_function_exists_warning',
       ),
-
-
-    // System
       array(
         '#type' => 'grep',
         '#value' => '$_SESSION',
         '#warning_callback' => '_coder_review_7x_session_warning',
       ),
+      // http://drupal.org/node/224333#variable_get_default_null --- Default parameter when getting variables
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]time\s*\([\w\d\'"]*\)',
         '#warning_callback' => '_coder_review_7x_time_warning',
       ),
-      // http://drupal.org/node/224333#variable_get_default_null --- Default parameter when getting variables
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]drupal_rebuild_code_registry\s*\(',
         '#warning_callback' => '_coder_review_7x_code_registry_rebuild_function_warning',
       ),
       // http://drupal.org/node/224333#hook_modules_action --- New hooks: hook_modules_installed, hook_modules_enabled, hook_modules_disabled, and hook_modules_uninstalled</a>
+      // http://drupal.org/node/224333#drupal_uninstall_modules --- drupal_uninstall_module() is now drupal_uninstall_modules()
       // http://drupal.org/node/224333#module_implements_not_module_list --- use module_implements not module_list when calling hook implementations
       // http://drupal.org/node/224333#drupal_http_request_parameters --- Parameters for drupal_http_request() have changed
       // http://drupal.org/node/224333#moved_statistics_settings --- Moved statistics settings from admin/reports/settings to admin/settings/statistics and added a new 'administer statistics' permission
 
-    // Permission
+    // Permissions and Access
       // http://drupal.org/node/224333#descriptions-permissions --- Permissions are required to have descriptions
       // http://drupal.org/node/224333#descriptions-permissions --- Permissions are required to have titles additionally to descriptions
       // http://drupal.org/node/224333#bypass_node_access --- "administer nodes" permission split into "administer nodes" and "bypass node access"
       // http://drupal.org/node/224333#moved_statistics_settings --- Moved statistics settings from admin/reports/settings to admin/settings/statistics and added a new 'administer statistics' permission
       // http://drupal.org/node/224333#sorting-permissions --- Permissions are no longer sorted alphabetically
       // http://drupal.org/node/224333#permission-tables --- New permission tables.
+      // http://drupal.org/node/224333#node_access_alter_hooks --- Node access hooks now have drupal_alter() functions
 
     // Database
       // http://drupal.org/node/224333#dbtng --- A completely new database API has been added
@@ -129,6 +133,7 @@ function coder_review_7x_reviews() {
         '#value' => '\{comments\}\s+WHERE\s+.*?\s*status\s*(!=|=|<>|>|<)\s*(0|1)',
         '#warning_callback' => '_coder_review_7x_comment_status_warning',
       ),
+      // http://drupal.org/node/224333#comment_save_refactor --- comment_save() now supports programatic saving
 
 
     // Actions
@@ -218,7 +223,9 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#drupal_add_js_weight --- Replace 'core', 'module' and 'theme' with 'file' in drupal_add_js()
       // http://drupal.org/node/224333#hook_js_alter --- New hook_js_alter to alter JavaScript
       // http://drupal.org/node/224333#javascript_compatibility --- JavaScript should be compatible with other libraries than jQuery
-      // http://drupal.org/node/224333#drupal_add_js_external
+      // http://drupal.org/node/224333#drupal_add_js_external --- External JavaScript can now be referenced through drupal_add_js()
+      // http://drupal.org/node/224333#local_settings_behaviors --- Settings passed locally to JavaScript Behaviors
+      // http://drupal.org/node/224333#jquery_13 --- jQuery 1.3.x
 
     // CSS
       // http://drupal.org/node/224333#drupal_add_js_options --- Changed parameters for drupal_add_js() and drupal_add_css()
@@ -233,10 +240,12 @@ function coder_review_7x_reviews() {
       ),
 
     // Form API
+      // http://drupal.org/node/224333#element_theme_properties --- Element theming properties used by drupal_render() have changed
       // http://drupal.org/node/224333#drupal_render_theming --- drupal_render theming properties changed
       // http://drupal.org/node/224333#node_form --- Simpler checking for the node form during hook_form_alter()
-      // http://drupal.org/node/224333#process-functions --- Some <code>#process</code> functions have been renamed
-      // http://drupal.org/node/224333#markup --- Use <code>'#markup'</code> not <code>'#value'</code> for markup.
+      // http://drupal.org/node/224333#process-functions --- Some #process functions have been renamed
+      // http://drupal.org/node/224333#markup --- Use '#markup' not '#value' for markup.
+      // http://drupal.org/node/224333#drupal_execute_drupal_form_submit --- drupal_execute() has been renamed to drupal_form_submit()
 
     // File API
       // http://drupal.org/node/224333#unmanaged_files --- File operations that don't affect the database have been renamed
@@ -255,7 +264,6 @@ function coder_review_7x_reviews() {
         '#value' => '[^\w]FILE_STATUS_TEMPORARY[^\w]',
         '#warning_callback' => '_coder_review_7x_file_status_temporary_warning',
       ),
-
       // http://drupal.org/node/224333#preg_match --- file_scan_directory() and drupal_system_listing() use preg regular expressions
 
     // User API
