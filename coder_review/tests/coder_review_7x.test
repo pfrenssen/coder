@@ -32,11 +32,13 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  $clone = clone $node;');
     $this->assertCoderReviewPass('  $clone = foo_drupal_clone($node);');
     $this->assertCoderReviewFail('  node_invoke_nodeapi($node, $hook);');
+
+    // http://drupal.org/node/224333#node_view
+    // http://drupal.org/node/224333#comment_validate_removed
   }
 
   function testModule7x() {
     // http://drupal.org/node/224333#api_php
-    // http://drupal.org/node/224333#absolute_includes
     // http://drupal.org/node/224333#update_php
 
     // http://drupal.org/node/224333#registry
@@ -45,6 +47,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testSystem7x() {
+    // http://drupal.org/node/224333#absolute_includes
+
     // http://drupal.org/node/224333#drupal_set_session
     $this->assertCoderReviewFail('  $foo = $_SESSION["foo"];');
     $this->assertCoderReviewFail('  $foo = $_SESSION[' . "'foo'" . '];');
@@ -61,6 +65,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  drupal_rebuild_code_registry();');
 
     // http://drupal.org/node/224333#hook_modules_action
+    // http://drupal.org/node/224333#drupal_uninstall_modules
     // http://drupal.org/node/224333#module_implements_not_module_list
     // http://drupal.org/node/224333#drupal_http_request_parameters
     // http://drupal.org/node/224333#moved_statistics_settings
@@ -74,12 +79,10 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#moved_statistics_settings
     // http://drupal.org/node/224333#sorting-permissions
     // http://drupal.org/node/224333#permission-tables
+    // http://drupal.org/node/224333#node_access_alter_hooks
   }
 
   function testDatabase7x() {
-    // http://drupal.org/node/224333#db_rewrite_sql
-    $this->assertCoderReviewFail('  $sql = db_rewrite_sql("SELECT n.nid FROM {node}");');
-
     // http://drupal.org/node/224333#dbtng
 
     // http://drupal.org/node/224333#schema-translation
@@ -89,6 +92,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  function mymodule_schema() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => st('My field description.'))));\n}");
     $this->assertCoderReviewPass("  function mymodule_schema() {\n \$schema['table'] = array(\n  'description' => 'My table description.');\n}");
     $this->assertCoderReviewPass("  function mymodule_schema() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => 'My field description.')));\n}");
+
+    // http://drupal.org/node/224333#db_rewrite_sql
+    $this->assertCoderReviewFail('  $sql = db_rewrite_sql("SELECT n.nid FROM {node}");');
   }
 
   function testMenu7x() {
@@ -97,13 +103,13 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testBlock7x() {
+    // http://drupal.org/node/224333#block_optional
+
     // http://drupal.org/node/224333#remove_op
     $this->assertCoderReviewFail("  function mymodule_block(\$op, \$delta, \$edit) {\n}");
     $this->assertCoderReviewPass("  function mymodule_block(\$delta, \$edit) {\n}");
     $this->assertCoderReviewFail("  function mymodule_block(\$delta, \$edit) {\n  if (\$op == 'list') {\n  }\n}");
     $this->assertCoderReviewFail("  function mymodule_block(\$delta, \$edit) {\n  switch (\$op) {\n  case 'list':\n  }\n}");
-
-    // http://drupal.org/node/224333#block_optional
   }
 
   function testComments7x() {
@@ -112,6 +118,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  if (_comment_load($cid)) {');
     $this->assertCoderReviewPass('  $comment = comment_load($cid);');
     $this->assertCoderReviewPass('  if (comment_load($cid)) {');
+
     // Any menu items that are using the %_comment wildcard will need to change to %comment.
     $this->assertCoderReviewFail('  function mymodule_menu() {\n$items[\'foo/%_comment\'] = array();\n}');
     $this->assertCoderReviewFail('  function mymodule_menu_alter() {\n$items[\'foo/%_comment\'] = array();\n}');
@@ -172,6 +179,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   function testTaxonomy7x() {
     // http://drupal.org/node/224333#taxonomy_get_tree
 
+    // http://drupal.org/node/224333#taxonomy_term_load_multiple
+
     // http://drupal.org/node/224333#taxonomy_tables
     $this->assertCoderReviewFail('  db_query("SELECT * FROM {term_data}")');
     $this->assertCoderReviewFail('  db_query("SELECT * FROM {term_hierarchy}")');
@@ -181,9 +190,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  db_query("SELECT * FROM {vocabulary}")');
     $this->assertCoderReviewFail('  db_query("SELECT * FROM {vocabulary_node_types}")');
 
-    // http://drupal.org/node/224333#taxonomy_term_load_multiple
-    // http://drupal.org/node/224333#term_functions
-    // http://drupal.org/node/224333#term_hooks
+    // ? http://drupal.org/node/224333#term_functions
+    // ? http://drupal.org/node/224333#term_hooks
 
     // http://drupal.org/node/224333#taxonomy_crud
     $this->assertCoderReviewFail('  taxonomy_get_term($tid);');
@@ -210,6 +218,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#hook_js_alter
     // http://drupal.org/node/224333#javascript_compatibility
     // http://drupal.org/node/224333#drupal_add_js_external
+    // http://drupal.org/node/224333#local_settings_behaviors
+    // http://drupal.org/node/224333#jquery_13
   }
 
   function testCss7x() {
@@ -225,10 +235,12 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testForm7x() {
+    // http://drupal.org/node/224333#element_theme_properties
     // http://drupal.org/node/224333#drupal_render_theming
     // http://drupal.org/node/224333#node_form
     // http://drupal.org/node/224333#process-functions
     // http://drupal.org/node/224333#markup
+    // http://drupal.org/node/224333#drupal_execute_drupal_form_submit
   }
 
   function testFile7x() {
@@ -293,6 +305,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#node_invoke_nodeapi
     $this->assertCoderReviewPass('  module_invoke_all("node_" . $hook, $node);');
+    $this->assertCoderReviewFail('  node_invoke_nodeapi($node, $hook);');
   }
 
 }
