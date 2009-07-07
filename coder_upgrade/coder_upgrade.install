@@ -1,0 +1,94 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Installation file for the coder_upgrade module.
+ *
+ * Copyright 2008-9 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ */
+
+module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
+
+/**
+ * Implementation of hook_install().
+ */
+function coder_upgrade_install() {
+  // Create the top-level module directory.
+  // This is necessary because core function is not recursive.
+  $dir = file_directory_path() . '/' . DEADWOOD_DIR;
+  if (file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
+    // Create the old and new module directories.
+    $dir = file_directory_path() . '/' . DEADWOOD_OLD;
+    if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
+      drupal_set_message(t('The files directory at %directory can not be written to. This is the default directory searched by Coder Upgrade for modules to be converted.', array('%directory' => $dir)), 'error');
+    }
+    $dir = file_directory_path() . '/' . DEADWOOD_NEW;
+      if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
+        drupal_set_message(t('The files directory at %directory can not be written to. This is the default directory that Coder Upgrade writes converted module code to.', array('%directory' => $dir)), 'error');
+    }
+  }
+  else {
+    drupal_set_message(t('Your files directory at %directory can not be written to. Coder Upgrade places converted module code in subdirectories of this directory.', array('%directory' => $dir)), 'error');
+  }
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function coder_upgrade_uninstall() {
+  // Remove the module input and output directories.
+  $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);
+  coder_upgrade_clean_directory($dir, TRUE);
+  $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
+  coder_upgrade_clean_directory($dir, TRUE);
+
+  // Remove items from {variables} table.
+  variable_del('coder_upgrade_dir_old');
+  variable_del('coder_upgrade_dir_new');
+}
+
+/**
+ * Implementation of hook_requirements().
+ */
+function coder_upgrade_requirements($phase) {
+  $requirements = array();
+
+  // Test writeability to files directory.
+  if ($phase == 'install') {
+    if (module_exists('deadwood')) {
+      $requirements['modules'] = array(
+        'title' => t('Deadwood module'),
+        'description' => t('The Deadwood module must be uninstalled before the Coder Upgrade module can be installed.'),
+        'severity' => REQUIREMENT_ERROR
+      );
+    }
+    $dir = file_directory_path();
+    if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
+      $requirements['files'] = array(
+        'title' => t('Files directory'),
+        'description' => t('Your files directory at %directory can not be written to. Coder Upgrade places converted module code in subdirectories of this directory.', array('%directory' => $dir)),
+        'severity' => REQUIREMENT_ERROR
+      );
+    }
+  }
+  else {
+    $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
+    if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
+      $requirements['files'] = array(
+        'title' => t('Coder Upgrade directory'),
+        'description' => t('Your files directory at %directory can not be written to. Coder Upgrade places converted module code in subdirectories of this directory.', array('%directory' => $dir)),
+        'severity' => REQUIREMENT_ERROR,
+        'value' => t('Not writeable (%dir)', array('%dir' => $dir))
+      );
+    }
+    else {
+      $requirements['files'] = array(
+        'title' => t('Coder Upgrade directory'),
+        'value' => t('Writeable (%dir)', array('%dir' => $dir))
+      );
+    }
+  }
+
+  return $requirements;
+}

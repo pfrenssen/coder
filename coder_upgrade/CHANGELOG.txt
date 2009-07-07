@@ -1,0 +1,15 @@
+// $Id$
+
+coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
+---------------------------------
+- Changes (2009-05-30):
+   * Add module to coder project as coder_upgrade.
+   * Rename conversion directories to 'coder_upgrade/old' and '/new'.
+   * Change menu path to 'admin/development/coder/upgrade'.
+   * Change menu path to 'admin/settings/coder/upgrade'.
+   * Add directory called 'conversions' and move conversion .inc files there.
+   * Remove deadwood node type.
+   * Add upgrade path to .install file (require uninstall of Deadwood).
+   * Restructure process to always run all conversions.
+   * Revise help text. (NOT DONE)
+   * Add grammar parser (pgp) module as a dependency.
