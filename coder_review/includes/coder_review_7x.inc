@@ -245,7 +245,11 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#node_form --- Simpler checking for the node form during hook_form_alter()
       // http://drupal.org/node/224333#process-functions --- Some #process functions have been renamed
       // http://drupal.org/node/224333#markup --- Use '#markup' not '#value' for markup.
-      // http://drupal.org/node/224333#drupal_execute_drupal_form_submit --- drupal_execute() has been renamed to drupal_form_submit()
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]drupal_execute\s*\(',
+        '#warning_callback' => '_coder_review_7x_drupal_execute_renamed_warning',
+      ),
 
     // File API
       // http://drupal.org/node/224333#unmanaged_files --- File operations that don't affect the database have been renamed
@@ -730,3 +734,16 @@ function _coder_review_7x_function_exists_warning() {
     '#link' => 'http://drupal.org/node/224333#registry',
   );
 }
+
+function _coder_review_7x_drupal_execute_renamed_warning() {
+  return array(
+    '#warning' => t('!drupal_execute() has been renamed to !drupal_submit_form()',
+      array(
+        '!drupal_execute()' => theme('drupalapi', 'drupal_execute'),
+        '!drupal_submit_form()' => theme('drupalapi', 'drupal_submit_form', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#drupal_execute_drupal_form_submit',
+  );
+}
+

@@ -240,7 +240,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#node_form
     // http://drupal.org/node/224333#process-functions
     // http://drupal.org/node/224333#markup
+
     // http://drupal.org/node/224333#drupal_execute_drupal_form_submit
+    $this->assertCoderReviewFail('  drupal_execute();');
+    $this->assertCoderReviewFail('  if (drupal_execute()) {');
+
   }
 
   function testFile7x() {
