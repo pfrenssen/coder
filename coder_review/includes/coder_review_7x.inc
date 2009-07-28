@@ -97,7 +97,7 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#menu-file-path --- The hook_menu() and hook_theme() "file" and "file path" keys have been removed.
       // http://drupal.org/node/224333#menu_callback_array --- Menu callbacks should return an array; hello hook_page_alter()
       // http://drupal.org/node/224333#hook_menu_link_alter --- Changed hook_menu_link_alter() (removed the $menu parameter)
-      // http://drupal.org/node/224333#international_item --- Added a new top level admin item, 'international'.
+      // N/A - http://drupal.org/node/224333#international_item --- Added a new top level admin item, 'international'.
       // http://drupal.org/node/224333#system_admin_menu_block_access --- Hide empty menu categories with access callback
       // http://drupal.org/node/224333#poundtheme --- #theme recommended for specifying theme function
 
@@ -148,7 +148,7 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]comment_node_url\s*\(',
         '#warning_callback' => '_coder_review_7x_comment_node_url_warning',
       ),
-      // http://drupal.org/node/224333#comment_load_multiple --- New comment_load_multiple()
+      // N/A - http://drupal.org/node/224333#comment_load_multiple --- New comment_load_multiple()
 
 
     // Input Sanitization & Input Formats
@@ -174,7 +174,6 @@ function coder_review_7x_reviews() {
         '#value' => '\$form\[.+?=\s*filter_form\(',
         '#warning_callback' => '_coder_review_7x_input_format_warning',
       ),
-      // http://drupal.org/node/224333#text_format --- New #text_format to assign text format selection to fields. Changes 'body' field location in node, comment, block, etc.
       // http://drupal.org/node/224333#filter_urls --- Moved filter module administrative URLs from admin/settings/filters/* to admin/settings/filter/*
 
 
@@ -187,8 +186,6 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_taxonomy_tables_warning',
       ),
       // http://drupal.org/node/224333#taxonomy_term_load_multiple --- taxonomy_term_load() and taxonomy_term_load_multiple()
-      // ? http://drupal.org/node/224333#term_functions --- Standardised and renamed taxonomy term save/load/delete functions</a>
-      // ? http://drupal.org/node/224333#term_hooks --- Added taxonomy term hooks
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]taxonomy_get_term\s*\(',
@@ -242,7 +239,7 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#jquery_13 --- jQuery 1.3.x
       // http://drupal.org/node/224333#attached_js --- Attached JavaScript and CSS for forms
       // http://drupal.org/node/224333#drupal_add_library --- Ability to add multiple JavaScript/CSS files at once
-      // http://drupal.org/node/224333#jquery_ui --- jQuery UI (1.7) was added into core
+      // N/A - http://drupal.org/node/224333#jquery_ui --- jQuery UI (1.7) was added into core
 
 
     // CSS
@@ -324,12 +321,17 @@ function coder_review_7x_reviews() {
         '#value' => 'function\s+[a-z0-9_]+_(user)\s*\(\s*\$op\s*,',
         '#warning_callback' => '_coder_review_7x_hook_user_op_warning',
       ),
-      // http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
+      // N/A - http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
 
 
     // Node API
       // http://drupal.org/node/224333#node_links --- Move node links into $node->content
-      // http://drupal.org/node/224333#node_load_multiple --- node_load() and node_load_multiple()
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' =>'[\s\(]node_load\s*\(\s*(\$param\s*[,\)]|array\s*\()',
+        '#warning_callback' => '_coder_review_7x_node_load_warning',
+      ),
       array(
         '#type' => 'regex',
         '#source' => 'allphp',
@@ -366,11 +368,11 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]node_view\s*\(',
         '#warning_callback' => '_coder_review_7x_node_view_warning',
       ),
-      // http://drupal.org/node/224333#delete_multiple --- Add node_delete_multiple()
+      // N/A - http://drupal.org/node/224333#delete_multiple --- Add node_delete_multiple()
       // http://drupal.org/node/224333#node_build_rss --- Removed $op "rss item" from hook_nodeapi() in favor of NODE_BUILD_RSS
       // http://drupal.org/node/224333#node_type_get_functions --- node_get_types($op) replaced by node_type_get_$op()
       // http://drupal.org/node/224333#build_mode --- $teaser parameter changed to $build_mode in node building functions and hooks, $node->build_mode property removed
-      // http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
+      // N/A - http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
 
 
     // Multilingual
@@ -846,5 +848,15 @@ function _coder_review_7x_comment_node_url_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/224333#comment_node_url',
+  );
+}
+
+function _coder_review_7x_node_load_warning() {
+  return array(
+    '#warning' => t('!node_load() now only takes nid and vid as parameters.',
+      array(
+        '!node_load' => theme('drupalapi', 'node_load', 7),
+      )
+    ),
   );
 }
