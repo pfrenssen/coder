@@ -33,13 +33,22 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]drupal_clone\s*\(',
         '#warning_callback' => '_coder_review_7x_drupal_clone_warning',
       ),
-      // http://drupal.org/node/224333#node_view --- node_view was removed in favor of node_build
-      // http://drupal.org/node/224333#comment_validate_removed --- comment_validate() has been removed
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]node_view\s*\(',
+        '#warning_callback' => '_coder_review_7x_node_view_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]comment_validate\s*\(',
+        '#warning_callback' => '_coder_review_7x_comment_validate_warning',
+      ),
 
     // Module Info / Install
       // http://drupal.org/node/224333#api_php --- Code documentation to module.api.php
       // http://drupal.org/node/224333#update_php --- Update functions in .install files must include a Doxygen style comment
       // http://drupal.org/node/224333#registry --- Module .info files must now specify all loadable code files explicitly.
+      // http://drupal.org/node/224333#afile --- Add Doxygen @file tag to all install files
 
 
     // System
@@ -70,15 +79,25 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#module_implements_not_module_list --- use module_implements not module_list when calling hook implementations
       // http://drupal.org/node/224333#drupal_http_request_parameters --- Parameters for drupal_http_request() have changed
       // http://drupal.org/node/224333#moved_statistics_settings --- Moved statistics settings from admin/reports/settings to admin/settings/statistics and added a new 'administer statistics' permission
+      // http://drupal.org/node/224333#system_get_module_data --- Renamed module_rebuild_cache() and system_theme_data() to system_get_module_data() and system_get_theme_data()
+      // http://drupal.org/node/224333#static_variable_api --- Standardized API for static variables and resetting them
+      // http://drupal.org/node/224333#drupal_set_html_head --- The function drupal_set_html_head() has been renamed to drupal_add_html_head()
+      // http://drupal.org/node/224333#php_eval --- drupal_eval() renamed to php_eval
+      // http://drupal.org/node/224333#http_header_functions --- Changes to HTTP header functions
+      // http://drupal.org/node/224333#drupal_set_content --- Renamed drupal_set_content() and drupal_get_content()
+      // http://drupal.org/node/224333#cache_implementation --- Alternative cache implementations changed
 
     // Permissions and Access
-      // http://drupal.org/node/224333#descriptions-permissions --- Permissions are required to have descriptions
       // http://drupal.org/node/224333#descriptions-permissions --- Permissions are required to have titles additionally to descriptions
       // http://drupal.org/node/224333#bypass_node_access --- "administer nodes" permission split into "administer nodes" and "bypass node access"
       // http://drupal.org/node/224333#moved_statistics_settings --- Moved statistics settings from admin/reports/settings to admin/settings/statistics and added a new 'administer statistics' permission
       // http://drupal.org/node/224333#sorting-permissions --- Permissions are no longer sorted alphabetically
       // http://drupal.org/node/224333#permission-tables --- New permission tables.
       // http://drupal.org/node/224333#node_access_alter_hooks --- Node access hooks now have drupal_alter() functions
+      // http://drupal.org/node/224333#hook-permission --- hook_perm() renamed to hook_permission()
+      // http://drupal.org/node/224333#php_permissions --- "use PHP for settings" permission should be used for all PHP settings rights (replaces "use PHP for block visibility")
+      // http://drupal.org/node/224333#system_admin_menu_block_access --- Hide empty menu categories with access callback
+      // http://drupal.org/node/224333#hook_node_access_records --- hook_node_access_records() now applies to unpublished nodes; 'view own unpublished content' permission added
 
     // Database
       // http://drupal.org/node/224333#dbtng --- A completely new database API has been added
@@ -98,6 +117,10 @@ function coder_review_7x_reviews() {
     // Menu
       // http://drupal.org/node/224333#menu-file-path --- The hook_menu() and hook_theme() "file" and "file path" keys have been removed.
       // http://drupal.org/node/224333#menu_callback_array --- Menu callbacks should return an array; hello hook_page_alter()
+      // http://drupal.org/node/224333#hook_menu_link_alter --- Changed hook_menu_link_alter() (removed the $menu parameter)
+      // http://drupal.org/node/224333#international_item --- Added a new top level admin item, 'international'.
+      // http://drupal.org/node/224333#system_admin_menu_block_access --- Hide empty menu categories with access callback
+      // http://drupal.org/node/224333#poundtheme --- #theme recommended for specifying theme function
 
     // Block
       // http://drupal.org/node/224333#block_optional --- Block module now optional
@@ -113,6 +136,7 @@ function coder_review_7x_reviews() {
         '#value' => 'function\s+[a-z0-9_]+_(block)\s*\(\s*\$op\s*,',
         '#warning_callback' => '_coder_review_7x_hook_block_op_warning',
       ),
+      // http://drupal.org/node/224333#hook_block_list_alter --- Added hook_block_list_alter()
 
     // Comment
       array(
@@ -134,6 +158,8 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_comment_status_warning',
       ),
       // http://drupal.org/node/224333#comment_save_refactor --- comment_save() now supports programatic saving
+      // http://drupal.org/node/224333#comment_node_url --- comment_node_url() was removed
+      // http://drupal.org/node/224333#comment_load_multiple --- New comment_load_multiple()
 
 
     // Actions
@@ -166,6 +192,8 @@ function coder_review_7x_reviews() {
         '#value' => '\$form\[.+?=\s*filter_form\(',
         '#warning_callback' => '_coder_review_7x_input_format_warning',
       ),
+      // http://drupal.org/node/224333#text_format --- New #text_format to assign text format selection to fields. Changes 'body' field location in node, comment, block, etc.
+      // http://drupal.org/node/224333#filter_urls --- Moved filter module administrative URLs from admin/settings/filters/* to admin/settings/filter/*
 
     // Taxonomy
       // http://drupal.org/node/224333#taxonomy_get_tree --- taxonomy_get_tree()
@@ -215,6 +243,8 @@ function coder_review_7x_reviews() {
       ),
 
       // http://drupal.org/node/224333#taxonomy_hooks --- New hooks: hook_taxonomy_term_load(), hook_taxonomy_term_insert(), hook_taxonomy_term_update(), hook_taxonomy_term_delete() and hook_taxonomy_vocabulary_load(), hook_taxonomy_vocabulary_insert(), hook_taxonomy_vocabulary_update(), hook_taxonomy_vocabulary_delete()
+      // http://drupal.org/node/224333#vocabulary_load_multiple --- Added taxonomy_vocabulary_load_multiple()
+      // http://drupal.org/node/224333#taxonomy_paths --- Multiple tid and depth handling removed for core taxonomy paths
 
     // Javascript
       // http://drupal.org/node/224333#drupal-behaviors --- Changed Drupal.behaviors to objects having the methods 'attach' and 'detach'
@@ -226,10 +256,16 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#drupal_add_js_external --- External JavaScript can now be referenced through drupal_add_js()
       // http://drupal.org/node/224333#local_settings_behaviors --- Settings passed locally to JavaScript Behaviors
       // http://drupal.org/node/224333#jquery_13 --- jQuery 1.3.x
+      // http://drupal.org/node/224333#attached_js --- Attached JavaScript and CSS for forms
+      // http://drupal.org/node/224333#drupal_add_library --- Ability to add multiple JavaScript/CSS files at once
+      // http://drupal.org/node/224333#jquery_ui --- jQuery UI (1.7) was added into core
 
     // CSS
       // http://drupal.org/node/224333#drupal_add_js_options --- Changed parameters for drupal_add_js() and drupal_add_css()
       // http://drupal.org/node/224333#drupal_add_js_css_reset --- Ability to reset JavaScript/CSS
+      // http://drupal.org/node/224333#attached_js --- Attached JavaScript and CSS for forms
+      // http://drupal.org/node/224333#drupal_add_css_inline --- Inline cascading style sheets from drupal_add_css()
+      // http://drupal.org/node/224333#drupal_add_library --- Ability to add multiple JavaScript/CSS files at once
 
     // Theming
       // http://drupal.org/node/224333#drupal_render_theming --- drupal_render theming properties changed
@@ -238,10 +274,11 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]drupal_rebuild_theme_registry\s*\(',
         '#warning_callback' => '_coder_review_7x_theme_rebuild_function_warning',
       ),
+      // http://drupal.org/node/224333#theme_page
 
     // Form API
       // http://drupal.org/node/224333#element_theme_properties --- Element theming properties used by drupal_render() have changed
-      // http://drupal.org/node/224333#drupal_render_theming --- drupal_render theming properties changed
+      // http://drupal.org/node/224333#drupal_render_children --- Element theme functions should call drupal_render_children()
       // http://drupal.org/node/224333#node_form --- Simpler checking for the node form during hook_form_alter()
       // http://drupal.org/node/224333#process-functions --- Some #process functions have been renamed
       // http://drupal.org/node/224333#markup --- Use '#markup' not '#value' for markup.
@@ -250,6 +287,8 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]drupal_execute\s*\(',
         '#warning_callback' => '_coder_review_7x_drupal_execute_renamed_warning',
       ),
+      // http://drupal.org/node/224333#unrendered --- drupal_get_form() returns an array
+      // http://drupal.org/node/224333#ahah_changes --- AHAH Processing has changed; new 'callback' member of the array, and the callback must be rewritten
 
     // File API
       // http://drupal.org/node/224333#unmanaged_files --- File operations that don't affect the database have been renamed
@@ -269,6 +308,8 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_file_status_temporary_warning',
       ),
       // http://drupal.org/node/224333#preg_match --- file_scan_directory() and drupal_system_listing() use preg regular expressions
+      // http://drupal.org/node/224333#file_scan_directory_property_names --- file_scan_directory() now uses same property names as file_load()
+      // http://drupal.org/node/224333#file_check_directory_recursive --- file_check_directory() will now recursively create directories
 
     // User API
       array(
@@ -294,6 +335,7 @@ function coder_review_7x_reviews() {
         '#value' => 'function\s+[a-z0-9_]+_(user)\s*\(\s*\$op\s*,',
         '#warning_callback' => '_coder_review_7x_hook_user_op_warning',
       ),
+      // http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
 
     // Node API
       // http://drupal.org/node/224333#node_links --- Move node links into $node->content
@@ -329,6 +371,19 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]node_invoke_nodeapi\s*\(',
         '#warning_callback' => '_coder_review_7x_node_invoke_nodeapi_warning',
       ),
+      // http://drupal.org/node/224333#delete_multiple --- Add node_delete_multiple()
+      // http://drupal.org/node/224333#node_build_rss --- Removed $op "rss item" from hook_nodeapi() in favor of NODE_BUILD_RSS
+      // http://drupal.org/node/224333#node_type_get_functions --- node_get_types($op) replaced by node_type_get_$op()
+      // http://drupal.org/node/224333#build_mode --- $teaser parameter changed to $build_mode in node building functions and hooks, $node->build_mode property removed
+      // http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
+
+    // Multilingual
+      // http://drupal.org/node/224333#locale_context --- Added string context support to t() and format_plural(), changed parameters
+
+    // Misc
+      // http://drupal.org/node/224333#implementation_hook_comment --- Commenting style - use 'Implement hook_foo().' when documenting hooks.
+      // http://drupal.org/node/224333#book_toc_parameters --- Parameters swapped in book_toc()
+      // http://drupal.org/node/224333#sticky_headers --- Make sticky tableheaders optional
   );
   $review = array(
     '#title' => t('Converting 6.x modules to 7.x'),
@@ -747,3 +802,26 @@ function _coder_review_7x_drupal_execute_renamed_warning() {
   );
 }
 
+function _coder_review_7x_node_view_warning() {
+  return array(
+    '#warning' => t('!node_view() has been removed and !node_build() should be used instead.',
+      array(
+        '!node_view' => theme('drupalapi', 'node_view', 6),
+        '!node_build()' => theme('drupalapi', 'node_build', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#node_view',
+  );
+}
+
+function _coder_review_7x_comment_validate_warning() {
+  return array(
+    '#warning' => t('!comment_validate() has been removed and !comment_form_validate() should be used instead.',
+      array(
+        '!comment_validate' => theme('drupalapi', 'comment_validate', 6),
+        '!comment_form_validate()' => theme('drupalapi', 'comment_form_validate', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#comment_validate_removed',
+  );
+}
