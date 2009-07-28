@@ -73,7 +73,13 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#sorting-permissions --- Permissions are no longer sorted alphabetically
       // http://drupal.org/node/224333#permission-tables --- New permission tables.
       // http://drupal.org/node/224333#node_access_alter_hooks --- Node access hooks now have drupal_alter() functions
-      // http://drupal.org/node/224333#hook-permission --- hook_perm() renamed to hook_permission()
+
+      array(
+        '#type' => 'regex',
+        '#value' => 'function\s+[a-z0-9_]+_(perm)\s*\(',
+        '#warning_callback' => '_coder_review_7x_hook_perm_warning',
+      ),
+
       // http://drupal.org/node/224333#php_permissions --- "use PHP for settings" permission should be used for all PHP settings rights (replaces "use PHP for block visibility")
       // http://drupal.org/node/224333#system_admin_menu_block_access --- Hide empty menu categories with access callback
       // http://drupal.org/node/224333#hook_node_access_records --- hook_node_access_records() now applies to unpublished nodes; 'view own unpublished content' permission added
@@ -856,6 +862,17 @@ function _coder_review_7x_node_load_warning() {
     '#warning' => t('!node_load() now only takes nid and vid as parameters.',
       array(
         '!node_load' => theme('drupalapi', 'node_load', 7),
+      )
+    ),
+  );
+}
+
+function _coder_review_7x_hook_perm_warning() {
+  return array(
+    '#warning' => t('!hook_perm() has been renamed to !hook_permission().',
+      array(
+        '!hook_perm' => theme('drupalapi', 'hook_perm', 6),
+        '!hook_permission' => theme('drupalapi', 'hook_permission', 7),
       )
     ),
   );

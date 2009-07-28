@@ -71,7 +71,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#sorting-permissions
     // http://drupal.org/node/224333#permission-tables
     // http://drupal.org/node/224333#node_access_alter_hooks
+
     // http://drupal.org/node/224333#hook-permission
+    $this->assertCoderReviewFail("  function mymodule_perm() {\n}");
+    $this->assertCoderReviewPass("  function mymodule_permission() {\n}");
+
     // http://drupal.org/node/224333#php_permissions
     // http://drupal.org/node/224333#system_admin_menu_block_access
     // http://drupal.org/node/224333#hook_node_access_records
