@@ -22,27 +22,6 @@ function coder_review_7x_reviews() {
         // potential errors in the code.
         '#warning_callback' => '_coder_review_7x_info_file_review_callback_warning',
       ),
-    // Core Functions Removed
-      array(
-        '#type' => 'regex',
-        '#value' => '[\s\(]referer_uri\s*\(',
-        '#warning_callback' => '_coder_review_7x_referer_uri_warning',
-      ),
-      array(
-        '#type' => 'regex',
-        '#value' => '[\s\(]drupal_clone\s*\(',
-        '#warning_callback' => '_coder_review_7x_drupal_clone_warning',
-      ),
-      array(
-        '#type' => 'regex',
-        '#value' => '[\s\(]node_view\s*\(',
-        '#warning_callback' => '_coder_review_7x_node_view_warning',
-      ),
-      array(
-        '#type' => 'regex',
-        '#value' => '[\s\(]comment_validate\s*\(',
-        '#warning_callback' => '_coder_review_7x_comment_validate_warning',
-      ),
 
     // Module Info / Install
       // http://drupal.org/node/224333#api_php --- Code documentation to module.api.php
@@ -138,6 +117,7 @@ function coder_review_7x_reviews() {
       ),
       // http://drupal.org/node/224333#hook_block_list_alter --- Added hook_block_list_alter()
 
+
     // Comment
       array(
         '#type' => 'regex',
@@ -157,17 +137,19 @@ function coder_review_7x_reviews() {
         '#value' => '\{comments\}\s+WHERE\s+.*?\s*status\s*(!=|=|<>|>|<)\s*(0|1)',
         '#warning_callback' => '_coder_review_7x_comment_status_warning',
       ),
-      // http://drupal.org/node/224333#comment_save_refactor --- comment_save() now supports programatic saving
-      // http://drupal.org/node/224333#comment_node_url --- comment_node_url() was removed
-      // http://drupal.org/node/224333#comment_load_multiple --- New comment_load_multiple()
-
-
-    // Actions
       array(
         '#type' => 'regex',
-        '#value' => '[\s\(]actions_synchronize\s*\((\$actions|[^,]+,)',
-        '#warning_callback' => '_coder_review_7x_actions_synchronize_warning',
+        '#value' => '[\s\(]comment_validate\s*\(',
+        '#warning_callback' => '_coder_review_7x_comment_validate_warning',
       ),
+      // http://drupal.org/node/224333#comment_save_refactor --- comment_save() now supports programatic saving
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]comment_node_url\s*\(',
+        '#warning_callback' => '_coder_review_7x_comment_node_url_warning',
+      ),
+      // http://drupal.org/node/224333#comment_load_multiple --- New comment_load_multiple()
+
 
     // Input Sanitization & Input Formats
       array(
@@ -194,6 +176,7 @@ function coder_review_7x_reviews() {
       ),
       // http://drupal.org/node/224333#text_format --- New #text_format to assign text format selection to fields. Changes 'body' field location in node, comment, block, etc.
       // http://drupal.org/node/224333#filter_urls --- Moved filter module administrative URLs from admin/settings/filters/* to admin/settings/filter/*
+
 
     // Taxonomy
       // http://drupal.org/node/224333#taxonomy_get_tree --- taxonomy_get_tree()
@@ -246,6 +229,7 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#vocabulary_load_multiple --- Added taxonomy_vocabulary_load_multiple()
       // http://drupal.org/node/224333#taxonomy_paths --- Multiple tid and depth handling removed for core taxonomy paths
 
+
     // Javascript
       // http://drupal.org/node/224333#drupal-behaviors --- Changed Drupal.behaviors to objects having the methods 'attach' and 'detach'
       // http://drupal.org/node/224333#drupal_add_js_css_reset --- Ability to reset JavaScript/CSS
@@ -260,12 +244,14 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#drupal_add_library --- Ability to add multiple JavaScript/CSS files at once
       // http://drupal.org/node/224333#jquery_ui --- jQuery UI (1.7) was added into core
 
+
     // CSS
       // http://drupal.org/node/224333#drupal_add_js_options --- Changed parameters for drupal_add_js() and drupal_add_css()
       // http://drupal.org/node/224333#drupal_add_js_css_reset --- Ability to reset JavaScript/CSS
       // http://drupal.org/node/224333#attached_js --- Attached JavaScript and CSS for forms
       // http://drupal.org/node/224333#drupal_add_css_inline --- Inline cascading style sheets from drupal_add_css()
       // http://drupal.org/node/224333#drupal_add_library --- Ability to add multiple JavaScript/CSS files at once
+
 
     // Theming
       // http://drupal.org/node/224333#drupal_render_theming --- drupal_render theming properties changed
@@ -275,6 +261,7 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_theme_rebuild_function_warning',
       ),
       // http://drupal.org/node/224333#theme_page
+
 
     // Form API
       // http://drupal.org/node/224333#element_theme_properties --- Element theming properties used by drupal_render() have changed
@@ -289,6 +276,7 @@ function coder_review_7x_reviews() {
       ),
       // http://drupal.org/node/224333#unrendered --- drupal_get_form() returns an array
       // http://drupal.org/node/224333#ahah_changes --- AHAH Processing has changed; new 'callback' member of the array, and the callback must be rewritten
+
 
     // File API
       // http://drupal.org/node/224333#unmanaged_files --- File operations that don't affect the database have been renamed
@@ -310,6 +298,7 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#preg_match --- file_scan_directory() and drupal_system_listing() use preg regular expressions
       // http://drupal.org/node/224333#file_scan_directory_property_names --- file_scan_directory() now uses same property names as file_load()
       // http://drupal.org/node/224333#file_check_directory_recursive --- file_check_directory() will now recursively create directories
+
 
     // User API
       array(
@@ -336,6 +325,7 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_hook_user_op_warning',
       ),
       // http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
+
 
     // Node API
       // http://drupal.org/node/224333#node_links --- Move node links into $node->content
@@ -371,19 +361,41 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]node_invoke_nodeapi\s*\(',
         '#warning_callback' => '_coder_review_7x_node_invoke_nodeapi_warning',
       ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]node_view\s*\(',
+        '#warning_callback' => '_coder_review_7x_node_view_warning',
+      ),
       // http://drupal.org/node/224333#delete_multiple --- Add node_delete_multiple()
       // http://drupal.org/node/224333#node_build_rss --- Removed $op "rss item" from hook_nodeapi() in favor of NODE_BUILD_RSS
       // http://drupal.org/node/224333#node_type_get_functions --- node_get_types($op) replaced by node_type_get_$op()
       // http://drupal.org/node/224333#build_mode --- $teaser parameter changed to $build_mode in node building functions and hooks, $node->build_mode property removed
       // http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
 
+
     // Multilingual
       // http://drupal.org/node/224333#locale_context --- Added string context support to t() and format_plural(), changed parameters
+
 
     // Misc
       // http://drupal.org/node/224333#implementation_hook_comment --- Commenting style - use 'Implement hook_foo().' when documenting hooks.
       // http://drupal.org/node/224333#book_toc_parameters --- Parameters swapped in book_toc()
       // http://drupal.org/node/224333#sticky_headers --- Make sticky tableheaders optional
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]referer_uri\s*\(',
+        '#warning_callback' => '_coder_review_7x_referer_uri_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]drupal_clone\s*\(',
+        '#warning_callback' => '_coder_review_7x_drupal_clone_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]actions_synchronize\s*\((\$actions|[^,]+,)',
+        '#warning_callback' => '_coder_review_7x_actions_synchronize_warning',
+      ),
   );
   $review = array(
     '#title' => t('Converting 6.x modules to 7.x'),
@@ -823,5 +835,16 @@ function _coder_review_7x_comment_validate_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/224333#comment_validate_removed',
+  );
+}
+
+function _coder_review_7x_comment_node_url_warning() {
+  return array(
+    '#warning' => t('!comment_node_url() has been removed. Use "node/" .  $comment->nid to build URLs instead.',
+      array(
+        '!comment_node_url' => theme('drupalapi', 'comment_node_url', 6),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#comment_node_url',
   );
 }
