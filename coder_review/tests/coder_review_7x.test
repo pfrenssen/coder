@@ -204,6 +204,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   function testTaxonomy7x() {
     // http://drupal.org/node/224333#taxonomy_get_tree
+    $this->assertCoderReviewFail('  $tree = taxonomy_get_tree($vid, $parent, $depth);');
+    $this->assertCoderReviewFail('  $tree = taxonomy_get_tree($vid, $parent, $depth, $max_depth);');
+    $this->assertCoderReviewFail('  $tree = taxonomy_get_tree($vid, $parent, -1);');
+    $this->assertCoderReviewFail('  $tree = taxonomy_get_tree($vid, $parent, -1, $max_depth);');
+    $this->assertCoderReviewPass('  $tree = taxonomy_get_tree($vid, $parent, $max_depth);');
 
     // http://drupal.org/node/224333#taxonomy_term_load_multiple
 

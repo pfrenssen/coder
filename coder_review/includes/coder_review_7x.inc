@@ -201,7 +201,12 @@ function coder_review_7x_reviews() {
 
 
     // Taxonomy
-      // http://drupal.org/node/224333#taxonomy_get_tree --- taxonomy_get_tree()
+      array(
+        '#type' => 'regex',
+        '#source' => 'php',
+        '#value' => '[\s\(]taxonomy_get_tree\s*\(\s*(' . $argex . '\s*,\s*){2}(\$depth|-1)\s*[,\)]',
+        '#warning_callback' => '_coder_review_7x_taxonomy_get_tree_warning',
+      ),
       array(
         '#type' => 'regex',
         '#source' => 'quote',
@@ -911,5 +916,17 @@ function _coder_review_7x_filter_urls_warning() {
   return array(
     '#warning' => t('Administrative URLs in the Filter module have been renamed from plural to singular.'),
     '#link' => 'http://drupal.org/node/224333#filter_urls',
+  );
+}
+
+function _coder_review_7x_taxonomy_get_tree_warning() {
+  return array(
+    '#warning' => t('!taxonomy_get_tree()\'s $depth and $max_depth parameters
+    have changed positions.',
+      array(
+        '!taxonomy_get_tree' => theme('drupalapi', 'taxonomy_get_tree', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#taxonomy_get_tree',
   );
 }
