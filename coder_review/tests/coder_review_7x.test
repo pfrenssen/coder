@@ -28,6 +28,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testSystem7x() {
+    // N/A - http://drupal.org/node/224333#variable_get_default_null
+
     // http://drupal.org/node/224333#absolute_includes
     $this->assertCoderReviewFail("  require variable_get('cache_inc', './includes/cache.inc');");
     $this->assertCoderReviewFail("  require_once variable_get('cache_inc', './includes/cache.inc');");
@@ -46,8 +48,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  $foo = $_SESSION["foo"];');
     $this->assertCoderReviewFail('  $foo = $_SESSION[' . "'foo'" . '];');
     $this->assertCoderReviewFail('  if ($_SESSION["foo"]) {');
-
-    // N/A - http://drupal.org/node/224333#variable_get_default_null
 
     // http://drupal.org/node/224333#time
     $this->assertCoderReviewFail('  $time = time();');
@@ -105,10 +105,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testMenu7x() {
+    // N/A - http://drupal.org/node/224333#international_item
+
     // http://drupal.org/node/224333#menu-file-path
     // http://drupal.org/node/224333#menu_callback_array
     // http://drupal.org/node/224333#hook_menu_link_alter
-    // N/A - http://drupal.org/node/224333#international_item
     // http://drupal.org/node/224333#system_admin_menu_block_access
     // http://drupal.org/node/224333#poundtheme
   }
@@ -126,6 +127,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testComments7x() {
+    // N/A - http://drupal.org/node/224333#comment_load_multiple
+    // N/A - http://drupal.org/node/224333#comment_save_refactor
+
     // http://drupal.org/node/224333#comment-load
     $this->assertCoderReviewFail('  $comment = _comment_load($cid);');
     $this->assertCoderReviewFail('  if (_comment_load($cid)) {');
@@ -150,13 +154,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  comment_validate();');
     $this->assertCoderReviewFail('  if (comment_validate()) {');
 
-    // http://drupal.org/node/224333#comment_save_refactor
-
     // http://drupal.org/node/224333#comment_node_url
     $this->assertCoderReviewFail('  comment_node_url();');
     $this->assertCoderReviewFail('  if (comment_node_url()) {');
-
-    // N/A - http://drupal.org/node/224333#comment_load_multiple
 
   }
 
@@ -196,6 +196,10 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  $format = filter_form(FILTER_FORMAT_DEFAULT);');
 
     // http://drupal.org/node/224333#filter_urls
+    $this->assertCoderReviewFail('  $url = url("admin/settings/filters");');
+    $this->assertCoderReviewFail('  $url = url("admin/settings/filters/add");');
+    $this->assertCoderReviewPass('  $url = url("admin/settings/filter");');
+    $this->assertCoderReviewPass('  $url = url("admin/settings/filter/add");');
   }
 
   function testTaxonomy7x() {
@@ -232,6 +236,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testJavascript7x() {
+    // N/A - http://drupal.org/node/224333#jquery_ui
+
     // http://drupal.org/node/224333#drupal-behaviors
     // http://drupal.org/node/224333#drupal_add_js_css_reset
     // http://drupal.org/node/224333#drupal_add_js_options
@@ -243,7 +249,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#jquery_13
     // http://drupal.org/node/224333#attached_js
     // http://drupal.org/node/224333#drupal_add_library
-    // N/A - http://drupal.org/node/224333#jquery_ui
   }
 
   function testCss7x() {
@@ -299,6 +304,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testUser7x() {
+    // N/A - http://drupal.org/node/224333#specified_ids
+
     // http://drupal.org/node/224333#user_cancel
     $this->assertCoderReviewFail('  user_delete($edit, $uid);');
     $this->assertCoderReviewPass('  foo_user_delete($edit, $uid);');
@@ -321,10 +328,12 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  l(t('my text'), 'user/logout');");
     $this->assertCoderReviewPass("  l(\$text, 'user/logout');");
 
-    // N/A - http://drupal.org/node/224333#specified_ids
   }
 
   function testNode7x() {
+    // N/A - http://drupal.org/node/224333#delete_multiple
+    // N/A - http://drupal.org/node/224333#specified_ids
+
     // http://drupal.org/node/224333#node_links
 
     // http://drupal.org/node/224333#node_load_multiple
@@ -357,11 +366,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  node_view($nid, TRUE);');
     $this->assertCoderReviewFail('  if (node_view($nid, TRUE)) {');
 
-    // N/A - http://drupal.org/node/224333#delete_multiple
     // http://drupal.org/node/224333#node_build_rss
     // http://drupal.org/node/224333#node_type_get_functions
     // http://drupal.org/node/224333#build_mode
-    // N/A - http://drupal.org/node/224333#specified_ids
   }
 
   function testMultilingual7x() {

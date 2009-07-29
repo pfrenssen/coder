@@ -31,6 +31,8 @@ function coder_review_7x_reviews() {
 
 
     // System
+      // N/A - http://drupal.org/node/224333#variable_get_default_null --- Default parameter when getting variables
+
       array(
         '#type' => 'regex',
         '#source' => 'allphp',
@@ -47,7 +49,6 @@ function coder_review_7x_reviews() {
         '#value' => '$_SESSION',
         '#warning_callback' => '_coder_review_7x_session_warning',
       ),
-      // N/A - http://drupal.org/node/224333#variable_get_default_null --- Default parameter when getting variables
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]time\s*\([\w\d\'"]*\)',
@@ -71,6 +72,7 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#drupal_set_content --- Renamed drupal_set_content() and drupal_get_content()
       // http://drupal.org/node/224333#cache_implementation --- Alternative cache implementations changed
 
+
     // Permissions and Access
       // http://drupal.org/node/224333#descriptions-permissions --- Permissions are required to have titles additionally to descriptions
       // http://drupal.org/node/224333#bypass_node_access --- "administer nodes" permission split into "administer nodes" and "bypass node access"
@@ -89,6 +91,7 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#system_admin_menu_block_access --- Hide empty menu categories with access callback
       // http://drupal.org/node/224333#hook_node_access_records --- hook_node_access_records() now applies to unpublished nodes; 'view own unpublished content' permission added
 
+
     // Database
       // http://drupal.org/node/224333#dbtng --- A completely new database API has been added
       array(
@@ -104,13 +107,16 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_db_rewrite_sql_warning',
       ),
 
+
     // Menu
+      // N/A - http://drupal.org/node/224333#international_item --- Added a new top level admin item, 'international'.
+
       // http://drupal.org/node/224333#menu-file-path --- The hook_menu() and hook_theme() "file" and "file path" keys have been removed.
       // http://drupal.org/node/224333#menu_callback_array --- Menu callbacks should return an array; hello hook_page_alter()
       // http://drupal.org/node/224333#hook_menu_link_alter --- Changed hook_menu_link_alter() (removed the $menu parameter)
-      // N/A - http://drupal.org/node/224333#international_item --- Added a new top level admin item, 'international'.
       // http://drupal.org/node/224333#system_admin_menu_block_access --- Hide empty menu categories with access callback
       // http://drupal.org/node/224333#poundtheme --- #theme recommended for specifying theme function
+
 
     // Block
       // http://drupal.org/node/224333#block_optional --- Block module now optional
@@ -130,6 +136,9 @@ function coder_review_7x_reviews() {
 
 
     // Comment
+      // N/A - http://drupal.org/node/224333#comment_load_multiple --- New comment_load_multiple()
+      // N/A - http://drupal.org/node/224333#comment_save_refactor --- comment_save() now supports programatic saving
+
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]_comment_load\s*\(',
@@ -153,13 +162,11 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]comment_validate\s*\(',
         '#warning_callback' => '_coder_review_7x_comment_validate_warning',
       ),
-      // http://drupal.org/node/224333#comment_save_refactor --- comment_save() now supports programatic saving
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]comment_node_url\s*\(',
         '#warning_callback' => '_coder_review_7x_comment_node_url_warning',
       ),
-      // N/A - http://drupal.org/node/224333#comment_load_multiple --- New comment_load_multiple()
 
 
     // Input Sanitization & Input Formats
@@ -185,7 +192,12 @@ function coder_review_7x_reviews() {
         '#value' => '\$form\[.+?=\s*filter_form\(',
         '#warning_callback' => '_coder_review_7x_input_format_warning',
       ),
-      // http://drupal.org/node/224333#filter_urls --- Moved filter module administrative URLs from admin/settings/filters/* to admin/settings/filter/*
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => '[\'"]admin\/settings\/filters(\/.*?)?[\'"]',
+        '#warning_callback' => '_coder_review_7x_filter_urls_warning',
+      ),
 
 
     // Taxonomy
@@ -239,6 +251,8 @@ function coder_review_7x_reviews() {
 
 
     // Javascript
+      // N/A - http://drupal.org/node/224333#jquery_ui --- jQuery UI (1.7) was added into core
+
       // http://drupal.org/node/224333#drupal-behaviors --- Changed Drupal.behaviors to objects having the methods 'attach' and 'detach'
       // http://drupal.org/node/224333#drupal_add_js_css_reset --- Ability to reset JavaScript/CSS
       // http://drupal.org/node/224333#drupal_add_js_options --- Changed parameters for drupal_add_js() and drupal_add_css()
@@ -250,7 +264,6 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#jquery_13 --- jQuery 1.3.x
       // http://drupal.org/node/224333#attached_js --- Attached JavaScript and CSS for forms
       // http://drupal.org/node/224333#drupal_add_library --- Ability to add multiple JavaScript/CSS files at once
-      // N/A - http://drupal.org/node/224333#jquery_ui --- jQuery UI (1.7) was added into core
 
 
     // CSS
@@ -309,6 +322,8 @@ function coder_review_7x_reviews() {
 
 
     // User API
+      // N/A - http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
+
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]user_delete\s*\(',
@@ -332,10 +347,12 @@ function coder_review_7x_reviews() {
         '#value' => 'function\s+[a-z0-9_]+_(user)\s*\(\s*\$op\s*,',
         '#warning_callback' => '_coder_review_7x_hook_user_op_warning',
       ),
-      // N/A - http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
 
 
     // Node API
+      // N/A - http://drupal.org/node/224333#delete_multiple --- Add node_delete_multiple()
+      // N/A - http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
+
       // http://drupal.org/node/224333#node_links --- Move node links into $node->content
       array(
         '#type' => 'regex',
@@ -379,11 +396,9 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]node_view\s*\(',
         '#warning_callback' => '_coder_review_7x_node_view_warning',
       ),
-      // N/A - http://drupal.org/node/224333#delete_multiple --- Add node_delete_multiple()
       // http://drupal.org/node/224333#node_build_rss --- Removed $op "rss item" from hook_nodeapi() in favor of NODE_BUILD_RSS
       // http://drupal.org/node/224333#node_type_get_functions --- node_get_types($op) replaced by node_type_get_$op()
       // http://drupal.org/node/224333#build_mode --- $teaser parameter changed to $build_mode in node building functions and hooks, $node->build_mode property removed
-      // N/A - http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
 
 
     // Multilingual
@@ -889,5 +904,12 @@ function _coder_review_7x_absolute_includes_warning() {
   return array(
     '#warning' => t('Use absolute path, constructed from DRUPAL_ROOT, when including a file.'),
     '#link' => 'http://drupal.org/node/224333#absolute_includes',
+  );
+}
+
+function _coder_review_7x_filter_urls_warning() {
+  return array(
+    '#warning' => t('Administrative URLs in the Filter module have been renamed from plural to singular.'),
+    '#link' => 'http://drupal.org/node/224333#filter_urls',
   );
 }
