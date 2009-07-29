@@ -29,6 +29,14 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   function testSystem7x() {
     // http://drupal.org/node/224333#absolute_includes
+    $this->assertCoderReviewFail("  require variable_get('cache_inc', './includes/cache.inc');");
+    $this->assertCoderReviewFail("  require_once variable_get('cache_inc', './includes/cache.inc');");
+    $this->assertCoderReviewFail("  include variable_get('cache_inc', './includes/cache.inc');");
+    $this->assertCoderReviewFail("  include_once variable_get('cache_inc', './includes/cache.inc');");
+    $this->assertCoderReviewPass("  require  DRUPAL_ROOT . '/' . variable_get('cache_inc', 'includes/cache.inc');");
+    $this->assertCoderReviewPass("  require_once  DRUPAL_ROOT . '/' . variable_get('cache_inc', 'includes/cache.inc');");
+    $this->assertCoderReviewPass("  include  DRUPAL_ROOT . '/' . variable_get('cache_inc', 'includes/cache.inc');");
+    $this->assertCoderReviewPass("  include_once  DRUPAL_ROOT . '/' . variable_get('cache_inc', 'includes/cache.inc');");
 
     // http://drupal.org/node/224333#registry
     $this->assertCoderReviewFail('  if (function_exists(\'my_function\')) {');
@@ -39,7 +47,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  $foo = $_SESSION[' . "'foo'" . '];');
     $this->assertCoderReviewFail('  if ($_SESSION["foo"]) {');
 
-    // http://drupal.org/node/224333#variable_get_default_null
+    // N/A - http://drupal.org/node/224333#variable_get_default_null
 
     // http://drupal.org/node/224333#time
     $this->assertCoderReviewFail('  $time = time();');

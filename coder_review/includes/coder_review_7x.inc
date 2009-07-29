@@ -31,7 +31,12 @@ function coder_review_7x_reviews() {
 
 
     // System
-      // http://drupal.org/node/224333#absolute_includes --- Use absolute path (constructed from DRUPAL_ROOT) when including a file
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => '((require|include)(_once)?).+[\'"]\.\/',
+        '#warning_callback' => '_coder_review_7x_absolute_includes_warning',
+      ),
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]function_exists\s*\(',
@@ -42,7 +47,7 @@ function coder_review_7x_reviews() {
         '#value' => '$_SESSION',
         '#warning_callback' => '_coder_review_7x_session_warning',
       ),
-      // http://drupal.org/node/224333#variable_get_default_null --- Default parameter when getting variables
+      // N/A - http://drupal.org/node/224333#variable_get_default_null --- Default parameter when getting variables
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]time\s*\([\w\d\'"]*\)',
@@ -864,6 +869,7 @@ function _coder_review_7x_node_load_warning() {
         '!node_load' => theme('drupalapi', 'node_load', 7),
       )
     ),
+    '#link' => 'http://drupal.org/node/224333#node_load_multiple',
   );
 }
 
@@ -875,5 +881,13 @@ function _coder_review_7x_hook_perm_warning() {
         '!hook_permission' => theme('drupalapi', 'hook_permission', 7),
       )
     ),
+    '#link' => 'http://drupal.org/node/224333#hook-permission',
+  );
+}
+
+function _coder_review_7x_absolute_includes_warning() {
+  return array(
+    '#warning' => t('Use absolute path, constructed from DRUPAL_ROOT, when including a file.'),
+    '#link' => 'http://drupal.org/node/224333#absolute_includes',
   );
 }
