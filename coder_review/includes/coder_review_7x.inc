@@ -194,13 +194,17 @@ function coder_review_7x_reviews() {
       ),
       array(
         '#type' => 'regex',
-        '#source' => 'allphp',
-        '#value' => '[\'"]admin\/settings\/filters(\/.*?)?[\'"]',
+        '#source' => 'quote',
+        '#value' => 'admin\/settings\/filters(\/.*?)?',
         '#warning_callback' => '_coder_review_7x_filter_urls_warning',
       ),
 
 
     // Taxonomy
+      // N/A - http://drupal.org/node/224333#taxonomy_term_load_multiple --- taxonomy_term_load() and taxonomy_term_load_multiple()
+      // N/A - http://drupal.org/node/224333#taxonomy_hooks --- New hooks: hook_taxonomy_term_load(), hook_taxonomy_term_insert(), hook_taxonomy_term_update(), hook_taxonomy_term_delete() and hook_taxonomy_vocabulary_load(), hook_taxonomy_vocabulary_insert(), hook_taxonomy_vocabulary_update(), hook_taxonomy_vocabulary_delete()
+      // N/A - http://drupal.org/node/224333#vocabulary_load_multiple --- Added taxonomy_vocabulary_load_multiple()
+
       array(
         '#type' => 'regex',
         '#source' => 'php',
@@ -213,7 +217,6 @@ function coder_review_7x_reviews() {
         '#value' => '^(select\s+.*\s+from\s+' . $taxonomy_tables .  '|insert\s+into\s+' .  $taxonomy_tables . '|update\s+' .  $taxonomy_tables . '\s+set|delete\s+from\s+' . $taxonomy_tables . ')',
         '#warning_callback' => '_coder_review_7x_taxonomy_tables_warning',
       ),
-      // http://drupal.org/node/224333#taxonomy_term_load_multiple --- taxonomy_term_load() and taxonomy_term_load_multiple()
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]taxonomy_get_term\s*\(',
@@ -249,10 +252,12 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]taxonomy_del_vocabulary\s*\(',
         '#warning_callback' => '_coder_review_7x_taxonomy_del_vocabulary_warning',
       ),
-
-      // http://drupal.org/node/224333#taxonomy_hooks --- New hooks: hook_taxonomy_term_load(), hook_taxonomy_term_insert(), hook_taxonomy_term_update(), hook_taxonomy_term_delete() and hook_taxonomy_vocabulary_load(), hook_taxonomy_vocabulary_insert(), hook_taxonomy_vocabulary_update(), hook_taxonomy_vocabulary_delete()
-      // http://drupal.org/node/224333#vocabulary_load_multiple --- Added taxonomy_vocabulary_load_multiple()
-      // http://drupal.org/node/224333#taxonomy_paths --- Multiple tid and depth handling removed for core taxonomy paths
+      array(
+        '#type' => 'regex',
+        '#source' => 'quote',
+        '#value' => 'taxonomy\/term\/\d+(\+\d+|\,\d+|\/\d+)',
+        '#warning_callback' => '_coder_review_7x_taxonomy_paths_warning',
+      ),
 
 
     // Javascript
@@ -928,5 +933,12 @@ function _coder_review_7x_taxonomy_get_tree_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/224333#taxonomy_get_tree',
+  );
+}
+
+function _coder_review_7x_taxonomy_paths_warning() {
+  return array(
+    '#warning' => t('Support for taxonomy term paths with multiple tids and depth specification has been removed.'),
+    '#link' => 'http://drupal.org/node/224333#taxonomy_paths',
   );
 }

@@ -203,14 +203,16 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testTaxonomy7x() {
+    // N/A - http://drupal.org/node/224333#taxonomy_term_load_multiple
+    // N/A - http://drupal.org/node/224333#taxonomy_hooks
+    // N/A - http://drupal.org/node/224333#vocabulary_load_multiple
+
     // http://drupal.org/node/224333#taxonomy_get_tree
     $this->assertCoderReviewFail('  $tree = taxonomy_get_tree($vid, $parent, $depth);');
     $this->assertCoderReviewFail('  $tree = taxonomy_get_tree($vid, $parent, $depth, $max_depth);');
     $this->assertCoderReviewFail('  $tree = taxonomy_get_tree($vid, $parent, -1);');
     $this->assertCoderReviewFail('  $tree = taxonomy_get_tree($vid, $parent, -1, $max_depth);');
     $this->assertCoderReviewPass('  $tree = taxonomy_get_tree($vid, $parent, $max_depth);');
-
-    // http://drupal.org/node/224333#taxonomy_term_load_multiple
 
     // http://drupal.org/node/224333#taxonomy_tables
     $this->assertCoderReviewFail('  db_query("SELECT * FROM {term_data}")');
@@ -235,9 +237,13 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  taxonomy_del_vocabulary($vocab);');
     $this->assertCoderReviewPass('  mytaxonomy_del_vocabulary($vocab);');
 
-    // http://drupal.org/node/224333#taxonomy_hooks
-    // http://drupal.org/node/224333#vocabulary_load_multiple
     // http://drupal.org/node/224333#taxonomy_paths
+    $this->assertCoderReviewPass('  $url = url("taxonomy/term/123");');
+    $this->assertCoderReviewFail('  $url = url("taxonomy/term/1+2+3");');
+    $this->assertCoderReviewFail('  $url = url("taxonomy/term/1,2,3");');
+    $this->assertCoderReviewFail('  $url = url("taxonomy/term/123/0");');
+    $this->assertCoderReviewFail('  $url = url("taxonomy/term/1+2+3/0");');
+    $this->assertCoderReviewFail('  $url = url("taxonomy/term/1,2,3/0");');
   }
 
   function testJavascript7x() {
