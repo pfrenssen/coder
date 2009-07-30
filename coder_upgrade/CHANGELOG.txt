@@ -2,7 +2,11 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
-- Changes (2009-05-30):
+- Changes (2009-07-30):
+   * Apply D7 standards for naming forms and implement hook comments
+   * Revise help text.
+
+- Changes (2009-07-07):
    * Add module to coder project as coder_upgrade.
    * Rename conversion directories to 'coder_upgrade/old' and '/new'.
    * Change menu path to 'admin/development/coder/upgrade'.
@@ -11,5 +15,5 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
    * Remove deadwood node type.
    * Add upgrade path to .install file (require uninstall of Deadwood).
    * Restructure process to always run all conversions.
-   * Revise help text. (NOT DONE)
+   * Revise help text.
    * Add grammar parser (pgp) module as a dependency.

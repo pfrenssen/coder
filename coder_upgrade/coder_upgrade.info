@@ -1,7 +1,7 @@
 ; $Id$
 name = "Coder Upgrade"
 
-description = "Module conversion suite -- generates code to assist with the upgrade of 
+description = "Module conversion suite -- generates code to assist with the upgrade of
                contributed 6.x modules to version 7.x modules.
                WARNING: Use only on contributed modules."
 

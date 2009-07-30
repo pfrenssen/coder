@@ -3,7 +3,7 @@
 
 /**
  * @file
- * Installation file for the coder_upgrade module.
+ * Install, uninstall, and update functions for the coder_upgrade module.
  *
  * Copyright 2008-9 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
@@ -11,11 +11,12 @@
 module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
 
 /**
- * Implementation of hook_install().
+ * Implement hook_install().
  */
 function coder_upgrade_install() {
   // Create the top-level module directory.
-  // This is necessary because core function is not recursive.
+  // Because the core function is now recursive, we could start with the
+  // subdirectories. However, this code is clean and allows for one else block.
   $dir = file_directory_path() . '/' . DEADWOOD_DIR;
   if (file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
     // Create the old and new module directories.
@@ -34,7 +35,7 @@ function coder_upgrade_install() {
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implement hook_uninstall().
  */
 function coder_upgrade_uninstall() {
   // Remove the module input and output directories.
@@ -49,7 +50,7 @@ function coder_upgrade_uninstall() {
 }
 
 /**
- * Implementation of hook_requirements().
+ * Implement hook_requirements().
  */
 function coder_upgrade_requirements($phase) {
   $requirements = array();
@@ -57,7 +58,7 @@ function coder_upgrade_requirements($phase) {
   // Test writeability to files directory.
   if ($phase == 'install') {
     if (module_exists('deadwood')) {
-      $requirements['modules'] = array(
+      $requirements['coder_upgrade_modules'] = array(
         'title' => t('Deadwood module'),
         'description' => t('The Deadwood module must be uninstalled before the Coder Upgrade module can be installed.'),
         'severity' => REQUIREMENT_ERROR
@@ -65,7 +66,7 @@ function coder_upgrade_requirements($phase) {
     }
     $dir = file_directory_path();
     if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
-      $requirements['files'] = array(
+      $requirements['coder_upgrade_files'] = array(
         'title' => t('Files directory'),
         'description' => t('Your files directory at %directory can not be written to. Coder Upgrade places converted module code in subdirectories of this directory.', array('%directory' => $dir)),
         'severity' => REQUIREMENT_ERROR
@@ -75,7 +76,7 @@ function coder_upgrade_requirements($phase) {
   else {
     $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
     if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
-      $requirements['files'] = array(
+      $requirements['coder_upgrade_files'] = array(
         'title' => t('Coder Upgrade directory'),
         'description' => t('Your files directory at %directory can not be written to. Coder Upgrade places converted module code in subdirectories of this directory.', array('%directory' => $dir)),
         'severity' => REQUIREMENT_ERROR,
@@ -83,7 +84,7 @@ function coder_upgrade_requirements($phase) {
       );
     }
     else {
-      $requirements['files'] = array(
+      $requirements['coder_upgrade_files'] = array(
         'title' => t('Coder Upgrade directory'),
         'value' => t('Writeable (%dir)', array('%dir' => $dir))
       );

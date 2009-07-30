@@ -31,7 +31,7 @@ module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
  */
 
 /**
- * Implementation of hook_perm().
+ * Implement hook_perm().
  */
 function coder_upgrade_perm() {
   return array(
@@ -43,7 +43,7 @@ function coder_upgrade_perm() {
 }
 
 /**
- * Implementation of hook_menu().
+ * Implement hook_menu().
  */
 function coder_upgrade_menu() {
   $items = array();
@@ -53,7 +53,7 @@ function coder_upgrade_menu() {
     'title' => 'Upgrade',
     'description' => 'Configure the module conversion suite.',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('coder_upgrade_settings'),
+    'page arguments' => array('coder_upgrade_settings_form'),
     'access arguments' => array('administer site configuration'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 1
@@ -64,7 +64,7 @@ function coder_upgrade_menu() {
     'title' => 'Upgrade',
     'description' => 'Convert module code from version 6.x to 7.x.',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('coder_upgrade_conversions'),
+    'page arguments' => array('coder_upgrade_conversions_form'),
     'access arguments' => array('manage code conversions'),
     'type' => MENU_LOCAL_TASK
   );
@@ -73,7 +73,7 @@ function coder_upgrade_menu() {
 }
 
 /**
- * Implementation of hook_theme().
+ * Implement hook_theme().
  */
 function coder_upgrade_theme() {
   return array(
@@ -84,9 +84,9 @@ function coder_upgrade_theme() {
 }
 
 /**
- * Implementation of settings form.
+ * Form builder for the settings form.
  */
-function coder_upgrade_settings() {
+function coder_upgrade_settings_form() {
   $form = array();
 
   $path = file_directory_path();
@@ -116,11 +116,11 @@ function coder_upgrade_settings() {
 }
 
 /**
- * Implementation of settings form sumission.
+ * Submit handler for the settings form.
  *
  * Rename module input and output directories based on user settings.
  */
-function coder_upgrade_settings_submit($form, &$form_state) {
+function coder_upgrade_settings_form_submit($form, &$form_state) {
   $values = $form_state['values'];
   $op = isset($values['op']) ? $values['op'] : '';
 
@@ -142,11 +142,11 @@ function coder_upgrade_settings_submit($form, &$form_state) {
 }
 
 /**
- * Display the module conversion form.
+ * Form builder for the module conversion form.
  */
-function coder_upgrade_conversions(&$form_state) {
+function coder_upgrade_conversions_form(&$form_state) {
   // Set default values.
-  list($extensions, $directory, $conversions) = coder_upgrade_conversions_defaults($form_state);
+  list($extensions, $directory, $conversions) = coder_upgrade_conversions_form_defaults($form_state);
 
   $form = array();
 
@@ -213,9 +213,9 @@ function coder_upgrade_conversions(&$form_state) {
 }
 
 /**
- * Implementation of module conversion form validation.
+ * Validation handler for the module conversion form.
  */
-function coder_upgrade_conversions_validate($form, &$form_state) {
+function coder_upgrade_conversions_form_validate($form, &$form_state) {
   // Gather the file types to convert based on extension.
   $extensions = array();
   $values = $form_state['values']['extensions'];
@@ -235,13 +235,16 @@ function coder_upgrade_conversions_validate($form, &$form_state) {
 
   // Gather the conversions to apply.
 //  $conversions = array();
-//  $conversions = coder_upgrade_conversions_list(); // Temporary!!!
+//  $conversions = coder_upgrade_conversions_list();
 }
 
 /**
- * Execute the module conversion code.
+ * Submit handler for the module conversion form.
+ *
+ * Execute the module conversion code on the selected file types in the
+ * selected directory.
  */
-function coder_upgrade_conversions_submit($form, &$form_state) {
+function coder_upgrade_conversions_form_submit($form, &$form_state) {
   // Rebuild form with user selections.
   $form_state['rebuild'] = TRUE;
 
@@ -263,7 +266,7 @@ function coder_upgrade_conversions_submit($form, &$form_state) {
 
   // Gather the conversions to apply.
   $conversions = array();
-  $conversions = coder_upgrade_conversions_list(); // Temporary!!!
+  $conversions = coder_upgrade_conversions_list();
   $params['conversions'] = $conversions;
 
   // Apply conversion functions.
@@ -276,7 +279,7 @@ function coder_upgrade_conversions_submit($form, &$form_state) {
  *
  * @return array of default values.
  */
-function coder_upgrade_conversions_defaults($form_state) {
+function coder_upgrade_conversions_form_defaults($form_state) {
   // Set defaults when form is first loaded.
   $extensions = array(
     'info' => FALSE,
@@ -288,7 +291,7 @@ function coder_upgrade_conversions_defaults($form_state) {
     'php' => FALSE
   );
   $directory = 'example';
-  $conversions = array(); // If not set below, will be set in coder_upgrade_conversions_table.
+  $conversions = array(); // Will be set in coder_upgrade_conversions_list.
 
   // Set defaults from submitted values.
   if (isset($form_state['values'])) {
