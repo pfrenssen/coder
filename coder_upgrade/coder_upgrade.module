@@ -22,14 +22,6 @@ module_load_include('inc', 'coder_upgrade', 'coder_upgrade.help');
 module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
 //module_load_include('inc', 'coder_upgrade', 'coder_upgrade.auto'); // Omit from module code
 
-/*
- * TODO Allow for "old" modules to be in other directories
- * - core modules directory (this is illogical)
- * - each site modules directory (this makes sense for Coder review but not upgrade
- *   since converted files from "new" directory will have to be moved to these
- *   directories and will override these files)
- */
-
 /**
  * Implement hook_perm().
  */
@@ -70,17 +62,6 @@ function coder_upgrade_menu() {
   );
 
   return $items;
-}
-
-/**
- * Implement hook_theme().
- */
-function coder_upgrade_theme() {
-  return array(
-    'coder_upgrade_extensions_table' => array(
-      'arguments' => array('form' => NULL)
-    ),
-  );
 }
 
 /**
@@ -146,62 +127,156 @@ function coder_upgrade_settings_form_submit($form, &$form_state) {
  */
 function coder_upgrade_conversions_form(&$form_state) {
   // Set default values.
-  list($extensions, $directory, $conversions) = coder_upgrade_conversions_form_defaults($form_state);
+  list($upgrades, $extensions, $directories, $modules) = coder_upgrade_conversions_form_defaults($form_state);
 
-  $form = array();
-
-  $form['extensions'] = array(
-    '#type' => 'item',
-    '#tree' => TRUE,
-    '#theme' => array('coder_upgrade_extensions_table')
-  );
-  // TODO Refactor this to a helper function?
-  $types = array(
-    'info' => 'Info files used with module installation',
-    'install' => 'PHP code files used with module installation',
-    'module' => 'PHP code files',
-    'inc' => 'PHP code files',
-    'profile' => 'PHP code files used with site installation',
-    'theme' => 'PHP code files used with themeing',
-    'php' => 'PHP code files'
-  );
-  foreach ($types as $key => $type) {
-    $row = array();
-    $row['include'] = array(
-      '#type' => 'checkbox',
-      '#default_value' => $extensions[$key]
-    );
-    $row['title'] = array(
-      '#type' => 'item',
-      '#title' => t('Title'),
-      '#value' => $key
-    );
-    $row['description'] = array(
-      '#type' => 'item',
-      '#title' => t('Description'),
-      '#value' => $type
-    );
-
-    $form['extensions'][$key] = $row;
+  // Create the list of upgrade options from the coder upgrade plug-ins.
+  // Maintain a secondary list based on #title only, to make sorting possible.
+  $upgrades_all = _coder_upgrade_upgrades();
+  foreach ($upgrades_all as $name => $upgrade) {
+    $upgrade_options[$name] = isset($upgrade['#link']) ? l($upgrade['#title'], $upgrade['#link']) : $upgrade['#title'];
+    if (isset($upgrade['#description'])) {
+      $upgrade_options[$name] .= ' (' . $upgrade['#description'] . ')';
+    }
+    $upgrades_sort[$name] = $upgrade['#title'];
   }
 
-  $options = array();
+  // Sort the upgrades by #title.
+  // TODO Unfortunately, the tableselect code seems to ignore the order of items???
+  asort($upgrades_sort);
+  foreach ($upgrades_sort as $name => $upgrade) {
+    $upgrades_sort[$name] = $upgrade_options[$name];
+  }
+
+  // Build the upgrade list.
+  $header = array(
+    'category' => array('data' => t('Category'), 'field' => 'category'),
+    'description' => array('data' => t('Description'), 'field' => 'description'),
+  );
+  $rows = array();
+  foreach ($upgrades_sort as $name => $upgrade) {
+    $row = array();
+    $row['category'] = $upgrades_sort[$name];
+    $row['description'] = 'Missing';
+
+    $rows[$name] = $row;
+  }
+  $upgrade_fs = array(
+    '#type' => 'fieldset',
+    '#title' => t('Upgrades'),
+    '#description' => t('Apply the selected conversion routines ...'),
+    '#tree' => TRUE,
+  );
+  $upgrade_fs['list'] = array(
+    '#type' => 'tableselect',
+    '#header' => $header,
+    '#options' => $rows,
+    '#default_value' => isset($upgrades) ? $upgrades : array(),
+    '#empty' => t('No comments available'),
+  );
+
+  // Build the file extension list.
+  $types = array(
+    'inc' => 'PHP code files',
+    'info' => 'Info files used with module installation',
+    'install' => 'PHP code files used with module installation, update and uninstallation',
+    'module' => 'PHP code files',
+    'php' => 'PHP code files',
+    'profile' => 'PHP code files used with site installation',
+    'test' => 'SimpleTest files',
+    'theme' => 'PHP code files used with theming',
+  );
+  $header = array(
+    'extension' => array('data' => t('Extension'), 'field' => 'extension'),
+    'description' => array('data' => t('Description'), 'field' => 'description'),
+  );
+  $rows = array();
+  foreach ($types as $key => $description) {
+    $row = array();
+    $row['extension'] = $key;
+    $row['description'] = $description;
+
+    $rows[$key] = $row;
+  }
+  $extension_fs = array(
+    '#type' => 'fieldset',
+    '#title' => t('Extensions'),
+    '#description' => t('... to files with the selected file extensions ...'),
+    '#tree' => TRUE,
+  );
+  $extension_fs['list'] = array(
+    '#type' => 'tableselect',
+    '#header' => $header,
+    '#options' => $rows,
+    '#default_value' => isset($extensions) ? $extensions : array(),
+    '#empty' => t('No comments available'),
+  );
+
+  // Build the directory list.
   $path = realpath(file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD));
   $dirs = coder_upgrade_scan_directory($path);
-  foreach ($dirs as $dir) {
-    $options[$dir] = $dir;
-  }
   if (!$dirs) {
     drupal_set_message(t('Please place modules to be converted in @path.', array('@path' => $path)), 'error');
   }
 
-  $form['directory'] = array(
-    '#title' => t('Directory (containing 6.x module files)'),
-    '#type' => 'select',
-    '#options' => $options,
-    '#default_value' => $directory,
-    '#description' => t('Directory beneath the module input path (!path) containing the files to be converted to the version 7.x API.', array('!path' => $path))
+  $header = array(
+    'name' => array('data' => t('Name'), 'field' => 'name'),
+    'path' => array('data' => t('Path'), 'field' => 'path'),
   );
+  $rows = array();
+  foreach ($dirs as $dir) {
+    $row = array();
+    $row['name'] = $dir;
+    $row['path'] = file_directory_path() . '/' . $dir;
+
+    $rows[$dir] = $row;
+  }
+  $directory_fs = array(
+    '#type' => 'fieldset',
+    '#title' => t('Directories'),
+    '#description' => t('... residing in the selected directories (beneath the files directory), or ...'),
+    '#tree' => TRUE,
+  );
+  $directory_fs['list'] = array(
+    '#type' => 'tableselect',
+    '#header' => $header,
+    '#options' => $rows,
+    '#default_value' => isset($directories) ? $directories : array(),
+    '#empty' => t('No comments available'),
+  );
+
+  // Build the module list.
+  $rows = coder_upgrade_module_list();
+  $header = array(
+    'name' => array('data' => t('Name'), 'field' => 'name'),
+    'path' => array('data' => t('Path'), 'field' => 'path'),
+  );
+  $module_fs = array(
+    '#type' => 'fieldset',
+    '#title' => t('Modules'),
+    '#description' => t('... residing in the selected modules (beneath the sites directory).'),
+    '#tree' => TRUE,
+  );
+  $module_fs['list'] = array(
+    '#type' => 'tableselect',
+    '#header' => $header,
+    '#options' => $rows,
+    '#default_value' => isset($modules) ? $modules : array(),
+    '#empty' => t('No comments available'),
+  );
+
+  // TODO Add a checkbox for creating a patch/diff file for each module; default is checked.
+
+  // Build the form.
+  $form = array();
+
+  $form['tabs'] = array(
+    '#type' => 'vertical_tabs',
+    '#default_tab' => 'edit-directories',
+  );
+  $form['tabs']['upgrades'] = $upgrade_fs;
+  $form['tabs']['extensions'] = $extension_fs;
+  $form['tabs']['directories'] = $directory_fs;
+  $form['tabs']['modules'] = $module_fs;
 
   $form['convert'] = array(
     '#type' => 'submit',
@@ -216,118 +291,164 @@ function coder_upgrade_conversions_form(&$form_state) {
  * Validation handler for the module conversion form.
  */
 function coder_upgrade_conversions_form_validate($form, &$form_state) {
-  // Gather the file types to convert based on extension.
-  $extensions = array();
-  $values = $form_state['values']['extensions'];
-  foreach ($values as $key => $value) {
-    if ($value['include']) {
-      $extensions[] = $key;
+  // Validate the user selections.
+  $values = $form_state['values'];
+  foreach ($values as $key => $list) {
+    if (!in_array($key, array('upgrades', 'extensions', 'directories', 'modules'))) {
+      continue;
+    }
+    $selections = coder_upgrade_selections_extract($list['list']);
+    if (!count($selections)) {
+      form_set_error($key, t('Please select at least one item in the %item tab.', array('%item' => ucfirst($key))));
     }
   }
-  if (!count($extensions)) {
-    form_set_error('extensions', t('Please select at least one file extension.'));
-  }
-
-  // Check for a valid directory.
-  if (!$form_state['values']['directory']) {
-    form_set_error('directory', t('Please place modules to be converted in directory.'));
-  }
-
-  // Gather the conversions to apply.
-//  $conversions = array();
-//  $conversions = coder_upgrade_conversions_list();
 }
 
 /**
  * Submit handler for the module conversion form.
  *
- * Execute the module conversion code on the selected file types in the
- * selected directory.
+ * Execute the selected module conversion code on the selected file types in the
+ * selected directories or modules.
  */
 function coder_upgrade_conversions_form_submit($form, &$form_state) {
   // Rebuild form with user selections.
   $form_state['rebuild'] = TRUE;
 
-  // Define the input and output directories.
-  $dirname = file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD) . '/' . $form_state['values']['directory'];
-  $newdirname = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/' . $form_state['values']['directory'];
+  // Gather the submitted parameters.
+  list($upgrades, $extensions, $directories, $modules) = coder_upgrade_selections($form_state['values']);
 
-  $params = array();
+  // TODO How to tell ourselves where the conversion code is and what files to require???
 
-  // Gather the file types to convert based on extension.
-  $extensions = array();
-  $values = $form_state['values']['extensions'];
-  foreach ($values as $key => $value) {
-    if ($value['include']) {
-      $extensions[] = $key;
+  $old_dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD) . '/';
+  $new_dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
+
+  // Combine directory and module items into a single list.
+  // Omit name from key so as to allow for duplicate names.
+  $items = array();
+
+  foreach ($directories as $key => $directory) {
+    $items[] = array(
+      'name' => $key,
+      'old_dir' => $old_dir . $key,
+      'new_dir' => $new_dir . $key,
+    );
+  }
+
+  $rows = coder_upgrade_module_list();
+  foreach ($modules as $key => $module) {
+    if (isset($rows[$key])) {
+      $row = $rows[$key];
+      $items[] = array(
+        'name' => $key,
+        'old_dir' => $row['dir'],
+        'new_dir' => $new_dir . $key,
+      );
     }
   }
-  $params['extensions'] = $extensions;
-
-  // Gather the conversions to apply.
-  $conversions = array();
-  $conversions = coder_upgrade_conversions_list();
-  $params['conversions'] = $conversions;
 
   // Apply conversion functions.
-//  coder_upgrade_start($dirname, $newdirname, $params); // Comment out until conversion routines are committed.
-  drupal_set_message(t('Module conversion code was run.'));
+  if (coder_upgrade_start($upgrades, $extensions, $items)) {
+    drupal_set_message(t('Module conversion code was run.'));
+  }
+  else {
+    drupal_set_message(t('Module conversion code was not run.'), 'error');
+  }
 }
 
 /**
- * Set the default file extensions to convert.
+ * Set the default values to display on the module conversions form.
  *
  * @return array of default values.
  */
 function coder_upgrade_conversions_form_defaults($form_state) {
-  // Set defaults when form is first loaded.
-  $extensions = array(
-    'info' => FALSE,
-    'install' => FALSE,
-    'module' => FALSE,
-    'inc' => FALSE,
-    'profile' => FALSE,
-    'theme' => FALSE,
-    'php' => FALSE
-  );
-  $directory = 'example';
-  $conversions = array(); // Will be set in coder_upgrade_conversions_list.
+  // D7: the key is used (and the value is irrelevant); D6: the value.
+  $upgrades = array();
 
-  // Set defaults from submitted values.
-  if (isset($form_state['values'])) {
-    if (isset($form_state['values']['extensions'])) {
-      $values = $form_state['values']['extensions'];
-      foreach ($values as $key => $value) {
-        $extensions[$key] = $value['include'];
-      }
-    }
-    if (isset($form_state['values']['directory'])) {
-      $directory = $form_state['values']['directory'];
-    }
+  $extensions = array(
+    'inc' => TRUE,
+    'info' => TRUE,
+    'install' => TRUE,
+    'module' => TRUE,
+//    'php' => FALSE,
+//    'profile' => FALSE,
+//    'test' => FALSE,
+//    'theme' => FALSE,
+  );
+
+  $directories['samples'] = 1;
+
+  $modules = array();
+
+  if (!isset($form_state['values'])) {
+    return array($upgrades, $extensions, $directories, $modules);
   }
 
-  return array($extensions, $directory, $conversions);
+  // Set defaults from submitted values.
+  return coder_upgrade_selections($form_state['values']);
 }
 
 /**
- * Theme the conversion file extension form.
+ * Return all submitted values.
  *
- * @return HTML output.
+ * @param array $values
+ *   Array of $form_state['values'].
+ * @return arrays
+ *   Arrays of submitted values.
  */
-function theme_coder_upgrade_extensions_table($form) {
-  $select_header = theme('table_select_header_cell');
-  $header = array($select_header, t('Extension'), t('Description'));
-  $rows = array();
-  foreach (element_children($form) as $key) {
-    $task = &$form[$key];
-
-    $row = array();
-    $row[] = drupal_render($task['include']);
-    $row[] = '<strong><label for="' . $task['include']['#id'] . '">' . $task['title']['#value'] . '</label></strong>';
-    $row[] = $task['description']['#value'];
-
-    $rows[] = $row;
+function coder_upgrade_selections($values) {
+  // Build arrays of each user selection type.
+  foreach (array('upgrades', 'extensions', 'directories', 'modules') as $key) {
+    if (isset($values[$key])) {
+      $$key = coder_upgrade_selections_extract($values[$key]['list']);
+    }
   }
+  return array($upgrades, $extensions, $directories, $modules);
+}
 
-  return theme('table', $header, $rows);
+/**
+ * Return a list of submitted values.
+ *
+ * @param array $values
+ *   Array slice from $form_state['values'].
+ * @return array
+ *   Array of submitted values.
+ */
+function coder_upgrade_selections_extract($values) {
+  $selections = array();
+  foreach ($values as $key => $value) {
+    if ($value) {
+      $selections[$key] = $key;
+    }
+  }
+  return $selections;
+}
+
+/**
+ * Return list of contributed modules.
+ *
+ * @return array
+ *   Array of contributed modules.
+ */
+function coder_upgrade_module_list() {
+  // Faster to query DB than to rescan files using _system_get_module_data().
+  $sql = "SELECT name, filename, type, status, info
+          FROM {system}
+          WHERE type = 'module'
+          AND filename NOT LIKE 'modules/%'
+          ORDER BY name ASC";
+  $default_value = 0;
+  $results = db_query($sql);
+  $rows = array();
+  foreach ($results as $module) {
+    $info = unserialize($module->info);
+    $row = array();
+    $row['name'] = $info['name'];
+    $row['path'] = $module->filename;
+    $row['dir'] = dirname($module->filename);
+    // TODO Pull files from this table???
+    // Would need to change the conversion code to not read the filesystem.
+
+    $rows[$module->name] = $row;
+  }
+  return $rows;
 }

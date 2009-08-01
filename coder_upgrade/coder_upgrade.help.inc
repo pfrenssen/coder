@@ -20,14 +20,16 @@ function coder_upgrade_help($path) {
     case 'admin/development/coder/upgrade':
       return tp('The purpose of this module is to automate as much as possible the task of updating a contributed module for Drupal API changes.' .
                 ' This particular module helps update the 6.x version of a contributed module to the 7.x version API.' .
-                ' The list of automated conversions to be applied is indicated !list.' .
+                ' Relative to the Drupal core APIs, the list of automated conversions to be applied is indicated !list.' .
                 ' For more detailed instructions on the module conversion process, visit the !help page.',
                  array('!list' => l(t('here'), 'http://drupal.org/node/394070'),
                        '!help' => l(t('help'), 'admin/help/coder_upgrade')));
     case 'admin/help#coder_upgrade':
       return tp('The purpose of this module is to automate as much as possible the task of updating a contributed module for Drupal API changes.' .
                 ' This particular module helps update the 6.x version of a contributed module to the 7.x version API.' .
-                ' The list of automated conversions to be applied is indicated !link.',
+                ' Relative to the Drupal core APIs, the list of automated conversions to be applied is indicated !link.' .
+                ' Contributed modules that define an API may add their own list of automated conversions to be applied by utilizing the Upgrades API provided by this module.' .
+                ' The Upgrades API is documented in coder_upgrade.api.php.',
                  array('!link' => l(t('here'), 'http://drupal.org/node/394070'))) .
              tp('The conversion process involves searching the module files (i.e., those files with extensions of .info, .install, .module, .inc, .profile, .theme, and .php) for 6.x syntax and replacing the text with the 7.x equivalent.' .
                 ' In many cases, this can be easily done in an automated fashion.' .

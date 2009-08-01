@@ -22,15 +22,15 @@ function coder_upgrade_install() {
     // Create the old and new module directories.
     $dir = file_directory_path() . '/' . DEADWOOD_OLD;
     if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
-      drupal_set_message(t('The files directory at %directory can not be written to. This is the default directory searched by Coder Upgrade for modules to be converted.', array('%directory' => $dir)), 'error');
+      drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory searched by Coder Upgrade for modules to be converted.', array('%directory' => $dir)), 'error');
     }
     $dir = file_directory_path() . '/' . DEADWOOD_NEW;
       if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
-        drupal_set_message(t('The files directory at %directory can not be written to. This is the default directory that Coder Upgrade writes converted module code to.', array('%directory' => $dir)), 'error');
+        drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory that Coder Upgrade writes converted module code to.', array('%directory' => $dir)), 'error');
     }
   }
   else {
-    drupal_set_message(t('Your files directory at %directory can not be written to. Coder Upgrade places converted module code in subdirectories of this directory.', array('%directory' => $dir)), 'error');
+    drupal_set_message(st('Your files directory at %directory can not be written to. Coder Upgrade places converted module code in subdirectories of this directory.', array('%directory' => $dir)), 'error');
   }
 }
 
