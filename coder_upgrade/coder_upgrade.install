@@ -26,7 +26,12 @@ function coder_upgrade_install() {
     }
     $dir = file_directory_path() . '/' . DEADWOOD_NEW;
       if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
-        drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory that Coder Upgrade writes converted module code to.', array('%directory' => $dir)), 'error');
+        drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory to which Coder Upgrade writes converted module code.', array('%directory' => $dir)), 'error');
+    }
+    // Create the patch directory.
+    $dir = file_directory_path() . '/' . DEADWOOD_PATCH;
+    if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
+      drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory to which Coder Upgrade writes patch files.', array('%directory' => $dir)), 'error');
     }
   }
   else {
@@ -43,10 +48,13 @@ function coder_upgrade_uninstall() {
   coder_upgrade_clean_directory($dir, TRUE);
   $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
   coder_upgrade_clean_directory($dir, TRUE);
+  $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_PATCH);
+  coder_upgrade_clean_directory($dir, TRUE);
 
   // Remove items from {variables} table.
   variable_del('coder_upgrade_dir_old');
   variable_del('coder_upgrade_dir_new');
+  variable_del('coder_upgrade_dir_patch');
 }
 
 /**

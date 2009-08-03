@@ -27,6 +27,12 @@ define('DEADWOOD_OLD', 'coder_upgrade/old');
 define('DEADWOOD_NEW', 'coder_upgrade/new');
 
 /**
+ * The default directory to store patch files.
+ * Relative to file_directory_path().
+ */
+define('DEADWOOD_PATCH', 'coder_upgrade/patch');
+
+/**
  * Pass a string through t() and wrap the result in html entity <p>.
  */
 function tp($string, $args = array()) {

@@ -18,9 +18,7 @@
  */
 
 module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
-module_load_include('inc', 'coder_upgrade', 'coder_upgrade.help');
 module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
-//module_load_include('inc', 'coder_upgrade', 'coder_upgrade.auto'); // Omit from module code
 
 /**
  * Implement hook_perm().
@@ -48,7 +46,7 @@ function coder_upgrade_menu() {
     'page arguments' => array('coder_upgrade_settings_form'),
     'access arguments' => array('administer site configuration'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 1
+    'weight' => 1,
   );
 
   // Conversion items.
@@ -58,7 +56,17 @@ function coder_upgrade_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('coder_upgrade_conversions_form'),
     'access arguments' => array('manage code conversions'),
-    'type' => MENU_LOCAL_TASK
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  // Patch files.
+  $items['files/coder_upgrade/patches/%'] = array(
+    'title' => 'Patches',
+    'description' => 'Display patch file.',
+    'page callback' => 'coder_upgrade_patch_display',
+    'page arguments' => array(3),
+    'access arguments' => array('manage code conversions'),
+    'type' => MENU_CALLBACK,
   );
 
   return $items;
@@ -93,6 +101,17 @@ function coder_upgrade_settings_form() {
     '#validate' => array('coder_upgrade_validate_dir_new'),
   );
 
+  $form['coder_upgrade_dir_patch'] = array(
+    '#title' => t('Module patch directory'),
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#default_value' => variable_get('coder_upgrade_dir_patch', DEADWOOD_PATCH),
+    '#description' => t('Directory beneath the file system path (!path) in which to save the patch files from the converted modules. Default is !default.', array('!path' => $path, '!default' => DEADWOOD_PATCH)),
+    '#size' => 30,
+    '#maxlength' => 255,
+    '#validate' => array('coder_upgrade_validate_dir_patch'),
+  );
+
   return system_settings_form($form);
 }
 
@@ -105,6 +124,7 @@ function coder_upgrade_settings_form_submit($form, &$form_state) {
   $values = $form_state['values'];
   $op = isset($values['op']) ? $values['op'] : '';
 
+  // TODO Make this into a foreach loop.
   $cur = variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);
   $new = $op == t('Reset to defaults') ? DEADWOOD_OLD : $values['coder_upgrade_dir_old'];
   if ($new != $cur) {
@@ -115,6 +135,14 @@ function coder_upgrade_settings_form_submit($form, &$form_state) {
 
   $cur = variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
   $new = $op == t('Reset to defaults') ? DEADWOOD_NEW : $values['coder_upgrade_dir_new'];
+  if ($new != $cur) {
+    $cur = file_directory_path() . '/' . $cur;
+    $new = file_directory_path() . '/' . $new;
+    rename($cur, $new);
+  }
+
+  $cur = variable_get('coder_upgrade_dir_patch', DEADWOOD_PATCH);
+  $new = $op == t('Reset to defaults') ? DEADWOOD_PATCH : $values['coder_upgrade_dir_patch'];
   if ($new != $cur) {
     $cur = file_directory_path() . '/' . $cur;
     $new = file_directory_path() . '/' . $new;
@@ -133,15 +161,14 @@ function coder_upgrade_conversions_form(&$form_state) {
   // Maintain a secondary list based on #title only, to make sorting possible.
   $upgrades_all = _coder_upgrade_upgrades();
   foreach ($upgrades_all as $name => $upgrade) {
-    $upgrade_options[$name] = isset($upgrade['#link']) ? l($upgrade['#title'], $upgrade['#link']) : $upgrade['#title'];
-    if (isset($upgrade['#description'])) {
-      $upgrade_options[$name] .= ' (' . $upgrade['#description'] . ')';
+    $upgrade_options[$name] = isset($upgrade['link']) ? l($upgrade['title'], $upgrade['link']) : $upgrade['title'];
+    if (isset($upgrade['description'])) {
+      $upgrade_options[$name] .= ' (' . $upgrade['description'] . ')';
     }
-    $upgrades_sort[$name] = $upgrade['#title'];
+    $upgrades_sort[$name] = $upgrade['title'];
   }
 
   // Sort the upgrades by #title.
-  // TODO Unfortunately, the tableselect code seems to ignore the order of items???
   asort($upgrades_sort);
   foreach ($upgrades_sort as $name => $upgrade) {
     $upgrades_sort[$name] = $upgrade_options[$name];
@@ -152,11 +179,13 @@ function coder_upgrade_conversions_form(&$form_state) {
     'category' => array('data' => t('Category'), 'field' => 'category'),
     'description' => array('data' => t('Description'), 'field' => 'description'),
   );
+  $i = 0;
   $rows = array();
   foreach ($upgrades_sort as $name => $upgrade) {
     $row = array();
     $row['category'] = $upgrades_sort[$name];
     $row['description'] = 'Missing';
+    $row['#weight'] = ++$i;
 
     $rows[$name] = $row;
   }
@@ -189,11 +218,13 @@ function coder_upgrade_conversions_form(&$form_state) {
     'extension' => array('data' => t('Extension'), 'field' => 'extension'),
     'description' => array('data' => t('Description'), 'field' => 'description'),
   );
+  $i = 0;
   $rows = array();
   foreach ($types as $key => $description) {
     $row = array();
     $row['extension'] = $key;
     $row['description'] = $description;
+    $row['#weight'] = ++$i;
 
     $rows[$key] = $row;
   }
@@ -220,13 +251,15 @@ function coder_upgrade_conversions_form(&$form_state) {
 
   $header = array(
     'name' => array('data' => t('Name'), 'field' => 'name'),
-    'path' => array('data' => t('Path'), 'field' => 'path'),
+    'path' => array('data' => t('Location'), 'field' => 'path'),
   );
+  $i = 0;
   $rows = array();
   foreach ($dirs as $dir) {
     $row = array();
-    $row['name'] = $dir;
+    $row['name'] = isset($directories[$dir]) ? l($dir, coder_upgrade_patch_link($dir)) : $dir;
     $row['path'] = file_directory_path() . '/' . $dir;
+    $row['#weight'] = ++$i;
 
     $rows[$dir] = $row;
   }
@@ -245,11 +278,16 @@ function coder_upgrade_conversions_form(&$form_state) {
   );
 
   // Build the module list.
-  $rows = coder_upgrade_module_list();
   $header = array(
     'name' => array('data' => t('Name'), 'field' => 'name'),
-    'path' => array('data' => t('Path'), 'field' => 'path'),
+    'path' => array('data' => t('Location'), 'field' => 'path'),
   );
+  $i = 0;
+  $rows = coder_upgrade_module_list();
+  foreach ($rows as $key => $row) {
+    $rows[$key]['name'] = isset($modules[$key]) ? l($row['name'], coder_upgrade_patch_link($key)) : $row['name'];
+    $rows[$key]['#weight'] = ++$i;
+  }
   $module_fs = array(
     '#type' => 'fieldset',
     '#title' => t('Modules'),
@@ -263,8 +301,6 @@ function coder_upgrade_conversions_form(&$form_state) {
     '#default_value' => isset($modules) ? $modules : array(),
     '#empty' => t('No comments available'),
   );
-
-  // TODO Add a checkbox for creating a patch/diff file for each module; default is checked.
 
   // Build the form.
   $form = array();
@@ -281,7 +317,7 @@ function coder_upgrade_conversions_form(&$form_state) {
   $form['convert'] = array(
     '#type' => 'submit',
     '#value' => t('Convert files'),
-    '#disabled' => !$dirs
+    '#disabled' => !$dirs,
   );
 
   return $form;
@@ -291,6 +327,7 @@ function coder_upgrade_conversions_form(&$form_state) {
  * Validation handler for the module conversion form.
  */
 function coder_upgrade_conversions_form_validate($form, &$form_state) {
+  $count = 0;
   // Validate the user selections.
   $values = $form_state['values'];
   foreach ($values as $key => $list) {
@@ -298,9 +335,15 @@ function coder_upgrade_conversions_form_validate($form, &$form_state) {
       continue;
     }
     $selections = coder_upgrade_selections_extract($list['list']);
-    if (!count($selections)) {
+    if (in_array($key, array('upgrades', 'extensions')) && !count($selections)) {
       form_set_error($key, t('Please select at least one item in the %item tab.', array('%item' => ucfirst($key))));
     }
+    elseif (in_array($key, array('directories', 'modules'))) {
+      $count += count($selections);
+    }
+  }
+  if (!$count) {
+    form_set_error($key, t('Please select at least one item in the %item1 or %item2 tabs.', array('%item1' => ucfirst('directories'), '%item2' => ucfirst('modules'))));
   }
 }
 
@@ -317,13 +360,23 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
   // Gather the submitted parameters.
   list($upgrades, $extensions, $directories, $modules) = coder_upgrade_selections($form_state['values']);
 
-  // TODO How to tell ourselves where the conversion code is and what files to require???
+  // TODO Cache this list so we don't have to query all the files again.
+  $upgrades_all = _coder_upgrade_upgrades(TRUE);
+  foreach ($upgrades as $prefix => $upgrade) {
+    $upgrades[$prefix] = array(
+      'prefix' => $prefix,
+      'routines' => $upgrades_all[$prefix]['routines'],
+    );
+  }
 
   $old_dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD) . '/';
   $new_dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
 
   // Combine directory and module items into a single list.
   // Omit name from key so as to allow for duplicate names.
+  // TODO Handle duplicate names when making new conversion directories.
+  // Could intersect keys in $directories, $modules; then add counter suffix to new_dir???
+  // Use global counter??? Or copy $directories to files/dirs and $modules to files/modules???
   $items = array();
 
   foreach ($directories as $key => $directory) {
@@ -349,6 +402,8 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
   // Apply conversion functions.
   if (coder_upgrade_start($upgrades, $extensions, $items)) {
     drupal_set_message(t('Module conversion code was run.'));
+    drupal_set_message(t('Click to view the !log.', array('!log' => l(t('conversion log file'), coder_upgrade_log_path()))));
+    drupal_set_message(t('Patch files may be viewed by clicking on Name links in the Directories and Modules tabs below.'));
   }
   else {
     drupal_set_message(t('Module conversion code was not run.'), 'error');
@@ -362,7 +417,7 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
  */
 function coder_upgrade_conversions_form_defaults($form_state) {
   // D7: the key is used (and the value is irrelevant); D6: the value.
-  $upgrades = array();
+  $upgrades = array('coder_upgrade' => 1);
 
   $extensions = array(
     'inc' => TRUE,
@@ -375,7 +430,7 @@ function coder_upgrade_conversions_form_defaults($form_state) {
 //    'theme' => FALSE,
   );
 
-  $directories['samples'] = 1;
+  $directories = array(); // 'samples' => 1;
 
   $modules = array();
 
@@ -435,7 +490,7 @@ function coder_upgrade_module_list() {
           FROM {system}
           WHERE type = 'module'
           AND filename NOT LIKE 'modules/%'
-          ORDER BY name ASC";
+          ORDER BY filename ASC";
   $default_value = 0;
   $results = db_query($sql);
   $rows = array();
@@ -443,7 +498,7 @@ function coder_upgrade_module_list() {
     $info = unserialize($module->info);
     $row = array();
     $row['name'] = $info['name'];
-    $row['path'] = $module->filename;
+    $row['path'] = dirname($module->filename); // $module->filename;
     $row['dir'] = dirname($module->filename);
     // TODO Pull files from this table???
     // Would need to change the conversion code to not read the filesystem.
@@ -451,4 +506,60 @@ function coder_upgrade_module_list() {
     $rows[$module->name] = $row;
   }
   return $rows;
+}
+
+/**
+ * Return path to log file.
+ *
+ * @return string
+ *   Path to file.
+ */
+function coder_upgrade_log_path() {
+  static $path = '';
+
+  if (!$path) {
+    $path = file_directory_path() . '/' . DEADWOOD_DIR . '/debug.txt';
+  }
+  return $path;
+}
+
+/**
+ * Return link to patch file.
+ *
+ * @param string $name
+ *   String of the patch filename.
+ * @return string
+ *   Link to file.
+ */
+function coder_upgrade_patch_link($name) {
+  return 'files/coder_upgrade/patches/' . $name . '.patch';
+}
+
+/**
+ * Return patch file wrapped in html tags.
+ *
+ * @param string $filename
+ *   String of the patch filename.
+ * @return string
+ *   HTML output.
+ */
+function coder_upgrade_patch_display($filename) {
+  echo '<html><head><body><pre>' . file_get_contents(coder_upgrade_patch_path($filename)) . '</pre></body></head></html>';
+}
+
+/**
+ * Return path to patch file.
+ *
+ * @param string $filename
+ *   String of the patch filename.
+ * @return string
+ *   Path to file.
+ */
+function coder_upgrade_patch_path($filename) {
+  static $dirname = '';
+
+  if (!$dirname) {
+    $dirname = file_directory_path() . '/' . variable_get('coder_upgrade_dir_patch', DEADWOOD_PATCH);
+  }
+  return $dirname . "/$filename";
 }

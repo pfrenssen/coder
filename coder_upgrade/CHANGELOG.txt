@@ -2,6 +2,12 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2009-08-02):
+   * Create log file and patch files.
+   * Add links to log file and patch files in user interface.
+   * Revise help text.
+   * Revise api.php file.
+
 - Changes (2009-08-01):
    * Revise user interface using new D7 form elements.
    * Implement hook_upgrades.

@@ -14,16 +14,24 @@
 
 /**
  * Return the list of automated conversion code from all modules.
+ *
+ * @param boolean $include_routines
+ *   Whether to include the list of routines (only needed on submit).
  */
-function _coder_upgrade_upgrades() {
-  return module_invoke_all('upgrades');
+function _coder_upgrade_upgrades($include_routines = FALSE) {
+  return module_invoke_all('upgrades', $include_routines);
 }
 
 /**
  * Implement hook_upgrades().
+ *
+ * @param boolean $include_routines
+ *   Whether to include the list of routines (only needed on submit).
  */
-function coder_upgrade_upgrades() {
-  global $_coder_upgrades; // TODO Only referenced in this function -- remove global
+function coder_upgrade_upgrades($include_routines) {
+  global $_coder_upgrades;
+
+  // TODO We only have one file with routines - could elminate loop?
   if (!isset($_coder_upgrades)) {
     $_coder_upgrades = array();
     $path = drupal_get_path('module', 'coder_upgrade') . '/conversions';
@@ -32,7 +40,7 @@ function coder_upgrade_upgrades() {
       require_once DRUPAL_ROOT . '/' . $file->filepath;
       $function = str_replace('.', '_', $file->name) . '_upgrades';
       if (drupal_function_exists($function)) {
-        if ($upgrade = call_user_func($function)) {
+        if ($upgrade = call_user_func($function, $include_routines)) {
           $_coder_upgrades = array_merge($_coder_upgrades, $upgrade);
         }
       }
@@ -42,16 +50,18 @@ function coder_upgrade_upgrades() {
 }
 
 /**
- * Prepare conversion environment before starting conversion loop.
+ * Prepare conversion environment and start conversion loop.
  *
  * @param array $upgrades
- *   Array of conversions to apply.
+ *   Array of conversion sets to apply.
  * @param array $extensions
  *   Array of file types to convert based on extension.
  * @param array $items
  *   Array of directories containing the files to convert.
  * @param boolean $recursive
  *   Indicates whether to recurse the subdirectories of each $item.
+ * @return boolean
+ *   Indicates whether conversion code was successfully applied.
  */
 function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) {
   return TRUE;

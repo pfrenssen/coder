@@ -36,10 +36,11 @@ function coder_upgrade_help($path) {
                 ' However, some of the API changes do not easily lend themselves to search and replace automation.' .
                 ' In those cases, and when a conversion routine has not been provided, manual intervention by the module maintainer is required.') .
              tp('<b>Conversion Process</b>') .
-             tp('Begin the conversion process by uploading your module\'s files to a directory beneath the module input directory (currently set to !input).' .
-                ' A directory (with the same name) for the converted files will automatically be created for you beneath the module output directory (currently set to !output).' .
-                ' You may define the name of the module input and output directories !link.',
-                 array('!input' => $input,
+             tp('Begin the conversion process by uploading your module\'s files to a directory beneath the <b>module input directory</b> (currently set to <b>!input</b>).' .
+                ' A directory (with the same name) for the converted files will automatically be created for you beneath the <b>module output directory</b> (currently set to <b>!output</b>).' .
+                ' You may define the name of the module input and output directories !link.' .
+                ' You may also upload your module to a modules directory beneath the sites directory (e.g. sites/all/modules).',
+                  array('!input' => $input,
                        '!output' => $output,
                        '!link' => l(t('here'), 'admin/settings/coder/upgrade'))) .
              tp('To apply the conversions, go to the !link page, select the appropriate runtime parameters based on the instructions below, and click the Convert files button.' .
@@ -48,18 +49,22 @@ function coder_upgrade_help($path) {
                        '!link' => l(t('Conversions Development'), 'admin/development/coder/upgrade'))) .
              tp('To convert 6.x files to 7.x files do the following:') .
               t('<ol>
-                 <li>Select the file types to convert by checking the appropriate boxes in the table.</li>
-                 <li>Select the directory containing the files to be converted.</li>
+                 <li>On the Upgrades tab, select the conversion (or upgrade) categories to apply by checking the appropriate boxes in the list.</li>
+                 <li>On the Extensions tab, select the file types to convert by checking the appropriate boxes in the list.</li>
+                 <li>On the Directories tab, select the directories containing the files to be converted.</li>
+                 <li>On the Modules tab, select the modules containing the files to be converted.</li>
                  <li>Click the Convert files button.</li>
                  </ol>
-                 The conversions will be done as follows:
+                 The conversions will be done as follows for each of the directories and modules selected in steps 3 and 4 above:
                  <ol>
-                 <li>The selected directory in the module input directory (!input) will be copied to the module output directory (!output).</li>
+                 <li>The selected directory or module will be copied to the module output directory (!output).</li>
                  <li>Files in the output directory will be reviewed one at a time and the selected conversions applied.</li>
                  </ol>
-                 After the automated conversions are made:
+                 After the automated conversions are applied:
                  <ol>
-                 <li>Review the changes made (using your favorite directory or file comparison utility).</li>
+                 <li>In the Directories and Modules tab, a patch file link is added to the names of each converted directory or module.</li>
+                 <li>Click on the patch file link to review the changes made for each directory or module.</li>
+                 <li>Otherwise, review the changes using your favorite directory or file comparison utility.</li>
                  <li>Rerun the !coder to highlight the areas in your module\'s code needing manual review.</li>
                  <li>Copy the directory from the module output directory to the 7.x installation directory for your contributed modules (e.g., sites/all/modules or sites/default/modules).</li>
                  <li>Install the module through the !install and test it.</li>
@@ -72,7 +77,7 @@ function coder_upgrade_help($path) {
              tp('After applying the automated conversions to your module, rerun the !coder to highlight the areas in your module\'s code needing manual review.',
                  array('!coder' => l(t('Coder Review'), 'admin/development/coder/review'))) .
              tp('<b>Feedback</b>') .
-             tp('If any of the automated conversions are not successful with your module and you believe the conversion code could be changed to handle your module\'s code, please submit a project issue to the !issue specifying "Coder Upgrade" as the Component.' .
+             tp('If any of the automated conversions are not successful with your module and you believe the conversion code could be changed to handle your module\'s code, please submit a project issue to the !issue <b>specifying "Coder Upgrade"</b> as the Component.' .
                 ' If you can also supply a patch for the change, that would be greatly appreciated too.',
                  array('!issue' => l(t('Coder Module'), 'http://drupal.org/node/add/project-issue/coder')));
   }
