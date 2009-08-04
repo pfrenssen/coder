@@ -2,6 +2,10 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2009-08-04):
+   * Rename hook_perm and the permission.
+   * Revise API documentation.
+
 - Changes (2009-08-02):
    * Create log file and patch files.
    * Add links to log file and patch files in user interface.

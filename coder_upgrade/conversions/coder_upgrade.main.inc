@@ -13,10 +13,14 @@
  */
 
 /**
- * Return the list of automated conversion code from all modules.
+ * Return the list of upgrade sets from all modules.
  *
  * @param boolean $include_routines
- *   Whether to include the list of routines (only needed on submit).
+ *   Indicates whether to include the list of conversion routines. This list
+ *   is only needed when the conversions are to be applied (typically on form
+ *   submission). This parameter equals FALSE when this routine is invoked by
+ *   Coder Upgrade while building the form, and TRUE when applying the
+ *   conversions.
  */
 function _coder_upgrade_upgrades($include_routines = FALSE) {
   return module_invoke_all('upgrades', $include_routines);
@@ -26,18 +30,21 @@ function _coder_upgrade_upgrades($include_routines = FALSE) {
  * Implement hook_upgrades().
  *
  * @param boolean $include_routines
- *   Whether to include the list of routines (only needed on submit).
+ *   Indicates whether to include the list of conversion routines. This list
+ *   is only needed when the conversions are to be applied (typically on form
+ *   submission). This parameter equals FALSE when this hook is invoked by
+ *   Coder Upgrade while building the form, and TRUE when applying the
+ *   conversions.
  */
 function coder_upgrade_upgrades($include_routines) {
-  global $_coder_upgrades;
+  $_coder_upgrades = drupal_static(__FUNCTION__);
 
-  // TODO We only have one file with routines - could elminate loop?
   if (!isset($_coder_upgrades)) {
     $_coder_upgrades = array();
     $path = drupal_get_path('module', 'coder_upgrade') . '/conversions';
     $files = drupal_system_listing('/coder_upgrade\..*\.inc$/', $path, 'filepath', 0);
     foreach ($files as $file) {
-      require_once DRUPAL_ROOT . '/' . $file->filepath;
+//      require_once DRUPAL_ROOT . '/' . $file->filepath;
       $function = str_replace('.', '_', $file->name) . '_upgrades';
       if (drupal_function_exists($function)) {
         if ($upgrade = call_user_func($function, $include_routines)) {
@@ -53,7 +60,7 @@ function coder_upgrade_upgrades($include_routines) {
  * Prepare conversion environment and start conversion loop.
  *
  * @param array $upgrades
- *   Array of conversion sets to apply.
+ *   Array of upgrade sets to apply.
  * @param array $extensions
  *   Array of file types to convert based on extension.
  * @param array $items
@@ -61,7 +68,7 @@ function coder_upgrade_upgrades($include_routines) {
  * @param boolean $recursive
  *   Indicates whether to recurse the subdirectories of each $item.
  * @return boolean
- *   Indicates whether conversion code was successfully applied.
+ *   Indicates whether the conversion code was successfully applied.
  */
 function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) {
   return TRUE;

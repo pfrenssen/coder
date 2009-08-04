@@ -21,13 +21,13 @@ module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
 module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
 
 /**
- * Implement hook_perm().
+ * Implement hook_permission().
  */
-function coder_upgrade_perm() {
+function coder_upgrade_permission() {
   return array(
-    'manage code conversions' => array(
-      'title' => t('Manage code conversions'),
-      'description' => t('Manage code conversions tasks for Coder Upgrade'),
+    'administer code conversions' => array(
+      'title' => t('Administer code conversions'),
+      'description' => t('Manage code conversion tasks for Coder Upgrade.'),
     ),
   );
 }
@@ -55,7 +55,7 @@ function coder_upgrade_menu() {
     'description' => 'Convert module code from version 6.x to 7.x.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('coder_upgrade_conversions_form'),
-    'access arguments' => array('manage code conversions'),
+    'access arguments' => array('administer code conversions'),
     'type' => MENU_LOCAL_TASK,
   );
 
@@ -65,7 +65,7 @@ function coder_upgrade_menu() {
     'description' => 'Display patch file.',
     'page callback' => 'coder_upgrade_patch_display',
     'page arguments' => array(3),
-    'access arguments' => array('manage code conversions'),
+    'access arguments' => array('administer code conversions'),
     'type' => MENU_CALLBACK,
   );
 
@@ -158,7 +158,7 @@ function coder_upgrade_conversions_form(&$form_state) {
   list($upgrades, $extensions, $directories, $modules) = coder_upgrade_conversions_form_defaults($form_state);
 
   // Create the list of upgrade options from the coder upgrade plug-ins.
-  // Maintain a secondary list based on #title only, to make sorting possible.
+  // Maintain a secondary list based on title only, to make sorting possible.
   $upgrades_all = _coder_upgrade_upgrades();
   foreach ($upgrades_all as $name => $upgrade) {
     $upgrade_options[$name] = isset($upgrade['link']) ? l($upgrade['title'], $upgrade['link']) : $upgrade['title'];
@@ -168,7 +168,7 @@ function coder_upgrade_conversions_form(&$form_state) {
     $upgrades_sort[$name] = $upgrade['title'];
   }
 
-  // Sort the upgrades by #title.
+  // Sort the upgrades by title.
   asort($upgrades_sort);
   foreach ($upgrades_sort as $name => $upgrade) {
     $upgrades_sort[$name] = $upgrade_options[$name];

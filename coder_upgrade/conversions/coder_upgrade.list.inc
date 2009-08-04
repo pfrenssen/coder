@@ -16,7 +16,7 @@
  * Callback from hook_upgrades().
  *
  * @param boolean $include_routines
- *   Whether to include the list of routines (only needed on submit).
+ *   Indicates whether to include the list of conversion routines.
  */
 function coder_upgrade_list_upgrades($include_routines) {
   $routines = $include_routines ? coder_upgrade_conversions_list() : array();
@@ -24,16 +24,15 @@ function coder_upgrade_list_upgrades($include_routines) {
     'title' => t('Core API changes from 6.x to 7.x'),
     'link' => 'http://drupal.org/node/394066',
     'routines' => $routines,
-    'severity' => 'critical',
   );
   return array('coder_upgrade' => $upgrade);
 }
 
 /**
- * Return a list of conversion routines.
+ * Return a list of conversion routine suffixes.
  *
  * @return array
- *   Array of conversion routines.
+ *   Array of conversion routine suffixes.
  */
 function coder_upgrade_conversions_list() {
   return array();
