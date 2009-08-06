@@ -339,6 +339,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  l(t('my text'), 'user/logout');");
     $this->assertCoderReviewPass("  l(\$text, 'user/logout');");
 
+    // http://drupal.org/node/224333#user_load_multiple
   }
 
   function testNode7x() {
@@ -346,6 +347,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // N/A - http://drupal.org/node/224333#specified_ids
 
     // http://drupal.org/node/224333#node_links
+    $this->assertCoderReviewFail("  function mymodule_link('node', \$node, \$teaser) {\n}");
+    $this->assertCoderReviewFail("  function mymodule_link('taxonomy terms', \$node, \$teaser) {\n}");
+    $this->assertCoderReviewFail("  function mymodule_link(\$type, \$node, \$teaser) {\n}");
+    $this->assertCoderReviewPass("  function mymodule_link(\$type, \$comment, \$teaser) {\n}");
+    $this->assertCoderReviewPass("  function mymodule_link('comment', \$comment, \$teaser) {\n}");
 
     // http://drupal.org/node/224333#node_load_multiple
     $this->assertCoderReviewFail('  node_load($param);');
@@ -378,8 +384,15 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  if (node_view($nid, TRUE)) {');
 
     // http://drupal.org/node/224333#node_build_rss
+    $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n  switch (\$operation) {\n  case 'rss item':\n  }\n}");
+
     // http://drupal.org/node/224333#node_type_get_functions
+    $this->assertCoderReviewFail('  node_get_types($op);');
+    $this->assertCoderReviewFail('  node_get_types(\'types\');');
+
     // http://drupal.org/node/224333#build_mode
+    $this->assertCoderReviewFail('  $build_mode = NODE_BUILD_PREVIEW;');
+    $this->assertCoderReviewFail('  $node->build_mode = 2;');
   }
 
   function testMultilingual7x() {
@@ -388,7 +401,15 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   function testMisc7x() {
     // http://drupal.org/node/224333#implementation_hook_comment
+
     // http://drupal.org/node/224333#book_toc_parameters
+    $this->assertCoderReviewFail('  $toc = book_toc($bid, array(), 9);');
+    $this->assertCoderReviewFail('  $toc = book_toc($bid, array());');
+    $this->assertCoderReviewFail('  $toc = book_toc($bid, $foo, 9);');
+    $this->assertCoderReviewPass('  $toc = book_toc($bid, 9);');
+    $this->assertCoderReviewPass('  $toc = book_toc($bid, 9, array());');
+    $this->assertCoderReviewPass('  $toc = book_toc($bid, 9, $foo);');
+
     // http://drupal.org/node/224333#sticky_headers
 
     // http://drupal.org/node/224333#referer_uri
@@ -407,5 +428,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  actions_synchronize($actions_in_code);');
     $this->assertCoderReviewFail('  actions_synchronize($foo, $delete_orphans);');
     $this->assertCoderReviewPass('  actions_synchronize($delete_orphans);');
+
+    // http://drupal.org/node/224333#distauth
   }
 }

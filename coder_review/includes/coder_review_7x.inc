@@ -357,13 +357,19 @@ function coder_review_7x_reviews() {
         '#value' => 'function\s+[a-z0-9_]+_(user)\s*\(\s*\$op\s*,',
         '#warning_callback' => '_coder_review_7x_hook_user_op_warning',
       ),
+      // http://drupal.org/node/224333#user_load_multiple --- user_load_multiple() and hook_user_load()
 
 
     // Node API
       // N/A - http://drupal.org/node/224333#delete_multiple --- Add node_delete_multiple()
       // N/A - http://drupal.org/node/224333#specified_ids --- Save new users and nodes with specified IDS
 
-      // http://drupal.org/node/224333#node_links --- Move node links into $node->content
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => 'function\s+[a-z0-9_]+_(link)\s*\(\s*([\'"](node|taxonomy terms)[\'"]|' . $argex . '\s*,\s*\$node\s*,)',
+        '#warning_callback' => '_coder_review_7x_node_links_warning',
+      ),
       array(
         '#type' => 'regex',
         '#source' => 'allphp',
@@ -406,9 +412,28 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]node_view\s*\(',
         '#warning_callback' => '_coder_review_7x_node_view_warning',
       ),
-      // http://drupal.org/node/224333#node_build_rss --- Removed $op "rss item" from hook_nodeapi() in favor of NODE_BUILD_RSS
-      // http://drupal.org/node/224333#node_type_get_functions --- node_get_types($op) replaced by node_type_get_$op()
-      // http://drupal.org/node/224333#build_mode --- $teaser parameter changed to $build_mode in node building functions and hooks, $node->build_mode property removed
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#function' => '_nodeapi$',
+        '#value' => '[\'"]rss item[\'"]',
+        '#warning_callback' => '_coder_review_7x_node_build_rss_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]node_get_types\s*\(',
+        '#warning_callback' => '_coder_review_7x_node_type_get_functions_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]\$node->build_mode',
+        '#warning_callback' => '_coder_review_7x_build_mode_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]NODE_BUILD_PREVIEW',
+        '#warning_callback' => '_coder_review_7x_node_build_preview_warning',
+      ),
 
 
     // Multilingual
@@ -417,7 +442,11 @@ function coder_review_7x_reviews() {
 
     // Misc
       // http://drupal.org/node/224333#implementation_hook_comment --- Commenting style - use 'Implement hook_foo().' when documenting hooks.
-      // http://drupal.org/node/224333#book_toc_parameters --- Parameters swapped in book_toc()
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]book_toc\s*\(\s*' . $argex . '\s*,\s*(array\s*\(|(\$?)[a-zA-Z_]+\s*,\s*\d+)',
+        '#warning_callback' => '_coder_review_7x_book_toc_warning',
+      ),
       // http://drupal.org/node/224333#sticky_headers --- Make sticky tableheaders optional
       array(
         '#type' => 'regex',
@@ -434,6 +463,7 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]actions_synchronize\s*\((\$actions|[^,]+,)',
         '#warning_callback' => '_coder_review_7x_actions_synchronize_warning',
       ),
+      // http://drupal.org/node/224333#distauth --- Login validation change for distributed authentication modules
   );
   $review = array(
     '#title' => t('Converting 6.x modules to 7.x'),
@@ -926,8 +956,7 @@ function _coder_review_7x_filter_urls_warning() {
 
 function _coder_review_7x_taxonomy_get_tree_warning() {
   return array(
-    '#warning' => t('!taxonomy_get_tree()\'s $depth and $max_depth parameters
-    have changed positions.',
+    '#warning' => t('!taxonomy_get_tree()\'s $depth and $max_depth parameters have changed positions.',
       array(
         '!taxonomy_get_tree' => theme('drupalapi', 'taxonomy_get_tree', 7),
       )
@@ -940,5 +969,64 @@ function _coder_review_7x_taxonomy_paths_warning() {
   return array(
     '#warning' => t('Support for taxonomy term paths with multiple tids and depth specification has been removed.'),
     '#link' => 'http://drupal.org/node/224333#taxonomy_paths',
+  );
+}
+
+function _coder_review_7x_book_toc_warning() {
+  return array(
+    '#warning' => t('!book_toc()\'s $depth_limit and $exclude parameters have changed positions.',
+      array(
+        '!book_toc' => theme('drupalapi', 'book_toc', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#book_toc_parameters',
+  );
+}
+
+function _coder_review_7x_node_type_get_functions_warning() {
+  return array(
+    '#warning' => t('!node_get_types() function has been replaced by node_type_get_$op() functions.',
+      array(
+        '!node_get_types' => theme('drupalapi', 'node_get_types', 6),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#node_type_get_functions',
+  );
+}
+
+function _coder_review_7x_node_build_rss_warning() {
+  return array(
+    '#warning' => t('Removed $op "rss item" from !hook_nodeapi() in favor of NODE_BUILD_RSS.',
+      array(
+        '!hook_nodeapi()' => theme('drupalapi', 'hook_nodeapi', '7'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#node_build_rss',
+  );
+}
+
+function _coder_review_7x_build_mode_warning() {
+  return array(
+    '#warning' => t('$node->build_mode property removed.'),
+    '#link' => 'http://drupal.org/node/224333#build_mode',
+  );
+}
+
+function _coder_review_7x_node_build_preview_warning() {
+  return array(
+    '#warning' => t('NODE_BUILD_PREVIEW has been replaced by the $node->in_preview boolean flag.'),
+    '#link' => 'http://drupal.org/node/224333#build_mode',
+  );
+}
+
+function _coder_review_7x_node_links_warning() {
+  return array(
+    '#warning' => t('Node and taxonomy links are no longer emitted by !hook_link() and !hook_link_alter().',
+      array(
+        '!hook_link()' => theme('drupalapi', 'hook_link', 7),
+        '!hook_link_alter()' => theme('drupalapi', 'hook_link_alter', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#node_links',
   );
 }
