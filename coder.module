@@ -1045,9 +1045,12 @@ function do_coder_reviews($coder_args) {
  *   Integer 1 if success.
  */
 function _coder_read_and_parse_file(&$coder_args) {
-  // If this isn't a php file, then don't try to parse it.
+  $is_php_file = 1;
   $regex = '/\.('. implode('|', array_merge(array('module'), $coder_args['#php_extensions'])) .')$/';
   if (!preg_match($regex, $coder_args['#filename'])) {
+    $is_php_file = 0;
+    /*
+    // If this isn't a php file, then don't try to parse it.
     if ((($filepath = realpath($coder_args['#filename'])) && file_exists($filepath))) {
       $full_lines = file($filepath);
       if ($full_lines[0] != '<?php') {
@@ -1060,12 +1063,13 @@ function _coder_read_and_parse_file(&$coder_args) {
         return 1;
       }
     }
+    */
   }
 
   // Get the path to the module file.
   if (!empty($coder_args['#patch']) || !empty($coder_args['#test']) || (($filepath = realpath($coder_args['#filename'])) && file_exists($filepath))) {
-    $in_php = 0;
-    $in_allphp = 0;
+    $in_php = ($is_php_file ? 0 : 1);
+    $in_allphp = ($is_php_file ? 0 : 1);
     $in_comment = 0;
 
     if (!empty($coder_args['#patch'])) {
