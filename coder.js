@@ -13,8 +13,8 @@ if (Drupal.jsEnabled) {
           core = this.form.elements.namedItem("edit-coder-core");
           active = this.form.elements.namedItem("edit-coder-active-modules");
           if (this == core || this == active) {
-            modules = "input[@id^=edit-coder-modules-]";
-            themes = "input[@id^=edit-coder-themes-]";
+            modules = "input[id^=edit-coder-modules-]";
+            themes = "input[id^=edit-coder-themes-]";
             if (core.checked || active.checked) {
               $(modules).uncheck();
               $(themes).uncheck();
