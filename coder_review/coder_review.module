@@ -847,6 +847,9 @@ function coder_review_page_form($form_state, $arg = '') {
       if (count($stats)) {
         $summary = array('files' => 0, 'minor' => 0, 'normal' => 0, 'critical' => 0);
         foreach ($stats as $stat) {
+          $summary['minor'] += $stat['minor'];
+          $summary['normal'] += $stat['normal'];
+          $summary['critical'] += $stat['critical'];
           if (isset($stat['#includes'])) {
             foreach ($stat['#includes'] as $includestat) {
               $summary['files'] ++;
