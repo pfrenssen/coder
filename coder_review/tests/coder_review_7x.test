@@ -22,13 +22,22 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
 
   function testModule7x() {
+    // N/A - in comment review - http://drupal.org/node/224333#afile
+
+    // NO TESTS - http://drupal.org/node/224333#registry
+    // Can't implement tests because it's reviewed by a review callback, which
+    // needs physical files, and because it's a .info file.
+
     // http://drupal.org/node/224333#api_php
     // http://drupal.org/node/224333#update_php
-    // http://drupal.org/node/224333#afile
   }
 
   function testSystem7x() {
     // N/A - http://drupal.org/node/224333#variable_get_default_null
+    // N/A - http://drupal.org/node/224333#hook_modules_action
+    // N/A - http://drupal.org/node/224333#static_variable_api
+
+    // UNCLEAR - http://drupal.org/node/224333#module_implements_not_module_list
 
     // http://drupal.org/node/224333#absolute_includes
     $this->assertCoderReviewFail("  require variable_get('cache_inc', './includes/cache.inc');");
@@ -57,25 +66,58 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#rebuild-functions
     $this->assertCoderReviewFail('  drupal_rebuild_code_registry();');
 
-    // http://drupal.org/node/224333#hook_modules_action
     // http://drupal.org/node/224333#drupal_uninstall_modules
-    // http://drupal.org/node/224333#module_implements_not_module_list
+    $this->assertCoderReviewFail('  drupal_uninstall_module("foo");');
+    $this->assertCoderReviewPass('  drupal_uninstall_modules(array("foo"));');
+
     // http://drupal.org/node/224333#drupal_http_request_parameters
+    $this->assertCoderReviewPass('  drupal_http_request($url, $options);');
+    $this->assertCoderReviewPass('  drupal_http_request($url, array());');
+    $this->assertCoderReviewFail('  drupal_http_request($url, $headers, $method, $data, $retry);');
+    $this->assertCoderReviewFail('  drupal_http_request($url, $headers, $method, $data);');
+    $this->assertCoderReviewFail('  drupal_http_request($url, $headers, $method);');
+    $this->assertCoderReviewFail('  drupal_http_request($url, array(), $method, $data, $retry);');
+    $this->assertCoderReviewFail('  drupal_http_request($url, $headers, "GET", $data, $retry);');
+    $this->assertCoderReviewFail('  drupal_http_request($url, $headers, "GET", NULL, $retry);');
+    $this->assertCoderReviewFail('  drupal_http_request($url, $headers, "GET", "foo", $retry);');
+    $this->assertCoderReviewFail('  drupal_http_request($url, $headers, "GET");');
+
     // http://drupal.org/node/224333#moved_statistics_settings
+    $this->assertCoderReviewFail('  $path = "admin/reports/settings";');
+    $this->assertCoderReviewFail("  \$path = 'admin/reports/settings';");
+    $this->assertCoderReviewFail('  $path = "URL is admin/reports/settings.";');
+
     // http://drupal.org/node/224333#system_get_module_data
-    // http://drupal.org/node/224333#static_variable_api
+    $this->assertCoderReviewFail('  module_rebuild_cache();');
+    $this->assertCoderReviewFail('  system_theme_data();');
+
     // http://drupal.org/node/224333#drupal_set_html_head
+    $this->assertCoderReviewFail('  drupal_set_html_head($data);');
+
     // http://drupal.org/node/224333#php_eval
+    $this->assertCoderReviewFail('  drupal_eval(\'<?php print "Hello"; ?>\');');
+
     // http://drupal.org/node/224333#http_header_functions
+    $this->assertCoderReviewPass("  drupal_set_header('Content-Type', 'text/plain');");
+    $this->assertCoderReviewFail("  drupal_set_header('Content-Type: text/plain');");
+    $this->assertCoderReviewPass("  drupal_set_header('500 Internal server error');");
+    $this->assertCoderReviewFail("  drupal_set_header(\$_SERVER['SERVER_PROTOCOL'] . ' 500 Internal server error');");
+
     // http://drupal.org/node/224333#drupal_set_content
-    // http://drupal.org/node/224333#cache_implementation
+    $this->assertCoderReviewFail("  drupal_set_content('footer', 'Adding custom text to the footer');");
+    $this->assertCoderReviewFail('  $content = drupal_get_content();');
+
+    // NO TESTS - http://drupal.org/node/224333#cache_implementation
+    // Can't implement tests because it's reviewed by a review callback, which
+    // needs physical files.
 
   }
 
   function testPermissions7x() {
+    // N/A - http://drupal.org/node/224333#moved_statistics_settings
+
     // http://drupal.org/node/224333#descriptions-permissions
     // http://drupal.org/node/224333#bypass_node_access
-    // http://drupal.org/node/224333#moved_statistics_settings
     // http://drupal.org/node/224333#sorting-permissions
     // http://drupal.org/node/224333#permission-tables
     // http://drupal.org/node/224333#node_access_alter_hooks
@@ -111,7 +153,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#menu_callback_array
     // http://drupal.org/node/224333#hook_menu_link_alter
     // http://drupal.org/node/224333#system_admin_menu_block_access
-    // http://drupal.org/node/224333#poundtheme
+
   }
 
   function testBlock7x() {
@@ -248,39 +290,58 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   function testJavascript7x() {
     // N/A - http://drupal.org/node/224333#jquery_ui
+    // N/A - http://drupal.org/node/224333#attached_js
+    // N/A - http://drupal.org/node/224333#drupal_add_library
+    // N/A - http://drupal.org/node/224333#drupal_add_js_css_reset
 
     // http://drupal.org/node/224333#drupal-behaviors
-    // http://drupal.org/node/224333#drupal_add_js_css_reset
+
     // http://drupal.org/node/224333#drupal_add_js_options
+    $this->assertCoderReviewPass("  drupal_add_js(\$data, 'module');");
+    $this->assertCoderReviewFail("  drupal_add_js(\$data, 'module', 'header');");
+    $this->assertCoderReviewFail("  drupal_add_js(\$data, 'module', \$header, \$defer);");
+
     // http://drupal.org/node/224333#drupal_add_js_weight
     // http://drupal.org/node/224333#hook_js_alter
     // http://drupal.org/node/224333#javascript_compatibility
     // http://drupal.org/node/224333#drupal_add_js_external
     // http://drupal.org/node/224333#local_settings_behaviors
     // http://drupal.org/node/224333#jquery_13
-    // http://drupal.org/node/224333#attached_js
-    // http://drupal.org/node/224333#drupal_add_library
   }
 
   function testCss7x() {
+    // N/A - http://drupal.org/node/224333#attached_js
+    // N/A - http://drupal.org/node/224333#drupal_add_css_inline
+    // N/A - http://drupal.org/node/224333#drupal_add_library
+    // N/A - http://drupal.org/node/224333#drupal_add_js_css_reset
+
     // http://drupal.org/node/224333#drupal_add_js_options
-    // http://drupal.org/node/224333#drupal_add_js_css_reset
-    // http://drupal.org/node/224333#attached_js
-    // http://drupal.org/node/224333#drupal_add_css_inline
-    // http://drupal.org/node/224333#drupal_add_library
+    $this->assertCoderReviewPass("  drupal_add_css(\$data, 'module');");
+    $this->assertCoderReviewFail("  drupal_add_css(\$data, 'module', 'all');");
+    $this->assertCoderReviewFail("  drupal_add_css(\$data, 'module', \$media);");
   }
 
   function testTheming7x() {
-    // http://drupal.org/node/224333#drupal_render_theming
-
     // http://drupal.org/node/224333#rebuild-functions
     $this->assertCoderReviewFail('  drupal_rebuild_theme_registry();');
+
     // http://drupal.org/node/224333#theme_page
+    $this->assertCoderReviewFail("  return theme('page');");
+
+    // http://drupal.org/node/224333#hook_footer
+    $this->assertCoderReviewFail('  function mymodule_footer() {');
+    $this->assertCoderReviewFail('  function mymodule_footer($main = 0) {');
+    $this->assertCoderReviewFail('  function mymodule_footer() {');
+    $this->assertCoderReviewFail('  function mytheme_closure() {');
+    $this->assertCoderReviewFail('  function mytheme_closure($main = 0) {');
+    $this->assertCoderReviewFail("  return theme('closure');");
+
+    // http://drupal.org/node/224333#element_theme_properties
+    // http://drupal.org/node/224333#drupal_render_children
   }
 
   function testForm7x() {
-    // http://drupal.org/node/224333#element_theme_properties
-    // http://drupal.org/node/224333#drupal_render_children
+    // http://drupal.org/node/224333#poundtheme
     // http://drupal.org/node/224333#node_form
     // http://drupal.org/node/224333#process-functions
     // http://drupal.org/node/224333#markup
@@ -340,11 +401,17 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  l(\$text, 'user/logout');");
 
     // http://drupal.org/node/224333#user_load_multiple
+    $this->assertCoderReviewPass('  user_load($uid);');
+    $this->assertCoderReviewFail('  $user = user_load((array) $uid);');
+    $this->assertCoderReviewFail('  $user = user_load(array(123));');
   }
 
   function testNode7x() {
     // N/A - http://drupal.org/node/224333#delete_multiple
     // N/A - http://drupal.org/node/224333#specified_ids
+
+    // No link - node_revisions table name changed.
+    $this->assertCoderReviewFail('  db_query("SELECT * FROM {node_revisions}");');
 
     // http://drupal.org/node/224333#node_links
     $this->assertCoderReviewFail("  function mymodule_link('node', \$node, \$teaser) {\n}");
@@ -400,7 +467,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testMisc7x() {
-    // http://drupal.org/node/224333#implementation_hook_comment
+    // N/A - http://drupal.org/node/224333#sticky_headers
+    // N/A - http://drupal.org/node/224332#implementation_hook_comment
 
     // http://drupal.org/node/224333#book_toc_parameters
     $this->assertCoderReviewFail('  $toc = book_toc($bid, array(), 9);');
@@ -409,8 +477,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  $toc = book_toc($bid, 9);');
     $this->assertCoderReviewPass('  $toc = book_toc($bid, 9, array());');
     $this->assertCoderReviewPass('  $toc = book_toc($bid, 9, $foo);');
-
-    // http://drupal.org/node/224333#sticky_headers
 
     // http://drupal.org/node/224333#referer_uri
     $this->assertCoderReviewFail('  $referer = referer_uri();');
