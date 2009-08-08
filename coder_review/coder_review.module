@@ -71,9 +71,9 @@ function coder_review_reviews() {
 }
 
 /**
- * Implementation of hook_perm().
+ * Implementation of hook_permission().
  */
-function coder_review_perm() {
+function coder_review_permission() {
   return array(
     'view code review' => array(
       'title' => t('View code review'),
@@ -747,7 +747,7 @@ function coder_review_page_form($form_state, $arg = '') {
         '#severity' => $settings['coder_severity'],
         '#php_extensions' => $php_extensions,
         '#include_extensions' => array(),
-//      '#filename' => $filename,
+        //'#filename' => $filename,
       );
 
       $form['core_php'] = array(
@@ -1072,9 +1072,12 @@ function do_coder_reviews($coder_args) {
  *   Integer 1 if success.
  */
 function _coder_review_read_and_parse_file(&$coder_args) {
-  // If this isn't a php file, then don't try to parse it.
+  $is_php_file = 1;
   $regex = '/\.(' . implode('|', array_merge(array('module'), $coder_args['#php_extensions'])) . ')$/';
   if (!preg_match($regex, $coder_args['#filename'])) {
+    $is_php_file = 0;
+  /*
+    // If this isn't a php file, then don't try to parse it.
     if ((($filepath = realpath($coder_args['#filename'])) && file_exists($filepath))) {
       $full_lines = file($filepath);
       if ($full_lines[0] != '<?php') {
@@ -1087,13 +1090,14 @@ function _coder_review_read_and_parse_file(&$coder_args) {
         return 1;
       }
     }
+  */
   }
 
   $filepath = realpath($coder_args['#filename']);
   // Get the path to the module file.
   if (!empty($coder_args['#patch']) || !empty($coder_args['#test']) || (($filepath = realpath($coder_args['#filename'])) && file_exists($filepath))) {
-    $in_php = 0;
-    $in_allphp = 0;
+    $in_php = ($is_php_file ? 0 : 1);
+    $in_allphp = ($is_php_file ? 0 : 1);
     $in_comment = 0;
 
     if (!empty($coder_args['#patch'])) {
@@ -1781,7 +1785,7 @@ function _coder_review_search_string($line, $rule) {
   static $php5;
 
   if (!isset($php5)) {
-    if (function_exists('stripos')) {
+    if (drupal_function_exists('stripos')) {
       $php5 = TRUE;
     }
     else {
