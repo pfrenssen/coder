@@ -316,21 +316,70 @@ function coder_review_7x_reviews() {
       // N/A - http://drupal.org/node/224333#drupal_add_library --- Ability to add multiple JavaScript/CSS files at once
       // N/A - http://drupal.org/node/224333#drupal_add_js_css_reset --- Ability to reset JavaScript/CSS
 
-      // http://drupal.org/node/224333#drupal-behaviors --- Changed Drupal.behaviors to objects having the methods 'attach' and 'detach'
-
+      // @NOTE: no simpletest for this because of #filename setting.
+      array(
+        '#type' => 'regex',
+        '#value' => 'Drupal\.behaviors\..+?\s*=\s*function\s*\(',
+        '#filename' => array('js'),
+        '#warning_callback' => '_coder_review_7x_drupal_behaviors_warning',
+      ),
+      array(
+        '#type' => 'callback',
+        '#value' => '_coder_review_7x_drupal_behaviors_review_callback',
+        '#filename' => array('js'),
+        // @NOTE: this warning_callback isn't used.  It only exists to catch
+        // potential errors in the code.
+        '#warning_callback' => '_coder_review_7x_drupal_behaviors_warning',
+      ),
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]drupal_add_js\s*\((' . $argex . '\s*,\s*){2,}(' . $argex . ')\s*\)',
         '#warning_callback' => '_coder_review_7x_drupal_add_js_parameters_warning',
       ),
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => '[\s\(]drupal_add_js\s*\(' . $argex . '\s*,\s*[\'"](module|theme|core)[\'"]\s*[,\)]',
+        '#warning_callback' => '_coder_review_7x_drupal_add_js_weight_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => '[\'"]scripts[\'"]',
+        '#function' => '_preprocess_page$',
+        '#warning_callback' => '_coder_review_7x_hook_js_alter_warning',
+      ),
+      // @NOTE: no simpletest for this because of #filename setting.
+      array(
+        '#type' => 'grep_invert',
+        '#value' => '(function ($) {',
+        '#filename' => array('js'),
+        '#warning_callback' => '_coder_review_7x_javascript_compatibility_warning',
+      ),
 
-      // http://drupal.org/node/224333#drupal_add_js_weight --- Replace 'core', 'module' and 'theme' with 'file' in drupal_add_js()
-      // http://drupal.org/node/224333#hook_js_alter --- New hook_js_alter to alter JavaScript
-      // http://drupal.org/node/224333#javascript_compatibility --- JavaScript should be compatible with other libraries than jQuery
-      // http://drupal.org/node/224333#drupal_add_js_external --- External JavaScript can now be referenced through drupal_add_js()
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => '[\s\(]drupal_add_html_head\s*\(\s*[\'"].*?<script\s.*?src\s*=\s*[\'"][a-zA-Z:\/\._\-0-9]+?\.js',
+        '#warning_callback' => '_coder_review_7x_drupal_add_js_external_warning',
+      ),
       // http://drupal.org/node/224333#local_settings_behaviors --- Settings passed locally to JavaScript Behaviors
-      // http://drupal.org/node/224333#jquery_13 --- jQuery 1.3.x
 
+      // @NOTE: no simpletest for this because of #filename setting.
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => '\[.*?@[a-zA-Z]+\s*(\^=|=|!=|\$=|\*=)\s*.+?\]',
+        '#filename' => array('js'),
+        '#warning_callback' => '_coder_review_7x_jquery_13_warning',
+      ),
+      // @NOTE: no simpletest for this because of #filename setting.
+      array(
+        '#type' => 'regex',
+        '#value' => '(\$|jQuery)\.(boxModel|browser.version|browser)',
+        '#filename' => array('js'),
+        '#warning_callback' => '_coder_review_7x_jquery_13_warning',
+      ),
 
     // CSS
       // N/A - http://drupal.org/node/224333#attached_js --- Attached JavaScript and CSS for forms
@@ -627,6 +676,34 @@ function _coder_review_7x_cache_implementation_review_callback(&$coder_args, $re
             $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
             $tmprule = $rule;
             $tmprule['#warning_callback'] = '_coder_review_7x_cache_implementation_warning';
+            _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
+          }
+        }
+      }
+    }
+  }
+}
+
+function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+  // @NOTE: no simpletest for this.
+  $filename = $coder_args['#filename'];
+  if (file_exists($filename)) {
+    // Only do it for js files.
+    if (substr($filename, -3) == '.js') {
+      if ($lines = file($filename)) {
+        $detach = FALSE;
+        foreach ($lines as $lineno => $line) {
+          // New function, reset detach boolean.
+          if (preg_match('/(^|[\s\(=])function\s*([a-zA-Z_]+?|\()/', $line)) {
+            $detach = FALSE;
+          }
+          if (preg_match('/Drupal\.detachBehaviors\s*\(/', $line)) {
+            $detach = TRUE;
+          }
+          if (!$detach && preg_match('/(jQuery\.|\$\.|\$\([a-zA-Z_#\'"\-]+?\)\.)(ajax|get|getJSON|post|load)/', $line)) {
+            $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
+            $tmprule = $rule;
+            $tmptrule['#warning_callback'] = '_coder_review_7x_drupal_behaviors_warning';
             _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
           }
         }
@@ -1186,7 +1263,7 @@ function _coder_review_7x_drupal_http_request_parameters_warning() {
 
 function _coder_review_7x_moved_statistics_settings_warning() {
   return array(
-    '#warning' => t('Statistics settings have moved from "admin/reports/settings" to "admin/settings/statistics".'),
+    '#warning' => t('Statistics settings have moved to "admin/settings/statistics".'),
     '#link' => 'http://drupal.org/node/224333#moved_statistics_settings',
   );
 }
@@ -1321,7 +1398,7 @@ function _coder_review_7x_closure_warning() {
 
 function _coder_review_7x_theme_page_warning() {
   return array(
-    '#warning' => t('Instead of theme("page") use !drupal_set_page_content()',
+    '#warning' => t('Instead of "theme(\'page\')" use !drupal_set_page_content()',
       array(
         '!drupal_set_page_content()' => theme('drupalapi', 'drupal_set_page_content()', 7),
       )
@@ -1349,5 +1426,59 @@ function _coder_review_7x_drupal_add_css_parameters_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/224333#drupal_add_js_options',
+  );
+}
+
+function _coder_review_7x_jquery_13_warning() {
+  return array(
+    '#warning' => t('jQuery has been upgraded to version 1.3.'),
+    '#link' => 'http://drupal.org/node/224333#jquery_13',
+  );
+}
+
+function _coder_review_7x_hook_js_alter_warning() {
+  return array(
+    '#warning' => t('There is a new !hook_js_alter() to alter JavaScript.',
+      array(
+        '!hook_js_alter()' => theme('drupalapi', 'hook_js_alter()', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#hook_js_alter',
+  );
+}
+
+function _coder_review_7x_drupal_add_js_weight_warning() {
+  return array(
+    '#warning' => t("Replace 'core', 'module' and 'theme' with 'file' in !drupal_add_js()",
+      array(
+        '!drupal_add_js()' => theme('drupalapi', 'drupal_add_js()', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#drupal_add_js_weight',
+  );
+}
+
+function _coder_review_7x_drupal_behaviors_warning() {
+  return array(
+    '#warning' => t('Changed Drupal.behaviors to objects having the methods "attach" and "detach".'),
+    '#link' => 'http://drupal.org/node/224333#drupal_behaviors',
+  );
+}
+
+function _coder_review_7x_drupal_add_js_external_warning() {
+  return array(
+    '#warning' => t('External JavaScript can now be referenced through !drupal_add_js().',
+      array(
+        '!drupal_add_js()' => theme('drupalapi', 'drupal_add_js()', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#drupal_add_js_external',
+  );
+}
+
+function _coder_review_7x_javascript_compatibility_warning() {
+  return array(
+    '#warning' => t('JavaScript should be compatible with other libraries than jQuery.'),
+    '#link' => 'http://drupal.org/node/224333#javascript_compatibility',
   );
 }

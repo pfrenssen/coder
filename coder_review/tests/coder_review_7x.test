@@ -294,19 +294,30 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // N/A - http://drupal.org/node/224333#drupal_add_library
     // N/A - http://drupal.org/node/224333#drupal_add_js_css_reset
 
-    // http://drupal.org/node/224333#drupal-behaviors
-
-    // http://drupal.org/node/224333#drupal_add_js_options
-    $this->assertCoderReviewPass("  drupal_add_js(\$data, 'module');");
-    $this->assertCoderReviewFail("  drupal_add_js(\$data, 'module', 'header');");
-    $this->assertCoderReviewFail("  drupal_add_js(\$data, 'module', \$header, \$defer);");
+    // NO TESTS - http://drupal.org/node/224333#jquery_13
+    // NO TESTS - http://drupal.org/node/224333#drupal-behaviors
+    // NO TESTS - http://drupal.org/node/224333#javascript_compatibility
 
     // http://drupal.org/node/224333#drupal_add_js_weight
+    $this->assertCoderReviewFail("  drupal_add_js(\$data, 'module');");
+    // http://drupal.org/node/224333#drupal_add_js_options
+    $this->assertCoderReviewPass("  drupal_add_js(\$data, 'file');");
+    $this->assertCoderReviewFail("  drupal_add_js(\$data, 'file', 'header');");
+    $this->assertCoderReviewFail("  drupal_add_js(\$data, 'file', \$header, \$defer);");
+
     // http://drupal.org/node/224333#hook_js_alter
-    // http://drupal.org/node/224333#javascript_compatibility
+    $this->assertCoderReviewPass("  function mytheme_preprocess_page(&\$variables) {\n  \$scripts = \$variables['myscripts'];\n}");
+    $this->assertCoderReviewFail("  function mytheme_preprocess_page(&\$variables) {\n  \$scripts = \$variables['scripts'];\n}");
+
     // http://drupal.org/node/224333#drupal_add_js_external
+    $this->assertCoderReviewPass('  drupal_add_html_head("foo");');
+    $this->assertCoderReviewFail('  drupal_add_html_head(\'<script type="text/javascript" src="foo.js">\');');
+    $this->assertCoderReviewFail('  drupal_add_html_head(\'<script src="foo.js">\');');
+    $this->assertCoderReviewFail('  drupal_add_html_head(\'<script src="http://example.com/foo.js">\');');
+    $this->assertCoderReviewFail('  drupal_add_html_head(\'<script src="/files/foo.js">\');');
+    $this->assertCoderReviewFail('  drupal_add_html_head(\'<script src="http://example123-ab_c.com.js">\');');
+
     // http://drupal.org/node/224333#local_settings_behaviors
-    // http://drupal.org/node/224333#jquery_13
   }
 
   function testCss7x() {
