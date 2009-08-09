@@ -46,10 +46,10 @@ class CoderReviewTestCase extends DrupalWebTestCase {
     // Display the test results.
     $message = 'Pass:'. str_replace(array('%s', '%d'), array('%%s', '%%d'), $code);
     if (count($results) == 0) {
-      $this->assertTrue(TRUE, $message);
+      $this->assertTrue(TRUE, check_plain($message));
     }
     else {
-      $this->assertTrue(FALSE, $message .': '. $this->getWarnings($results));
+      $this->assertTrue(FALSE, check_plain($message) .': '. $this->getWarnings($results));
     }
   }
 
@@ -60,10 +60,10 @@ class CoderReviewTestCase extends DrupalWebTestCase {
     // Display the test results.
     $message = 'Fail:'. str_replace(array('%s', '%d'), array('%%s', '%%d'), $code);
     if (count($results) <= 1) {
-      $this->assertTrue(count($results) == 1, $message);
+      $this->assertTrue(count($results) == 1, check_plain($message));
     }
     else {
-      $this->assertTrue(FALSE, $message .': '. $this->getWarnings($results));
+      $this->assertTrue(FALSE, check_plain($message) .': '. $this->getWarnings($results));
     }
   }
   
