@@ -10,7 +10,7 @@
  * Implementation of hook_reviews().
  */
 function coder_review_7x_reviews() {
-  $argex = '(((\$?)[a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'\'|"")';
+  $argex = '(((&?\$?)[a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'\'|"")';
   $taxonomy_tables = '\{(term_data|term_hierarchy|term_node|term_relation|term_synonym|vocabulary|vocabulary_node_types)\}';
 
   $rules = array(
@@ -48,6 +48,7 @@ function coder_review_7x_reviews() {
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]function_exists\s*\(',
+        '#function-not' => '^drupal_function_exists$',
         '#warning_callback' => '_coder_review_7x_function_exists_warning',
       ),
       // http://drupal.org/node/224333#drupal_set_session
@@ -141,6 +142,9 @@ function coder_review_7x_reviews() {
     // Permissions and Access
       // N/A - http://drupal.org/node/224333#moved_statistics_settings --- Added a new 'administer statistics' permission
 
+      // UNCLEAR - http://drupal.org/node/224333#hook_node_access_records --- hook_node_access_records() now applies to unpublished nodes; 'view own unpublished content' permission added
+      // UNCLEAR - http://drupal.org/node/224333#bypass_node_access --- "administer nodes" permission split into "administer nodes" and "bypass node access"
+
       // http://drupal.org/node/224333#descriptions_permissions
       array(
         '#type' => 'regex',
@@ -150,8 +154,7 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_descriptions_permissions_warning',
       ),
 
-      // http://drupal.org/node/224333#bypass_node_access --- "administer nodes" permission split into "administer nodes" and "bypass node access"
-      // http://drupal.org/node/224333#sorting-permissions --- Permissions are no longer sorted alphabetically
+      // http://drupal.org/node/224333#sorting_permissions --- Permissions are no longer sorted alphabetically
 
       // http://drupal.org/node/224333#permission_tables
       array(
@@ -169,10 +172,15 @@ function coder_review_7x_reviews() {
         '#value' => 'function\s+[a-z0-9_]+_(perm)\s*\(',
         '#warning_callback' => '_coder_review_7x_hook_perm_warning',
       ),
-
       // http://drupal.org/node/224333#php_permissions --- "use PHP for settings" permission should be used for all PHP settings rights (replaces "use PHP for block visibility")
+      array(
+        '#type' => 'regex',
+        '#source' => 'quote',
+        '#value' => '^use PHP for block visibility$',
+        '#warning_callback' => '_coder_review_7x_php_permissions_warning',
+      ),
+
       // http://drupal.org/node/224333#system_admin_menu_block_access --- Hide empty menu categories with access callback
-      // http://drupal.org/node/224333#hook_node_access_records --- hook_node_access_records() now applies to unpublished nodes; 'view own unpublished content' permission added
 
 
     // Database
@@ -197,9 +205,24 @@ function coder_review_7x_reviews() {
     // Menu
       // N/A - http://drupal.org/node/224333#international_item --- Added a new top level admin item, 'international'.
 
-      // http://drupal.org/node/224333#menu-file-path --- The hook_menu() and hook_theme() "file" and "file path" keys have been removed.
+      // http://drupal.org/node/224333#menu_file_path
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#function' => '_(menu|theme)$',
+        '#value' => '[\'"](file|file path|path)[\'"]',
+        '#warning_callback' => '_coder_review_7x_menu_file_path_warning',
+      ),
+
       // http://drupal.org/node/224333#menu_callback_array --- Menu callbacks should return an array; hello hook_page_alter()
-      // http://drupal.org/node/224333#hook_menu_link_alter --- Changed hook_menu_link_alter() (removed the $menu parameter)
+
+      // http://drupal.org/node/224333#hook_menu_link_alter
+      array(
+        '#type' => 'regex',
+        '#value' => 'function\s+[a-z0-9_]+_(menu_link_alter)\s*\(\s*(' . $argex . '\s*,\s*){1,}(' . $argex . ')\s*\)',
+        '#warning_callback' => '_coder_review_7x_hook_menu_link_alter_warning',
+      ),
+
       // http://drupal.org/node/224333#system_admin_menu_block_access --- Hide empty menu categories with access callback
 
 
@@ -372,13 +395,13 @@ function coder_review_7x_reviews() {
       array(
         '#type' => 'regex',
         '#value' => 'Drupal\.behaviors\..+?\s*=\s*function\s*\(',
-        '#filename' => array('js'),
+        '#filename' => array('\.js'),
         '#warning_callback' => '_coder_review_7x_drupal_behaviors_warning',
       ),
       array(
         '#type' => 'callback',
         '#value' => '_coder_review_7x_drupal_behaviors_review_callback',
-        '#filename' => array('js'),
+        '#filename' => array('\.js'),
         // @NOTE: this warning_callback isn't used.  It only exists to catch
         // potential errors in the code.
         '#warning_callback' => '_coder_review_7x_drupal_behaviors_warning',
@@ -408,7 +431,7 @@ function coder_review_7x_reviews() {
       array(
         '#type' => 'grep_invert',
         '#value' => '(function ($) {',
-        '#filename' => array('js'),
+        '#filename' => array('\.js'),
         '#warning_callback' => '_coder_review_7x_javascript_compatibility_warning',
       ),
       // http://drupal.org/node/224333#drupal_add_js_external
@@ -423,13 +446,13 @@ function coder_review_7x_reviews() {
         '#type' => 'regex',
         '#source' => 'allphp',
         '#value' => '\[.*?@[a-zA-Z]+\s*(\^=|=|!=|\$=|\*=)\s*.+?\]',
-        '#filename' => array('js'),
+        '#filename' => array('\.js'),
         '#warning_callback' => '_coder_review_7x_jquery_13_warning',
       ),
       array(
         '#type' => 'regex',
         '#value' => '(\$|jQuery)\.(boxModel|browser.version|browser)',
-        '#filename' => array('js'),
+        '#filename' => array('\.js'),
         '#warning_callback' => '_coder_review_7x_jquery_13_warning',
       ),
 
@@ -477,7 +500,7 @@ function coder_review_7x_reviews() {
       array(
         '#type' => 'regex',
         '#value' => '\$closure[^a-zA-Z_]',
-        '#filename' => array('tpl.php'),
+        '#filename' => array('\.tpl.php'),
         '#warning_callback' => '_coder_review_7x_closure_warning',
       ),
       // http://drupal.org/node/224333#element_theme_properties --- Element theming properties used by drupal_render() have changed
@@ -525,7 +548,7 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]file_scan_directory\s*\(\s*((' . $argex . '\s*,\s*){4,}(' . $argex . ')\s*\)|(' . $argex . '\s*,\s*){2,}\$nomask)',
         '#warning_callback' => '_coder_review_7x_file_scan_directory_array_itize_warning',
       ),
-      // http://drupal.org/node/224333#file_scan_directory_nomatch
+      // http://drupal.org/node/224333#file_scan_directory_nomask
       array(
         '#type' => 'regex',
         '#source' => 'allphp',
@@ -1652,5 +1675,35 @@ function _coder_review_7x_descriptions_permissions_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/224333#descriptions_permissions',
+  );
+}
+
+function _coder_review_7x_php_permissions_warning() {
+  return array(
+    '#warning' => t('The "use PHP for block visibility" permission has been replaced by the more generic "use PHP for settings" permission.'),
+    '#link' => 'http://drupal.org/node/224333#php_permissions',
+  );
+}
+
+function _coder_review_7x_menu_file_path_warning() {
+  return array(
+    '#warning' => t('The "file", "path" and "file path" keys have been removed from !hook_menu() and !hook_theme().',
+      array(
+        '!hook_menu()' => theme('drupalapi', 'hook_menu()', 7),
+        '!hook_theme()' => theme('drupalapi', 'hook_theme()', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#menu_file_path',
+  );
+}
+
+function _coder_review_7x_hook_menu_link_alter_warning() {
+  return array(
+    '#warning' => t('The parameters to !hook_menu_link_alter() have changed.',
+      array(
+        '!hook_menu_link_alter()' => theme('drupalapi', 'hook_menu_link_alter()', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#hook_menu_link_alter',
   );
 }

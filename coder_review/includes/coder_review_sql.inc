@@ -49,7 +49,7 @@ function coder_review_sql_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#filename' => array('install'),
+      '#filename' => array('\.install'),
       '#function' => '_update_[0-9]+$',
       '#source' => 'allphp',
       '#value' => 'db_query\s*\(\s*[\'"](UPDATE|INSERT|DELETE)\s+',

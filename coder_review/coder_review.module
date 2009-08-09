@@ -1076,7 +1076,7 @@ function do_coder_reviews($coder_args) {
  */
 function _coder_review_read_and_parse_file(&$coder_args) {
   $is_php_file = 1;
-  $regex = '/\.(' . implode('|', array_merge(array('module'), $coder_args['#php_extensions'])) . ')$/';
+  $regex = '/(' . implode('|', array_merge(array('module'), $coder_args['#php_extensions'])) . ')$/';
   if (!preg_match($regex, $coder_args['#filename'])) {
     $is_php_file = 0;
   /*
@@ -1552,7 +1552,7 @@ function do_coder_review($coder_args, $review) {
     foreach ($review['#rules'] as $rule) {
       // Ignore rules that don't match the file extension.
       if ($filename_includes = isset($rule['#filename']) ? $rule['#filename'] : (isset($rule['#filename-not']) ? $coder_args['#php_extensions'] : NULL)) {
-        $regex = '/\.(' . implode('|', $filename_includes) . ')$/i';
+        $regex = '/(' . implode('|', $filename_includes) . ')$/i';
         if (!preg_match($regex, $filename, $matches)) {
           continue;
         }
@@ -1561,7 +1561,7 @@ function do_coder_review($coder_args, $review) {
       // Ignore rules that do match the file extension, javascript files are excluded by default.
       $not = isset($rule['#filename-not']) ? $rule['#filename-not'] : (isset($rule['#filename']) ? NULL : $coder_args['#include_extensions']);
       if ($not) {
-        $regex = '/\.(' . implode('|', $not) . ')$/i';
+        $regex = '/(' . implode('|', $not) . ')$/i';
         // Check filename.  If a patch, also check the .patch extension.
         if (preg_match($regex, $filename, $matches) || ($is_patch && preg_match($regex, 'coder_review.patch', $matches))) {
           continue;
@@ -1571,7 +1571,7 @@ function do_coder_review($coder_args, $review) {
       // If it's a patch, it can contain any sort of file, so ensure the file
       // being processed is either php or one of the supported extensions.
       if ($is_patch) {
-        $regex = '/\.(' . implode('|', $allowed_extensions) . ')$/i';
+        $regex = '/(' . implode('|', $allowed_extensions) . ')$/i';
         if (!preg_match($regex, $filename, $matches)) {
           continue;
         }

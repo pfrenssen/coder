@@ -88,7 +88,7 @@ function coder_review_style_reviews() {
       '#value' => '(?-i)(function\s+|\$)(([a-z]+[A-Z]+([a-z]*[A-Z]*)*)|([A-Z]+[a-z]+([A-Z]*[a-z]*)*))',
       '#warning' => 'do not use mixed case (camelCase), use lower case and _',
       '#class-not' => '.+',
-      '#filename-not' => array('test'), // Add this line too for patch files, where we don't have have class context.
+      '#filename-not' => array('\.test'), // Add this line too for patch files, where we don't have have class context.
     ),
     array(
       '#type' => 'regex',
@@ -117,7 +117,7 @@ function coder_review_style_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#filename' => array('tpl.php'),
+      '#filename' => array('\.tpl.php'),
       '#value' => '\s(if|elseif)\s*\(.*\) \s*{\s*[^\s]+',
       '#warning' => 'The control statement should use ":" syntax instead of curly braces.',
     ),

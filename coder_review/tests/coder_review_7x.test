@@ -116,13 +116,15 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   function testPermissions7x() {
     // N/A - http://drupal.org/node/224333#moved_statistics_settings
 
+    // UNCLEAR - http://drupal.org/node/224333#hook_node_access_records
+    // UNCLEAR - http://drupal.org/node/224333#bypass_node_access
+
     // http://drupal.org/node/224333#descriptions_permissions
     $this->assertCoderReviewFail("  function mymodule_permission() {\n  return array('administer mymodule');\n  }");
     $this->assertCoderReviewFail("  function mymodule_permission() {\n  return array('administer mymodule', 'access foo');\n  }");
     $this->assertCoderReviewPass("  function mymodule_permission() {\n  return array('administer mymodule' => array('title' => t('Administer mymodule'), 'description' => t('foo')));\n  }");
 
-    // http://drupal.org/node/224333#bypass_node_access
-    // http://drupal.org/node/224333#sorting-permissions
+    // http://drupal.org/node/224333#sorting_permissions
 
     // http://drupal.org/node/224333#permission_tables
     $this->assertCoderReviewPass('  db_query("SELECT * FROM {role_permission}");');
@@ -136,8 +138,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  function mymodule_permission() {\n}");
 
     // http://drupal.org/node/224333#php_permissions
+    $this->assertCoderReviewFail("  \$permission = 'use PHP for block visibility';");
+    $this->assertCoderReviewFail('  $permission = "use PHP for block visibility";');
+    $this->assertCoderReviewFail("  return array('use PHP for block visibility');");
+
     // http://drupal.org/node/224333#system_admin_menu_block_access
-    // http://drupal.org/node/224333#hook_node_access_records
   }
 
   function testDatabase7x() {
@@ -158,9 +163,20 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   function testMenu7x() {
     // N/A - http://drupal.org/node/224333#international_item
 
-    // http://drupal.org/node/224333#menu-file-path
+    // http://drupal.org/node/224333#menu_file_path
+    $this->assertCoderReviewFail("  function mymodule_menu() {\n \$items['foo'] = array(\n  'file' => 'foo.inc');\n}");
+    $this->assertCoderReviewFail("  function mymodule_menu() {\n \$items['foo'] = array(\n  'file path' => 'includes/');\n}");
+    $this->assertCoderReviewPass("  function mymodule_menu() {\n \$items['foo'] = array(\n  'filepath' => 'foo');\n}");
+    $this->assertCoderReviewFail("  function mymodule_theme() {\n \$theme['foo'] = array(\n  'file' => 'foo.inc');\n}");
+    $this->assertCoderReviewFail("  function mymodule_theme() {\n \$theme['foo'] = array(\n  'path' => 'includes/');\n}");
+    $this->assertCoderReviewPass("  function mymodule_theme() {\n \$theme['foo'] = array(\n  'filepath' => 'foo');\n}");
+
     // http://drupal.org/node/224333#menu_callback_array
+
     // http://drupal.org/node/224333#hook_menu_link_alter
+    $this->assertCoderReviewFail('  function mymodule_menu_link_alter(&$item, $menu)');
+    $this->assertCoderReviewPass('  function mymodule_menu_link_alter(&$item)');
+
     // http://drupal.org/node/224333#system_admin_menu_block_access
 
   }
@@ -388,7 +404,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  file_scan_directory($dir, $mask, $options, $callback, $recurse, $key, $min_depth, $depth);');
     $this->assertCoderReviewFail('  file_scan_directory($dir, $mask, $nomask);');
 
-    // http://drupal.org/node/224333#file_scan_directory_nomatch
+    // http://drupal.org/node/224333#file_scan_directory_nomask
     $this->assertCoderReviewFail("  file_scan_directory(\$dir, \$mask, array('.', '..', 'CVS'));");
     $this->assertCoderReviewFail("  file_scan_directory(\$dir, \$mask, array('nomask' => array('.', '..', 'CVS')));");
 
