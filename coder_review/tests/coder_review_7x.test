@@ -116,13 +116,22 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   function testPermissions7x() {
     // N/A - http://drupal.org/node/224333#moved_statistics_settings
 
-    // http://drupal.org/node/224333#descriptions-permissions
+    // http://drupal.org/node/224333#descriptions_permissions
+    $this->assertCoderReviewFail("  function mymodule_permission() {\n  return array('administer mymodule');\n  }");
+    $this->assertCoderReviewFail("  function mymodule_permission() {\n  return array('administer mymodule', 'access foo');\n  }");
+    $this->assertCoderReviewPass("  function mymodule_permission() {\n  return array('administer mymodule' => array('title' => t('Administer mymodule'), 'description' => t('foo')));\n  }");
+
     // http://drupal.org/node/224333#bypass_node_access
     // http://drupal.org/node/224333#sorting-permissions
-    // http://drupal.org/node/224333#permission-tables
+
+    // http://drupal.org/node/224333#permission_tables
+    $this->assertCoderReviewPass('  db_query("SELECT * FROM {role_permission}");');
+    $this->assertCoderReviewFail('  db_query("SELECT * FROM {permission}");');
+    $this->assertCoderReviewFail('  db_query("DELETE FROM {permission}");');
+
     // http://drupal.org/node/224333#node_access_alter_hooks
 
-    // http://drupal.org/node/224333#hook-permission
+    // http://drupal.org/node/224333#hook_permission
     $this->assertCoderReviewFail("  function mymodule_perm() {\n}");
     $this->assertCoderReviewPass("  function mymodule_permission() {\n}");
 
@@ -134,7 +143,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   function testDatabase7x() {
     // http://drupal.org/node/224333#dbtng
 
-    // http://drupal.org/node/224333#schema-translation
+    // http://drupal.org/node/224333#schema_translation
     $this->assertCoderReviewFail("  function mymodule_schema() {\n \$schema['table'] = array(\n  'description' => t('My table description.'));\n}");
     $this->assertCoderReviewFail("  function mymodule_schema() {\n \$schema['table'] = array(\n  'description' => st('My table description.'));\n}");
     $this->assertCoderReviewFail("  function mymodule_schema() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => t('My field description.'))));\n}");
@@ -172,7 +181,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // N/A - http://drupal.org/node/224333#comment_load_multiple
     // N/A - http://drupal.org/node/224333#comment_save_refactor
 
-    // http://drupal.org/node/224333#comment-load
+    // http://drupal.org/node/224333#comment_load
     $this->assertCoderReviewFail('  $comment = _comment_load($cid);');
     $this->assertCoderReviewFail('  if (_comment_load($cid))');
     $this->assertCoderReviewPass('  $comment = comment_load($cid);');
@@ -295,7 +304,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // N/A - http://drupal.org/node/224333#local_settings_behaviors
 
     // NO TESTS - http://drupal.org/node/224333#jquery_13
-    // NO TESTS - http://drupal.org/node/224333#drupal-behaviors
+    // NO TESTS - http://drupal.org/node/224333#drupal_behaviors
     // NO TESTS - http://drupal.org/node/224333#javascript_compatibility
 
     // http://drupal.org/node/224333#drupal_add_js_weight
@@ -332,7 +341,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testTheming7x() {
-    // http://drupal.org/node/224333#rebuild-functions
+    // http://drupal.org/node/224333#rebuild_functions
     $this->assertCoderReviewFail('  drupal_rebuild_theme_registry();');
 
     // http://drupal.org/node/224333#theme_page
@@ -366,11 +375,12 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   function testFile7x() {
     // N/A - http://drupal.org/node/224333#file_load_multiple
+    // N/A - http://drupal.org/node/224333#file_check_directory_recursive
 
     // UNCLEAR - http://drupal.org/node/224333#file_validate_extensions
-
-    // http://drupal.org/node/224333#unmanaged_files
-    // http://drupal.org/node/224333#user_picture
+    // UNCLEAR - http://drupal.org/node/224333#file_scan_directory_property_names
+    // UNCLEAR - http://drupal.org/node/224333#unmanaged_files
+    // UNCLEAR - http://drupal.org/node/224333#user_picture
 
     // http://drupal.org/node/224333#file_scan_directory_array-itize
     $this->assertCoderReviewPass('  file_scan_directory($dir, $mask);');
@@ -395,10 +405,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  file_scan_directory(\$dir, '\.module\$');");
     $this->assertCoderReviewPass("  \$files = drupal_system_listing('/\.module$/', 'modules', 'name', 0);");
     $this->assertCoderReviewFail("  \$files = drupal_system_listing('\.module\$', 'modules', 'name', 0);");
-
-
-    // http://drupal.org/node/224333#file_scan_directory_property_names
-    // http://drupal.org/node/224333#file_check_directory_recursive
   }
 
   function testUser7x() {
