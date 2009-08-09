@@ -85,12 +85,12 @@ function coder_review_comment_reviews() {
       '#type' => 'grep_invert',
       '#source' => 'comment',
       '#value' => '@' . 'file',
-      '#warning_callback' => '_coder_review_comment_missing_file_block',
+      '#warning_callback' => '_coder_review_comment_missing_file_block_warning',
       '#filename-not' => array('\.patch'),
     ),
     array(
       '#type' => 'callback',
-      '#value' => '_coder_review_comment_install_file_block',
+      '#value' => '_coder_review_comment_install_file_block_callback',
       // @NOTE: This is not used.  It only exists to catch potential errors in this code.
       '#warning_callback' => '_coder_review_comment_install_file_callback_warning',
     ),
@@ -98,7 +98,7 @@ function coder_review_comment_reviews() {
       '#type' => 'regex',
       '#source' => 'comment',
       '#value' => '@' . 'file\s+.+$',
-      '#warning_callback' => '_coder_review_comment_invalid_file_block',
+      '#warning_callback' => '_coder_review_comment_invalid_file_block_warning',
       '#severity' => 'minor',
     ),
     array(
@@ -145,7 +145,7 @@ function coder_review_comment_reviews() {
 /**
  * Define the rule callbacks for comment install file block, see do_coder_review_callback().
  */
-function _coder_review_comment_install_file_block(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_comment_install_file_block_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // Only perform this check on install files.
   $filename = $coder_args['#filename'];
   if (substr($filename, -7) == '.install') {
@@ -187,14 +187,14 @@ function _coder_review_comment_Id_warning() {
   );
 }
 
-function _coder_review_comment_missing_file_block() {
+function _coder_review_comment_missing_file_block_warning() {
   return array(
     '#warning' => t('@' . 'file block missing'),
     '#link' => 'http://drupal.org/node/1354#files',
   );
 }
 
-function _coder_review_comment_invalid_file_block() {
+function _coder_review_comment_invalid_file_block_warning() {
   return array(
     '#warning' => t('@' . 'file description should be on the following line'),
     '#link' => 'http://drupal.org/node/1354#files',
