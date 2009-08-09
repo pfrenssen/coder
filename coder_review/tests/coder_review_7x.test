@@ -50,13 +50,13 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  include_once  DRUPAL_ROOT . '/' . variable_get('cache_inc', 'includes/cache.inc');");
 
     // http://drupal.org/node/224333#registry
-    $this->assertCoderReviewFail('  if (function_exists(\'my_function\')) {');
-    $this->assertCoderReviewPass('  if (drupal_function_exists(\'my_function\')) {');
+    $this->assertCoderReviewFail('  if (function_exists(\'my_function\'))');
+    $this->assertCoderReviewPass('  if (drupal_function_exists(\'my_function\'))');
 
     // http://drupal.org/node/224333#drupal_set_session
     $this->assertCoderReviewFail('  $foo = $_SESSION["foo"];');
     $this->assertCoderReviewFail('  $foo = $_SESSION[' . "'foo'" . '];');
-    $this->assertCoderReviewFail('  if ($_SESSION["foo"]) {');
+    $this->assertCoderReviewFail('  if ($_SESSION["foo"])');
 
     // http://drupal.org/node/224333#time
     $this->assertCoderReviewFail('  $time = time();');
@@ -174,9 +174,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#comment-load
     $this->assertCoderReviewFail('  $comment = _comment_load($cid);');
-    $this->assertCoderReviewFail('  if (_comment_load($cid)) {');
+    $this->assertCoderReviewFail('  if (_comment_load($cid))');
     $this->assertCoderReviewPass('  $comment = comment_load($cid);');
-    $this->assertCoderReviewPass('  if (comment_load($cid)) {');
+    $this->assertCoderReviewPass('  if (comment_load($cid))');
 
     // Any menu items that are using the %_comment wildcard will need to change to %comment.
     $this->assertCoderReviewFail('  function mymodule_menu() {\n$items[\'foo/%_comment\'] = array();\n}');
@@ -194,12 +194,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#comment_validate_removed
     $this->assertCoderReviewFail('  comment_validate();');
-    $this->assertCoderReviewFail('  if (comment_validate()) {');
+    $this->assertCoderReviewFail('  if (comment_validate())');
 
     // http://drupal.org/node/224333#comment_node_url
     $this->assertCoderReviewFail('  comment_node_url();');
-    $this->assertCoderReviewFail('  if (comment_node_url()) {');
-
+    $this->assertCoderReviewFail('  if (comment_node_url())');
   }
 
 
@@ -227,10 +226,10 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  drupal_set_title(t("test"));');
 
     // http://drupal.org/node/224333#hook_filter_params
-    $this->assertCoderReviewFail('  function mymodule_filter($op, $delta, $format, $text, $cache_id) {');
-    $this->assertCoderReviewFail('  function mymodule_filter($op, $delta = 0, $format = -1, $text = \'\', $cache_id = 0) {');
-    $this->assertCoderReviewPass('  function mymodule_filter($op, $delta, $format, $text, $langcode, $cache_id) {');
-    $this->assertCoderReviewPass('  function mymodule_filter($op, $delta = 0, $format = -1, $text = \'\', $langcode = \'\', $cache_id = 0) {');
+    $this->assertCoderReviewFail('  function mymodule_filter($op, $delta, $format, $text, $cache_id)');
+    $this->assertCoderReviewFail('  function mymodule_filter($op, $delta = 0, $format = -1, $text = \'\', $cache_id = 0)');
+    $this->assertCoderReviewPass('  function mymodule_filter($op, $delta, $format, $text, $langcode, $cache_id)');
+    $this->assertCoderReviewPass('  function mymodule_filter($op, $delta = 0, $format = -1, $text = \'\', $langcode = \'\', $cache_id = 0)');
 
     // http://drupal.org/node/224333#text_format
     $this->assertCoderReviewFail('  $form[\'format\'] = filter_form($edit[\'format\']);');
@@ -293,6 +292,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // N/A - http://drupal.org/node/224333#attached_js
     // N/A - http://drupal.org/node/224333#drupal_add_library
     // N/A - http://drupal.org/node/224333#drupal_add_js_css_reset
+    // N/A - http://drupal.org/node/224333#local_settings_behaviors
 
     // NO TESTS - http://drupal.org/node/224333#jquery_13
     // NO TESTS - http://drupal.org/node/224333#drupal-behaviors
@@ -304,6 +304,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  drupal_add_js(\$data, 'file');");
     $this->assertCoderReviewFail("  drupal_add_js(\$data, 'file', 'header');");
     $this->assertCoderReviewFail("  drupal_add_js(\$data, 'file', \$header, \$defer);");
+    $this->assertCoderReviewPass("  drupal_add_js(\$jquery_plugin, array('weight' => JS_LIBRARY));");
 
     // http://drupal.org/node/224333#hook_js_alter
     $this->assertCoderReviewPass("  function mytheme_preprocess_page(&\$variables) {\n  \$scripts = \$variables['myscripts'];\n}");
@@ -311,13 +312,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#drupal_add_js_external
     $this->assertCoderReviewPass('  drupal_add_html_head("foo");');
-    $this->assertCoderReviewFail('  drupal_add_html_head(\'<script type="text/javascript" src="foo.js">\');');
+    $this->assertCoderReviewFail('  drupal_add_html_head(\'<script type="text/javascript" src="foo.js"/>\');');
     $this->assertCoderReviewFail('  drupal_add_html_head(\'<script src="foo.js">\');');
     $this->assertCoderReviewFail('  drupal_add_html_head(\'<script src="http://example.com/foo.js">\');');
     $this->assertCoderReviewFail('  drupal_add_html_head(\'<script src="/files/foo.js">\');');
     $this->assertCoderReviewFail('  drupal_add_html_head(\'<script src="http://example123-ab_c.com.js">\');');
-
-    // http://drupal.org/node/224333#local_settings_behaviors
   }
 
   function testCss7x() {
@@ -340,11 +339,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  return theme('page');");
 
     // http://drupal.org/node/224333#hook_footer
-    $this->assertCoderReviewFail('  function mymodule_footer() {');
-    $this->assertCoderReviewFail('  function mymodule_footer($main = 0) {');
-    $this->assertCoderReviewFail('  function mymodule_footer() {');
-    $this->assertCoderReviewFail('  function mytheme_closure() {');
-    $this->assertCoderReviewFail('  function mytheme_closure($main = 0) {');
+    $this->assertCoderReviewFail('  function mymodule_footer()');
+    $this->assertCoderReviewFail('  function mymodule_footer($main = 0)');
+    $this->assertCoderReviewFail('  function mymodule_footer()');
+    $this->assertCoderReviewFail('  function mytheme_closure()');
+    $this->assertCoderReviewFail('  function mytheme_closure($main = 0)');
     $this->assertCoderReviewFail("  return theme('closure');");
 
     // http://drupal.org/node/224333#element_theme_properties
@@ -359,29 +358,45 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#drupal_execute_drupal_form_submit
     $this->assertCoderReviewFail('  drupal_execute();');
-    $this->assertCoderReviewFail('  if (drupal_execute()) {');
+    $this->assertCoderReviewFail('  if (drupal_execute())');
 
     // http://drupal.org/node/224333#unrendered
     // http://drupal.org/node/224333#ahah_changes
   }
 
   function testFile7x() {
+    // N/A - http://drupal.org/node/224333#file_load_multiple
+
+    // UNCLEAR - http://drupal.org/node/224333#file_validate_extensions
+
     // http://drupal.org/node/224333#unmanaged_files
     // http://drupal.org/node/224333#user_picture
-    // http://drupal.org/node/224333#file_load_multiple
+
     // http://drupal.org/node/224333#file_scan_directory_array-itize
+    $this->assertCoderReviewPass('  file_scan_directory($dir, $mask);');
+    $this->assertCoderReviewPass('  file_scan_directory($dir, $mask, $options, $depth);');
+    $this->assertCoderReviewFail('  file_scan_directory($dir, $mask, $options, $callback, $recurse, $key, $min_depth, $depth);');
+    $this->assertCoderReviewFail('  file_scan_directory($dir, $mask, $nomask);');
+
     // http://drupal.org/node/224333#file_scan_directory_nomatch
+    $this->assertCoderReviewFail("  file_scan_directory(\$dir, \$mask, array('.', '..', 'CVS'));");
+    $this->assertCoderReviewFail("  file_scan_directory(\$dir, \$mask, array('nomask' => array('.', '..', 'CVS')));");
 
     // http://drupal.org/node/224333#file_set_status
     $this->assertCoderReviewFail('  file_set_status($file, FILE_STATUS_PERMANENT);');
     $this->assertCoderReviewPass('  myfile_set_status($file, FILE_STATUS_PERMANENT);');
 
-    // http://drupal.org/node/224333#file_validate_extensions
     // http://drupal.org/node/224333#remove_FILE_STATUS_TEMPORARY
     $this->assertCoderReviewFail('  $file->status = FILE_STATUS_TEMPORARY;');
     $this->assertCoderReviewPass('  $file->status = MY_FILE_STATUS_TEMPORARY;');
 
     // http://drupal.org/node/224333#preg_match
+    $this->assertCoderReviewPass("  file_scan_directory(\$dir, '/\.module\$/');");
+    $this->assertCoderReviewFail("  file_scan_directory(\$dir, '\.module\$');");
+    $this->assertCoderReviewPass("  \$files = drupal_system_listing('/\.module$/', 'modules', 'name', 0);");
+    $this->assertCoderReviewFail("  \$files = drupal_system_listing('\.module\$', 'modules', 'name', 0);");
+
+
     // http://drupal.org/node/224333#file_scan_directory_property_names
     // http://drupal.org/node/224333#file_check_directory_recursive
   }
@@ -392,7 +407,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#user_cancel
     $this->assertCoderReviewFail('  user_delete($edit, $uid);');
     $this->assertCoderReviewPass('  foo_user_delete($edit, $uid);');
-    $this->assertCoderReviewPass('  function foo_user_delete($edit, $uid) {');
+    $this->assertCoderReviewPass('  function foo_user_delete($edit, $uid)');
 
     // http://drupal.org/node/224333#remove_op
     $this->assertCoderReviewPass("  function mymodule_user(\$edit, &\$user) {\n}");
@@ -459,7 +474,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#node_view
     $this->assertCoderReviewFail('  node_view($nid, TRUE);');
-    $this->assertCoderReviewFail('  if (node_view($nid, TRUE)) {');
+    $this->assertCoderReviewFail('  if (node_view($nid, TRUE))');
 
     // http://drupal.org/node/224333#node_build_rss
     $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n  switch (\$operation) {\n  case 'rss item':\n  }\n}");
@@ -491,12 +506,12 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#referer_uri
     $this->assertCoderReviewFail('  $referer = referer_uri();');
-    $this->assertCoderReviewFail('  if (referer_uri()) {');
+    $this->assertCoderReviewFail('  if (referer_uri())');
     $this->assertCoderReviewPass('  $referer = foo_referer_uri();');
 
     // http://drupal.org/node/224333#drupal_clone
     $this->assertCoderReviewFail('  $clone = drupal_clone($node);');
-    $this->assertCoderReviewFail('  if (drupal_clone($node)) {');
+    $this->assertCoderReviewFail('  if (drupal_clone($node))');
     $this->assertCoderReviewPass('  $clone = clone $node;');
     $this->assertCoderReviewPass('  $clone = foo_drupal_clone($node);');
     $this->assertCoderReviewFail('  node_invoke_nodeapi($node, $hook);');

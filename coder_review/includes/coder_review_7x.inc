@@ -69,7 +69,7 @@ function coder_review_7x_reviews() {
       ),
       array(
         '#type' => 'regex',
-        '#value' => '[\s\(]drupal_http_request\s*\((' . $argex . '\s*,\s*){2,}(' . $argex .  ')\s*\)',
+        '#value' => '[\s\(]drupal_http_request\s*\(\s*(' . $argex . '\s*,\s*){2,}(' . $argex .  ')\s*\)',
         '#warning_callback' => '_coder_review_7x_drupal_http_request_parameters_warning',
       ),
       array(
@@ -222,7 +222,7 @@ function coder_review_7x_reviews() {
     // Input Sanitization & Input Formats
       array(
         '#type' => 'regex',
-        '#value' => '[\s\(]check_markup\s*\((' . $argex . '\s*,\s*){2}(\$check|FALSE|TRUE)',
+        '#value' => '[\s\(]check_markup\s*\(\s*(' . $argex . '\s*,\s*){2}(\$check|FALSE|TRUE)',
         '#warning_callback' => '_coder_review_7x_check_markup_warning',
       ),
       array(
@@ -315,6 +315,7 @@ function coder_review_7x_reviews() {
       // N/A - http://drupal.org/node/224333#attached_js --- Attached JavaScript and CSS for forms
       // N/A - http://drupal.org/node/224333#drupal_add_library --- Ability to add multiple JavaScript/CSS files at once
       // N/A - http://drupal.org/node/224333#drupal_add_js_css_reset --- Ability to reset JavaScript/CSS
+      // N/A - http://drupal.org/node/224333#local_settings_behaviors --- Settings passed locally to JavaScript Behaviors
 
       // @NOTE: no simpletest for this because of #filename setting.
       array(
@@ -333,13 +334,13 @@ function coder_review_7x_reviews() {
       ),
       array(
         '#type' => 'regex',
-        '#value' => '[\s\(]drupal_add_js\s*\((' . $argex . '\s*,\s*){2,}(' . $argex . ')\s*\)',
+        '#value' => '[\s\(]drupal_add_js\s*\(\s*(' . $argex . '\s*,\s*){2,}(' . $argex . ')\s*\)',
         '#warning_callback' => '_coder_review_7x_drupal_add_js_parameters_warning',
       ),
       array(
         '#type' => 'regex',
         '#source' => 'allphp',
-        '#value' => '[\s\(]drupal_add_js\s*\(' . $argex . '\s*,\s*[\'"](module|theme|core)[\'"]\s*[,\)]',
+        '#value' => '[\s\(]drupal_add_js\s*\(\s*' . $argex . '\s*,\s*[\'"](module|theme|core)[\'"]\s*[,\)]',
         '#warning_callback' => '_coder_review_7x_drupal_add_js_weight_warning',
       ),
       array(
@@ -356,15 +357,12 @@ function coder_review_7x_reviews() {
         '#filename' => array('js'),
         '#warning_callback' => '_coder_review_7x_javascript_compatibility_warning',
       ),
-
       array(
         '#type' => 'regex',
         '#source' => 'allphp',
         '#value' => '[\s\(]drupal_add_html_head\s*\(\s*[\'"].*?<script\s.*?src\s*=\s*[\'"][a-zA-Z:\/\._\-0-9]+?\.js',
         '#warning_callback' => '_coder_review_7x_drupal_add_js_external_warning',
       ),
-      // http://drupal.org/node/224333#local_settings_behaviors --- Settings passed locally to JavaScript Behaviors
-
       // @NOTE: no simpletest for this because of #filename setting.
       array(
         '#type' => 'regex',
@@ -389,7 +387,7 @@ function coder_review_7x_reviews() {
 
       array(
         '#type' => 'regex',
-        '#value' => '[\s\(]drupal_add_css\s*\((' . $argex . '\s*,\s*){2,}(' . $argex . ')\s*\)',
+        '#value' => '[\s\(]drupal_add_css\s*\(\s*(' . $argex . '\s*,\s*){2,}(' . $argex . ')\s*\)',
         '#warning_callback' => '_coder_review_7x_drupal_add_css_parameters_warning',
       ),
 
@@ -453,23 +451,54 @@ function coder_review_7x_reviews() {
 
 
     // File API
+      // N/A - http://drupal.org/node/224333#file_load_multiple --- file_load_multiple()
+
+      // UNCLEAR - http://drupal.org/node/224333#file_validate_extensions --- file_validate_extensions() enforces check for uid=1
+
       // http://drupal.org/node/224333#unmanaged_files --- File operations that don't affect the database have been renamed
       // http://drupal.org/node/224333#user_picture --- User pictures are now managed files
-      // http://drupal.org/node/224333#file_load_multiple --- file_load_multiple()
-      // http://drupal.org/node/224333#file_scan_directory_array-itize --- file_scan_directory()'s optional parameters are now an array
-      // http://drupal.org/node/224333#file_scan_directory_nomatch --- file_scan_directory() now uses a preg regular expression for the no match parameter
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]file_scan_directory\s*\(\s*((' . $argex . '\s*,\s*){4,}(' . $argex . ')\s*\)|(' . $argex . '\s*,\s*){2,}\$nomask)',
+        '#warning_callback' => '_coder_review_7x_file_scan_directory_array_itize_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => '[\s\(]file_scan_directory\s*\(\s*(\s*.*?,\s*){2,}array\(([\'"].*?[\'"](,)*){1,}\)\s*[,\)]',
+        '#warning_callback' => '_coder_review_7x_file_scan_directory_nomask_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => '[\s\(]file_scan_directory\s*\(\s*(\s*.*?,\s*){2,}array\(.+?[\'"]nomask[\'"]\s*=>\s*array\(([\'"].*?[\'"](,)*){1,}\)\s*[,\)]',
+        '#warning_callback' => '_coder_review_7x_file_scan_directory_nomask_warning',
+      ),
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]file_set_status\s*\(',
         '#warning_callback' => '_coder_review_7x_file_set_status_warning',
       ),
-      // http://drupal.org/node/224333#file_validate_extensions --- file_validate_extensions() enforces check for uid=1
       array(
         '#type' => 'regex',
         '#value' => '[^\w]FILE_STATUS_TEMPORARY[^\w]',
         '#warning_callback' => '_coder_review_7x_file_status_temporary_warning',
       ),
-      // http://drupal.org/node/224333#preg_match --- file_scan_directory() and drupal_system_listing() use preg regular expressions
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => '[\s\(]file_scan_directory\s*\(\s*([^,]+?\s*,\s*){1}[\'"].*?[\'"]\s*[,\)]',
+        '#never' => '[\s\(]file_scan_directory\s*\(\s*[^,]+?,\s*[\'"]\/.*?\/[\'"]\s*[,\)]',
+        '#warning_callback' => '_coder_review_7x_file_scan_directory_preg_match_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => '[\s\(]drupal_system_listing\s*\(\s*[\'"][^\/].*?[^\/][\'"]\s*,',
+        '#never' => '[\s\(]drupal_system_listing\s*\(\s*[\'"]\/.*?\/[\'"]\s*,',
+        '#warning_callback' => '_coder_review_7x_drupal_system_listing_preg_match_warning',
+      ),
+
       // http://drupal.org/node/224333#file_scan_directory_property_names --- file_scan_directory() now uses same property names as file_load()
       // http://drupal.org/node/224333#file_check_directory_recursive --- file_check_directory() will now recursively create directories
 
@@ -1480,5 +1509,49 @@ function _coder_review_7x_javascript_compatibility_warning() {
   return array(
     '#warning' => t('JavaScript should be compatible with other libraries than jQuery.'),
     '#link' => 'http://drupal.org/node/224333#javascript_compatibility',
+  );
+}
+
+function _coder_review_7x_file_scan_directory_array_itize_warning() {
+  return array(
+    '#warning' => t('Parameters to !file_scan_directory() have changed.',
+      array(
+        '!file_scan_directory()' => theme('drupalapi', 'file_scan_directory()', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#file_scan_directory_array_itize',
+  );
+}
+
+function _coder_review_7x_file_scan_directory_nomask_warning() {
+  return array(
+    '#warning' => t('!file_scan_directory() now uses a preg regular expression for the nomask parameter.',
+      array(
+        '!file_scan_directory()' => theme('drupalapi', 'file_scan_directory()', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#file_scan_directory_nomask',
+  );
+}
+
+function _coder_review_7x_drupal_system_listing_preg_match_warning() {
+  return array(
+    '#warning' => t('!drupal_system_listing() now uses preg regular expressions.',
+      array(
+        '!drupal_system_listing()' => theme('drupalapi', 'drupal_system_listing()', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#preg_match',
+  );
+}
+
+function _coder_review_7x_file_scan_directory_preg_match_warning() {
+  return array(
+    '#warning' => t('!file_scan_directory() now uses preg regular expressions.',
+      array(
+        '!file_scan_directory()' => theme('drupalapi', 'file_scan_directory()', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#preg_match',
   );
 }
