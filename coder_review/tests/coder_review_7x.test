@@ -23,6 +23,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   function testModule7x() {
     // N/A - in comment review - http://drupal.org/node/224333#afile
+    // N/A - http://drupal.org/node/224333#module_file_during_install
+    // N/A - http://drupal.org/node/224333#module_version_dependencies
 
     // NO TESTS - http://drupal.org/node/224333#registry
     // Can't implement tests because it's reviewed by a review callback, which
@@ -50,10 +52,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  include_once  DRUPAL_ROOT . '/' . variable_get('cache_inc', 'includes/cache.inc');");
 
     // http://drupal.org/node/224333#registry
-    $this->assertCoderReviewFail('  if (function_exists(\'my_function\'))');
+    $this->assertCoderReviewFail("  function foo() {\n  if (function_exists(\'my_function\')) {}\n}");
+    $this->assertCoderReviewPass("  function drupal_function_exists() {\n  if (function_exists(\'my_function\')) {}\n}");
     $this->assertCoderReviewPass('  if (drupal_function_exists(\'my_function\'))');
 
-    // http://drupal.org/node/224333#drupal_set_session
+    // TODO - http://drupal.org/node/224333#drupal_set_session
     $this->assertCoderReviewFail('  $foo = $_SESSION["foo"];');
     $this->assertCoderReviewFail('  $foo = $_SESSION[' . "'foo'" . '];');
     $this->assertCoderReviewFail('  if ($_SESSION["foo"])');
@@ -111,6 +114,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // Can't implement tests because it's reviewed by a review callback, which
     // needs physical files.
 
+    // http://drupal.org/node/224333#time_limit
+    $this->assertCoderReviewFail("  function foo () {\n  set_time_limit(100);\n}");
+    $this->assertCoderReviewPass("  function drupal_set_time_limit () {\n  set_time_limit(100);\n}");
+    $this->assertCoderReviewPass("  function foo () {\n  drupal_set_time_limit(100);\n}");
+
   }
 
   function testPermissions7x() {
@@ -155,9 +163,21 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  function mymodule_schema() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => st('My field description.'))));\n}");
     $this->assertCoderReviewPass("  function mymodule_schema() {\n \$schema['table'] = array(\n  'description' => 'My table description.');\n}");
     $this->assertCoderReviewPass("  function mymodule_schema() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => 'My field description.')));\n}");
+    $this->assertCoderReviewFail("  function mymodule_update_123() {\n \$schema['table'] = array(\n  'description' => st('My table description.'));\n}");
+    $this->assertCoderReviewFail("  function mymodule_update_123() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => t('My field description.'))));\n}");
 
     // http://drupal.org/node/224333#db_rewrite_sql
     $this->assertCoderReviewFail('  $sql = db_rewrite_sql("SELECT n.nid FROM {node}");');
+
+    // http://drupal.org/node/224333#schema_html
+    $this->assertCoderReviewFail("  function mymodule_schema() {\n \$schema['table'] = array(\n  'description' => 'My table &lt;a href=\"foo.html\"&gt;foo&lt;/a&gt; description.');\n}");
+    $this->assertCoderReviewFail("  function mymodule_schema() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => 'My field &lt;a href=\"foo.html\"&gt;foo&lt;/a&gt; description.')));\n}");
+    $this->assertCoderReviewPass("  function mymodule_schema() {\n \$schema['table'] = array(\n  'description' => 'My table <a href=\"foo.html\">foo</a> description.');\n}");
+    $this->assertCoderReviewPass("  function mymodule_schema() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => 'My field <a href=\"foo.html\">foo</a> description.')));\n}");
+    $this->assertCoderReviewFail("  function mymodule_update_123() {\n \$schema['table'] = array(\n  'description' => 'My table &lt;a href=\"foo.html\"&gt;foo&lt;/a&gt; description.');\n}");
+    $this->assertCoderReviewFail("  function mymodule_update_123() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => 'My field &lt;a href=\"foo.html\"&gt;foo&lt;/a&gt; description.')));\n}");
+
+    // http://drupal.org/node/224333#select_count
   }
 
   function testMenu7x() {
@@ -186,7 +206,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#remove_op
     $this->assertCoderReviewFail("  function mymodule_block(\$op, \$delta, \$edit) {\n}");
-    $this->assertCoderReviewPass("  function mymodule_block(\$delta, \$edit) {\n}");
     $this->assertCoderReviewFail("  function mymodule_block(\$delta, \$edit) {\n  if (\$op == 'list') {\n  }\n}");
     $this->assertCoderReviewFail("  function mymodule_block(\$delta, \$edit) {\n  switch (\$op) {\n  case 'list':\n  }\n}");
 
@@ -310,6 +329,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  $url = url("taxonomy/term/123/0");');
     $this->assertCoderReviewFail('  $url = url("taxonomy/term/1+2+3/0");');
     $this->assertCoderReviewFail('  $url = url("taxonomy/term/1,2,3/0");');
+
+    // http://drupal.org/node/224333#related_terms
+    $this->assertCoderReviewFail('  $related = taxonomy_get_related($tid);');
   }
 
   function testJavascript7x() {
@@ -377,8 +399,24 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   function testForm7x() {
     // http://drupal.org/node/224333#poundtheme
+
     // http://drupal.org/node/224333#node_form
-    // http://drupal.org/node/224333#process-functions
+    $this->assertCoderReviewFail("  function mymodule_form_alter(&\$form, &\$form_state, \$form_id) {\n  if (isset(\$form['type']) && isset(\$form['#node']) && \$form['type']['#value'] .'_node_form' == \$form_id)");
+    $this->assertCoderReviewFail("  function mymodule_form_alter(&\$form, &\$form_state, \$form_id) {\n  if (\$form['type']['#value'] .'_node_form' == \$form_id)");
+
+    // No link - parameter change to hook_form_alter().
+    $this->assertCoderReviewFail("  function mymodule_form_alter(&\$form, \$form_state, \$form_id)");
+    $this->assertCoderReviewPass("  function mymodule_form_alter(&\$form, &\$form_state, \$form_id)");
+
+    // http://drupal.org/node/224333#process_functions
+    $this->assertCoderReviewFail('  $form = array("#process" => "expand_password_confirm");');
+    $this->assertCoderReviewFail('  $form["#process"] = "expand_password_confirm";');
+    $this->assertCoderReviewFail('  $form["#process"] = "expand_date";');
+    $this->assertCoderReviewFail('  $form["#process"] = "expand_radios";');
+    $this->assertCoderReviewFail('  $form["#process"] = "form_expand_ahah";');
+    $this->assertCoderReviewFail('  $form["#process"] = "expand_checkboxes";');
+    $this->assertCoderReviewFail('  $form["#process"] = "process_weight";');
+
     // http://drupal.org/node/224333#markup
 
     // http://drupal.org/node/224333#drupal_execute_drupal_form_submit
@@ -414,7 +452,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#remove_FILE_STATUS_TEMPORARY
     $this->assertCoderReviewFail('  $file->status = FILE_STATUS_TEMPORARY;');
-    $this->assertCoderReviewPass('  $file->status = MY_FILE_STATUS_TEMPORARY;');
 
     // http://drupal.org/node/224333#preg_match
     $this->assertCoderReviewPass("  file_scan_directory(\$dir, '/\.module\$/');");
@@ -432,7 +469,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  function foo_user_delete($edit, $uid)');
 
     // http://drupal.org/node/224333#remove_op
-    $this->assertCoderReviewPass("  function mymodule_user(\$edit, &\$user) {\n}");
     $this->assertCoderReviewFail("  function mymodule_user(\$edit, &\$user) {\n  if (\$op == 'load') {\n  }\n}");
     $this->assertCoderReviewFail("  function mymodule_user(\$edit, &\$user) {\n  switch (\$op) {\n  case 'load':\n  }\n}");
 
@@ -452,6 +488,10 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  user_load($uid);');
     $this->assertCoderReviewFail('  $user = user_load((array) $uid);');
     $this->assertCoderReviewFail('  $user = user_load(array(123));');
+
+    // http://drupal.org/node/224333#user_authenticate
+    $this->assertCoderReviewPass('  user_authenticate($username, $password);');
+    $this->assertCoderReviewFail('  user_authenticate(&$form_state);');
   }
 
   function testNode7x() {
@@ -486,7 +526,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#remove_op
     $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$op, \$teaser, \$page) {\n}");
-    $this->assertCoderReviewPass("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n}");
     $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n  if (\$op == 'list') {\n  }\n}");
     $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n  switch (\$op) {\n  case 'list':\n  }\n}");
 
@@ -498,8 +537,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  node_view($nid, TRUE);');
     $this->assertCoderReviewFail('  if (node_view($nid, TRUE))');
 
-    // http://drupal.org/node/224333#node_build_rss
-    $this->assertCoderReviewFail("  function mymodule_nodeapi(&\$node, \$teaser, \$page) {\n  switch (\$operation) {\n  case 'rss item':\n  }\n}");
+    // N/A - http://drupal.org/node/224333#node_build_rss : covered by
+    // hook_nodeapi() removal.
 
     // http://drupal.org/node/224333#node_type_get_functions
     $this->assertCoderReviewFail('  node_get_types($op);');
@@ -508,6 +547,10 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#build_mode
     $this->assertCoderReviewFail('  $build_mode = NODE_BUILD_PREVIEW;');
     $this->assertCoderReviewFail('  $node->build_mode = 2;');
+
+    // http://drupal.org/node/224333#hook_node_xxx
+    $this->assertCoderReviewFail("  function mymodule_nodeapi_foo(&\$node, \$teaser, \$page)");
+    $this->assertCoderReviewPass("  function mymodule_node_foo(&\$node, \$teaser, \$page)");
   }
 
   function testMultilingual7x() {
