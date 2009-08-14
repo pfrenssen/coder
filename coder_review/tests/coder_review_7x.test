@@ -178,6 +178,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  function mymodule_update_123() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => 'My field &lt;a href=\"foo.html\"&gt;foo&lt;/a&gt; description.')));\n}");
 
     // http://drupal.org/node/224333#select_count
+    // http://drupal.org/node/224333#foreign-keys-added
   }
 
   function testMenu7x() {
@@ -344,6 +345,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // NO TESTS - http://drupal.org/node/224333#jquery_13
     // NO TESTS - http://drupal.org/node/224333#drupal_behaviors
     // NO TESTS - http://drupal.org/node/224333#javascript_compatibility
+    // NO TESTS - http://drupal.org/node/224333#no-jsenabled
 
     // http://drupal.org/node/224333#drupal_add_js_weight
     $this->assertCoderReviewFail("  drupal_add_js(\$data, 'module');");
@@ -492,6 +494,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#user_authenticate
     $this->assertCoderReviewPass('  user_authenticate($username, $password);');
     $this->assertCoderReviewFail('  user_authenticate(&$form_state);');
+
+    // http://drupal.org/node/224333#hook-user-changes
   }
 
   function testNode7x() {
@@ -587,5 +591,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  actions_synchronize($delete_orphans);');
 
     // http://drupal.org/node/224333#distauth
+    // http://drupal.org/node/224333#xmlrpc-wrapper
   }
 }
