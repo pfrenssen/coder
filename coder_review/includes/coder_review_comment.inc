@@ -17,7 +17,7 @@ function coder_review_comment_reviews() {
       '#value' => '$Id',
       '#case-sensitive' => TRUE,
       '#warning_callback' => '_coder_review_comment_Id_warning',
-      '#filename-not' => array('\.patch'),
+      '#filename-not' => array('patch'),
     ),
     array(
       '#type' => 'regex',
@@ -86,7 +86,7 @@ function coder_review_comment_reviews() {
       '#source' => 'comment',
       '#value' => '@' . 'file',
       '#warning_callback' => '_coder_review_comment_missing_file_block_warning',
-      '#filename-not' => array('\.patch'),
+      '#filename-not' => array('patch'),
     ),
     array(
       '#type' => 'callback',

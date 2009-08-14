@@ -218,6 +218,7 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_schema_html_warning',
       ),
       // http://drupal.org/node/224333#select_count --- Do not use SELECT COUNT(*) to check for existence of rows
+      // http://drupal.org/node/224333#foreign-keys-added --- Foreign keys added to core database table schema
 
 
     // Menu
@@ -412,13 +413,13 @@ function coder_review_7x_reviews() {
       array(
         '#type' => 'regex',
         '#value' => 'Drupal\.behaviors\..+?\s*=\s*function\s*\(',
-        '#filename' => array('\.js'),
+        '#filename' => array('js'),
         '#warning_callback' => '_coder_review_7x_drupal_behaviors_warning',
       ),
       array(
         '#type' => 'callback',
         '#value' => '_coder_review_7x_drupal_behaviors_review_callback',
-        '#filename' => array('\.js'),
+        '#filename' => array('js'),
         // @NOTE: this warning_callback isn't used.  It only exists to catch
         // potential errors in the code.
         '#warning_callback' => '_coder_review_7x_drupal_behaviors_warning',
@@ -448,7 +449,7 @@ function coder_review_7x_reviews() {
       array(
         '#type' => 'grep_invert',
         '#value' => '(function ($) {',
-        '#filename' => array('\.js'),
+        '#filename' => array('js'),
         '#warning_callback' => '_coder_review_7x_javascript_compatibility_warning',
       ),
       // http://drupal.org/node/224333#drupal_add_js_external
@@ -463,15 +464,23 @@ function coder_review_7x_reviews() {
         '#type' => 'regex',
         '#source' => 'allphp',
         '#value' => '\[.*?@[a-zA-Z]+\s*(\^=|=|!=|\$=|\*=)\s*.+?\]',
-        '#filename' => array('\.js'),
+        '#filename' => array('js'),
         '#warning_callback' => '_coder_review_7x_jquery_13_warning',
       ),
       array(
         '#type' => 'regex',
         '#value' => '(\$|jQuery)\.(boxModel|browser.version|browser)',
-        '#filename' => array('\.js'),
+        '#filename' => array('js'),
         '#warning_callback' => '_coder_review_7x_jquery_13_warning',
       ),
+      // NO TESTS - http://drupal.org/node/224333#no-jsenabled
+      array(
+        '#type' => 'regex',
+        '#value' => 'Drupal.jsEnabled',
+        '#filename' => array('js'),
+        '#warning_callback' => '_coder_review_7x_no_jsenabled_warning',
+      ),
+
 
     // CSS
       // N/A - http://drupal.org/node/224333#attached_js --- Attached JavaScript and CSS for forms
@@ -517,7 +526,7 @@ function coder_review_7x_reviews() {
       array(
         '#type' => 'regex',
         '#value' => '\$closure[^a-zA-Z_]',
-        '#filename' => array('\.tpl.php'),
+        '#filename' => array('tpl.php'),
         '#warning_callback' => '_coder_review_7x_closure_warning',
       ),
       // http://drupal.org/node/224333#element_theme_properties --- Element theming properties used by drupal_render() have changed
@@ -610,6 +619,7 @@ function coder_review_7x_reviews() {
       array(
         '#type' => 'grep',
         '#value' => 'FILE_STATUS_TEMPORARY',
+        '#case-sensitive' => TRUE,
         '#warning_callback' => '_coder_review_7x_file_status_temporary_warning',
       ),
       // http://drupal.org/node/224333#preg_match
@@ -663,6 +673,7 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]user_authenticate\s*\(\s*' . $argex . '\s*\)',
         '#warning_callback' => '_coder_review_7x_user_authenticate_warning',
       ),
+      // http://drupal.org/node/224333#hook-user-changes --- Removed several unecessary arguments to various hook_user_$op hooks and removed hook_profile_alter
 
 
     // Node API
@@ -716,7 +727,7 @@ function coder_review_7x_reviews() {
       array(
         '#type' => 'regex',
         '#value' => '[\s\(]node_invoke_nodeapi\s*\(',
-        '#warning_callback' => '_coder_review_7x_node_invoke_nodeapi_warning',
+        '#warning_callback' => '_coder_review_7x_node_invoke_nodeapi_removed_warning',
       ),
       // http://drupal.org/node/224333#node_view
       array(
@@ -790,6 +801,7 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_actions_synchronize_warning',
       ),
       // http://drupal.org/node/224333#distauth --- Login validation change for distributed authentication modules
+      // http://drupal.org/node/224333#xmlrpc-wrapper --- xmlrpc() wrapper function removed
   );
   $review = array(
     '#title' => t('Converting 6.x modules to 7.x'),
@@ -909,7 +921,7 @@ function _coder_review_7x_drupal_clone_warning() {
   );
 }
 
-function _coder_review_7x_node_invoke_nodeapi_warning() {
+function _coder_review_7x_node_invoke_nodeapi_removed_warning() {
   return array(
     '#warning' => t('!node_invoke_nodeapi() has been removed and !module_invoke_all(\'node_\' . $hook, $node); should be used instead.',
       array(
@@ -1824,5 +1836,12 @@ function _coder_review_7x_process_functions_warning() {
       )
     ),
     '#link' => 'http://drupal.org/node/224333#process_functions',
+  );
+}
+
+function _coder_review_7x_no_jsenabled_warning() {
+  return array(
+    '#warning' => t('JavaScript variable Drupal.jsEnabled has been removed.'),
+    '#link' => 'http://drupal.org/node/224333#no-jsenabled',
   );
 }

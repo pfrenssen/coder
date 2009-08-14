@@ -15,7 +15,7 @@ function coder_review_i18n_po_reviews() {
   $rules = array(
     array(
       '#type' => 'callback',
-      '#filename' => array('\.po'),
+      '#filename' => array('po'),
       '#value' => '_coder_review_translation_callback',
     ),
   );
