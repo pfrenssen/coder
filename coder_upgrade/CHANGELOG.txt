@@ -2,6 +2,12 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2009-08-17):
+   * Group conversion routines by processing order (beginning, middle, or end).
+   * Separate middle conversion routines into two groups (regex and parser) to utilize the PGP API.
+   * Add handler specification (regex or parser) for the middle changes applied at the file level.
+   * Revise API documentation.
+
 - Changes (2009-08-04):
    * Rename hook_perm and the permission.
    * Revise API documentation.

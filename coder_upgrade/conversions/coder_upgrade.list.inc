@@ -31,9 +31,26 @@ function coder_upgrade_list_upgrades($include_routines) {
 /**
  * Return a list of conversion routine suffixes.
  *
+ * Group changes by processing order (beginning, middle, or end). The beginning
+ * and end conversion routines are applied only at the module or directory
+ * level and the routine will need to determine what to do and how (regex or
+ * parser) to do it.
+ *
+ * The middle changes are applied at the file level and the list entry must
+ * specify the handler (regex or parser). The regex changes are applied before
+ * the parser changes.
+ *
  * @return array
  *   Array of conversion routine suffixes.
  */
 function coder_upgrade_conversions_list() {
-  return array();
+  $list = array(
+    'beginning' => array(),
+    'middle' => array(),
+    'end' => array(),
+  );
+
+  $list['end'] = array('end');
+
+  return $list;
 }
