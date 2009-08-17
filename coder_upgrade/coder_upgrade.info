@@ -17,6 +17,6 @@ files[] = conversions/coder_upgrade.end.inc
 ; files[] = conversions/coder_upgrade.install.inc
 files[] = conversions/coder_upgrade.list.inc
 files[] = conversions/coder_upgrade.main.inc
-; files[] = conversions/coder_upgrade.other.inc
+files[] = conversions/coder_upgrade.other.inc
 
 core = 7.x

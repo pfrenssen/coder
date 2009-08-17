@@ -50,6 +50,13 @@ function coder_upgrade_conversions_list() {
     'end' => array(),
   );
 
+  $list['middle'] = array(
+    array(
+      'name' => 'simple_changes',
+      'type' => 'parser',
+    ),
+  );
+
   $list['end'] = array('end');
 
   return $list;

@@ -111,7 +111,7 @@ function coder_upgrade_add_file_entries($dirname = '', $files = array(), &$items
 
   // Create list of files for registry.
   // TODO Allow for custom extensions!!!
-  $extensions = array('inc', 'install', 'module', 'php');
+  $extensions = array('inc', 'install', 'module', 'php', 'test');
   $path = $path != '' ? $path . '/' : $path;
   foreach ($files as $file) {
     if (is_array($file)) {
