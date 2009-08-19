@@ -22,6 +22,9 @@
  * http://drupal.org/node/224333#drupal_uninstall_modules
  * http://drupal.org/node/224333#module_implements_not_module_list
  * http://drupal.org/node/224333#system_get_module_data
+ * http://drupal.org/node/224333#drupal_set_html_head
+ * http://drupal.org/node/224333#php_eval
+ * http://drupal.org/node/224333#http_header_functions
  *
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
@@ -36,12 +39,57 @@ function coder_upgrade_callback_simple_changes(&$item) {
   $name = &$item['name'];
   $value = &$name['value'];
   switch ($name['value']) {
+
+    case 'drupal_eval':
+      /*
+       * Examine the statement containing the function call.
+       * Wrap the containing statement in an "if (module_exists('php'))" block.
+       * The function call may be the containing statement.
+       */
+
+      // Set the name of the function call.
+      $name['value'] = 'php_eval';
+
+      // Get the parent = statement (i.e. node) this function call is part of.
+      $parent = $item['parent'];
+      $temp = $class->statementsToText($parent);
+      $temp = $editor->textToStatements("if (module_exists('php')) {\n\t$temp\n}");
+      $parent->data = $temp->get(0)->data;
+      break;
+
+    case 'drupal_get_headers':
+      $name['value'] = 'drupal_get_header';
+      break;
+
     case 'drupal_rebuild_code_registry':
       $name['value'] = 'registry_rebuild';
       break;
 
     case 'drupal_rebuild_theme_registry':
       $name['value'] = 'drupal_theme_rebuild';
+      break;
+
+    case 'drupal_set_header':
+      // TODO the hook_file_download() changes. Use parser on the entire function.
+      $temp = $class->printParameters($item);
+      if (strpos($temp, 'Content-Type:') !== FALSE) {
+        $temp = explode(':', $temp);
+        foreach ($temp as $key => $string) {
+          $temp[$key] = "'" . trim($string, "' ") . "'";
+        }
+        $class->setParameters($item, $temp);
+      }
+      elseif (strpos($temp, "\$_SERVER['SERVER_PROTOCOL']") !== FALSE ||
+              strpos($temp, '\$_SERVER["SERVER_PROTOCOL"]') !== FALSE) {
+        $from = '@\$_SERVER\[(\'|")SERVER_PROTOCOL(\'|")\]\s*\.\s*(\'|")\s*(.*?)(\'|")@';
+        $to = "$3$4$3";
+        $temp = preg_replace($from, $to, $temp);
+        $class->setParameters($item, array($temp));
+      }
+      break;
+
+    case 'drupal_set_html_head':
+      $name['value'] = 'drupal_add_html_head';
       break;
 
     case 'drupal_uninstall_module':
