@@ -19,6 +19,9 @@
  * http://drupal.org/node/224333#drupal_set_session (REVERTED)
  * http://drupal.org/node/224333#time
  * http://drupal.org/node/224333#rebuild_functions
+ * http://drupal.org/node/224333#drupal_uninstall_modules
+ * http://drupal.org/node/224333#module_implements_not_module_list
+ * http://drupal.org/node/224333#system_get_module_data
  *
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
@@ -41,8 +44,27 @@ function coder_upgrade_callback_simple_changes(&$item) {
       $name['value'] = 'drupal_theme_rebuild';
       break;
 
+    case 'drupal_uninstall_module':
+      $name['value'] = 'drupal_uninstall_modules';
+      $temp = $class->printParameters($item);
+      $class->setParameters($item, array('array(' . $temp . ')'));
+      break;
+
     case 'function_exists':
       $name['value'] = 'drupal_function_exists';
+      break;
+
+    case 'module_list':
+      $name['value'] = 'module_implements';
+      $class->setParameters($item, array('$hook /* TODO Set this variable. */'));
+      break;
+
+    case 'module_rebuild_cache':
+      $name['value'] = 'system_get_module_data';
+      break;
+
+    case 'system_theme_data':
+      $name['value'] = 'system_get_theme_data';
       break;
 
     case 'time':
