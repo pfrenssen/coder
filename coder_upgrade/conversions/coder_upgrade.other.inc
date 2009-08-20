@@ -34,6 +34,13 @@
  * http://drupal.org/node/224333#comment_node_url
  *
  *
+ * http://drupal.org/node/224333#check_markup_params
+ *
+ *
+ * http://drupal.org/node/224333#taxonomy_get_tree
+ * http://drupal.org/node/224333#taxonomy_crud
+ *
+ *
  * http://drupal.org/node/224333#drupal_clone
  *
  * @param PGPReader $reader
@@ -49,6 +56,12 @@ function coder_upgrade_callback_simple_changes(&$item) {
   $name = &$item['name'];
   $value = &$name['value'];
   switch ($name['value']) {
+    case 'check_markup':
+      if ($item['parameters']->count() > 2) {
+        $class->insertParameter($item, 2, '$langcode = \'\' /* TODO Set this variable. */');
+      }
+      break;
+
     case '_comment_load':
       // TODO The comment_wildcard change in hook_menu.
       $name['value'] = 'comment_load';
@@ -158,6 +171,45 @@ function coder_upgrade_callback_simple_changes(&$item) {
 
     case 'system_theme_data':
       $name['value'] = 'system_get_theme_data';
+      break;
+
+    case 'taxonomy_del_term':
+      $name['value'] = 'taxonomy_term_delete';
+      break;
+
+    case 'taxonomy_del_vocabulary':
+      $name['value'] = 'taxonomy_vocabulary_delete';
+      break;
+
+    case 'taxonomy_get_term':
+      $name['value'] = 'taxonomy_term_load';
+      break;
+
+    case 'taxonomy_get_tree':
+      // Assume they are not default values if present.
+      if ($item['parameters']->count() > 3) {
+        $p2 = $item['parameters']->get(2)->data;
+        $p3 = $item['parameters']->get(3)->data;
+        $item['parameters']->updateKey(2, $p3);
+        $item['parameters']->updateKey(3, $p2);
+      }
+      elseif ($item['parameters']->count() > 2) {
+        $class->insertParameter($item, 2, '$max_depth = NULL /* TODO Set this variable. */');
+      }
+      // TODO Eliminate default variables from right to left.
+      // TODO Do we need to change module_invoke('taxonomy', 'get_tree', ...)? See patch code in example function.
+      break;
+
+    case 'taxonomy_save_term':
+      $name['value'] = 'taxonomy_term_save';
+      $temp = $class->printParameters($item);
+      $class->setParameters($item, array('$term /* TODO Term object replaces array ' . $temp . ' */)'));
+      break;
+
+    case 'taxonomy_save_vocabulary':
+      $name['value'] = 'taxonomy_vocabulary_save';
+      $temp = $class->printParameters($item);
+      $class->setParameters($item, array('$vocabulary /* TODO Vocabulary object replaces array ' . $temp . ' */)'));
       break;
 
     case 'time':
