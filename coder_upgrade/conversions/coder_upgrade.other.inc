@@ -41,6 +41,10 @@
  * http://drupal.org/node/224333#taxonomy_crud
  *
  *
+ * http://drupal.org/node/224333#preg_match
+ *
+ *
+ * http://drupal.org/node/224333#referer_uri
  * http://drupal.org/node/224333#drupal_clone
  *
  * @param PGPReader $reader
@@ -146,10 +150,37 @@ function coder_upgrade_callback_simple_changes(&$item) {
       $name['value'] = 'drupal_add_html_head';
       break;
 
+    case 'drupal_system_listing':
+      $temp = $class->printParameter($item, 0);
+      // Check for type == T_CONSTANT_ENCAPSED_STRING
+      // Check for a '/' in the mask and use a different mask or delimit the '/' with '\/'.
+      if ($temp[0] == "'") {
+        $class->setParameter($item, 0, "'/" . substr($temp, 1, -1) . "/'");
+      }
+      elseif ($temp[0] == '"') {
+        $class->setParameter($item, 0, '"/' . substr($temp, 1, -1) . '/"');
+      }
+      // else if type == T_VARIABLE, find the $mask used in the call and examine its value.
+      break;
+
     case 'drupal_uninstall_module':
       $name['value'] = 'drupal_uninstall_modules';
       $temp = $class->printParameters($item);
       $class->setParameters($item, array('array(' . $temp . ')'));
+      break;
+
+    case 'file_scan_directory':
+      // TODO Other changes apply to this function call.
+      $temp = $class->printParameter($item, 1);
+      // Check for type == T_CONSTANT_ENCAPSED_STRING
+      // Check for a '/' in the mask and use a different mask or delimit the '/' with '\/'.
+      if ($temp[0] == "'") {
+        $class->setParameter($item, 1, "'/" . substr($temp, 1, -1) . "/'");
+      }
+      elseif ($temp[0] == '"') {
+        $class->setParameter($item, 1, '"/' . substr($temp, 1, -1) . '/"');
+      }
+      // else if type == T_VARIABLE, find the $mask used in the call and examine its value.
       break;
 
     case 'function_exists':
@@ -163,6 +194,11 @@ function coder_upgrade_callback_simple_changes(&$item) {
 
     case 'module_rebuild_cache':
       $name['value'] = 'system_get_module_data';
+      break;
+
+    case 'referer_uri':
+      $temp = $editor->expressionToStatement("\$_SERVER['HTTP_REFERER']");
+      $item = $temp['operand_1'];
       break;
 
     case 'set_time_limit':
