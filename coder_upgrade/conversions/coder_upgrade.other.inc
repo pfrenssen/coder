@@ -25,6 +25,16 @@
  * http://drupal.org/node/224333#drupal_set_html_head
  * http://drupal.org/node/224333#php_eval
  * http://drupal.org/node/224333#http_header_functions
+ * http://drupal.org/node/224333#drupal_set_content
+ * http://drupal.org/node/224333#time_limit
+ *
+ *
+ * http://drupal.org/node/224333#comment_load
+ * http://drupal.org/node/224333#comment_validate_removed
+ * http://drupal.org/node/224333#comment_node_url
+ *
+ *
+ * http://drupal.org/node/224333#drupal_clone
  *
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
@@ -39,6 +49,29 @@ function coder_upgrade_callback_simple_changes(&$item) {
   $name = &$item['name'];
   $value = &$name['value'];
   switch ($name['value']) {
+    case '_comment_load':
+      // TODO The comment_wildcard change in hook_menu.
+      $name['value'] = 'comment_load';
+
+    case 'comment_node_url':
+      $parent = $item['parent'];
+      $temp = $editor->statementsToText($parent);
+      $from = '@comment_node_url()@';
+      $to = "'comment/' . \$comment->cid";
+      $temp = preg_replace($from, $to, $temp);
+      $temp = $editor->textToStatements($temp);
+      $parent->data = $temp->get(0)->data;
+      break;
+
+    case 'comment_validate':
+      $name['value'] = 'comment_form_validate';
+      $class->setParameters($item, array('$form', '$form_state /* TODO Set these variables. */'));
+      break;
+
+    case 'drupal_clone':
+      $name['value'] = 'clone';
+      $item['noparens'] = 1;
+      break;
 
     case 'drupal_eval':
       /*
@@ -57,6 +90,10 @@ function coder_upgrade_callback_simple_changes(&$item) {
       $parent->data = $temp->get(0)->data;
       break;
 
+    case 'drupal_get_content':
+      $name['value'] = 'drupal_get_region_content';
+      break;
+
     case 'drupal_get_headers':
       $name['value'] = 'drupal_get_header';
       break;
@@ -67,6 +104,10 @@ function coder_upgrade_callback_simple_changes(&$item) {
 
     case 'drupal_rebuild_theme_registry':
       $name['value'] = 'drupal_theme_rebuild';
+      break;
+
+    case 'drupal_set_content':
+      $name['value'] = 'drupal_add_region_content';
       break;
 
     case 'drupal_set_header':
@@ -109,6 +150,10 @@ function coder_upgrade_callback_simple_changes(&$item) {
 
     case 'module_rebuild_cache':
       $name['value'] = 'system_get_module_data';
+      break;
+
+    case 'set_time_limit':
+      $name['value'] = 'drupal_set_time_limit';
       break;
 
     case 'system_theme_data':
