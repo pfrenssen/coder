@@ -13,7 +13,7 @@
  */
 
 /**
- * Miscellaneous routine for simple changes.
+ * Function call changes using grammar parser.
  *
  * http://drupal.org/node/224333#registry
  * http://drupal.org/node/224333#drupal_set_session (REVERTED)
@@ -41,6 +41,7 @@
  * http://drupal.org/node/224333#taxonomy_crud
  *
  *
+ * http://drupal.org/node/224333#file_set_status
  * http://drupal.org/node/224333#preg_match
  *
  *
@@ -50,13 +51,13 @@
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
  */
-function coder_upgrade_convert_simple_changes(&$reader) {
+function coder_upgrade_convert_function_calls(&$reader) {
   $editor = new PGPEditor();
   $types = array(T_STRING);
-  $editor->traverse_callback($reader->getFunctionCalls(), 'coder_upgrade_callback_simple_changes', $types);
+  $editor->traverse_callback($reader->getFunctionCalls(), 'coder_upgrade_callback_function_calls', $types);
 }
 
-function coder_upgrade_callback_simple_changes(&$item) {
+function coder_upgrade_callback_function_calls(&$item) {
   $name = &$item['name'];
   $value = &$name['value'];
   switch ($name['value']) {
@@ -183,6 +184,24 @@ function coder_upgrade_callback_simple_changes(&$item) {
       // else if type == T_VARIABLE, find the $mask used in the call and examine its value.
       break;
 
+    case 'file_set_status':
+      if ($item['parameters']->count() == 2) {
+        $p0 = $class->printParameter($item, 0);
+        $p1 = $class->printParameter($item, 1);
+
+        // Insert statement.
+        $temp = $editor->textToStatements("{$p0}->status &= $p1");
+        $parent->container->insertBefore($parent, $temp->get(0)->data);
+
+        // Change statement.
+        $from = $temp1;
+        $to = "$p0 = file_save($p0)";
+        $temp = str_replace($from, $to, $temp2);
+        $temp = $editor->textToStatements($temp);
+        $parent->data = $temp->get(0)->data;
+      }
+      break;
+
     case 'function_exists':
       $name['value'] = 'drupal_function_exists';
       break;
@@ -253,4 +272,28 @@ function coder_upgrade_callback_simple_changes(&$item) {
       $item = $temp['operand_1'];
       break;
   }
+}
+
+/**
+ * Simple regular expression changes.
+ *
+ * http://drupal.org/node/224333#php_permissions
+ *
+ * @param string $file
+ *   The text of the file to convert.
+ */
+function coder_upgrade_convert_regex_simple_changes(&$file) {
+  $hook = 'regex_simple_changes';
+  $cur = $file;
+  $new = $cur;
+
+  $from = array();
+  $to = array();
+
+  // Replace referer_uri() with PHP-provided global variable.
+  $from[] = '/(\'|")use PHP for block visibility(\'|")/';
+  $to[] = "$1use PHP for settings$1";
+
+  coder_upgrade_do_conversions($from, $to, $new);
+  coder_upgrade_save_changes($cur, $new, $file, $hook);
 }

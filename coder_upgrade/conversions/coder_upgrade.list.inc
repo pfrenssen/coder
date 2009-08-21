@@ -52,8 +52,12 @@ function coder_upgrade_conversions_list() {
 
   $list['middle'] = array(
     array(
-      'name' => 'simple_changes',
+      'name' => 'function_calls',
       'type' => 'parser',
+    ),
+    array(
+      'name' => 'regex_simple_changes',
+      'type' => 'regex',
     ),
   );
 
