@@ -18,19 +18,19 @@ function coder_upgrade_install() {
   // Because the core function is now recursive, we could start with the
   // subdirectories. However, this code is clean and allows for one else block.
   $dir = file_directory_path() . '/' . DEADWOOD_DIR;
-  if (file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
+  if (file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
     // Create the old and new module directories.
     $dir = file_directory_path() . '/' . DEADWOOD_OLD;
-    if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
+    if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
       drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory searched by Coder Upgrade for modules to be converted.', array('%directory' => $dir)), 'error');
     }
     $dir = file_directory_path() . '/' . DEADWOOD_NEW;
-      if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
+      if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
         drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory to which Coder Upgrade writes converted module code.', array('%directory' => $dir)), 'error');
     }
     // Create the patch directory.
     $dir = file_directory_path() . '/' . DEADWOOD_PATCH;
-    if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
+    if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
       drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory to which Coder Upgrade writes patch files.', array('%directory' => $dir)), 'error');
     }
   }
@@ -73,7 +73,7 @@ function coder_upgrade_requirements($phase) {
       );
     }
     $dir = file_directory_path();
-    if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
+    if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
       $requirements['coder_upgrade_files'] = array(
         'title' => t('Files directory'),
         'description' => t('Your files directory at %directory can not be written to. Coder Upgrade places converted module code in subdirectories of this directory.', array('%directory' => $dir)),
@@ -83,7 +83,7 @@ function coder_upgrade_requirements($phase) {
   }
   else {
     $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
-    if (!file_check_directory($dir, FILE_CREATE_DIRECTORY)) {
+    if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
       $requirements['coder_upgrade_files'] = array(
         'title' => t('Coder Upgrade directory'),
         'description' => t('Your files directory at %directory can not be written to. Coder Upgrade places converted module code in subdirectories of this directory.', array('%directory' => $dir)),
