@@ -421,7 +421,10 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  if (drupal_execute())');
 
     // http://drupal.org/node/224333#unrendered
-    // http://drupal.org/node/224333#ahah_changes
+
+    // http://drupal.org/node/224333#ahah_now_ajax
+    $this->assertCoderReviewFail('  $form["#ahah"] = "foo";');
+    $this->assertCoderReviewFail("  \$form['#ahah'] = 'foo';");
   }
 
   function testFile7x() {
