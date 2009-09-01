@@ -58,9 +58,9 @@ function coder_review_reviews() {
     $path = drupal_get_path('module', 'coder_review') . '/includes';
     $files = drupal_system_listing('/coder_review_.*\.inc$/', $path, 'filepath', 0);
     foreach ($files as $file) {
-      require_once DRUPAL_ROOT . '/' . $file->filepath;
+      require_once DRUPAL_ROOT . '/' . $file->uri;
       $function = $file->name . '_reviews';
-      if (drupal_function_exists($function)) {
+      if (function_exists($function)) {
         if ($review = call_user_func($function)) {
           $_coder_reviews = array_merge($_coder_reviews, $review);
         }
@@ -875,7 +875,7 @@ function coder_review_page_form($form_state, $arg = '') {
         }
         drupal_set_message(implode(', ', $display));
 
-        if (drupal_function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+        if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
           print coder_review_print_drush_messages();
         }
       }
@@ -927,10 +927,10 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
   $weight = 0;
   $exclusions = str_replace(array("\r\n", "\r", "\n", '/', '*', '.'), array('|', '|', '|', '\\/', '.*', '\\.'), $exclusions);
   foreach ($files as $file) {
-    if (!empty($exclusions) && preg_match("/$exclusions/", $file->filepath)) {
+    if (!empty($exclusions) && preg_match("/$exclusions/", $file->uri)) {
       continue; // Don't review this file.
     }
-    $filename = drupal_substr($file->filepath, $offset);
+    $filename = drupal_substr($file->uri, $offset);
     $php_extensions = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
     $coder_args['#filename'] = $filename;
     $coder_args['#php_extensions'] = $php_extensions;
@@ -1766,7 +1766,7 @@ function do_coder_review_grep_invert(&$coder_args, $review, $rule, $lines, &$res
  */
 function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
   if ($function = $rule['#value']) {
-    if (drupal_function_exists($function)) {
+    if (function_exists($function)) {
       call_user_func_array($function, array(&$coder_args, $review, $rule, $lines, &$results));
     }
   }
@@ -1788,7 +1788,7 @@ function _coder_review_search_string($line, $rule) {
   static $php5;
 
   if (!isset($php5)) {
-    if (drupal_function_exists('stripos')) {
+    if (function_exists('stripos')) {
       $php5 = TRUE;
     }
     else {
@@ -1902,7 +1902,7 @@ function coder_review_theme() {
  */
 function theme_coder_review($name, $filename, $results) {
   // theme the output for the Drupal shell
-  if (drupal_function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+  if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
     return theme_drush_coder_review($name, $filename, $results);
   }
 
@@ -1933,7 +1933,7 @@ function theme_coder_review_warning_msg($error) {
  */
 function _coder_review_warning($rule) {
   if (isset($rule['#warning_callback'])) {
-    if (drupal_function_exists($rule['#warning_callback'])) {
+    if (function_exists($rule['#warning_callback'])) {
       return $rule['#warning_callback']();
     }
     return t('please <a href="@report">report</a> this !warning',
@@ -1963,7 +1963,7 @@ function _coder_review_warning($rule) {
  */
 function theme_coder_review_warning($warning, $severity_name, $lineno = 0, $line = '') {
   // theme the output for the Drupal shell
-  if (drupal_function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+  if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
     return theme_drush_coder_review_warning($warning, $severity_name, $lineno, $line);
   }
 
