@@ -265,11 +265,10 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  drupal_set_title(t("@test"), PASS_THROUGH);');
     $this->assertCoderReviewPass('  drupal_set_title(t("test"));');
 
-    // http://drupal.org/node/224333#hook_filter_params
-    $this->assertCoderReviewFail('  function mymodule_filter($op, $delta, $format, $text, $cache_id)');
-    $this->assertCoderReviewFail('  function mymodule_filter($op, $delta = 0, $format = -1, $text = \'\', $cache_id = 0)');
-    $this->assertCoderReviewPass('  function mymodule_filter($op, $delta, $format, $text, $langcode, $cache_id)');
-    $this->assertCoderReviewPass('  function mymodule_filter($op, $delta = 0, $format = -1, $text = \'\', $langcode = \'\', $cache_id = 0)');
+    // http://drupal.org/node/224333#hook_filter_info
+    $this->assertCoderReviewFail('  function mymodule_filter($op, $delta = 0, $format = -1, $text = \'\')');
+    $this->assertCoderReviewFail('  function mymodule_filter_tips($delta, $format, $long = FALSE)');
+    $this->assertCoderReviewPass('  function mymodule_filter_info()');
 
     // http://drupal.org/node/224333#text_format
     $this->assertCoderReviewFail('  $form[\'format\'] = filter_form($edit[\'format\']);');

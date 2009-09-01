@@ -304,11 +304,16 @@ function coder_review_7x_reviews() {
         '#never' => 'PASS_THROUGH',
         '#warning_callback' => '_coder_review_7x_drupal_set_title_warning',
       ),
-      // http://drupal.org/node/224333#hook_filter_params
+      // http://drupal.org/node/224333#hook_filter_info
       array(
         '#type' => 'regex',
-        '#value' => 'function\s+\w+_filter\s*\(([^,]+?,\s*){4}' . $argex . '[^,]*\)',
+        '#value' => 'function\s+\w+_(filter)\s*\(',
         '#warning_callback' => '_coder_review_7x_hook_filter_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => 'function\s+\w+_(filter_tips)\s*\(',
+        '#warning_callback' => '_coder_review_7x_hook_filter_tips_warning',
       ),
       // http://drupal.org/node/224333#text_format
       array(
@@ -1124,12 +1129,25 @@ function _coder_review_7x_drupal_set_title_warning() {
 
 function _coder_review_7x_hook_filter_warning() {
   return array(
-    '#warning' => t('Parameters for !hook_filter() have changed',
+    '#warning' => t('!hook_filter() has been removed in favour of !hook_filter_info().',
       array(
-        '!hook_filter()' => theme('drupalapi', 'hook_filter', 7),
+        '!hook_filter_info()' => theme('drupalapi', 'hook_filter_info', 7),
+        '!hook_filter()' => theme('drupalapi', 'hook_filter', 6),
       )
     ),
-    '#link' => 'http://drupal.org/node/224333#hook_filter_params',
+    '#link' => 'http://drupal.org/node/224333#hook_filter_info',
+  );
+}
+
+function _coder_review_7x_hook_filter_tips_warning() {
+  return array(
+    '#warning' => t('!hook_filter_tips() has been removed in favour of !hook_filter_info().',
+      array(
+        '!hook_filter_info()' => theme('drupalapi', 'hook_filter_info', 7),
+        '!hook_filter_tips()' => theme('drupalapi', 'hook_filter_tips', 6),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#hook_filter_info',
   );
 }
 
