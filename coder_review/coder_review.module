@@ -509,7 +509,7 @@ function _coder_review_settings_form($settings, &$system, &$files) {
         '#type' => 'checkbox',
         '#title' => $link,
         '#default_value' => $default_value,
-        '#attributes' => array('class' => implode(' ', $classes)),
+        '#attributes' => array('class' => $classes),
       );
     }
 
