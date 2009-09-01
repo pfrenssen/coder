@@ -223,7 +223,7 @@ function coder_review_7x_reviews() {
         '#source' => 'allphp',
         '#value' => 'db_query\s*\(\s*[\'"]select\s+count\s*\(\s*\*\s*\)\s+from\s+',
         '#warning_callback' => '_coder_review_7x_select_count_warning',
-        '#severity' => 'normal'
+        '#severity' => 'minor'
       ),
       // http://drupal.org/node/224333#foreign-keys-added --- Foreign keys added to core database table schema
 
@@ -1908,7 +1908,7 @@ function _coder_review_7x_ahah_now_ajax_warning() {
 
 function _coder_review_7x_select_count_warning() {
   return array(
-    '#warning' => t('Do not use SELECT COUNT(*) when checking for existence of rows in a table'),
+    '#warning' => t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actualy numer of rows.'),
     '#link' => 'http://drupal.org/node/224333#select_count',
   );
 }

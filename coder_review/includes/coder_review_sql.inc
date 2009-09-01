@@ -60,6 +60,7 @@ function coder_review_sql_reviews() {
       '#source' => 'allphp',
       '#value' => 'db_query\s*\(\s*[\'"]select\s+count\s*\(\s*\*\s*\)\s+from\s+',
       '#warning_callback' => '_coder_review_sql_select_count_warning',
+      '#severity' => 'minor',
     ),
   );
   $review = array(
@@ -99,7 +100,7 @@ function _coder_review_sql_db_query_in_install_function() {
 
 function _coder_review_sql_select_count_warning() {
   return array(
-    '#warning' => t('Do not use SELECT COUNT(*) when checking for existence of rows in a table'),
+    '#warning' => t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actualy numer of rows.'),
     '#link' => 'http://drupal.org/node/224333#select_count',
   );
 }
