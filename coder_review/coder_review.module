@@ -425,7 +425,7 @@ function _coder_review_settings_form($settings, &$system, &$files) {
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       'checkboxes' => array(
-        '#theme' => 'coder_table_cols',
+        '#theme' => 'coder_review_table_cols',
         '#cols' => 2,
       ),
     );
@@ -461,7 +461,7 @@ function _coder_review_settings_form($settings, &$system, &$files) {
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       'checkboxes' => array(
-        '#theme' => 'coder_table_cols',
+        '#theme' => 'coder_review_table_cols',
       ),
     );
     if (isset($settings['coder_all'])) {
