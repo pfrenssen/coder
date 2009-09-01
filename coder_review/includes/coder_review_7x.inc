@@ -923,7 +923,7 @@ function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review
           if (!$detach && preg_match('/(jQuery\.|\$\.|\$\([a-zA-Z_#\'"\-]+?\)\.)(ajax|get|getJSON|post|load)/', $line)) {
             $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
             $tmprule = $rule;
-            $tmptrule['#warning_callback'] = '_coder_review_7x_drupal_behaviors_warning';
+            $tmprule['#warning_callback'] = '_coder_review_7x_drupal_behaviors_warning';
             _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
           }
         }
