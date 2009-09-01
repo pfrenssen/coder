@@ -55,6 +55,12 @@ function coder_review_sql_reviews() {
       '#value' => 'db_query\s*\(\s*[\'"](UPDATE|INSERT|DELETE)\s+',
       '#warning_callback' => '_coder_review_sql_db_query_in_install_function',
     ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'allphp',
+      '#value' => 'db_query\s*\(\s*[\'"]select\s+count\s*\(\s*\*\s*\)\s+from\s+',
+      '#warning_callback' => '_coder_review_sql_select_count_warning',
+    ),
   );
   $review = array(
     '#title' => t('Drupal SQL Standards'),
@@ -88,5 +94,12 @@ function _coder_review_sql_db_query_in_install_function() {
         '!hook_update_N' => theme('drupalapi', 'hook_update_N'),
       )
     ),
+  );
+}
+
+function _coder_review_sql_select_count_warning() {
+  return array(
+    '#warning' => t('Do not use SELECT COUNT(*) when checking for existence of rows in a table'),
+    '#link' => 'http://drupal.org/node/224333#select_count',
   );
 }

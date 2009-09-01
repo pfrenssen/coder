@@ -40,6 +40,10 @@ class CoderReviewSQLTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  $sql = "SELECT * FROM {node} LIMIT 10";');
   }
 
+  function testSelectCOUNT() {
+    $this->assertCoderReviewFail("  db_query('SELECT COUNT(*) FROM {users}')");
+  }
+
   function testSQLBackTick() {
     $this->assertCoderReviewFail('  $sql = "SELECT * FROM {node} WHERE title=`abc`";');
     $this->assertCoderReviewFail('  $sql = "INSERT INTO {foo} (nid, title) VALUES (\'1\', `abc`)";');

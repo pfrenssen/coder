@@ -175,6 +175,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  function mymodule_update_123() {\n \$schema['table'] = array(\n  'fields' => array('nid' => array('description' => 'My field &lt;a href=\"foo.html\"&gt;foo&lt;/a&gt; description.')));\n}");
 
     // http://drupal.org/node/224333#select_count
+    $this->assertCoderReviewFail("  db_query( 'SELECT COUNT (*) FROM {users}')");
     // http://drupal.org/node/224333#foreign-keys-added
   }
 

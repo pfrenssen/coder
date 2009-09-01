@@ -218,6 +218,13 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_schema_html_warning',
       ),
       // http://drupal.org/node/224333#select_count --- Do not use SELECT COUNT(*) to check for existence of rows
+      array(
+        '#type' => 'regex',
+        '#source' => 'allphp',
+        '#value' => 'db_query\s*\(\s*[\'"]select\s+count\s*\(\s*\*\s*\)\s+from\s+',
+        '#warning_callback' => '_coder_review_7x_select_count_warning',
+        '#severity' => 'normal'
+      ),
       // http://drupal.org/node/224333#foreign-keys-added --- Foreign keys added to core database table schema
 
 
@@ -1896,5 +1903,12 @@ function _coder_review_7x_ahah_now_ajax_warning() {
   return array(
     '#warning' => t('#ahah has changed to #ajax and the call details have changed.'),
     '#link' => 'http://drupal.org/node/224333#ahah-now-ajax',
+  );
+}
+
+function _coder_review_7x_select_count_warning() {
+  return array(
+    '#warning' => t('Do not use SELECT COUNT(*) when checking for existence of rows in a table'),
+    '#link' => 'http://drupal.org/node/224333#select_count',
   );
 }
