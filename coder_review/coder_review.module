@@ -92,14 +92,14 @@ function coder_review_permission() {
 function coder_review_menu() {
   $items = array();
 
-  $items['admin/development/coder/review'] = array(
+  $items['admin/config/development/coder/review'] = array(
     'title' => 'Review',
     'page callback' => 'coder_review_page',
     'access arguments' => array('view code review'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -2,
   );
-  $items['admin/development/coder/review/default'] = array(
+  $items['admin/config/development/coder/review/default'] = array(
     'title' => 'Default',
     'page callback' => 'coder_review_page',
     'page arguments' => array('default'),
@@ -107,21 +107,21 @@ function coder_review_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => -1,
   );
-  $items['admin/development/coder/review/core'] = array(
+  $items['admin/config/development/coder/review/core'] = array(
     'title' => 'Core',
     'page callback' => 'coder_review_page',
     'page arguments' => array('core'),
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
   );
-  $items['admin/development/coder/review/active'] = array(
+  $items['admin/config/development/coder/review/active'] = array(
     'title' => 'Active',
     'page callback' => 'coder_review_page',
     'page arguments' => array('active'),
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
   );
-  $items['admin/development/coder/review/all'] = array(
+  $items['admin/config/development/coder/review/all'] = array(
     'title' => 'All',
     'page callback' => 'coder_review_page',
     'page arguments' => array('all'),
@@ -129,7 +129,7 @@ function coder_review_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
   );
-  $items['admin/development/coder/review/patches'] = array(
+  $items['admin/config/development/coder/review/patches'] = array(
     'title' => 'Patches',
     'page callback' => 'coder_review_page',
     'page arguments' => array('patches'),
@@ -153,7 +153,7 @@ function coder_review_menu() {
  * Implementation of hook_menu_alter().
  */
 function coder_review_menu_alter(&$callbacks) {
-  $callbacks['admin/development/coder']['page callback'] = 'coder_review_page';
+  $callbacks['admin/config/development/coder']['page callback'] = 'coder_review_page';
   $callbacks['admin/settings/coder']['page callback'] = 'drupal_get_form';
   $callbacks['admin/settings/coder']['page arguments'] = array('coder_review_admin_settings');
 }
@@ -174,7 +174,7 @@ function coder_review_form_alter(&$form, $form_state, $form_id) {
           foreach ($modules as $name => $data) {
             if (!preg_match('/^#/', $name)) {
               $description = $data['description']['#markup'];
-              $form['modules'][$package][$name]['description']['#markup'] = $description . ' (' . l(t('Code Review'), "admin/development/coder/review/$name") . ')';
+              $form['modules'][$package][$name]['description']['#markup'] = $description . ' (' . l(t('Code Review'), "admin/config/development/coder/review/$name") . ')';
             }
           }
         }
@@ -376,7 +376,7 @@ function _coder_review_settings_form($settings, &$system, &$files) {
       else {
         $system_themes[$system->name] = $system->name;
       }
-      $system_links[$system->name] = l($display_name, "admin/development/coder/review/$system->name");
+      $system_links[$system->name] = l($display_name, "admin/config/development/coder/review/$system->name");
       $files[$system->name] = $system->filename;
     }
     asort($system_links);
@@ -555,7 +555,7 @@ function coder_review_admin_settings() {
   $form = _coder_review_settings_form($settings, $system, $files);
   $form['help'] = array(
     '#type' => 'markup',
-    '#markup' => t('After setting these defaults, use <a href="@url">coder review</a> to perform code reviews.', array('@url' => url('admin/development/coder/review'))),
+    '#markup' => t('After setting these defaults, use <a href="@url">coder review</a> to perform code reviews.', array('@url' => url('admin/config/development/coder/review'))),
     '#weight' => -1,
   );
   $form['#submit'][] = 'coder_review_settings_form_submit';
