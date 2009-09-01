@@ -51,11 +51,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  include  DRUPAL_ROOT . '/' . variable_get('cache_inc', 'includes/cache.inc');");
     $this->assertCoderReviewPass("  include_once  DRUPAL_ROOT . '/' . variable_get('cache_inc', 'includes/cache.inc');");
 
-    // http://drupal.org/node/224333#registry
-    $this->assertCoderReviewFail("  function foo() {\n  if (function_exists(\'my_function\')) {}\n}");
-    $this->assertCoderReviewPass("  function drupal_function_exists() {\n  if (function_exists(\'my_function\')) {}\n}");
-    $this->assertCoderReviewPass('  if (drupal_function_exists(\'my_function\'))');
-
     // TODO - http://drupal.org/node/224333#drupal_set_session
     $this->assertCoderReviewFail('  $foo = $_SESSION["foo"];');
     $this->assertCoderReviewFail('  $foo = $_SESSION[' . "'foo'" . '];');
@@ -591,6 +586,5 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  actions_synchronize($delete_orphans);');
 
     // http://drupal.org/node/224333#distauth
-    // http://drupal.org/node/224333#xmlrpc-wrapper
   }
 }

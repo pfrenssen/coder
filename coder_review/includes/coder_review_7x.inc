@@ -46,13 +46,6 @@ function coder_review_7x_reviews() {
         '#value' => '((require|include)(_once)?).+[\'"]\.\/',
         '#warning_callback' => '_coder_review_7x_absolute_includes_warning',
       ),
-      // http://drupal.org/node/224333#registry
-      array(
-        '#type' => 'regex',
-        '#value' => '[\s\(]function_exists\s*\(',
-        '#function-not' => '^drupal_function_exists$',
-        '#warning_callback' => '_coder_review_7x_function_exists_warning',
-      ),
       // TODO - http://drupal.org/node/224333#drupal_set_session
       array(
         '#type' => 'grep',
@@ -801,7 +794,6 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_actions_synchronize_warning',
       ),
       // http://drupal.org/node/224333#distauth --- Login validation change for distributed authentication modules
-      // http://drupal.org/node/224333#xmlrpc-wrapper --- xmlrpc() wrapper function removed
   );
   $review = array(
     '#title' => t('Converting 6.x modules to 7.x'),
@@ -1243,18 +1235,6 @@ function _coder_review_7x_taxonomy_del_vocabulary_warning() {
 function _coder_review_7x_info_files_warning() {
   return array(
     '#warning' => t('Module .info files must now specify all loadable code files explicitly.'),
-    '#link' => 'http://drupal.org/node/224333#registry',
-  );
-}
-
-function _coder_review_7x_function_exists_warning() {
-  return array(
-    '#warning' => t('Please use the !drupal_function_exists() function instead of !function_exists()',
-      array(
-        '!function_exists()' => theme('phpapi', 'function_exists'),
-        '!drupal_function_exists()' => theme('drupalapi', 'drupal_function_exists', 7),
-      )
-    ),
     '#link' => 'http://drupal.org/node/224333#registry',
   );
 }
