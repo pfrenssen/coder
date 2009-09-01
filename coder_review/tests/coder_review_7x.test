@@ -39,7 +39,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // N/A - http://drupal.org/node/224333#hook_modules_action
     // N/A - http://drupal.org/node/224333#static_variable_api
 
-    // UNCLEAR - http://drupal.org/node/224333#module_implements_not_module_list
+    // http://drupal.org/node/224333#module_implements_not_module_list
+    $this->assertCoderReviewFail("  foreach (module_list() as \$module) {\n  module_invoke(\$module, 'foo');\n}");
+    $this->assertCoderReviewPass("  foreach (module_list() as \$module) {\n  print 'foo';\n}");
 
     // http://drupal.org/node/224333#absolute_includes
     $this->assertCoderReviewFail("  require variable_get('cache_inc', './includes/cache.inc');");

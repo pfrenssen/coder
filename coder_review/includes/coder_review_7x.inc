@@ -37,7 +37,14 @@ function coder_review_7x_reviews() {
       // N/A - http://drupal.org/node/224333#hook_modules_action --- New hooks: hook_modules_installed, hook_modules_enabled, hook_modules_disabled, and hook_modules_uninstalled</a>
       // N/A - http://drupal.org/node/224333#static_variable_api --- Standardized API for static variables and resetting them
 
-      // UNCLEAR - http://drupal.org/node/224333#module_implements_not_module_list --- use module_implements not module_list when calling hook implementations
+      // http://drupal.org/node/224333#module_implements_not_module_list --- use module_implements not module_list when calling hook implementations
+      array(
+        '#type' => 'callback',
+        '#value' => '_coder_review_7x_module_implements_review_callback',
+        // @NOTE: this warning_callback isn't used.  It only exists to catch
+        // potential errors in the code.
+        '#warning_callback' => '_coder_review_7x_module_implements_callback_warning',
+      ),
 
       // http://drupal.org/node/224333#absolute_includes
       array(
@@ -843,6 +850,34 @@ function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule
       }
     }
 
+  }
+}
+
+/**
+ * Define the rule callbacks for 7.x, see do_coder_review_callback().
+ */
+function _coder_review_7x_module_implements_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+  $depth = 0;
+  foreach ($lines as $lineno => $line) {
+    if ($depth = 0) {
+      if (preg_match('/^\s+foreach\s*\(\s*module_list\s*\(\s*\)/', $line[0])) {
+        $depth = 1;
+      }
+    }
+    else {
+      if (preg_match('/module_invoke\s*\(/', $line[0])) {
+        $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
+        $tmprule = $rule;
+        $tmprule['#warning_callback'] = '_coder_review_7x_module_implements_warning';
+        _coder_review_error($results, $tmprule, $severity_name, $lineno, $line[0]);
+      }
+      if (strpos($line[0], '{') !== FALSE) {
+        $depth --;
+      }
+      if (strpos($line[0], '}') !== FALSE) {
+        $depth ++;
+      }
+    }
   }
 }
 
@@ -1847,6 +1882,13 @@ function _coder_review_7x_no_jsenabled_warning() {
   return array(
     '#warning' => t('JavaScript variable Drupal.jsEnabled has been removed.'),
     '#link' => 'http://drupal.org/node/224333#no-jsenabled',
+  );
+}
+
+function _coder_review_7x_module_implements_warning() {
+  return array(
+    '#warning' => t('Use module_implements not module_list when calling hook implementations.'),
+    '#link' => 'http://drupal.org/node/224333#module_implements_not_module_list',
   );
 }
 
