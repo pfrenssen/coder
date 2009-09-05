@@ -148,6 +148,10 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  return array('use PHP for block visibility');");
 
     // http://drupal.org/node/224333#system_admin_menu_block_access
+
+    // http://drupal.org/node/224333#hook_node_access
+    $this->assertCoderReviewFail("  function mymodule_access() {\n}");
+    $this->assertCoderReviewPass("  function mymodule_node_access() {\n}");
   }
 
   function testDatabase7x() {

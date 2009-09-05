@@ -188,6 +188,13 @@ function coder_review_7x_reviews() {
         '#value' => '^use PHP for block visibility$',
         '#warning_callback' => '_coder_review_7x_php_permissions_warning',
       ),
+      // http://drupal.org/node/224333#node_access
+      array(
+        '#type' => 'regex',
+        '#value' => 'function\s+[a-z0-9_]+_(access)\s*\(',
+        '#function-not' => '^\w+_node_access$',
+        '#warning_callback' => '_coder_review_7x_hook_access_warning',
+      ),
 
       // http://drupal.org/node/224333#system_admin_menu_block_access --- Hide empty menu categories with access callback
 
@@ -1910,5 +1917,17 @@ function _coder_review_7x_select_count_warning() {
   return array(
     '#warning' => t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actualy numer of rows.'),
     '#link' => 'http://drupal.org/node/224333#select_count',
+  );
+}
+
+function _coder_review_7x_hook_access_warning() {
+  return array(
+    '#warning' => t('!hook_access() removed in favor of !hook_node_access().',
+      array(
+        '!hook_access()' => theme('drupalapi', 'hook_access', 6),
+        '!hook_node_access()' => theme('drupalapi', 'hook_node_access', 7),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#hook_node_access',
   );
 }
