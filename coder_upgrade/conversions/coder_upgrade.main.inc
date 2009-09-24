@@ -48,7 +48,7 @@ function coder_upgrade_upgrades($include_routines) {
     foreach ($files as $file) {
 //      require_once DRUPAL_ROOT . '/' . $file->filepath;
       $function = str_replace('.', '_', $file->name) . '_upgrades';
-      if (drupal_function_exists($function)) {
+      if (function_exists($function)) {
         if ($upgrade = call_user_func($function, $include_routines)) {
           $_coder_upgrades = array_merge($_coder_upgrades, $upgrade);
         }
@@ -255,7 +255,7 @@ function coder_upgrade_apply_regex($filename, &$new, $prefix, $routines = array(
     if ($routine['type'] != 'regex') {
       continue;
     }
-    if (drupal_function_exists($function = $prefix . '_convert_' . $routine['name'])) {
+    if (function_exists($function = $prefix . '_convert_' . $routine['name'])) {
       coder_upgrade_debug_print("Applying $function");
       $is_format_conversion = strpos($routine['name'], 'format') === 0;
       $is_info_conversion = strpos($routine['name'], 'info') === 0;
@@ -315,7 +315,7 @@ function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array
     if ($routine['type'] != 'parser') {
       continue;
     }
-    if (drupal_function_exists($function = $prefix . '_convert_' . $routine['name'])) {
+    if (function_exists($function = $prefix . '_convert_' . $routine['name'])) {
       coder_upgrade_debug_print("Applying $function");
       $is_format_conversion = strpos($routine['name'], 'format') === 0;
       $is_info_conversion = strpos($routine['name'], 'info') === 0;

@@ -203,7 +203,8 @@ function coder_upgrade_callback_function_calls(&$item) {
       break;
 
     case 'function_exists':
-      $name['value'] = 'drupal_function_exists';
+      // Change was reverted.
+//      $name['value'] = 'drupal_function_exists';
       break;
 
     case 'module_list':
