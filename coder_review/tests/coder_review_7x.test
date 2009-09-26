@@ -475,8 +475,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  function foo_user_delete($edit, $uid)');
 
     // http://drupal.org/node/224333#remove_op
-    $this->assertCoderReviewFail("  function mymodule_user(\$edit, &\$user) {\n  if (\$op == 'load') {\n  }\n}");
-    $this->assertCoderReviewFail("  function mymodule_user(\$edit, &\$user) {\n  switch (\$op) {\n  case 'load':\n  }\n}");
+    $this->assertCoderReviewFail("  function mymodule_user(");
 
     // http://drupal.org/node/224333#logout_path
     $this->assertCoderReviewFail('  drupal_goto(\'logout\');');
