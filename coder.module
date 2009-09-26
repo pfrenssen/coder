@@ -6,46 +6,29 @@
  * Installation file for the coder module.
  */
 
+/**
+ * Implement hook_menu().
+ */
 function coder_menu() {
-  $items = array();
-
+  $items['admin/settings/coder'] = array(
+    'title' => 'Coder',
+    'description' => 'Select code review plugins and modules, and upgrade files.',
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['admin/config/development/coder'] = array(
+    'title' => 'Coder',
+    'description' => 'Select code review plugins and modules, and upgrade files.',
+    'access arguments' => array('administer site configuration'),
+  );
   if (!module_exists('coder_review') && !module_exists('coder_upgrade')) {
-    $items['admin/settings/coder'] = array(
-      'title' => 'Coder',
-      'page callback' => 'coder_display_required_module_message',
-      'description' => 'Select code review plugins and modules, and upgrade directories.',
-      'access arguments' => array('administer site configuration'),
-    );
-
-    $items['admin/config/development/coder'] = array(
-      'title' => 'Coder',
-      'page callback' => 'coder_display_required_module_message',
-      'description' => 'Select code review plugins and modules, and upgrade files.',
-      'access arguments' => array('administer site configuration'),
-    );
+    $items['admin/settings/coder']['page callback'] = 'coder_display_required_module_message';
+    $items['admin/config/development/coder']['page callback'] = 'coder_display_required_module_message';
   }
-  else {
-    $items['admin/settings/coder'] = array(
-      'title' => 'Coder',
-      'description' => 'Select code review plugins and modules, and upgrade directories.',
-      'access arguments' => array('administer site configuration'),
-    );
-
-    $items['admin/config/development/coder'] = array(
-      'title' => 'Coder',
-      'description' => 'Select code review plugins and modules, and upgrade files.',
-      'access arguments' => array('administer site configuration'),
-    );
-  }
-
   return $items;
 }
 
 function coder_display_required_module_message() {
   $message = t('Please enable the "coder review" or "coder upgrade" module.');
-  $build['coder_message'] = array(
-    '#markup' => $message,
-  );
-
+  $build['coder_message']['#markup'] = $message;
   return $build;
 }

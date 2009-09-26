@@ -90,8 +90,6 @@ function coder_review_permission() {
  * Implementation of hook_menu().
  */
 function coder_review_menu() {
-  $items = array();
-
   $items['admin/config/development/coder/review'] = array(
     'title' => 'Review',
     'page callback' => 'coder_review_page',
@@ -550,7 +548,7 @@ function theme_coder_review_table_cols($form) {
 /**
  * Implementation of settings page.
  */
-function coder_review_admin_settings() {
+function coder_review_admin_settings($form, &$form_state) {
   $settings = _coder_review_get_default_settings();
   $form = _coder_review_settings_form($settings, $system, $files);
   $form['help'] = array(
@@ -706,7 +704,7 @@ function _coder_review_get_reviews_extensions($defaults, $reviews) {
  * Implements coder_review's main form, in which a user can select reviews and
  * modules/themes to run them on.
  */
-function coder_review_page_form($form_state, $arg = '') {
+function coder_review_page_form($form, &$form_state, $arg = '') {
   if (isset($form_state['storage'])) {
     $settings = $form_state['storage'];
     $settings['coder_modules'] = _coder_review_settings_array($form_state, 'module');
