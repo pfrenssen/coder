@@ -6,7 +6,7 @@
  * Main coder test suite.
  */
 
-class CoderReviewTestCase extends DrupalWebTestCase {
+class CoderReviewTestCase extends DrupalUnitTestCase {
   protected $review_name;
 
   function __construct($review_name, $id = NULL) {
