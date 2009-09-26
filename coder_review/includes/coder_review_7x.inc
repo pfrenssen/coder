@@ -331,7 +331,7 @@ function coder_review_7x_reviews() {
       array(
         '#type' => 'regex',
         '#value' => '\$form\[.+?=\s*filter_form\(',
-        '#warning_callback' => '_coder_review_7x_input_format_warning',
+        '#warning_callback' => '_coder_review_7x_text_format_warning',
       ),
       // http://drupal.org/node/224333#filter_urls
       array(
@@ -1191,10 +1191,10 @@ function _coder_review_7x_hook_filter_tips_warning() {
   );
 }
 
-function _coder_review_7x_input_format_warning() {
+function _coder_review_7x_text_format_warning() {
   return array(
-    '#warning' => t('New #input_format to assign input format selection to fields.'),
-    '#link' => 'http://drupal.org/node/224333#input_format',
+    '#warning' => t('New #text_format to assign text format selection to fields.'),
+    '#link' => 'http://drupal.org/node/224333#text_format',
   );
 }
 

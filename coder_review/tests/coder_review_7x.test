@@ -280,7 +280,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#text_format
     $this->assertCoderReviewFail('  $form[\'format\'] = filter_form($edit[\'format\']);');
     $this->assertCoderReviewFail('  $form[\'comment\'][\'filter\'] = filter_form(FILTER_FORMAT_DEFAULT);');
-    $this->assertCoderReviewPass('  $format = filter_form(FILTER_FORMAT_DEFAULT);');
+    $this->assertCoderReviewPass('  $format = filter_form();');
 
     // http://drupal.org/node/224333#filter_urls
     $this->assertCoderReviewFail('  $url = url("admin/settings/filters");');
