@@ -560,6 +560,18 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   function testMultilingual7x() {
     // http://drupal.org/node/224333#locale_context
+    $this->assertCoderReviewFail("  t('Welcome to our site', array(), 'de');");
+    $this->assertCoderReviewFail('  t("Welcome to our site", array(), "de");');
+    $this->assertCoderReviewFail("  t('Welcome to our site', array('!code' => \$code, '!foo' => \$foo), 'de');");
+    $this->assertCoderReviewPass("  t('Welcome to our site');");
+    $this->assertCoderReviewPass("  t('Welcome to our site', array());");
+    $this->assertCoderReviewPass("  t('Welcome to our site', array('!code' => \$code, '!foo' => \$foo));");
+    $this->assertCoderReviewPass("  t('Welcome to our site', array(), array('langcode' => 'de'));");
+    $this->assertCoderReviewPass("  t('Welcome to our site', array('!code' => \$code, '!foo' => \$foo), array('langcode' => 'de'));");
+    $this->assertCoderReviewPass("  t('!user, welcome to our site', array('!user' => theme('username', \$user)), array('langcode' => 'de'));");
+
+    $this->assertCoderReviewFail("  format_plural(\$count, '1 comment', '@count comments', array(), 'de');");
+    $this->assertCoderReviewPass("  format_plural(\$count, '1 comment', '@count comments', array(), array('langcode' => 'de'));");
   }
 
   function testMisc7x() {

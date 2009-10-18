@@ -797,6 +797,18 @@ function coder_review_7x_reviews() {
 
     // Multilingual
       // http://drupal.org/node/224333#locale_context --- Added string context support to t() and format_plural(), changed parameters
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]t\s*\(\s*(.*?\s*,\s*){2,}([\'"].*?[\'"])\s*\)',
+        '#value' => '[\s\(]t\s*\(\s*(' . $argex . '\s*,\s*){2,}([\'"].*?[\'"])\s*\)',
+        '#warning_callback' => '_coder_review_7x_t_signature_warning',
+      ),
+
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]format_plural\s*\(\s*(' . $argex . '\s*,\s*){4,}([\'"].*?[\'"])\s*\)',
+        '#warning_callback' => '_coder_review_7x_format_plural_signature_warning',
+      ),
 
 
     // Misc
@@ -1974,5 +1986,25 @@ function _coder_rewview_7x_hook_profile_alter_warning() {
       '!hook_profile_alter()' => theme('drupalapi', array('function' => 'hook_profile_alter', 'version' => 6)),
       '!hook_user_view()' => theme('drupalapi', array('function' => 'hook_user_view', 'version' => 7)),
     )),
+  );
+}
+
+function _coder_review_7x_t_signature_warning() {
+  return array(
+    '#warning' => t('Context has been added to !t() as the third parameter, locale has to be an element in the array. Example: array("context" => "frontpage", "locale" => "de").',
+      array(
+        '!t()' => theme('drupalapi', 't', 7),
+      )),
+    '#link' => 'http://drupal.org/node/224333#locale_context',
+  );
+}
+
+function _coder_review_7x_format_plural_signature_warning() {
+  return array(
+    '#warning' => t('Context has been added to !format_plural() as the fifth parameter, locale has to be an element in the array. Example: array("context" => "frontpage", "locale" => "de").',
+      array(
+        '!format_plural()' => theme('drupalapi', 'format_plural', 7),
+      )),
+    '#link' => 'http://drupal.org/node/224333#locale_context',
   );
 }
