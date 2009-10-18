@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_reviews().
+ * Implements hook_reviews().
  */
 function coder_review_sql_reviews() {
   $table = '\{[A-Za-z_]+\}'; // table-regex
@@ -79,7 +79,7 @@ function _coder_review_sql_db_query_range_warning() {
   return array(
     '#warning' => t('Use !db_query_range() instead of the SQL LIMIT clause',
       array(
-        '!db_query_range' => theme('drupalapi', 'db_query_range'),
+        '!db_query_range' => theme('drupalapi', array('function' => 'db_query_range')),
       )
     ),
     '#link' => 'http://drupal.org/node/1395',
@@ -90,9 +90,9 @@ function _coder_review_sql_db_query_in_install_function() {
   return array(
     '#warning' => t('Use !update_sql() instead of !db_query() in !hook_update_N()',
       array(
-        '!update_sql' => theme('drupalapi', 'update_sql'),
-        '!db_query' => theme('drupalapi', 'db_query'),
-        '!hook_update_N' => theme('drupalapi', 'hook_update_N'),
+        '!update_sql' => theme('drupalapi', array('function' => 'update_sql')),
+        '!db_query' => theme('drupalapi', array('function' => 'db_query')),
+        '!hook_update_N' => theme('drupalapi', array('function' => 'hook_update_N')),
       )
     ),
   );

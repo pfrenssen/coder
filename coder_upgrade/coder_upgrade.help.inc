@@ -15,9 +15,9 @@ function coder_upgrade_help($path) {
   $input = file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);
   $output = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
   switch ($path) {
-    case 'admin/settings/coder/upgrade':
+    case 'admin/config/development/coder/configure/upgrade':
       return tp('This is a list of the variables used by the automated module conversion suite.');
-    case 'admin/development/coder/upgrade':
+    case 'admin/config/development/coder/upgrade':
       return tp('The purpose of this module is to automate as much as possible the task of updating a contributed module for Drupal API changes.' .
                 ' This particular module helps update the 6.x version of a contributed module to the 7.x version API.' .
                 ' Relative to the Drupal core APIs, the list of automated conversions to be applied is indicated !list.' .
@@ -42,11 +42,11 @@ function coder_upgrade_help($path) {
                 ' You may also upload your module to a modules directory beneath the sites directory (e.g. sites/all/modules).',
                   array('!input' => $input,
                        '!output' => $output,
-                       '!link' => l(t('here'), 'admin/settings/coder/upgrade'))) .
+                       '!link' => l(t('here'), 'admin/config/development/coder/configure/upgrade'))) .
              tp('To apply the conversions, go to the !link page, select the appropriate runtime parameters based on the instructions below, and click the Convert files button.' .
                 ' In the instructions below, references to checkboxes and other interface items apply to the development page.',
                  array('!input' => $input,
-                       '!link' => l(t('Conversions Development'), 'admin/development/coder/upgrade'))) .
+                       '!link' => l(t('Conversions Development'), 'admin/config/development/coder/upgrade'))) .
              tp('To convert 6.x files to 7.x files do the following:') .
               t('<ol>
                  <li>On the Upgrades tab, select the conversion (or upgrade) categories to apply by checking the appropriate boxes in the list.</li>
@@ -71,11 +71,11 @@ function coder_upgrade_help($path) {
                  </ol>',
                  array('!input' => $input,
                        '!output' => $output,
-                       '!coder' => l(t('Coder Review'), 'admin/development/coder/review'),
+                       '!coder' => l(t('Coder Review'), 'admin/config/development/coder/review'),
                        '!install' => l(t('Drupal interface'), 'admin/structure/modules'))) .
              tp('<b>Manual Changes</b>') .
              tp('After applying the automated conversions to your module, rerun the !coder to highlight the areas in your module\'s code needing manual review.',
-                 array('!coder' => l(t('Coder Review'), 'admin/development/coder/review'))) .
+                 array('!coder' => l(t('Coder Review'), 'admin/config/development/coder/review'))) .
              tp('<b>Feedback</b>') .
              tp('If any of the automated conversions are not successful with your module and you believe the conversion code could be changed to handle your module\'s code, please submit a project issue to the !issue <b>specifying "Coder Upgrade"</b> as the Component.' .
                 ' If you can also supply a patch for the change, that would be greatly appreciated too.',

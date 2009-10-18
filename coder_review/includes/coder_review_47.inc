@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_reviews().
+ * Implements hook_reviews().
  */
 function coder_review_47_reviews() {
   $rules = array(
@@ -116,7 +116,7 @@ function coder_review_47_reviews() {
 function _coder_review_47_hook_node_info_warning() {
   return t('implement !hook_node_info() to create a module which defines node type(s)',
     array(
-      '!hook_node_info' => theme('drupalapi', 'hook_node_info'),
+      '!hook_node_info' => theme('drupalapi', array('function' => 'hook_node_info', 'version' => '4.7')),
     )
   );
 }
@@ -124,7 +124,7 @@ function _coder_review_47_hook_node_info_warning() {
 function _coder_review_47_node_load_warning() {
   return t('use !node_load($nid) instead of !node_load(array(\'nid\' => $nid))',
     array(
-      '!node_load' => theme('drupalapi', 'node_load'),
+      '!node_load' => theme('drupalapi', array('function' => 'node_load', 'version' => '4.7')),
     )
   );
 }
@@ -132,7 +132,7 @@ function _coder_review_47_node_load_warning() {
 function _coder_review_47_node_list_warning() {
   return t('!node_list() became node_get_types and now returns an associative array about node types',
     array(
-      '!node_list' => theme('drupalapi', 'node_list'),
+      '!node_list' => theme('drupalapi', array('function' => 'node_list', 'version' => '4.7')),
     )
   );
 }
@@ -140,8 +140,8 @@ function _coder_review_47_node_list_warning() {
 function _coder_review_47_module_get_name_warning() {
   return t('!module_get_node_name() deprecated and now handled by !node_get_base().',
     array(
-      '!module_get_node_name' => theme('drupalapi', 'module_get_node_name', '4.6'),
-      '!node_get_base' => theme('drupalapi', 'node_get_base'),
+      '!module_get_node_name' => theme('drupalapi', array('function' => 'module_get_node_name', 'version' => '4.6')),
+      '!node_get_base' => theme('drupalapi', array('function' => 'node_get_base', 'version' => '4.7')),
     )
   );
 }
@@ -149,8 +149,8 @@ function _coder_review_47_module_get_name_warning() {
 function _coder_review_47_format_name_warning() {
   return t('!format_name() was renamed to !theme_username()',
     array(
-      '!format_name' => theme('drupalapi', 'format_name', '4.6'),
-      '!theme_username' => theme('drupalapi', 'theme_username'),
+      '!format_name' => theme('drupalapi', array('function' => 'format_name', 'version' => '4.6')),
+      '!theme_username' => theme('drupalapi', array('function' => 'theme_username', 'version' => '4.7')),
     )
   );
 }
@@ -158,7 +158,7 @@ function _coder_review_47_format_name_warning() {
 function _coder_review_47_message_access_warning() {
   return t('!message_access() was removed, replace with a nice case error message',
     array(
-      '!message_access' => theme('drupalapi', 'message_access', '4.6'),
+      '!message_access' => theme('drupalapi', array('function' => 'message_access', 'version' => '4.6')),
     )
   );
 }
@@ -166,8 +166,8 @@ function _coder_review_47_message_access_warning() {
 function _coder_review_47_conf_url_rewrite_warning() {
   return t('!conf_url_rewrite() became !custom_url_rewrite()',
     array(
-      '!conf_url_rewrite' => theme('drupalapi', 'conf_url_rewrite', '4.6'),
-      '!custom_url_rewrite' => theme('drupalapi', 'custom_url_rewrite'),
+      '!conf_url_rewrite' => theme('drupalapi', array('function' => 'conf_url_rewrite', 'version' => '4.6')),
+      '!custom_url_rewrite' => theme('drupalapi', array('function' => 'custom_url_rewrite', 'version' => '4.7')),
     )
   );
 }
@@ -175,7 +175,7 @@ function _coder_review_47_conf_url_rewrite_warning() {
 function _coder_review_47_node_delete_warning() {
   return t('use !node_delete($nid) instead of !node_delete(array(\'nid\' => $nid))',
     array(
-      '!node_delete' => theme('drupalapi', 'node_delete'),
+      '!node_delete' => theme('drupalapi', array('function' => 'node_delete', 'version' => '4.7')),
     )
   );
 }
@@ -183,7 +183,7 @@ function _coder_review_47_node_delete_warning() {
 function _coder_review_47_file_directory_temp_warning() {
   return t('use !file_directory_temp() function instead of variable',
     array(
-      '!file_directory_temp' => theme('drupalapi', 'file_directory_temp'),
+      '!file_directory_temp' => theme('drupalapi', array('function' => 'file_directory_temp', 'version' => '4.7')),
     )
   );
 }
@@ -191,7 +191,7 @@ function _coder_review_47_file_directory_temp_warning() {
 function _coder_review_47_file_directory_path_warning() {
   return t('use !file_directory_path() function instead of variable',
     array(
-      '!file_directory_path' => theme('drupalapi', 'file_directory_path'),
+      '!file_directory_path' => theme('drupalapi', array('function' => 'file_directory_path', 'version' => '4.7')),
     )
   );
 }
@@ -199,7 +199,7 @@ function _coder_review_47_file_directory_path_warning() {
 function _coder_review_47_array2object_warning() {
   return t('!array2object() replaced by native PHP type conversion (typecase to (object)',
     array(
-      '!array2object' => theme('drupalapi', 'array2object', '4.6'),
+      '!array2object' => theme('drupalapi', array('function' => 'array2object', 'version' => '4.6')),
     )
   );
 }
@@ -207,7 +207,7 @@ function _coder_review_47_array2object_warning() {
 function _coder_review_47_hook_onload_warning() {
   return t('!hook_onload() replaced by javascript addLoadEvent()',
     array(
-      '!hook_onload' => theme('drupalapi', 'hook_onload', '4.6'),
+      '!hook_onload' => theme('drupalapi', array('function' => 'hook_onload', 'version' => '4.6')),
     )
   );
 }
@@ -215,7 +215,7 @@ function _coder_review_47_hook_onload_warning() {
 function _coder_review_47_node_validate_title_warning() {
   return t('!node_validate_title() was removed',
     array(
-      '!node_validate_title' => theme('drupalapi', 'node_validate_title', '4.6'),
+      '!node_validate_title' => theme('drupalapi', array('function' => 'node_validate_title', 'version' => '4.6')),
     )
   );
 }
@@ -223,7 +223,7 @@ function _coder_review_47_node_validate_title_warning() {
 function _coder_review_47_node_tablesort_pager_warning() {
   return t('!tablesort_pager() was removed',
     array(
-      '!tablesort_pager' => theme('drupalapi', 'tablesort_pager', '4.6'),
+      '!tablesort_pager' => theme('drupalapi', array('function' => 'tablesort_pager', 'version' => '4.6')),
     )
   );
 }

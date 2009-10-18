@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_reviews().
+ * Implements hook_reviews().
  */
 function coder_review_comment_reviews() {
   $rules = array(

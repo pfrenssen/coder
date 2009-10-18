@@ -37,7 +37,7 @@ function coder_upgrade_permission() {
  */
 function coder_upgrade_menu() {
   // Settings related items.
-  $items['admin/settings/coder/upgrade'] = array(
+  $items['admin/config/development/coder/configure/upgrade'] = array(
     'title' => 'Upgrade',
     'description' => 'Configure the module conversion suite.',
     'page callback' => 'drupal_get_form',
@@ -48,7 +48,7 @@ function coder_upgrade_menu() {
   );
 
   // Conversion items.
-  $items['admin/development/coder/upgrade'] = array(
+  $items['admin/config/development/coder/upgrade'] = array(
     'title' => 'Upgrade',
     'description' => 'Convert module code from version 6.x to 7.x.',
     'page callback' => 'drupal_get_form',

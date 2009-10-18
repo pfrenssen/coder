@@ -7,14 +7,14 @@
  */
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function coder_review_install() {
   drupal_install_schema('coder_review');
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function coder_review_uninstall() {
   variable_del('coder_cache');
@@ -31,7 +31,7 @@ function coder_review_uninstall() {
 }
 
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  */
 function coder_review_schema() {
   // Use our own cache table because we can create lots of entries, that slow down and clutter the default cache.

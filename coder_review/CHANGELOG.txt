@@ -1,0 +1,10 @@
+// $Id$
+
+Coder Review 7.x-3.x, xxxx-xx-xx
+---------------------------------
+#607592 (japerry, stella) :
+ - changed menu paths.
+ - updated arguments to theme() function calls and definitions.
+ - changed drupal_add_css/js calls to use #attached instead.
+ - changed #markup theme() calls to use #theme.
+ - coding style fixes.

@@ -14,8 +14,8 @@ Installation
 ------------
 
 Copy coder.module to your module directory and then enable on the admin
-modules page.  Enable the modules that admin/settings/coder works on,
-then view the coder results page at coder.
+modules page.  Enable the modules that admin/config/development/coder/settings
+works on, then view the coder results page at coder.
 
 Author
 ------

@@ -1,0 +1,6 @@
+// $Id$
+
+Coder 7.x-3.x, xxxx-xx-xx
+--------------------------
+#607592 (stella) :
+ - changed menu paths

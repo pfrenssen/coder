@@ -10,10 +10,11 @@
  * Implement hook_menu().
  */
 function coder_menu() {
-  $items['admin/settings/coder'] = array(
-    'title' => 'Coder',
+  $items['admin/config/development/coder/configure'] = array(
+    'title' => 'Configure',
     'description' => 'Select code review plugins and modules, and upgrade files.',
     'access arguments' => array('administer site configuration'),
+    'type' => MENU_LOCAL_TASK,
   );
   $items['admin/config/development/coder'] = array(
     'title' => 'Coder',
@@ -21,7 +22,7 @@ function coder_menu() {
     'access arguments' => array('administer site configuration'),
   );
   if (!module_exists('coder_review') && !module_exists('coder_upgrade')) {
-    $items['admin/settings/coder']['page callback'] = 'coder_display_required_module_message';
+    $items['admin/config/development/coder/configure']['page callback'] = 'coder_display_required_module_message';
     $items['admin/config/development/coder']['page callback'] = 'coder_display_required_module_message';
   }
   return $items;

@@ -29,12 +29,12 @@ define('SEVERITY_NORMAL', 5);
 define('SEVERITY_CRITICAL', 9);
 
 /**
- * Implementation of hook_help().
+ * Implements hook_help().
  */
 function coder_review_help($page, $arg) {
   switch ($page) {
     case 'coder_review#disclaimer':
-      return t('Coder provides helpful hints without false positives, but offers no guarantee for creating good code.  You are the final arbitrar.  If in doubt, read the Drupal documentation (see review links below and <a href="@api">api.drupal.org</a>).', array('@api' => 'http://api.drupal.org'));
+      return t('Coder provides helpful hints without false positives, but offers no guarantee for creating good code. You are the final arbitrar. If in doubt, read the Drupal documentation (see review links below and <a href="@api">api.drupal.org</a>).', array('@api' => 'http://api.drupal.org'));
 
     case 'drush:coder_review':
       return t('coder_review [summary] [@reviews] [minor|major|critical] [active|core|all|default|<modules>] [no-<module>]', array('@reviews' => implode('|', array_keys(_coder_review_reviews()))));
@@ -49,7 +49,7 @@ function _coder_review_reviews() {
 }
 
 /**
- * Implementation of hook_reviews().
+ * Implements hook_reviews().
  */
 function coder_review_reviews() {
   global $_coder_reviews;
@@ -71,7 +71,7 @@ function coder_review_reviews() {
 }
 
 /**
- * Implementation of hook_permission().
+ * Implements hook_permission().
  */
 function coder_review_permission() {
   return array(
@@ -87,11 +87,18 @@ function coder_review_permission() {
 }
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function coder_review_menu() {
   $items['admin/config/development/coder/review'] = array(
     'title' => 'Review',
+    'page callback' => 'coder_review_page',
+    'access arguments' => array('view code review'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -2,
+  );
+  $items['admin/config/development/coder/review/select'] = array(
+    'title' => 'Select',
     'page callback' => 'coder_review_page',
     'access arguments' => array('view code review'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
@@ -135,7 +142,7 @@ function coder_review_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 2,
   );
-  $items['admin/settings/coder/review'] = array(
+  $items['admin/config/development/coder/configure/review'] = array(
     'title' => 'Review',
     'description' => 'Select code review plugins and modules',
     'page arguments' => array('coder_review_admin_settings'),
@@ -148,25 +155,28 @@ function coder_review_menu() {
 }
 
 /**
- * Implementation of hook_menu_alter().
+ * Implements hook_menu_alter().
  */
 function coder_review_menu_alter(&$callbacks) {
   $callbacks['admin/config/development/coder']['page callback'] = 'coder_review_page';
-  $callbacks['admin/settings/coder']['page callback'] = 'drupal_get_form';
-  $callbacks['admin/settings/coder']['page arguments'] = array('coder_review_admin_settings');
+  $callbacks['admin/config/development/coder/configure']['page callback'] = 'drupal_get_form';
+  $callbacks['admin/config/development/coder/configure']['page arguments'] = array('coder_review_admin_settings');
+  $callbacks['admin/config/development/coder/configure/review']['page callback'] = 'drupal_get_form';
+  $callbacks['admin/config/development/coder/configure/review']['page arguments'] = array('coder_review_admin_settings');
 }
 
 /**
- * Implementation of hook_form_alter().
+ * Implements hook_form_alter().
  *
  * Modify the module display view by adding a Coder Review link to every
  * module description.
  */
-function coder_review_form_alter(&$form, $form_state, $form_id) {
+function coder_review_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'system_modules' && (!isset($form['#theme']) || $form['#theme'] != 'confirm_form')) {
     if (user_access('view code review')) {
-      $path = drupal_get_path('module', 'coder_review');
-      drupal_add_css($path . '/coder_review.css', 'module');
+      $form['#attached']['css'] = array(
+        drupal_get_path('module', 'coder_review') . '/coder_review.css',
+      );
       foreach ($form['modules'] as $package => $modules) {
         if (!preg_match('/^#/', $package)) {
           foreach ($modules as $name => $data) {
@@ -194,9 +204,8 @@ function _coder_review_default_reviews() {
  * Generates a form with the default reviews and default modules/themes to
  * run Coder on.
  *
- * @note
- *   Actual forms may have additional sections added to them, this
- *   is simply a base.
+ * Actual forms may have additional sections added to them, this is simply a
+ * base.
  *
  * @param $settings
  *   Settings array for coder_review in the format of _coder_review_get_default_settings().
@@ -211,8 +220,9 @@ function _coder_review_default_reviews() {
  */
 function _coder_review_settings_form($settings, &$system, &$files) {
   // Add the javascript.
-  $path = drupal_get_path('module', 'coder_review');
-  drupal_add_js($path . '/coder_review.js');
+  $form['#attached']['js'] = array(
+    drupal_get_path('module', 'coder_review') . '/coder_review.js',
+  );
 
   // Create the list of review options from the coder review plug-ins.
   // Maintain a secondary list based on #title only, to make sorting possible.
@@ -266,7 +276,7 @@ function _coder_review_settings_form($settings, &$system, &$files) {
       '#collapsed' => FALSE,
     );
     $form['coder_what']['coder_patch_help'] = array(
-      '#markup' => '<p>' . t('All patches must be in unified format.  It\'s also preferable for the patch to be created with the "-p" option, which shows the function closest to the code change.  Without this, some function dependent tests may not be triggered.  Coder offers no guarantee that the patch will apply cleanly or will function correctly.') . '</p>',
+      '#markup' => '<p>' . t('All patches must be in unified format. It\'s also preferable for the patch to be created with the "-p" option, which shows the function closest to the code change. Without this, some function dependent tests may not be triggered. Coder offers no guarantee that the patch will apply cleanly or will function correctly.') . '</p>',
       '#weight' => -4,
     );
     $form['coder_what']['coder_patch_link'] = array(
@@ -413,7 +423,7 @@ function _coder_review_settings_form($settings, &$system, &$files) {
       '#rows' => 3,
       '#type' => 'textarea',
       '#default_value' => isset($settings['coder_includes_exclusions']) ? $settings['coder_includes_exclusions'] : '',
-      '#description' => t('List file names or paths, one per line, which should be excluded (only valid if "include files" is checked above).  For example, modules/system/*.php will exclude all php files in the modules/system directory.'),
+      '#description' => t('List file names or paths, one per line, which should be excluded (only valid if "include files" is checked above). For example, modules/system/*.php will exclude all php files in the modules/system directory.'),
     );
 
     // Display the modules in a fieldset.
@@ -520,7 +530,8 @@ function _coder_review_settings_form($settings, &$system, &$files) {
  * Implement theme_cols to theme the radiobuttons and checkboxes form
  * elements in a table column.
  */
-function theme_coder_review_table_cols($form) {
+function theme_coder_review_table_cols($variables) {
+  $form = $variables['form'];
   $total = 0;
   $cols = isset($form['#cols']) ? $form['#cols'] : 3;
   foreach ($form as $element_id => $element) {
@@ -531,6 +542,7 @@ function theme_coder_review_table_cols($form) {
   $total = (int) (($total % $cols) ? (($total + $cols - 1) / $cols) : ($total / $cols));
   $pos = 0;
   $rows = array();
+
   foreach ($form as $element_id => $element) {
     if ($element_id[0] != '#') {
       $pos ++;
@@ -542,11 +554,13 @@ function theme_coder_review_table_cols($form) {
       $rows[$row][$col] = drupal_render($element);
     }
   }
-  return theme('table', array(), $rows);
+
+  $output = theme('table', array('rows' => $rows, 'attributes' => array('id' => 'filter-order')));
+  return $output;
 }
 
 /**
- * Implementation of settings page.
+ * Configuration page.
  */
 function coder_review_admin_settings($form, &$form_state) {
   $settings = _coder_review_get_default_settings();
@@ -598,10 +612,10 @@ function _coder_review_settings_array(&$form_state, $type) {
 }
 
 /**
- * Implementation of code review page.
+ * Code review page.
  */
 function coder_review_page($type = '') {
-  $output  = '<div class="coder-disclaimer">' . coder_review_help('coder#disclaimer', array()) . '</div>';
+  $output = '<div class="coder-disclaimer">' . coder_review_help('coder#disclaimer', array()) . '</div>';
   $output .= drupal_render(drupal_get_form('coder_review_page_form', $type));
   return $output;
 }
@@ -609,9 +623,8 @@ function coder_review_page($type = '') {
 /**
  * Returns a active settings array for coder_review.
  *
- * @note
- *   The name is a misnomer, but is a largely correct characterization
- *   for most of Coder's settings as the variables usually do not exist.
+ * The name is a misnomer, but is a largely correct characterization
+ * for most of Coder's settings as the variables usually do not exist.
  *
  * @param $args
  *   String settings argument, can be 'settings', 'active', 'core', 'all'
@@ -673,7 +686,7 @@ function _coder_review_get_default_settings($arg = 'default') {
 }
 
 /**
- * Implementation of hook_submit().
+ * Implements hook_submit().
  */
 function coder_review_page_form_submit($form, &$form_state) {
   $form_state['storage'] = $form_state['values'];
@@ -699,7 +712,7 @@ function _coder_review_get_reviews_extensions($defaults, $reviews) {
 }
 
 /**
- * Implementation of hook_form().
+ * Implements hook_form().
  *
  * Implements coder_review's main form, in which a user can select reviews and
  * modules/themes to run them on.
@@ -729,9 +742,6 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
   }
 
   if ($coder_form = _coder_review_settings_form($settings, $system, $files)) {
-    // Add style sheet.
-    $path = drupal_get_path('module', 'coder_review');
-    drupal_add_css($path . '/coder_review.css', 'module');
 
     // Get the includes_exclusions settings once, it is used multiple times.
     $coder_includes_exclusions = isset($settings['coder_includes_exclusions']) ? $settings['coder_includes_exclusions'] : '';
@@ -783,7 +793,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
       foreach ($system as $name => $checked) {
         if ($checked) {
           // Process this one file.
-          $filename = $files[$name];
+          $filename = isset($files[$name]) ? $files[$name] : FALSE;
           if (!$filename) {
             drupal_set_message(t('Code Review file for %module not found', array('%module' => $name)));
             continue;
@@ -819,7 +829,10 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
             $form[$name]['#collapsed'] = FALSE;
           }
           $form[$name]['output'] = array(
-            '#markup' => theme('coder_review', $name, $filename, $results),
+            '#theme' => 'coder_review',
+            '#name' => $name,
+            '#filename' => $filename,
+            '#results' => $results,
             '#weight' => -1,
           );
 
@@ -884,16 +897,19 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
       '#type' => 'fieldset',
       '#title' => t('Selection form'),
       '#collapsible' => TRUE,
-      '#collapsed' => isset($form),
+      '#collapsed' => !empty($form),
       '#weight' => -1,
     );
     if ($form['settings']['#collapsed']) {
-      $form['settings']['#prefix'] = t('<div class="coder-settings">Use the Selection form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/settings/coder_review'), '@default' => url('coder_review/default')));
+      $form['settings']['#prefix'] = t('<div class="coder-settings">Use the Selection form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/config/development/coder/configure/review'), '@default' => url('admin/config/development/coder/review/default')));
     }
     $form['settings'][] = $coder_form;
     $form['settings']['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Submit'),
+    );
+    $form['#attached']['css'] = array(
+      drupal_get_path('module', 'coder_review') . '/coder_review.css',
     );
   }
   return $form;
@@ -952,7 +968,10 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
       $form[$name]['#collapsed'] = FALSE;
     }
     $form[$name][$filename]['output'] = array(
-      '#markup' => theme('coder_review', $name, $filename, $results),
+      '#theme' => 'coder_review',
+      '#name' => $name,
+      '#filename' => $filename,
+      '#results' => $results,
     );
   }
   return $stats;
@@ -996,7 +1015,7 @@ function _coder_review_modified() {
 function do_coder_reviews($coder_args) {
   // Load the cached results if they exist, but not for patches.
   if (empty($coder_args['#patch']) && empty($coder_args['#test'])) {
-    $cache_key = 'coder:' .  implode(':', array_keys($coder_args['#reviews'])) .  $coder_args['#severity'] . ':' . $coder_args['#filename'];
+    $cache_key = 'coder:' . implode(':', array_keys($coder_args['#reviews'])) . $coder_args['#severity'] . ':' . $coder_args['#filename'];
     if (file_exists($filepath = realpath($coder_args['#filename']))) {
       $cache_mtime = filemtime($filepath);
       if ($cache_results = cache_get($cache_key, 'cache_coder')) {
@@ -1034,7 +1053,8 @@ function do_coder_reviews($coder_args) {
     // Theme the error messages.
     foreach ($errors as $key => $error) {
       if (is_numeric($key)) {
-        $results[$key] = theme('coder_review_warning_msg', $error);
+        $error['warning'] = _coder_review_warning($error['rule']);
+        $results[$key] = theme('coder_review_warning_msg', array('error' => $error));
       }
     }
 
@@ -1042,7 +1062,7 @@ function do_coder_reviews($coder_args) {
     ksort($results, SORT_NUMERIC);
   }
   else {
-    $results[] = theme('coder_review_warning', t('Could not read the file'), 'critical');
+    $results[] = theme('coder_review_warning', array('warning' => t('Could not read the file'), 'severity_name' => 'critical'));
   }
 
   // Save the results in the cache if we're not reviewing a patch.
@@ -1560,7 +1580,7 @@ function do_coder_review($coder_args, $review) {
       $not = isset($rule['#filename-not']) ? $rule['#filename-not'] : (isset($rule['#filename']) ? NULL : $coder_args['#include_extensions']);
       if ($not) {
         $regex = '/(' . implode('|', $not) . ')$/i';
-        // Check filename.  If a patch, also check the .patch extension.
+        // Check filename. If a patch, also check the .patch extension.
         if (preg_match($regex, $filename, $matches) || ($is_patch && preg_match($regex, 'coder_review.patch', $matches))) {
           continue;
         }
@@ -1623,8 +1643,8 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
   if (isset($rule['#value']) && !empty($lines)) {
     $regexflags = isset($rule['#case-sensitive']) ? '' : 'i';
     $regex = '/' . $rule['#value'] . '/' . $regexflags;
-    $class_regex = isset($rule['#class']) ? '/'. $rule['#class'] .'/' : '';
-    $class_not_regex = isset($rule['#class-not']) ? '/'. $rule['#class-not'] .'/' : '';
+    $class_regex = isset($rule['#class']) ? '/' . $rule['#class'] . '/' : '';
+    $class_not_regex = isset($rule['#class-not']) ? '/' . $rule['#class-not'] . '/' : '';
     $class_current = '';
     $class_paren = 0;
     $function_regex = isset($rule['#function']) ? '/' . $rule['#function'] . '/' : '';
@@ -1719,8 +1739,7 @@ function _coder_review_error(&$results, $rule, $severity_name, $lineno = -1, $li
 /**
  * Search for a string.
  *
- * @note
- *   See do_coder_review_regex() for arguments.
+ * @see do_coder_review_regex()
  */
 function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
   if (isset($rule['#value'])) {
@@ -1739,8 +1758,7 @@ function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
 /**
  * Search for potentially missing string.
  *
- * @note
- *   See do_coder_review_regex() for arguments.
+ * @see do_coder_review_regex()
  */
 function do_coder_review_grep_invert(&$coder_args, $review, $rule, $lines, &$results) {
   if (isset($rule['#value'])) {
@@ -1759,8 +1777,7 @@ function do_coder_review_grep_invert(&$coder_args, $review, $rule, $lines, &$res
 /**
  * Allow for an arbitrary callback function to perform a review.
  *
- * @note
- *   See do_coder_review_regex() for arguments.
+ * @see do_coder_review_regex()
  */
 function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
   if ($function = $rule['#value']) {
@@ -1867,7 +1884,7 @@ function _coder_review_is_drupal_core($module) {
 }
 
 /**
- * Implementation of hook_simpletest().
+ * Implements hook_simpletest().
  */
 function coder_review_simpletest() {
   return array_keys(file_scan_directory(drupal_get_path('module', 'coder_review') . '/tests', '/\.test/'));
@@ -1876,15 +1893,46 @@ function coder_review_simpletest() {
 // Theming functions
 
 /**
- * Implementation of hook_theme().
+ * Implements hook_theme().
  */
 function coder_review_theme() {
   return array(
-    'coder_review' => array('arguments' => array('name', 'filename', 'results')),
-    'coder_review_warning' => array('arguments' => array('warning', 'severity_name', 'lineno', 'line')),
-    'coder_review_warning_msg' => array('arguments' => array('error')),
-    'coder_review_table_cols' => array('arguments' => array('form')),
-    'drupalapi' => array('arguments' => array('function', 'version')),
+    'coder_review' => array(
+      'arguments' => array(
+        'name' => NULL,
+        'filename' => NULL,
+        'results' => NULL,
+      ),
+    ),
+    'coder_review_warning' => array(
+      'arguments' => array(
+        'warning' => NULL,
+        'severity_name' => NULL,
+        'lineno' => NULL,
+        'line' => NULL,
+      ),
+    ),
+    'coder_review_warning_msg' => array(
+      'arguments' => array(
+        'error' => NULL,
+      ),
+    ),
+    'coder_review_table_cols' => array(
+      'arguments' => array(
+        'form' => NULL,
+      ),
+    ),
+    'drupalapi' => array(
+      'arguments' => array(
+        'function' => NULL,
+        'version' => substr(VERSION, 0, 1),
+      ),
+    ),
+    'phpapi' => array(
+      'arguments' => array(
+        'function' => NULL,
+      ),
+    ),
   );
 }
 
@@ -1898,15 +1946,19 @@ function coder_review_theme() {
  * @param $results
  *   Array list of results HTML to display. See do_coder_reviews() for format.
  */
-function theme_coder_review($name, $filename, $results) {
+function theme_coder_review($variables) {
+  $name = $variables['name'];
+  $filename = $variables['filename'];
+  $results = $variables['results'];
+
   // theme the output for the Drupal shell
   if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
-    return theme_drush_coder_review($name, $filename, $results);
+    return theme_drush_coder_review(array('name' => $name, 'filename' => $filename, 'results' => $results));
   }
 
   $output = '<div class="coder"><h2>' . basename($filename) . '</h2>';
   if (!empty($results)) {
-    $output .= theme('item_list', $results);
+    $output .= theme('item_list', array('items' => $results));
   }
   $output .= '</div>';
   return $output;
@@ -1920,10 +1972,17 @@ function theme_coder_review($name, $filename, $results) {
  * @param $error
  *   Error array from _coder_review_error().
  */
-function theme_coder_review_warning_msg($error) {
+function theme_coder_review_warning_msg($variables) {
+  $error = $variables['error'];
   // @TODO: we can combine theme_coder_review_warning() and theme_coder_review_warning_msg(),
   // But let's do this on the 7.x upgrade in case anyone's actually using it.
-  return theme('coder_review_warning', _coder_review_warning($error['rule']), $error['severity_name'], $error['lineno'], $error['line']);
+
+  return theme('coder_review_warning', array(
+    'warning' => _coder_review_warning($error['rule']),
+    'severity_name' => $error['severity_name'],
+    'lineno' => $error['lineno'],
+    'line' => $error['line'],
+  ));
 }
 
 /**
@@ -1959,10 +2018,20 @@ function _coder_review_warning($rule) {
  * @param $line
  *   String contents of line.
  */
-function theme_coder_review_warning($warning, $severity_name, $lineno = 0, $line = '') {
+function theme_coder_review_warning($variables) {
+  $warning = $variables['warning'];
+  $severity_name = $variables['severity_name'];
+  $lineno = $variables['lineno'];
+  $line = $variables['line'];
+
   // theme the output for the Drupal shell
   if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
-    return theme_drush_coder_review_warning($warning, $severity_name, $lineno, $line);
+    return theme_drush_coder_review_warning(array(
+      'warning' => $warning,
+      'severity_name' => $severity_name,
+      'lineno' => $lineno,
+      'line' => $line,
+    ));
   }
 
   // Extract description from warning.
@@ -1970,7 +2039,7 @@ function theme_coder_review_warning($warning, $severity_name, $lineno = 0, $line
     $description = isset($warning['#description']) ? $warning['#description'] : '';
     $warning_msg = $warning['#warning'];
     if (isset($warning['#link'])) {
-      $warning_msg .= '  (' . l(t('Drupal Docs'), $warning['#link']) . ')';
+      $warning_msg .= ' (' . l(t('Drupal Docs'), $warning['#link']) . ')';
     }
     $warning = $warning_msg;
   }
@@ -1986,9 +2055,14 @@ function theme_coder_review_warning($warning, $severity_name, $lineno = 0, $line
   }
   $path = drupal_get_path('module', 'coder');
   $title = t('severity: @severity', array('@severity' => $severity_name));
-  $img = theme('image', $path . "/images/$severity_name.png", $title, $title, array('align' => 'right', 'class' => 'coder'), FALSE);
+  $img = theme('image', array(
+    'path' => $path . "/images/$severity_name.png",
+    'alt' => $title, 'title' => $title,
+    'attributes' => array('align' => 'right', 'class' => 'coder'),
+    'getsize' => FALSE,
+  ));
   if (!empty($description)) {
-    $img .= theme('image', $path . '/images/more.png', t('click to read more'), '', array('align' => 'right', 'class' => 'coder-more'), FALSE);
+    $img .= theme('image', array('path' => $path . '/images/more.png', 'alt' => t('click to read more'), 'atributes' => array('align' => 'right', 'class' => 'coder-more'), 'getsize' => FALSE));
     $warning .= '<div class="coder-description">Explanation: ' . $description . '</div>';
   }
   return '<div class="' . $class . '">' . $img . $warning . '</div>';
@@ -2002,7 +2076,10 @@ function theme_coder_review_warning($warning, $severity_name, $lineno = 0, $line
  * @param $version
  *   Version to link to.
  */
-function theme_drupalapi($function, $version = '') {
+function theme_drupalapi($variables) {
+  $version = $variables['version'];
+  $function = $variables['function'];
+
   return l($function, "http://api.drupal.org/api/function/$function/$version");
 }
 
@@ -2012,6 +2089,7 @@ function theme_drupalapi($function, $version = '') {
  * @param $function
  *   Function to link to.
  */
-function theme_phpapi($function) {
+function theme_phpapi($variables) {
+  $function = $variables['function'];
   return l($function, "http://us.php.net/$function");
 }

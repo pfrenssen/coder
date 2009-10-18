@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_reviews().
+ * Implements hook_reviews().
  */
 function coder_review_5x_reviews() {
   $rules = array(
@@ -107,8 +107,8 @@ function _coder_review_5x_callback_warning() {
 function _coder_review_5x_user_mail_warning() {
   return t('!user_mail() is replaced by !drupal_mail()',
     array(
-      '!user_mail' => theme('drupalapi', 'user_mail', '4.7'),
-      '!drupal_mail' => theme('drupalapi', 'drupal_mail', '5'),
+      '!user_mail' => theme('drupalapi', array('function' => 'user_mail', 'version' => '4.7')),
+      '!drupal_mail' => theme('drupalapi', array('function' => 'drupal_mail', 'version' => '5')),
     )
   );
 }
@@ -116,8 +116,8 @@ function _coder_review_5x_user_mail_warning() {
 function _coder_review_5x_user_mail_wrapper_warning() {
   return t('!user_mail_wrapper() changed to !drupal_mail_wrapper()',
     array(
-      '!user_mail_wrapper' => theme('drupalapi', 'user_mail_wrapper', '4.7'),
-      '!drupal_mail_wrapper' => theme('drupalapi', 'drupal_mail_wrapper', '5'),
+      '!user_mail_wrapper' => theme('drupalapi', array('function' => 'user_mail_wrapper', 'version' => '4.7')),
+      '!drupal_mail_wrapper' => theme('drupalapi', array('function' => 'drupal_mail_wrapper', 'version' => '5')),
     )
   );
 }
@@ -125,8 +125,8 @@ function _coder_review_5x_user_mail_wrapper_warning() {
 function _coder_review_5x_message_na_warning() {
   return t('The function !message_na() was removed, remove it from your modules as well and replace it with !t(\'n/a\')',
     array(
-      '!message_na' => theme('drupalapi', 'message_na', '4.7'),
-      '!t' => theme('drupalapi', 't', '5'),
+      '!message_na' => theme('drupalapi', array('function' => 'message_na', 'version' => '4.7')),
+      '!t' => theme('drupalapi', array('function' => 't', 'version' => '5')),
     )
   );
 }
@@ -134,8 +134,8 @@ function _coder_review_5x_message_na_warning() {
 function _coder_review_5x_module_exist_warning() {
   return t('!module_exist() is now !module_exists()',
     array(
-      '!module_exist' => theme('drupalapi', 'module_exist', '4.7'),
-      '!module_exists' => theme('drupalapi', 'module_exists', '5'),
+      '!module_exist' => theme('drupalapi', array('function' => 'module_exist', 'version' => '4.7')),
+      '!module_exists' => theme('drupalapi', array('function' => 'module_exists', 'version' => '5')),
     )
   );
 }
@@ -143,8 +143,8 @@ function _coder_review_5x_module_exist_warning() {
 function _coder_review_5x_drupal_call_js_warning() {
   return t('Remove !drupal_call_js(), use "!drupal_add_js(\'myCustomFunction(your, parameters, here)\', \'inline\');" instead',
     array(
-      '!drupal_call_js' => theme('drupalapi', 'drupal_call_js', '4.7'),
-      '!drupal_add_js' => theme('drupalapi', 'drupal_add_js', '5'),
+      '!drupal_call_js' => theme('drupalapi', array('function' => 'drupal_call_js', 'version' => '4.7')),
+      '!drupal_add_js' => theme('drupalapi', array('function' => 'drupal_add_js', 'version' => '5')),
     )
   );
 }
@@ -152,8 +152,8 @@ function _coder_review_5x_drupal_call_js_warning() {
 function _coder_review_5x_system_listing_warning() {
   return t('!system_listing() is now !drupal_system_listing()',
     array(
-      '!system_listing' => theme('drupalapi', 'system_listing', '4.7'),
-      '!drupal_system_listing' => theme('drupalapi', 'drupal_system_listing', '5'),
+      '!system_listing' => theme('drupalapi', array('function' => 'system_listing', 'version' => '4.7')),
+      '!drupal_system_listing' => theme('drupalapi', array('function' => 'drupal_system_listing', 'version' => '5')),
     )
   );
 }
@@ -161,8 +161,8 @@ function _coder_review_5x_system_listing_warning() {
 function _coder_review_5x_theme_add_style_warning() {
   return t('Replace !theme_add_style() with !drupal_add_css()',
     array(
-      '!theme_add_style' => theme('drupalapi', 'theme_add_style', '4.7'),
-      '!drupal_add_css' => theme('drupalapi', 'drupal_add_css', '5'),
+      '!theme_add_style' => theme('drupalapi', array('function' => 'theme_add_style', 'version' => '4.7')),
+      '!drupal_add_css' => theme('drupalapi', array('function' => 'drupal_add_css', 'version' => '5')),
     )
   );
 }
@@ -170,8 +170,8 @@ function _coder_review_5x_theme_add_style_warning() {
 function _coder_review_5x_form_render_warning() {
   return t('Replace !form_render() with !drupal_render()',
     array(
-      '!form_render' => theme('drupalapi', 'form_render', '4.7'),
-      '!drupal_render' => theme('drupalapi', 'drupal_render', '5'),
+      '!form_render' => theme('drupalapi', array('function' => 'form_render', 'version' => '4.7')),
+      '!drupal_render' => theme('drupalapi', array('function' => 'drupal_render', 'version' => '5')),
     )
   );
 }
@@ -179,8 +179,8 @@ function _coder_review_5x_form_render_warning() {
 function _coder_review_5x_node_get_name_warning() {
   return t('Replace !node_get_name($node) with !node_get_types(\'name\', $node)',
     array(
-      '!node_get_name' => theme('drupalapi', 'node_get_name', '4.7'),
-      '!node_get_types' => theme('drupalapi', 'node_get_types', '5'),
+      '!node_get_name' => theme('drupalapi', array('function' => 'node_get_name', 'version' => '4.7')),
+      '!node_get_types' => theme('drupalapi', array('function' => 'node_get_types', 'version' => '5')),
     )
   );
 }
