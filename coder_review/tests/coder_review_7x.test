@@ -499,6 +499,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  user_authenticate(&$form_state);');
 
     // http://drupal.org/node/224333#hook-user-changes
+    $this->assertCoderReviewFail('  function mymodule_profile_alter(');
   }
 
   function testNode7x() {

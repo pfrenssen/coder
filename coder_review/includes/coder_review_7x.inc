@@ -689,7 +689,12 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]user_authenticate\s*\(\s*' . $argex . '\s*\)',
         '#warning_callback' => '_coder_review_7x_user_authenticate_warning',
       ),
-      // http://drupal.org/node/224333#hook-user-changes --- Removed several unecessary arguments to various hook_user_$op hooks and removed hook_profile_alter
+      // http://drupal.org/node/224333#hook-user-changes
+      array(
+        '#type' => 'regex',
+        '#value' => 'function\s+\w+_profile_alter\s*\(',
+        '#warning_callback' => '_coder_review_7x_hook_profile_alter_warning',
+      ),
 
 
     // Node API
@@ -1911,3 +1916,12 @@ function _coder_review_7x_hook_access_warning() {
   );
 }
 
+function _coder_rewview_7x_hook_profile_alter_warning() {
+  return array(
+    '#warning' => t('!hook_profile_alter() has been removed in favour of !hook_user_view().', 
+    array(
+      '!hook_profile_alter()' => theme('drupalapi', array('function' => 'hook_profile_alter', 'version' => 6)),
+      '!hook_user_view()' => theme('drupalapi', array('function' => 'hook_user_view', 'version' => 7)),
+    )),
+  );
+}
