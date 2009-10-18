@@ -10,4 +10,7 @@ Coder Review 7.x-3.x, xxxx-xx-xx
  - coding style fixes.
 #575726 by stella :
  - changed coder_review module description.
- - 
+#471874 by grendzy :
+ - added coder.drush.inc dependency setting
+#583136 by willmoy, matason :
+ - added 'case' to list of keywords not to enforce no space between it and (
