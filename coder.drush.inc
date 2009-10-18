@@ -8,6 +8,7 @@ function coder_drush_command() {
   $items['coder'] = array(
     'callback' => 'coder_drush_review',
     'description' => dt('Run code reviews'),
+    'drupal dependencies' => array('coder'),
   );
   return $items;
 }
