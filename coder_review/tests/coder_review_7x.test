@@ -20,6 +20,12 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     );
   }
 
+  function testTestModule7x() {
+    // http://drupal.org/node/224333#block_optional
+
+    $this->runTestModuleTest();
+  }
+
 
   function testModule7x() {
     // N/A - in comment review - http://drupal.org/node/224333#afile
@@ -197,8 +203,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testBlock7x() {
-    // http://drupal.org/node/224333#block_optional
-
     // http://drupal.org/node/224333#remove_op
     $this->assertCoderReviewFail("  function mymodule_block(\$op, \$delta, \$edit) {\n}");
     $this->assertCoderReviewFail("  function mymodule_block(\$delta, \$edit) {\n  if (\$op == 'list') {\n  }\n}");

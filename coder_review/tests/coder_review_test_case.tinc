@@ -26,6 +26,8 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
   function runTest($code, $severity = SEVERITY_MINOR) {
     $reviews = coder_review_reviews();
     $ext = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
+
+    // Review code snippets in the test files.
     $coder_args = array(
       '#severity' => $severity,
       '#filename' => 'snippet.php',
@@ -35,6 +37,25 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
     );
     _coder_review_read_and_parse_file($coder_args);
     $results = do_coder_review($coder_args, $reviews[$this->review_name]);
+
+    unset($results['#stats']);
+    return $results;
+  }
+
+  function runTestModuleTest($severity = SEVERITY_MINOR) {
+    $reviews = coder_review_reviews();
+    $ext = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
+
+    // Review the coder_review_test module.
+    $coder_args = array(
+      '#severity' => $severity,
+      '#filename' => drupal_get_path('module', 'coder_review_test') . '/coder_review_test.module',
+      '#php_extensions' => $ext,
+      '#include_extensions' => _coder_review_get_reviews_extensions($ext, $reviews),
+    );
+    _coder_review_read_and_parse_file($coder_args);
+    $results = do_coder_review($coder_args, $reviews[$this->review_name]);
+
     unset($results['#stats']);
     return $results;
   }

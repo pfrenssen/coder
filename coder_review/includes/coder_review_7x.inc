@@ -968,7 +968,7 @@ function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, 
   $ini = parse_ini_file($modulename .'.info');
 
   // Check if the dependency has been declared.
-  $dependency_declared = is_array($ini['dependencies']) ? in_array('block', $ini['dependencies']) : FALSE;
+  $dependency_declared = (isset($ini['dependencies']) && is_array($ini['dependencies'])) ? in_array('block', $ini['dependencies']) : FALSE;
 
   if (file_exists($filename) && $modulename != 'block' && !$dependency_declared) {
     if ($lines = file($filename)) {

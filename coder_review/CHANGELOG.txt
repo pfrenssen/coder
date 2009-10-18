@@ -16,3 +16,5 @@ Coder Review 7.x-3.x, xxxx-xx-xx
  - added 'case' to list of keywords not to enforce no space between it and (
 #565280 by snufkin :
  - added optional block module review.
+Added coder_review_test module to test for items that can't be done in a test
+file.
