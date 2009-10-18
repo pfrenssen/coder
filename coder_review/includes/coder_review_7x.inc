@@ -146,6 +146,9 @@ function coder_review_7x_reviews() {
         '#function-not' => '^drupal_set_time_limit$',
         '#warning_callback' => '_coder_review_7x_time_limit_warning',
       ),
+      // http://drupal.org/node/224333#archive-tar
+      // http://drupal.org/node/224333#search-api
+      // http://drupal.org/node/224333#user-1
 
 
     // Permissions and Access
@@ -197,6 +200,7 @@ function coder_review_7x_reviews() {
       ),
 
       // http://drupal.org/node/224333#system_admin_menu_block_access --- Hide empty menu categories with access callback
+      // http://drupal.org/node/224333#user-roles-api --- Added API functions for creating, loading, updating, and deleting user roles and permissions
 
 
     // Database
@@ -251,6 +255,8 @@ function coder_review_7x_reviews() {
 
 
     // Block
+      // N/A - http://drupal.org/node/224333#hook_block_info_alter --- Added hook_block_info_alter()
+
       // http://drupal.org/node/224333#block_optional --- Block module now optional
       array(
         '#type' => 'callback',
@@ -266,12 +272,12 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_hook_block_op_warning',
       ),
 
-      // http://drupal.org/node/224333#hook_block_list_alter --- Added hook_block_list_alter()
 
 
     // Comment
       // N/A - http://drupal.org/node/224333#comment_load_multiple --- New comment_load_multiple()
       // N/A - http://drupal.org/node/224333#comment_save_refactor --- comment_save() now supports programatic saving
+      // N/A - http://drupal.org/node/224333#comment_presave_hook --- New hook_comment_presave() for comments
 
       // http://drupal.org/node/224333#comment_load
       array(
@@ -346,6 +352,9 @@ function coder_review_7x_reviews() {
         '#value' => 'admin\/settings\/filters(\/.*?)?',
         '#warning_callback' => '_coder_review_7x_filter_urls_warning',
       ),
+      // http://drupal.org/node/224333#default-text-formats
+      // http://drupal.org/node/224333#text-format-permissions
+      // http://drupal.org/node/224333#filter-formats-parameters
 
 
     // Taxonomy
@@ -416,6 +425,7 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]taxonomy_get_related\s*\(',
         '#warning_callback' => '_coder_review_7x_related_terms_warning',
       ),
+      // http://drupal.org/node/224333#taxonomy-node
 
 
     // Javascript
@@ -496,6 +506,8 @@ function coder_review_7x_reviews() {
         '#filename' => array('js'),
         '#warning_callback' => '_coder_review_7x_no_jsenabled_warning',
       ),
+      // http://drupal.org/node/224333#jquery_once
+      // http://drupal.org/node/224333#rename-drupal-to-js
 
 
     // CSS
@@ -503,6 +515,7 @@ function coder_review_7x_reviews() {
       // N/A - http://drupal.org/node/224333#drupal_add_css_inline --- Inline cascading style sheets from drupal_add_css()
       // N/A - http://drupal.org/node/224333#drupal_add_library --- Ability to add multiple JavaScript/CSS files at once
       // N/A - http://drupal.org/node/224333#drupal_add_js_css_reset --- Ability to reset JavaScript/CSS
+      // N/A - http://drupal.org/node/224333#add-css-external --- drupal_add_css() now supports external CSS files
 
       // http://drupal.org/node/224333#drupal_add_js_options
       array(
@@ -510,6 +523,8 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]drupal_add_css\s*\(\s*(' . $argex . '\s*,\s*){2,}(' . $argex . ')\s*\)',
         '#warning_callback' => '_coder_review_7x_drupal_add_css_parameters_warning',
       ),
+      // http://drupal.org/node/224333#drupal_add_css_weight
+      // http://drupal.org/node/224333#class_attribute_array
 
 
     // Theming
@@ -545,7 +560,7 @@ function coder_review_7x_reviews() {
         '#filename' => array('tpl.php'),
         '#warning_callback' => '_coder_review_7x_closure_warning',
       ),
-      // http://drupal.org/node/224333#element_theme_properties --- Element theming properties used by drupal_render() have changed
+      // http://drupal.org/node/224333#element_theme_properties
       array(
         '#type' => 'regex',
         '#source' => 'allphp',
@@ -555,6 +570,8 @@ function coder_review_7x_reviews() {
       ),
 
       // http://drupal.org/node/224333#drupal_render_children --- Element theme functions should call drupal_render_children()
+      // http://drupal.org/node/224333#theme-links-param --- theme_links() has a new parameter $heading for accessibility
+      // http://drupal.org/node/224333#theme_changes --- theme() now takes only takes two arguments.
 
 
 
@@ -840,6 +857,8 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_actions_synchronize_warning',
       ),
       // http://drupal.org/node/224333#distauth --- Login validation change for distributed authentication modules
+      // http://drupal.org/node/224333#trigger_overhaul --- Trigger and Actions API overhaul
+      // http://drupal.org/node/224333#hook_entity_load --- Added hook_entity_load().
   );
   $review = array(
     '#title' => t('Converting 6.x modules to 7.x'),
