@@ -14,3 +14,5 @@ Coder Review 7.x-3.x, xxxx-xx-xx
  - added coder.drush.inc dependency setting
 #583136 by willmoy, matason :
  - added 'case' to list of keywords not to enforce no space between it and (
+#565280 by snufkin :
+ - added optional block module review.

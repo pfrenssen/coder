@@ -252,6 +252,12 @@ function coder_review_7x_reviews() {
 
     // Block
       // http://drupal.org/node/224333#block_optional --- Block module now optional
+      array(
+        '#type' => 'callback',
+        '#source' => 'allphp',
+        '#value' => '_coder_review_7x_optional_block_review_callback',
+        '#warning_callback' => '_coder_review_7x_optional_block_warning',
+      ),
 
       // http://drupal.org/node/224333#remove_op
       array(
@@ -934,6 +940,44 @@ function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review
             $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
             $tmprule = $rule;
             $tmprule['#warning_callback'] = '_coder_review_7x_drupal_behaviors_warning';
+            _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Make sure user defined block module as a dependency if using block functions.
+ *
+ * @see http://drupal.org/node/224333#block_optional
+ */
+function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+  $functions_to_check = array('block_list', 'block_custom_block_get', 'block_page_build');
+  $filename = $coder_args['#filename'];
+
+  // Skip for unit tests as there is no physical file.
+  if ($filename == 'snippet.php') {
+    return;
+  }
+
+  // Find out the info filename and load it.
+  $pos = strpos($filename, '.');
+  $modulename = substr($filename, 0, $pos);
+  $ini = parse_ini_file($modulename .'.info');
+
+  // Check if the dependency has been declared.
+  $dependency_declared = is_array($ini['dependencies']) ? in_array('block', $ini['dependencies']) : FALSE;
+
+  if (file_exists($filename) && $modulename != 'block' && !$dependency_declared) {
+    if ($lines = file($filename)) {
+      foreach ($lines as $lineno => $line) {
+        foreach ($functions_to_check as $function) {
+          if (preg_match("/[\s\(]$function\(/", $line)) {
+            $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
+            $tmprule = $rule;
+            $tmprule['#warning_callback'] = '_coder_review_7x_optional_block_warning';
             _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
           }
         }
@@ -1880,6 +1924,13 @@ function _coder_review_7x_no_jsenabled_warning() {
   return array(
     '#warning' => t('JavaScript variable Drupal.jsEnabled has been removed.'),
     '#link' => 'http://drupal.org/node/224333#no-jsenabled',
+  );
+}
+
+function _coder_review_7x_optional_block_warning() {
+  return array(
+    '#warning' => t("Block module is now optional, make sure you declare it as a dependency in your module's .info file."),
+    '#link' => 'http://drupal.org/node/224333#block_optional',
   );
 }
 

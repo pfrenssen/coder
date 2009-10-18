@@ -186,14 +186,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   function testMenu7x() {
     // N/A - http://drupal.org/node/224333#international_item
 
-    // http://drupal.org/node/224333#menu_file_path
-    $this->assertCoderReviewFail("  function mymodule_menu() {\n \$items['foo'] = array(\n  'file' => 'foo.inc');\n}");
-    $this->assertCoderReviewFail("  function mymodule_menu() {\n \$items['foo'] = array(\n  'file path' => 'includes/');\n}");
-    $this->assertCoderReviewPass("  function mymodule_menu() {\n \$items['foo'] = array(\n  'filepath' => 'foo');\n}");
-    $this->assertCoderReviewFail("  function mymodule_theme() {\n \$theme['foo'] = array(\n  'file' => 'foo.inc');\n}");
-    $this->assertCoderReviewFail("  function mymodule_theme() {\n \$theme['foo'] = array(\n  'path' => 'includes/');\n}");
-    $this->assertCoderReviewPass("  function mymodule_theme() {\n \$theme['foo'] = array(\n  'filepath' => 'foo');\n}");
-
     // http://drupal.org/node/224333#menu_callback_array
 
     // http://drupal.org/node/224333#hook_menu_link_alter
@@ -213,6 +205,7 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  function mymodule_block(\$delta, \$edit) {\n  switch (\$op) {\n  case 'list':\n  }\n}");
 
     // http://drupal.org/node/224333#hook_block_list_alter
+    $this->assertCoderReviewPass('  mymodule_block_list_alter(&$blocks)');
   }
 
   function testComments7x() {
