@@ -1,0 +1,816 @@
+# Dansk translation of coder (6.x-1.0)
+# Copyright (c) 2009 by the Dansk translation team
+# Generated from files:
+#  coder_6x.inc,v 1.5.2.26 2008/05/13 16:06:11 snpower
+#  coder_format.php,v 1.2.4.5 2008/01/26 18:09:56 sun
+#  coder.module,v 1.88.2.46 2008/08/28 14:31:19 douggreen
+#  coder_style.inc,v 1.6.2.8 2008/07/14 13:29:59 snpower
+#  coder.info,v 1.9.2.1 2008/04/27 18:35:16 douggreen
+#  coder.drush.inc,v 1.1.4.10 2008/08/20 16:10:16 snpower
+#  coder_47.inc,v 1.14.2.5 2008/02/16 14:21:57 douggreen
+#  coder_50.inc,v 1.21.2.7 2008/08/28 14:31:19 douggreen
+#  coder_6x.inc,v 1.17.2.53 2008/08/28 14:31:19 douggreen
+#  coder_comment.inc,v 1.1.4.11 2008/08/20 16:08:47 snpower
+#  coder_style.inc,v 1.16.2.18 2008/08/28 14:31:19 douggreen
+#  coder_security.inc,v 1.15.2.12 2008/07/20 14:36:38 snpower
+#  coder_sql.inc,v 1.1.4.10 2008/05/13 18:03:19 snpower
+#  coder_format.inc,v 1.2.4.13 2008/02/24 19:36:09 sun
+#  coder_sql.inc,v 1.1.4.11 2008/07/18 22:50:48 snpower
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: coder (6.x-1.0)\n"
+"POT-Creation-Date: 2009-05-29 11:59-0700\n"
+"PO-Revision-Date: 2009-05-29 21:07+0100\n"
+"Language-Team: Dansk <dansk@klid.dk>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"Last-Translator: Morten Wulff <wulff@ratatosk.net>\n"
+"X-Poedit-Language: Danish\n"
+"X-Poedit-Country: DENMARK\n"
+
+#: tests/coder_6x.inc:36
+msgid "debug"
+msgstr "debug"
+
+#: scripts/coder_format/coder_format.php:107
+msgid "The directory %directory does not exist."
+msgstr "Mappen %directory eksisterer ikke."
+
+#: scripts/coder_format/coder_format.php:115
+msgid "The directory %directory is not writable"
+msgstr "Der kan ikke skrives til mappen %directory."
+
+#: scripts/coder_format/coder_format.php:175
+msgid "The selected file %file could not be uploaded, because the destination %directory is not properly configured."
+msgstr "Filen %file kan ikke uploades, fordi mappen %directory ikke er indstillet korrekt."
+
+#: scripts/coder_format/coder_format.php:183
+msgid "The selected file %file could not be copied, because no file by that name exists. Please check that you supplied the correct filename."
+msgstr "Filen %file kan ikke kopieres, fordi filen med det angivne navn ikke eksisterer. Undersøg venligst om du har angivet det korrekte filnavn."
+
+#: scripts/coder_format/coder_format.php:196,241
+msgid "The selected file %file could not be copied, because a file by that name already exists in the destination."
+msgstr "Filen %file kan ikke kopieres, fordi der allerede findes en fil med det angivne navn."
+
+#: scripts/coder_format/coder_format.php:201
+msgid "The selected file %file could not be copied."
+msgstr "Filen %file kan ikke kopieres."
+
+#: scripts/coder_format/coder_format.php:275
+msgid "The removal of the original file %file has failed."
+msgstr "Den oprindelige fil %file kan ikke fjernes."
+
+#: coder.module:108
+msgid "Default"
+msgstr "Standard"
+
+#: coder.module:127
+msgid "All"
+msgstr "Alle"
+
+#: coder.module:121
+msgid "Active"
+msgstr "Aktiv"
+
+#: tests/coder_6x.inc:35
+msgid "user"
+msgstr "bruger"
+
+#: coder.module:840
+msgid "Submit"
+msgstr "Indsend"
+
+#: tests/coder_style.inc:52
+msgid ""
+"<p>Blocks are boxes of content that may be rendered into certain regions of your web pages, for example, into sidebars. They are usually generated automatically by modules, but administrators can create blocks manually.</p>\n"
+"<p>Only enabled blocks are shown. You can position blocks by specifying which area of the page they should appear in (e.g., a sidebar).  Highlighted labels on this page show the regions into which blocks can be rendered. You can specify where within a region a block will appear by adjusting its weight.</p>\n"
+"<p>If you want certain blocks to disable themselves temporarily during high server loads, check the \"Throttle\" box. You can configure the auto-throttle on the <a href=\"@throttle\">throttle configuration page</a> after having enabled the throttle module.</p>\n"
+"<p>You can configure the behaviour of each block (for example, specifying on which pages and for what users it will appear) by clicking the \"configure\" link for each block.</p>"
+msgstr ""
+"<p>Blokke er kasser med indhold, der vises i specielle regioner på dine sider, f.eks. sidepanelerne. De oprettes normalt automatisk af moduler, men administratorer kan oprette blokke manuelt.</p>\n"
+"<p>Kun aktive blokke vises. Du kan vælge blokkenes placering ved at angive hvilken del af siden, de skal vises på (f.eks. et sidepanel). Fremhævede etiketter på denne side viser hvilke regioner blokke kan placeres i. Du kan bestemme placeringen i region ved at justere blokkens vægt.</p>\n"
+"<p>Hvis du ønsker at visse blokke skal deaktiveres, når belastningen på serveren er høj, skal du afkrydse feltet \"Begræns\". Når du har aktiveret throttlemodulet, kan du indstille auto-throttle på <a href=\"@throttle\">throttlesiden</a>.</p>\n"
+"<p>Du kan bestemme hver bloks opførsel (f.eks. angive på hvilke sider og for hvilke brugere blokken vises) ved at klikke på linket \"konfigurer\" ud for hver blok.</p>"
+
+#: coder.info:0
+msgid "Development"
+msgstr "Udvikling"
+
+#: coder.drush.inc:10
+msgid "Run code reviews"
+msgstr "Kør kodeinspektioner"
+
+#: coder.drush.inc:81
+msgid "Severity @severity_name"
+msgstr "Omfang @severity_name"
+
+#: coder.module:37
+msgid "Coder provides helpful hints without false positives, but offers no guarantee for creating good code.  You are the final arbitrar.  If in doubt, read the Drupal documentation (see review links below and <a href=\"@api\">api.drupal.org</a>)."
+msgstr "Coder giver nyttige tip uden falske positiver, men giver ingen garanti for god kode. Du har det endelige ansvar. Læs Drupal dokumentationen hvis du er i tvivl (se links herunder og <a href=\"@api\">api.drupal.org</a>)."
+
+#: coder.module:39
+msgid "coder [summary] [@reviews] [minor|major|critical] [active|core|all|default|<modules>] [no-<module>]"
+msgstr "coder [summary] [@reviews] [minor|major|critical] [active|core|all|default|<modules>] [no-<module>]"
+
+#: coder.module:134
+msgid "Patches"
+msgstr "Patches"
+
+#: coder.module:164
+msgid "Code Review"
+msgstr "Kodeinspektion"
+
+#: coder.module:223
+msgid "Reviews"
+msgstr "Inspektioner"
+
+#: coder.module:230
+msgid "apply the checked coding reviews"
+msgstr "anvend de markerede kodeinspektioner"
+
+#: coder.module:242
+msgid "show warnings at or above the severity warning level"
+msgstr "vis advarsler på eller over advarselsniveauet"
+
+#: coder.module:250,366
+msgid "What to review"
+msgstr "Hvad skal inspiceres"
+
+#: coder.module:255
+msgid "All patches must be in unified format.  It's also preferable for the patch to be created with the \"-p\" option, which shows the function closest to the code change.  Without this, some function dependent tests may not be triggered.  Coder offers no guarantee that the patch will apply cleanly or will function correctly."
+msgstr "Alle patches skal være i unified format. Det foretrækkes at patches også oprettes med \"-p\" valget, som viser funktionen tættest på kodeændringen. Uden denne vil nogen funktionsafhængige tests ikke blive udløst. Coder garanterer ikke at patchen kan indlæses uden fejl eller at den vil fungere korrekt."
+
+#: coder.module:260
+msgid "Link to patch"
+msgstr "Link til patch"
+
+#: coder.module:265
+msgid "Or"
+msgstr "Eller"
+
+#: coder.module:270
+msgid "Patch text"
+msgstr "Patch tekst"
+
+#: coder.module:344
+msgid " (active)"
+msgstr " (aktivt)"
+
+#: coder.module:348
+msgid " (core)"
+msgstr " (kerne)"
+
+#: coder.module:374
+msgid "active modules and themes"
+msgstr "aktive moduler og temaer"
+
+#: coder.module:379
+msgid "core files (php, modules, and includes)"
+msgstr "kernefiler (php, moduler og includes)"
+
+#: coder.module:384
+msgid "include files (.inc, .php, .test, and .install files)"
+msgstr "include-filer (.inc, .php, .test og .install filer)"
+
+#: coder.module:388
+msgid "include file exclusions"
+msgstr "ekskludér include-filer"
+
+#: coder.module:396
+msgid "List file names or paths, one per line, which should be excluded (only valid if \"include files\" is checked above).  For example, modules/system/*.php will exclude all php files in the modules/system directory."
+msgstr "Angiv filnavne eller stier, én pr. linje, som skal ekskluderes (kun gyldig hvis 'inkludér filer' er markeret ovenfor). For eksempel vil modules/system/*.php ekskludere alle filer i mappen modules/system."
+
+#: coder.module:402
+msgid "use the coder cache"
+msgstr "brug coder cachen"
+
+#: coder.module:409
+msgid "Select specific modules"
+msgstr "Vælg specifikke moduler"
+
+#: coder.module:443
+msgid "Select specific themes"
+msgstr "Vælg specifikke temaer"
+
+#: coder.module:540
+msgid "After setting these defaults, use <a href=\"@url\">coder</a> to perform code reviews."
+msgstr "Når du har indstillet disse standardværdier kan du bruge <a href=\"@url\">coder</a> til at lave kodeinspektioner."
+
+#: coder.module:672
+msgid "Code review (submitted options)"
+msgstr "Kodeinspektion (indsendte valg)"
+
+#: coder.module:678
+msgid "Code review (@options)"
+msgstr "Kodeinspektion (@options)"
+
+#: coder.module:738
+msgid "Code Review file for %module not found"
+msgstr "Kodeinspektionsfil for %module ikke fundet"
+
+#: coder.module:764,890
+msgid "No Problems Found"
+msgstr "Ingen problemer fundet"
+
+#: coder.module:807
+msgid "Coder found @count patches"
+msgstr "Coder fandt @count patches"
+
+#: coder.module:810
+msgid "Coder found @count projects"
+msgstr "Coder fandt @count projekter"
+
+#: coder.module:811
+msgid "@count files"
+msgstr "@count filer"
+
+#: coder.module:815
+msgid "@count %severity_name warnings"
+msgstr "@count %severity_name advarsler"
+
+#: coder.module:829
+msgid "Selection form"
+msgstr "Udvalgsformular"
+
+#: coder.module:835
+msgid "<div class=\"coder-settings\">Use the Selection Form to select options for this code review, or change the <a href=\"@settings\">Default Settings</a> and use the <a href=\"@default\">Default</a> tab above.</div>"
+msgstr "<div class=\"coder-settings\">Brug udvalgsformularen til at vælge indstillinger for denne kodeinspektion, eller skift <a href=\"@settings\">standardindstillingerne</a> og brug <a href=\"@default\">Standard</a>-fanen ovenfor.</div>"
+
+#: coder.module:987
+msgid "Could not read the file"
+msgstr "Kunne ikke læse filen"
+
+#: coder.module:1731
+msgid "please <a href=\"@report\">report</a> this !warning"
+msgstr "<a href=\"@report\">rapportér</a> venligst denne !warning"
+
+#: coder.module:1779
+msgid "Line @number: !warning"
+msgstr "Linje @number: !warning"
+
+#: coder.module:1789
+msgid "severity: @severity"
+msgstr "omfang: @severity"
+
+#: coder.module:1792
+msgid "click to read more"
+msgstr "klik for at læse mere"
+
+#: coder.module:85
+msgid "view code review"
+msgstr "vis kodeinspektion"
+
+#: coder.module:85
+msgid "view code review all"
+msgstr "vis kodeinspektion alle"
+
+#: coder.module:95,141
+msgid "Code review"
+msgstr "Kodeinspektion"
+
+#: coder.module:101
+msgid "Selection Form"
+msgstr "Udvalgsformular"
+
+#: coder.module:115
+msgid "Core"
+msgstr "Kerne"
+
+#: coder.module:142
+msgid "Select code review plugins and modules"
+msgstr "Vælg plugins og moduler til kodeinspektion"
+
+#: coder.module:0
+msgid "coder"
+msgstr "coder"
+
+#: coder.info:0
+msgid "Coder"
+msgstr "Coder"
+
+#: coder.info:0
+msgid "Developer Module that assists with code review and version upgrade"
+msgstr "Udviklermodul som hjælper med kodeindspektion og versionsopgradering"
+
+#: includes/coder_47.inc:104
+msgid "Converting 4.6.x modules to 4.7.x"
+msgstr "Konvertér 4.6.x moduler til 4.7.x"
+
+#: includes/coder_47.inc:117
+msgid "implement !hook_node_info() to create a module which defines node type(s)"
+msgstr "implementér !hook_node_info() for at oprette et modul som definerer indholdstyper"
+
+#: includes/coder_47.inc:125
+msgid "use !node_load($nid) instead of !node_load(array('nid' => $nid))"
+msgstr "brug !node_load($nid) i stedet for !node_load(array('nid' => $nid))"
+
+#: includes/coder_47.inc:133
+msgid "!node_list() became node_get_types and now returns an associative array about node types"
+msgstr "!node_list() blev til node_get_types returnere nu et associativt array af indholdstyper"
+
+#: includes/coder_47.inc:141
+msgid "!module_get_node_name() deprecated and now handled by !node_get_base()."
+msgstr "!module_get_node_name() er forældet og håndteres nu af !node_get_base()."
+
+#: includes/coder_47.inc:150
+msgid "!format_name() was renamed to !theme_username()"
+msgstr "!format_name() er omdøbt til !theme_username()"
+
+#: includes/coder_47.inc:159
+msgid "!message_access() was removed, replace with a nice case error message"
+msgstr "!message_access() er fjernet, erstat med en venlig fejlmeddelelse"
+
+#: includes/coder_47.inc:167
+msgid "!conf_url_rewrite() became !custom_url_rewrite()"
+msgstr "!conf_url_rewrite() ændret til !custom_url_rewrite()"
+
+#: includes/coder_47.inc:176
+msgid "use !node_delete($nid) instead of !node_delete(array('nid' => $nid))"
+msgstr "brug !node_delete($nid) i stedet for !node_delete(array('nid' => $nid))"
+
+#: includes/coder_47.inc:184
+msgid "use !file_directory_temp() function instead of variable"
+msgstr "brug !file_directory_temp()-funktionen i stedet for variabel"
+
+#: includes/coder_47.inc:192
+msgid "use !file_directory_path() function instead of variable"
+msgstr "brug !file_directory_path()-funktionen i stedet for variabel"
+
+#: includes/coder_47.inc:200
+msgid "!array2object() replaced by native PHP type conversion (typecase to (object)"
+msgstr "!array2object() erstattet af indbygget PHP typekonvertering (typecase til (object)"
+
+#: includes/coder_47.inc:208
+msgid "!hook_onload() replaced by javascript addLoadEvent()"
+msgstr "!hook_onload() erstattet af javascript addLoadEvent()"
+
+#: includes/coder_47.inc:216
+msgid "!node_validate_title() was removed"
+msgstr "!node_validate_title() er fjernet"
+
+#: includes/coder_47.inc:224
+msgid "!tablesort_pager() was removed"
+msgstr "!tablesort_pager() er fjernet"
+
+#: includes/coder_50.inc:80
+msgid "Converting 4.7.x modules to 5.x"
+msgstr "Konvertér 4.7.x moduler til 5.x"
+
+#: includes/coder_50.inc:109
+msgid "All modules now need to have a <a href=\"@info\">modulename.info file</a>"
+msgstr "Alle moduler skal nu have en <a href=\"@info\">modulnavn.info-fil</a>"
+
+#: includes/coder_50.inc:113
+msgid "!user_mail() is replaced by !drupal_mail()"
+msgstr "!user_mail() erstattet af !drupal_mail()"
+
+#: includes/coder_50.inc:122
+msgid "!user_mail_wrapper() changed to !drupal_mail_wrapper()"
+msgstr "!user_mail_wrapper() ændret til !drupal_mail_wrapper()"
+
+#: includes/coder_50.inc:131
+msgid "The function !message_na() was removed, remove it from your modules as well and replace it with !t('n/a')"
+msgstr "Funktionen !message_na() er fjernet, fjern den fra dit modul og erstat den med !t('n/a')"
+
+#: includes/coder_50.inc:140
+msgid "!module_exist() is now !module_exists()"
+msgstr "!module_exist() er nu !module_exists()"
+
+#: includes/coder_50.inc:149
+msgid "Remove !drupal_call_js(), use \"!drupal_add_js('myCustomFunction(your, parameters, here)', 'inline');\" instead"
+msgstr "Fjern !drupal_call_js(), brug \"!drupal_add_js('minEgenFunktion(dine, parametre, her)', 'inline');\" i stedet"
+
+#: includes/coder_50.inc:158
+msgid "!system_listing() is now !drupal_system_listing()"
+msgstr "!system_listing() er nu !drupal_system_listing()"
+
+#: includes/coder_50.inc:167
+msgid "Replace !theme_add_style() with !drupal_add_css()"
+msgstr "Erstat !theme_add_style() med !drupal_add_css()"
+
+#: includes/coder_50.inc:176
+msgid "Replace !form_render() with !drupal_render()"
+msgstr "Erstat !form_render() med !drupal_render()"
+
+#: includes/coder_50.inc:185
+msgid "Replace !node_get_name($node) with !node_get_types('name', $node)"
+msgstr "Erstat !node_get_name($node) med !node_get_types('name', $node)"
+
+#: includes/coder_6x.inc:464
+msgid "Converting 5.x modules to 6.x"
+msgstr "Konvertér 5.x moduler til 6.x"
+
+#: includes/coder_6x.inc:542
+msgid "New syntax for .info files files requires core=6.x"
+msgstr "Ny syntaks for .info-filer kræver core=6.x"
+
+#: includes/coder_6x.inc:549
+msgid "New syntax for .info files, use dependencies[]"
+msgstr "Ny syntaks for .info-filer, brug dependencies[]"
+
+#: includes/coder_6x.inc:556
+msgid "Translations moved from ./po to ./translations"
+msgstr "Oversættelser flyttet fra ./po til ./translations"
+
+#: includes/coder_6x.inc:563
+msgid "The menu system has been completely over-hauled in 6.x."
+msgstr "Menusystemet er ændret fuldstændigt i 6.x."
+
+#: includes/coder_6x.inc:570
+msgid "The menu system has been completely over-hauled in 6.x, and if you are looping, you are probably doing something wrong."
+msgstr "Menusystemet er ændret fuldstændigt i 6.x, og hvis du bruger løkker gør du sandsynligvis noget forkert."
+
+#: includes/coder_6x.inc:577
+msgid "!hook_form_alter() parameters have changed"
+msgstr "!hook_form_alter() parametre er ændret"
+
+#: includes/coder_6x.inc:588
+msgid "!hook_link_alter() parameters have changed"
+msgstr "!hook_link_alter() parametre er ændret"
+
+#: includes/coder_6x.inc:599
+msgid "!hook_profile_alter() parameters have changed"
+msgstr "!hook_profile_alter() parametre er ændret"
+
+#: includes/coder_6x.inc:610
+msgid "!hook_mail_alter() parameters have changed"
+msgstr "!hook_mail_alter() parametre er ændret"
+
+#: includes/coder_6x.inc:621
+msgid "new !hook_theme() function is required to register theme_ functions"
+msgstr "ny !hook_theme() funktion er obligatorisk for at registrere theme_-funktioner"
+
+#: includes/coder_6x.inc:632
+msgid "!url() and !l() arguments changed, if you have a lot of these use <a href=\"@script\">this conversion script</a>"
+msgstr "!url() og !l() argumenter ændret, hvis du har mange af disse kan du bruge <a href=\"@script\">dette script til konvertering</a>"
+
+#: includes/coder_6x.inc:645
+msgid "!taxonomy_node_get_terms(), !taxonomy_node_get_terms_by_vocabulary(), and !taxonomy_node_delete() now take a full $node object, not just a nid (node id)."
+msgstr "!taxonomy_node_get_terms(), !taxonomy_node_get_terms_by_vocabulary() og !taxonomy_node_delete() tager nu et fuldt $node-objekt, ikke kun en nid (node id)."
+
+#: includes/coder_6x.inc:658
+msgid "!format_plural() accepts replacements, you no longer need to use !strtr()"
+msgstr "!format_plural() accepterer erstatninger, du behøver ikke længere at bruge !strtr()"
+
+#: includes/coder_6x.inc:670
+msgid "Parameters of !watchdog() changed, you <em>must</em> remove calls to !t()"
+msgstr "Parametre til !watchdog() ændret, du <em>skal</em> fjerne kald til !t()"
+
+#: includes/coder_6x.inc:682
+msgid "Changes to !cache_set() parameter order"
+msgstr "Ændringer i !cache_set() parameterrækkefølge"
+
+#: includes/coder_6x.inc:693
+msgid "!cache_set() and !cache_get() automatically (un)serialize complex data types"
+msgstr "!cache_set() og !cache_get() (de)serialiserer automatisk komplekse datatyper"
+
+#: includes/coder_6x.inc:705
+msgid "Use new !ip_address() function instead of $_SERVER['REMOTE_ADDR']"
+msgstr "Brug den nye !ip_address() funktion i stedet for $_SERVER['REMOTE_ADDR']"
+
+#: includes/coder_6x.inc:716
+msgid "!file_check_upload() merged into !file_save_upload()"
+msgstr "!file_check_upload() flettet med !file_save_upload()"
+
+#: includes/coder_6x.inc:728
+msgid "Parameters for !file_save_upload() have changed"
+msgstr "Parametre til !file_save_upload() er ændret"
+
+#: includes/coder_6x.inc:746
+msgid "The parameters for form validation and submission functions have changed to $form, &$form_state."
+msgstr "Parametre til formular-validering og -indsendelse er ændret til $form, &$form_state."
+
+#: includes/coder_6x.inc:753
+msgid "The parameters for form prerender functions have changed to $form."
+msgstr "Parametre til formular prerender funktioner er ændret til $form."
+
+#: includes/coder_6x.inc:767
+msgid "!form_set_value() parameters have changed"
+msgstr "!form_set_value() parametres er ændret"
+
+#: includes/coder_6x.inc:778
+msgid "The arguments to !confirm_form() have changed"
+msgstr "Argumenterne til !confirm_form() er ændret"
+
+#: includes/coder_6x.inc:789
+msgid "In place of !custom_url_rewrite(), use !custom_url_rewrite_inbound() or !custom_url_rewrite_outbound()"
+msgstr "Brug !custom_url_rewrite_inbound() eller !custom_url_rewrite_outbound() i stedet for !custom_url_rewrite()."
+
+#: includes/coder_6x.inc:802
+msgid "hook no longer exists, use !hook_form_alter() to swap your own validation handler"
+msgstr "hook findes ikke længere, brug !hook_form_alter() for at indsætte din egen validering"
+
+#: includes/coder_6x.inc:813
+msgid "The arguments to !hook_help() have changed"
+msgstr "Argumenterne til !hook_help() er ændret"
+
+#: includes/coder_6x.inc:825
+msgid "A new schema API has been added in 6.x"
+msgstr "Et nyt schema API er blevet tilføjet i 6.x"
+
+#: includes/coder_6x.inc:827
+msgid "This patch caused changes to the format of hook_install(), hook_uninstall(), and hook_update_N(). No longer are switch statements done on $GLOBALS['db_type']; instead, use the variety of schema API functions to perform table manipulation."
+msgstr "Denne patch var årsag til ændringer i formatet af hook_install(), hook_uninstall() og hook_update_N(). Der skiftes ikke længere på basis af $GLOBALS['db_type']; brug i stedet de forskellige Schema API funktioner til at manipulere tabeller."
+
+#: includes/coder_6x.inc:832
+msgid "!theme_get_function() has been deprecated because of template theming; see !theme_get_registry()"
+msgstr "!theme_get_function() er forældet på grund af skabelon-theming; se !theme_get_registry()"
+
+#: includes/coder_6x.inc:842
+msgid "!db_num_rows() has been deprecated"
+msgstr "!db_num_rows() er forældet"
+
+#: includes/coder_6x.inc:848
+msgid "The db_num_rows() method was removed from the database abstraction layer in 6.x core, as it was a database dependent method.  Use SELECT COUNT(*) or some other appropriate solutions"
+msgstr "Funktionen db_num_rows() er fjernet fra database abstraktionslaget i 6.x-kernen, da det var en database-afhængig metode. Brug SELECT COUNT(*) eller en anden passende løsning."
+
+#: includes/coder_6x.inc:854
+msgid "Parameters for !drupal_retrieve_form() have changed, add $form_state as a second argument"
+msgstr "Parametre til !drupal_retrieve_form() er ændret, tilføj $form_state som andet argument"
+
+#: includes/coder_6x.inc:865
+msgid "The node/add/$type menu items are now auto-generated by the menu system in 6.x. You should not declare them in your menu hook. See <a href=\"@url\">node/add is now menu generated</a>."
+msgstr "Menupunkterne node/add/$type genereres nu automatisk af menusystemet i 6.x. Du skal ikke deklarere dem i din menu hook. Se <a href=\"@url\">\"node/add is now menu generated\"</a>."
+
+#: includes/coder_6x.inc:876
+msgid "Comment settings are now per node type."
+msgstr "Kommentarindstillinger er nu pr. indholdstype."
+
+#: includes/coder_6x.inc:883
+msgid "!node_access_rebuild() should not be called from !hook_enable() or !hook_disable() functions any more."
+msgstr "!node_access_rebuild() bør ikke længere kaldes fra !hook_enable() eller !hook_disable() functions."
+
+#: includes/coder_6x.inc:910
+msgid "Support for form property #DANGEROUS_SKIP_CHECK has been removed."
+msgstr "Understøttelse af formularegenskaben #DANGEROUS_SKIP_CHECK er blevet fjernet."
+
+#: includes/coder_6x.inc:917
+msgid "!locale_refresh_cache() is deprecated.  Use !cache_clear_all() instead."
+msgstr "!locale_refresh_cache() er forældet. Brug !cache_clear_all() i stedet."
+
+#: includes/coder_6x.inc:929
+msgid "!db_next_id() is deprecated.  Use !db_last_insert_id() instead."
+msgstr "!db_next_id() er forældet. Brug !db_last_insert_id() i stedet."
+
+#: includes/coder_6x.inc:941
+msgid "!menu_set_location() is deprecated.  Use !drupal_set_breadcrumb() to set a custom breadcrumb or !menu_set_item() to set the current location in the menu tree."
+msgstr "!menu_set_location() er forældet. Brug !drupal_set_breadcrumb() for at sætte en tilpasset brødkrummesti eller !menu_set_item() for at sætte den aktuelle placering i menutræet."
+
+#: includes/coder_6x.inc:954
+msgid "!taxonomy_get_vocabulary() is deprecated.  Use !taxonomy_vocabulary_load() instead."
+msgstr "!taxonomy_get_vocabulary() er forældet. Brug !taxonomy_vocabulary_load() i stedet."
+
+#: includes/coder_6x.inc:966
+msgid "Parameters of !watchdog() changed, you use $severity WATCHDOG_DEBUG instead of $type 'debug'"
+msgstr "Parametre til !watchdog() ændret, du bruger $severity WATCHDOG_DEBUG i stedet for $type 'debug'"
+
+#: includes/coder_6x.inc:977
+msgid "!book_admin_orphan() is deprecated"
+msgstr "!book_admin_orphan() er forældet"
+
+#: includes/coder_6x.inc:988
+msgid "!book_content() is deprecated"
+msgstr "!book_content() er forældet"
+
+#: includes/coder_6x.inc:999
+msgid "!book_form() is deprecated"
+msgstr "!book_form() er forældet"
+
+#: includes/coder_6x.inc:1010
+msgid "!book_insert() is deprecated"
+msgstr "!book_insert() er forældet"
+
+#: includes/coder_6x.inc:1021
+msgid "!book_location() is deprecated"
+msgstr "!book_location() er forældet"
+
+#: includes/coder_6x.inc:1032
+msgid "!book_location_down() is deprecated"
+msgstr "!book_location_down() er forældet"
+
+#: includes/coder_6x.inc:1043
+msgid "!book_node_visitor_html_post() is deprecated"
+msgstr "!book_node_visitor_html_post() er forældet"
+
+#: includes/coder_6x.inc:1054
+msgid "!book_node_visitor_html_pre() is deprecated"
+msgstr "!book_node_visitor_html_pre() er forældet"
+
+#: includes/coder_6x.inc:1065
+msgid "!book_recurse() is deprecated"
+msgstr "!book_recurse() er forældet"
+
+#: includes/coder_6x.inc:1076
+msgid "!book_toc_recurse() is deprecated"
+msgstr "!book_toc_recurse() er forældet"
+
+#: includes/coder_6x.inc:1087
+msgid "!book_tree() is deprecated"
+msgstr "!book_tree() er forældet"
+
+#: includes/coder_6x.inc:1098
+msgid "!book_tree_recurse() is deprecated"
+msgstr "!book_tree_recurse() er forældet"
+
+#: includes/coder_6x.inc:1109
+msgid "Parameters to !book_admin_edit() have changed"
+msgstr "Parametre til !book_admin_edit() er ændret"
+
+#: includes/coder_6x.inc:1120
+msgid "Parameters to !book_toc() have changed"
+msgstr "Parametre til !book_toc() er ændret"
+
+#: includes/coder_6x.inc:1131
+msgid "Parameters to !book_export_html() have changed"
+msgstr "Parametre til !book_export_html() er ændret"
+
+#: includes/coder_6x.inc:1142
+msgid "Parameters to !book_export() have changed"
+msgstr "Parametre til !book_export() er ændret"
+
+#: includes/coder_6x.inc:1153
+msgid "Parameters to !book_outline() have changed"
+msgstr "Parametre til !book_outline() er ændret"
+
+#: includes/coder_6x.inc:1164
+msgid "Parameters to !book_prev() have changed"
+msgstr "Parametre til !book_prev() er ændret"
+
+#: includes/coder_6x.inc:1175
+msgid "Parameters to !book_next() have changed"
+msgstr "Parametre til !book_next() er ændret"
+
+#: includes/coder_6x.inc:1186
+msgid "!hook_nodeapi('submit') has been replaced by op='presave'"
+msgstr "!hook_nodeapi('submit') er blevet erstattet af  op='presave'"
+
+#: includes/coder_6x.inc:1197
+msgid "Remove $row argument from !db_result() method"
+msgstr "Fjern $row argument fra !db_result()-metoden"
+
+#: includes/coder_6x.inc:1208
+msgid "Parameters to !drupal_mail() have changed"
+msgstr "Parametre til !drupal_mail() er ændret"
+
+#: includes/coder_6x.inc:1219
+msgid "Use the new Schema API to create and drop tables rather than db_query()"
+msgstr "Brug det nye Schema API til at oprette og droppe tabeller i stedet for db_query()"
+
+#: includes/coder_6x.inc:1226
+msgid "Parameters to !user_authenticate have changed"
+msgstr "Parametre til !user_authenticate er ændret"
+
+#: includes/coder_6x.inc:1237
+msgid "Parameters to !hook_access() have changed"
+msgstr "Parametre til !hook_access() er ændret"
+
+#: includes/coder_6x.inc:1248
+msgid "Use !menu_get_object() to get an object based on your path"
+msgstr "Brug !menu_get_object() til at få et objekt baseret på din sti"
+
+#: includes/coder_6x.inc:1259
+msgid "Submit handlers use $form_state rather than returning urls"
+msgstr "Submit handlers bruger $form_state i stedet for at returnere URLer"
+
+#: includes/coder_6x.inc:1267
+msgid "Menu item titles and descriptions should now no longer be wrapped in t() calls."
+msgstr "Titler og beskrivelser af menupunkter skal ikke længere pakkes ind i kald til t()."
+
+#: includes/coder_comment.inc:128
+msgid "Drupal Commenting Standards"
+msgstr "Drupal kommentarstandarder"
+
+#: includes/coder_comment.inc:131;
+#: includes/coder_style.inc:152
+msgid "every developer should use"
+msgstr "enhver udvikler bør bruge"
+
+#: includes/coder_security.inc:55
+msgid "very basic, needs work, but what it finds is good"
+msgstr "meget basal, behøver arbejde, hvad den finder er godt"
+
+#: includes/coder_security.inc:77
+msgid "!l() already contains a !check_plain() call by default"
+msgstr "!l() indeholder allerede et !check_plain() kald som standard"
+
+#: includes/coder_security.inc:86
+msgid "the use of REQUEST_URI is prone to XSS exploits and does not work on IIS; use !request_uri() instead"
+msgstr "brugen af REQUEST_URI kan føre til XSS-svagheder og virker ikke på IIS, brug !request_uri() i stedet"
+
+#: includes/coder_security.inc:95
+msgid "In SQL strings, Use !db_query() placeholders in place of variables.  This is a potential source of SQL injection attacks when the variable can come from user data."
+msgstr "Brug !db_query() placeholders i SQL-strenge i stedet for variable. Dette er en potentiel kilde til SQL-injektions-angreb når variablen kan stamme fra brugerdata."
+
+#: includes/coder_security.inc:101
+msgid "Use %s and %d variable substitution.  When inserting an array of values use <code>$placeholders = implode(',', array_fill(0, count($args), \"'%s'\"));</code>"
+msgstr "Brug %s og %d variabeludskiftning. Brug <code>$placeholders = implode(',', array_fill(0, count($args), \"'%s'\"));</code> når du indsætter en række af værdier."
+
+#: includes/coder_security.inc:107
+msgid "SQL query handling data in a potentially insecure way by using the %s placeholder without wrapping it in single quotes.  This is a potential source of SQL injection attacks when the value can come from user data."
+msgstr "SQL forespørgsel håndterer data på en potentielt usikker måde ved at bruge %s variablen uden at pakke den ind i anførselstegn. Dette er en potentiel kilde til SQL-injektions-angreb når variablen kan stamme fra brugerdata."
+
+#: includes/coder_sql.inc:52
+msgid "Drupal SQL Standards"
+msgstr "Drupal SQL-standarder"
+
+#: includes/coder_sql.inc:54
+msgid "new review, so use with caution"
+msgstr "ny inspektion, bruges med forsigtighed"
+
+#: includes/coder_sql.inc:65
+msgid "Use !db_query_range() instead of the SQL LIMIT clause"
+msgstr "Brug !db_query_range() i stedet for SQL LIMIT-klausulen"
+
+#: includes/coder_style.inc:149
+msgid "Drupal Coding Standards"
+msgstr "Drupal kodestandarder"
+
+#: includes/coder_style.inc:240
+msgid "use lowercase html tags to comply with <a href=\"@xhtml\">XHTML</a>"
+msgstr "skriv HTML-tags med små bogstaver for at respektere <a href=\"@xhtml\">XHTML</a>"
+
+#: scripts/coder_format/coder_format.inc:19
+msgid "%directory not found."
+msgstr "%directory ikke fundet"
+
+#: scripts/coder_format/coder_format.inc:64
+msgid "%file restored."
+msgstr "%file gendannet."
+
+#: scripts/coder_format/coder_format.inc:68
+msgid "%file could not be restored."
+msgstr "%file kunne ikke gendannes."
+
+#: scripts/coder_format/coder_format.inc:77
+msgid "%file could not be backup."
+msgstr "%file kunne ikke sikkerhedskopieres."
+
+#: scripts/coder_format/coder_format.inc:95
+msgid "%file processed."
+msgstr "%file behandlet."
+
+#: scripts/coder_format/coder_format.inc:99
+msgid "An error occurred while processing %file."
+msgstr "Der opstod en fejl under behandling af %file."
+
+#: scripts/coder_format/coder_format.inc:104
+msgid "%file could not be opened."
+msgstr "%file kan ikke åbnes."
+
+#: tests/coder_6x.inc:34,35
+msgid "Removed %username user."
+msgstr "Bruger %user fjernet."
+
+#: tests/coder_6x.inc:73,75,76
+msgid "Do you really want to delete this?"
+msgstr "Ønsker du virkelig at slette dette?"
+
+#: tests/coder_6x.inc:73
+msgid "Don't do it unless you're really sure!"
+msgstr "Gør det ikke medmindre du er helt sikker!"
+
+#: tests/coder_6x.inc:73
+msgid "Delete it"
+msgstr "Slet det"
+
+#: tests/coder_6x.inc:73
+msgid "Go back"
+msgstr "Gå tilbage"
+
+#: tests/coder_6x.inc:216
+msgid "My title"
+msgstr "Min titel"
+
+#: tests/coder_6x.inc:217
+msgid "My description"
+msgstr "Min beskrivelse"
+
+#: tests/coder_6x.inc:36
+msgid "My debug message here"
+msgstr "Min fejlsøgningsbesked her"
+
+#: tests/coder_6x.inc:31,32
+msgid "There is currently 1 %type post on your site."
+msgid_plural "There are currently @count %type posts on your site."
+msgstr[0] "Der er i øjeblikket 1 %type indlæg på dit site."
+msgstr[1] "Der er i øjeblikket @count %type indlæg på dit site."
+
+#: tests/coder_sql.inc:18
+msgid "select something from this"
+msgstr "vælg noget herfra"
+
+#: tests/coder_sql.inc:19
+msgid "update something"
+msgstr "opdatér noget"
+
+#: tests/coder_sql.inc:20
+msgid "insert something"
+msgstr "indsæt noget"
+
+#: tests/coder_sql.inc:21
+msgid "delete something"
+msgstr "slet noget"
+
