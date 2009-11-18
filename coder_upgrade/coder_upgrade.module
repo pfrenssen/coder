@@ -21,7 +21,7 @@ module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
 module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
 
 /**
- * Implement hook_permission().
+ * Implements hook_permission().
  */
 function coder_upgrade_permission() {
   return array(
@@ -33,20 +33,9 @@ function coder_upgrade_permission() {
 }
 
 /**
- * Implement hook_menu().
+ * Implements hook_menu().
  */
 function coder_upgrade_menu() {
-  // Settings related items.
-  $items['admin/config/development/coder/configure/upgrade'] = array(
-    'title' => 'Upgrade',
-    'description' => 'Configure the module conversion suite.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('coder_upgrade_settings_form'),
-    'access arguments' => array('administer site configuration'),
-    'type' => MENU_LOCAL_TASK,
-    'weight' => 1,
-  );
-
   // Conversion items.
   $items['admin/config/development/coder/upgrade'] = array(
     'title' => 'Upgrade',
@@ -54,6 +43,22 @@ function coder_upgrade_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('coder_upgrade_conversions_form'),
     'access arguments' => array('administer code conversions'),
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  // Run items.
+  $items['admin/config/development/coder/upgrade/run'] = array(
+    'title' => 'Run',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+
+  // Settings related items.
+  $items['admin/config/development/coder/upgrade/settings'] = array(
+    'title' => 'Settings',
+    'description' => 'Configure the module conversion suite.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('coder_upgrade_settings_form'),
+    'access arguments' => array('administer site configuration'),
     'type' => MENU_LOCAL_TASK,
   );
 
@@ -308,10 +313,16 @@ function coder_upgrade_conversions_form($form, &$form_state) {
   $form['tabs']['directories'] = $directory_fs;
   $form['tabs']['modules'] = $module_fs;
 
+  $form['notice'] = array(
+    '#type' => 'item',
+    '#title' => t('Notice'),
+    '#markup' => t("The 'Convert files' button below has been disabled pending a major refactoring of the !link module.", array('!link' => l('Grammar Parser', 'http://drupal.org/project/pgp'))),
+  );
+
   $form['convert'] = array(
     '#type' => 'submit',
     '#value' => t('Convert files'),
-    '#disabled' => !$dirs,
+    '#disabled' => TRUE, // !$dirs,
   );
 
   return $form;
@@ -405,7 +416,7 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
 }
 
 /**
- * Set the default values to display on the module conversions form.
+ * Sets the default values to display on the module conversions form.
  *
  * @return array of default values.
  */
@@ -437,7 +448,7 @@ function coder_upgrade_conversions_form_defaults($form_state) {
 }
 
 /**
- * Return all submitted values.
+ * Returns all submitted values.
  *
  * @param array $values
  *   Array of $form_state['values'].
@@ -455,7 +466,7 @@ function coder_upgrade_selections($values) {
 }
 
 /**
- * Return a list of submitted values.
+ * Returns a list of submitted values.
  *
  * @param array $values
  *   Array slice from $form_state['values'].
@@ -473,7 +484,7 @@ function coder_upgrade_selections_extract($values) {
 }
 
 /**
- * Return list of contributed modules.
+ * Returns list of contributed modules.
  *
  * @return array
  *   Array of contributed modules.
@@ -503,7 +514,7 @@ function coder_upgrade_module_list() {
 }
 
 /**
- * Return path to log file.
+ * Returns path to log file.
  *
  * @return string
  *   Path to file.
@@ -518,7 +529,7 @@ function coder_upgrade_log_path() {
 }
 
 /**
- * Return link to patch file.
+ * Returns link to patch file.
  *
  * @param string $name
  *   String of the patch filename.
@@ -530,7 +541,7 @@ function coder_upgrade_patch_link($name) {
 }
 
 /**
- * Return patch file wrapped in html tags.
+ * Returns patch file wrapped in html tags.
  *
  * @param string $filename
  *   String of the patch filename.
@@ -542,7 +553,7 @@ function coder_upgrade_patch_display($filename) {
 }
 
 /**
- * Return path to patch file.
+ * Returns path to patch file.
  *
  * @param string $filename
  *   String of the patch filename.

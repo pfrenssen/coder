@@ -13,6 +13,7 @@
  */
 
 require_once drupal_get_path('module', 'coder_upgrade') . '/conversions/coder_upgrade.end.inc';
+require_once drupal_get_path('module', 'coder_upgrade') . '/conversions/coder_upgrade.list.inc';
 
 /**
  * Return the list of upgrade sets from all modules.
@@ -298,11 +299,11 @@ function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array
   }
 
   // Include parser files.
-  require_once drupal_get_path('module', 'pgp') . '/pgp.parser.inc';
-  require_once drupal_get_path('module', 'pgp') . '/pgp.reader.inc';
-  require_once drupal_get_path('module', 'pgp') . '/pgp.writer.inc';
-  require_once drupal_get_path('module', 'pgp') . '/pgp.editor.inc';
-  require_once drupal_get_path('module', 'pgp') . '/pgp.list.inc';
+  require_once drupal_get_path('module', 'pgp') . '/engine/pgp.parser.inc';
+  require_once drupal_get_path('module', 'pgp') . '/engine/pgp.reader.inc';
+  require_once drupal_get_path('module', 'pgp') . '/engine/pgp.writer.inc';
+  require_once drupal_get_path('module', 'pgp') . '/engine/pgp.editor.inc';
+  require_once drupal_get_path('module', 'pgp') . '/engine/pgp.list.inc';
 
   // Create reader object; pass it to the routines.
   $reader = new PGPReader($new);

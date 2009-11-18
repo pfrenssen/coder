@@ -15,7 +15,7 @@ function coder_upgrade_help($path) {
   $input = file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);
   $output = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
   switch ($path) {
-    case 'admin/config/development/coder/configure/upgrade':
+    case 'admin/config/development/coder/upgrade/settings':
       return tp('This is a list of the variables used by the automated module conversion suite.');
     case 'admin/config/development/coder/upgrade':
       return tp('The purpose of this module is to automate as much as possible the task of updating a contributed module for Drupal API changes.' .
@@ -42,7 +42,7 @@ function coder_upgrade_help($path) {
                 ' You may also upload your module to a modules directory beneath the sites directory (e.g. sites/all/modules).',
                   array('!input' => $input,
                        '!output' => $output,
-                       '!link' => l(t('here'), 'admin/config/development/coder/configure/upgrade'))) .
+                       '!link' => l(t('here'), 'admin/config/development/coder/upgrade/settings'))) .
              tp('To apply the conversions, go to the !link page, select the appropriate runtime parameters based on the instructions below, and click the Convert files button.' .
                 ' In the instructions below, references to checkboxes and other interface items apply to the development page.',
                  array('!input' => $input,

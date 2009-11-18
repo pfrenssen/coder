@@ -2,9 +2,18 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2009-11-18):
+   * Changes made to conform to revised core api or standards:
+   * - use third person tense in hook_x comments
+   * - manually include files again
+   * Change settings menu path to 'admin/config/development/coder/upgrade/settings'.
+   * Disable upgrade functionality until grammar parser refactoring is complete.
+
 - Changes (2009-10-18):
-   * Changed menu path to 'admin/config/development/coder/upgrade'.
-   * Changed menu path to 'admin/config/development/coder/configure/upgrade'.
+   * Changes made to conform to revised core api or standards:
+   * - add 'config' to menu paths
+   * - add $form to parameters of form builder functions
+   * Change settings menu path to 'admin/config/development/coder/configure/upgrade'.
 
 - Changes (2009-08-24):
    * Change calls to file_check_directory to file_prepare_directory in light of core function rename.
@@ -48,4 +57,3 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
    * Restructure process to always run all conversions.
    * Revise help text.
    * Add grammar parser (pgp) module as a dependency.
-
