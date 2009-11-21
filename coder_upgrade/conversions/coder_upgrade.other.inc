@@ -256,36 +256,55 @@ function coder_upgrade_callback_function_calls(&$item) {
       $name['value'] = 'taxonomy_term_load';
       break;
 
-    case 'taxonomy_get_tree':
-      // Assume they are not default values if present.
-      if ($item['parameters']->count() > 3) {
-        $p2 = $item['parameters']->get(2)->data;
-        $p3 = $item['parameters']->get(3)->data;
-        $item['parameters']->updateKey(2, $p3);
-        $item['parameters']->updateKey(3, $p2);
+    case 'taxonomy_get_tree': // DONE
+      $depth = '$max_depth = NULL /* TODO Set this variable. */';
+      $count = $item->parameters->count();
+      // Adjust parameters.
+      if ($count > 3) {
+        // Switch places.
+        $p2 = $item->getParameter(2);
+        $p3 = $item->getParameter(3);
+        $item->setParameter(2, $p3);
+        $item->setParameter(3, $p2);
       }
-      elseif ($item['parameters']->count() > 2) {
-        $class->insertParameter($item, 2, '$max_depth = NULL /* TODO Set this variable. */');
+      elseif ($count > 2) {
+        // Insert parameter due to change in parameter order.
+        $class->insertParameter($item, 2, $depth);
+        $count = $item->parameters->count();
       }
-      // TODO Eliminate default variables from right to left.
-      // TODO Do we need to change module_invoke('taxonomy', 'get_tree', ...)? See patch code in example function.
+
+      // Remove default parameters from right to left.
+      if ($count == 4) {
+        $value = $item->printParameter(3);
+        if ($value == '-1') {
+          $item->deleteParameter(3);
+          $count = $item->parameters->count();
+        }
+      }
+      if ($count == 3) {
+        $value = $item->printParameter(2);
+        if ($value == 'NULL' || $value == $depth) {
+          $item->deleteParameter(2);
+        }
+      }
       break;
 
-    case 'taxonomy_save_term':
+    case 'taxonomy_save_term': // DONE
       $name['value'] = 'taxonomy_term_save';
-      $temp = $class->printParameters($item);
+      $temp = $item->printParameters();
       $class->setParameters($item, array('$term /* TODO Term object replaces array ' . $temp . ' */)'));
       break;
 
-    case 'taxonomy_save_vocabulary':
+    case 'taxonomy_save_vocabulary': // DONE
       $name['value'] = 'taxonomy_vocabulary_save';
-      $temp = $class->printParameters($item);
+      $temp = $item->printParameters();
       $class->setParameters($item, array('$vocabulary /* TODO Vocabulary object replaces array ' . $temp . ' */)'));
       break;
 
-    case 'time':
-      $temp = $editor->expressionToStatement('REQUEST_TIME');
-      $item = $temp['operand_1'];
+    case 'time': // DONE
+      $expression = $editor->expressionToStatement('REQUEST_TIME');
+      coder_upgrade_debug_echo($expression->print_r());
+      $item = $expression->getElement(0);
       break;
   }
 }
