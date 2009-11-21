@@ -54,15 +54,24 @@
 function coder_upgrade_convert_function_calls(&$reader) {
   $editor = new PGPEditor();
   $types = array(T_STRING);
-  $editor->traverse_callback($reader->getFunctionCalls(), 'coder_upgrade_callback_function_calls', $types);
+  $editor->traverseCallback($reader->getFunctionCalls(), 'coder_upgrade_callback_function_calls', $types);
 }
 
+/**
+ * Callback routine for function call changes using grammar parser.
+ *
+ * @param PGPFunctionCall2 $item
+ *   A function call object of the expression or statement.
+ */
 function coder_upgrade_callback_function_calls(&$item) {
-  $name = &$item['name'];
-  $value = &$name['value'];
+  $editor = new PGPEditor();
+  $class = new PGPFunctionCall();
+  $list = new PGPList();
+  
+  $name = &$item->name;
   switch ($name['value']) {
-    case 'check_markup':
-      if ($item['parameters']->count() > 2) {
+    case 'check_markup': // DONE
+      if ($item->parameters->count() > 2) {
         $class->insertParameter($item, 2, '$langcode = \'\' /* TODO Set this variable. */');
       }
       break;
