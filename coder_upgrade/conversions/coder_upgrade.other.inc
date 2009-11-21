@@ -161,8 +161,8 @@ function coder_upgrade_callback_function_calls(&$item) {
       $name['value'] = 'drupal_add_html_head';
       break;
 
-    case 'drupal_system_listing':
-      $temp = $class->printParameter($item, 0);
+    case 'drupal_system_listing': // DONE
+      $temp = $item->printParameter(0);
       // Check for type == T_CONSTANT_ENCAPSED_STRING
       // Check for a '/' in the mask and use a different mask or delimit the '/' with '\/'.
       if ($temp[0] == "'") {
@@ -174,15 +174,17 @@ function coder_upgrade_callback_function_calls(&$item) {
       // else if type == T_VARIABLE, find the $mask used in the call and examine its value.
       break;
 
-    case 'drupal_uninstall_module':
+    case 'drupal_uninstall_module': // DONE
       $name['value'] = 'drupal_uninstall_modules';
-      $temp = $class->printParameters($item);
+      $temp = $item->printParameters();
       $class->setParameters($item, array('array(' . $temp . ')'));
       break;
 
-    case 'file_scan_directory':
+    case 'file_scan_directory': // DONE
+      // TODO Part of http://drupal.org/node/224333#preg_match
       // TODO Other changes apply to this function call.
-      $temp = $class->printParameter($item, 1);
+      coder_upgrade_debug_echo($item->print_r());
+      $temp = $item->printParameter(1);
       // Check for type == T_CONSTANT_ENCAPSED_STRING
       // Check for a '/' in the mask and use a different mask or delimit the '/' with '\/'.
       if ($temp[0] == "'") {
@@ -194,13 +196,16 @@ function coder_upgrade_callback_function_calls(&$item) {
       // else if type == T_VARIABLE, find the $mask used in the call and examine its value.
       break;
 
-    case 'file_set_status':
-      if ($item['parameters']->count() == 2) {
-        $p0 = $class->printParameter($item, 0);
-        $p1 = $class->printParameter($item, 1);
+    case 'file_set_status': // DONE
+      $parent = $item->parent;
+
+      if ($item->parameters->count() == 2) {
+        $p0 = $item->printParameter(0);
+        $p1 = $item->printParameter(1);
 
         // Insert statement.
         $temp = $editor->textToStatements("{$p0}->status &= $p1");
+        $parent = $item->parent;
         $parent->container->insertBefore($parent, $temp->get(0)->data);
 
         // Change statement.
