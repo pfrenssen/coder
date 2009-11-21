@@ -222,37 +222,37 @@ function coder_upgrade_callback_function_calls(&$item) {
 //      $name['value'] = 'drupal_function_exists';
       break;
 
-    case 'module_list':
+    case 'module_list': // DONE
       $name['value'] = 'module_implements';
       $class->setParameters($item, array('$hook /* TODO Set this variable. */'));
       break;
 
-    case 'module_rebuild_cache':
+    case 'module_rebuild_cache': // DONE
       $name['value'] = 'system_get_module_data';
       break;
 
-    case 'referer_uri':
-      $temp = $editor->expressionToStatement("\$_SERVER['HTTP_REFERER']");
-      $item = $temp['operand_1'];
+    case 'referer_uri': // DONE
+      $expression = $editor->expressionToStatement("\$_SERVER['HTTP_REFERER']");
+      $item = $expression->getElement(0);
       break;
 
-    case 'set_time_limit':
+    case 'set_time_limit': // DONE
       $name['value'] = 'drupal_set_time_limit';
       break;
 
-    case 'system_theme_data':
+    case 'system_theme_data': // DONE
       $name['value'] = 'system_get_theme_data';
       break;
 
-    case 'taxonomy_del_term':
+    case 'taxonomy_del_term': // DONE
       $name['value'] = 'taxonomy_term_delete';
       break;
 
-    case 'taxonomy_del_vocabulary':
+    case 'taxonomy_del_vocabulary': // DONE
       $name['value'] = 'taxonomy_vocabulary_delete';
       break;
 
-    case 'taxonomy_get_term':
+    case 'taxonomy_get_term': // DONE
       $name['value'] = 'taxonomy_term_load';
       break;
 
