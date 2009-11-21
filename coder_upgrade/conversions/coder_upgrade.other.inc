@@ -67,7 +67,7 @@ function coder_upgrade_callback_function_calls(&$item) {
   $editor = new PGPEditor();
   $class = new PGPFunctionCall();
   $list = new PGPList();
-  
+
   $name = &$item->name;
   switch ($name['value']) {
     case 'check_markup': // DONE
@@ -98,10 +98,10 @@ function coder_upgrade_callback_function_calls(&$item) {
 
     case 'drupal_clone': // DONE
       $name['value'] = 'clone';
-      $item['noparens'] = 1;
+      $item->noparens = 1;
       break;
 
-    case 'drupal_eval':
+    case 'drupal_eval': // DONE
       /*
        * Examine the statement containing the function call.
        * Wrap the containing statement in an "if (module_exists('php'))" block.
@@ -112,35 +112,35 @@ function coder_upgrade_callback_function_calls(&$item) {
       $name['value'] = 'php_eval';
 
       // Get the parent = statement (i.e. node) this function call is part of.
-      $parent = $item['parent'];
+      $parent = $item->parent;
       $temp = $class->statementsToText($parent);
       $temp = $editor->textToStatements("if (module_exists('php')) {\n\t$temp\n}");
       $parent->data = $temp->get(0)->data;
       break;
 
-    case 'drupal_get_content':
+    case 'drupal_get_content': // DONE
       $name['value'] = 'drupal_get_region_content';
       break;
 
-    case 'drupal_get_headers':
+    case 'drupal_get_headers': // DONE
       $name['value'] = 'drupal_get_header';
       break;
 
-    case 'drupal_rebuild_code_registry':
+    case 'drupal_rebuild_code_registry': // DONE
       $name['value'] = 'registry_rebuild';
       break;
 
-    case 'drupal_rebuild_theme_registry':
+    case 'drupal_rebuild_theme_registry': // DONE
       $name['value'] = 'drupal_theme_rebuild';
       break;
 
-    case 'drupal_set_content':
+    case 'drupal_set_content': // DONE
       $name['value'] = 'drupal_add_region_content';
       break;
 
-    case 'drupal_set_header':
+    case 'drupal_set_header': // DONE
       // TODO the hook_file_download() changes. Use parser on the entire function.
-      $temp = $class->printParameters($item);
+      $temp = $item->printParameters();
       if (strpos($temp, 'Content-Type:') !== FALSE) {
         $temp = explode(':', $temp);
         foreach ($temp as $key => $string) {
@@ -157,7 +157,7 @@ function coder_upgrade_callback_function_calls(&$item) {
       }
       break;
 
-    case 'drupal_set_html_head':
+    case 'drupal_set_html_head': // DONE
       $name['value'] = 'drupal_add_html_head';
       break;
 
