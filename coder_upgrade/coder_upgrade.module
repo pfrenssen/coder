@@ -313,16 +313,16 @@ function coder_upgrade_conversions_form($form, &$form_state) {
   $form['tabs']['directories'] = $directory_fs;
   $form['tabs']['modules'] = $module_fs;
 
-  $form['notice'] = array(
-    '#type' => 'item',
-    '#title' => t('Notice'),
-    '#markup' => t("The 'Convert files' button below has been disabled pending a major refactoring of the !link module.", array('!link' => l('Grammar Parser', 'http://drupal.org/project/pgp'))),
-  );
+//  $form['notice'] = array(
+//    '#type' => 'item',
+//    '#title' => t('Notice'),
+//    '#markup' => t("The 'Convert files' button below has been disabled pending a major refactoring of the !link module.", array('!link' => l('Grammar Parser', 'http://drupal.org/project/pgp'))),
+//  );
 
   $form['convert'] = array(
     '#type' => 'submit',
     '#value' => t('Convert files'),
-    '#disabled' => TRUE, // !$dirs,
+    '#disabled' => !$dirs,
   );
 
   return $form;
