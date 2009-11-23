@@ -717,3 +717,76 @@ function coder_upgrade_convert_access(&$item) {
     $item->setParameter(1, $p0);
   }
 }
+
+/**
+ * Updates hook_perm().
+ *
+ * Rename hook_perm() to hook_permission().
+ * Permissions are required to have titles and descriptions.
+ *
+ * @param PGPClass $item
+ */
+function coder_upgrade_convert_perm(&$item) {
+  coder_upgrade_debug_echo(__METHOD__ . "\n");
+  coder_upgrade_debug_echo($item->print_r());
+
+  // Rename function.
+  $item->name .= 'ission';
+  // Update document comment.
+  $item->comment = preg_replace('@hook_perm([^i])@', "hook_permission$1", $item->comment);
+
+  // Restructure the permissions array.
+  $body = &$item->body;
+
+  if (!($return = $body->find(T_RETURN, 'reverse'))) {
+    coder_upgrade_debug_print("ERROR: return statement not found in hook_perm");
+    return;
+  }
+  echo "Printing return item\n";
+  $value = &$return['value'];
+  coder_upgrade_debug_echo($value->print_r());
+  coder_upgrade_debug_echo($value->toString());
+  echo "Printing return item DONE\n";
+
+  $array = $value->getElement();
+  if (!is_a($array, 'PGPArray')) {
+    coder_upgrade_debug_print("ERROR: return statement does not include an array of values in hook_perm");
+    return;
+  }
+  // Grab the PGPList of values.
+  $values = $array->values;
+
+  $string = "array(\n";
+  $current = $values->first();
+  while ($current->next != NULL) {
+    if ($current->type == 'value') {
+      // If the permission is other than a string (e.g. T_VARIABLE expression),
+      // then do not enclose in quotes.
+      $expression = &$current->data->first()->data;
+      $type = is_object($expression) ? $expression->type : $expression['type'];
+      $add_quotes = $type == T_CONSTANT_ENCAPSED_STRING;
+
+      $permission = &$current->data->toString();
+//      coder_upgrade_debug_echo("permission = $permission\n");
+      $permission = trim($permission, "'\"");
+      if ($add_quotes) {
+        $string .= "'$permission' => array('title' => t('$permission'), 'description' => t('TODO Add a description for $permission'),),\n";
+      }
+      else {
+        $permission2 = str_replace("'", "\'", $permission);
+        $string .= "$permission => array('title' => t($permission), 'description' => t('TODO Add a description for $permission2'),),\n";
+      }
+    }
+    $current = &$current->next;
+  }
+  $string .= ");\n";
+//  coder_upgrade_debug_echo($string);
+  $editor = new PGPEditor();
+  $expression = $editor->expressionToStatement($string);
+//  coder_upgrade_debug_echo("PRINT NEW expression\n");
+//  coder_upgrade_debug_echo($expression->print_r(3));
+//  coder_upgrade_debug_echo("PRINT NEW expression DONE\n");
+
+  // Set the return array to the new array.
+  $value->setElement(0, $expression);
+}
