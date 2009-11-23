@@ -52,6 +52,10 @@ function coder_upgrade_conversions_list() {
 
   $list['middle'] = array(
     array(
+      'name' => 'functions',
+      'type' => 'parser',
+    ),
+    array(
       'name' => 'function_calls',
       'type' => 'parser',
     ),

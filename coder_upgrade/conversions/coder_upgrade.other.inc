@@ -596,3 +596,124 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
   coder_upgrade_do_conversions($from, $to, $new);
   coder_upgrade_save_changes($cur, $new, $file, $hook);
 }
+
+/**
+ * Callback routine for function changes using grammar parser.
+ *
+ * The grammar parser API which provides helper functions for working with
+ * function objects. Some examples of typical tasks follow.
+ *
+ * @code
+ *   // Rename the function.
+ *   $item->name = 'new_function_name';
+ *
+ *   // Update the document comment.
+ *   $item->comment = preg_replace('@hook_perm([^i])@', "hook_permission$1", $item->comment);
+ *
+ *   // Get the list of body statements (note the use of the reference operator).
+ *   $body = &$item->body;
+ *
+ *   // Find the return statement in the function.
+ *   $return = $body->find(T_RETURN, 'reverse');
+ * @endcode
+ *
+ * For other examples of using the grammar parser API
+ * @see coder_upgrade_callback_function_calls
+ *
+ * @param PGPFunction $item
+ *   A function object of the statement block.
+ */
+function coder_upgrade_callback_functions(&$item) {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+
+  global $_coder_upgrade_module_name;
+
+  $name = &$item->name;
+  coder_upgrade_debug_echo("name = $name\n");
+
+  /*
+   * If the function name does not begin with the module name, then ignore it.
+   * This assumes such a function would be an instance of an API hook defined
+   * by the contributed module but implemented on behalf of another module. For
+   * this use case, the contributed module would define upgrade routines to
+   * allow other contributed modules that implement said API to upgrade their
+   * code.
+   *
+   * Example: the Views module defines hooks and implements them on behalf of
+   * core modules.
+   *
+   * Otherwise, strip the module name from the function name and use this as
+   * the key in the switch statement. In some cases (e.g. hook_update_N), some
+   * additional manipulation and testing needs to be done.
+   */
+  if (strpos($name, $_coder_upgrade_module_name) !== 0) {
+    coder_upgrade_debug_print("Ignoring function '$name' as its name does not begin with the module name");
+    return;
+  }
+
+  // By convention, the module name should be followed by an underscore.
+  $key = substr($name, strlen($_coder_upgrade_module_name) + 1);
+  coder_upgrade_debug_echo("key = $key\n");
+
+  // Update hooks need additional manipulation.
+  if (preg_match('@update_\d+$@', $key, $matches)) {
+    coder_upgrade_debug_echo(print_r($matches, 1));
+    $key = 'update_N';
+  }
+
+  switch ($key) {
+    case 'access':
+      // Changes: hook_node_access
+      coder_upgrade_convert_access($item);
+      break;
+
+    case 'perm':
+      // Changes: hook_permission and descriptions_permissions
+      coder_upgrade_convert_perm($item);
+      break;
+
+    case 'schema':
+      // Changes: schema_translation and schema_html
+      coder_upgrade_convert_schema($item);
+      break;
+
+    case 'update_N':
+      // Changes: update_php
+      coder_upgrade_convert_update_N($item);
+      break;
+  }
+}
+
+/**
+ * Updates hook_access().
+ *
+ * Replace hook_access() with hook_node_access().
+ * Switch places of first two parameters.
+ *
+ * @param PGPClass $item
+ */
+function coder_upgrade_convert_access(&$item) {
+  coder_upgrade_debug_echo(__METHOD__ . "\n");
+  coder_upgrade_debug_echo($item->print_r());
+
+  global $_coder_upgrade_module_name;
+
+  // Rename function.
+  $item->name = $_coder_upgrade_module_name . '_node_access';
+  // Update document comment.
+  $item->comment = preg_replace('@hook_access([^i])@', "hook_node_access$1", $item->comment);
+
+  // Switch places of the first two parameters.
+  echo "Printing parameters\n";
+  coder_upgrade_debug_echo($item->parameters->print_r());
+
+  $count = $item->parameters->count();
+  // Adjust parameters.
+  if ($count > 1) {
+    // Switch places.
+    $p0 = $item->getParameter(0);
+    $p1 = $item->getParameter(1);
+    $item->setParameter(0, $p1);
+    $item->setParameter(1, $p0);
+  }
+}
