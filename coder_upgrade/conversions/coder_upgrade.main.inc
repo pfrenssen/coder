@@ -130,6 +130,7 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
 function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = TRUE) {
 //  global $_coder_upgrade_filename; // TODO Only referenced in this function -- remove global
   static $ignore = array('.', '..', 'CVS', '.svn');
+  global $_coder_upgrade_module_name;
 
   $dirname = $item['old_dir'];
   $new_dirname = $item['new_dir'];
@@ -151,6 +152,9 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
 
   // Loop on files.
   $dir = opendir($dirname);
+  coder_upgrade_module_name($dir, $item);
+  rewinddir($dir);
+  $_coder_upgrade_module_name = $item['module'];
   while ($filename = readdir($dir)) {
 //    $_coder_upgrade_filename = $filename;
     if (!in_array($filename, $ignore)) {
@@ -168,6 +172,8 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
             'new_dir' => $new_dirname . '/' . $filename,
           );
           coder_upgrade_convert_dir($upgrades, $extensions, $new_item, $recursive);
+          // Reset the module name.
+          $_coder_upgrade_module_name = $item['module'];
         }
       }
       elseif (in_array(pathinfo($filename, PATHINFO_EXTENSION), array_keys($extensions))) {
@@ -304,6 +310,7 @@ function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array
   require_once drupal_get_path('module', 'pgp') . '/engine/pgp.writer.inc';
   require_once drupal_get_path('module', 'pgp') . '/engine/pgp.editor.inc';
   require_once drupal_get_path('module', 'pgp') . '/engine/pgp.list.inc';
+  require_once drupal_get_path('module', 'pgp') . '/engine/pgp.object.inc';
 
   // Create reader object; pass it to the routines.
   $reader = new PGPReader($new);
@@ -358,6 +365,29 @@ function coder_upgrade_parser_routines_exist($routines = array()) {
     }
   }
   return FALSE;
+}
+
+/**
+ * Add the module name to the item array.
+ *
+ * @param object $dir
+ *   A directory resource handle.
+ * @param array $item
+ *   Array of a directory containing the files to convert.
+ */
+function coder_upgrade_module_name(&$dir, &$item) {
+  // Extensions that indicate a module is present.
+  $extensions = array('info', 'module');
+  
+  // Loop on files.
+  while ($filename = readdir($dir)) {
+    if (!is_dir($dirname . '/' . $filename)) {
+      if (in_array(pathinfo($filename, PATHINFO_EXTENSION), array_keys($extensions))) {
+        $item['module'] = pathinfo($filename, PATHINFO_FILENAME);
+        break;
+      }
+    }
+  }
 }
 
 /**
@@ -469,6 +499,7 @@ function coder_upgrade_do_conversions($from, $to, &$subject) {
 function coder_upgrade_save_changes($cur, $new, &$file, $hook) {
   if ($new != $cur) {
     $file = str_replace($cur, $new, $file);
+//    coder_upgrade_debug_print('Completed conversions for ' . $hook);
   }
 }
 
@@ -490,4 +521,20 @@ function coder_upgrade_debug_print($text) {
   else {
     file_put_contents(coder_upgrade_log_path(), $text . "\n", FILE_APPEND);
   }
+}
+
+/**
+ * Echo debug information if echo flag is on.
+ *
+ * @param mixed $text
+ *   A string, array, or object to print.
+ */
+function coder_upgrade_debug_echo($text) {
+  global $echo;
+  $echo = TRUE; // FALSE;
+
+  if (!$echo) {
+    return;
+  }
+  echo $text;
 }
