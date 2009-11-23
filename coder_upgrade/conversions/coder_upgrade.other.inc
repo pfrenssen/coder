@@ -790,3 +790,57 @@ function coder_upgrade_convert_perm(&$item) {
   // Set the return array to the new array.
   $value->setElement(0, $expression);
 }
+
+/**
+ * Updates hook_schema().
+ *
+ * @param PGPClass $item
+ */
+function coder_upgrade_convert_schema(&$item) {
+  coder_upgrade_debug_echo(__METHOD__ . "\n");
+  $body = &$item->body;
+
+  if (!($return = $body->find(T_RETURN, 'reverse'))) {
+    coder_upgrade_debug_print("ERROR: return statement not found in hook_schema");
+    return;
+  }
+  echo "Printing return item\n";
+  coder_upgrade_debug_echo($item->print_r(0, $return));
+  echo "Printing return item DONE\n";
+  $variable = $return['value']->first();
+
+  /*
+   * Traverse the body statements looking for:
+   * - assignment to the return variable
+   * - in the assignment
+   *   - a PGPArray operand
+   *   - in the operand
+   *     - key of 'description'
+   *     - value whose first operand is PGPArray (recurse into this)
+   *       - if the value calls t() then remove t()
+   */
+  $body->searchCallback($body, 'coder_upgrade_convert_schema_callback', 'PGPFunctionCall', 'name', 'value', 't');
+}
+
+function coder_upgrade_convert_schema_callback(&$item) {
+  coder_upgrade_debug_echo(__METHOD__ . "\n");
+//  coder_upgrade_debug_echo($item->print_r());
+
+  if (get_class($item) != 'PGPFunctionCall') {
+    return;
+  }
+
+  // Fetch the first parameter of the t() call.
+  $parameter = $item->getParameter();
+  $operand = $parameter->getElement();
+//  coder_upgrade_debug_echo("operand\n");
+//  coder_upgrade_debug_echo(print_r($operand, 1));
+
+  // Parent should be the value expression in an array (key, value) pair.
+  $parent = &$item->parentExpression;
+  // Set the value to the first parameter of the t() call.
+  if ($parent->count() == 1) {
+    // This is an example of changing a function call reference.
+    $parent->get(0)->data = $operand;
+  }
+}
