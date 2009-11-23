@@ -79,32 +79,124 @@ function coder_upgrade_convert_function_calls(&$reader) {
 /**
  * Callback routine for function call changes using grammar parser.
  *
- * @param PGPFunctionCall2 $item
+ * Programmatically changing the source code requires changing the contents of
+ * the grammar object (the grammar equivalent of the code represented as a
+ * PGPList of statements). A difficult way to do this would be to manually
+ * create items (arrays or objects extended from the PGPBase class) and replace
+ * the existing grammar items with the new items. This would essntially
+ * duplicate the functionality of the PGPReader class.
+ *
+ * A simpler approach takes advantage of the grammar parser API which provides
+ * helper functions for working with function call objects. Some examples of
+ * typical tasks follow.
+ *
+ * Print a grammar object
+ *
+ * Before making a change, it is a good idea to print the contents of the
+ * grammar object to become familiar with its structure and contents. PGP
+ * provides a custom print_r function for this purpose. (NOTE: calls to the
+ * built-in print_r, var_dump or equivalent routines for this purpose is not
+ * recommended as the output may be extremely voluminous.) All of the objects
+ * (as opposed to array items) can be printed using the custom print_r routine.
+ * An array item can be printed using the built-in print_r routine.
+ * @code
+ *   // Print the grammar item (a function call object in this case).
+ *   coder_upgrade_debug_echo($item->print_r());
+ *
+ *   // Print the parameters to the function call.
+ *   coder_upgrade_debug_echo($item->parameters->print_r());
+ *   // Alternatively, with a parameters object, do this.
+ *   $parameters = $item->parameters;
+ *   coder_upgrade_debug_echo($parameters->print_r());
+ * @endcode
+ *
+ * Change the name of the function being called
+ * @code
+ *   // Change the name of the function being called.
+ *   $name['value'] = 'new_function_name';
+ * @endcode
+ *
+ * Get a paramter object and an expression object
+ * @code
+ *   // Get a parameter object (PGPExpression).
+ *   $param = $item->getParameter(0);
+ *
+ *   // Get the first element of the parameter expression (PGPOperand or array).
+ *   $element = $param->getElement(0);
+ * @endcode
+ *
+ * Reorder the parameters
+ * @code
+ *  // Save the current parameters to local variables.
+ *  $p0 = $item->getParameter(0);
+ *  $p0 = $item->getParameter(1);
+ *
+ *  // Swap the parameters.
+ *  $item->setParameter(0, $p1);
+ *  $item->setParameter(1, $p0);
+ * @endcode
+ *
+ * Insert or delete a parameter object
+ * @code
+ *   $item->insertParameter(2, $expression);
+ *   $item->deleteParameter(2);
+ * @endcode
+ *
+ * Set grammar elements from a string of code
+ *
+ * As mentioned above, it is not recommended to manually create items (arrays
+ * or objects extended from the PGPBase class) and replace the existing grammar
+ * items with the new items. A simpler approach is to create the string of code
+ * to be inserted and use the PGPEditor class to convert this string to its
+ * grammar representation.
+ *
+ * @code
+ *  // Set a single parameter from a string of code.
+ *  $editor->setParameter($item, 0, $code);
+ *
+ *  // Set all of the parameters from an array of code strings.
+ *  $editor->setParameters($item, array('$form', '$form_state'));
+ *
+ *  // Insert a parameter from a string of code.
+ *  $editor->insertParameter($item, 2, '$langcode = \'en\'');
+ * @endcode
+ *
+ * Get grammar elements as a string of code
+ *
+ * @code
+ *  // Print a parameter (i.e. convert it from a grammar object to a string).
+ *  $parameter = $item->printParameter(1);
+ *
+ *  // Get the grammar equivalent of a string of code.
+ *  $expression = $editor->expressionToStatement($string);
+ * @endcode
+ *
+ * @param PGPFunctionCall $item
  *   A function call object of the expression or statement.
  */
 function coder_upgrade_callback_function_calls(&$item) {
   coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  coder_upgrade_debug_echo($item->print_r());
 
   /*
-   * The $item variable passed to this function is a PGPFunctionCall2 object.
+   * The $item variable passed to this function is a PGPFunctionCall object.
    * When passed here via the coder_upgrade_convert_function_calls routine, the
    * variable was an entry in the function calls array filled by the PGPReader
    * class (and accessed as $reader->getFunctionCalls()).
    *
-   * The function calls array contains references to PGPFunctionCall2 objects.
+   * The function calls array contains references to PGPFunctionCall objects.
    * As these objects are processed, they may change or eliminate other
    * references yet to be processed (i.e. if other function call references
    * are contained in the current reference). Because of this, we need to
-   * test whether $item actually refers to a PGPFunctionCall2 object before
+   * test whether $item actually refers to a PGPFunctionCall object before
    * attempting to do any processing.
    */
-  if (!isset($item) || !is_a($item, 'PGPFunctionCall2')) {
+  if (!isset($item) || !is_a($item, 'PGPFunctionCall')) {
     return;
   }
 
   // Create helper objects.
   $editor = new PGPEditor();
-  $class = new PGPFunctionCall();
   $list = new PGPList();
 
   // Process function call.
@@ -112,7 +204,7 @@ function coder_upgrade_callback_function_calls(&$item) {
   switch ($name['value']) {
     case 'check_markup': // DONE
       if ($item->parameters->count() > 2) {
-        $class->insertParameter($item, 2, '$langcode = \'\' /* TODO Set this variable. */');
+        $editor->insertParameter($item, 2, '$langcode = \'\' /* TODO Set this variable. */');
       }
       break;
 
@@ -133,7 +225,7 @@ function coder_upgrade_callback_function_calls(&$item) {
 
     case 'comment_validate': // DONE
       $name['value'] = 'comment_form_validate';
-      $class->setParameters($item, array('$form', '$form_state /* TODO Set these variables. */'));
+      $editor->setParameters($item, array('$form', '$form_state /* TODO Set these variables. */'));
       break;
 
     case 'drupal_clone': // DONE
@@ -153,7 +245,7 @@ function coder_upgrade_callback_function_calls(&$item) {
 
       // Get the parent = statement (i.e. node) this function call is part of.
       $parent = $item->parent;
-      $temp = $class->statementsToText($parent);
+      $temp = $editor->statementsToText($parent);
       $temp = $editor->textToStatements("if (module_exists('php')) {\n\t$temp\n}");
       $parent->data = $temp->get(0)->data;
       break;
@@ -241,14 +333,14 @@ function coder_upgrade_callback_function_calls(&$item) {
         foreach ($temp as $key => $string) {
           $temp[$key] = "'" . trim($string, "' ") . "'";
         }
-        $class->setParameters($item, $temp);
+        $editor->setParameters($item, $temp);
       }
       elseif (strpos($temp, "\$_SERVER['SERVER_PROTOCOL']") !== FALSE ||
               strpos($temp, '\$_SERVER["SERVER_PROTOCOL"]') !== FALSE) {
         $from = '@\$_SERVER\[(\'|")SERVER_PROTOCOL(\'|")\]\s*\.\s*(\'|")\s*(.*?)(\'|")@';
         $to = "$3$4$3";
         $temp = preg_replace($from, $to, $temp);
-        $class->setParameters($item, array($temp));
+        $editor->setParameters($item, array($temp));
       }
       break;
 
@@ -257,7 +349,6 @@ function coder_upgrade_callback_function_calls(&$item) {
       break;
 
     case 'drupal_set_title': // DONE
-      coder_upgrade_debug_echo($item->print_r());
       $temp = $item->printParameters();
       coder_upgrade_debug_echo("temp = $temp\n");
 
@@ -268,16 +359,16 @@ function coder_upgrade_callback_function_calls(&$item) {
         $temp = $temp->getElement(0);
         coder_upgrade_debug_echo("Printing the first \n");
         coder_upgrade_debug_echo($temp->print_r());
-        $class->setParameter($item, 0, $temp->printParameter(0));
+        $editor->setParameter($item, 0, $temp->printParameter(0));
         coder_upgrade_debug_echo($item->print_r());
         break;
       }
       $parameters = &$item->parameters;
-      if ($call = &$parameters->search($parameters, 'PGPFunctionCall2', 'name', 'value', 't')) {
+      if ($call = &$parameters->search($parameters, 'PGPFunctionCall', 'name', 'value', 't')) {
         $temp = $call->toString();
         coder_upgrade_debug_echo("temp = $temp\n");
         if (preg_match('#(\'|")@\w+(\'|")\s*=>\s*#', $temp)) {
-          $class->setParameter($item, 1, 'PASS_THROUGH');
+          $editor->setParameter($item, 1, 'PASS_THROUGH');
           coder_upgrade_debug_echo($item->print_r(0, $item));
         }
       }
@@ -288,10 +379,10 @@ function coder_upgrade_callback_function_calls(&$item) {
       // Check for type == T_CONSTANT_ENCAPSED_STRING
       // Check for a '/' in the mask and use a different mask or delimit the '/' with '\/'.
       if ($temp[0] == "'") {
-        $class->setParameter($item, 0, "'/" . substr($temp, 1, -1) . "/'");
+        $editor->setParameter($item, 0, "'/" . substr($temp, 1, -1) . "/'");
       }
       elseif ($temp[0] == '"') {
-        $class->setParameter($item, 0, '"/' . substr($temp, 1, -1) . '/"');
+        $editor->setParameter($item, 0, '"/' . substr($temp, 1, -1) . '/"');
       }
       // else if type == T_VARIABLE, find the $mask used in the call and examine its value.
       break;
@@ -299,28 +390,25 @@ function coder_upgrade_callback_function_calls(&$item) {
     case 'drupal_uninstall_module': // DONE
       $name['value'] = 'drupal_uninstall_modules';
       $temp = $item->printParameters();
-      $class->setParameters($item, array('array(' . $temp . ')'));
+      $editor->setParameters($item, array('array(' . $temp . ')'));
       break;
 
     case 'file_scan_directory': // DONE
       // TODO Part of http://drupal.org/node/224333#preg_match
       // TODO Other changes apply to this function call.
-      coder_upgrade_debug_echo($item->print_r());
       $temp = $item->printParameter(1);
       // Check for type == T_CONSTANT_ENCAPSED_STRING
       // Check for a '/' in the mask and use a different mask or delimit the '/' with '\/'.
       if ($temp[0] == "'") {
-        $class->setParameter($item, 1, "'/" . substr($temp, 1, -1) . "/'");
+        $editor->setParameter($item, 1, "'/" . substr($temp, 1, -1) . "/'");
       }
       elseif ($temp[0] == '"') {
-        $class->setParameter($item, 1, '"/' . substr($temp, 1, -1) . '/"');
+        $editor->setParameter($item, 1, '"/' . substr($temp, 1, -1) . '/"');
       }
       // else if type == T_VARIABLE, find the $mask used in the call and examine its value.
       break;
 
     case 'file_set_status': // DONE
-      $parent = $item->parent;
-
       if ($item->parameters->count() == 2) {
         $p0 = $item->printParameter(0);
         $p1 = $item->printParameter(1);
@@ -344,9 +432,53 @@ function coder_upgrade_callback_function_calls(&$item) {
 //      $name['value'] = 'drupal_function_exists';
       break;
 
+    case 'module_invoke':
+      // http://drupal.org/node/224333#taxonomy_get_tree
+      $count = $item->parameters->count();
+      // Confirm this call relates to our topic.
+      if ($count > 2) {
+        $p0 = $item->printParameter(0);
+        $p1 = $item->printParameter(1);
+        if ($p0 != "'taxonomy'" || $p1 != "'get_tree'") {
+          coder_upgrade_debug_echo("FAILED to relate\n");
+          break;
+        }
+      }
+
+      // Adjust parameters.
+      if ($count > 5) {
+        // Switch places.
+        $p4 = $item->getParameter(4);
+        $p5 = $item->getParameter(5);
+        $item->setParameter(4, $p5);
+        $item->setParameter(5, $p4);
+      }
+      elseif ($count > 4) {
+        // Insert parameter due to change in parameter order.
+        $editor->insertParameter($item, 4, '$max_depth = NULL /* TODO Set this variable. */');
+        $count = $item->parameters->count();
+      }
+
+      // Remove default parameters from right to left.
+      if ($count == 6) {
+        $value = $item->printParameter(5);
+        if ($value == '-1') {
+          $item->deleteParameter(5);
+          $count = $item->parameters->count();
+        }
+      }
+      if ($count == 5) {
+        $value = $item->printParameter(4);
+        if ($value == 'NULL' || $value == '$max_depth = NULL /* TODO Set this variable. */') {
+          $item->deleteParameter(4);
+        }
+      }
+      coder_upgrade_debug_echo($item->print_r());
+      break;
+
     case 'module_list': // DONE
       $name['value'] = 'module_implements';
-      $class->setParameters($item, array('$hook /* TODO Set this variable. */'));
+      $editor->setParameters($item, array('$hook /* TODO Set this variable. */'));
       break;
 
     case 'module_rebuild_cache': // DONE
@@ -391,7 +523,7 @@ function coder_upgrade_callback_function_calls(&$item) {
       }
       elseif ($count > 2) {
         // Insert parameter due to change in parameter order.
-        $class->insertParameter($item, 2, $depth);
+        $editor->insertParameter($item, 2, $depth);
         $count = $item->parameters->count();
       }
 
@@ -414,13 +546,13 @@ function coder_upgrade_callback_function_calls(&$item) {
     case 'taxonomy_save_term': // DONE
       $name['value'] = 'taxonomy_term_save';
       $temp = $item->printParameters();
-      $class->setParameters($item, array('$term /* TODO Term object replaces array ' . $temp . ' */)'));
+      $editor->setParameters($item, array('$term /* TODO Term object replaces array ' . $temp . ' */)'));
       break;
 
     case 'taxonomy_save_vocabulary': // DONE
       $name['value'] = 'taxonomy_vocabulary_save';
       $temp = $item->printParameters();
-      $class->setParameters($item, array('$vocabulary /* TODO Vocabulary object replaces array ' . $temp . ' */)'));
+      $editor->setParameters($item, array('$vocabulary /* TODO Vocabulary object replaces array ' . $temp . ' */)'));
       break;
 
     case 'time': // DONE
