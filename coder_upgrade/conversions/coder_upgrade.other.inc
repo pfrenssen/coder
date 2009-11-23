@@ -598,6 +598,34 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
 }
 
 /**
+ * Function changes using grammar parser.
+ *
+ * Module Info / Install
+ * http://drupal.org/node/224333#update_php
+ *
+ *
+ * Permissions and Access
+ * http://drupal.org/node/224333#hook_permission
+ * http://drupal.org/node/224333#descriptions_permissions
+ * http://drupal.org/node/224333#hook_node_access
+ *
+ *
+ * Database
+ * http://drupal.org/node/224333#schema_translation
+ * http://drupal.org/node/224333#schema_html (NOT DONE)
+ *
+ * @param PGPReader $reader
+ *   The object containing the grammar statements of the file to convert.
+ */
+function coder_upgrade_convert_functions(&$reader) {
+//  coder_upgrade_debug_print(__FUNCTION__ . "\n");
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  $editor = new PGPEditor();
+  $types = array(T_FUNCTION);
+  $editor->traverseCallback($reader->getFunctions(), 'coder_upgrade_callback_functions', $types);
+}
+
+/**
  * Callback routine for function changes using grammar parser.
  *
  * The grammar parser API which provides helper functions for working with
@@ -842,5 +870,31 @@ function coder_upgrade_convert_schema_callback(&$item) {
   if ($parent->count() == 1) {
     // This is an example of changing a function call reference.
     $parent->get(0)->data = $operand;
+  }
+}
+
+/**
+ * Updates hook_update_N().
+ *
+ * Check hook_update_N for a Doxygen style comment.
+ *
+ * @param PGPClass $item
+ */
+function coder_upgrade_convert_update_N(&$item) {
+  coder_upgrade_debug_echo(__METHOD__ . "\n");
+//  coder_upgrade_debug_echo($item->print_r());
+
+  $comment = &$item->comment;
+  if (!is_array($comment) || empty($comment)) {
+    $comment = array(
+      'type' => T_DOC_COMMENT,
+      'value' => "/**\n * @todo Please insert a Doxygen style comment for this hook_update_N.\n *\n */",
+    );
+  }
+  elseif ($comment['type'] != T_DOC_COMMENT) {
+    $comment = array(
+      'type' => T_DOC_COMMENT,
+      'value' => "/**\n * @todo Please insert a Doxygen style comment for this hook_update_N.\n *\n *" . $comment['value'] . "\n */",
+    );
   }
 }
