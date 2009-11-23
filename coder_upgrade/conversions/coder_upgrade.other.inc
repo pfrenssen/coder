@@ -15,13 +15,16 @@
 /**
  * Function call changes using grammar parser.
  *
+ * System
  * http://drupal.org/node/224333#registry
  * http://drupal.org/node/224333#drupal_set_session (REVERTED)
  * http://drupal.org/node/224333#time
  * http://drupal.org/node/224333#rebuild_functions
  * http://drupal.org/node/224333#drupal_uninstall_modules
  * http://drupal.org/node/224333#module_implements_not_module_list
+ * http://drupal.org/node/224333#drupal_http_request_parameters
  * http://drupal.org/node/224333#system_get_module_data
+ * http://drupal.org/node/224333#static_variable_api (NOT IN THIS FUNCTION)
  * http://drupal.org/node/224333#drupal_set_html_head
  * http://drupal.org/node/224333#php_eval
  * http://drupal.org/node/224333#http_header_functions
@@ -29,22 +32,35 @@
  * http://drupal.org/node/224333#time_limit
  *
  *
+ * Comments
  * http://drupal.org/node/224333#comment_load
  * http://drupal.org/node/224333#comment_validate_removed
  * http://drupal.org/node/224333#comment_node_url
  *
  *
+ * Input Sanitization and Input Formats
  * http://drupal.org/node/224333#check_markup_params
  *
  *
+ * Taxonomy
  * http://drupal.org/node/224333#taxonomy_get_tree
  * http://drupal.org/node/224333#taxonomy_crud
  *
  *
+ * Theming
+ * http://drupal.org/node/224333#rebuild_functions (DUP System)
+ *
+ *
+ * Form API
+ * http://drupal.org/node/224333#drupal_execute_drupal_form_submit
+ *
+ *
+ * File API
  * http://drupal.org/node/224333#file_set_status
  * http://drupal.org/node/224333#preg_match
  *
  *
+ * Miscellaneous
  * http://drupal.org/node/224333#referer_uri
  * http://drupal.org/node/224333#drupal_clone
  *
@@ -52,6 +68,7 @@
  *   The object containing the grammar statements of the file to convert.
  */
 function coder_upgrade_convert_function_calls(&$reader) {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
   $editor = new PGPEditor();
   $types = array(T_STRING);
   $editor->traverseCallback($reader->getFunctionCalls(), 'coder_upgrade_callback_function_calls', $types);
@@ -64,10 +81,31 @@ function coder_upgrade_convert_function_calls(&$reader) {
  *   A function call object of the expression or statement.
  */
 function coder_upgrade_callback_function_calls(&$item) {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+
+  /*
+   * The $item variable passed to this function is a PGPFunctionCall2 object.
+   * When passed here via the coder_upgrade_convert_function_calls routine, the
+   * variable was an entry in the function calls array filled by the PGPReader
+   * class (and accessed as $reader->getFunctionCalls()).
+   *
+   * The function calls array contains references to PGPFunctionCall2 objects.
+   * As these objects are processed, they may change or eliminate other
+   * references yet to be processed (i.e. if other function call references
+   * are contained in the current reference). Because of this, we need to
+   * test whether $item actually refers to a PGPFunctionCall2 object before
+   * attempting to do any processing.
+   */
+  if (!isset($item) || !is_a($item, 'PGPFunctionCall2')) {
+    return;
+  }
+
+  // Create helper objects.
   $editor = new PGPEditor();
   $class = new PGPFunctionCall();
   $list = new PGPList();
 
+  // Process function call.
   $name = &$item->name;
   switch ($name['value']) {
     case 'check_markup': // DONE
@@ -118,12 +156,67 @@ function coder_upgrade_callback_function_calls(&$item) {
       $parent->data = $temp->get(0)->data;
       break;
 
+    case 'drupal_execute': // DONE
+      $name['value'] = 'drupal_form_submit';
+      break;
+
     case 'drupal_get_content': // DONE
       $name['value'] = 'drupal_get_region_content';
       break;
 
     case 'drupal_get_headers': // DONE
       $name['value'] = 'drupal_get_header';
+      break;
+
+    case 'drupal_http_request': // DONE
+      coder_upgrade_debug_echo($item->parameters->print_r());
+
+      $count = $item->parameters->count();
+      if ($count == 1) {
+        break;
+      }
+
+      $string = 'array(';
+      if ($count > 1) {
+        $params['headers'] = $item->printParameter(1);
+        $string .= "'headers' => " . $item->printParameter(1);
+      }
+      if ($count > 2) {
+        $value = $item->printParameter(2);
+        if ($value != "'GET'") {
+          $params['method'] = $value;
+          $string .= ", 'method' => $value";
+        }
+      }
+      if ($count > 3) {
+        $value = $item->printParameter(3);
+        if ($value != 'NULL') {
+          $params['data'] = $value;
+          $string .= ", 'data' => $value";
+        }
+      }
+      if ($count > 4) {
+        $value = $item->printParameter(4);
+        if ($value != 3) {
+          $params['max_redirects'] = $value;
+          $string .= ", 'max_redirects' => $value";
+        }
+      }
+      $string .= ')';
+      coder_upgrade_debug_echo("params\n");
+      coder_upgrade_debug_echo(print_r($params, 1));
+      coder_upgrade_debug_echo("string\n");
+      coder_upgrade_debug_echo($string . "\n");
+
+      $item->deleteParameter(4);
+      $item->deleteParameter(3);
+      $item->deleteParameter(2);
+
+      $temp = $editor->expressionToStatement($string);
+      coder_upgrade_debug_echo($temp->print_r());
+//      $reader = new PGPReader();
+//      $reader->isMultiline = FALSE;
+      $item->setParameter(1, $temp); // $item->parameters->get(1)->data = $temp;
       break;
 
     case 'drupal_rebuild_code_registry': // DONE
