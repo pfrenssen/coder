@@ -40,6 +40,8 @@
  *
  * Input Sanitization and Input Formats
  * http://drupal.org/node/224333#check_markup_params
+ * http://drupal.org/node/224333#drupal_set_title
+ * http://drupal.org/node/224333#hook_filter_params (NOT IN THIS FUNCTION)
  *
  *
  * Taxonomy
@@ -254,6 +256,33 @@ function coder_upgrade_callback_function_calls(&$item) {
       $name['value'] = 'drupal_add_html_head';
       break;
 
+    case 'drupal_set_title': // DONE
+      coder_upgrade_debug_echo($item->print_r());
+      $temp = $item->printParameters();
+      coder_upgrade_debug_echo("temp = $temp\n");
+
+      if (strpos($temp, 'check_plain') !== FALSE) {
+        // TODO Could check for isset, count of parameters, etc.???
+        // check_plain could be part of an expression (e.g. concatenation).
+        $temp = $item->getParameter(0);
+        $temp = $temp->getElement(0);
+        coder_upgrade_debug_echo("Printing the first \n");
+        coder_upgrade_debug_echo($temp->print_r());
+        $class->setParameter($item, 0, $temp->printParameter(0));
+        coder_upgrade_debug_echo($item->print_r());
+        break;
+      }
+      $parameters = &$item->parameters;
+      if ($call = &$parameters->search($parameters, 'PGPFunctionCall2', 'name', 'value', 't')) {
+        $temp = $call->toString();
+        coder_upgrade_debug_echo("temp = $temp\n");
+        if (preg_match('#(\'|")@\w+(\'|")\s*=>\s*#', $temp)) {
+          $class->setParameter($item, 1, 'PASS_THROUGH');
+          coder_upgrade_debug_echo($item->print_r(0, $item));
+        }
+      }
+      break;
+
     case 'drupal_system_listing': // DONE
       $temp = $item->printParameter(0);
       // Check for type == T_CONSTANT_ENCAPSED_STRING
@@ -405,6 +434,12 @@ function coder_upgrade_callback_function_calls(&$item) {
 /**
  * Simple regular expression changes.
  *
+ * System
+ * http://drupal.org/node/224333#moved_statistics_settings
+ *
+ *
+ * Permissions and Access
+ * http://drupal.org/node/224333#moved_statistics_settings (DUP System)
  * http://drupal.org/node/224333#php_permissions
  *
  * @param string $file
@@ -417,6 +452,10 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
 
   $from = array();
   $to = array();
+
+  // Moved admin/reports/settings to admin/config/system/statistics (replacing admin/settings/statistics).
+  $from[] = "@'admin/reports/settings'@";
+  $to[] = "'admin/config/system/statistics'";
 
   // Replace referer_uri() with PHP-provided global variable.
   $from[] = '/(\'|")use PHP for block visibility(\'|")/';
