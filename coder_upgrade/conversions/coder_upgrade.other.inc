@@ -63,6 +63,7 @@
  *
  *
  * Miscellaneous
+ * http://drupal.org/node/224333#book_toc_parameters
  * http://drupal.org/node/224333#referer_uri
  * http://drupal.org/node/224333#drupal_clone
  *
@@ -202,6 +203,26 @@ function coder_upgrade_callback_function_calls(&$item) {
   // Process function call.
   $name = &$item->name;
   switch ($name['value']) {
+    case 'book_toc': // DONE
+      // Adjust parameters.
+      $count = $item->parameters->count();
+      if ($count > 2) {
+        // Switch places.
+        $p1 = $item->getParameter(1);
+        $p2 = $item->getParameter(2);
+        $item->setParameter(1, $p2);
+        $item->setParameter(2, $p1);
+      }
+      // Remove default parameter.
+      if ($count == 3) {
+        $value = $item->printParameter(2);
+        coder_upgrade_debug_echo("value = $value\n");
+        if ($value == 'array()') {
+          $item->deleteParameter(2);
+        }
+      }
+      break;
+
     case 'check_markup': // DONE
       if ($item->parameters->count() > 2) {
         $editor->insertParameter($item, 2, '$langcode = \'\' /* TODO Set this variable. */');
@@ -614,6 +635,10 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
  * http://drupal.org/node/224333#schema_translation
  * http://drupal.org/node/224333#schema_html (NOT DONE)
  *
+ *
+ * Menus
+ * http://drupal.org/node/224333#hook_menu_link_alter
+ *
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
  */
@@ -695,6 +720,11 @@ function coder_upgrade_callback_functions(&$item) {
       coder_upgrade_convert_access($item);
       break;
 
+    case 'menu_link_alter':
+      // Changes: hook_menu_link_alter
+      coder_upgrade_convert_menu_link_alter($item);
+      break;
+
     case 'perm':
       // Changes: hook_permission and descriptions_permissions
       coder_upgrade_convert_perm($item);
@@ -744,6 +774,23 @@ function coder_upgrade_convert_access(&$item) {
     $item->setParameter(0, $p1);
     $item->setParameter(1, $p0);
   }
+}
+
+/**
+ * Updates hook_menu_link_alter().
+ *
+ * Changed hook_menu_link_alter() (removed the $menu parameter).
+ *
+ * @param PGPClass $item
+ */
+function coder_upgrade_convert_menu_link_alter($item) {
+  $count = $item->parameters->count();
+  // Adjust parameters.
+  if ($count > 1) {
+    // Delete second parameter.
+    $item->deleteParameter(1);
+  }
+  // TODO Do we need to check for $menu in the body of this hook?
 }
 
 /**
