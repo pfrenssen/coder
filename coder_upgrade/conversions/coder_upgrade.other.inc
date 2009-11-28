@@ -32,6 +32,10 @@
  * http://drupal.org/node/224333#time_limit
  *
  *
+ * Menu
+ * http://drupal.org/node/224333#comment_load (DUP Comments)
+ *
+ *
  * Comments
  * http://drupal.org/node/224333#comment_load
  * http://drupal.org/node/224333#comment_validate_removed
@@ -47,6 +51,10 @@
  * Taxonomy
  * http://drupal.org/node/224333#taxonomy_get_tree
  * http://drupal.org/node/224333#taxonomy_crud
+ *
+ *
+ * CSS
+ * http://drupal.org/node/224333#drupal_add_js_options
  *
  *
  * Theming
@@ -74,7 +82,7 @@ function coder_upgrade_convert_function_calls(&$reader) {
   coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
   $editor = new PGPEditor();
   $types = array(T_STRING);
-  $editor->traverseCallback($reader->getFunctionCalls(), 'coder_upgrade_callback_function_calls', $types);
+  $editor->traverseCallback($reader->getFunctionCalls(), 'coder_upgrade_callback_function_calls', $types, $reader);
 }
 
 /**
@@ -175,9 +183,9 @@ function coder_upgrade_convert_function_calls(&$reader) {
  * @param PGPFunctionCall $item
  *   A function call object of the expression or statement.
  */
-function coder_upgrade_callback_function_calls(&$item) {
+function coder_upgrade_callback_function_calls(&$item, &$reader) {
   coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
-  coder_upgrade_debug_echo($item->print_r());
+//  coder_upgrade_debug_echo($item->print_r());
 
   /*
    * The $item variable passed to this function is a PGPFunctionCall object.
@@ -241,12 +249,140 @@ function coder_upgrade_callback_function_calls(&$item) {
       $to = "'comment/' . \$comment->cid";
       $temp = preg_replace($from, $to, $temp);
       $temp = $editor->textToStatements($temp);
-      $parent->data = $temp->get(0)->data;
+      $parent->data = $temp->getElement(0);
       break;
 
     case 'comment_validate': // DONE
       $name['value'] = 'comment_form_validate';
       $editor->setParameters($item, array('$form', '$form_state /* TODO Set these variables. */'));
+      break;
+
+    case 'drupal_add_css':
+      // A similar comment to that in 'drupal_add_js' below applies here.
+      coder_upgrade_debug_echo($item->parameters->print_r());
+
+      $count = $item->parameters->count();
+      if ($count < 3) {
+        break;
+      }
+
+      // TODO Refactor this array-itize code into a function.
+      // Create array of options; removing any default values in the process.
+      $string = 'array(';
+      if ($count > 1) {
+        $value = $item->printParameter(1);
+        if ($value != "'module'") {
+          $params['type'] = $value;
+          $string .= ", 'type' => $value";
+        }
+      }
+      if ($count > 2) {
+        $value = $item->printParameter(2);
+        if ($value != "'all'") {
+          $params['media'] = $value;
+          $string .= ", 'media' => $value";
+        }
+      }
+      if ($count > 3) {
+        $value = $item->printParameter(3);
+        if ($value != 'TRUE') {
+          $params['preprocess'] = $value;
+          $string .= ", 'preprocess' => $value";
+        }
+      }
+      $string .= ')';
+      if (isset($params)) {
+        coder_upgrade_debug_echo("params\n");
+        coder_upgrade_debug_echo(print_r($params, 1));
+      }
+      coder_upgrade_debug_echo("string\n");
+      coder_upgrade_debug_echo($string . "\n");
+
+      $item->deleteParameter(3);
+      $item->deleteParameter(2);
+
+      if ($string != 'array()') {
+        $temp = $editor->expressionToStatement($string);
+        coder_upgrade_debug_echo($temp->print_r());
+        $item->setParameter(1, $temp);
+      }
+      break;
+
+    case 'drupal_add_js':
+      /*
+       * With
+       * drupal_add_js('misc/collapse.js', 'core', 'header', FALSE, TRUE, TRUE);
+       * we will output
+       * drupal_add_js('misc/collapse.js', array(
+       *   'type' => 'core',
+       * ));
+       * which is correct, although the function will also accept
+       * drupal_add_js('misc/collapse.js', 'core');
+       * The example begs the question why someone would have included all
+       * the default parameters.
+       */
+      coder_upgrade_debug_echo($item->parameters->print_r());
+
+      $count = $item->parameters->count();
+      if ($count < 3) {
+        break;
+      }
+
+      // Create array of options; removing any default values in the process.
+      $string = 'array(';
+      if ($count > 1) {
+        $value = $item->printParameter(1);
+        if ($value != "'module'") {
+          $params['type'] = $value;
+          $string .= ", 'type' => $value";
+        }
+      }
+      if ($count > 2) {
+        $value = $item->printParameter(2);
+        if ($value != "'header'") {
+          $params['scope'] = $value;
+          $string .= ", 'scope' => $value";
+        }
+      }
+      if ($count > 3) {
+        $value = $item->printParameter(3);
+        if ($value != 'FALSE') {
+          $params['defer'] = $value;
+          $string .= ", 'defer' => $value";
+        }
+      }
+      if ($count > 4) {
+        $value = $item->printParameter(4);
+        if ($value != 'TRUE') {
+          $params['cache'] = $value;
+          $string .= ", 'cache' => $value";
+        }
+      }
+      if ($count > 5) {
+        $value = $item->printParameter(5);
+        if ($value != 'TRUE') {
+          $params['preprocess'] = $value;
+          $string .= ", 'preprocess' => $value";
+        }
+      }
+      $string .= ')';
+      if (isset($params)) {
+        coder_upgrade_debug_echo("params\n");
+        coder_upgrade_debug_echo(print_r($params, 1));
+      }
+      coder_upgrade_debug_echo("string\n");
+      coder_upgrade_debug_echo($string . "\n");
+
+      $item->deleteParameter(5);
+      $item->deleteParameter(4);
+      $item->deleteParameter(3);
+      $item->deleteParameter(2);
+
+      if ($string != 'array()') {
+        $temp = $editor->expressionToStatement($string);
+        coder_upgrade_debug_echo($temp->print_r());
+        $item->setParameter(1, $temp);
+      }
       break;
 
     case 'drupal_clone': // DONE
@@ -268,7 +404,7 @@ function coder_upgrade_callback_function_calls(&$item) {
       $parent = $item->parent;
       $temp = $editor->statementsToText($parent);
       $temp = $editor->textToStatements("if (module_exists('php')) {\n\t$temp\n}");
-      $parent->data = $temp->get(0)->data;
+      $parent->data = $temp->getElement(0);
       break;
 
     case 'drupal_execute': // DONE
