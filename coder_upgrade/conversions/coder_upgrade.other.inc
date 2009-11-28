@@ -60,6 +60,7 @@
  *
  * Theming
  * http://drupal.org/node/224333#rebuild_functions (DUP System)
+ * http://drupal.org/node/224333#theme_changes
  *
  *
  * Form API
@@ -266,7 +267,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       $editor->setParameters($item, array('$form', '$form_state /* TODO Set these variables. */'));
       break;
 
-    case 'drupal_add_css':
+    case 'drupal_add_css': // DONE
       // A similar comment to that in 'drupal_add_js' below applies here.
       coder_upgrade_debug_echo($item->parameters->print_r());
 
@@ -317,7 +318,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       }
       break;
 
-    case 'drupal_add_js':
+    case 'drupal_add_js': // DONE
       /*
        * With
        * drupal_add_js('misc/collapse.js', 'core', 'header', FALSE, TRUE, TRUE);
@@ -476,7 +477,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       coder_upgrade_debug_echo($temp->print_r());
 //      $reader = new PGPReader();
 //      $reader->isMultiline = FALSE;
-      $item->setParameter(1, $temp); // $item->parameters->get(1)->data = $temp;
+      $item->setParameter(1, $temp);
       break;
 
     case 'drupal_rebuild_code_registry': // DONE
@@ -593,7 +594,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       }
       break;
 
-    case 'filter_formats':
+    case 'filter_formats': // DONE
       // If has a parameter, then change it to $user and add global statement.
       if ($item->parameters->count() > 0) {
         $p0 = $editor->expressionToStatement('$user');
@@ -609,7 +610,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       }
       break;
 
-    case 'format_plural':
+    case 'format_plural': // DONE
       $count = $item->parameters->count();
       if ($count < 5) {
         break;
@@ -640,7 +641,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
 //      $name['value'] = 'drupal_function_exists';
       break;
 
-    case 'module_invoke':
+    case 'module_invoke': // DONE
       // http://drupal.org/node/224333#taxonomy_get_tree
       $count = $item->parameters->count();
       // Confirm this call relates to our topic.
@@ -681,7 +682,6 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
           $item->deleteParameter(4);
         }
       }
-      coder_upgrade_debug_echo($item->print_r());
       break;
 
     case 'module_list': // DONE
@@ -706,7 +706,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       $name['value'] = 'system_rebuild_theme_data';
       break;
 
-    case 't':
+    case 't': // DONE
       $count = $item->parameters->count();
       if ($count < 3) {
         break;
@@ -789,6 +789,88 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       $editor->setParameters($item, array('$vocabulary /* TODO Vocabulary object replaces array ' . $temp . ' */)'));
       break;
 
+    case 'theme': // DONE
+      /*
+       * Create a static variable to hold the array of theme registrations.
+       * Find the theme in the list so we know the names of its parameters.
+       * Array-itize the parameters.
+       *
+       * Find the hook_theme function (using $reader passed to this function)
+       * and save its contents. This assumes the hook_theme is defined in this
+       * file!!!
+       *
+       * Add helper functions to PGPArray to get the keys and values as arrays.
+       * TODO Refactor any existing code that does this.
+       *
+       * static $themes = array();
+       *
+       * $p0 = $item->getParameter(0);
+       * $theme = $themes[$p0];
+       * $keys = keys from $theme
+       * $string = 'array(';
+       * foreach ($keys as $key) {
+       *   $string .= "'$key' => $p{$i},";
+       * }
+       * $string = ');
+       */
+      coder_upgrade_debug_echo(__FUNCTION__ . " inside theme case\n");
+      global $_coder_upgrade_module_name;
+      $found = FALSE;
+      // TODO This is what the traverseCallback should be able to do. Or search or find...
+      $functions = $reader->getFunctions();
+      foreach ($functions as $function) {
+        $name2 = &$function->name;
+        coder_upgrade_debug_echo("name\n");
+        coder_upgrade_debug_echo(print_r($name2, 1));
+        if ($name2 == $_coder_upgrade_module_name . '_theme') {
+//          coder_upgrade_debug_echo($function->print_r());
+          $found = TRUE;
+          break;
+        }
+      }
+      if (!$found) {
+        break;
+      }
+
+      // Get the keys for the appropriate theme.
+      $body = &$function->body;
+
+      if (!($return = $body->find(T_RETURN, 'reverse'))) {
+        coder_upgrade_debug_print("ERROR: return statement not found in hook_perm");
+        return;
+      }
+      $value = &$return['value'];
+      $array = $value->getElement(0);
+      if (get_class($array) == 'PGPArray') {
+        $theme = $array->getValue(-1, $item->getParameter(0)->toString());
+        $array = $theme->getElement(0);
+        $arguments = $array->getValue(-1, "'arguments'"); // TODO If upgraded, then key = 'variables'.
+        $keys = $arguments->getElement(0)->keysToArray();
+        if (empty($keys)) {
+          break;
+        }
+        print_r($keys);
+      }
+
+      $count = $item->parameters->count();
+      if ($count == 1) {
+        break;
+      }
+
+      $string = 'array(';
+      for ($index = 1; $index < $count; $index++) {
+        $string .= "{$keys[$index - 1]} => " . $item->printParameter($index) . ",\n";
+      }
+      $string .= ')';
+
+      $item->deleteParameter(2);
+      $item->deleteParameter(1);
+
+      $temp = $editor->expressionToStatement($string);
+      $temp->getElement(0)->multiline = 0;
+      $item->setParameter(1, $temp);
+      break;
+
     case 'time': // DONE
       $expression = $editor->expressionToStatement('REQUEST_TIME');
       coder_upgrade_debug_echo($expression->print_r());
@@ -804,9 +886,9 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
 
       /*
        * Two cases:
-       * - parameter is an array expression: extract values to use as new 
+       * - parameter is an array expression: extract values to use as new
        *   parameters
-       * - parameter is a variable expression (not an array): assume the 
+       * - parameter is a variable expression (not an array): assume the
        *   variable has name and pass as elements
        */
 
