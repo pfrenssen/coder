@@ -935,6 +935,10 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
  * http://drupal.org/node/224333#moved_statistics_settings (DUP System)
  * http://drupal.org/node/224333#php_permissions
  *
+ *
+ * Input Sanitization and Input Formats
+ * http://drupal.org/node/224333#filter_urls
+ *
  * @param string $file
  *   The text of the file to convert.
  */
@@ -953,6 +957,10 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
   // Replace referer_uri() with PHP-provided global variable.
   $from[] = '/(\'|")use PHP for block visibility(\'|")/';
   $to[] = "$1use PHP for settings$1";
+
+  // Moved admin/settings/filters/* to admin/settings/filter/*
+  $from[] = '@admin\/settings\/filters(\/.*?)@';
+  $to[] = "admin\/settings\/filter$1";
 
   coder_upgrade_do_conversions($from, $to, $new);
   coder_upgrade_save_changes($cur, $new, $file, $hook);
@@ -987,7 +995,7 @@ function coder_upgrade_convert_functions(&$reader) {
   coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
   $editor = new PGPEditor();
   $types = array(T_FUNCTION);
-  $editor->traverseCallback($reader->getFunctions(), 'coder_upgrade_callback_functions', $types);
+  $editor->traverseCallback($reader->getFunctions(), 'coder_upgrade_callback_functions', $types, $reader);
 }
 
 /**
@@ -1256,7 +1264,7 @@ function coder_upgrade_convert_schema_callback(&$item) {
   // Set the value to the first parameter of the t() call.
   if ($parent->count() == 1) {
     // This is an example of changing a function call reference.
-    $parent->get(0)->data = $operand;
+    $parent->setElement(0, $operand);
   }
 }
 
