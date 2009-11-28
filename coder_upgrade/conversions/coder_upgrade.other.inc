@@ -71,6 +71,10 @@
  * http://drupal.org/node/224333#preg_match
  *
  *
+ * User API
+ * http://drupal.org/node/224333#user_authenticate
+ *
+ *
  * Multi-lingual
  * http://drupal.org/node/224333#locale_context
  *
@@ -789,6 +793,51 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       $expression = $editor->expressionToStatement('REQUEST_TIME');
       coder_upgrade_debug_echo($expression->print_r());
       $item = $expression->getElement(0);
+      break;
+
+    case 'user_authenticate':
+      $count = $item->parameters->count();
+      if ($count == 0) {
+        $editor->setParameters($item, array('$name', '$password /* TODO Set these variables */'));
+        break;
+      }
+
+      /*
+       * Two cases:
+       * - parameter is an array expression: extract values to use as new 
+       *   parameters
+       * - parameter is a variable expression (not an array): assume the 
+       *   variable has name and pass as elements
+       */
+
+      $p0 = $item->getParameter();
+      $operand = $p0->getElement();
+      $class = get_class($operand);
+      if ($class == 'PGPOperand') {
+        // Get the variable name used as the parameter.
+        $parameter = $item->getParameter()->toString();
+        // Make variable assignments referring to two new parameters.
+        $assign1 = $editor->textToStatements('$name = ' . $parameter . "['name']; // TODO Set these variables");//->get(0)->data;
+        $assign2 = $editor->textToStatements('$password = ' . $parameter . "['pass'];")->getElement(0); //->data;
+        coder_upgrade_debug_echo($assign1->print_r());
+        // Insert the assignments before this statement.
+        // Get the statement (i.e. node) this function call is part of.
+        $parent = &$item->parent;
+        // Get the statement list the parent is part of.
+        $container = &$parent->container;
+        // Insert statements.
+        $container->insertListBefore($parent, $assign1, 'assignment');
+        $container->insertBefore($parent, $assign2, 'assignment');
+        // Set the parameters on this function call.
+        $editor->setParameters($item, array('$name', '$password'));
+      }
+      elseif ($class == 'PGPArray') {
+        $name = $operand->getValue(-1, "'name'")->toString();
+        $password = $operand->getValue(-1, "'pass'")->toString();
+        // Set the parameters on this function call.
+        $editor->setParameters($item, array($name, $password));
+      }
+
       break;
   }
 }
