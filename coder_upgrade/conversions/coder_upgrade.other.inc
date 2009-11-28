@@ -71,6 +71,10 @@
  * http://drupal.org/node/224333#preg_match
  *
  *
+ * Multi-lingual
+ * http://drupal.org/node/224333#locale_context
+ *
+ *
  * Miscellaneous
  * http://drupal.org/node/224333#book_toc_parameters
  * http://drupal.org/node/224333#referer_uri
@@ -574,14 +578,14 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         // Insert statement.
         $temp = $editor->textToStatements("{$p0}->status &= $p1");
         $parent = $item->parent;
-        $parent->container->insertBefore($parent, $temp->get(0)->data);
+        $parent->container->insertBefore($parent, $temp->getElement(0));
 
         // Change statement.
         $from = $temp1;
         $to = "$p0 = file_save($p0)";
         $temp = str_replace($from, $to, $temp2);
         $temp = $editor->textToStatements($temp);
-        $parent->data = $temp->get(0)->data;
+        $parent->data = $temp->getElement(0);
       }
       break;
 
@@ -599,6 +603,32 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         $statement = $editor->textToStatements("global \$user;")->getElement(0);
         $container->insertBefore($parent, $statement, 'global');
       }
+      break;
+
+    case 'format_plural':
+      $count = $item->parameters->count();
+      if ($count < 5) {
+        break;
+      }
+
+      $string = 'array(';
+      // Change all of these array-itizes to build array of strings; implode with comma separator.
+      if ($count > 4) {
+        $value = $item->printParameter(4);
+        if ($value != "'XXX_YYY'") { // TODO Default value is current language
+          $string .= "'langcode' => $value";
+        }
+      }
+      $string .= ')';
+      coder_upgrade_debug_echo("string\n");
+      coder_upgrade_debug_echo($string . "\n");
+
+      $item->deleteParameter(4);
+
+      $temp = $editor->expressionToStatement($string);
+      $temp->getElement(0)->multiline = 0;
+      coder_upgrade_debug_echo($temp->print_r());
+      $item->setParameter(4, $temp);
       break;
 
     case 'function_exists':
@@ -656,7 +686,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       break;
 
     case 'module_rebuild_cache': // DONE
-      $name['value'] = 'system_get_module_data';
+      $name['value'] = 'system_rebuild_module_data';
       break;
 
     case 'referer_uri': // DONE
@@ -669,7 +699,33 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       break;
 
     case 'system_theme_data': // DONE
-      $name['value'] = 'system_get_theme_data';
+      $name['value'] = 'system_rebuild_theme_data';
+      break;
+
+    case 't':
+      $count = $item->parameters->count();
+      if ($count < 3) {
+        break;
+      }
+
+      $string = 'array(';
+      // Change all of these array-itizes to build array of strings; implode with comma separator.
+      if ($count > 2) {
+        $value = $item->printParameter(2);
+        if ($value != "'XXX_YYY'") { // TODO Default value is current language
+          $string .= "'langcode' => $value";
+        }
+      }
+      $string .= ')';
+      coder_upgrade_debug_echo("string\n");
+      coder_upgrade_debug_echo($string . "\n");
+
+      $item->deleteParameter(2);
+
+      $temp = $editor->expressionToStatement($string);
+      $temp->getElement(0)->multiline = 0;
+      coder_upgrade_debug_echo($temp->print_r());
+      $item->setParameter(2, $temp);
       break;
 
     case 'taxonomy_del_term': // DONE
