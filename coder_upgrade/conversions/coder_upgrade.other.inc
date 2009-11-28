@@ -45,7 +45,8 @@
  * Input Sanitization and Input Formats
  * http://drupal.org/node/224333#check_markup_params
  * http://drupal.org/node/224333#drupal_set_title
- * http://drupal.org/node/224333#hook_filter_params (NOT IN THIS FUNCTION)
+ * http://drupal.org/node/224333#hook_filter_info (NOT IN THIS FUNCTION)
+ * http://drupal.org/node/224333#filter_formats_parameters
  *
  *
  * Taxonomy
@@ -581,6 +582,22 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         $temp = str_replace($from, $to, $temp2);
         $temp = $editor->textToStatements($temp);
         $parent->data = $temp->get(0)->data;
+      }
+      break;
+
+    case 'filter_formats':
+      // If has a parameter, then change it to $user and add global statement.
+      if ($item->parameters->count() > 0) {
+        $p0 = $editor->expressionToStatement('$user');
+        $item->setParameter(0, $p0);
+
+        // Get the parent = statement (i.e. node) this function call is part of.
+        $parent = &$item->parent;
+        // Get the statement list the parent is part of.
+        $container = &$parent->container;
+        // Insert a statement.
+        $statement = $editor->textToStatements("global \$user;")->getElement(0);
+        $container->insertBefore($parent, $statement, 'global');
       }
       break;
 
