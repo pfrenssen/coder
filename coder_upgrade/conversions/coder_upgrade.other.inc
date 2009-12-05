@@ -79,6 +79,7 @@
  *
  *
  * User API
+ * http://drupal.org/node/224333#user_cancel (ALSO in convert_functions)
  * http://drupal.org/node/224333#user_authenticate
  *
  *
@@ -754,7 +755,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       $item = $expression->getElement(0);
       break;
 
-    case 'user_authenticate':
+    case 'user_authenticate': // DONE
       $count = $item->parameters->count();
       if ($count == 0) {
         $editor->setParameters($item, array('$name', '$password /* TODO Set these variables */'));
@@ -796,7 +797,11 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         // Set the parameters on this function call.
         $editor->setParameters($item, array($name, $password));
       }
+      break;
 
+    case 'user_delete': // DONE
+      $name['value'] = 'user_cancel';
+      $editor->setParameter($item, 2, "\$method = 'user_cancel_block' /* TODO Set this variable */");
       break;
   }
 }
@@ -872,6 +877,11 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
  *
  * Comments
  * http://drupal.org/node/224333#remove_op (DUP Node API) (THIS IS MISSING FROM THE CHRONO PAGE!!!)
+ *
+ *
+ * User API
+ * http://drupal.org/node/224333#user_cancel (DONE with remove_op)
+ * http://drupal.org/node/224333#remove_op (DUP Node API)
  *
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
@@ -993,6 +1003,13 @@ function coder_upgrade_callback_functions(&$node) {
     case 'update_N':
       // Changes: update_php
       coder_upgrade_convert_update_N($node);
+      break;
+
+    case 'user':
+      // Changes: remove_op, user_cancel and others !!!???
+      $callback = 'coder_upgrade_callback_user';
+      $op_index = 0;
+      coder_upgrade_convert_op($node, $callback, $op_index);
       break;
   }
 }
@@ -1520,6 +1537,111 @@ function coder_upgrade_callback_comment($node, $case_node, $operation = '') {
       break;
     case 'view':
       // This block becomes example_comment_view
+      break;
+    default:
+      coder_upgrade_debug_echo("ERROR: Invalid case value\n");
+      return;
+  }
+
+  // Create the new hook function.
+  coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters);
+}
+
+/**
+ * Updates hook_user().
+ *
+ * hook_nodeapi, hook_node_type, hook_user, and hook_block removed and replaced
+ * with families of related functions
+ * Renamed user_delete() to user_cancel();
+ * likewise renamed hook_user_delete() to hook_user_cancel(). (Did this exist?)
+ */
+function coder_upgrade_callback_user($node, $case_node, $operation = '') {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+
+  if (!$operation) {
+    $case = &$case_node->data;
+    if (!is_a($case, 'PGPCase')) {
+      coder_upgrade_debug_echo("Houston, we've got an unexpected statement\n");
+      return;
+    }
+    $operation = $case->case->toString();
+    $operation = trim($operation, "'\"");
+  }
+
+  $hook = '_user_' . str_replace(' ', '_', $operation);
+  $parameters = array('$edit', '$account');
+
+  // TODO We can end up with multiple copies of same hook if this mapping is accurate???
+  switch ($operation) {
+    case 'after_update':
+      // The user object has been updated and changed. Use this if (probably along with 'insert') if you want to reuse some information from the user object.
+      // This block becomes example_user_update
+      $hook = '_user_update';
+      $parameters = array('&$edit', '$account', '$category');
+      break;
+    case 'categories':
+      // A set of user information categories is requested.
+      // This block becomes example_user_categories
+      $parameters = array();
+      break;
+    case 'delete':
+      // The user account is being deleted. The module should remove its custom additions to the user object from the database.
+      // This block becomes example_user_cancel
+      $hook = '_user_cancel';
+      $parameters = array('$edit', '$account', '$method');
+      break;
+    case 'form':
+      // The user account edit form is about to be displayed. The module should present the form elements it wishes to inject into the form.
+      // This block becomes example_user_???
+      $hook = '_user_XXX';
+      break;
+    case 'insert':
+      // The user account is being added. The module should save its custom additions to the user object into the database and set the saved fields to NULL in $edit.
+      // This block becomes example_user_insert
+      $parameters = array('&$edit', '$account', '$category');
+      break;
+    case 'load':
+      // The user account is being loaded. The module may respond to this and insert additional information into the user object.
+      // This block becomes example_user_load
+      $parameters = array('$users');
+      break;
+    case 'login':
+      // The user just logged in.
+      // This block becomes example_user_login
+      $parameters = array('&$edit', '$account');
+      break;
+    case 'logout':
+      // The user just logged out.
+      // This block becomes example_user_logout
+      $parameters = array('$account');
+      break;
+    case 'register':
+      // The user account registration form is about to be displayed. The module should present the form elements it wishes to inject into the form.
+      // This block becomes example_user_???
+      $hook = '_user_XXX';
+      break;
+    case 'submit':
+      // Modify the account before it gets saved.
+      // This block becomes example_user_???
+      $hook = '_user_presave';
+      $parameters = array('&$edit', '$account', '$category');
+      break;
+    case 'update':
+      // The user account is being changed. The module should save its custom additions to the user object into the database and set the saved fields to NULL in $edit.
+      // This block becomes example_user_presave
+      $hook = '_user_presave';
+      $parameters = array('&$edit', '$account', '$category');
+      break;
+    case 'validate':
+      // The user account is about to be modified. The module should validate its custom additions to the user object, registering errors as necessary.
+      // This block becomes example_user_presave
+      $hook = '_user_presave';
+      $parameters = array('&$edit', '$account', '$category');
+      break;
+    case 'view':
+      // The user's account information is being displayed. The module should format its custom additions for display, and add them to the $account->content array.
+      // This block becomes example_user_view
+      $parameters = array('$account', '$build_mode');
       break;
     default:
       coder_upgrade_debug_echo("ERROR: Invalid case value\n");
