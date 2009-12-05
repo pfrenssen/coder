@@ -549,7 +549,7 @@ function coder_upgrade_patch_link($name) {
  *   HTML output.
  */
 function coder_upgrade_patch_display($filename) {
-  echo '<html><head><body><pre>' . file_get_contents(coder_upgrade_patch_path($filename)) . '</pre></body></head></html>';
+  echo '<html><head><body><pre>' . check_plain(file_get_contents(coder_upgrade_patch_path($filename))) . '</pre></body></head></html>';
 }
 
 /**
