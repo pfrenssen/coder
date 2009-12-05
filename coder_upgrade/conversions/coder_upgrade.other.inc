@@ -859,6 +859,7 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
  * Database
  * http://drupal.org/node/224333#schema_translation
  * http://drupal.org/node/224333#schema_html (NOT DONE)
+ * http://drupal.org/node/224333#install-schema
  *
  *
  * Menus
@@ -868,7 +869,7 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
  *   The object containing the grammar statements of the file to convert.
  */
 function coder_upgrade_convert_functions(&$reader) {
-//  coder_upgrade_debug_print(__FUNCTION__ . "\n");
+//  coder_upgrade_debug_print("inside " . __FUNCTION__ . "\n");
   coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
   $editor = new PGPEditor();
   $types = array(T_FUNCTION);
@@ -898,11 +899,12 @@ function coder_upgrade_convert_functions(&$reader) {
  * For other examples of using the grammar parser API
  * @see coder_upgrade_callback_function_calls
  *
- * @param PGPFunction $item
- *   A function object of the statement block.
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
  */
-function coder_upgrade_callback_functions(&$item) {
+function coder_upgrade_callback_functions(&$node) {
   coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  $item = &$node->data;
 
   global $_coder_upgrade_module_name;
 
@@ -942,27 +944,33 @@ function coder_upgrade_callback_functions(&$item) {
   switch ($key) {
     case 'access':
       // Changes: hook_node_access
-      coder_upgrade_convert_access($item);
+      coder_upgrade_convert_access($node);
+      break;
+
+    case 'install':
+    case 'uninstall':
+      // Changes: install-schema
+      coder_upgrade_convert_install($node);
       break;
 
     case 'menu_link_alter':
       // Changes: hook_menu_link_alter
-      coder_upgrade_convert_menu_link_alter($item);
+      coder_upgrade_convert_menu_link_alter($node);
       break;
 
     case 'perm':
       // Changes: hook_permission and descriptions_permissions
-      coder_upgrade_convert_perm($item);
+      coder_upgrade_convert_perm($node);
       break;
 
     case 'schema':
       // Changes: schema_translation and schema_html
-      coder_upgrade_convert_schema($item);
+      coder_upgrade_convert_schema($node);
       break;
 
     case 'update_N':
       // Changes: update_php
-      coder_upgrade_convert_update_N($item);
+      coder_upgrade_convert_update_N($node);
       break;
   }
 }
@@ -973,10 +981,12 @@ function coder_upgrade_callback_functions(&$item) {
  * Replace hook_access() with hook_node_access().
  * Switch places of first two parameters.
  *
- * @param PGPClass $item
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
  */
-function coder_upgrade_convert_access(&$item) {
-  coder_upgrade_debug_echo(__METHOD__ . "\n");
+function coder_upgrade_convert_access(&$node) {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  $item = &$node->data;
   coder_upgrade_debug_echo($item->print_r());
 
   global $_coder_upgrade_module_name;
@@ -1002,13 +1012,59 @@ function coder_upgrade_convert_access(&$item) {
 }
 
 /**
+ * Updates hook_install() or hook_uninstall().
+ *
+ * Database schema (un)installed automatically.
+ *
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
+ */
+function coder_upgrade_convert_install($node) {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  coder_upgrade_debug_echo($name . "\n");
+  $item = &$node->data;
+
+  // Get body statements.
+  $body = &$item->body;
+
+  /*
+   * In 6.x, drupal_install_schema has a return value, but not in 7.x.
+   * The code below asssumes the return value is not utilized. Otherwise,
+   * set the variable to empty string.
+   */
+
+  $current = $body->first();
+  while ($current->next != NULL) {
+    $statement = &$current->data;
+    coder_upgrade_debug_echo($statement->print_r());
+    if (is_a($statement, 'PGPAssignment')) {
+      $text = $statement->values->toString();
+      coder_upgrade_debug_echo($text . "\n");
+      if (preg_match('(drupal_install_schema|drupal_uninstall_schema)', $text)) {
+        $editor = new PGPEditor();
+        // Insert comment.
+        $statements = $editor->textToStatements('// TODO The drupal_(un)install_schema functions are called automatically in D7.');
+        $body->insertBefore($current, $statements->getElement(), 'comment');
+        // Comment out the statement.
+        $statements = $editor->textToStatements('// ' . $text);
+        $statement = $statements->getElement();
+        break;
+      }
+    }
+    $current = &$current->next;
+  }
+}
+
+/**
  * Updates hook_menu_link_alter().
  *
  * Changed hook_menu_link_alter() (removed the $menu parameter).
  *
- * @param PGPClass $item
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
  */
-function coder_upgrade_convert_menu_link_alter($item) {
+function coder_upgrade_convert_menu_link_alter($node) {
+  $item = &$node->data;
   $count = $item->parameters->count();
   // Adjust parameters.
   if ($count > 1) {
@@ -1024,10 +1080,12 @@ function coder_upgrade_convert_menu_link_alter($item) {
  * Rename hook_perm() to hook_permission().
  * Permissions are required to have titles and descriptions.
  *
- * @param PGPClass $item
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
  */
-function coder_upgrade_convert_perm(&$item) {
-  coder_upgrade_debug_echo(__METHOD__ . "\n");
+function coder_upgrade_convert_perm(&$node) {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  $item = &$node->data;
   coder_upgrade_debug_echo($item->print_r());
 
   // Rename function.
@@ -1094,10 +1152,12 @@ function coder_upgrade_convert_perm(&$item) {
 /**
  * Updates hook_schema().
  *
- * @param PGPClass $item
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
  */
-function coder_upgrade_convert_schema(&$item) {
-  coder_upgrade_debug_echo(__METHOD__ . "\n");
+function coder_upgrade_convert_schema(&$node) {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  $item = &$node->data;
   $body = &$item->body;
 
   if (!($return = $body->find(T_RETURN, 'reverse'))) {
@@ -1123,7 +1183,7 @@ function coder_upgrade_convert_schema(&$item) {
 }
 
 function coder_upgrade_convert_schema_callback(&$item) {
-  coder_upgrade_debug_echo(__METHOD__ . "\n");
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
 //  coder_upgrade_debug_echo($item->print_r());
 
   if (get_class($item) != 'PGPFunctionCall') {
@@ -1150,10 +1210,12 @@ function coder_upgrade_convert_schema_callback(&$item) {
  *
  * Check hook_update_N for a Doxygen style comment.
  *
- * @param PGPClass $item
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
  */
-function coder_upgrade_convert_update_N(&$item) {
-  coder_upgrade_debug_echo(__METHOD__ . "\n");
+function coder_upgrade_convert_update_N(&$node) {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  $item = &$node->data;
 //  coder_upgrade_debug_echo($item->print_r());
 
   $comment = &$item->comment;
