@@ -869,6 +869,10 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
  * Blocks
  * http://drupal.org/node/224333#remove_op (DUP Node API)
  *
+ *
+ * Comments
+ * http://drupal.org/node/224333#remove_op (DUP Node API) (THIS IS MISSING FROM THE CHRONO PAGE!!!)
+ *
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
  */
@@ -955,6 +959,13 @@ function coder_upgrade_callback_functions(&$node) {
       // Changes: remove_op
       $callback = 'coder_upgrade_callback_block';
       $op_index = 0;
+      coder_upgrade_convert_op($node, $callback, $op_index);
+      break;
+
+    case 'comment':
+      // Changes: remove_op
+      $callback = 'coder_upgrade_callback_comment';
+      $op_index = 1;
       coder_upgrade_convert_op($node, $callback, $op_index);
       break;
 
@@ -1455,6 +1466,60 @@ function coder_upgrade_callback_block($node, $case_node, $operation = '') {
       break;
     case 'view':
       // This block becomes example_block_view
+      break;
+    default:
+      coder_upgrade_debug_echo("ERROR: Invalid case value\n");
+      return;
+  }
+
+  // Create the new hook function.
+  coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters);
+}
+
+/**
+ * Updates hook_comment().
+ *
+ * ADD THIS TO:
+ * hook_nodeapi, hook_node_type, hook_user, and hook_block removed and replaced
+ * with families of related functions
+ */
+function coder_upgrade_callback_comment($node, $case_node, $operation = '') {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+
+  if (!$operation) {
+    $case = &$case_node->data;
+    if (!is_a($case, 'PGPCase')) {
+      coder_upgrade_debug_echo("Houston, we've got an unexpected statement\n");
+      return;
+    }
+    $operation = $case->case->toString();
+    $operation = trim($operation, "'\"");
+  }
+
+  $hook = '_comment_' . str_replace(' ', '_', $operation);
+  $parameters = array('$comment');
+
+  switch ($operation) {
+    case 'delete':
+      // This block becomes example_comment_delete
+      break;
+    case 'insert':
+      // This block becomes example_comment_insert
+      break;
+    case 'publish':
+      // This block becomes example_comment_publish
+      break;
+    case 'unpublish':
+      // This block becomes example_comment_unpublish
+      break;
+    case 'update':
+      // This block becomes example_comment_update
+      break;
+    case 'validate':
+      // This block becomes example_comment_validate
+      break;
+    case 'view':
+      // This block becomes example_comment_view
       break;
     default:
       coder_upgrade_debug_echo("ERROR: Invalid case value\n");
