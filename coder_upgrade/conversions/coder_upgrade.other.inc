@@ -90,6 +90,8 @@
  * http://drupal.org/node/224333#book_toc_parameters
  * http://drupal.org/node/224333#referer_uri
  * http://drupal.org/node/224333#drupal_clone
+ * http://drupal.org/node/224333#actions_synchronize
+ * http://drupal.org/node/224333#url_is_external
  *
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
@@ -227,6 +229,13 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
   // Process function call.
   $name = &$item->name;
   switch ($name['value']) {
+    case 'actions_synchronize': // DONE
+      $count = $item->parameters->count();
+      if ($count > 0) {
+        $item->deleteParameter();
+      }
+      break;
+
     case 'book_toc': // DONE
       // Adjust parameters.
       $count = $item->parameters->count();
@@ -548,6 +557,10 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
     case 'function_exists':
       // Change was reverted.
 //      $name['value'] = 'drupal_function_exists';
+      break;
+
+    case 'menu_path_is_external': // DONE
+      $name['value'] = 'url_is_external';
       break;
 
     case 'module_invoke': // DONE
