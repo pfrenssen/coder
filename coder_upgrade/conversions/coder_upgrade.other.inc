@@ -381,46 +381,13 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         break;
       }
 
-      $string = 'array(';
-      if ($count > 1) {
-        $params['headers'] = $item->printParameter(1);
-        $string .= "'headers' => " . $item->printParameter(1);
-      }
-      if ($count > 2) {
-        $value = $item->printParameter(2);
-        if ($value != "'GET'") {
-          $params['method'] = $value;
-          $string .= ", 'method' => $value";
-        }
-      }
-      if ($count > 3) {
-        $value = $item->printParameter(3);
-        if ($value != 'NULL') {
-          $params['data'] = $value;
-          $string .= ", 'data' => $value";
-        }
-      }
-      if ($count > 4) {
-        $value = $item->printParameter(4);
-        if ($value != 3) {
-          $params['max_redirects'] = $value;
-          $string .= ", 'max_redirects' => $value";
-        }
-      }
-      $string .= ')';
-      coder_upgrade_debug_echo("params\n");
-      coder_upgrade_debug_echo(print_r($params, 1));
-      coder_upgrade_debug_echo("string\n");
-      coder_upgrade_debug_echo($string . "\n");
-
-      $item->deleteParameter(4);
-      $item->deleteParameter(3);
-      $item->deleteParameter(2);
+      $keys = array('headers', 'method', 'data', 'max_redirects');
+      $defaults = array('xxx_YYY_zzz', "'GET'", 'NULL', 3);
+      $string = $editor->arrayitize($item, 1, $keys, $defaults);
 
       $temp = $editor->expressionToStatement($string);
+      $temp->getElement(0)->multiline = 0;
       coder_upgrade_debug_echo($temp->print_r());
-//      $reader = new PGPReader();
-//      $reader->isMultiline = FALSE;
       $item->setParameter(1, $temp);
       break;
 
@@ -568,19 +535,9 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         break;
       }
 
-      $string = 'array(';
-      // Change all of these array-itizes to build array of strings; implode with comma separator.
-      if ($count > 4) {
-        $value = $item->printParameter(4);
-        if ($value != "'XXX_YYY'") { // TODO Default value is current language
-          $string .= "'langcode' => $value";
-        }
-      }
-      $string .= ')';
-      coder_upgrade_debug_echo("string\n");
-      coder_upgrade_debug_echo($string . "\n");
-
-      $item->deleteParameter(4);
+      $keys = array('langcode');
+      $defaults = array("'XXX_YYY'");
+      $string = $editor->arrayitize($item, 4, $keys, $defaults);
 
       $temp = $editor->expressionToStatement($string);
       $temp->getElement(0)->multiline = 0;
@@ -595,6 +552,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
 
     case 'module_invoke': // DONE
       // http://drupal.org/node/224333#taxonomy_get_tree
+      $depth = '$max_depth = NULL /* TODO Set this variable. */';
       $count = $item->parameters->count();
       // Confirm this call relates to our topic.
       if ($count > 2) {
@@ -616,24 +574,12 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       }
       elseif ($count > 4) {
         // Insert parameter due to change in parameter order.
-        $editor->insertParameter($item, 4, '$max_depth = NULL /* TODO Set this variable. */');
+        $editor->insertParameter($item, 4, $depth);
         $count = $item->parameters->count();
       }
 
-      // Remove default parameters from right to left.
-      if ($count == 6) {
-        $value = $item->printParameter(5);
-        if ($value == '-1') {
-          $item->deleteParameter(5);
-          $count = $item->parameters->count();
-        }
-      }
-      if ($count == 5) {
-        $value = $item->printParameter(4);
-        if ($value == 'NULL' || $value == '$max_depth = NULL /* TODO Set this variable. */') {
-          $item->deleteParameter(4);
-        }
-      }
+      $defaults = array(array('NULL', $depth), '-1');
+      $string = $editor->removeDefaults($item, 4, $defaults);
       break;
 
     case 'module_list': // DONE
@@ -664,19 +610,9 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         break;
       }
 
-      $string = 'array(';
-      // Change all of these array-itizes to build array of strings; implode with comma separator.
-      if ($count > 2) {
-        $value = $item->printParameter(2);
-        if ($value != "'XXX_YYY'") { // TODO Default value is current language
-          $string .= "'langcode' => $value";
-        }
-      }
-      $string .= ')';
-      coder_upgrade_debug_echo("string\n");
-      coder_upgrade_debug_echo($string . "\n");
-
-      $item->deleteParameter(2);
+      $keys = array('langcode');
+      $defaults = array("'XXX_YYY'");
+      $string = $editor->arrayitize($item, 2, $keys, $defaults);
 
       $temp = $editor->expressionToStatement($string);
       $temp->getElement(0)->multiline = 0;
@@ -713,20 +649,8 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         $count = $item->parameters->count();
       }
 
-      // Remove default parameters from right to left.
-      if ($count == 4) {
-        $value = $item->printParameter(3);
-        if ($value == '-1') {
-          $item->deleteParameter(3);
-          $count = $item->parameters->count();
-        }
-      }
-      if ($count == 3) {
-        $value = $item->printParameter(2);
-        if ($value == 'NULL' || $value == $depth) {
-          $item->deleteParameter(2);
-        }
-      }
+      $defaults = array(array('NULL', $depth), '-1');
+      $string = $editor->removeDefaults($item, 2, $defaults);
       break;
 
     case 'taxonomy_save_term': // DONE
@@ -767,21 +691,10 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
        */
       coder_upgrade_debug_echo(__FUNCTION__ . " inside theme case\n");
       global $_coder_upgrade_module_name;
-      $found = FALSE;
-      // TODO This is what the traverseCallback should be able to do. Or search or find...
-      $functions = $reader->getFunctions();
-      foreach ($functions as $function) {
-        $name2 = &$function->name;
-        coder_upgrade_debug_echo("name\n");
-        coder_upgrade_debug_echo(print_r($name2, 1));
-        if ($name2 == $_coder_upgrade_module_name . '_theme') {
-//          coder_upgrade_debug_echo($function->print_r());
-          $found = TRUE;
-          break;
-        }
-      }
-      if (!$found) {
-        break;
+      // Find the hook_theme function object.
+      $function = $editor->findFunction($reader->getFunctions(), $_coder_upgrade_module_name . '_theme');
+      if (is_null($function)) {
+        return;
       }
 
       // Get the keys for the appropriate theme.
@@ -794,12 +707,17 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       $value = &$return['value'];
       $array = $value->getElement(0);
       if (get_class($array) == 'PGPArray') {
-        $theme = $array->getValue(-1, $item->getParameter(0)->toString());
+        $theme = $array->findValue($item->getParameter(0)->toString());
         $array = $theme->getElement(0);
-        $arguments = $array->getValue(-1, "'arguments'"); // TODO If upgraded, then key = 'variables'.
+        $arguments = $array->findValue("'arguments'");
         $keys = $arguments->getElement(0)->keysToArray();
         if (empty($keys)) {
           break;
+        }
+        print_r($keys);
+        // Remove the quotes surrounding the keys.
+        foreach ($keys as $index => $key) {
+          $keys[$index] = trim($key, "'\"");
         }
         print_r($keys);
       }
@@ -809,14 +727,8 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         break;
       }
 
-      $string = 'array(';
-      for ($index = 1; $index < $count; $index++) {
-        $string .= "{$keys[$index - 1]} => " . $item->printParameter($index) . ",\n";
-      }
-      $string .= ')';
-
-      $item->deleteParameter(2);
-      $item->deleteParameter(1);
+      $defaults = array_fill(0, $count - 1, "'XXX_YYY'");
+      $string = $editor->arrayitize($item, 1, $keys, $defaults);
 
       $temp = $editor->expressionToStatement($string);
       $temp->getElement(0)->multiline = 0;
