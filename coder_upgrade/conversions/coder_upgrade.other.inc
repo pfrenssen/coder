@@ -1110,7 +1110,7 @@ function coder_upgrade_convert_access(&$item) {
   $item->comment = preg_replace('@hook_access([^i])@', "hook_node_access$1", $item->comment);
 
   // Switch places of the first two parameters.
-  echo "Printing parameters\n";
+//  echo "Printing parameters\n";
   coder_upgrade_debug_echo($item->parameters->print_r());
 
   $count = $item->parameters->count();
@@ -1165,11 +1165,11 @@ function coder_upgrade_convert_perm(&$item) {
     coder_upgrade_debug_print("ERROR: return statement not found in hook_perm");
     return;
   }
-  echo "Printing return item\n";
+//  echo "Printing return item\n";
   $value = &$return['value'];
   coder_upgrade_debug_echo($value->print_r());
   coder_upgrade_debug_echo($value->toString());
-  echo "Printing return item DONE\n";
+//  echo "Printing return item DONE\n";
 
   $array = $value->getElement();
   if (!is_a($array, 'PGPArray')) {
@@ -1227,9 +1227,9 @@ function coder_upgrade_convert_schema(&$item) {
     coder_upgrade_debug_print("ERROR: return statement not found in hook_schema");
     return;
   }
-  echo "Printing return item\n";
+//  echo "Printing return item\n";
   coder_upgrade_debug_echo($item->print_r(0, $return));
-  echo "Printing return item DONE\n";
+//  echo "Printing return item DONE\n";
   $variable = $return['value']->first();
 
   /*

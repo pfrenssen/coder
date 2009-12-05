@@ -14,6 +14,7 @@
 
 require_once drupal_get_path('module', 'coder_upgrade') . '/conversions/coder_upgrade.end.inc';
 require_once drupal_get_path('module', 'coder_upgrade') . '/conversions/coder_upgrade.list.inc';
+require_once drupal_get_path('module', 'coder_upgrade') . '/conversions/coder_upgrade.other.inc';
 
 /**
  * Return the list of upgrade sets from all modules.
@@ -152,7 +153,7 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
 
   // Loop on files.
   $dir = opendir($dirname);
-  coder_upgrade_module_name($dir, $item);
+  coder_upgrade_module_name($dir, $dirname, $item);
   rewinddir($dir);
   $_coder_upgrade_module_name = $item['module'];
   while ($filename = readdir($dir)) {
@@ -177,8 +178,8 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
         }
       }
       elseif (in_array(pathinfo($filename, PATHINFO_EXTENSION), array_keys($extensions))) {
-        echo pathinfo($filename, PATHINFO_EXTENSION) . "\n";
-        echo print_r(array_keys($extensions), 1);
+//        echo pathinfo($filename, PATHINFO_EXTENSION) . "\n";
+//        echo print_r(array_keys($extensions), 1);
         copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
         coder_upgrade_debug_print("\n*************************");
         coder_upgrade_debug_print('Converting the file => ' . $filename);
@@ -372,13 +373,15 @@ function coder_upgrade_parser_routines_exist($routines = array()) {
  *
  * @param object $dir
  *   A directory resource handle.
+ * @param string $dirname
+ *   A string of the directory name.
  * @param array $item
  *   Array of a directory containing the files to convert.
  */
-function coder_upgrade_module_name(&$dir, &$item) {
+function coder_upgrade_module_name(&$dir, $dirname, &$item) {
   // Extensions that indicate a module is present.
   $extensions = array('info', 'module');
-  
+
   // Loop on files.
   while ($filename = readdir($dir)) {
     if (!is_dir($dirname . '/' . $filename)) {
@@ -530,6 +533,7 @@ function coder_upgrade_debug_print($text) {
  *   A string, array, or object to print.
  */
 function coder_upgrade_debug_echo($text) {
+  return;
   global $echo;
   $echo = TRUE; // FALSE;
 
