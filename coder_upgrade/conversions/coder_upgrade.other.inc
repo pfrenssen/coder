@@ -865,6 +865,10 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
  * Menus
  * http://drupal.org/node/224333#hook_menu_link_alter
  *
+ *
+ * Blocks
+ * http://drupal.org/node/224333#remove_op (DUP Node API)
+ *
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
  */
@@ -945,6 +949,13 @@ function coder_upgrade_callback_functions(&$node) {
     case 'access':
       // Changes: hook_node_access
       coder_upgrade_convert_access($node);
+      break;
+
+    case 'block':
+      // Changes: remove_op
+      $callback = 'coder_upgrade_callback_block';
+      $op_index = 0;
+      coder_upgrade_convert_op($node, $callback, $op_index);
       break;
 
     case 'install':
@@ -1231,4 +1242,312 @@ function coder_upgrade_convert_update_N(&$node) {
       'value' => "/**\n * @todo Please insert a Doxygen style comment for this hook_update_N.\n *\n *" . $comment['value'] . "\n */",
     );
   }
+}
+
+/**
+ * Initiates the transformation of $op hook to a new hook_$op style function.
+ *
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
+ * @param string $callback
+ *   A string of the callback function for the hook.
+ * @param integer $op_index
+ *   An integer of the operation parameter in the function parameter list.
+ */
+function coder_upgrade_convert_op(&$node, $callback, $op_index) {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  coder_upgrade_debug_echo("$callback\n");
+
+  /*
+   * DBTNG changes can be done in another routine
+   */
+
+  // Get the function object.
+  $item = &$node->data;
+  // Rename the function in case any code is left over.
+  $item->name .= '_OLD';
+  // Get the operation function parameter, usually called $op.
+  $count = $item->parameters->count();
+  // TODO This gets the entire parameter including any default value. Hook_block has $op = 'list'.
+  $op = $item->printParameter($op_index);
+
+  // Get the function body statements.
+  $body = &$item->body;
+
+  /*
+   * Two likely cases: switch statement or series of if blocks.
+   * Do the if blocks later.
+   * Compare the second parameter to the function with the switch operand.
+   */
+
+  // Loop on the body statements looking for the $op parameter in an IF or
+  // SWITCH condition.
+  $current = $body->first();
+  while ($current->next != NULL) {
+    $statement = &$current->data;
+    if (is_object($statement)) {
+      coder_upgrade_debug_echo($statement->print_r());
+    }
+    if (is_a($statement, 'PGPConditional')) {
+//      echo "inside PGPConditional check\n";
+//      echo "statement->type = " . $statement->type . "\n";
+      if ($statement->type == T_SWITCH) {
+//        echo "inside T_SWITCH check\n";
+        // Get the list of conditions.
+        $conditions = $statement->conditions;
+        // Get the first condition. (With a switch there should only be one condition.)
+        $condition = $conditions->getElement();
+        $operand = $condition->toString();
+        // If the condition variable matches the $op variable, then go to work.
+        if ($op == $operand) {
+          $cases = $statement->body;
+          $node->traverse($cases, $callback);
+        }
+      }
+      elseif (in_array($statement->type, array(T_IF, T_ELSEIF/*, T_ELSE*/))) {
+//        echo "inside T_IF check\n";
+        /*
+         * Extract the conditions referencing the $op variable and loop on them.
+         * These are conditions of the form $op == 'operation'.
+         * Replace them with condition of TRUE to not disrupt the logic.
+         * Retain any other conditions as part of the body in the new hook
+         * function.
+         */
+        $operations = coder_upgrade_extract_operations($statement->conditions, $op);
+        // Loop on the extracted operations.
+        foreach ($operations as $operation) {
+          // Change a T_ELSEIF to a T_IF in the new hook function.
+          $statement->type = T_IF; // If it isn't already.
+          $block = new stdClass();
+          $block->body = new PGPList();
+          $block->body->insertLast($statement);
+          $case_node = new PGPNode($block, $current->container); // TODO What is the correct container???
+          $callback($node, $case_node, $operation);
+        }
+      }
+    }
+    // Move to next node.
+    $current = &$current->next;
+    // Get the statement list the switch statement (or if block) node is part of.
+    $container = &$current->container;
+    $container->delete($current->previous);
+  }
+}
+
+/**
+ * Extracts operations from conditions and replaces the conditions with TRUE.
+ *
+ * @param PGPList $conditions
+ *   A list of conditions to an if block.
+ * @param string $op
+ *   A string of the hook operation.
+ * @return array
+ *   Array of operations referenced in the if block.
+ */
+function coder_upgrade_extract_operations(&$conditions, $op) {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  $operations = array();
+
+  /*
+   * A condition may consist of at most two operands separated by an operator.
+   */
+  if (is_a($conditions, 'PGPList')) {
+    // Iterate over the conditions of the condition list.
+    $current = $conditions->first();
+    while ($current->next != NULL) {
+      $type = $current->type;
+      if ($type == 'condition') {
+        // Get the condition object of the current node.
+        $condition = &$current->data;
+        // Iterate over elements of the condition expression.
+        $found = FALSE;
+        $current2 = $condition->first();
+        while ($current2->next != NULL) {
+          if ($current2->type == 'operand') {
+            // Get the operand (object or array) of the current node.
+            $element = &$current2->data;
+            // Inspect the element looking for $op.
+            if (is_a($element, 'PGPOperand')) {
+              // Inspect the operand looking for $op.
+              $text = $element->toString();
+              if (strpos($text, $op) !== FALSE) {
+                $found = TRUE;
+              }
+              else {
+                $operation = $element->toString();
+              }
+            }
+            elseif (is_array($element)) {
+              // This should have type = T_CONSTANT_ENCAPSED_STRING.
+              $operation = $element['value'];
+            }
+          }
+          // An interesting effect takes place with an & on the next line.
+          $current2 = /*&*/$current2->next;
+        }
+        if ($found) {
+          // Replace condition with TRUE so the logic remains the same.
+          $condition->clear();
+          $data = array(
+            'type' => T_STRING,
+            'value' => 'TRUE',
+          );
+          $condition->insertLast($data, 'operand');
+
+          // Add operation to list.
+          $operations[] = trim($operation, "'\"");
+        }
+      }
+      $current = /*&*/$current->next;
+    }
+  }
+
+  return $operations;
+}
+
+/**
+ * Prepares the information needed to create a new hook_$op style function.
+ *
+ * This is a series of functions -- one for each existing hook to be modified.
+ *
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
+ * @param PGPNode $case_node
+ *   A node object containing a PGPCase (or PGPConditional) item.
+ * @param string $operation
+ *   A string of the operation to create a new hook for.
+ */
+
+/**
+ * Updates hook_block().
+ *
+ * hook_nodeapi, hook_node_type, hook_user, and hook_block removed and replaced
+ * with families of related functions
+ */
+function coder_upgrade_callback_block($node, $case_node, $operation = '') {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+
+  if (!$operation) {
+    $case = &$case_node->data;
+    if (!is_a($case, 'PGPCase')) {
+      coder_upgrade_debug_echo("Houston, we've got an unexpected statement\n");
+      return;
+    }
+    $operation = $case->case->toString();
+    $operation = trim($operation, "'\"");
+  }
+
+  $hook = '_block_' . str_replace(' ', '_', $operation);
+  $parameters = array('$delta');
+
+  switch ($operation) {
+    case 'configure':
+      // This block becomes example_block_configure
+      break;
+    case 'list':
+      // This block becomes example_block_list
+      $hook = '_block_info';
+      $parameters = array();
+      break;
+    case 'save':
+      // This block becomes example_block_save
+      $parameters = array('$delta', '$edit');
+      break;
+    case 'view':
+      // This block becomes example_block_view
+      break;
+    default:
+      coder_upgrade_debug_echo("ERROR: Invalid case value\n");
+      return;
+  }
+
+  // Create the new hook function.
+  coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters);
+}
+
+/**
+ * Creates hook_$op function from the case (of if) block of an $op-style hook.
+ *
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
+ * @param PGPNode $case_node
+ *   A node object containing a PGPCase item.
+ * @param string $hook
+ *  A string of the new function name.
+ * @param array $parameters
+ *  An array of function parameters.
+ */
+function coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters) {
+  /*
+   * Copy the case body to the new hook function.
+   * Insert before (or after) the $item function.
+   *
+   * When case body is empty (e.g. insert, update), then use next reference
+   * until a non-empty body is found.
+   *
+   * TODO
+   * Add the new function to the list of functions.
+   * This is useful when we may need to check for the existence of a function
+   * on another upgrade.
+   * Example: hook_link() becomes part of hook_node_view()
+   * or hook_comment_view() based on $type parameter. Also hook_link_alter()
+   * code goes in hook_node_view_alter() or hook_comment_view_alter().
+   * See http://drupal.org/node/224333#node_links.
+   */
+
+  global $_coder_upgrade_module_name;
+  $case = &$case_node->data;
+
+  // Set values for the new hook function.
+  $comment = array(
+    'type' => T_DOC_COMMENT,
+    'value' => "/**\n * Implements hook$hook.\n */",
+  );
+  $name = $_coder_upgrade_module_name . $hook;
+
+  // Create the new hook function.
+  $function = new PGPClass($name);
+  $function->comment = $comment;
+  $function->type = T_FUNCTION;
+  $function->parameters = new PGPList();
+
+  // Use the editor to set the function parameters.
+  $editor = new PGPEditor();
+  $editor->setParameters($function, $parameters);
+
+  // Copy the case (or if) block as the body of the function.
+  $function->body = $case->body;
+  if ($function->body->isEmpty()) {
+    // TODO Clone the node??? Use a while loop since there could be more than two cases back to back.
+    $case_node2 = &$case_node->next;
+    $case2 = &$case_node2->data;
+    $body2 = $case2->body;
+    if (!$body2->isEmpty()) {
+      $function->body = clone $case2->body;
+    }
+  }
+
+  // Remove the break statement from a case block.
+  if (($break = $function->body->find(T_BREAK, 'reverse', TRUE))) {
+    coder_upgrade_debug_echo("return statement found in hook\n");
+    $function->body->delete($break);
+  }
+  // Remove any trailing blank lines (after break) that are included in body.
+  $last = $function->body->last();
+  if (is_array($last->data) && $last->data['type'] == T_WHITESPACE) {
+    coder_upgrade_debug_echo("YAHOO: found whitespace statement in hook_nodeapi\n");
+    $function->body->delete($last);
+  }
+
+  // Get the statement list the function node is part of.
+  $container = &$node->container;
+
+  // Insert the new function before the old function.
+  $container->insertBefore($node, $function, 'function');
+  // Insert a blank line.
+  $whitespace = array(
+    'type' => T_WHITESPACE,
+    'value' => 1,
+  );
+  $container->insertBefore($node, $whitespace, 'whitespace');
 }
