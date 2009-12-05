@@ -54,8 +54,14 @@
  * http://drupal.org/node/224333#taxonomy_crud
  *
  *
- * CSS
+ * Javascript
  * http://drupal.org/node/224333#drupal_add_js_options
+ * http://drupal.org/node/224333#drupal_add_js_weight (Included with above)
+ * http://drupal.org/node/224333#rename-drupal-to-js
+ *
+ *
+ * CSS
+ * http://drupal.org/node/224333#drupal_add_js_options (DUP Javascript)
  *
  *
  * Theming
@@ -273,46 +279,21 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
 
       $count = $item->parameters->count();
       if ($count < 3) {
+        $type = trim($item->printParameter(1), "'\"");
+        if (in_array($type, array('module', 'theme'))) {
+          $editor->setParameter($item, 1, "'file'"); // Could simply delete it.
+        }
         break;
       }
 
-      // TODO Refactor this array-itize code into a function.
-      // Create array of options; removing any default values in the process.
-      $string = 'array(';
-      if ($count > 1) {
-        $value = $item->printParameter(1);
-        if ($value != "'module'") {
-          $params['type'] = $value;
-          $string .= ", 'type' => $value";
-        }
-      }
-      if ($count > 2) {
-        $value = $item->printParameter(2);
-        if ($value != "'all'") {
-          $params['media'] = $value;
-          $string .= ", 'media' => $value";
-        }
-      }
-      if ($count > 3) {
-        $value = $item->printParameter(3);
-        if ($value != 'TRUE') {
-          $params['preprocess'] = $value;
-          $string .= ", 'preprocess' => $value";
-        }
-      }
-      $string .= ')';
-      if (isset($params)) {
-        coder_upgrade_debug_echo("params\n");
-        coder_upgrade_debug_echo(print_r($params, 1));
-      }
-      coder_upgrade_debug_echo("string\n");
-      coder_upgrade_debug_echo($string . "\n");
-
-      $item->deleteParameter(3);
-      $item->deleteParameter(2);
+      $keys = array('type', 'media', 'preprocess');
+      $defaults = array("'module'", "'all'", 'TRUE');
+      $string = $editor->arrayitize($item, 1, $keys, $defaults);
+      $string = preg_replace('@[\'"]theme[\'"]@', "'file'", $string); // Could be deleted.
 
       if ($string != 'array()') {
         $temp = $editor->expressionToStatement($string);
+        $temp->getElement(0)->multiline = 0;
         coder_upgrade_debug_echo($temp->print_r());
         $item->setParameter(1, $temp);
       }
@@ -330,66 +311,29 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
        * drupal_add_js('misc/collapse.js', 'core');
        * The example begs the question why someone would have included all
        * the default parameters.
+       *
+       * A type of 'core', 'module' or 'theme' all convert to 'file' which is
+       * the new default. We could add a weight item based on the type?
        */
       coder_upgrade_debug_echo($item->parameters->print_r());
 
       $count = $item->parameters->count();
       if ($count < 3) {
+        $type = trim($item->printParameter(1), "'\"");
+        if (in_array($type, array('core', 'module', 'theme'))) {
+          $editor->setParameter($item, 1, "'file'"); // Could simply delete it.
+        }
         break;
       }
 
-      // Create array of options; removing any default values in the process.
-      $string = 'array(';
-      if ($count > 1) {
-        $value = $item->printParameter(1);
-        if ($value != "'module'") {
-          $params['type'] = $value;
-          $string .= ", 'type' => $value";
-        }
-      }
-      if ($count > 2) {
-        $value = $item->printParameter(2);
-        if ($value != "'header'") {
-          $params['scope'] = $value;
-          $string .= ", 'scope' => $value";
-        }
-      }
-      if ($count > 3) {
-        $value = $item->printParameter(3);
-        if ($value != 'FALSE') {
-          $params['defer'] = $value;
-          $string .= ", 'defer' => $value";
-        }
-      }
-      if ($count > 4) {
-        $value = $item->printParameter(4);
-        if ($value != 'TRUE') {
-          $params['cache'] = $value;
-          $string .= ", 'cache' => $value";
-        }
-      }
-      if ($count > 5) {
-        $value = $item->printParameter(5);
-        if ($value != 'TRUE') {
-          $params['preprocess'] = $value;
-          $string .= ", 'preprocess' => $value";
-        }
-      }
-      $string .= ')';
-      if (isset($params)) {
-        coder_upgrade_debug_echo("params\n");
-        coder_upgrade_debug_echo(print_r($params, 1));
-      }
-      coder_upgrade_debug_echo("string\n");
-      coder_upgrade_debug_echo($string . "\n");
-
-      $item->deleteParameter(5);
-      $item->deleteParameter(4);
-      $item->deleteParameter(3);
-      $item->deleteParameter(2);
+      $keys = array('type', 'scope', 'defer', 'cache', 'preprocess');
+      $defaults = array("'module'", "'header'", 'FALSE', 'TRUE', 'TRUE');
+      $string = $editor->arrayitize($item, 1, $keys, $defaults);
+      $string = preg_replace('@[\'"](core|theme)[\'"]@', "'file'", $string); // Could be deleted.
 
       if ($string != 'array()') {
         $temp = $editor->expressionToStatement($string);
+        $temp->getElement(0)->multiline = 0;
         coder_upgrade_debug_echo($temp->print_r());
         $item->setParameter(1, $temp);
       }
@@ -480,6 +424,10 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       $item->setParameter(1, $temp);
       break;
 
+    case 'drupal_json': // DONE
+      $name['value'] = 'drupal_json_output';
+      break;
+
     case 'drupal_rebuild_code_registry': // DONE
       $name['value'] = 'registry_rebuild';
       break;
@@ -552,6 +500,10 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         $editor->setParameter($item, 0, '"/' . substr($temp, 1, -1) . '/"');
       }
       // else if type == T_VARIABLE, find the $mask used in the call and examine its value.
+      break;
+
+    case 'drupal_to_js': // DONE
+      $name['value'] = 'drupal_json_encode';
       break;
 
     case 'drupal_uninstall_module': // DONE
