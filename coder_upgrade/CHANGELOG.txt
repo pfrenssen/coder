@@ -2,9 +2,16 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2009-12-05):
+   * #651844: coder_upgrade_module_name (no module file in directory).
+
 - Changes (2009-12-04):
-   * Turn off debugging code.
+   * Turn off debug output:
+   * - Comment out the echo statements
+   * - Turn off coder_upgrade_debug_echo
+   * Add statement to load the other.inc file.
    * Fix coder_upgrade_module_name function.
+   * Wrap patch file contents with check_plain.
 
 - Changes (2009-11-18):
    * Changes made to conform to revised core api or standards:

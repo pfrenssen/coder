@@ -65,7 +65,7 @@ function coder_upgrade_conversions_list() {
     ),
   );
 
-  $list['end'] = array('end');
+  $list['end'] = array(/*'end'*/);
 
   return $list;
 }

@@ -382,6 +382,9 @@ function coder_upgrade_module_name(&$dir, $dirname, &$item) {
   // Extensions that indicate a module is present.
   $extensions = array('info', 'module');
 
+  // Set value in case there is no module in the directory (e.g. po).
+  $item['module'] = '';
+
   // Loop on files.
   while ($filename = readdir($dir)) {
     if (!is_dir($dirname . '/' . $filename)) {
@@ -535,7 +538,7 @@ function coder_upgrade_debug_print($text) {
 function coder_upgrade_debug_echo($text) {
   return;
   global $echo;
-  $echo = TRUE; // FALSE;
+  $echo = TRUE; // FALSE; //
 
   if (!$echo) {
     return;
