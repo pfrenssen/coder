@@ -883,6 +883,13 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
  * http://drupal.org/node/224333#user_cancel (DONE with remove_op)
  * http://drupal.org/node/224333#remove_op (DUP Node API)
  *
+ *
+ * Node API
+ * http://drupal.org/node/224333#remove_op (SPANS MULTIPLE HOOKS)
+ * http://drupal.org/node/224333#node_build_rss
+ * http://drupal.org/node/224333#build_mode
+ * http://drupal.org/node/224333#hook_node_xxx
+ *
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
  */
@@ -988,6 +995,20 @@ function coder_upgrade_callback_functions(&$node) {
     case 'menu_link_alter':
       // Changes: hook_menu_link_alter
       coder_upgrade_convert_menu_link_alter($node);
+      break;
+
+    case 'nodeapi':
+      // Changes: build_mode, remove_op and others !!!???
+      $callback = 'coder_upgrade_callback_nodeapi';
+      $op_index = 1;
+      coder_upgrade_convert_op($node, $callback, $op_index);
+      break;
+
+    case 'node_type':
+      // Changes: remove_op
+      $callback = 'coder_upgrade_callback_node_type';
+      $op_index = 0;
+      coder_upgrade_convert_op($node, $callback, $op_index);
       break;
 
     case 'perm':
@@ -1537,6 +1558,134 @@ function coder_upgrade_callback_comment($node, $case_node, $operation = '') {
       break;
     case 'view':
       // This block becomes example_comment_view
+      break;
+    default:
+      coder_upgrade_debug_echo("ERROR: Invalid case value\n");
+      return;
+  }
+
+  // Create the new hook function.
+  coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters);
+}
+
+/**
+ * Updates hook_nodeapi().
+ *
+ * hook_nodeapi, hook_node_type, hook_user, and hook_block removed and replaced
+ * with families of related functions
+ */
+function coder_upgrade_callback_nodeapi($node, $case_node, $operation = '') {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+
+  if (!$operation) {
+    $case = &$case_node->data;
+    if (!is_a($case, 'PGPCase')) {
+      coder_upgrade_debug_echo("Houston, we've got an unexpected statement\n");
+      return;
+    }
+    $operation = $case->case->toString();
+    $operation = trim($operation, "'\"");
+  }
+
+  $hook = '_node_' . str_replace(' ', '_', $operation);
+  $parameters = array('$node');
+
+  switch ($operation) {
+    case 'alter':
+      // This block becomes example_node_build_alter
+      $hook = '_node_build_alter';
+      $parameters = array('$build');
+      break;
+    case 'delete':
+      // This block becomes example_node_delete
+      break;
+    case 'delete revision':
+      // This block becomes example_node_revision_delete
+      $hook = '_node_revision_delete';
+      break;
+    case 'insert':
+      // This block becomes example_node_insert
+      break;
+    case 'load':
+      // This block becomes example_node_load
+      $parameters = array('$node', '$types');
+      break;
+    case 'prepare':
+      // This block becomes example_node_prepare
+      break;
+    case 'prepare translation':
+      // This block becomes example_node_prepare_translation
+      break;
+    case 'print':
+      // This block becomes example_node_view with $build_mode = 'print'
+      $hook = '_node_view';
+      $parameters = array('$node', '$build_mode = \'print\'');
+      break;
+    case 'rss item':
+      // This block becomes example_node_view with $build_mode = 'rss'
+      $hook = '_node_view';
+      $parameters = array('$node', '$build_mode = \'rss\'');
+      break;
+    case 'search result':
+      // This block becomes example_node_search_result
+      break;
+    case 'presave':
+      // This block becomes example_node_presave
+      break;
+    case 'update':
+      // This block becomes example_node_update
+      break;
+    case 'update index':
+      // This block becomes example_node_update_index
+      break;
+    case 'validate':
+      // This block becomes example_node_validate
+      $parameters = array('$node', '$form');
+      break;
+    case 'view':
+      // This block becomes example_node_view with $build_mode = 'full' by default
+      $parameters = array('$node', '$build_mode = \'full\'');
+      break;
+    default:
+      coder_upgrade_debug_echo("ERROR: Invalid case value\n");
+      return;
+  }
+
+  // Create the new hook function.
+  coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters);
+}
+
+/**
+ * Updates hook_node_type().
+ *
+ * hook_nodeapi, hook_node_type, hook_user, and hook_block removed and replaced
+ * with families of related functions
+ */
+function coder_upgrade_callback_node_type($node, $case_node, $operation = '') {
+  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+
+  if (!$operation) {
+    $case = &$case_node->data;
+    if (!is_a($case, 'PGPCase')) {
+      coder_upgrade_debug_echo("Houston, we've got an unexpected statement\n");
+      return;
+    }
+    $operation = $case->case->toString();
+    $operation = trim($operation, "'\"");
+  }
+
+  $hook = '_node_type_' . str_replace(' ', '_', $operation);
+  $parameters = array('$info');
+
+  switch ($operation) {
+    case 'delete':
+      // This block becomes example_node_type_delete
+      break;
+    case 'insert':
+      // This block becomes example_node_type_insert
+      break;
+    case 'update':
+      // This block becomes example_node_type_update
       break;
     default:
       coder_upgrade_debug_echo("ERROR: Invalid case value\n");
