@@ -52,11 +52,11 @@ function coder_upgrade_conversions_list() {
 
   $list['middle'] = array(
     array(
-      'name' => 'functions',
+      'name' => 'function_calls',
       'type' => 'parser',
     ),
     array(
-      'name' => 'function_calls',
+      'name' => 'functions',
       'type' => 'parser',
     ),
     array(
@@ -65,7 +65,7 @@ function coder_upgrade_conversions_list() {
     ),
   );
 
-  $list['end'] = array(/*'end'*/);
+  $list['end'] = array('end');
 
   return $list;
 }
