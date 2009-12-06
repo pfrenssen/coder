@@ -32,6 +32,10 @@
  * http://drupal.org/node/224333#time_limit
  *
  *
+ * Database
+ * http://drupal.org/node/224333#schema_ret
+ *
+ *
  * Menu
  * http://drupal.org/node/224333#comment_load (DUP Comments)
  *
@@ -281,6 +285,41 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
     case 'comment_validate': // DONE
       $name['value'] = 'comment_form_validate';
       $editor->setParameters($item, array('$form', '$form_state /* TODO Set these variables. */'));
+      break;
+
+    case 'db_add_field':
+      // includes/database.pgsql.inc Add a new field to a table.
+    case 'db_add_index':
+      // includes/database.pgsql.inc Add an index.
+    case 'db_add_primary_key':
+      // includes/database.pgsql.inc Add a primary key.
+    case 'db_add_unique_key':
+      // includes/database.pgsql.inc Add a unique key.
+    case 'db_change_field':
+      // includes/database.pgsql.inc Change a field definition.
+    case 'db_create_table':
+      // includes/database.inc Create a new table from a Drupal table definition.
+    case 'db_create_table_sql':
+      // includes/database.pgsql.inc Generate SQL to create a new table from a Drupal schema definition.
+    case 'db_drop_field':
+      // includes/database.pgsql.inc Drop a field.
+    case 'db_drop_index':
+      // includes/database.pgsql.inc Drop an index.
+    case 'db_drop_primary_key':
+      // includes/database.pgsql.inc Drop the primary key.
+    case 'db_drop_table':
+      // includes/database.pgsql.inc Drop a table.
+    case 'db_drop_unique_key':
+      // includes/database.pgsql.inc Drop a unique key.
+    case 'db_field_names':
+      // includes/database.inc Return an array of field names from an array of key/index column specifiers.
+    case 'db_field_set_default':
+      // includes/database.pgsql.inc Set the default value for a field.
+    case 'db_field_set_no_default':
+      // includes/database.pgsql.inc Set a field to have no default value.
+    case 'db_rename_table':
+      // includes/database.pgsql.inc Rename a table.
+      $item->deleteParameter();
       break;
 
     case 'drupal_add_css': // DONE
@@ -864,7 +903,7 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
  *
  * Database
  * http://drupal.org/node/224333#schema_translation
- * http://drupal.org/node/224333#schema_html (NOT DONE)
+ * http://drupal.org/node/224333#schema_html
  * http://drupal.org/node/224333#install-schema
  *
  *
@@ -1253,6 +1292,10 @@ function coder_upgrade_convert_schema_callback(&$item) {
   // Fetch the first parameter of the t() call.
   $parameter = $item->getParameter();
   $operand = $parameter->getElement();
+  if (is_array($operand)) {
+    // schema_html: schema descriptions are now plain text instead of HTML.
+    $operand['value'] = html_entity_decode($operand['value']);
+  }
 //  coder_upgrade_debug_echo("operand\n");
 //  coder_upgrade_debug_echo(print_r($operand, 1));
 
