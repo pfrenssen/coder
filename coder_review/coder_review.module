@@ -1898,14 +1898,14 @@ function coder_review_simpletest() {
 function coder_review_theme() {
   return array(
     'coder_review' => array(
-      'arguments' => array(
+      'variables' => array(
         'name' => NULL,
         'filename' => NULL,
         'results' => NULL,
       ),
     ),
     'coder_review_warning' => array(
-      'arguments' => array(
+      'variables' => array(
         'warning' => NULL,
         'severity_name' => NULL,
         'lineno' => NULL,
@@ -1913,23 +1913,21 @@ function coder_review_theme() {
       ),
     ),
     'coder_review_warning_msg' => array(
-      'arguments' => array(
+      'variables' => array(
         'error' => NULL,
       ),
     ),
     'coder_review_table_cols' => array(
-      'arguments' => array(
-        'form' => NULL,
-      ),
+      'render element' => 'form',
     ),
     'drupalapi' => array(
-      'arguments' => array(
+      'variables' => array(
         'function' => NULL,
         'version' => substr(VERSION, 0, 1),
       ),
     ),
     'phpapi' => array(
-      'arguments' => array(
+      'variables' => array(
         'function' => NULL,
       ),
     ),
