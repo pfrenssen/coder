@@ -13,7 +13,7 @@
  */
 
 /**
- * Apply finishing touches to the directory.
+ * Applies finishing touches to the directory.
  *
  * @param string $dirname
  *   The name of the directory with the converted files.
@@ -30,7 +30,7 @@ function coder_upgrade_convert_end($dirname) {
 }
 
 /**
- * Scan a specified directory and find all files and/or directories beneath it.
+ * Scans a directory and finds all files and/or directories beneath it.
  *
  * @todo Move to .inc file in parent directory.
  *
@@ -65,7 +65,7 @@ function coder_upgrade_scan_directory_2($dirname, $retrieve = 'dirs') {
 }
 
 /**
- * Add file entries to .info files.
+ * Adds file entries to .info files.
  *
  * Module .info files must now specify all loadable code files explicitly.
  * http://drupal.org/node/224333#registry
@@ -142,7 +142,7 @@ function coder_upgrade_add_file_entries($dirname = '', $files = array(), &$items
       $new .= "files[] = $item\n";
     }
     if (file_put_contents($info_file, $new) === FALSE) {
-      coder_upgrade_debug_print('File could not be written: !file', array('!file' => $info_file));
+      clp('File could not be written: !file', array('!file' => $info_file));
     }
   }
 }

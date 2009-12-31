@@ -13,7 +13,7 @@
  */
 
 /**
- * Function call changes using grammar parser.
+ * Upgrades function calls using grammar parser.
  *
  * System
  * http://drupal.org/node/224333#registry
@@ -102,7 +102,7 @@
  *   The object containing the grammar statements of the file to convert.
  */
 function coder_upgrade_convert_function_calls(&$reader) {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  cdp("inside " . __FUNCTION__);
   $editor = new PGPEditor();
   $types = array(T_STRING);
   $editor->traverseCallback($reader->getFunctionCalls(), 'coder_upgrade_callback_function_calls', $types, $reader);
@@ -133,13 +133,13 @@ function coder_upgrade_convert_function_calls(&$reader) {
  * An array item can be printed using the built-in print_r routine.
  * @code
  *   // Print the grammar item (a function call object in this case).
- *   coder_upgrade_debug_echo($item->print_r());
+ *   cdp($item->print_r());
  *
  *   // Print the parameters to the function call.
- *   coder_upgrade_debug_echo($item->parameters->print_r());
+ *   cdp($item->parameters->print_r());
  *   // Alternatively, with a parameters object, do this.
  *   $parameters = $item->parameters;
- *   coder_upgrade_debug_echo($parameters->print_r());
+ *   cdp($parameters->print_r());
  * @endcode
  *
  * Change the name of the function being called
@@ -148,7 +148,7 @@ function coder_upgrade_convert_function_calls(&$reader) {
  *   $name['value'] = 'new_function_name';
  * @endcode
  *
- * Get a paramter object and an expression object
+ * Get a parameter object and an expression object
  * @code
  *   // Get a parameter object (PGPExpression).
  *   $param = $item->getParameter(0);
@@ -203,12 +203,23 @@ function coder_upgrade_convert_function_calls(&$reader) {
  *  $expression = $editor->expressionToStatement($string);
  * @endcode
  *
+ * Other debug print examples.
+ *
+ * @code
+ * cdp($list->printNode($parent));
+ * cdp($list->printArray($parent));
+ * cdp($list->printArray($temp->getElement(0)));
+ * cdp($list->printNode($temp->get(0)));
+ * @endcode
+ *
  * @param PGPFunctionCall $item
  *   A function call object of the expression or statement.
+ * @param PGPReader $reader
+ *   The object containing the grammar statements of the file to convert.
  */
 function coder_upgrade_callback_function_calls(&$item, &$reader) {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
-//  coder_upgrade_debug_echo($item->print_r());
+  cdp("inside " . __FUNCTION__);
+//  cdp($item->print_r());
 
   /*
    * The $item variable passed to this function is a PGPFunctionCall object.
@@ -254,7 +265,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       // Remove default parameter.
       if ($count == 3) {
         $value = $item->printParameter(2);
-        coder_upgrade_debug_echo("value = $value\n");
+        cdp("value = $value");
         if ($value == 'array()') {
           $item->deleteParameter(2);
         }
@@ -324,7 +335,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
 
     case 'drupal_add_css': // DONE
       // A similar comment to that in 'drupal_add_js' below applies here.
-      coder_upgrade_debug_echo($item->parameters->print_r());
+      cdp($item->parameters->print_r());
 
       $count = $item->parameters->count();
       if ($count < 3) {
@@ -343,7 +354,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       if ($string != 'array()') {
         $temp = $editor->expressionToStatement($string);
         $temp->getElement(0)->multiline = 0;
-        coder_upgrade_debug_echo($temp->print_r());
+        cdp($temp->print_r());
         $item->setParameter(1, $temp);
       }
       break;
@@ -364,7 +375,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
        * A type of 'core', 'module' or 'theme' all convert to 'file' which is
        * the new default. We could add a weight item based on the type?
        */
-      coder_upgrade_debug_echo($item->parameters->print_r());
+      cdp($item->parameters->print_r());
 
       $count = $item->parameters->count();
       if ($count < 3) {
@@ -383,7 +394,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       if ($string != 'array()') {
         $temp = $editor->expressionToStatement($string);
         $temp->getElement(0)->multiline = 0;
-        coder_upgrade_debug_echo($temp->print_r());
+        cdp($temp->print_r());
         $item->setParameter(1, $temp);
       }
       break;
@@ -423,7 +434,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       break;
 
     case 'drupal_http_request': // DONE
-      coder_upgrade_debug_echo($item->parameters->print_r());
+      cdp($item->parameters->print_r());
 
       $count = $item->parameters->count();
       if ($count == 1) {
@@ -436,7 +447,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
 
       $temp = $editor->expressionToStatement($string);
       $temp->getElement(0)->multiline = 0;
-      coder_upgrade_debug_echo($temp->print_r());
+      cdp($temp->print_r());
       $item->setParameter(1, $temp);
       break;
 
@@ -481,26 +492,26 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
 
     case 'drupal_set_title': // DONE
       $temp = $item->printParameters();
-      coder_upgrade_debug_echo("temp = $temp\n");
+      cdp("temp = $temp");
 
       if (strpos($temp, 'check_plain') !== FALSE) {
         // TODO Could check for isset, count of parameters, etc.???
         // check_plain could be part of an expression (e.g. concatenation).
         $temp = $item->getParameter(0);
         $temp = $temp->getElement(0);
-        coder_upgrade_debug_echo("Printing the first \n");
-        coder_upgrade_debug_echo($temp->print_r());
+        cdp("Printing the first ");
+        cdp($temp->print_r());
         $editor->setParameter($item, 0, $temp->printParameter(0));
-        coder_upgrade_debug_echo($item->print_r());
+        cdp($item->print_r());
         break;
       }
       $parameters = &$item->parameters;
       if ($call = &$parameters->search($parameters, 'PGPFunctionCall', 'name', 'value', 't')) {
         $temp = $call->toString();
-        coder_upgrade_debug_echo("temp = $temp\n");
+        cdp("temp = $temp");
         if (preg_match('#(\'|")@\w+(\'|")\s*=>\s*#', $temp)) {
           $editor->setParameter($item, 1, 'PASS_THROUGH');
-          coder_upgrade_debug_echo($item->print_r(0, $item));
+          cdp($item->print_r(0, $item));
         }
       }
       break;
@@ -590,7 +601,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
 
       $temp = $editor->expressionToStatement($string);
       $temp->getElement(0)->multiline = 0;
-      coder_upgrade_debug_echo($temp->print_r());
+      cdp($temp->print_r());
       $item->setParameter(4, $temp);
       break;
 
@@ -612,7 +623,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         $p0 = $item->printParameter(0);
         $p1 = $item->printParameter(1);
         if ($p0 != "'taxonomy'" || $p1 != "'get_tree'") {
-          coder_upgrade_debug_echo("FAILED to relate\n");
+          cdp("FAILED to relate");
           break;
         }
       }
@@ -669,7 +680,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
 
       $temp = $editor->expressionToStatement($string);
       $temp->getElement(0)->multiline = 0;
-      coder_upgrade_debug_echo($temp->print_r());
+      cdp($temp->print_r());
       $item->setParameter(2, $temp);
       break;
 
@@ -742,7 +753,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
        * }
        * $string = ');
        */
-      coder_upgrade_debug_echo(__FUNCTION__ . " inside theme case\n");
+      cdp(__FUNCTION__ . " inside theme case");
       global $_coder_upgrade_module_name;
       // Find the hook_theme function object.
       $function = $editor->findFunction($reader->getFunctions(), $_coder_upgrade_module_name . '_theme');
@@ -754,14 +765,14 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
       $body = &$function->body;
 
       if (!($return = $body->find(T_RETURN, 'reverse'))) {
-        coder_upgrade_debug_print("ERROR: return statement not found in hook_perm");
+        clp("ERROR: return statement not found in hook_perm");
         return;
       }
       $value = &$return['value'];
       $array = $value->getElement(0);
       if (get_class($array) == 'PGPArray') {
         if (!($theme = $array->findValue($item->getParameter(0)->toString()))) {
-          coder_upgrade_debug_print("ERROR: theme entry not found in hook_theme");
+          clp("ERROR: theme entry not found in hook_theme");
           return;
         }
         $array = $theme->getElement(0);
@@ -791,7 +802,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
 
     case 'time': // DONE
       $expression = $editor->expressionToStatement('REQUEST_TIME');
-      coder_upgrade_debug_echo($expression->print_r());
+      cdp($expression->print_r());
       $item = $expression->getElement(0);
       break;
 
@@ -819,7 +830,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         // Make variable assignments referring to two new parameters.
         $assign1 = $editor->textToStatements('$name = ' . $parameter . "['name']; // TODO Set these variables");
         $assign2 = $editor->textToStatements('$password = ' . $parameter . "['pass'];")->getElement(0);
-        coder_upgrade_debug_echo($assign1->print_r());
+        cdp($assign1->print_r());
         // Insert the assignments before this statement.
         // Get the statement (i.e. node) this function call is part of.
         $parent = &$item->parent;
@@ -847,7 +858,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
 }
 
 /**
- * Simple regular expression changes.
+ * Upgrades text using simple regular expressions.
  *
  * System
  * http://drupal.org/node/224333#moved_statistics_settings
@@ -876,7 +887,7 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
   $from[] = "@'admin/reports/settings'@";
   $to[] = "'admin/config/system/statistics'";
 
-  // Replace referer_uri() with PHP-provided global variable.
+  // Replace "use PHP for block visibility" with "use PHP for settings."
   $from[] = '/(\'|")use PHP for block visibility(\'|")/';
   $to[] = "$1use PHP for settings$1";
 
@@ -889,7 +900,7 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
 }
 
 /**
- * Function changes using grammar parser.
+ * Upgrades functions using grammar parser.
  *
  * Module Info / Install
  * http://drupal.org/node/224333#update_php
@@ -934,8 +945,8 @@ function coder_upgrade_convert_regex_simple_changes(&$file) {
  *   The object containing the grammar statements of the file to convert.
  */
 function coder_upgrade_convert_functions(&$reader) {
-//  coder_upgrade_debug_print("inside " . __FUNCTION__ . "\n");
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+//  clp("inside " . __FUNCTION__);
+  cdp("inside " . __FUNCTION__);
   $editor = new PGPEditor();
   $types = array(T_FUNCTION);
   $editor->traverseCallback($reader->getFunctions(), 'coder_upgrade_callback_functions', $types, $reader);
@@ -966,15 +977,17 @@ function coder_upgrade_convert_functions(&$reader) {
  *
  * @param PGPNode $node
  *   A node object containing a PGPClass (or function) item.
+ * @param PGPReader $reader
+ *   The object containing the grammar statements of the file to convert.
  */
-function coder_upgrade_callback_functions(&$node) {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+function coder_upgrade_callback_functions(&$node, &$reader) {
+  cdp("inside " . __FUNCTION__);
   $item = &$node->data;
 
   global $_coder_upgrade_module_name;
 
   $name = &$item->name;
-  coder_upgrade_debug_echo("name = $name\n");
+  cdp("name = $name");
 
   /*
    * If the function name does not begin with the module name, then ignore it.
@@ -992,17 +1005,17 @@ function coder_upgrade_callback_functions(&$node) {
    * additional manipulation and testing needs to be done.
    */
   if (strpos($name, $_coder_upgrade_module_name) !== 0) {
-    coder_upgrade_debug_print("Ignoring function '$name' as its name does not begin with the module name");
+    clp("Ignoring function '$name' as its name does not begin with the module name");
     return;
   }
 
   // By convention, the module name should be followed by an underscore.
   $key = substr($name, strlen($_coder_upgrade_module_name) + 1);
-  coder_upgrade_debug_echo("key = $key\n");
+  cdp("key = $key");
 
   // Update hooks need additional manipulation.
   if (preg_match('@update_\d+$@', $key, $matches)) {
-    coder_upgrade_debug_echo(print_r($matches, 1));
+    cdp(print_r($matches, 1));
     $key = 'update_N';
   }
 
@@ -1085,9 +1098,9 @@ function coder_upgrade_callback_functions(&$node) {
  *   A node object containing a PGPClass (or function) item.
  */
 function coder_upgrade_convert_access(&$node) {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  cdp("inside " . __FUNCTION__);
   $item = &$node->data;
-  coder_upgrade_debug_echo($item->print_r());
+  cdp($item->print_r());
 
   global $_coder_upgrade_module_name;
 
@@ -1097,8 +1110,8 @@ function coder_upgrade_convert_access(&$node) {
   $item->comment = preg_replace('@hook_access([^i])@', "hook_node_access$1", $item->comment);
 
   // Switch places of the first two parameters.
-//  echo "Printing parameters\n";
-  coder_upgrade_debug_echo($item->parameters->print_r());
+//  cdp("Printing parameters");
+  cdp($item->parameters->print_r());
 
   $count = $item->parameters->count();
   // Adjust parameters.
@@ -1120,7 +1133,7 @@ function coder_upgrade_convert_access(&$node) {
  *   A node object containing a PGPClass (or function) item.
  */
 function coder_upgrade_convert_install($node) {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  cdp("inside " . __FUNCTION__);
   $item = &$node->data;
 
   // Get body statements.
@@ -1135,10 +1148,10 @@ function coder_upgrade_convert_install($node) {
   $current = $body->first();
   while ($current->next != NULL) {
     $statement = &$current->data;
-    coder_upgrade_debug_echo($statement->print_r());
+    cdp($statement->print_r());
     if (is_a($statement, 'PGPAssignment')) {
       $text = $statement->values->toString();
-      coder_upgrade_debug_echo($text . "\n");
+      cdp($text);
       if (preg_match('(drupal_install_schema|drupal_uninstall_schema)', $text)) {
         $editor = new PGPEditor();
         // Insert comment.
@@ -1162,7 +1175,7 @@ function coder_upgrade_convert_install($node) {
  * @param PGPNode $node
  *   A node object containing a PGPClass (or function) item.
  */
-function coder_upgrade_convert_menu_link_alter($node) {
+function coder_upgrade_convert_menu_link_alter(&$node) {
   $item = &$node->data;
   $count = $item->parameters->count();
   // Adjust parameters.
@@ -1183,9 +1196,9 @@ function coder_upgrade_convert_menu_link_alter($node) {
  *   A node object containing a PGPClass (or function) item.
  */
 function coder_upgrade_convert_perm(&$node) {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  cdp("inside " . __FUNCTION__);
   $item = &$node->data;
-  coder_upgrade_debug_echo($item->print_r());
+  cdp($item->print_r());
 
   // Rename function.
   $item->name .= 'ission';
@@ -1196,18 +1209,18 @@ function coder_upgrade_convert_perm(&$node) {
   $body = &$item->body;
 
   if (!($return = $body->find(T_RETURN, 'reverse'))) {
-    coder_upgrade_debug_print("ERROR: return statement not found in hook_perm");
+    clp("ERROR: return statement not found in hook_perm");
     return;
   }
-//  echo "Printing return item\n";
+//  cdp("Printing return item");
   $value = &$return['value'];
-  coder_upgrade_debug_echo($value->print_r());
-  coder_upgrade_debug_echo($value->toString());
-//  echo "Printing return item DONE\n";
+  cdp($value->print_r());
+  cdp($value->toString());
+//  cdp("Printing return item DONE");
 
   $array = $value->getElement();
   if (!is_a($array, 'PGPArray')) {
-    coder_upgrade_debug_print("ERROR: return statement does not include an array of values in hook_perm");
+    clp("ERROR: return statement does not include an array of values in hook_perm");
     return;
   }
   // Grab the PGPList of values.
@@ -1224,7 +1237,7 @@ function coder_upgrade_convert_perm(&$node) {
       $add_quotes = $type == T_CONSTANT_ENCAPSED_STRING;
 
       $permission = &$current->data->toString();
-//      coder_upgrade_debug_echo("permission = $permission\n");
+//      cdp("permission = $permission");
       $permission = trim($permission, "'\"");
       if ($add_quotes) {
         $string .= "'$permission' => array('title' => t('$permission'), 'description' => t('TODO Add a description for $permission'),),\n";
@@ -1237,12 +1250,12 @@ function coder_upgrade_convert_perm(&$node) {
     $current = &$current->next;
   }
   $string .= ");\n";
-//  coder_upgrade_debug_echo($string);
+//  cdp($string);
   $editor = new PGPEditor();
   $expression = $editor->expressionToStatement($string);
-//  coder_upgrade_debug_echo("PRINT NEW expression\n");
-//  coder_upgrade_debug_echo($expression->print_r(3));
-//  coder_upgrade_debug_echo("PRINT NEW expression DONE\n");
+//  cdp("PRINT NEW expression");
+//  cdp($expression->print_r(3));
+//  cdp("PRINT NEW expression DONE");
 
   // Set the return array to the new array.
   $value->setElement(0, $expression);
@@ -1255,17 +1268,17 @@ function coder_upgrade_convert_perm(&$node) {
  *   A node object containing a PGPClass (or function) item.
  */
 function coder_upgrade_convert_schema(&$node) {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  cdp("inside " . __FUNCTION__);
   $item = &$node->data;
   $body = &$item->body;
 
   if (!($return = $body->find(T_RETURN, 'reverse'))) {
-    coder_upgrade_debug_print("ERROR: return statement not found in hook_schema");
+    clp("ERROR: return statement not found in hook_schema");
     return;
   }
-//  echo "Printing return item\n";
-  coder_upgrade_debug_echo($item->print_r(0, $return));
-//  echo "Printing return item DONE\n";
+//  cdp("Printing return item");
+  cdp($item->print_r(0, $return));
+//  cdp("Printing return item DONE");
   $variable = $return['value']->first();
 
   /*
@@ -1281,9 +1294,9 @@ function coder_upgrade_convert_schema(&$node) {
   $body->searchCallback($body, 'coder_upgrade_convert_schema_callback', 'PGPFunctionCall', 'name', 'value', 't');
 }
 
-function coder_upgrade_convert_schema_callback(&$item) {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
-//  coder_upgrade_debug_echo($item->print_r());
+function coder_upgrade_convert_schema_callback(&$item /*&$node*/) {
+  cdp("inside " . __FUNCTION__);
+//  cdp($item->print_r());
 
   if (get_class($item) != 'PGPFunctionCall') {
     return;
@@ -1296,8 +1309,8 @@ function coder_upgrade_convert_schema_callback(&$item) {
     // schema_html: schema descriptions are now plain text instead of HTML.
     $operand['value'] = html_entity_decode($operand['value']);
   }
-//  coder_upgrade_debug_echo("operand\n");
-//  coder_upgrade_debug_echo(print_r($operand, 1));
+//  cdp("operand");
+//  cdp(print_r($operand, 1));
 
   // Parent should be the value expression in an array (key, value) pair.
   $parent = &$item->parentExpression;
@@ -1317,9 +1330,9 @@ function coder_upgrade_convert_schema_callback(&$item) {
  *   A node object containing a PGPClass (or function) item.
  */
 function coder_upgrade_convert_update_N(&$node) {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  cdp("inside " . __FUNCTION__);
   $item = &$node->data;
-//  coder_upgrade_debug_echo($item->print_r());
+//  cdp($item->print_r());
 
   $comment = &$item->comment;
   if (!is_array($comment) || empty($comment)) {
@@ -1347,8 +1360,8 @@ function coder_upgrade_convert_update_N(&$node) {
  *   An integer of the operation parameter in the function parameter list.
  */
 function coder_upgrade_convert_op(&$node, $callback, $op_index) {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
-  coder_upgrade_debug_echo("$callback\n");
+  cdp("inside " . __FUNCTION__);
+  cdp("$callback");
 
   /*
    * DBTNG changes can be done in another routine
@@ -1378,13 +1391,13 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
   while ($current->next != NULL) {
     $statement = &$current->data;
     if (is_object($statement)) {
-      coder_upgrade_debug_echo($statement->print_r());
+      cdp($statement->print_r());
     }
     if (is_a($statement, 'PGPConditional')) {
-//      echo "inside PGPConditional check\n";
-//      echo "statement->type = " . $statement->type . "\n";
+//      cdp("inside PGPConditional check");
+//      cdp("statement->type = " . $statement->type);
       if ($statement->type == T_SWITCH) {
-//        echo "inside T_SWITCH check\n";
+//        cdp("inside T_SWITCH check");
         // Get the list of conditions.
         $conditions = $statement->conditions;
         // Get the first condition. (With a switch there should only be one condition.)
@@ -1397,7 +1410,7 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
         }
       }
       elseif (in_array($statement->type, array(T_IF, T_ELSEIF/*, T_ELSE*/))) {
-//        echo "inside T_IF check\n";
+//        cdp("inside T_IF check");
         /*
          * Extract the conditions referencing the $op variable and loop on them.
          * These are conditions of the form $op == 'operation'.
@@ -1437,7 +1450,7 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
  *   Array of operations referenced in the if block.
  */
 function coder_upgrade_extract_operations(&$conditions, $op) {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  cdp("inside " . __FUNCTION__);
   $operations = array();
 
   /*
@@ -1517,12 +1530,12 @@ function coder_upgrade_extract_operations(&$conditions, $op) {
  * with families of related functions
  */
 function coder_upgrade_callback_block($node, $case_node, $operation = '') {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  cdp("inside " . __FUNCTION__);
 
   if (!$operation) {
     $case = &$case_node->data;
     if (!is_a($case, 'PGPCase')) {
-      coder_upgrade_debug_echo("Houston, we've got an unexpected statement\n");
+      cdp("Houston, we've got an unexpected statement");
       return;
     }
     $operation = $case->case->toString();
@@ -1549,7 +1562,7 @@ function coder_upgrade_callback_block($node, $case_node, $operation = '') {
       // This block becomes example_block_view
       break;
     default:
-      coder_upgrade_debug_echo("ERROR: Invalid case value\n");
+      cdp("ERROR: Invalid case value");
       return;
   }
 
@@ -1565,12 +1578,12 @@ function coder_upgrade_callback_block($node, $case_node, $operation = '') {
  * with families of related functions
  */
 function coder_upgrade_callback_comment($node, $case_node, $operation = '') {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  cdp("inside " . __FUNCTION__);
 
   if (!$operation) {
     $case = &$case_node->data;
     if (!is_a($case, 'PGPCase')) {
-      coder_upgrade_debug_echo("Houston, we've got an unexpected statement\n");
+      cdp("Houston, we've got an unexpected statement");
       return;
     }
     $operation = $case->case->toString();
@@ -1603,7 +1616,7 @@ function coder_upgrade_callback_comment($node, $case_node, $operation = '') {
       // This block becomes example_comment_view
       break;
     default:
-      coder_upgrade_debug_echo("ERROR: Invalid case value\n");
+      cdp("ERROR: Invalid case value");
       return;
   }
 
@@ -1618,12 +1631,12 @@ function coder_upgrade_callback_comment($node, $case_node, $operation = '') {
  * with families of related functions
  */
 function coder_upgrade_callback_nodeapi($node, $case_node, $operation = '') {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  cdp("inside " . __FUNCTION__);
 
   if (!$operation) {
     $case = &$case_node->data;
     if (!is_a($case, 'PGPCase')) {
-      coder_upgrade_debug_echo("Houston, we've got an unexpected statement\n");
+      cdp("Houston, we've got an unexpected statement");
       return;
     }
     $operation = $case->case->toString();
@@ -1690,7 +1703,7 @@ function coder_upgrade_callback_nodeapi($node, $case_node, $operation = '') {
       $parameters = array('$node', '$build_mode = \'full\'');
       break;
     default:
-      coder_upgrade_debug_echo("ERROR: Invalid case value\n");
+      cdp("ERROR: Invalid case value");
       return;
   }
 
@@ -1705,12 +1718,12 @@ function coder_upgrade_callback_nodeapi($node, $case_node, $operation = '') {
  * with families of related functions
  */
 function coder_upgrade_callback_node_type($node, $case_node, $operation = '') {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  cdp("inside " . __FUNCTION__);
 
   if (!$operation) {
     $case = &$case_node->data;
     if (!is_a($case, 'PGPCase')) {
-      coder_upgrade_debug_echo("Houston, we've got an unexpected statement\n");
+      cdp("Houston, we've got an unexpected statement");
       return;
     }
     $operation = $case->case->toString();
@@ -1731,7 +1744,7 @@ function coder_upgrade_callback_node_type($node, $case_node, $operation = '') {
       // This block becomes example_node_type_update
       break;
     default:
-      coder_upgrade_debug_echo("ERROR: Invalid case value\n");
+      cdp("ERROR: Invalid case value");
       return;
   }
 
@@ -1748,12 +1761,12 @@ function coder_upgrade_callback_node_type($node, $case_node, $operation = '') {
  * likewise renamed hook_user_delete() to hook_user_cancel(). (Did this exist?)
  */
 function coder_upgrade_callback_user($node, $case_node, $operation = '') {
-  coder_upgrade_debug_echo("inside " . __FUNCTION__ . "\n");
+  cdp("inside " . __FUNCTION__);
 
   if (!$operation) {
     $case = &$case_node->data;
     if (!is_a($case, 'PGPCase')) {
-      coder_upgrade_debug_echo("Houston, we've got an unexpected statement\n");
+      cdp("Houston, we've got an unexpected statement");
       return;
     }
     $operation = $case->case->toString();
@@ -1836,7 +1849,7 @@ function coder_upgrade_callback_user($node, $case_node, $operation = '') {
       $parameters = array('$account', '$build_mode');
       break;
     default:
-      coder_upgrade_debug_echo("ERROR: Invalid case value\n");
+      cdp("ERROR: Invalid case value");
       return;
   }
 
@@ -1908,13 +1921,13 @@ function coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters) {
 
   // Remove the break statement from a case block.
   if (($break = $function->body->find(T_BREAK, 'reverse', TRUE))) {
-    coder_upgrade_debug_echo("return statement found in hook\n");
+    cdp("return statement found in hook");
     $function->body->delete($break);
   }
   // Remove any trailing blank lines (after break) that are included in body.
   $last = $function->body->last();
   if (is_array($last->data) && $last->data['type'] == T_WHITESPACE) {
-    coder_upgrade_debug_echo("YAHOO: found whitespace statement in hook_nodeapi\n");
+    cdp("YAHOO: found whitespace statement in hook_nodeapi");
     $function->body->delete($last);
   }
 

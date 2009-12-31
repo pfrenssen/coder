@@ -13,7 +13,54 @@
  */
 
 /**
- * Callback from hook_upgrades().
+ * Returns the list of upgrade sets from all modules.
+ *
+ * @param boolean $include_routines
+ *   Indicates whether to include the list of conversion routines. This list
+ *   is only needed when the conversions are to be applied (typically on form
+ *   submission). This parameter equals FALSE when this routine is invoked by
+ *   Coder Upgrade while building the form, and TRUE when applying the
+ *   conversions.
+ */
+function _coder_upgrade_upgrades($include_routines = FALSE) {
+  return module_invoke_all('upgrades', $include_routines);
+}
+
+/**
+ * Implements hook_upgrades().
+ *
+ * @param boolean $include_routines
+ *   Indicates whether to include the list of conversion routines. This list
+ *   is only needed when the conversions are to be applied (typically on form
+ *   submission). This parameter equals FALSE when this hook is invoked by
+ *   Coder Upgrade while building the form, and TRUE when applying the
+ *   conversions.
+ */
+function coder_upgrade_upgrades($include_routines) {
+  $_coder_upgrades = drupal_static(__FUNCTION__);
+
+  if (!isset($_coder_upgrades)) {
+    $_coder_upgrades = array();
+    $path = drupal_get_path('module', 'coder_upgrade') . '/conversions';
+    $files = drupal_system_listing('/coder_upgrade\..*\.inc$/', $path, 'filepath', 0);
+    foreach ($files as $file) {
+//      require_once DRUPAL_ROOT . '/' . $file->filepath;
+      $function = str_replace('.', '_', $file->name) . '_upgrades';
+      if (function_exists($function)) {
+        if ($upgrade = call_user_func($function, $include_routines)) {
+          $_coder_upgrades = array_merge($_coder_upgrades, $upgrade);
+        }
+      }
+    }
+  }
+  return $_coder_upgrades;
+}
+
+/**
+ * Returns a list of upgrade sets provided by this module.
+ *
+ * If requested, each set includes its associated list of upgrade routines.
+ * This is a callback from hook_upgrades().
  *
  * @param boolean $include_routines
  *   Indicates whether to include the list of conversion routines.
@@ -29,7 +76,7 @@ function coder_upgrade_list_upgrades($include_routines) {
 }
 
 /**
- * Return a list of conversion routine suffixes.
+ * Returns a list of conversion routine suffixes.
  *
  * Group changes by processing order (beginning, middle, or end). The beginning
  * and end conversion routines are applied only at the module or directory

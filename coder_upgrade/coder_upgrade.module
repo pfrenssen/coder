@@ -18,7 +18,7 @@
  */
 
 module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
-module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
+module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.list');
 
 /**
  * Implements hook_permission().
@@ -178,7 +178,7 @@ function coder_upgrade_conversions_form($form, &$form_state) {
   // Build the upgrade list.
   $header = array(
     'category' => array('data' => t('Category'), 'field' => 'category'),
-    'description' => array('data' => t('Description'), 'field' => 'description'),
+//    'description' => array('data' => t('Description'), 'field' => 'description'),
   );
   $i = 0;
   $rows = array();
@@ -244,7 +244,8 @@ function coder_upgrade_conversions_form($form, &$form_state) {
   );
 
   // Build the directory list.
-  $path = realpath(file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD));
+  $deadwood_dir = variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);
+  $path = realpath(file_directory_path() . '/' . $deadwood_dir);
   $dirs = coder_upgrade_scan_directory($path);
   if (!$dirs) {
     drupal_set_message(t('Please place modules to be converted in @path.', array('@path' => $path)), 'error');
@@ -259,7 +260,7 @@ function coder_upgrade_conversions_form($form, &$form_state) {
   foreach ($dirs as $dir) {
     $row = array();
     $row['name'] = isset($directories[$dir]) ? l($dir, coder_upgrade_patch_link($dir)) : $dir;
-    $row['path'] = file_directory_path() . '/' . $dir;
+    $row['path'] = $deadwood_dir . '/' . $dir;
     $row['#weight'] = ++$i;
 
     $rows[$dir] = $row;
@@ -292,7 +293,7 @@ function coder_upgrade_conversions_form($form, &$form_state) {
   $module_fs = array(
     '#type' => 'fieldset',
     '#title' => t('Modules'),
-    '#description' => t('... residing in the selected modules (beneath the sites directory).'),
+    '#description' => t('... residing in the selected modules (beneath the drupal directory).'),
     '#tree' => TRUE,
   );
   $module_fs['list'] = array(
@@ -405,6 +406,7 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
   }
 
   // Apply conversion functions.
+  module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
   if (coder_upgrade_start($upgrades, $extensions, $items)) {
     drupal_set_message(t('Module conversion code was run.'));
     drupal_set_message(t('Click to view the !log.', array('!log' => l(t('conversion log file'), coder_upgrade_log_path()))));
@@ -511,21 +513,6 @@ function coder_upgrade_module_list() {
     $rows[$module->name] = $row;
   }
   return $rows;
-}
-
-/**
- * Returns path to log file.
- *
- * @return string
- *   Path to file.
- */
-function coder_upgrade_log_path() {
-  static $path = '';
-
-  if (!$path) {
-    $path = file_directory_path() . '/' . DEADWOOD_DIR . '/debug.txt';
-  }
-  return $path;
 }
 
 /**

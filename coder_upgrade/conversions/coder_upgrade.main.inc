@@ -13,55 +13,10 @@
  */
 
 require_once drupal_get_path('module', 'coder_upgrade') . '/conversions/coder_upgrade.end.inc';
-require_once drupal_get_path('module', 'coder_upgrade') . '/conversions/coder_upgrade.list.inc';
 require_once drupal_get_path('module', 'coder_upgrade') . '/conversions/coder_upgrade.other.inc';
 
 /**
- * Return the list of upgrade sets from all modules.
- *
- * @param boolean $include_routines
- *   Indicates whether to include the list of conversion routines. This list
- *   is only needed when the conversions are to be applied (typically on form
- *   submission). This parameter equals FALSE when this routine is invoked by
- *   Coder Upgrade while building the form, and TRUE when applying the
- *   conversions.
- */
-function _coder_upgrade_upgrades($include_routines = FALSE) {
-  return module_invoke_all('upgrades', $include_routines);
-}
-
-/**
- * Implement hook_upgrades().
- *
- * @param boolean $include_routines
- *   Indicates whether to include the list of conversion routines. This list
- *   is only needed when the conversions are to be applied (typically on form
- *   submission). This parameter equals FALSE when this hook is invoked by
- *   Coder Upgrade while building the form, and TRUE when applying the
- *   conversions.
- */
-function coder_upgrade_upgrades($include_routines) {
-  $_coder_upgrades = drupal_static(__FUNCTION__);
-
-  if (!isset($_coder_upgrades)) {
-    $_coder_upgrades = array();
-    $path = drupal_get_path('module', 'coder_upgrade') . '/conversions';
-    $files = drupal_system_listing('/coder_upgrade\..*\.inc$/', $path, 'filepath', 0);
-    foreach ($files as $file) {
-//      require_once DRUPAL_ROOT . '/' . $file->filepath;
-      $function = str_replace('.', '_', $file->name) . '_upgrades';
-      if (function_exists($function)) {
-        if ($upgrade = call_user_func($function, $include_routines)) {
-          $_coder_upgrades = array_merge($_coder_upgrades, $upgrade);
-        }
-      }
-    }
-  }
-  return $_coder_upgrades;
-}
-
-/**
- * Prepare conversion environment and start conversion loop.
+ * Prepares conversion environment and starts conversion loop.
  *
  * @param array $upgrades
  *   Array of upgrade sets to apply.
@@ -76,7 +31,7 @@ function coder_upgrade_upgrades($include_routines) {
  */
 function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) {
   // Declare global variables.
-  global $debug;
+  global $log, $debug, $_coder_upgrade_module_name;
 //  global $_coder_upgrade_dirname; // Not used.
 
   // Check lists in case this function is called apart from form submit.
@@ -90,14 +45,20 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
     return FALSE;
   }
 
-  $debug = TRUE;
-  // Clear the debug log file.
-  if ($debug) {
+  $log = TRUE;
+  // Clear the log file.
+  if ($log) {
     file_put_contents(coder_upgrade_log_path(), '');
+  }
+  $debug = TRUE; // FALSE; //
+  // Clear the debug file.
+  if ($debug) {
+    file_put_contents(coder_upgrade_debug_path(), '');
   }
 
   // Loop on items.
   foreach ($items as $item) {
+    $_coder_upgrade_module_name = '';
 //    $_coder_upgrade_dirname = $item['old_dir'];
     // TODO Set a global variable indicating the current module name (since this is often needed) - it may change as we enter a subdir.
 
@@ -117,7 +78,7 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
 }
 
 /**
- * Convert files in a directory.
+ * Converts files in a directory.
  *
  * @param array $upgrades
  *   Array of upgrade sets to apply.
@@ -146,17 +107,18 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
   }
 
   if (!in_array($dirname, $ignore)) {
-    coder_upgrade_debug_print("\n*************************");
-    coder_upgrade_debug_print('Converting the directory => ' . $dirname);
-    coder_upgrade_debug_print("*************************");
+    coder_upgrade_log_print("\n*************************");
+    coder_upgrade_log_print('Converting the directory => ' . $dirname);
+    coder_upgrade_log_print("*************************");
   }
 
+  // Determine module name.
+  coder_upgrade_module_name($dirname, $item);
+  $_coder_upgrade_module_name = $item['module'] ? $item['module'] : $_coder_upgrade_module_name;
+
   // Loop on files.
-  $dir = opendir($dirname);
-  coder_upgrade_module_name($dir, $dirname, $item);
-  rewinddir($dir);
-  $_coder_upgrade_module_name = $item['module'];
-  while ($filename = readdir($dir)) {
+  $filenames = scandir($dirname . '/');
+  foreach ($filenames as $filename) {
 //    $_coder_upgrade_filename = $filename;
     if (!in_array($filename, $ignore)) {
       if (is_dir($dirname . '/' . $filename)) {
@@ -178,12 +140,10 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
         }
       }
       elseif (in_array(pathinfo($filename, PATHINFO_EXTENSION), array_keys($extensions))) {
-//        echo pathinfo($filename, PATHINFO_EXTENSION) . "\n";
-//        echo print_r(array_keys($extensions), 1);
         copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
-        coder_upgrade_debug_print("\n*************************");
-        coder_upgrade_debug_print('Converting the file => ' . $filename);
-        coder_upgrade_debug_print("*************************");
+        coder_upgrade_log_print("\n*************************");
+        coder_upgrade_log_print('Converting the file => ' . $filename);
+        coder_upgrade_log_print("*************************");
         coder_upgrade_convert_file($new_dirname . '/' . $filename, $upgrades);
       }
       else {
@@ -194,7 +154,7 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
 }
 
 /**
- * Convert a file.
+ * Converts a file.
  *
  * @param string $filename
  *   The name of the file to convert.
@@ -235,14 +195,14 @@ function coder_upgrade_convert_file($filename, $upgrades = array()) {
   // Write the new file.
   if ($new != $cur) {
     if (file_put_contents($filename, $new) === FALSE) {
-      coder_upgrade_debug_print('File could not be written');
+      coder_upgrade_log_print('File could not be written');
     }
-    coder_upgrade_debug_print('Replaced the file');
+    coder_upgrade_log_print('Replaced the file');
   }
 }
 
 /**
- * Apply regular expression conversion routines to a file.
+ * Applies regular expression conversion routines to a file.
  *
  * @param string $filename
  *   The name of the file to convert.
@@ -264,7 +224,7 @@ function coder_upgrade_apply_regex($filename, &$new, $prefix, $routines = array(
       continue;
     }
     if (function_exists($function = $prefix . '_convert_' . $routine['name'])) {
-      coder_upgrade_debug_print("Applying $function");
+      coder_upgrade_log_print("Applying $function");
       $is_format_conversion = strpos($routine['name'], 'format') === 0;
       $is_info_conversion = strpos($routine['name'], 'info') === 0;
       $is_schema_conversion = in_array($routine['name'], array('hook_schema', 'hook_install', 'hook_uninstall', 'hook_update'));
@@ -277,16 +237,16 @@ function coder_upgrade_apply_regex($filename, &$new, $prefix, $routines = array(
         // Apply conversion routine to the file.
         call_user_func_array($function, array(&$new)); // TODO Remove &???
       }
-      coder_upgrade_debug_print('Completed ' . $function);
+      coder_upgrade_log_print('Completed ' . $function);
     }
     else {
-      coder_upgrade_debug_print("ERROR: Conversion routine not found: $function");
+      coder_upgrade_log_print("ERROR: Conversion routine not found: $function");
     }
   }
 }
 
 /**
- * Apply parser conversion routines to a file.
+ * Applies grammar parser conversion routines to a file.
  *
  * @param string $filename
  *   The name of the file to convert.
@@ -325,7 +285,7 @@ function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array
       continue;
     }
     if (function_exists($function = $prefix . '_convert_' . $routine['name'])) {
-      coder_upgrade_debug_print("Applying $function");
+      coder_upgrade_log_print("Applying $function");
       $is_format_conversion = strpos($routine['name'], 'format') === 0;
       $is_info_conversion = strpos($routine['name'], 'info') === 0;
       $is_schema_conversion = in_array($routine['name'], array('hook_schema', 'hook_install', 'hook_uninstall', 'hook_update'));
@@ -338,10 +298,10 @@ function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array
         // Apply conversion routine to the file.
         call_user_func_array($function, array(&$reader)); // TODO Remove &???
       }
-      coder_upgrade_debug_print('Completed ' . $function);
+      coder_upgrade_log_print('Completed ' . $function);
     }
     else {
-      coder_upgrade_debug_print("ERROR: Conversion routine not found: $function");
+      coder_upgrade_log_print("ERROR: Conversion routine not found: $function");
     }
   }
 
@@ -351,7 +311,7 @@ function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array
 }
 
 /**
- * Return whether parser routines are present in the list.
+ * Returns whether grammar parser routines are present in the list.
  *
  * @param array $routines
  *   Array of upgrade routines.
@@ -369,27 +329,36 @@ function coder_upgrade_parser_routines_exist($routines = array()) {
 }
 
 /**
- * Add the module name to the item array.
+ * Adds the module name to the item array.
  *
- * @param object $dir
- *   A directory resource handle.
  * @param string $dirname
  *   A string of the directory name.
  * @param array $item
  *   Array of a directory containing the files to convert.
  */
-function coder_upgrade_module_name(&$dir, $dirname, &$item) {
+function coder_upgrade_module_name($dirname, &$item) {
   // Extensions that indicate a module is present.
   $extensions = array('info', 'module');
 
-  // Set value in case there is no module in the directory (e.g. po).
+  /*
+   * Set the module name in case there is no module in the directory (e.g. po
+   * or translations).
+   *
+   * This code assumes at most one module per directory. Absent this condition
+   * we have no way of determining the file list for the .info file. This
+   * condition does not hold for the devel project which has 4 modules in its
+   * top-level directory.
+   */
   $item['module'] = '';
 
   // Loop on files.
-  while ($filename = readdir($dir)) {
-    if (!is_dir($dirname . '/' . $filename)) {
-      if (in_array(pathinfo($filename, PATHINFO_EXTENSION), array_keys($extensions))) {
-        $item['module'] = pathinfo($filename, PATHINFO_FILENAME);
+  $path = $dirname . '/';
+  $files = scandir($path);
+  foreach ($files as $file) {
+    $file_path = $path . $file;
+    if (!is_dir($file_path)) {
+      if (in_array(pathinfo($file_path, PATHINFO_EXTENSION), $extensions)) {
+        $item['module'] = pathinfo($file_path, PATHINFO_FILENAME);
         break;
       }
     }
@@ -397,7 +366,7 @@ function coder_upgrade_module_name(&$dir, $dirname, &$item) {
 }
 
 /**
- * Make a patch file of the conversion routine changes.
+ * Makes a patch file of the conversion routine changes.
  *
  * @param array $item
  *   Array of the directory containing the files to convert.
@@ -407,16 +376,18 @@ function coder_upgrade_make_patch_file($item) {
   $patch_dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_patch', DEADWOOD_PATCH) . '/';
 
   // Make a patch file.
-  coder_upgrade_debug_print("\n*************************");
-  coder_upgrade_debug_print('Creating a patch file for the directory => ' . $item['old_dir']);
-  coder_upgrade_debug_print("*************************");
+  coder_upgrade_log_print("\n*************************");
+  coder_upgrade_log_print('Creating a patch file for the directory => ' . $item['old_dir']);
+  coder_upgrade_log_print("*************************");
   $patch_filename = $patch_dir . $item['name'] . '.patch';
-  coder_upgrade_debug_print("Making patch file: diff -u -r {$item['old_dir']} {$item['new_dir']} > {$patch_filename}");
+  coder_upgrade_log_print("Making patch file: diff -u -r {$item['old_dir']} {$item['new_dir']} > {$patch_filename}");
   shell_exec("diff -u -r {$item['old_dir']} {$item['new_dir']} > {$patch_filename}");
 }
 
 /**
- * Find the text of a particular function.
+ * Finds the text of a particular function.
+ *
+ * This is used with regular expressions, but is obsoleted by the parser.
  *
  * @param string $hook
  *   By default, the suffix of the function name to find.
@@ -451,7 +422,7 @@ function coder_upgrade_find_hook($hook, $file, $match_all = FALSE, $hook_is_suff
       // Find last function in file.
       $pattern = '/^function\s*' . $prefix . $hook . '.*\z/ms';
       preg_match_all($pattern, $file, $matches, PREG_PATTERN_ORDER);
-      coder_upgrade_debug_print('Primary search failed to find function text for _' . $hook . '. Resorting to secondary pattern to find function.');
+      coder_upgrade_log_print('Primary search failed to find function text for _' . $hook . '. Resorting to secondary pattern to find function.');
     }
     return isset($matches[0]) ? $matches[0] : array();
   }
@@ -468,14 +439,14 @@ function coder_upgrade_find_hook($hook, $file, $match_all = FALSE, $hook_is_suff
       // Find last function in file.
       $pattern = '/^function\s*' . $prefix . $hook . '.*\z/ms';
       preg_match($pattern, $file, $matches);
-      coder_upgrade_debug_print('Primary search failed to find function text for _' . $hook . '. Resorting to secondary pattern to find function.');
+      coder_upgrade_log_print('Primary search failed to find function text for _' . $hook . '. Resorting to secondary pattern to find function.');
     }
     return isset($matches[0]) ? $matches[0] : '';
   }
 }
 
 /**
- * Loop on from and to arrays, converting the text of the subject string.
+ * Loops on from and to arrays, converting the text of the subject string.
  *
  * @param string $from
  *   The pattern to search for.
@@ -491,7 +462,7 @@ function coder_upgrade_do_conversions($from, $to, &$subject) {
 }
 
 /**
- * Save the changes back to the file.
+ * Saves the regular expression changes back to the file.
  *
  * @param string $cur
  *   The string to search for in $file.
@@ -505,20 +476,20 @@ function coder_upgrade_do_conversions($from, $to, &$subject) {
 function coder_upgrade_save_changes($cur, $new, &$file, $hook) {
   if ($new != $cur) {
     $file = str_replace($cur, $new, $file);
-//    coder_upgrade_debug_print('Completed conversions for ' . $hook);
+//    coder_upgrade_log_print('Completed conversions for ' . $hook);
   }
 }
 
 /**
- * Print debug information if debug flag is on.
+ * Prints log information if log flag is on.
  *
  * @param mixed $text
  *   A string, array, or object to print.
  */
-function coder_upgrade_debug_print($text) {
-  global $debug;
+function coder_upgrade_log_print($text) {
+  global $log;
 
-  if (!$debug) {
+  if (!$log) {
     return;
   }
   if (is_array($text) || is_object($text)) {
@@ -530,18 +501,60 @@ function coder_upgrade_debug_print($text) {
 }
 
 /**
- * Echo debug information if echo flag is on.
+ * Prints debug information if debug flag is on.
  *
  * @param mixed $text
  *   A string, array, or object to print.
  */
-function coder_upgrade_debug_echo($text) {
-  return;
-  global $echo;
-  $echo = TRUE; // FALSE; //
+function coder_upgrade_debug_print($text) {
+  global $debug;
 
-  if (!$echo) {
+  if (!$debug) {
     return;
   }
-  echo $text;
+  if (is_array($text) || is_object($text)) {
+    // Caller needs to set the $text using PGPBase::print_r as appropriate.
+    file_put_contents(coder_upgrade_debug_path(), $text, FILE_APPEND);
+  }
+  else {
+    file_put_contents(coder_upgrade_debug_path(), $text . "\n", FILE_APPEND);
+  }
+}
+
+function clp($text) {
+	coder_upgrade_log_print($text);
+}
+
+function cdp($text) {
+  coder_upgrade_debug_print($text);
+}
+
+/**
+ * Returns path to log file.
+ *
+ * @return string
+ *   Path to file.
+ */
+function coder_upgrade_log_path() {
+  static $path = '';
+
+  if (!$path) {
+    $path = file_directory_path() . '/' . DEADWOOD_DIR . '/log.txt';
+  }
+  return $path;
+}
+
+/**
+ * Returns path to log file.
+ *
+ * @return string
+ *   Path to file.
+ */
+function coder_upgrade_debug_path() {
+  static $path = '';
+
+  if (!$path) {
+    $path = file_directory_path() . '/' . DEADWOOD_DIR . '/debug.txt';
+  }
+  return $path;
 }

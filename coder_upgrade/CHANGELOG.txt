@@ -2,6 +2,34 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2009-12-26):
+   * coder_upgrade.main.inc
+   * - move coder_upgrade_log_path and coder_upgrade_debug_path to this file
+
+- Changes (2009-12-20):
+   * coder_upgrade.main.inc
+   * - rename coder_upgrade_debug_print to coder_upgrade_log_print
+   * - rename coder_upgrade_debug_echo to coder_upgrade_debug_print
+   * - replace echo statements with print to file
+   * - add aliases for above two: clp and cdp
+   * coder_upgrade.other.inc:
+   * - add $reader as a parameter to coder_upgrade_callback_functions
+
+- Changes (2009-12-09):
+   * coder_upgrade.module:
+   * - eliminate unconditional load of 'conversions/coder_upgrade.main'
+   * - this leads to all upgrade files always being loaded
+   * - module only needs the list of upgrade sets
+   * - move _coder_upgrade_upgrades and coder_upgrade_upgrades to coder_upgrade.list.inc
+   * coder_upgrade_conversions_form:
+   * - eliminate upgrade description column
+   * - correct directory path display
+   * - correct caption on modules tab
+   * coder_upgrade.main.inc:
+   * - convert opendir and readdir to scandir. (2 places)
+   * - improve on setting $_coder_upgrade_module_name
+   * all files: use second person tense in document comments.
+
 - Changes (2009-12-05):
    * #651844: coder_upgrade_module_name (no module file in directory).
 
