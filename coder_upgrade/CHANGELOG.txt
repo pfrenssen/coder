@@ -2,6 +2,12 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-01-01):
+   * coder_upgrade.other.inc
+   * - conform upgrade routines to Grammar Parser changes
+   *   - T_RETURN statements changed from array to PGPExpression 
+   *   - body statements changed from PGPList to PGPBody
+
 - Changes (2009-12-26):
    * coder_upgrade.main.inc
    * - move coder_upgrade_log_path and coder_upgrade_debug_path to this file
@@ -35,8 +41,8 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 
 - Changes (2009-12-04):
    * Turn off debug output:
-   * - Comment out the echo statements
-   * - Turn off coder_upgrade_debug_echo
+   * - comment out the echo statements
+   * - turn off coder_upgrade_debug_echo
    * Add statement to load the other.inc file.
    * Fix coder_upgrade_module_name function.
    * Wrap patch file contents with check_plain.

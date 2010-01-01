@@ -768,7 +768,7 @@ function coder_upgrade_callback_function_calls(&$item, &$reader) {
         clp("ERROR: return statement not found in hook_perm");
         return;
       }
-      $value = &$return['value'];
+      $value = &$return->value;
       $array = $value->getElement(0);
       if (get_class($array) == 'PGPArray') {
         if (!($theme = $array->findValue($item->getParameter(0)->toString()))) {
@@ -1213,7 +1213,7 @@ function coder_upgrade_convert_perm(&$node) {
     return;
   }
 //  cdp("Printing return item");
-  $value = &$return['value'];
+  $value = &$return->value;
   cdp($value->print_r());
   cdp($value->toString());
 //  cdp("Printing return item DONE");
@@ -1233,7 +1233,8 @@ function coder_upgrade_convert_perm(&$node) {
       // If the permission is other than a string (e.g. T_VARIABLE expression),
       // then do not enclose in quotes.
       $expression = &$current->data->first()->data;
-      $type = is_object($expression) ? $expression->type : $expression['type'];
+      // TODO Fix next line when condition is TRUE
+      $type = is_object($expression) ? '$expression->type' : $expression['type']; // Operand object does not have a type parameter // $type = is_object($expression) ? $expression->type : $expression['type'];
       $add_quotes = $type == T_CONSTANT_ENCAPSED_STRING;
 
       $permission = &$current->data->toString();
@@ -1279,7 +1280,7 @@ function coder_upgrade_convert_schema(&$node) {
 //  cdp("Printing return item");
   cdp($item->print_r(0, $return));
 //  cdp("Printing return item DONE");
-  $variable = $return['value']->first();
+  $variable = $return->value->first();
 
   /*
    * Traverse the body statements looking for:
@@ -1424,7 +1425,7 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
           // Change a T_ELSEIF to a T_IF in the new hook function.
           $statement->type = T_IF; // If it isn't already.
           $block = new stdClass();
-          $block->body = new PGPList();
+          $block->body = new PGPBody();
           $block->body->insertLast($statement);
           $case_node = new PGPNode($block, $current->container); // TODO What is the correct container???
           $callback($node, $case_node, $operation);
