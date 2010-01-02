@@ -7,10 +7,10 @@
  */
 
 /**
- * Implements hook_help().
+ * Implements hook_drush_help().
  */
-function coder_review_drush_help($path, $arg) {
-  switch ($path) {
+function coder_review_drush_help($section) {
+  switch ($section) {
     case 'drush:coder review':
       return dt('Run code reviews');
   }

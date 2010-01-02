@@ -2,6 +2,8 @@
 
 Coder Review 7.x-3.x, xxxx-xx-xx
 ---------------------------------
+#666714 by dereine :
+ - Fixed parameters in coder_review_drush_help().
 #607592 by japerry, stella :
  - changed menu paths.
  - updated arguments to theme() function calls and definitions.
