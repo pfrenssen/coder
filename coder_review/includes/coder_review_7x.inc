@@ -1998,9 +1998,9 @@ function _coder_review_7x_hook_access_warning() {
   );
 }
 
-function _coder_rewview_7x_hook_profile_alter_warning() {
+function _coder_review_7x_hook_profile_alter_warning() {
   return array(
-    '#warning' => t('!hook_profile_alter() has been removed in favour of !hook_user_view().', 
+    '#warning' => t('!hook_profile_alter() has been removed in favour of !hook_user_view().',
     array(
       '!hook_profile_alter()' => theme('drupalapi', array('function' => 'hook_profile_alter', 'version' => 6)),
       '!hook_user_view()' => theme('drupalapi', array('function' => 'hook_user_view', 'version' => 7)),
