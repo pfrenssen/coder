@@ -2,10 +2,14 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-01-18):
+   * coder_upgrade.main.inc
+   * - replace require_once statements with call to module_load_include (that includes DRUPAL_ROOT)
+
 - Changes (2010-01-01):
    * coder_upgrade.other.inc
    * - conform upgrade routines to Grammar Parser changes
-   *   - T_RETURN statements changed from array to PGPExpression 
+   *   - T_RETURN statements changed from array to PGPExpression
    *   - body statements changed from PGPList to PGPBody
 
 - Changes (2009-12-26):

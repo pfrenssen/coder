@@ -12,8 +12,8 @@
  * Copyright 2008-9 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
-require_once drupal_get_path('module', 'coder_upgrade') . '/conversions/coder_upgrade.end.inc';
-require_once drupal_get_path('module', 'coder_upgrade') . '/conversions/coder_upgrade.other.inc';
+module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.end');
+module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.other');
 
 /**
  * Prepares conversion environment and starts conversion loop.
@@ -266,12 +266,12 @@ function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array
   }
 
   // Include parser files.
-  require_once drupal_get_path('module', 'pgp') . '/engine/pgp.parser.inc';
-  require_once drupal_get_path('module', 'pgp') . '/engine/pgp.reader.inc';
-  require_once drupal_get_path('module', 'pgp') . '/engine/pgp.writer.inc';
-  require_once drupal_get_path('module', 'pgp') . '/engine/pgp.editor.inc';
-  require_once drupal_get_path('module', 'pgp') . '/engine/pgp.list.inc';
-  require_once drupal_get_path('module', 'pgp') . '/engine/pgp.object.inc';
+  module_load_include('inc', 'pgp', 'engine/pgp.parser');
+  module_load_include('inc', 'pgp', 'engine/pgp.reader');
+  module_load_include('inc', 'pgp', 'engine/pgp.writer');
+  module_load_include('inc', 'pgp', 'engine/pgp.editor');
+  module_load_include('inc', 'pgp', 'engine/pgp.list');
+  module_load_include('inc', 'pgp', 'engine/pgp.object');
 
   // Create reader object; pass it to the routines.
   $reader = new PGPReader($new);
