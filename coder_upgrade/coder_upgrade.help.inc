@@ -9,7 +9,7 @@
  */
 
 /**
- * Implement hook_help().
+ * Implements hook_help().
  */
 function coder_upgrade_help($path) {
   $input = file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);

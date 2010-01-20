@@ -33,14 +33,14 @@ define('DEADWOOD_NEW', 'coder_upgrade/new');
 define('DEADWOOD_PATCH', 'coder_upgrade/patch');
 
 /**
- * Pass a string through t() and wrap the result in html entity <p>.
+ * Passes a string through t() and wraps the result in html entity <p>.
  */
 function tp($string, $args = array()) {
   return '<p>' . t($string, $args) . '</p>';
 }
 
 /**
- * Scan a specified directory and find all first-level directories beneath it.
+ * Scans a directory and finds all first-level directories beneath it.
  *
  * TODO Replace this with a call to file_scan_directory in include/files.inc.
  *
@@ -66,8 +66,7 @@ function coder_upgrade_scan_directory($path) {
 }
 
 /**
- * Remove all files from the specified directory and optionally remove the
- * directory.
+ * Removes all files from a directory and optionally removes the directory.
  *
  * @param string $path Directory path.
  */

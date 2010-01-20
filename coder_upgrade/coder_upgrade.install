@@ -11,7 +11,7 @@
 module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
 
 /**
- * Implement hook_install().
+ * Implements hook_install().
  */
 function coder_upgrade_install() {
   // Create the top-level module directory.
@@ -40,7 +40,7 @@ function coder_upgrade_install() {
 }
 
 /**
- * Implement hook_uninstall().
+ * Implements hook_uninstall().
  */
 function coder_upgrade_uninstall() {
   // Remove the module input and output directories.
@@ -58,7 +58,7 @@ function coder_upgrade_uninstall() {
 }
 
 /**
- * Implement hook_requirements().
+ * Implements hook_requirements().
  */
 function coder_upgrade_requirements($phase) {
   $requirements = array();

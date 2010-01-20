@@ -2,6 +2,9 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-01-20):
+  * #690518: api.php, help.inc, inc, install: use second person tense in document comments
+
 - Changes (2010-01-18):
    * coder_upgrade.main.inc
    * - replace require_once statements with call to module_load_include (that includes DRUPAL_ROOT)
