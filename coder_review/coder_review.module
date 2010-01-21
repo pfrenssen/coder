@@ -689,7 +689,11 @@ function _coder_review_get_default_settings($arg = 'default') {
  * Implements hook_submit().
  */
 function coder_review_page_form_submit($form, &$form_state) {
+  // In D7, setting values in this variable does not trigger a form rebuild.
   $form_state['storage'] = $form_state['values'];
+
+  // Rebuild form with user selections.
+  $form_state['rebuild'] = TRUE;
 }
 
 /**
