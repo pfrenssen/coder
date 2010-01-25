@@ -50,7 +50,7 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
   if ($log) {
     file_put_contents(coder_upgrade_log_path(), '');
   }
-  $debug = TRUE; // FALSE; //
+  $debug = FALSE; // TRUE; //
   // Clear the debug file.
   if ($debug) {
     file_put_contents(coder_upgrade_debug_path(), '');
@@ -265,16 +265,21 @@ function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array
     return;
   }
 
-  // Include parser files.
-  module_load_include('inc', 'pgp', 'engine/pgp.parser');
-  module_load_include('inc', 'pgp', 'engine/pgp.reader');
-  module_load_include('inc', 'pgp', 'engine/pgp.writer');
-  module_load_include('inc', 'pgp', 'engine/pgp.editor');
-  module_load_include('inc', 'pgp', 'engine/pgp.list');
-  module_load_include('inc', 'pgp', 'engine/pgp.object');
+  static $parser_loaded = FALSE;
+  if (!$parser_loaded) {
+    $parser_loaded = TRUE;
+    // Include parser files.
+    module_load_include('inc', 'pgp', 'engine/pgp.parser');
+    module_load_include('inc', 'pgp', 'engine/pgp.reader');
+    module_load_include('inc', 'pgp', 'engine/pgp.writer');
+    module_load_include('inc', 'pgp', 'engine/pgp.editor');
+    module_load_include('inc', 'pgp', 'engine/pgp.list');
+    module_load_include('inc', 'pgp', 'engine/pgp.object');
+  }
 
   // Create reader object; pass it to the routines.
-  $reader = new PGPReader($new);
+  $reader = PGPReader::getInstance();
+  $reader->setSnippet($new);
 //  $reader->setDebug(TRUE);
   $reader->addTokenNames();
   $reader->buildGrammar();
@@ -306,8 +311,11 @@ function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array
   }
 
   // Use writer to redo file.
-  $writer = new PGPWriter();
+  $writer = PGPWriter::getInstance();
   $new = $writer->toString($reader->getStatements());
+
+  // Free up memory.
+  $reader->reset();
 }
 
 /**
@@ -522,7 +530,7 @@ function coder_upgrade_debug_print($text) {
 }
 
 function clp($text) {
-	coder_upgrade_log_print($text);
+  coder_upgrade_log_print($text);
 }
 
 function cdp($text) {
@@ -545,7 +553,7 @@ function coder_upgrade_log_path() {
 }
 
 /**
- * Returns path to log file.
+ * Returns path to debug file.
  *
  * @return string
  *   Path to file.
