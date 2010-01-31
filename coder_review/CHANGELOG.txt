@@ -2,6 +2,8 @@
 
 Coder Review 7.x-3.x, xxxx-xx-xx
 ---------------------------------
+#698054 by hctom:
+ - patch to shorten cache keys and add hook_flush_caches().
 #689758 by solotandem:
  - Fix code so it runs in 7.x-alpha 1
  - coder_review.module
