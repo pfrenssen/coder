@@ -29,6 +29,13 @@ define('SEVERITY_NORMAL', 5);
 define('SEVERITY_CRITICAL', 9);
 
 /**
+ * Implements hook_flush_caches().
+ */
+function coder_flush_caches() {
+  return array('cache_coder');
+}
+
+/**
  * Implementation of hook_help().
  */
 function coder_help($page, $arg) {
@@ -973,7 +980,7 @@ function _coder_modified() {
 function do_coder_reviews($coder_args) {
   if (empty($coder_args['#patch']) && empty($coder_args['#test'])) {
     // Load the cached results if they exist.
-    $cache_key = 'coder:'.  implode(':', array_keys($coder_args['#reviews'])) .  $coder_args['#severity'] .':'. $coder_args['#filename'];
+    $cache_key = 'coder:'.  md5(implode(':', array_keys($coder_args['#reviews']))) .  $coder_args['#severity'] .':'. $coder_args['#filename'];
     if (file_exists($filepath = realpath($coder_args['#filename']))) {
       $cache_mtime = filemtime($filepath);
       if ($cache_results = cache_get($cache_key, 'cache_coder')) {
