@@ -7,7 +7,7 @@
  *
  * The functions in these conversion routine files correspond to the topics in
  * the category roadmap at http://drupal.org/node/394070 that are marked with
- * a "Yes" in the Upgrade column.
+ * a green check mark in the Upgrade column.
  *
  * Copyright 2008-9 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
@@ -44,13 +44,21 @@ function _coder_upgrade_upgrades($include_routines = FALSE) {
 function coder_upgrade_upgrades($include_routines) {
   $upgrades = array();
   $path = drupal_get_path('module', 'coder_upgrade') . '/conversions';
-  $files = drupal_system_listing('/coder_upgrade\..*\.inc$/', $path, 'filepath', 0);
+  $files = drupal_system_listing('/coder_upgrade\..*\.inc$/', $path, 'uri', 0);
   foreach ($files as $file) {
-//    require_once DRUPAL_ROOT . '/' . $file->filepath;
     $function = str_replace('.', '_', $file->name) . '_upgrades';
     if (function_exists($function)) {
       if ($upgrade = call_user_func($function, $include_routines)) {
         $upgrades = array_merge($upgrades, $upgrade);
+        if (isset($upgrade['coder_upgrade']['routines'])) {
+          foreach ($upgrade['coder_upgrade']['routines'] as $routine) {
+            foreach ($routine as $item) {
+              if (isset($item['file'])) {
+                require_once DRUPAL_ROOT . '/' . $path . '/' . $item['file'];
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -102,18 +110,26 @@ function coder_upgrade_conversions_list() {
     array(
       'name' => 'function_calls',
       'type' => 'parser',
+      'file' => 'coder_upgrade.call.inc',
     ),
     array(
       'name' => 'functions',
       'type' => 'parser',
+      'file' => 'coder_upgrade.function.inc',
     ),
     array(
       'name' => 'regex_simple_changes',
       'type' => 'regex',
+      'file' => 'coder_upgrade.regex.inc',
     ),
   );
 
-  $list['end'] = array('end');
+  $list['end'] = array(
+    array(
+      'name' => 'end',
+      'file' => 'coder_upgrade.end.inc',
+    ),
+  );
 
   return $list;
 }

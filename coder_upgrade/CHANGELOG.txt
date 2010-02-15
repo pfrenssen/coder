@@ -2,9 +2,30 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-02-15):
+   * coder_upgrade.list.inc
+   * - correct parameters in call to drupal_system_listing (filepath is now uri)
+   * - add 'file' parameter to upgrade routine array
+   * - include files from 'file' parameter
+   * coder_upgrade.main.inc
+   * - eliminate hard-coded include of conversion routine files
+   * - refactor convert_functions and convert_function_calls routines to this file from other.inc
+   * coder_upgrade.other.inc
+   * - refactor function and function call routines to use drupal_alter
+   * - refactor each case block in these two functions to a separate alter hook routine
+   * - use this module to make the above change
+   * - refactor function and function call routines to separate include files
+   * coder_upgrade.call.inc
+   * - add this file for function call changes
+   * - drupal_add_css, drupal_add_js, drupal_set_html_head, filter_formats: revised
+   * coder_upgrade.function.inc
+   * - add this file for function (or hook) changes
+   * coder_upgrade.regex.inc
+   * - add this file for regular expression changes
+
 - Changes (2010-02-03):
   * list.inc
-  * - #703506: move static variable out of hook implemenation into calling routine
+  * - #703506: move static variable out of hook implementation into calling routine
  
 - Changes (2010-01-24):
   * main.inc

@@ -7,13 +7,10 @@
  *
  * The functions in these conversion routine files correspond to the topics in
  * the category roadmap at http://drupal.org/node/394070 that are marked with
- * a "Yes" in the Upgrade column.
+ * a green check mark in the Upgrade column.
  *
  * Copyright 2008-9 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
-
-module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.end');
-module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.other');
 
 /**
  * Prepares conversion environment and starts conversion loop.
@@ -224,7 +221,6 @@ function coder_upgrade_apply_regex($filename, &$new, $prefix, $routines = array(
       continue;
     }
     if (function_exists($function = $prefix . '_convert_' . $routine['name'])) {
-      coder_upgrade_log_print("Applying $function");
       $is_format_conversion = strpos($routine['name'], 'format') === 0;
       $is_info_conversion = strpos($routine['name'], 'info') === 0;
       $is_schema_conversion = in_array($routine['name'], array('hook_schema', 'hook_install', 'hook_uninstall', 'hook_update'));
@@ -234,10 +230,11 @@ function coder_upgrade_apply_regex($filename, &$new, $prefix, $routines = array(
           ($is_info_file && $is_info_conversion) ||
           ($is_schema_file && $is_schema_conversion) ||
           ($is_format_conversion)) {
+        coder_upgrade_log_print("Applying $function");
         // Apply conversion routine to the file.
         call_user_func_array($function, array(&$new)); // TODO Remove &???
+        coder_upgrade_log_print('Completed ' . $function);
       }
-      coder_upgrade_log_print('Completed ' . $function);
     }
     else {
       coder_upgrade_log_print("ERROR: Conversion routine not found: $function");
@@ -290,20 +287,20 @@ function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array
       continue;
     }
     if (function_exists($function = $prefix . '_convert_' . $routine['name'])) {
-      coder_upgrade_log_print("Applying $function");
       $is_format_conversion = strpos($routine['name'], 'format') === 0;
       $is_info_conversion = strpos($routine['name'], 'info') === 0;
-      $is_schema_conversion = in_array($routine['name'], array('hook_schema', 'hook_install', 'hook_uninstall', 'hook_update'));
+      $is_schema_conversion = in_array($routine['name'], array('install_file'/*, 'hook_schema', 'hook_install', 'hook_uninstall', 'hook_update'*/));
       // Only run info changes on info files
       // Only run install changes on install files
       if ((!$is_info_file && !$is_info_conversion && !$is_schema_file && !$is_schema_conversion) ||
           ($is_info_file && $is_info_conversion) ||
           ($is_schema_file && $is_schema_conversion) ||
           ($is_format_conversion)) {
+        coder_upgrade_log_print("Applying $function");
         // Apply conversion routine to the file.
         call_user_func_array($function, array(&$reader)); // TODO Remove &???
+        coder_upgrade_log_print('Completed ' . $function);
       }
-      coder_upgrade_log_print('Completed ' . $function);
     }
     else {
       coder_upgrade_log_print("ERROR: Conversion routine not found: $function");
@@ -334,6 +331,89 @@ function coder_upgrade_parser_routines_exist($routines = array()) {
     }
   }
   return FALSE;
+}
+
+/**
+ * Upgrades function calls using grammar parser.
+ *
+ * @param PGPReader $reader
+ *   The object containing the grammar statements of the file to convert.
+ */
+function coder_upgrade_convert_function_calls(&$reader) {
+  cdp("inside " . __FUNCTION__);
+  $items = &$reader->getFunctionCalls();
+  foreach ($items as &$item) {
+    if (!isset($item) || !is_object($item) || !is_a($item, 'PGPFunctionCall') || $item->type != T_FUNCTION_CALL) {
+      // The reference could have been changed in another routine so that it
+      // no longer refers to an ojbect.
+      continue;
+    }
+    if (is_array($item->name) && $item->name['type'] == T_STRING) {
+      // If name is an object, then it is a variable expression that is not
+      // 'alterable' in the traditional sense.
+      drupal_alter('upgrade_call_' . $item->name['value'], $item, $reader);
+      // TODO The alter hooks can get the $reader from PGPReader::getInstance();
+      // We could do the same in this function.
+    }
+  }
+}
+
+/**
+ * Upgrades functions (or hooks) using grammar parser.
+ *
+ * @param PGPReader $reader
+ *   The object containing the grammar statements of the file to convert.
+ */
+function coder_upgrade_convert_functions(&$reader) {
+  cdp("inside " . __FUNCTION__);
+  global $_coder_upgrade_module_name;
+
+  $nodes = &$reader->getFunctions();
+  foreach ($nodes as &$node) {
+    $item = &$node->data;
+    if (!isset($item) ||!is_object($item) || !is_a($item, 'PGPClass') || $item->type != T_FUNCTION) {
+      // The reference could have been changed in another routine so that it
+      // no longer refers to an ojbect.
+      continue;
+    }
+
+    $name = &$item->name;
+    cdp("name = $name");
+
+    /*
+     * If the function name does not begin with the module name, then ignore it.
+     * This assumes such a function would be an instance of an API hook defined
+     * by the contributed module but implemented on behalf of another module. For
+     * this use case, the contributed module would define upgrade routines to
+     * allow other contributed modules that implement said API to upgrade their
+     * code.
+     *
+     * Example: the Views module defines hooks and implements them on behalf of
+     * core modules.
+     *
+     * Otherwise, strip the module name from the function name and use this as
+     * the key in the switch statement. In some cases (e.g. hook_update_N), some
+     * additional manipulation and testing needs to be done.
+     */
+    if (strpos($name, $_coder_upgrade_module_name . '_') !== 0) {
+      clp("Ignoring function '$name' as its name does not begin with the module name");
+      return;
+    }
+
+    // By convention, the module name should be followed by an underscore.
+    $key = substr($name, strlen($_coder_upgrade_module_name) + 1);
+    cdp("key = $key");
+
+    // Update hooks need additional manipulation.
+    if (preg_match('@update_\d+$@', $key, $matches)) {
+      cdp(print_r($matches, 1));
+      $key = 'update_N';
+    }
+
+    // TODO The alter hooks can get the $reader from PGPReader::getInstance();
+    // We could do the same in this function.
+    drupal_alter('upgrade_hook_' . $key, $node, $reader);
+  }
 }
 
 /**

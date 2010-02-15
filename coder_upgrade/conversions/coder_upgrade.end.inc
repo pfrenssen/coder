@@ -4,12 +4,13 @@
 /**
  * @file
  * End conversion routine file for the coder_upgrade module.
+ * These routines upgrade function calls using the grammar parser.
  *
- * The functions in these conversion routine files correspond to the topics in
- * the category roadmap at http://drupal.org/node/394070 that are marked with
- * a "Yes" in the Upgrade column.
+ * The functions in this conversion routine file correspond to topics in the
+ * category roadmap at http://drupal.org/node/394070 that are marked with a
+ * green check mark in the Upgrade column.
  *
- * Copyright 2008-9 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2009-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
