@@ -8,6 +8,18 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
    * other non-conversion files
    * - update copyright years
 
+- Changes (2010-02-16):
+   * coder_upgrade.install.inc
+   * - add this file for install file changes
+   * - afile: Install files must include a Doxygen style file comment
+   * - info_core_7: Info file should specify core = 7.x
+   * coder_upgrade.list.inc
+   * - allow for array of files to be associated with a routine
+   * - add entries for install_file and info_file routines
+   * coder_upgrade.db.inc
+   * - add this file for database layer changes
+   * - start on dbtng for non-select queries
+
 - Changes (2010-02-15):
    * coder_upgrade.list.inc
    * - correct parameters in call to drupal_system_listing (filepath is now uri)

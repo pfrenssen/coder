@@ -9,7 +9,7 @@
  * the category roadmap at http://drupal.org/node/394070 that are marked with
  * a green check mark in the Upgrade column.
  *
- * Copyright 2008-9 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2009-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -53,9 +53,7 @@ function coder_upgrade_upgrades($include_routines) {
         if (isset($upgrade['coder_upgrade']['routines'])) {
           foreach ($upgrade['coder_upgrade']['routines'] as $routine) {
             foreach ($routine as $item) {
-              if (isset($item['file'])) {
-                require_once DRUPAL_ROOT . '/' . $path . '/' . $item['file'];
-              }
+              coder_upgrade_upgrades_include($path, $item['file']);
             }
           }
         }
@@ -63,6 +61,23 @@ function coder_upgrade_upgrades($include_routines) {
     }
   }
   return $upgrades;
+}
+
+/**
+ * Includes code files with upgrade routines.
+ *
+ * @param string $path
+ * @param mixed $file
+ */
+function coder_upgrade_upgrades_include($path, $file) {
+  if (is_array($file)) {
+    foreach ($file as $item) {
+      require_once DRUPAL_ROOT . '/' . $path . '/' . $item;
+    }
+  }
+  elseif (isset($file)) {
+    require_once DRUPAL_ROOT . '/' . $path . '/' . $file;
+  }
 }
 
 /**
@@ -110,7 +125,7 @@ function coder_upgrade_conversions_list() {
     array(
       'name' => 'function_calls',
       'type' => 'parser',
-      'file' => 'coder_upgrade.call.inc',
+      'file' => array('coder_upgrade.call.inc', 'coder_upgrade.db.inc'),
     ),
     array(
       'name' => 'functions',
@@ -121,6 +136,16 @@ function coder_upgrade_conversions_list() {
       'name' => 'regex_simple_changes',
       'type' => 'regex',
       'file' => 'coder_upgrade.regex.inc',
+    ),
+    array(
+      'name' => 'install_file',
+      'type' => 'parser',
+      'file' => 'coder_upgrade.install.inc',
+    ),
+    array(
+      'name' => 'info_file',
+      'type' => 'regex', // 'type' => 'parser',
+      'file' => 'coder_upgrade.install.inc',
     ),
   );
 
