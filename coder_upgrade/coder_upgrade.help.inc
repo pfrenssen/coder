@@ -5,7 +5,7 @@
  * @file
  * Help file for the coder_upgrade module.
  *
- * Copyright 2008-9 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2008-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**

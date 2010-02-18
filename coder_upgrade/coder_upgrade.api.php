@@ -5,7 +5,7 @@
  * @file
  * Hooks provided by the Coder Upgrade module.
  *
- * Copyright 2008-9 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2009-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -14,7 +14,105 @@
  */
 
 /**
+ * Alters a function call using the grammar parser.
+ *
+ * This hook allows contributed modules to alter a function call object using
+ * the grammar parser. The function call may be a stand-alone statement or part
+ * of an expression in another statement. For example:
+ * @code
+ *   foo($bar); // Stand-alone.
+ *   if (foo($bar)) { // Embedded.
+ *     // Do something.
+ *   }
+ * @endcode
+ *
+ * Coder Upgrade will call this alter hook for each function call in the file
+ * that was parsed. Refer to the grammar parser documentation for details of the
+ * function call object.
+ *
+ * @see PGPFunctionCall
+ *
+ * @param PGPFunctionCall $item
+ *   A function call object of the expression or statement.
+ * @param PGPReader $reader
+ *   The object containing the grammar statements of the file to convert.
+ */
+function hook_upgrade_call_FUNCTION_NAME_alter(&$item, &$reader) {
+  // Change the function name.
+  $item->name = 'new_name';
+
+  if ($item->parameters->count() > 0) {
+    // Delete the first parameter.
+    $item->deleteParameter();
+  }
+}
+
+/**
+ * Alters a hook function using the grammar parser.
+ *
+ * This hook allows contributed modules to alter a function object using the
+ * grammar parser. The function block may be inside an interface or class, or a
+ * stand-alone statement block. For example:
+ * @code
+ *   function foo($bar) { // Stand-alone.
+ *     if ($bar) {
+ *       // Do something.
+ *     }
+ *   }
+ *   class example {
+ *     function foo($bar) { // Embedded.
+ *       if ($bar) {
+ *         // Do something.
+ *       }
+ *     }
+ *   }
+ * @endcode
+ *
+ * Coder Upgrade will call this alter hook for each hook function in the file
+ * that was parsed. However, the function name must follow the naming convention
+ * for a hook, i.e, your_module_name_hook. If your module declares a hook for
+ * another module or otherwise digresses from the standard naming convention,
+ * then you will need to add a converion routine to the list to be able to alter
+ * this function.
+ *
+ * Refer to the grammar parser documentation for details of the function object
+ * (i.e. PGPClass).
+ *
+ * @see hook_upgrades
+ * @see PGPClass
+ *
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
+ * @param PGPReader $reader
+ *   The object containing the grammar statements of the file to convert.
+ */
+function hook_upgrade_hook_HOOK_NAME_alter(&$node, &$reader) {
+  global $_coder_upgrade_module_name;
+
+  // Get the function object.
+  $item = &$node->data;
+
+  // Rename the function.
+  $item->name = $_coder_upgrade_module_name . '_new_hook_name';
+  // Update the document comment.
+  $item->comment['value'] = preg_replace('@\* Implement\s+@', "* Implements ", $item->comment['value']);
+
+  if ($item->parameters->count() > 1) {
+    // Switch the first two parameters.
+    $p0 = $item->getParameter(0);
+    $p1 = $item->getParameter(1);
+    $item->setParameter(0, $p1);
+    $item->setParameter(1, $p0);
+  }
+}
+
+/**
  * Declares upgrade sets for an API (or set of APIs).
+ *
+ * This hook should only be used if the conversion routines are other than a
+ * change to a function call or to a hook function. The Coder Upgrade module
+ * already invokes an alter hook that allows any function call or hook function
+ * to be changed.
  *
  * This hook allows contributed modules to declare upgrade sets for an API
  * supplied by their module, another contributed module, or a core module. Each
@@ -63,10 +161,12 @@
  *       array(
  *         'name' => 'your_routine_name_regex',
  *         'type' => 'regex',
+ *         'file' => 'your_module_name.regex_conversions.inc',
  *       ),
  *       array(
  *         'name' => 'your_routine_name_parser',
  *         'type' => 'parser',
+ *         'file' => 'your_module_name.parser_conversions.inc',
  *       ),
  *     );
  *
@@ -86,21 +186,13 @@
  *
  * The $reader parameter passed to your parser conversion routine is a
  * reference to the object containing the grammar statements of the file to
- * convert. Be sure to include an ampersand before $reader so that your changes
- * will be incorporated into the output code file.
+ * convert. In PHP5, an ampersand is not needed before $reader as objects are
+ * automatically passed by reference.
  * @code
  *   function your_module_name_convert_your_routine_name_parser(&$reader) {
  *     // Do something with $reader.
  *   }
  * @endcode
- *
- * To use the sample functions included in this api file:
- * - Copy and paste the sample functions to a file in your module.
- * - Replace "your_module_name" with your actual module name.
- * - Complete the conversions_list() routine.
- * - Duplicate the sample conversion routine for each entry in your list,
- *   replacing "your_routine_name" with the appropriate value and changing the
- *   comment block to describe the upgrade applied by the routine.
  *
  * @param boolean $include_routines
  *   Indicates whether to include the list of conversion routines. This list
@@ -125,7 +217,52 @@ function hook_upgrades($include_routines)  {
 
 /**
  * Sample functions.
+ *
+ * To use the sample functions included in this api file:
+ * - Copy and paste the sample functions to a file in your module.
+ * - Replace "your_module_name" with your actual module name.
+ * - Replace "function_name" and "hook_name" with actual names.
+ * - Complete the conversions_list() routine.
+ * - Duplicate the sample conversion routine for each entry in your list,
+ *   replacing "your_routine_name" with the appropriate value and changing the
+ *   comment block to describe the upgrade applied by the routine.
  */
+
+/**
+ * Implements hook_upgrade_call_function_name_alter().
+ */
+function your_module_name_upgrade_call_function_name_alter(&$item, &$reader) {
+  // Change the function name.
+  $item->name = 'new_name';
+
+  if ($item->parameters->count() > 0) {
+    // Delete the first parameter.
+    $item->deleteParameter();
+  }
+}
+
+/**
+ * Implements hook_upgrade_hook_hook_name_alter().
+ */
+function your_module_name_upgrade_hook_hook_name_alter(&$node, &$reader) {
+  global $_coder_upgrade_module_name;
+
+  // Get the function object.
+  $item = &$node->data;
+
+  // Rename the function.
+  $item->name = $_coder_upgrade_module_name . '_new_hook_name';
+  // Update the document comment.
+  $item->comment['value'] = preg_replace('@\* Implement\s+@', "* Implements ", $item->comment['value']);
+
+  if ($item->parameters->count() > 1) {
+    // Switch the first two parameters.
+    $p0 = $item->getParameter(0);
+    $p1 = $item->getParameter(1);
+    $item->setParameter(0, $p1);
+    $item->setParameter(1, $p0);
+  }
+}
 
 /**
  * Implements hook_upgrades().
@@ -163,10 +300,12 @@ function your_module_name_conversions_list() {
     array(
       'name' => 'your_routine_name_regex',
       'type' => 'regex',
+      'file' => 'your_module_name.regex_conversions.inc',
     ),
     array(
       'name' => 'your_routine_name_parser',
       'type' => 'parser',
+      'file' => 'your_module_name.parser_conversions.inc',
     ),
   );
 

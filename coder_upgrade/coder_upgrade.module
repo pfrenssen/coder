@@ -14,7 +14,7 @@
  * For a list of core API changes that are handled by this module, see:
  * - http://drupal.org/node/394070
  *
- * Copyright 2008-9 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2008-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
