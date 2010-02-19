@@ -2,6 +2,18 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-02-19):
+   * coder_upgrade.module
+   * - add setting to indicate whether to list core or contributed modules on run upgrade form
+   * coder_upgrade.list.inc, coder_upgrade.main.inc, coder_upgrade.module
+   * - refactor the routine names out of the upgrade sets
+   * - refactor hook_upgrades to hook_upgrade_info
+   * - refactor the API to be totally hook based using drupal_alter
+   * coder_upgrade.end.inc, coder_upgrade.install.inc, coder_upgrade.regex.inc
+   * - refactor the main upgrade routines to hooks
+   * coder_upgrade.call.inc, coder_upgrade.function.inc
+   * - remove first parameter from search function calls
+
 - Changes (2010-02-18):
    * coder_upgrade.api.inc
    * - update API documentation for new alter hooks
@@ -44,7 +56,7 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 - Changes (2010-02-03):
   * list.inc
   * - #703506: move static variable out of hook implementation into calling routine
- 
+
 - Changes (2010-01-24):
   * main.inc
   * - call reader, writer::getInstance to avoid creating duplicate objects

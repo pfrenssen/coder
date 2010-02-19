@@ -22,13 +22,15 @@
  */
 
 /**
+ * Implements hook_upgrade_parser_install_alter.
+ *
  * Applies finishing touches to the install file.
  *
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
  */
-function coder_upgrade_convert_install_file(&$reader) {
-  coder_upgrade_convert_install_file_comment(&$reader);
+function coder_upgrade_upgrade_parser_install_alter(&$reader) {
+  coder_upgrade_convert_install_file_comment($reader);
 }
 
 /**
@@ -115,6 +117,8 @@ function coder_upgrade_add_install_file_comment(&$reader, $position) {
 }
 
 /**
+ * Implements hook_upgrade_regex_info_alter.
+ *
  * Upgrades text using simple regular expressions.
  *
  * Module Info / Install
@@ -123,7 +127,7 @@ function coder_upgrade_add_install_file_comment(&$reader, $position) {
  * @param string $file
  *   The text of the file to convert.
  */
-function coder_upgrade_convert_info_file(&$file) {
+function coder_upgrade_upgrade_regex_info_alter(&$file) {
   cdp("inside " . __FUNCTION__);
   $hook = 'info_file';
   $cur = $file;

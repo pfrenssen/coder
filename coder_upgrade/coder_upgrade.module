@@ -113,6 +113,13 @@ function coder_upgrade_settings_form($form, &$form_state) {
     '#validate' => array('coder_upgrade_validate_dir_patch'),
   );
 
+  $form['coder_upgrade_upgrade_core'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Drupal core modules'),
+    '#default_value' => variable_get('coder_upgrade_upgrade_core', FALSE),
+    '#description' => t('If checked, then the list of modules to select for upgrade will be the Drupal core modules. Otherwise, the list will be created from contributed modules.'),
+  );
+
   return system_settings_form($form);
 }
 
@@ -367,11 +374,10 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
   list($upgrades, $extensions, $directories, $modules) = coder_upgrade_selections($form_state['values']);
 
   // TODO Cache this list so we don't have to query all the files again.
-  $upgrades_all = _coder_upgrade_upgrades(TRUE);
-  foreach ($upgrades as $prefix => $upgrade) {
-    $upgrades[$prefix] = array(
-      'prefix' => $prefix,
-      'routines' => $upgrades_all[$prefix]['routines'],
+  $upgrades_all = _coder_upgrade_upgrades();
+  foreach ($upgrades as $module => $upgrade) {
+    $upgrades[$module] = array(
+      'files' => isset($upgrades_all[$module]['files']) ? $upgrades_all[$module]['files'] : array(),
     );
   }
 
@@ -492,11 +498,13 @@ function coder_upgrade_selections_extract($values) {
  *   Array of contributed modules.
  */
 function coder_upgrade_module_list() {
+  $like = variable_get('coder_upgrade_upgrade_core', FALSE) ? 'LIKE' : 'NOT LIKE';
+
   // Faster to query DB than to rescan files using _system_get_module_data().
   $sql = "SELECT name, filename, type, status, info
           FROM {system}
           WHERE type = 'module'
-          AND filename NOT LIKE 'modules/%'
+          AND filename $like 'modules/%'
           ORDER BY filename ASC";
   $default_value = 0;
   $results = db_query($sql);

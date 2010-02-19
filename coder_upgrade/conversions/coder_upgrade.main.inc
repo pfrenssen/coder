@@ -53,18 +53,21 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
     file_put_contents(coder_upgrade_debug_path(), '');
   }
 
+  // Load code.
+  coder_upgrade_load_code($upgrades);
+
   // Loop on items.
   foreach ($items as $item) {
     $_coder_upgrade_module_name = '';
 //    $_coder_upgrade_dirname = $item['old_dir'];
-    // TODO Set a global variable indicating the current module name (since this is often needed) - it may change as we enter a subdir.
+
+    // Process the directory before conversion routines are applied.
+    coder_upgrade_convert_beginning($item['old_dir']);
 
     // Call main conversion loop.
     coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive);
 
     // Apply finishing touches to the directory.
-    // TODO Turn this into a loop on routines.
-//    $_coder_upgrade_dirname = $item['new_dir'];
     coder_upgrade_convert_end($item['new_dir']);
 
     // Make a patch file.
@@ -72,6 +75,51 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
   }
 
   return TRUE;
+}
+
+/**
+ * Loads upgrade routine code files.
+ *
+ * @param array $upgrades
+ *   Array of upgrade sets to apply.
+ */
+function coder_upgrade_load_code(&$upgrades) {
+  foreach ($upgrades as $module => $upgrade) {
+    $path = DRUPAL_ROOT . '/' . drupal_get_path('module', $module);
+    if (isset($upgrade['files']) && !empty($upgrade['files'])) {
+      foreach ($upgrade['files'] as $file) {
+        require_once $path . '/' . $file;
+      }
+    }
+    else {
+      // Default file name is module.upgrade in the module's root directory.
+      require_once $path . '/' . $module . '.upgrade';
+    }
+  }
+}
+
+/**
+ * Processes the directory before conversion routines are applied.
+ *
+ * This hook can be used to cache information needed by other routines.
+ * Example: core changes need to know about hook_theme or hook_menu to make
+ * theme changes and form API changes.
+ *
+ * @param string $dirname
+ *   The name of the directory with the original files.
+ */
+function coder_upgrade_convert_beginning($dirname) {
+  drupal_alter('upgrade_begin', $dirname);
+}
+
+/**
+ * Applies finishing touches to the directory of converted files.
+ *
+ * @param string $dirname
+ *   The name of the directory with the converted files.
+ */
+function coder_upgrade_convert_end($dirname) {
+  drupal_alter('upgrade_end', $dirname);
 }
 
 /**
@@ -167,27 +215,10 @@ function coder_upgrade_convert_file($filename, $upgrades = array()) {
   $cur = file_get_contents($filename);
   $new = $cur;
 
-  if (empty($upgrades)) {
-    // TODO Temporary solution for development.
-    $upgrades = coder_upgrade_list_upgrades(TRUE);
-  }
-
-  // Loop on upgrades.
-  foreach ($upgrades as $upgrade) {
-    if (!isset($upgrade['prefix']) || !isset($upgrade['routines'])) {
-      continue;
-    }
-
-    $prefix = $upgrade['prefix'];
-    $routines = $upgrade['routines']['middle'];
-
-    // Apply regular expression routines.
-    coder_upgrade_apply_regex($filename, $new, $prefix, $routines);
-    if (coder_upgrade_parser_routines_exist($routines)) {
-      // Apply parser routines.
-      coder_upgrade_apply_parser($filename, $new, $prefix, $routines);
-    }
-  }
+  // Apply regular expression routines.
+  coder_upgrade_apply_regex($filename, $new);
+  // Apply parser routines.
+  coder_upgrade_apply_parser($filename, $new);
 
   // Write the new file.
   if ($new != $cur) {
@@ -205,41 +236,29 @@ function coder_upgrade_convert_file($filename, $upgrades = array()) {
  *   The name of the file to convert.
  * @param string $new
  *   The contents of the file to convert.
- * @param string $prefix
- *   The function name prefix.
- * @param array $routines
- *   Array of upgrade routines to apply.
  */
-function coder_upgrade_apply_regex($filename, &$new, $prefix, $routines = array()) {
+function coder_upgrade_apply_regex($filename, &$new) {
   // Categorize certain files.
   $is_info_file = pathinfo($filename, PATHINFO_EXTENSION) == 'info';
-  $is_schema_file = pathinfo($filename, PATHINFO_EXTENSION) == 'install';
+  $is_install_file = pathinfo($filename, PATHINFO_EXTENSION) == 'install';
 
-  // Loop on conversion routines using regular expressions.
-  foreach ($routines as $routine) {
-    if ($routine['type'] != 'regex') {
-      continue;
-    }
-    if (function_exists($function = $prefix . '_convert_' . $routine['name'])) {
-      $is_format_conversion = strpos($routine['name'], 'format') === 0;
-      $is_info_conversion = strpos($routine['name'], 'info') === 0;
-      $is_schema_conversion = in_array($routine['name'], array('hook_schema', 'hook_install', 'hook_uninstall', 'hook_update'));
-      // Only run info changes on info files
-      // Only run install changes on install files
-      if ((!$is_info_file && !$is_info_conversion && !$is_schema_file && !$is_schema_conversion) ||
-          ($is_info_file && $is_info_conversion) ||
-          ($is_schema_file && $is_schema_conversion) ||
-          ($is_format_conversion)) {
-        coder_upgrade_log_print("Applying $function");
-        // Apply conversion routine to the file.
-        call_user_func_array($function, array(&$new)); // TODO Remove &???
-        coder_upgrade_log_print('Completed ' . $function);
-      }
-    }
-    else {
-      coder_upgrade_log_print("ERROR: Conversion routine not found: $function");
-    }
+  if ($is_info_file) {
+    // Apply regular expression conversion routines for info file.
+    coder_upgrade_log_print("Calling hook_upgrade_regex_info_alter");
+    drupal_alter('upgrade_regex_info', $new);
+    coder_upgrade_log_print("Completed hook_upgrade_regex_info_alter");
+    return;
   }
+  if ($is_install_file) {
+    // Apply regular expression conversion routines for install file.
+    coder_upgrade_log_print("Calling hook_upgrade_regex_install_alter");
+    drupal_alter('upgrade_regex_install', $new);
+    coder_upgrade_log_print("Completed hook_upgrade_regex_install_alter");
+  }
+  // Apply regular expression conversion routines.
+  coder_upgrade_log_print("Calling hook_upgrade_regex_alter");
+  drupal_alter('upgrade_regex', $new);
+  coder_upgrade_log_print("Completed hook_upgrade_regex_alter");
 }
 
 /**
@@ -249,16 +268,13 @@ function coder_upgrade_apply_regex($filename, &$new, $prefix, $routines = array(
  *   The name of the file to convert.
  * @param string $new
  *   The contents of the file to convert.
- * @param string $prefix
- *   The function name prefix.
- * @param array $routines
- *   Array of upgrade routines to apply.
  */
-function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array()) {
+function coder_upgrade_apply_parser($filename, &$new) {
   // Categorize certain files.
   $is_info_file = pathinfo($filename, PATHINFO_EXTENSION) == 'info';
-  $is_schema_file = pathinfo($filename, PATHINFO_EXTENSION) == 'install';
+  $is_install_file = pathinfo($filename, PATHINFO_EXTENSION) == 'install';
   if ($is_info_file) {
+    // Grammar parser only parses PHP code files.
     return;
   }
 
@@ -281,30 +297,26 @@ function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array
   $reader->addTokenNames();
   $reader->buildGrammar();
 
-  // Loop on conversion routines using parser.
-  foreach ($routines as $routine) {
-    if ($routine['type'] != 'parser') {
-      continue;
-    }
-    if (function_exists($function = $prefix . '_convert_' . $routine['name'])) {
-      $is_format_conversion = strpos($routine['name'], 'format') === 0;
-      $is_info_conversion = strpos($routine['name'], 'info') === 0;
-      $is_schema_conversion = in_array($routine['name'], array('install_file'/*, 'hook_schema', 'hook_install', 'hook_uninstall', 'hook_update'*/));
-      // Only run info changes on info files
-      // Only run install changes on install files
-      if ((!$is_info_file && !$is_info_conversion && !$is_schema_file && !$is_schema_conversion) ||
-          ($is_info_file && $is_info_conversion) ||
-          ($is_schema_file && $is_schema_conversion) ||
-          ($is_format_conversion)) {
-        coder_upgrade_log_print("Applying $function");
-        // Apply conversion routine to the file.
-        call_user_func_array($function, array(&$reader)); // TODO Remove &???
-        coder_upgrade_log_print('Completed ' . $function);
-      }
-    }
-    else {
-      coder_upgrade_log_print("ERROR: Conversion routine not found: $function");
-    }
+  // Apply parser conversion routines for function calls.
+  coder_upgrade_log_print("Calling hook_upgrade_call_alter");
+  coder_upgrade_convert_function_calls($reader);
+  coder_upgrade_log_print("Completed hook_upgrade_call_alter");
+
+  // Apply parser conversion routines for hook functions.
+  coder_upgrade_log_print("Calling hook_upgrade_hook_alter");
+  coder_upgrade_convert_functions($reader);
+  coder_upgrade_log_print("Completed hook_upgrade_hook_alter");
+
+  // Apply parser conversion routines for the file.
+  coder_upgrade_log_print("Calling hook_upgrade_file_alter");
+  drupal_alter('upgrade_file', $reader); // coder_upgrade_convert_file($reader);
+  coder_upgrade_log_print("Completed hook_upgrade_file_alter");
+
+  if ($is_install_file) {
+    // Apply parser conversion routines for install file.
+    coder_upgrade_log_print("Calling hook_upgrade_parser_install_alter");
+    drupal_alter('upgrade_parser_install', $reader);
+    coder_upgrade_log_print("Completed hook_upgrade_parser_install_alter");
   }
 
   // Use writer to redo file.
@@ -313,24 +325,6 @@ function coder_upgrade_apply_parser($filename, &$new, $prefix, $routines = array
 
   // Free up memory.
   $reader->reset();
-}
-
-/**
- * Returns whether grammar parser routines are present in the list.
- *
- * @param array $routines
- *   Array of upgrade routines.
- * @return boolean
- *   Whether parser routines are present in the list.
- */
-function coder_upgrade_parser_routines_exist($routines = array()) {
-  // Loop on conversion routines.
-  foreach ($routines as $routine) {
-    if ($routine['type'] == 'parser') {
-      return TRUE;
-    }
-  }
-  return FALSE;
 }
 
 /**
@@ -348,10 +342,24 @@ function coder_upgrade_convert_function_calls(&$reader) {
       // no longer refers to an ojbect.
       continue;
     }
-    if (is_array($item->name) && $item->name['type'] == T_STRING) {
+    // If need to change other statements that we build as a function call,
+    // then modify the next line. Others: eval, empty, unset, print, throw.
+    $types = array(T_STRING, T_REQUIRE, T_REQUIRE_ONCE, T_INCLUDE, T_INCLUDE_ONCE);
+    if (is_array($item->name) && in_array($item->name['type'], $types)) {
       // If name is an object, then it is a variable expression that is not
       // 'alterable' in the traditional sense.
       drupal_alter('upgrade_call_' . $item->name['value'], $item, $reader);
+      // TODO The alter hooks can get the $reader from PGPReader::getInstance();
+      // We could do the same in this function.
+    }
+
+    if (!isset($item) || !is_object($item) || !is_a($item, 'PGPFunctionCall') || $item->type != T_FUNCTION_CALL) {
+      continue;
+    }
+    if (is_array($item->name) && in_array($item->name['type'], $types)) {
+      // Set name because only variables may be passed by reference.
+      $name = $item->name['value'];
+      drupal_alter('upgrade_call', $item, $reader, $name);
       // TODO The alter hooks can get the $reader from PGPReader::getInstance();
       // We could do the same in this function.
     }
@@ -397,7 +405,7 @@ function coder_upgrade_convert_functions(&$reader) {
      */
     if (strpos($name, $_coder_upgrade_module_name . '_') !== 0) {
       clp("Ignoring function '$name' as its name does not begin with the module name");
-      return;
+      continue;
     }
 
     // By convention, the module name should be followed by an underscore.
@@ -406,7 +414,6 @@ function coder_upgrade_convert_functions(&$reader) {
 
     // Update hooks need additional manipulation.
     if (preg_match('@update_\d+$@', $key, $matches)) {
-      cdp(print_r($matches, 1));
       $key = 'update_N';
     }
 

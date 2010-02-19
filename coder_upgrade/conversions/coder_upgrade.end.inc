@@ -19,7 +19,7 @@
  * @param string $dirname
  *   The name of the directory with the converted files.
  */
-function coder_upgrade_convert_end($dirname) {
+function coder_upgrade_upgrade_end_alter($dirname) { // function coder_upgrade_convert_end($dirname) {
   global $_coder_upgrade_dirname;
 
   $_coder_upgrade_dirname = $dirname;
