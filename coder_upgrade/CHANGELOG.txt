@@ -2,9 +2,17 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-02-20):
+   * coder_upgrade.api.inc
+   * - update API documentation for new alter hooks
+   * coder_upgrade.main.inc
+   * - add hook_upgrade_hook_alter
+   * - use old directory name in hook_upgrade_end_alter if files are being replaced
+
 - Changes (2010-02-19):
    * coder_upgrade.module
    * - add setting to indicate whether to list core or contributed modules on run upgrade form
+   * - omit modules contained in subdirectory of a parent module also selected for upgrade
    * coder_upgrade.module, coder_upgrade.main.inc
    * - add setting to indicate whether to replace files
    * coder_upgrade.list.inc, coder_upgrade.main.inc, coder_upgrade.module

@@ -71,7 +71,9 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
     coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive);
 
     // Apply finishing touches to the directory.
-    coder_upgrade_convert_end($item['new_dir']);
+    // Swap directories if files are replaced.
+    $new_dir = $replace_files ? $item['old_dir'] : $item['new_dir'];
+    coder_upgrade_convert_end($new_dir);
 
     // Make a patch file.
     coder_upgrade_make_patch_file($item, $replace_files);
@@ -405,9 +407,9 @@ function coder_upgrade_convert_functions(&$reader) {
      * Example: the Views module defines hooks and implements them on behalf of
      * core modules.
      *
-     * Otherwise, strip the module name from the function name and use this as
-     * the key in the switch statement. In some cases (e.g. hook_update_N), some
-     * additional manipulation and testing needs to be done.
+     * Strip the module name from the function name and use this as the key in
+     * a switch statement. In some cases (e.g. hook_update_N), some additional
+     * manipulation and checking needs to be done.
      */
     if (strpos($name, $_coder_upgrade_module_name . '_') !== 0) {
       clp("Ignoring function '$name' as its name does not begin with the module name");
@@ -415,17 +417,26 @@ function coder_upgrade_convert_functions(&$reader) {
     }
 
     // By convention, the module name should be followed by an underscore.
-    $key = substr($name, strlen($_coder_upgrade_module_name) + 1);
-    cdp("key = $key");
+    $hook = substr($name, strlen($_coder_upgrade_module_name) + 1);
+    cdp("hook = $hook");
 
     // Update hooks need additional manipulation.
-    if (preg_match('@update_\d+$@', $key, $matches)) {
-      $key = 'update_N';
+    if (preg_match('@update_\d+$@', $hook, $matches)) {
+      $hook = 'update_N';
     }
 
     // TODO The alter hooks can get the $reader from PGPReader::getInstance();
     // We could do the same in this function.
-    drupal_alter('upgrade_hook_' . $key, $node, $reader);
+    drupal_alter('upgrade_hook_' . $hook, $node, $reader);
+
+    if (!isset($item) ||!is_object($item) || !is_a($item, 'PGPClass') || $item->type != T_FUNCTION) {
+      continue;
+    }
+    if (strpos($name, $_coder_upgrade_module_name . '_') !== 0) {
+      clp("Ignoring function '$name' as its name does not begin with the module name");
+      continue;
+    }
+    drupal_alter('upgrade_hook', $node, $reader, $hook);
   }
 }
 

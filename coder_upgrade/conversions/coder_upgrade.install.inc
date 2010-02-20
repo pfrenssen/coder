@@ -22,7 +22,7 @@
  */
 
 /**
- * Implements hook_upgrade_parser_install_alter.
+ * Implements hook_upgrade_parser_install_alter().
  *
  * Applies finishing touches to the install file.
  *
@@ -57,7 +57,7 @@ function coder_upgrade_convert_install_file_comment(&$reader) {
   /*
    * A standards-compliant Drupal php file would begin with:
    * <?php
-   * // $Id$
+   * // $\Id: .. username Exp $ (slash added to prevent CVS from changing this line)
    *
    * ... rest of file
    *
@@ -117,9 +117,9 @@ function coder_upgrade_add_install_file_comment(&$reader, $position) {
 }
 
 /**
- * Implements hook_upgrade_regex_info_alter.
+ * Implements hook_upgrade_regex_info_alter().
  *
- * Upgrades text using simple regular expressions.
+ * Alters the text of a code file using regular expressions.
  *
  * Module Info / Install
  * http://drupal.org/node/224333#info_core_7 (this anchor does not exist on the chronological page)
