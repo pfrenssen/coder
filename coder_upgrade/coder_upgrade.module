@@ -115,9 +115,16 @@ function coder_upgrade_settings_form($form, &$form_state) {
 
   $form['coder_upgrade_upgrade_core'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Drupal core modules'),
+    '#title' => t('Update Drupal core modules'),
     '#default_value' => variable_get('coder_upgrade_upgrade_core', FALSE),
     '#description' => t('If checked, then the list of modules to select for upgrade will be the Drupal core modules. Otherwise, the list will be created from contributed modules.'),
+  );
+
+  $form['coder_upgrade_replace_files'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Replace files'),
+    '#default_value' => variable_get('coder_upgrade_replace_files', FALSE),
+    '#description' => t('If checked, then the original file will be replaced with the upgraded file. Otherwise, the upgraded file will only be written to the output directory shown above.'),
   );
 
   return system_settings_form($form);
@@ -399,10 +406,16 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
     );
   }
 
+  $last = 'xx_XX';
   $rows = coder_upgrade_module_list();
   foreach ($modules as $key => $module) {
     if (isset($rows[$key])) {
       $row = $rows[$key];
+      if (strpos($row['dir'] . '/', $last . '/') === 0) {
+        // Omit modules contained in subdirectory of a parent module.
+        continue;
+      }
+      $last = $row['dir'];
       $items[] = array(
         'name' => $key,
         'old_dir' => $row['dir'],
@@ -501,11 +514,12 @@ function coder_upgrade_module_list() {
   $like = variable_get('coder_upgrade_upgrade_core', FALSE) ? 'LIKE' : 'NOT LIKE';
 
   // Faster to query DB than to rescan files using _system_get_module_data().
-  $sql = "SELECT name, filename, type, status, info
+  $sql = "SELECT name, filename, type, status, info,
+          REPLACE(filename, CONCAT('/', name, '.', type), '') AS directory
           FROM {system}
           WHERE type = 'module'
           AND filename $like 'modules/%'
-          ORDER BY filename ASC";
+          ORDER BY directory, name";
   $default_value = 0;
   $results = db_query($sql);
   $rows = array();
@@ -514,7 +528,7 @@ function coder_upgrade_module_list() {
     $row = array();
     $row['name'] = $info['name'];
     $row['path'] = dirname($module->filename); // $module->filename;
-    $row['dir'] = dirname($module->filename);
+    $row['dir'] = $module->directory; // dirname($module->filename);
     // TODO Pull files from this table???
     // Would need to change the conversion code to not read the filesystem.
 
