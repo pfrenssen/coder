@@ -2,6 +2,20 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-02-27):
+  * coder_upgrade.call.inc
+  * - implement #drupal_set_header_renamed
+
+- Changes (2010-02-22):
+  * coder_upgrade.call.inc
+  * - implement hook_upgrade_call_alter for db_... function calls and #absolute_includes
+  * - #absolute_includes
+  * coder_upgrade.function.inc
+  * - replace new PGPEditor() with PGPEditor::getInstance()
+  * coder_upgrade.main.inc
+  * - refactor debug and log print to automatically call $object->print_r()
+  * - add calls to pgp_log_memory_use
+
 - Changes (2010-02-20):
    * coder_upgrade.api.inc
    * - update API documentation for new alter hooks
@@ -29,6 +43,10 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
    * - update API documentation for new alter hooks
    * other non-conversion files
    * - update copyright years
+
+- Changes (2010-02-17):
+   * coder_upgrade.call.inc
+   * - #preg_match, #file_scan_directory_nomask, #file_scan_directory_property_names, #file_scan_directory_array_itize
 
 - Changes (2010-02-16):
    * coder_upgrade.install.inc
@@ -79,6 +97,12 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
    * coder_upgrade.main.inc
    * - replace require_once statements with call to module_load_include (that includes DRUPAL_ROOT)
 
+- Changes (2010-01-10):
+   * coder_upgrade.other.inc
+   * - function calls
+   *   - drupal_add_css_weight: included in drupal_add_js_options change
+   *   - drupal_valid_path: menu_valid_path becomes drupal_valid_path with a parameter change
+
 - Changes (2010-01-01):
    * coder_upgrade.other.inc
    * - conform upgrade routines to Grammar Parser changes
@@ -97,6 +121,12 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
    * - add aliases for above two: clp and cdp
    * coder_upgrade.other.inc:
    * - add $reader as a parameter to coder_upgrade_callback_functions
+   * - function calls
+   *   - drupal_set_html_head: insert new required parameter when first parameter is set
+   *   - node_type_base
+   * - functions
+   *   - action_info, filter, hook_info, link
+   *   - node_type_base
 
 - Changes (2009-12-09):
    * coder_upgrade.module:
@@ -111,7 +141,9 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
    * coder_upgrade.main.inc:
    * - convert opendir and readdir to scandir. (2 places)
    * - improve on setting $_coder_upgrade_module_name
-   * all files: use second person tense in document comments.
+   * coder_upgrade.other.inc:
+   * - add upgrades for hook_action_info() and hook_hook_info()
+   * all files: use second person tense in document comments
 
 - Changes (2009-12-05):
    * #651844: coder_upgrade_module_name (no module file in directory).
