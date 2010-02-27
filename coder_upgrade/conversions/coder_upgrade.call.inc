@@ -17,6 +17,7 @@
  * The upgrades to these functions are documented at the following urls.
  *
  * System
+ * http://drupal.org/node/224333#absolute_includes
  * http://drupal.org/node/224333#registry
  * http://drupal.org/node/224333#drupal_set_session (REVERTED)
  * http://drupal.org/node/224333#time
@@ -80,8 +81,11 @@
  *
  *
  * File API
+ * http://drupal.org/node/224333#file_scan_directory_array_itize
+ * http://drupal.org/node/224333#file_scan_directory_nomask
  * http://drupal.org/node/224333#file_set_status
  * http://drupal.org/node/224333#preg_match
+ * http://drupal.org/node/224333#file_scan_directory_property_names
  *
  *
  * User API
@@ -99,7 +103,79 @@
  * http://drupal.org/node/224333#drupal_clone
  * http://drupal.org/node/224333#actions_synchronize
  * http://drupal.org/node/224333#url_is_external
+ * http://drupal.org/node/224333#drupal_valid_path
  */
+
+/**
+ * Implements hook_upgrade_call_alter().
+ */
+function coder_upgrade_upgrade_call_alter(&$item, &$reader, $name) { // NEEDS WORK
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Process function call.
+//  $name = &$item->name;
+
+  switch ($name) {
+    case 'db_add_field':
+      // includes/database.pgsql.inc Add a new field to a table.
+    case 'db_add_index':
+      // includes/database.pgsql.inc Add an index.
+    case 'db_add_primary_key':
+      // includes/database.pgsql.inc Add a primary key.
+    case 'db_add_unique_key':
+      // includes/database.pgsql.inc Add a unique key.
+    case 'db_change_field':
+      // includes/database.pgsql.inc Change a field definition.
+    case 'db_create_table':
+      // includes/database.inc Create a new table from a Drupal table definition.
+    case 'db_create_table_sql':
+      // includes/database.pgsql.inc Generate SQL to create a new table from a Drupal schema definition.
+    case 'db_drop_field':
+      // includes/database.pgsql.inc Drop a field.
+    case 'db_drop_index':
+      // includes/database.pgsql.inc Drop an index.
+    case 'db_drop_primary_key':
+      // includes/database.pgsql.inc Drop the primary key.
+    case 'db_drop_table':
+      // includes/database.pgsql.inc Drop a table.
+    case 'db_drop_unique_key':
+      // includes/database.pgsql.inc Drop a unique key.
+    case 'db_field_names':
+      // includes/database.inc Return an array of field names from an array of key/index column specifiers.
+    case 'db_field_set_default':
+      // includes/database.pgsql.inc Set the default value for a field.
+    case 'db_field_set_no_default':
+      // includes/database.pgsql.inc Set a field to have no default value.
+    case 'db_rename_table':
+      // includes/database.pgsql.inc Rename a table.
+      $item->deleteParameter();
+
+      /*
+       * TODO
+       * See http://drupal.org/node/224333#update_sql
+       * Search for assignments to and return statements with the $ret parameter
+       * used in these db_operation function calls.
+       *
+       * These could be moved to the install file although it may be possible to
+       * call them in other files.
+       */
+      break;
+
+    case 'require':
+    case 'require_once':
+    case 'include':
+    case 'include_once':
+      // These are included by $reader in function call list.
+      // Use with http://drupal.org/node/224333#absolute_includes
+      coder_upgrade_convert_require($item, $reader);
+      break;
+
+    default:
+      ;
+      break;
+  }
+}
 
 /**
  * Implements hook_upgrade_call_actions_synchronize_alter().
@@ -167,8 +243,8 @@ function coder_upgrade_upgrade_call__comment_load_alter(&$item, &$reader) { // D
 
   // Process function call.
   $name = &$item->name;
-  // TODO The comment_wildcard change in hook_menu.
   $name['value'] = 'comment_load';
+  // TODO The %_comment wildcard change to %comment in hook_menu. (See coder_upgrade.other_regex.inc.)
 }
 
 /**
@@ -204,8 +280,8 @@ function coder_upgrade_upgrade_call_comment_validate_alter(&$item, &$reader) { /
 
 /**
  * Implements hook_upgrade_call_db_add_field_alter().
- */
-function coder_upgrade_upgrade_call_db_add_field_alter(&$item, &$reader) { // DONE
+ *//*
+function coder_upgrade_upgrade_call_db_add_field_alter(&$item, &$reader) { // NEEDS WORK
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
@@ -213,11 +289,21 @@ function coder_upgrade_upgrade_call_db_add_field_alter(&$item, &$reader) { // DO
   $name = &$item->name;
   // includes/database.pgsql.inc Add a new field to a table.
   $item->deleteParameter();
-}
+
+  /*
+   * TODO
+   * See http://drupal.org/node/224333#update_sql
+   * Search for assignments to and return statements with the $ret parameter
+   * used in these db_operation function calls.
+   *
+   * These could be moved to the install file although it may be possible to
+   * call them in other files.
+   *//*
+}*/
 
 /**
  * Implements hook_upgrade_call_db_add_index_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_add_index_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -226,11 +312,11 @@ function coder_upgrade_upgrade_call_db_add_index_alter(&$item, &$reader) { // DO
   $name = &$item->name;
   // includes/database.pgsql.inc Add an index.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_add_primary_key_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_add_primary_key_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -239,11 +325,11 @@ function coder_upgrade_upgrade_call_db_add_primary_key_alter(&$item, &$reader) {
   $name = &$item->name;
   // includes/database.pgsql.inc Add a primary key.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_add_unique_key_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_add_unique_key_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -252,11 +338,11 @@ function coder_upgrade_upgrade_call_db_add_unique_key_alter(&$item, &$reader) { 
   $name = &$item->name;
   // includes/database.pgsql.inc Add a unique key.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_change_field_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_change_field_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -265,11 +351,11 @@ function coder_upgrade_upgrade_call_db_change_field_alter(&$item, &$reader) { //
   $name = &$item->name;
   // includes/database.pgsql.inc Change a field definition.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_create_table_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_create_table_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -278,11 +364,11 @@ function coder_upgrade_upgrade_call_db_create_table_alter(&$item, &$reader) { //
   $name = &$item->name;
   // includes/database.inc Create a new table from a Drupal table definition.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_create_table_sql_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_create_table_sql_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -291,11 +377,11 @@ function coder_upgrade_upgrade_call_db_create_table_sql_alter(&$item, &$reader) 
   $name = &$item->name;
   // includes/database.pgsql.inc Generate SQL to create a new table from a Drupal schema definition.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_drop_field_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_drop_field_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -304,11 +390,11 @@ function coder_upgrade_upgrade_call_db_drop_field_alter(&$item, &$reader) { // D
   $name = &$item->name;
   // includes/database.pgsql.inc Drop a field.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_drop_index_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_drop_index_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -317,11 +403,11 @@ function coder_upgrade_upgrade_call_db_drop_index_alter(&$item, &$reader) { // D
   $name = &$item->name;
   // includes/database.pgsql.inc Drop an index.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_drop_primary_key_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_drop_primary_key_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -330,11 +416,11 @@ function coder_upgrade_upgrade_call_db_drop_primary_key_alter(&$item, &$reader) 
   $name = &$item->name;
   // includes/database.pgsql.inc Drop the primary key.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_drop_table_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_drop_table_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -343,11 +429,11 @@ function coder_upgrade_upgrade_call_db_drop_table_alter(&$item, &$reader) { // D
   $name = &$item->name;
   // includes/database.pgsql.inc Drop a table.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_drop_unique_key_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_drop_unique_key_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -356,11 +442,11 @@ function coder_upgrade_upgrade_call_db_drop_unique_key_alter(&$item, &$reader) {
   $name = &$item->name;
   // includes/database.pgsql.inc Drop a unique key.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_field_names_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_field_names_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -369,11 +455,11 @@ function coder_upgrade_upgrade_call_db_field_names_alter(&$item, &$reader) { // 
   $name = &$item->name;
   // includes/database.inc Return an array of field names from an array of key/index column specifiers.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_field_set_default_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_field_set_default_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -382,11 +468,11 @@ function coder_upgrade_upgrade_call_db_field_set_default_alter(&$item, &$reader)
   $name = &$item->name;
   // includes/database.pgsql.inc Set the default value for a field.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_field_set_no_default_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_field_set_no_default_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -395,11 +481,11 @@ function coder_upgrade_upgrade_call_db_field_set_no_default_alter(&$item, &$read
   $name = &$item->name;
   // includes/database.pgsql.inc Set a field to have no default value.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_db_rename_table_alter().
- */
+ *//*
 function coder_upgrade_upgrade_call_db_rename_table_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -408,7 +494,7 @@ function coder_upgrade_upgrade_call_db_rename_table_alter(&$item, &$reader) { //
   $name = &$item->name;
   // includes/database.pgsql.inc Rename a table.
   $item->deleteParameter();
-}
+}*/
 
 /**
  * Implements hook_upgrade_call_drupal_add_css_alter().
@@ -453,6 +539,12 @@ function coder_upgrade_upgrade_call_drupal_add_css_alter(&$item, &$reader) { // 
   }
 }
 
+/**
+ * Returns the new css weight parameter.
+ *
+ * @param string $type
+ * @return string
+ */
 function coder_upgrade_css_weight($type) {
   switch ($type) {
     case 'module':
@@ -526,6 +618,12 @@ function coder_upgrade_upgrade_call_drupal_add_js_alter(&$item, &$reader) { // D
   }
 }
 
+/**
+ * Returns the new js weight parameter.
+ *
+ * @param string $type
+ * @return string
+ */
 function coder_upgrade_js_weight($type) {
   switch ($type) {
     case 'core':
@@ -821,24 +919,207 @@ function coder_upgrade_upgrade_call_drupal_uninstall_module_alter(&$item, &$read
 /**
  * Implements hook_upgrade_call_file_scan_directory_alter().
  */
-function coder_upgrade_upgrade_call_file_scan_directory_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_file_scan_directory_alter(&$item, &$reader) { // DONE (IN PROGRESS)
+  cdp(__FUNCTION__);
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
   // Process function call.
   $name = &$item->name;
-  // TODO Part of http://drupal.org/node/224333#preg_match
-  // TODO Other changes apply to this function call.
-  $temp = $item->printParameter(1);
+
+  /*
+   * TODO Default values will not harm anything if they are in the $options
+   * array. However, if the mask and nomask parameters are variables, then they
+   * need to be changed to preg format. Also, the key values need to change in
+   * the function call and the variables that reference the file objects.
+   */
+
+  // Save the depth parameter.
+  $depth = $item->getParameter(7);
+  $item->deleteParameter(7);
+
+  if ($item->parameters->count() > 1) {
+    // Change mask from ereg to preg style.
+    // Part of http://drupal.org/node/224333#preg_match
+    $mask = $item->getParameter(1);
+    $operand = $mask->getElement();
+    if (is_array($operand) && $operand['type'] == T_CONSTANT_ENCAPSED_STRING) {
+      // Parameter is a string.
+      $mask = coder_upgrade_ereg_to_preg($item->printParameter(1));
+      $editor->setParameter($item, 1, $mask);
+    }
+    elseif (is_a($operand, 'PGPOperand') && $operand->findNode('type') == T_VARIABLE) {
+      // Parameter is a variable.
+      $variable = $operand->findNode('value');
+      // Get the parent = statement (i.e. node) this function call is part of.
+      $parent = $item->parent; // $parent = &$item->parent;
+      // Get the statement list the parent is part of.
+      $statement = $parent->container->searchBackward('PGPAssignment', 'values', 0, $variable, $parent);
+      if ($statement) {
+        $operand2 = &$statement->values->getElement()->findNode('operand', 'backward');
+        // TODO A pattern here - this is the same code as above but executed on a different object.
+        if (is_array($operand2) && $operand2['type'] == T_CONSTANT_ENCAPSED_STRING) {
+          $operand2['value'] = coder_upgrade_ereg_to_preg($operand2['value']);
+          $mask = $operand2['value'];
+        }
+        else {
+          clp("ERROR: Could not find a string to change in " . __FUNCTION__);
+        }
+      }
+    }
+    else {
+      clp("ERROR: Could not find a string to change in " . __FUNCTION__);
+    }
+  }
+
+  if ($item->parameters->count() > 2) {
+    // Change nomask from array to preg style.
+    // http://drupal.org/node/224333#file_scan_directory_nomask
+    $nomask = $item->getParameter(2);
+    $operand = $nomask->getElement();
+    if (is_a($operand, 'PGPArray')) {
+      // Parameter is an array.
+      $nomask = coder_upgrade_array_to_preg($operand);
+      $editor->setParameter($item, 2, $nomask);
+    }
+    elseif (is_a($operand, 'PGPOperand') && $operand->findNode('type') == T_VARIABLE) {
+      // Parameter is a variable.
+      $variable = $operand->findNode('value');
+      // Get the parent = statement (i.e. node) this function call is part of.
+      $parent = $item->parent; // $parent = &$item->parent;
+      // Get the statement list the parent is part of.
+      $statement = $parent->container->searchBackward('PGPAssignment', 'values', 0, $variable, $parent);
+      if ($statement) {
+        $operand2 = &$statement->values->getElement()->findNode('operand', 'backward');
+        // TODO A pattern here - this is the same code as above but executed on a different object.
+        if (is_a($operand2, 'PGPArray')) {
+          $nomask = coder_upgrade_array_to_preg($operand2);
+          $operand2 = array('type' => T_CONSTANT_ENCAPSED_STRING, 'value' => $nomask);
+        }
+        else {
+          clp("ERROR: Could not find a string to change in " . __FUNCTION__);
+        }
+      }
+    }
+    else {
+      clp("ERROR: Could not find a string to change in " . __FUNCTION__);
+    }
+  }
+
+  if ($item->parameters->count() > 5) {
+    // Change key values.
+    // http://drupal.org/node/224333#file_scan_directory_property_names
+    $operand = $item->getParameter(5)->getElement();
+    if (is_array($operand) && $operand['type'] == T_CONSTANT_ENCAPSED_STRING) {
+      // Parameter is a string.
+      $key = coder_upgrade_file_key($item->printParameter(5));
+      $editor->setParameter($item, 5, $key);
+    }
+    elseif (is_a($operand, 'PGPOperand') && $operand->findNode('type') == T_VARIABLE) {
+      // Parameter is a variable.
+      $variable = $operand->findNode('value');
+      $parent = $item->parent;
+      $statement = $parent->container->searchBackward('PGPAssignment', 'values', 0, $variable, $parent);
+
+    }
+    // Edge case: the parameter could have a comment.
+    // Make a general function to clean the parameter of comments and whitespace so we can truly evaluate it.
+    // TODO Add a comment if unable to make the change. This applies to all routines!!!
+  }
+
+  // http://drupal.org/node/224333#file_scan_directory_array_itize
+  // Arrayitize the parameters.
+  $keys = array('nomask', 'callback', 'recurse', 'key', 'min_depth');
+  $defaults = array(/*"array('.', '..', 'CVS')"*/ "'/(\.\.?|CVS)$/'", '0', 'TRUE', /*"'filename'"*/"'uri'", 0);
+  $string = $editor->arrayitize($item, 2, $keys, $defaults);
+
+  if (is_object($depth) || $string != 'array()') {
+    $temp = $editor->expressionToStatement($string);
+    $temp->getElement(0)->multiline = 0;
+    $item->setParameter(2, $temp);
+  }
+  if (is_object($depth)) {
+    $item->setParameter(7, $depth);
+  }
+
+  // TODO Could regex for '->filename' and change to '->filepath'???
+  // See http://drupal.org/files/issues/file_scan_directory-1.patch
+}
+
+/**
+ * Returns the new file key parameter.
+ *
+ * @param string $key
+ * @return string
+ */
+function coder_upgrade_file_key($key) {
+  switch ($key) {
+    case "'filename'":
+      return "'uri'";
+
+    case "'basename'":
+      return "'filename'";
+
+    case "'name'":
+      return "'name'";
+
+    default:
+      return "'uri'";
+  }
+}
+
+/**
+ * Converts an ereg string to a preg string.
+ *
+ * @param string $string
+ * @return string
+ */
+function coder_upgrade_ereg_to_preg($string) {
+  cdp(__FUNCTION__);
   // Check for type == T_CONSTANT_ENCAPSED_STRING
   // Check for a '/' in the mask and use a different mask or delimit the '/' with '\/'.
-  if ($temp[0] == "'") {
-    $editor->setParameter($item, 1, "'/" . substr($temp, 1, -1) . "/'");
+  $delimiters = array('/', '@', '#', '%', '~', ''); // TODO Are these all legal?
+  foreach ($delimiters as $delimiter) {
+    if (strpos($string, $delimiter) === FALSE) {
+      break;
+    }
   }
-  elseif ($temp[0] == '"') {
-    $editor->setParameter($item, 1, '"/' . substr($temp, 1, -1) . '/"');
+
+  if (!$delimiter) {
+    clp('ERROR: could not find a suitable delimiter for the regular exprssion');
+    $delimiter = '/';
+    $string = str_replace('/', '\/', $string);
   }
-  // else if type == T_VARIABLE, find the $mask used in the call and examine its value.
+
+  $quote = $string[0];
+  return $quote . $delimiter . substr($string, 1, -1) . $delimiter . $quote;
+}
+
+/**
+ * Returns a preg string for the nomask parameter.
+ *
+ * @param PGPOperand $nomask
+ * @return string
+ */
+function coder_upgrade_array_to_preg($operand) {
+  cdp(__FUNCTION__);
+  $defaults = array('.', '..', 'CVS');
+  $current = $operand->values->first();
+  while ($current->next != NULL) {
+    if ($current->type == 'value') {
+      $values[] = trim($current->data->toString(), "'\"");
+    }
+    $current = $current->next;
+  }
+  $defaults = array_diff($defaults, $values);
+  if (empty($defaults)) {
+    return "'/(\.\.?|CVS)$/'";
+  }
+  $strings = array();
+  foreach ($values as $value) {
+    $strings[] .= str_replace('.', '\.', $value);
+  }
+  return "'/(" . implode('|', $strings) . ")/'";
 }
 
 /**
@@ -958,6 +1239,25 @@ function coder_upgrade_upgrade_call_menu_path_is_external_alter(&$item, &$reader
   // Process function call.
   $name = &$item->name;
   $name['value'] = 'url_is_external';
+}
+
+/**
+ * Implements hook_upgrade_call_menu_valid_path_alter().
+ */
+function coder_upgrade_upgrade_call_menu_valid_path_alter(&$item, &$reader) { // DONE
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Process function call.
+  $name = &$item->name; // NOT DONE
+  $name['value'] = 'drupal_valid_path';
+  //      cdp($item->parameters->print_r());
+  $count = $item->parameters->count();
+  if (!$count) {
+    $editor->setParameter($item, 0, "'' /* TODO Please pass a menu path */");
+    return;
+  }
+  coder_upgrade_convert_menu_valid_path($item, $reader, $editor);
 }
 
 /**
@@ -1335,4 +1635,124 @@ function coder_upgrade_upgrade_call_user_delete_alter(&$item, &$reader) { // DON
   $name = &$item->name;
   $name['value'] = 'user_cancel';
   $editor->setParameter($item, 2, "\$method = 'user_cancel_block' /* TODO Set this variable */");
+}
+
+/**
+ * Updates menu_valid_path().
+ *
+ * Copied from hook_node_info() change.
+ *
+ * NOTE
+ * In general, there are 3 typical cases (or code styles):
+ * Case 1: passes variable directly.
+ * if (!menu_valid_path(array('link_path' => $expression))) { ... }
+ *
+ * Case 2: makes one assignment to array variable; passes variable.
+ * $item = array('link_path' => $expression);
+ * if (!menu_valid_path($item)) { ... }
+ *
+ * Case 3: makes multiple assignments to array variable; passes variable.
+ * $item['link_path'] = $expression1;
+ * $item['link_title'] = $expression2;
+ * if (!menu_valid_path($item)) { ... }
+ *
+ * [The inner array to modify is 3 levels deep in the first 2 cases, but only
+ * 2 levels deep in the third. In the first 2 cases, we can loop on the key1
+ * arrays. In the third, the loop is on assignment statements.]
+ */
+function coder_upgrade_convert_menu_valid_path(&$item, &$reader, &$editor) { // DONE
+  cdp("inside " . __FUNCTION__);
+
+  $operand = $item->getParameter()->getElement();
+  cdp($operand->print_r());
+
+  // Examine the type of the operand in the parameter.
+  if (get_class($operand) == 'PGPArray') {
+    // Use case 1 - passes variable directly.
+    cdp("Case 1: passes variable directly");
+    coder_upgrade_callback_menu_valid_path($item, $operand);
+  }
+  elseif (get_class($operand) == 'PGPOperand') {
+    $p0 = $operand->toString();
+    if ($operand->count() > 2) {
+      // Use case 4 - passes more complex variable directly. (NOT HANDLED)
+      // The operand passed is more complex than a variable name. It might
+      // be an expression like $item['xx'] or $item->xx.
+      clp("ERROR: Variable expression $p0 passed as parameter in menu_valid_path");
+      $editor->setParameter($item, 0, "$p0 /* TODO Please pass a menu path directly */");
+      return;
+    }
+    if ($operand->getElement(0) != T_VARIABLE) {
+      clp("ERROR: Parameter $p0 is not a variable in menu_valid_path");
+      return;
+    }
+
+    $variable = $operand->getElement(1);
+    cdp("variable = $variable");
+
+    // Get the statement (i.e. node) this function call is part of.
+    $parent = &$item->parent;
+    // Get the statement list the parent is part of.
+    $container = &$parent->container;
+    // Search the container for assignment to the variable.
+
+    /*
+     * Loop on body statements until we find an assignment to the parameter
+     * variable. Loop in reverse from the parent statement to find the last
+     * setting of the variable.
+     */
+
+    $parameter_variable = $operand->toString();
+    $count = 0;
+
+    $current = $parent->previous;
+    while ($current->previous != NULL) {
+      if (is_object($current->data) && $current->data->type == T_ASSIGNMENT) {
+        $assignment = $current->data;
+        $assign_variable = $assignment->values->getElement()->getElement()->toString();
+        if ($parameter_variable == $assign_variable) {
+          // Use case 2: makes one assignment to array variable; pass variable.
+          cdp("Case 2: Assignment variable matches parameter variable");
+          $value1 = $assignment->values->getElement();
+          $array1 = $value1->getElement($value1->count() - 1);
+          coder_upgrade_callback_menu_valid_path($item, $array1);
+          //          $count++;
+          return;
+        }
+        elseif (strpos($assign_variable, $parameter_variable) !== FALSE && strpos($assign_variable, 'link_path') !== FALSE) {
+          // Use case 3: makes multiple assignments to array variable; pass variable.
+          cdp("Case 3: Assignment variable includes parameter variable");
+          $value1 = $assignment->values->getElement();
+          $value2 = $value1->getElement($value1->count() - 1);
+          // Make an expression object to use as function call parameter.
+          $expression = new PGPExpression();
+          $expression->insertLast($value2, 'operand');
+          $item->setParameter(0, $value2);
+          cdp($item->toString());
+          //          $count++;
+          return;
+        }
+      }
+      $current = $current->previous;
+    }
+    if (!$count) {
+      clp("ERROR: assignment statement to parameter variable not found in menu_valid_path");
+      return;
+    }
+  }
+}
+
+/**
+ * Changes function call parameter.
+ *
+ * @param PGPFunctionCall $item
+ * @param PGPArray $operand
+ */
+function coder_upgrade_callback_menu_valid_path(&$item, &$operand) { // DONE
+  cdp("inside " . __FUNCTION__);
+  // TODO This key value could also be in double quotes.
+  $value = $operand->findValue("'link_path'");
+  cdp($value->print_r());
+  $item->setParameter(0, $value);
+  cdp($item->toString());
 }
