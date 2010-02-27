@@ -44,6 +44,10 @@
  * http://drupal.org/node/224333#remove_op (DUP Node API) (THIS IS MISSING FROM THE CHRONO PAGE!!!)
  *
  *
+ * Input Sanitization and Input Formats
+ * http://drupal.org/node/224333#hook_filter_info
+ *
+ *
  * User API
  * http://drupal.org/node/224333#user_cancel (DONE with remove_op)
  * http://drupal.org/node/224333#remove_op (DUP Node API)
@@ -94,6 +98,14 @@ function coder_upgrade_upgrade_hook_comment_alter(&$node, &$reader) {
   $callback = 'coder_upgrade_callback_comment';
   $op_index = 1;
   coder_upgrade_convert_op($node, $callback, $op_index);
+}
+
+/**
+ * Implements hook_upgrade_hook_filter_alter().
+ */
+function coder_upgrade_upgrade_hook_filter_alter(&$node, &$reader) {
+  // Changes: hook_filter_info
+  coder_upgrade_convert_filter($node, $reader);
 }
 
 /**
@@ -353,6 +365,368 @@ function coder_upgrade_callback_action_info(&$array) { // DONE
       $current = &$current->next;
     }
   }
+}
+
+/**
+ * Updates hook_filter().
+ *
+ * hook_filter() and hook_filter_tips() replaced by hook_filter_info().
+ *
+ * @todo Integrate hook_filter_tips() code with this function.
+ *
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
+ */
+function coder_upgrade_convert_filter(&$node, &$reader) {  // DONE
+  cdp("inside " . __FUNCTION__);
+  $item = &$node->data;
+
+  global $_coder_upgrade_module_name;
+
+  $tips = array();
+  $editor = new PGPEditor();
+  // Find the hook_filter_tips function object.
+  $function_node = $editor->findFunction($reader->getFunctions(), $_coder_upgrade_module_name . '_filter_tips', 'node');
+  if (!is_null($function_node)) {
+    $tips = coder_upgrade_convert_filter_tips($function_node);
+  }
+
+  // Rename function.
+  $item->name .= '_XXX'; // $item->name = $_coder_upgrade_module_name . '_filter_info';
+  // Update document comment.
+  //  $item->comment = preg_replace('@hook_filter@', "hook_filter_info", $item->comment);
+
+  // Restructure the triggers array.
+  $body = &$item->body;
+
+  if (!($switch1 = $body->find(T_SWITCH))) {
+    clp("ERROR: switch statement not found in hook_filter");
+    return;
+  }
+  //  $value = &$switch1['value'];
+
+  /*
+   * Compare first parameter to first switch condition (s/b $op)
+   * Compare second parameter to second switch condition (s/b $delta)
+   *
+   * Read $op case block: case operand gives the key for array
+   * Read $delta case block: case operand gives the key for array
+   * Return value gives the array value for above keys
+   * Build array internally, then write it out.
+   *
+   * On the callback items, we only want the callback function name, not the
+   * parameters. If there is not a function name (e.g. the filter module had
+   * case 'process': case 4: return trim(check_plain($text));),
+   * then make a new function with the return value as its body.
+   * For this example, core created _filter_html_escape($text).
+   *
+   * Look for a hook_filter_tips($delta, $format, $long = false).
+   * If present:
+   * - if multiple $delta bodies, then create new callback functions using
+   * $delta as part of the function name
+   * - else if one, then create new callback function
+   * - remove the $delta parameter
+   * - add tips_callback parameters to filter_info array items
+   */
+
+  $operand1 = $switch1->conditions->toString();
+  if ($operand1 != $item->getParameter()->toString()) {
+    clp("ERROR: switch statement operand does not match first function parameter in hook_filter");
+    return;
+  }
+
+  $filters = array();
+  // Get list of case statements.
+  $cases1 = $switch1->body;
+  $current1 = $cases1->first();
+  while ($current1->next != NULL) {
+    $case1 = $current1->data;
+    if ($case1->type == T_DEFAULT) {
+      $current1 = $current1->next;
+      continue;
+    }
+    $key1 = trim($case1->case->toString(), "'\"");
+    cdp("key1 = $key1");
+    // TODO Convert key2 to new key: Ex. 'process' becomes 'process callback'
+    $key1 = coder_upgrade_callback_filter($key1);
+    cdp("new key1 = $key1");
+    $body1 = $case1->body->getElement();
+    if (get_class($body1) == 'PGPAssignment' /*&& $body1->type == T_RETURN*/) {
+      // Use case 1: returns an array.
+      cdp("body1 is an array");
+      if ($key1 != 'name') {
+        clp("ERROR: key is not 'list' in hook_filter");
+        return;
+      }
+      if ($body1->type != T_RETURN) {
+        clp("ERROR: switch statement body for 'list' key does not return an array in hook_filter");
+        return;
+      }
+      $value1 = $body1->value->getElement();
+      if (get_class($value1) == 'PGPArray') {
+        //        eval("\$temp = " . $body1['value']->toString() . ";");
+        //        cdp(print_r($temp, 1));
+        //        foreach ($temp as $delta => $value) {
+        //          $filters[$delta][$key1] = $value;
+        //        }
+
+        $node_x = $value1->values->first();
+        while ($node_x->next != NULL) {
+          $data = $node_x->data;
+          if ($node_x->type == 'key') {
+            $key2 = $data->toString(); // Should be an integer = $delta
+          }
+          elseif ($node_x->type == 'value') {
+            $filters[$key2][$key1] = $data->toString();
+          }
+          $node_x = $node_x->next;
+        }
+
+        //        $filters[$key1] = $value1->values->toString();
+        //        cdp($value1->values->toString());
+      }
+    }
+    elseif (get_class($body1) == 'PGPConditional' && $body1->type == T_SWITCH) {
+      // Use case 2: switch statement on $delta.
+      $switch2 = &$body1;
+      $operand2 = $switch2->conditions->toString();
+      if ($operand2 != $item->getParameter(1)->getElement()->toString()) {
+        clp("ERROR: switch statement operand does not match second function parameter in hook_filter");
+        return;
+      }
+      // Get list of case statements.
+      $cases2 = $switch2->body;
+      $current2 = $cases2->first();
+      while ($current2->next != NULL) {
+        $case2 = $current2->data;
+        if ($case2->type == T_DEFAULT) {
+          $current2 = $current2->next;
+          continue;
+        }
+        $key2 = trim($case2->case->toString(), "'\"");
+        cdp("key2 = $key2");
+        $body2 = $case2->body->getElement();
+        if (get_class($body2) == 'PGPAssignment') {
+          // Use case 2: returns an array.
+          cdp("body2 is an array");
+          if ($body2->type != T_RETURN) {
+            clp("ERROR: switch statement operand does not match first function parameter in hook_filter");
+            return;
+          }
+          $value2 = $body2->value; // ->getElement();
+          if (get_class($value2) == 'PGPExpression') {
+            // TODO On the callback items only want the callback function name, not the parameters!!!
+            $filters[$key2][$key1] = $body2->value->toString(); // $value2->values->toString();
+            cdp($body2->value->toString()); // $value2->values->toString() . "\n";
+          }
+        }
+        $current2 = $current2->next;
+      }
+    }
+    $current1 = $current1->next;
+  }
+  cdp(print_r($filters, 1));
+
+  $hook = '_filter_info';
+  coder_upgrade_new_filter_hook($node, $hook, $filters);
+
+  // Delete the function body.
+  $item->body->clear();
+}
+
+// TODO Rename this function.
+function coder_upgrade_callback_filter($key2) {  // DONE
+  switch ($key2) {
+    case 'list':
+      return 'name';
+    case 'process':
+      return 'process callback';
+    case 'settings':
+      return 'settings callback';
+    case 'tips':
+      return 'tips callback';
+    default:
+      return $key2;
+  }
+}
+
+function coder_upgrade_new_filter_hook($node, $hook, $filters = array()) {  // DONE
+  global $_coder_upgrade_module_name;
+
+  // Set values for the new hook function.
+  $comment = array(
+    'type' => T_DOC_COMMENT,
+    'value' => "/**\n * Implements hook$hook().\n */",
+  );
+  $name = $_coder_upgrade_module_name . $hook; // '_filter_info';
+
+  // Create the new hook function.
+  $function = new PGPClass($name);
+  $function->comment = $comment;
+  $function->type = T_FUNCTION;
+  $function->parameters = new PGPList();
+
+  // Use the editor to set the function parameters.
+  $editor = new PGPEditor();
+  //  $editor->setParameters($function, $parameters);
+
+  // Create body statements.
+  $string = '';
+  foreach ($filters as $key => $filter) {
+    $string .= "\$filters[$key] = array(\n";
+    foreach ($filter as $key2 => $value) {
+      $string .= "\t'$key2' => $value,\n";
+    }
+    $string .= ");\n";
+  }
+  $string .= "return \$filters;\n";
+  cdp(print_r($string, 1));
+
+  // Copy the case (or if) block as the body of the function.
+  $function->body = $editor->textToStatements($string);
+  cdp(get_class($function->body));
+  cdp($editor->statementsToText($function->body));
+  if ($function->body->isEmpty()) {
+  }
+  //  return ;
+
+  // Get the statement list the function node is part of.
+  $container = &$node->container;
+
+  // Insert the new function before the old function.
+  $container->insertBefore($node, $function, 'function');
+  // Insert a blank line.
+  $whitespace = array(
+    'type' => T_WHITESPACE,
+    'value' => 1,
+  );
+  $container->insertBefore($node, $whitespace, 'whitespace');
+}
+
+/**
+ * Updates hook_filter_tips().
+ *
+ * hook_filter() and hook_filter_tips() replaced by hook_filter_info().
+ *
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
+ * @return array
+ *   Array of tip callback functions indexed by $delta.
+ */
+function coder_upgrade_convert_filter_tips(&$node) {  // DONE
+  cdp("inside " . __FUNCTION__);
+  $item = &$node->data;
+
+  global $_coder_upgrade_module_name;
+
+  // Rename function.
+  $item->name .= '_XXX';
+  // Update document comment.
+  //  $item->comment .= 'This function is obsolete.'; // TODO Make a comment manipulation routine.
+
+  // Restructure the triggers array.
+  $body = &$item->body;
+
+  if (!($switch1 = $body->find(T_SWITCH))) {
+    clp("ERROR: switch statement not found in hook_filter_tips");
+    return array();
+  }
+
+  /*
+   * Compare first parameter to first switch condition (s/b $op)
+   *
+   * Read $delta case block: case operand gives the key for array
+   * Return value gives the array value for above keys
+   * Build array internally, then write it out.
+   *
+   * Look for a hook_filter_tips($delta, $format, $long = false).
+   * If present:
+   * - if multiple $delta bodies, then create new callback functions using
+   *   $delta as part of the function name
+   * - else if one, then create new callback function
+   * - remove the $delta parameter
+   * - add tips_callback parameters to filter_info array items
+   *
+   * - TODO Case 2: could be an if block
+   */
+
+  $operand1 = $switch1->conditions->toString();
+  if ($operand1 != $item->getParameter()->toString()) {
+    clp("ERROR: switch statement operand does not match first function parameter in hook_filter_tips");
+    return array();
+  }
+
+  // Remove first parameter for new callback function.
+  // TODO Do we need to clone this object for each new function???
+  $parameters1 = $item->parameters;
+  $parameters1->deleteElement();
+
+  $tips = array();
+  // Get list of case statements.
+  $cases1 = $switch1->body;
+  $current1 = $cases1->first();
+  while ($current1->next != NULL) {
+    $case1 = $current1->data;
+    if ($case1->type == T_DEFAULT) {
+      $current1 = $current1->next;
+      continue;
+    }
+    // Get the $delta value.
+    $key1 = trim($case1->case->toString(), "'\"");
+    cdp("key1 = $key1");
+    $body1 = $case1->body->getElement();
+
+    // Make a new callback function.
+    $hook = '_filter_tips_' . $key1;
+    coder_upgrade_new_filter_tips_hook($node, $hook, $parameters1, $body1);
+    // Store callback name in return array.
+    $tips[$key1] = $_coder_upgrade_module_name . $hook;
+
+    $current1 = $current1->next;
+  }
+
+  // Delete the function body.
+  $item->body->clear();
+
+  return $tips;
+}
+
+function coder_upgrade_new_filter_tips_hook($node, $hook, $parameters, $body) {  // DONE
+  global $_coder_upgrade_module_name;
+
+  // Set values for the new hook function.
+  $delta = substr($hook, strrpos($hook, '_') + 1);
+  $comment = array(
+    'type' => T_DOC_COMMENT,
+    'value' => "/**\n * Filter tips callback function for \$filters[$delta] in hook_filter_info().\n */",
+  );
+  $name = $_coder_upgrade_module_name . $hook;
+
+  // Create the new hook function.
+  $function = new PGPClass($name);
+  $function->comment = $comment;
+  $function->type = T_FUNCTION;
+  $function->parameters = $parameters; // new PGPList();
+  $function->body = new PGPBody();
+  $function->body->insertLast($body);
+
+  //  cdp($function->print_r());
+
+  // TODO REFACTOR: The following statements are repeated in other create_hook routines.
+
+  // Get the statement list the function node is part of.
+  $container = &$node->container;
+
+  // Insert the new function before the old function.
+  $new_node = $container->insertBefore($node, $function, 'function');
+  //  $editor = new PGPEditor();
+  //  cdp($editor->statementsToText($new_node));
+  // Insert a blank line.
+  $whitespace = array(
+    'type' => T_WHITESPACE,
+    'value' => 1,
+  );
+  $container->insertBefore($node, $whitespace, 'whitespace');
 }
 
 /**
