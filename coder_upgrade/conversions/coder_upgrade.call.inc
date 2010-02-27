@@ -32,6 +32,7 @@
  * http://drupal.org/node/224333#http_header_functions
  * http://drupal.org/node/224333#drupal_set_content
  * http://drupal.org/node/224333#time_limit
+ * http://drupal.org/node/224333#drupal_set_header_renamed
  *
  *
  * Database
@@ -716,7 +717,9 @@ function coder_upgrade_upgrade_call_drupal_get_headers_alter(&$item, &$reader) {
 
   // Process function call.
   $name = &$item->name;
-  $name['value'] = 'drupal_get_header';
+//  $name['value'] = 'drupal_get_header'; // Overwritten by following change.
+  // http://drupal.org/node/224333#drupal_set_header_renamed
+  $name['value'] = 'drupal_get_http_header';
 }
 
 /**
@@ -802,6 +805,8 @@ function coder_upgrade_upgrade_call_drupal_set_header_alter(&$item, &$reader) { 
 
   // Process function call.
   $name = &$item->name;
+  // http://drupal.org/node/224333#drupal_set_header_renamed
+  $name['value'] = 'drupal_add_http_header';
   // TODO the hook_file_download() changes. Use parser on the entire function.
   $temp = $item->printParameters();
   if (strpos($temp, 'Content-Type:') !== FALSE) {

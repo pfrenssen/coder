@@ -1132,25 +1132,6 @@ function coder_upgrade_convert_menu_link_alter(&$node) {
 }
 
 /**
- * Updates hook_menu_link_alter().
- *
- * Changed hook_menu_link_alter() (removed the $menu parameter).
- *
- * @param PGPNode $node
- *   A node object containing a PGPClass (or function) item.
- */
-function coder_upgrade_convert_menu_link_alter(&$node) {
-  $item = &$node->data;
-  $count = $item->parameters->count();
-  // Adjust parameters.
-  if ($count > 1) {
-    // Delete second parameter.
-    $item->deleteParameter(1);
-  }
-  // TODO Do we need to check for $menu in the body of this hook?
-}
-
-/**
  * Updates hook_node_info().
  *
  * In hook_node_info() change 'module' back to 'base' and change 'node' to
