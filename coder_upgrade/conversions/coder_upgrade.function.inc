@@ -55,6 +55,7 @@
  *
  * Node API
  * http://drupal.org/node/224333#node_links (NOT DONE)
+ * http://drupal.org/node/224333#node_type_base (NOT DONE)
  * http://drupal.org/node/224333#remove_op (SPANS MULTIPLE HOOKS)
  * http://drupal.org/node/224333#node_build_rss
  * http://drupal.org/node/224333#build_mode
@@ -154,6 +155,14 @@ function coder_upgrade_upgrade_hook_nodeapi_alter(&$node, &$reader) {
   $callback = 'coder_upgrade_callback_nodeapi';
   $op_index = 1;
   coder_upgrade_convert_op($node, $callback, $op_index);
+}
+
+/**
+ * Implements hook_upgrade_hook_node_info_alter().
+ */
+function coder_upgrade_upgrade_hook_node_info_alter(&$node, &$reader) {
+  // Changes: node_type_base
+  coder_upgrade_convert_node_info($node);
 }
 
 /**
@@ -347,7 +356,7 @@ function coder_upgrade_callback_action_info(&$array) { // DONE
           $element = &$key->getElement(); // $key->setElement();
           $element['value'] = "'triggers'";
 
-          $editor = new PGPEditor();
+          $editor = PGPEditor::getInstance();
           $list = new PGPList();
 
           // This should be a PGPArray object.
@@ -401,7 +410,7 @@ function coder_upgrade_convert_filter(&$node, &$reader) {  // DONE
   global $_coder_upgrade_module_name;
 
   $tips = array();
-  $editor = new PGPEditor();
+  $editor = PGPEditor::getInstance();
   // Find the hook_filter_tips function object.
   $function_node = $editor->findFunction($reader->getFunctions(), $_coder_upgrade_module_name . '_filter_tips', 'node');
   if (!is_null($function_node)) {
@@ -584,7 +593,7 @@ function coder_upgrade_new_filter_hook($node, $hook, $filters = array()) {  // D
   $function->parameters = new PGPList();
 
   // Use the editor to set the function parameters.
-  $editor = new PGPEditor();
+  $editor = PGPEditor::getInstance();
   //  $editor->setParameters($function, $parameters);
 
   // Create body statements.
@@ -736,7 +745,7 @@ function coder_upgrade_new_filter_tips_hook($node, $hook, $parameters, $body) { 
 
   // Insert the new function before the old function.
   $new_node = $container->insertBefore($node, $function, 'function');
-  //  $editor = new PGPEditor();
+  //  $editor = PGPEditor::getInstance();
   //  cdp($editor->statementsToText($new_node));
   // Insert a blank line.
   $whitespace = array(
@@ -832,7 +841,7 @@ L4          'runs when' => t('When either saving a new post or updating an exist
 function coder_upgrade_callback_hook_info(&$array1) { // DONE
   cdp("inside " . __FUNCTION__);
 
-  $editor = new PGPEditor();
+  $editor = PGPEditor::getInstance();
   //  $list = new PGPList();
 
   // The keys of this array are the hook function names.
@@ -973,7 +982,7 @@ function coder_upgrade_convert_install($node) {
       $text = $statement->values->toString();
       cdp($text);
       if (preg_match('(drupal_install_schema|drupal_uninstall_schema)', $text)) {
-        $editor = new PGPEditor();
+        $editor = PGPEditor::getInstance();
         // Insert comment.
         $statements = $editor->textToStatements('// TODO The drupal_(un)install_schema functions are called automatically in D7.');
         $body->insertBefore($current, $statements->getElement(), 'comment');
@@ -1142,6 +1151,180 @@ function coder_upgrade_convert_menu_link_alter(&$node) {
 }
 
 /**
+ * Updates hook_node_info().
+ *
+ * In hook_node_info() change 'module' back to 'base' and change 'node' to
+ * 'node_content'.
+ *
+ * @todo A similar change applies to the array passed as the parameter to
+ * node_type_set_defaults($example_node_type).
+ *
+ * NOTE
+ * In general, there are 3 typical cases (or code styles):
+ * - return array('key1' => array('key2' => ...);
+ * - $var = array('key1' => array('key2' => ...); return $var;
+ * - $var = array(); $var['key1'] = array('key2' => ...); return $var;
+ *
+ * The inner array to modify is 3 levels deep in the first 2 cases, but only
+ * 2 levels deep in the third. In the first 2 cases, we can loop on the key1
+ * arrays. In the third, the loop is on assignment statements.
+ *
+ */
+function coder_upgrade_convert_node_info(&$node) { // DONE
+  cdp("inside " . __FUNCTION__);
+  $item = &$node->data;
+  //  cdp($item->print_r());
+
+  // Get the function body.
+  $body = &$item->body;
+
+  if (!($return = $body->find(T_RETURN, 'reverse'))) {
+    clp("ERROR: return statement not found in hook_node_info");
+    return;
+  }
+
+  $value = &$return->value;
+
+  // Examine the type of the operand in the return statement.
+  $operand = $return->value->getElement();
+  if (get_class($operand) == 'PGPArray') {
+    // Use case 1 - returns array directly.
+    // The keys of this array are the node type items.
+    $array1 = $value->getElement();
+    coder_upgrade_callback_node_case1($array1);
+  }
+  elseif (get_class($operand) == 'PGPOperand') {
+
+    /*
+     * Loop on body statements until we find an assignment to the return variable.
+     * The assignment could be to an array element like $info['node_type_name'] = array(...).
+     * Or directly to the variable like $info = array('node_type_name' = array(...)).
+     */
+
+    $return_variable = $operand->toString();
+    $count = 0;
+
+    $current = $body->first();
+    while ($current->next != NULL) {
+      if (is_object($current->data) && $current->data->type == T_ASSIGNMENT) {
+        $assignment = $current->data;
+        $assign_variable = $assignment->values->getElement()->getElement()->toString();
+        if ($return_variable == $assign_variable) {
+          // Use case 2: makes one assignment to array variable; returns variable.
+          cdp("Assignment variable matches return variable");
+          $value1 = $assignment->values->getElement();
+          $array1 = $value1->getElement($value1->count() - 1);
+          coder_upgrade_callback_node_case1($array1);
+          $count++;
+        }
+        elseif (strpos($assign_variable, $return_variable) !== FALSE) {
+          // Use case 3: makes multiple assignments to array variable; returns variable.
+          cdp("Assignment variable matches return variable");
+          $value1 = $assignment->values->getElement();
+          $array1 = $value1->getElement($value1->count() - 1);
+          coder_upgrade_callback_node_info($array1);
+          $count++;
+        }
+      }
+      $current = $current->next;
+    }
+    if (!$count) {
+      clp("ERROR: assignment statement to return variable not found in hook_node_info");
+      return;
+    }
+  }
+}
+
+/**
+ * Loops on elements of first-level array.
+ *
+ * @todo Abstract to the PGPArray object: traverse with callback.
+ * This is setting up as a nice recursive function.
+ *
+ * @param PGPArray $array1
+ */
+function coder_upgrade_callback_node_case1(&$array1) { // DONE
+  cdp("inside " . __FUNCTION__);
+
+  // The keys of this array are the node types.
+  if (!is_a($array1, 'PGPArray')) {
+    clp("ERROR: array1 is not a PGPArray object in hook_node_info");
+    return;
+  }
+
+  // Grab the PGPList of values.
+  $values1 = $array1->values;
+
+  $current1 = $values1->first();
+  while ($current1->next != NULL) {
+    if ($current1->type == 'key') {
+      $key1 = $current1->data;
+      // Do something if appropriate.
+      // This is not the one needed; we need the next level down.
+    }
+    elseif ($current1->type == 'value') {
+      // This is the value expression for a node type key.
+      $value1 = $current1->data;
+      if (get_class($value1) != 'PGPExpression') {
+        clp("ERROR: value1 is not a PGPExpression object in hook_node_info");
+        return;
+      }
+      // This is the array of node type items.
+      $array2 = $value1->getElement();
+      coder_upgrade_callback_node_info($array2);
+    }
+    $current1 = $current1->next;
+  }
+}
+
+/**
+ * Loops on elements of second-level array.
+ *
+ * @todo Abstract to the PGPArray object: traverse with callback.
+ *
+ * @param PGPArray $array2
+ */
+function coder_upgrade_callback_node_info(&$array2) { // DONE
+  cdp("inside " . __FUNCTION__);
+
+  // The keys of this array are the node type items.
+  if (!is_a($array2, 'PGPArray')) {
+    clp("ERROR: array2 is not a PGPArray object in hook_node_info");
+    return;
+  }
+
+  $editor = PGPEditor::getInstance();
+  $change_value = FALSE;
+
+  // Grab the PGPList of values.
+  $values2 = $array2->values;
+
+  $current2 = $values2->first();
+  while ($current2->next != NULL) {
+    if ($current2->type == 'key') {
+      // This is the node type item key.
+      $key2 = trim($current2->data->toString(), "'\"");
+      if ($key2 == 'module') {
+        // Change key to 'base'.
+        $current2->data = $editor->expressionToStatement("'base'");
+        $change_value = TRUE;
+      }
+    }
+    elseif ($current2->type == 'value') {
+      if ($change_value) {
+        $change_value = FALSE;
+        $value2 = trim($current2->data->toString(), "'\"");
+        if ($value2 == 'node') {
+          // Change key to 'base'.
+          $current2->data = $editor->expressionToStatement("'node_content'");
+        }
+      }
+    }
+    $current2 = $current2->next;
+  }
+}
+
+/**
  * Updates hook_perm().
  *
  * Rename hook_perm() to hook_permission().
@@ -1207,7 +1390,7 @@ function coder_upgrade_convert_perm(&$node) {
   }
   $string .= ");\n";
   //  cdp($string);
-  $editor = new PGPEditor();
+  $editor = PGPEditor::getInstance();
   $expression = $editor->expressionToStatement($string);
   //  cdp("PRINT NEW expression");
   //  cdp($expression->print_r(3));
@@ -1862,7 +2045,7 @@ function coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters) {
   $function->parameters = new PGPList();
 
   // Use the editor to set the function parameters.
-  $editor = new PGPEditor();
+  $editor = PGPEditor::getInstance();
   $editor->setParameters($function, $parameters);
 
   // Copy the case (or if) block as the body of the function.
