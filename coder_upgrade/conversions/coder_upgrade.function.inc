@@ -54,6 +54,7 @@
  *
  *
  * Node API
+ * http://drupal.org/node/224333#node_links (NOT DONE)
  * http://drupal.org/node/224333#remove_op (SPANS MULTIPLE HOOKS)
  * http://drupal.org/node/224333#node_build_rss
  * http://drupal.org/node/224333#build_mode
@@ -127,6 +128,14 @@ function coder_upgrade_upgrade_hook_install_alter(&$node, &$reader) { }
 function coder_upgrade_upgrade_hook_uninstall_alter(&$node, &$reader) {
   // Changes: install-schema
   coder_upgrade_convert_install($node);
+}
+
+/**
+ * Implements hook_upgrade_hook_link_alter().
+ */
+function coder_upgrade_upgrade_hook_link_alter(&$node, &$reader) {
+  // Changes: build_mode and others !!!???
+  coder_upgrade_convert_link($node);
 }
 
 /**
@@ -976,6 +985,141 @@ function coder_upgrade_convert_install($node) {
     }
     $current = &$current->next;
   }
+}
+
+/**
+ * Updates hook_link().
+ *
+ * Move node, taxonomy, and comment links into $node->content;
+ * Deprecate hook_link() and hook_link_alter().
+ *
+ * @todo THIS IS NOT DONE.
+ *
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
+ */
+function coder_upgrade_convert_link(&$node) { // NOT DONE
+  return;
+  cdp("inside " . __FUNCTION__);
+  cdp("$callback");
+
+  /*
+   * Find code related to delete operation (in switch or if)
+   * Move block to new function hook_user_cancel
+   * Rename $user to $account (toString, preg_replace, convert to expression)
+   * Add $method parameter
+   * Add switch on $method; add core case values?
+   * Place existing code under case 'user_cancel_reassign'
+   * Add TODO note to check placement of code
+   * DBTNG changes can be done in another routine
+   */
+
+  // Get the function object.
+  $item = &$node->data;
+  // Rename the function in case any code is left over.
+  $item->name .= '_OLD'; // $item->name = $item->name . '_OLD'; // $item->name['value'] = $item->name['value'] . '_OLD';
+  // Get the first function parameter, usually called $op.
+  $count = $item->parameters->count();
+  // TODO This gets the entire parameter including any default value. Hook_block has $op = 'list'.
+  $op = $item->printParameter($op_index);
+  //  cdp("op = '$op'");
+
+  // Get the function body statements.
+  $body = &$item->body;
+
+  /*
+   * Two likely cases: switch statement or series of if blocks.
+   * Do the if blocks later.
+   * Compare the second parameter to the function with the switch operand.
+   */
+
+  // TODO The following code is common to the remove_op upgrades. Refactor.
+
+  // Loop on the body statements looking for the $op parameter in an IF or
+  // SWITCH condition.
+  $current = $body->first();
+  while ($current->next != NULL) {
+    $statement = &$current->data;
+    if (is_object($statement)) {
+      cdp($statement->print_r());
+    }
+    if (is_a($statement, 'PGPConditional')) {
+      //      cdp("inside PGPConditional check");
+      //      cdp("statement->type = " . $statement->type);
+      if ($statement->type == T_SWITCH) {
+        //        cdp("inside T_SWITCH check");
+        // Get the list of conditions.
+        $conditions = $statement->conditions;
+        // Get the first condition. (With a switch there should only be one condition.)
+        $condition = $conditions->getElement();
+        $operand = $condition->toString();
+        // If the condition variable matches the $op variable, then go to work.
+        if ($op == $operand) {
+          $cases = $statement->body;
+          $node->traverse($cases, $callback /*'coder_upgrade_callback_user'*/);
+          //          // Get the statement list the switch statement node is part of.
+          //          $container = &$current->container;
+          //          $container->delete($current);
+          //          $statement->body->clear();
+        }
+      }
+      elseif (in_array($statement->type, array(T_IF, T_ELSEIF/*, T_ELSE*/))) {
+        // Do something similar.
+        //        cdp("inside T_IF check");
+        // Get the list of conditions.
+        //        $conditions = $statement->conditions;
+        // Get the text of the conditions.
+        //        $conditions = $statement->conditionsToArray();
+        //        print_r($conditions);
+        $operations = coder_upgrade_extract_operations($statement->conditions, $op); // list($operations, $others) = coder_upgrade_separate_operators($conditions, $op);
+        /*
+         * Extract the conditions referencing the $op variable and loop on them.
+         * These are conditions of the form $op == 'operation'.
+         * Replace them with condition of TRUE to not disrupt the logic.
+         * Retain any other conditions as part of the body in the new hook
+         * function.
+         * Do we need a helper function to find the operand with $op???
+         * Determine the $op comparison value (i.e. $op == 'what') so we can
+         * use a case block in the upgrade routine.
+         * Change a T_ELSEIF to a T_IF in the new hook function if we have
+         * extra conditions.
+         */
+        foreach ($operations as $operand) {
+ // TODO Rename $operand to $operation here and in called functions
+          $statement->type = T_IF; // If it isn't already.
+          $block = new stdClass();
+          $block->body = new PGPBody();
+          $block->body->insertLast($statement);
+          $case_node = new PGPNode($block, $current->container); // TODO What is the correct container???
+          $callback($node, $case_node, $operand); // coder_upgrade_callback_user($node, $case_node, $operand);
+        }
+      }
+    }
+    // Move to next node.
+    $current = &$current->next;
+    // Get the statement list the switch statement (or if block) node is part of.
+    $container = &$current->container;
+    $container->delete($current->previous);
+  }
+}
+
+/**
+ * Updates hook_menu_link_alter().
+ *
+ * Changed hook_menu_link_alter() (removed the $menu parameter).
+ *
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
+ */
+function coder_upgrade_convert_menu_link_alter(&$node) {
+  $item = &$node->data;
+  $count = $item->parameters->count();
+  // Adjust parameters.
+  if ($count > 1) {
+    // Delete second parameter.
+    $item->deleteParameter(1);
+  }
+  // TODO Do we need to check for $menu in the body of this hook?
 }
 
 /**
