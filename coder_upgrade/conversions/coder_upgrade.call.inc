@@ -93,6 +93,10 @@
  * http://drupal.org/node/224333#user_authenticate
  *
  *
+ * Node API
+ * http://drupal.org/node/224333#node_type_base (ALSO in convert_functions)
+ *
+ *
  * Multi-lingual
  * http://drupal.org/node/224333#locale_context
  *
@@ -872,7 +876,7 @@ function coder_upgrade_upgrade_call_drupal_set_title_alter(&$item, &$reader) { /
 /**
  * Implements hook_upgrade_call_drupal_system_listing_alter().
  */
-function coder_upgrade_upgrade_call_drupal_system_listing_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_system_listing_alter(&$item, &$reader) { // DONE (Revise like file_scan_directory)
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
@@ -1326,6 +1330,19 @@ function coder_upgrade_upgrade_call_module_rebuild_cache_alter(&$item, &$reader)
 }
 
 /**
+ * Implements hook_upgrade_call__node_type_set_defaults_alter().
+ */
+function coder_upgrade_upgrade_call__node_type_set_defaults_alter(&$item, &$reader) { // DONE
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Process function call.
+  $name = &$item->name;
+  // http://drupal.org/node/224333#node_type_base
+  $name['value'] = 'node_type_set_defaults';
+}
+
+/**
  * Implements hook_upgrade_call_referer_uri_alter().
  */
 function coder_upgrade_upgrade_call_referer_uri_alter(&$item, &$reader) { // DONE
@@ -1336,6 +1353,45 @@ function coder_upgrade_upgrade_call_referer_uri_alter(&$item, &$reader) { // DON
   $name = &$item->name;
   $expression = $editor->expressionToStatement("\$_SERVER['HTTP_REFERER']");
   $item = $expression->getElement(0);
+}
+
+/**
+ * Updates require() and its siblings.
+ */
+function coder_upgrade_convert_require(&$item, &$reader) { // DONE
+  cdp(__FUNCTION__);
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // These language elements are included by $reader in function call list.
+  // Use with http://drupal.org/node/224333#absolute_includes
+
+  // Eliminate parentheses (if any).
+  $item->noparens = 1;
+
+  // Get first parameter.
+  $p0 = $item->getParameter();
+  $operand = $p0->getElement();
+  if (is_a($operand, 'PGPOperand') && $operand->findNode('type') == T_STRING && $operand->findNode('value') == 'DRUPAL_ROOT') {
+    // Nothing to change.
+    cdp('leaving the routine');
+    return;
+  }
+  if (is_array($operand) && $operand['type'] == T_CONSTANT_ENCAPSED_STRING) {
+    if (strpos($operand['value'], "'./'") === 0) { // if ($operand['value'][0] == '.') {
+      cdp('found ./');
+      // Remove './' from the beginning of the string.
+      $operand['value'] = str_replace('./', '', $operand['value']);
+      cdp('value = '. $operand['value']);
+      if ($operand['value'] == "''" || $operand['value'] == '""') {
+        cdp('deleteElement');
+        $p0->deleteElement();
+        $p0->deleteElement(); // This should be a concatenation operator.
+      }
+    }
+  }
+  // Prepend DRUPAL_ROOT before existing expression.
+  $editor->setParameter($item, 0, "DRUPAL_ROOT . '/' . " . $p0->toString());
 }
 
 /**
@@ -1495,7 +1551,15 @@ function coder_upgrade_upgrade_call_theme_alter(&$item, &$reader) { // DONE
    *
    * Find the hook_theme function (using $reader passed to this function)
    * and save its contents. This assumes the hook_theme is defined in this
-   * file!!!
+   * file!!! The theme call could be to any core theme or a dependent contrib
+   * theme. Can we build an array of the core theme items so we know the
+   * parameters? Search on 'function theme_' in includes and modules. The
+   * former are more general; many of the latter relate to admin page items.
+   * How can we easily gather the array keys in order? Use ourselves to read
+   * all theme_ functions and convert variable name to a key?
+   * See drupal_common_theme() in common.inc. Also hook_theme in the modules.
+   *
+   * See http://drupal.org/files/issues/theme-wip-572618-83.patch
    *
    * Add helper functions to PGPArray to get the keys and values as arrays.
    * TODO Refactor any existing code that does this.
@@ -1516,18 +1580,19 @@ function coder_upgrade_upgrade_call_theme_alter(&$item, &$reader) { // DONE
   // Find the hook_theme function object.
   $function = $editor->findFunction($reader->getFunctions(), $_coder_upgrade_module_name . '_theme');
   if (is_null($function)) {
+    cdp("no theme hook");
     return;
   }
 
   // Get the keys for the appropriate theme.
   $body = &$function->body;
 
-  if (!($return = $body->find(T_RETURN, 'reverse'))) {
-    clp("ERROR: return statement not found in hook_perm");
+  if (!($return = $body->searchBackward('PGPFunctionCall', 'name', 'value', 'return'))) { // if (!($return = $body->find(T_RETURN, 'reverse'))) {
+    clp("ERROR: return statement not found in hook_theme");
     return;
   }
-  $value = &$return->value;
-  $array = $value->getElement(0);
+//  $value = &$return->value; // $value = &$return->value;
+  $array = $return->parameters->getElement(0)->getElement(0); // $array = $value->getElement(0);
   if (get_class($array) == 'PGPArray') {
     if (!($theme = $array->findValue($item->getParameter(0)->toString()))) {
       clp("ERROR: theme entry not found in hook_theme");
