@@ -46,6 +46,8 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
   // Clear the log file.
   if ($log) {
     file_put_contents(coder_upgrade_log_path(), '');
+    pgp_log_memory_use('', TRUE);
+    pgp_log_memory_use('initial');
   }
   $debug = FALSE; // TRUE; //
   // Clear the debug file.
@@ -65,7 +67,7 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
 //    $_coder_upgrade_dirname = $item['old_dir'];
 
     // Process the directory before conversion routines are applied.
-    coder_upgrade_convert_beginning($item['old_dir']);
+    coder_upgrade_convert_begin($item['old_dir']);
 
     // Call main conversion loop.
     coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive);
@@ -113,7 +115,7 @@ function coder_upgrade_load_code(&$upgrades) {
  * @param string $dirname
  *   The name of the directory with the original files.
  */
-function coder_upgrade_convert_beginning($dirname) {
+function coder_upgrade_convert_begin($dirname) {
   drupal_alter('upgrade_begin', $dirname);
 }
 
@@ -296,43 +298,55 @@ function coder_upgrade_apply_parser($filename, &$new) {
     module_load_include('inc', 'pgp', 'engine/pgp.editor');
     module_load_include('inc', 'pgp', 'engine/pgp.list');
     module_load_include('inc', 'pgp', 'engine/pgp.object');
+    pgp_log_memory_use('load code');
   }
 
   // Create reader object; pass it to the routines.
   $reader = PGPReader::getInstance();
+  pgp_log_memory_use('create reader for file ' . $filename);
   $reader->setSnippet($new);
+  pgp_log_memory_use('set snippet');
 //  $reader->setDebug(TRUE);
   $reader->addTokenNames();
+  pgp_log_memory_use('add token names');
   $reader->buildGrammar();
+  pgp_log_memory_use('build grammar');
 
   // Apply parser conversion routines for function calls.
   coder_upgrade_log_print("Calling hook_upgrade_call_alter");
   coder_upgrade_convert_function_calls($reader);
   coder_upgrade_log_print("Completed hook_upgrade_call_alter");
+  pgp_log_memory_use('apply function call conversions');
 
   // Apply parser conversion routines for hook functions.
   coder_upgrade_log_print("Calling hook_upgrade_hook_alter");
   coder_upgrade_convert_functions($reader);
   coder_upgrade_log_print("Completed hook_upgrade_hook_alter");
+  pgp_log_memory_use('apply hook function conversions');
 
   // Apply parser conversion routines for the file.
   coder_upgrade_log_print("Calling hook_upgrade_file_alter");
   drupal_alter('upgrade_file', $reader);
   coder_upgrade_log_print("Completed hook_upgrade_file_alter");
+  pgp_log_memory_use('apply hook function conversions');
 
   if ($is_install_file) {
     // Apply parser conversion routines for install file.
     coder_upgrade_log_print("Calling hook_upgrade_parser_install_alter");
     drupal_alter('upgrade_parser_install', $reader);
     coder_upgrade_log_print("Completed hook_upgrade_parser_install_alter");
+    pgp_log_memory_use('apply install file conversions');
   }
 
   // Use writer to redo file.
   $writer = PGPWriter::getInstance();
+  pgp_log_memory_use('create writer');
   $new = $writer->toString($reader->getStatements());
+  pgp_log_memory_use('writer->toString');
 
   // Free up memory.
   $reader->reset();
+  pgp_log_memory_use('reset reader');
 }
 
 /**
@@ -609,7 +623,16 @@ function coder_upgrade_log_print($text) {
   if (!$log) {
     return;
   }
-  if (is_array($text) || is_object($text)) {
+  if (is_a($text, 'PGPList')) {
+    file_put_contents(coder_upgrade_log_path(), $text->print_r(), FILE_APPEND);
+  }
+  elseif (is_a($text, 'PGPBase')) {
+    file_put_contents(coder_upgrade_log_path(), $text->print_r(), FILE_APPEND);
+  }
+  elseif (is_object($text)) {
+//    print_r($text);
+  }
+  elseif (is_array($text)) {
     file_put_contents(coder_upgrade_log_path(), print_r($text, 1), FILE_APPEND);
   }
   else {
@@ -629,9 +652,17 @@ function coder_upgrade_debug_print($text) {
   if (!$debug) {
     return;
   }
-  if (is_array($text) || is_object($text)) {
-    // Caller needs to set the $text using PGPBase::print_r as appropriate.
-    file_put_contents(coder_upgrade_debug_path(), $text, FILE_APPEND);
+  if (is_a($text, 'PGPList')) {
+    file_put_contents(coder_upgrade_debug_path(), $text->print_r(), FILE_APPEND);
+  }
+  elseif (is_a($text, 'PGPBase')) {
+    file_put_contents(coder_upgrade_debug_path(), $text->print_r(), FILE_APPEND);
+  }
+  elseif (is_object($text)) {
+//    print_r($text);
+  }
+  elseif (is_array($text)) {
+    file_put_contents(coder_upgrade_debug_path(), print_r($text, 1), FILE_APPEND);
   }
   else {
     file_put_contents(coder_upgrade_debug_path(), $text . "\n", FILE_APPEND);
