@@ -54,6 +54,10 @@
  * http://drupal.org/node/224333#node_build_rss
  * http://drupal.org/node/224333#build_mode
  * http://drupal.org/node/224333#hook_node_xxx
+ *
+ *
+ * Miscellaneous
+ * http://drupal.org/node/224333#trigger_overhaul
  */
 
 /**
@@ -62,6 +66,14 @@
 function coder_upgrade_upgrade_hook_access_alter(&$node, &$reader) {
   // Changes: hook_node_access
   coder_upgrade_convert_access($node);
+}
+
+/**
+ * Implements hook_upgrade_hook_action_info_alter().
+ */
+function coder_upgrade_upgrade_hook_action_info_alter(&$node, &$reader) {
+  // Changes: trigger_overhaul
+  coder_upgrade_convert_action_info($node);
 }
 
 /**
@@ -192,6 +204,154 @@ function coder_upgrade_convert_access(&$node) {
     $p1 = $item->getParameter(1);
     $item->setParameter(0, $p1);
     $item->setParameter(1, $p0);
+  }
+}
+
+/**
+ * Updates hook_action_info().
+ *
+ * The arrays returned by hook_action_info(), hook_action_info_alter(),
+ * actions_list(), actions_get_all_actions(), actions_actions_map() were
+ * changed.
+ *
+ * @todo Database table {actions} - 'description' field is now called 'label'.
+ *
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
+ */
+function coder_upgrade_convert_action_info(&$node) { // DONE
+  cdp("inside " . __FUNCTION__);
+  $item = &$node->data;
+  //  cdp($item->print_r());
+
+  // Restructure the actions array.
+  $body = &$item->body;
+
+  if (!($return = $body->find(T_RETURN, 'reverse'))) {
+    clp("ERROR: return statement not found in hook_action_info");
+    return;
+  }
+  //  cdp("Printing return item");
+  $value = &$return->value;
+  cdp($value->print_r());
+  cdp($value->toString());
+  //  cdp("Printing return item DONE");
+
+  // Examine the type of the operand in the return statement.
+  $operand = $return->value->getElement();
+  if (get_class($operand) == 'PGPArray') {
+    // Use case 1 - returns array directly.
+    // The keys of this array are the hook function names.
+    $array1 = $value->getElement();
+    if (!is_a($array1, 'PGPArray')) {
+      clp("ERROR: return statement does not include an array of values in hook_action_info");
+      return;
+    }
+    coder_upgrade_callback_action_info($array1);
+  }
+  elseif (get_class($operand) == 'PGPOperand') {
+    // Use case 2 - assigns array to variable, then returns variable.
+    // TODO Do callback on body statements until find the assignment to the return variable.
+    $variable = $operand->toString();
+    if (!($assign = $body->find(T_ASSIGNMENT))) {
+      clp("ERROR: assignment statement not found in hook_action_info");
+      return;
+    }
+    $variable2 = $assign->values->getElement()->getElement()->toString();
+    if ($variable == $variable2) {
+      cdp("Assignment variable matches return variable");
+      //      $array1 = $assign->values->getElement()->last();
+      $value1 = $assign->values->getElement();
+      $array1 = $value1->getElement($value1->count() - 1);
+      if (!is_a($array1, 'PGPArray')) {
+        clp("ERROR: assignment statement does not include an array of values in hook_action_info");
+        return;
+      }
+      coder_upgrade_callback_action_info($array1);
+    }
+  }
+}
+
+function coder_upgrade_callback_action_info(&$array) { // DONE
+  // The keys of this array are the action function names.
+  //  $array = $value->getElement();
+  if (!is_a($array, 'PGPArray')) {
+    clp("ERROR: return statement does not include an array of values in hook_action_info");
+    return;
+  }
+
+  // This check duplicates above - go with one of them.
+  if (get_class($array) == 'PGPArray') {
+    // Grab the PGPList of values.
+    $actions = $array->values;
+
+    $current = $actions->first();
+    while ($current->next != NULL) {
+      //      cdp('$current->type = '. $current->type);
+      if ($current->type == 'key') {
+        //        $key = &$current->data; // This is not the one needed; we need the next level down.
+      }
+      elseif ($current->type == 'value') {
+        // This is the value expression for an action key.
+        $value = $current->data;
+        //        cdp('class = ' . get_class($value));
+        if (get_class($value) != 'PGPExpression') {
+          $current = &$current->next;
+          continue;
+        }
+        // This is the array of action items.
+        $action_items = $value->getElement();
+        //        cdp('class = ' . get_class($action_items));
+        if (get_class($action_items) != 'PGPArray') {
+          $current = &$current->next;
+          continue;
+        }
+        if (($key = $action_items->findKey("'description'")) !== FALSE) {
+          //          cdp("Found the description key");
+          // Change key from 'description' to 'label.'
+          $element = &$key->getElement(); // $key->setElement();
+          $element['value'] = "'label'";
+        }
+        if (($key = $action_items->findKey("'hooks'")) !== FALSE) {
+          //          cdp("Found the hooks key");
+          // Change key from 'hooks' to 'triggers.'
+          $element = &$key->getElement(); // $key->setElement();
+          $element['value'] = "'triggers'";
+
+          $editor = new PGPEditor();
+          $list = new PGPList();
+
+          // This should be a PGPArray object.
+          $triggers = &$action_items->findValue("'triggers'")->getElement();
+          $trigger = $triggers->values->first();
+          while ($trigger->next != NULL) {
+            if ($trigger->type == 'key') {
+              // This is the module (or content type) the action pertains to.
+              $prefix = trim($trigger->data->toString(), "'\"");
+            }
+            elseif ($trigger->type == 'value') {
+              // This is the value expression for an action key.
+              $value2 = $trigger->data;
+              // This is the array of action operation items.
+              $operation_items = $value2->getElement();
+              $string = $operation_items->values->toString();
+              //              print_r($string . "\n");
+              $ops = explode(', ', $string);
+              foreach ($ops as $id => $op) {
+                $ops[$id] = "'{$prefix}_" . trim($op, "'\"") . "'";
+              }
+              $string = 'array(' . implode(', ', $ops) . ')';
+              //              print_r($string . "\n");
+              $list->insertLast($editor->expressionToStatement($string), 'value');
+              //              cdp($list->toString());
+            }
+            $trigger = &$trigger->next;
+          }
+          $triggers = $list;
+        }
+      }
+      $current = &$current->next;
+    }
   }
 }
 
