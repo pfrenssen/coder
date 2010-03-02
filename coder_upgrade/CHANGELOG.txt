@@ -2,6 +2,14 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-03-01):
+  * coder_upgrade.info, coder_upgrade.main.inc
+  * - reflect the renamed grammar parser module 
+  * coder_upgrade.install, coder_upgrade.module
+  * - minor cleanup
+  * coder_upgrade.test, tests directory
+  * - add these files
+
 - Changes (2010-02-27):
   * coder_upgrade.call.inc
   * - implement #drupal_set_header_renamed

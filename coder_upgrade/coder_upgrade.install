@@ -48,7 +48,7 @@ function coder_upgrade_uninstall() {
   coder_upgrade_clean_directory($dir, TRUE);
   $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
   coder_upgrade_clean_directory($dir, TRUE);
-  $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_PATCH);
+  $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_patch', DEADWOOD_PATCH);
   coder_upgrade_clean_directory($dir, TRUE);
 
   // Remove items from {variables} table.

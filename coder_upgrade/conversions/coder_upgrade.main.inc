@@ -116,7 +116,9 @@ function coder_upgrade_load_code(&$upgrades) {
  *   The name of the directory with the original files.
  */
 function coder_upgrade_convert_begin($dirname) {
+  coder_upgrade_log_print("Calling hook_upgrade_begin_alter");
   drupal_alter('upgrade_begin', $dirname);
+  coder_upgrade_log_print("Completed hook_upgrade_begin_alter");
 }
 
 /**
@@ -126,7 +128,9 @@ function coder_upgrade_convert_begin($dirname) {
  *   The name of the directory with the converted files.
  */
 function coder_upgrade_convert_end($dirname) {
+  coder_upgrade_log_print("Calling hook_upgrade_end_alter");
   drupal_alter('upgrade_end', $dirname);
+  coder_upgrade_log_print("Completed hook_upgrade_end_alter");
 }
 
 /**
@@ -292,12 +296,12 @@ function coder_upgrade_apply_parser($filename, &$new) {
   if (!$parser_loaded) {
     $parser_loaded = TRUE;
     // Include parser files.
-    module_load_include('inc', 'pgp', 'engine/pgp.parser');
-    module_load_include('inc', 'pgp', 'engine/pgp.reader');
-    module_load_include('inc', 'pgp', 'engine/pgp.writer');
-    module_load_include('inc', 'pgp', 'engine/pgp.editor');
-    module_load_include('inc', 'pgp', 'engine/pgp.list');
-    module_load_include('inc', 'pgp', 'engine/pgp.object');
+    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.parser');
+    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.reader');
+    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.writer');
+    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.editor');
+    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.list');
+    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.object');
     pgp_log_memory_use('load code');
   }
 
@@ -619,24 +623,28 @@ function coder_upgrade_save_changes($cur, $new, &$file, $hook) {
  */
 function coder_upgrade_log_print($text) {
   global $log;
+  static $path = '';
 
   if (!$log) {
     return;
   }
+  if (!$path) {
+    $path = coder_upgrade_log_path();
+  }
   if (is_a($text, 'PGPList')) {
-    file_put_contents(coder_upgrade_log_path(), $text->print_r(), FILE_APPEND);
+    file_put_contents($path, $text->print_r(), FILE_APPEND);
   }
   elseif (is_a($text, 'PGPBase')) {
-    file_put_contents(coder_upgrade_log_path(), $text->print_r(), FILE_APPEND);
+    file_put_contents($path, $text->print_r(), FILE_APPEND);
   }
   elseif (is_object($text)) {
 //    print_r($text);
   }
   elseif (is_array($text)) {
-    file_put_contents(coder_upgrade_log_path(), print_r($text, 1), FILE_APPEND);
+    file_put_contents($path, print_r($text, 1), FILE_APPEND);
   }
   else {
-    file_put_contents(coder_upgrade_log_path(), $text . "\n", FILE_APPEND);
+    file_put_contents($path, $text . "\n", FILE_APPEND);
   }
 }
 
@@ -648,24 +656,28 @@ function coder_upgrade_log_print($text) {
  */
 function coder_upgrade_debug_print($text) {
   global $debug;
+  static $path = '';
 
   if (!$debug) {
     return;
   }
+  if (!$path) {
+    $path = coder_upgrade_debug_path();
+  }
   if (is_a($text, 'PGPList')) {
-    file_put_contents(coder_upgrade_debug_path(), $text->print_r(), FILE_APPEND);
+    file_put_contents($path, $text->print_r(), FILE_APPEND);
   }
   elseif (is_a($text, 'PGPBase')) {
-    file_put_contents(coder_upgrade_debug_path(), $text->print_r(), FILE_APPEND);
+    file_put_contents($path, $text->print_r(), FILE_APPEND);
   }
   elseif (is_object($text)) {
 //    print_r($text);
   }
   elseif (is_array($text)) {
-    file_put_contents(coder_upgrade_debug_path(), print_r($text, 1), FILE_APPEND);
+    file_put_contents($path, print_r($text, 1), FILE_APPEND);
   }
   else {
-    file_put_contents(coder_upgrade_debug_path(), $text . "\n", FILE_APPEND);
+    file_put_contents($path, $text . "\n", FILE_APPEND);
   }
 }
 

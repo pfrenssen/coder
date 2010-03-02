@@ -388,8 +388,8 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
     );
   }
 
-  $old_dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD) . '/';
-  $new_dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
+  $old_dir = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD) . '/';
+  $new_dir = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
 
   // Combine directory and module items into a single list.
   // Omit name from key so as to allow for duplicate names.

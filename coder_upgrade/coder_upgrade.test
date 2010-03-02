@@ -1,0 +1,277 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Tests for the Coder Upgrade module.
+ */
+
+/**
+ * Unit tests for the upgrade routines.
+ */
+class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
+  protected $test_directory;
+  protected $site_directory;
+/*
+  protected function getInfo2() { // public static function getInfo() {
+    // Always display this warning since this function is only called when cache is cleared.
+    $settings = l('here', 'admin/config/development/coder/upgrade/settings');
+    $msg = "WARNING: Do not run this test if the \"Replace files\" option is checked for this module. Change this setting $settings.";
+    $dir = variable_get('coder_upgrade_dir_new', DEADWOOD_OLD);
+    return array(
+      'name' => 'Run interface (test)',
+      'description' => "Test the output from the upgrade routines on the files in the files/$dir/{$this->test_directory} directory. $msg",
+      'group' => 'Coder Upgrade',
+    );
+  }
+*/
+  protected function setUp() {
+    // Save the live site files directory path.
+    $this->site_directory = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
+    file_put_contents('output.html', '');
+    file_put_contents('output.html', __METHOD__ . "\n", FILE_APPEND);
+    file_put_contents('output.html', $this->site_directory . "\n", FILE_APPEND);
+    parent::setUp('grammar_parser', 'coder_upgrade'); //, 'gpui');
+  	// Create output file directories.
+//  	module_load_include('install', 'gpui'); // module_load_include('install', 'grammar_parser');
+  	module_load_include('install', 'coder_upgrade');
+//    gpui_install();
+  	coder_upgrade_install();
+
+  	// Enable debug printing.
+  	global $debug;
+  	$debug = TRUE;
+  }
+
+  /**
+   * Tests the upgrade routines (outside of the user interface).
+   */
+  protected function testRunInterface() {
+    file_put_contents('output.html', __METHOD__ . "\n", FILE_APPEND);
+    $replace_files = variable_get('coder_upgrade_replace_files', FALSE);
+    if ($replace_files) {
+      $settings = l('here', 'admin/config/development/coder/upgrade/settings');
+      $msg = "WARNING: Do not run this test if the \"Replace files\" option is checked for this module. Change this setting $settings.";
+      $this->assertFalse($replace_files, $msg, 'Settings');
+      return;
+    }
+    file_put_contents('output.html', __METHOD__ . "\n", FILE_APPEND);
+
+    pgp_log_memory_use('', TRUE);
+    pgp_log_memory_use('initial');
+
+    // Include necessary files.
+    $module_dirname = DRUPAL_ROOT . '/' . drupal_get_path('module', 'grammar_parser');
+    // Always add these since not running WebTestCase.
+    require_once $module_dirname . '/grammar_parser.module'; // require_once $module_dirname . '/grammar_parser.inc';
+    require_once $module_dirname . '/engine/grammar_parser.parser.inc';
+    require_once $module_dirname . '/engine/grammar_parser.reader.inc';
+    require_once $module_dirname . '/engine/grammar_parser.writer.inc';
+    require_once $module_dirname . '/engine/grammar_parser.list.inc';
+    require_once $module_dirname . '/engine/grammar_parser.object.inc';
+    pgp_log_memory_use('load code');
+
+    // TODO Move the debug_print method to .inc file??? Then avoid this load at this time.
+    $module_dirname = DRUPAL_ROOT . '/' . drupal_get_path('module', 'coder_upgrade');
+    require_once $module_dirname . '/conversions/coder_upgrade.main.inc';
+    coder_upgrade_debug_print("module = $module_dirname");
+
+    $in_dirname = $module_dirname . '/tests/old/';
+    $expected_dirname = $module_dirname . '/tests/new/';
+    $out_dirname = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
+
+    $upgrades = coder_upgrade_upgrade_info();
+
+    $extensions = array(
+      'inc' => TRUE,
+      'info' => TRUE,
+      'install' => TRUE,
+      'module' => TRUE,
+      'php' => FALSE,
+      'profile' => FALSE,
+      'test' => FALSE,
+      'theme' => FALSE,
+    );
+
+    $directories = array($this->test_directory => 1);
+    foreach ($directories as $key => $directory) {
+      $items[] = array(
+        'name' => $key,
+        'old_dir' => $in_dirname . $key,
+        'new_dir' => $out_dirname . $key,
+      );
+    }
+
+    // Apply conversion functions.
+//    module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
+    if (coder_upgrade_start($upgrades, $extensions, $items)) {
+    }
+
+    $ignore = array('.', '..', 'CVS', '.svn');
+
+    // Loop on files.
+    $filenames = scandir($in_dirname . $key . '/');
+    cdp($filenames);
+    foreach ($filenames as $filename) {
+      if (in_array($filename, $ignore)) {
+        continue;
+      }
+      // Set file name to be compared.
+      $expected_filename = $expected_dirname . $key . '/' . $filename;
+      $out_filename = $out_dirname . $key . '/' . $filename;
+      coder_upgrade_debug_print("exp = $expected_filename");
+      coder_upgrade_debug_print("out = $out_filename");
+
+      // Compare upgraded file to expected file.
+      $this->compareFiles($expected_filename, $out_filename);
+    }
+  }
+
+  function compareFiles($expected_filename, $out_filename) {
+    $name = pathinfo($out_filename, PATHINFO_BASENAME);
+    $b1 = file_exists($expected_filename);
+    $this->assertTrue($b1, 'Expected file exists', $name);
+    $b2 = file_exists($out_filename);
+    $this->assertTrue($b2, 'Output file exists', $name);
+    if ($b1 && $b2) {
+      $expected = file_get_contents($expected_filename);
+      $actual = file_get_contents($out_filename);
+      $this->assertEqual($expected, $actual, 'Contents of output file match that of expected file', $name);
+    }
+    else {
+      // TODO This copy may have name clashes.
+      copy($out_filename, $this->site_directory . $name);
+      $this->assertEqual('expected', 'actual', 'Contents of output file match that of expected file', $name);
+    }
+  }
+}
+
+/**
+ * Unit tests on a single file in files/coder_upgrade/old/test.
+ *
+ * Use this while developing on an upgrade routine.
+ */
+class CoderUpgradeUnitTestCase1 extends CoderUpgradeUnitTestCase {
+
+  public static function getInfo() {
+//    $this->test_directory = 'test';
+//    return parent::getInfo2();
+    // Always display this warning since this function is only called when cache is cleared.
+    $settings = l('here', 'admin/config/development/coder/upgrade/settings');
+    $msg = "WARNING: Do not run this test if the \"Replace files\" option is checked for this module. Change this setting $settings.";
+    $dir = variable_get('coder_upgrade_dir_new', DEADWOOD_OLD);
+    return array(
+      'name' => 'Run interface (test)',
+      'description' => "Test the output from the upgrade routines on the files in the files/$dir/test directory. $msg",
+      'group' => 'Coder Upgrade',
+    );
+  }
+
+  protected function setUp() {
+    parent::setUp();
+    $this->test_directory = 'test';
+  }
+}
+
+/**
+ * Unit tests on a sample module in files/coder_upgrade/old/samples.
+ */
+class CoderUpgradeUnitTestCase2 extends CoderUpgradeUnitTestCase {
+
+  public static function getInfo() {
+//    $this->test_directory = 'samples';
+//    return parent::getInfo2();
+    // Always display this warning since this function is only called when cache is cleared.
+    $settings = l('here', 'admin/config/development/coder/upgrade/settings');
+    $msg = "WARNING: Do not run this test if the \"Replace files\" option is checked for this module. Change this setting $settings.";
+    $dir = variable_get('coder_upgrade_dir_new', DEADWOOD_OLD);
+    return array(
+      'name' => 'Run interface (samples)',
+      'description' => "Test the output from the upgrade routines on the files in the files/$dir/samples directory. $msg",
+      'group' => 'Coder Upgrade',
+    );
+  }
+
+  protected function setUp() {
+    parent::setUp();
+    $this->test_directory = 'samples';
+  }
+}
+
+/**
+* Functional tests for the admin interface (settings and execution).
+*/
+class CoderUpgradeWebTestCase extends DrupalWebTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Settings interface',
+      'description' => 'Test the administration interface for Coder Upgrade.',
+      'group' => 'Coder Upgrade',
+    );
+  }
+
+  function setUp() {
+    parent::setUp('coder_upgrade');
+    $this->admin_user = $this->drupalCreateUser(array('access administration pages', 'administer site configuration', 'administer code conversions'));
+    $this->drupalLogin($this->admin_user);
+  }
+
+  /**
+   * Call test methods (prefixed with 'check' to avoid setUp overhead).
+   */
+  function testAdminInterface() {
+    // Include the admin file so we can call its functions.
+    module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
+
+    $this->checkSettingsInterface();
+    $this->checkRunInterface();
+  }
+
+  /**
+   * Test the settings via the user interface.
+   */
+  function checkSettingsInterface() {
+    // Visit the advanced menu settings page.
+    $this->drupalGet('admin/config/development/coder_upgrade/settings');
+
+    // Update the settings.
+    $edit = array();
+    $edit['coder_upgrade_dir_old'] = $this->randomName();
+    $edit['coder_upgrade_dir_new'] = $this->randomName();
+    $edit['coder_upgrade_dir_patch'] = $this->randomName();
+    $this->drupalPost(NULL, $edit, t('Save configuration'));
+    $this->assertRaw(t('The configuration options have been saved.'), t('Settings updated successfully'));
+
+    // Verify the settings.
+    $settings = variable_get('coder_upgrade_dir_old', '');
+    $this->assertEqual($settings, $edit['coder_upgrade_dir_old'], t('Old directory name found in variable.'));
+    $settings = variable_get('coder_upgrade_dir_new', '');
+    $this->assertEqual($settings, $edit['coder_upgrade_dir_new'], t('New directory name found in variable.'));
+    $settings = variable_get('coder_upgrade_dir_patch', '');
+    $this->assertEqual($settings, $edit['coder_upgrade_dir_patch'], t('Patch directory name found in variable.'));
+
+    // There is no reset button visible?
+    // Reset the settings.
+    $edit = array();
+    $edit['coder_upgrade_dir_old'] = DEADWOOD_OLD;
+    $edit['coder_upgrade_dir_new'] = DEADWOOD_NEW;
+    $edit['coder_upgrade_dir_patch'] = DEADWOOD_PATCH;
+    $this->drupalPost(NULL, $edit, t('Save configuration')); // $this->drupalPost(NULL, $edit, t('Reset to defaults'));
+    $this->assertRaw(t('The configuration options have been saved.'), t('Settings updated successfully'));
+
+    // Verify the settings.
+    $settings = variable_get('coder_upgrade_dir_old', '');
+    $this->assertEqual($settings, $edit['coder_upgrade_dir_old'], t('Old directory name was cleared.'));
+    $settings = variable_get('coder_upgrade_dir_new', '');
+    $this->assertEqual($settings, $edit['coder_upgrade_dir_new'], t('New directory name was cleared.'));
+    $settings = variable_get('coder_upgrade_dir_patch', '');
+    $this->assertEqual($settings, $edit['coder_upgrade_dir_patch'], t('Patch directory name was cleared.'));
+  }
+
+  /**
+   * Test the running via the user interface.
+   */
+  function checkRunInterface() {
+  }
+}

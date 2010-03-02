@@ -7,12 +7,13 @@ description = "Module conversion suite -- generates code to assist with the upgr
 
 package = Development
 dependencies[] = coder
-dependencies[] = pgp
+dependencies[] = grammar_parser
 
 files[] = coder_upgrade.help.inc
 files[] = coder_upgrade.inc
 files[] = coder_upgrade.install
 files[] = coder_upgrade.module
+files[] = coder_upgrade.test
 files[] = conversions/coder_upgrade.call.inc
 files[] = conversions/coder_upgrade.db.inc
 files[] = conversions/coder_upgrade.end.inc
