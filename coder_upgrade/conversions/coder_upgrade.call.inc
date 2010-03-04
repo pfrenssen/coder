@@ -75,6 +75,7 @@
  * Theming
  * http://drupal.org/node/224333#rebuild_functions (DUP System)
  * http://drupal.org/node/224333#theme_changes
+ * http://drupal.org/node/224333#placeholder
  *
  *
  * Form API
@@ -96,6 +97,8 @@
  *
  * Node API
  * http://drupal.org/node/224333#node_type_base (ALSO in convert_functions)
+ * http://drupal.org/node/224333#node_invoke_nodeapi
+ * http://drupal.org/node/224333#node_type_get_functions
  *
  *
  * Multi-lingual
@@ -1335,6 +1338,146 @@ function coder_upgrade_upgrade_call_module_rebuild_cache_alter(&$item, &$reader)
 }
 
 /**
+* Implements hook_upgrade_call_node_get_types_alter().
+*/
+function coder_upgrade_upgrade_call_node_get_types_alter(&$item, &$reader) { // DONE
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  if ($item->parameterCount() && !$item->getParameter()->isType(T_CONSTANT_ENCAPSED_STRING)) {
+    // Add TODO comment.
+    $item->insertStatementBefore($editor->commentToStatement('// TODO Please change this function call to node_type_get_$op based on the value of the $op variable.'));
+    return;
+  }
+
+  $op = $item->printParameter(0);
+  $node = $item->printParameter(1);
+  $reset = $item->printParameter(2);
+
+  // node_get_types($op) is now node_type_get_$op.
+  $op = trim($op, "'\"");
+  $op = $op ? $op : 'types';
+
+  $item->parameters->clear();
+  switch ($op) {
+    case 'module':
+      $op = 'base';
+    case 'name':
+    case 'type':
+      $todo = '';
+      if (strtoupper($node) == 'NULL' || $node == '') {
+        $node = $node == '' ? '$node' : $node;
+        $todo = ' /* TODO The $node parameter should not be null. Please declare and initialize a $node parameter. */';
+      }
+      $editor->setParameter($item, 0, $node . $todo);
+      break;
+  }
+
+  $name = &$item->name;
+  $name['value'] = 'node_type_get_'. $op;
+
+  // node_type_clear() (to clear the static cache) is now a separate function.
+  if ($reset && $reset != 'FALSE') {
+    $statement = $editor->textToStatements("node_types_clear();")->getElement(0);
+    $item->insertStatementBefore($statement);
+  }
+}
+/**
+* Implements hook_upgrade_call_node_invoke_nodeapi_alter().
+*/
+function coder_upgrade_upgrade_call_node_invoke_nodeapi_alter(&$item, &$reader) { // DONE
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Process function call.
+  $name = &$item->name;
+  $name['value'] = 'module_invoke_all';
+
+  if ($item->parameterCount() < 2) {
+    $item->insertStatementBefore($editor->commentToStatement('// TODO The $hook parameter should not be null. Please declare and initialize a $hook parameter.'));
+    $editor->insertParameter($item, 0, 'node_ . $hook /* TODO Set this variable. */');
+    return;
+  }
+
+  $op = $item->getParameter(1);
+  $p2 = $item->printParameter(2);
+  $p3 = $item->printParameter(3);
+
+  $item->deleteParameter(3);
+  $item->deleteParameter(2);
+  $item->deleteParameter(1);
+
+  if ($op->isType(T_CONSTANT_ENCAPSED_STRING)) {
+    $operation = trim($op->toString(), "'\"");
+    switch ($operation) {
+      case 'delete':
+      case 'insert':
+      case 'load':
+      case 'prepare':
+      case 'presave':
+      case 'update':
+      case 'validate':
+        // This operation hook becomes node_x
+        break;
+
+      case 'prepare translation':
+      case 'search result':
+      case 'update index':
+        // This operation hook becomes node_x_x
+        $operation = str_replace(" ", "_", $operation);
+        break;
+
+      case 'alter':
+        // This operation hook becomes node_build_alter
+        $operation = 'build_alter';
+        break;
+
+      case 'delete revision':
+        // This operation hook becomes node_revision_delete
+        $operation = 'revision_delete';
+        break;
+
+      case 'print':
+        // This operation hook becomes node_view with $view_mode = 'print'
+        $operation = 'view';
+        $p2 = "'print'";
+        break;
+
+      case 'rss item':
+        // This operation hook becomes node_view with $view_mode = 'rss'
+        $operation = 'view';
+        $p2 = "'rss'";
+        break;
+
+      case 'view':
+        // This operation hook becomes node_view with $view_mode = 'full' by default
+        if ($p2 && !in_array(strtolower($p2), array('null', 'false'))) {
+          $p2 = "'teaser'";
+        }
+        elseif ($p3 && !in_array(strtolower($p3), array('null', 'false'))) {
+          $p2 = "'full'";
+        }
+        break;
+
+      default:
+        cdp("ERROR: Invalid case value");
+        return;
+    }
+    $p0 = "'node_" . $operation . "'";
+  }
+  else {
+    $p0 = "'node_' . ". $op->toString();
+    // Let's assume $p2 is valid.
+//    $p2 .= $p2 ? " /* TODO: Set this parameter based on the " . $op->toString() . " hook */" : '';
+  }
+
+  $editor->insertParameter($item, 0, $p0);
+  if ($p2) {
+    $editor->setParameter($item, 2, $p2);
+  }
+}
+
+/**
  * Implements hook_upgrade_call__node_type_set_defaults_alter().
  */
 function coder_upgrade_upgrade_call__node_type_set_defaults_alter(&$item, &$reader) { // DONE
@@ -1543,13 +1686,24 @@ function coder_upgrade_upgrade_call_taxonomy_save_vocabulary_alter(&$item, &$rea
 /**
  * Implements hook_upgrade_call_theme_alter().
  */
-function coder_upgrade_upgrade_call_theme_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_theme_alter(&$item, &$reader) { // NEEDS WORK
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
   // Process function call.
   $name = &$item->name;
+
+  // http://drupal.org/node/224333#placeholder
+  // theme('placeholder') has been replaced by drupal_placeholder().
+  if (trim($item->printParameter(), "'\"") == 'placeholder') { // DONE
+    $item->deleteParameter();
+    $name['value'] = 'drupal_placeholder';
+    return;
+  }
+
   /*
+   * http://drupal.org/node/224333#theme_changes
+   *
    * Create a static variable to hold the array of theme registrations.
    * Find the theme in the list so we know the names of its parameters.
    * Array-itize the parameters.

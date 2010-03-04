@@ -403,7 +403,7 @@ function coder_upgrade_callback_action_info(&$array) { // DONE
  * @param PGPNode $node
  *   A node object containing a PGPClass (or function) item.
  */
-function coder_upgrade_convert_filter(&$node, &$reader) {  // DONE
+function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
   cdp("inside " . __FUNCTION__);
   $item = &$node->data;
 
@@ -561,7 +561,7 @@ function coder_upgrade_convert_filter(&$node, &$reader) {  // DONE
 }
 
 // TODO Rename this function.
-function coder_upgrade_callback_filter($key2) {  // DONE
+function coder_upgrade_callback_filter($key2) { // DONE
   switch ($key2) {
     case 'list':
       return 'name';
@@ -576,7 +576,7 @@ function coder_upgrade_callback_filter($key2) {  // DONE
   }
 }
 
-function coder_upgrade_new_filter_hook($node, $hook, $filters = array()) {  // DONE
+function coder_upgrade_new_filter_hook($node, $hook, $filters = array()) { // DONE
   global $_coder_upgrade_module_name;
 
   // Set values for the new hook function.
@@ -639,7 +639,7 @@ function coder_upgrade_new_filter_hook($node, $hook, $filters = array()) {  // D
  * @return array
  *   Array of tip callback functions indexed by $delta.
  */
-function coder_upgrade_convert_filter_tips(&$node) {  // DONE
+function coder_upgrade_convert_filter_tips(&$node) { // DONE
   cdp("inside " . __FUNCTION__);
   $item = &$node->data;
 
@@ -717,7 +717,7 @@ function coder_upgrade_convert_filter_tips(&$node) {  // DONE
   return $tips;
 }
 
-function coder_upgrade_new_filter_tips_hook($node, $hook, $parameters, $body) {  // DONE
+function coder_upgrade_new_filter_tips_hook($node, $hook, $parameters, $body) { // DONE
   global $_coder_upgrade_module_name;
 
   // Set values for the new hook function.
@@ -1795,14 +1795,14 @@ function coder_upgrade_callback_nodeapi($node, $case_node, $operation = '') {
       // This block becomes example_node_prepare_translation
       break;
     case 'print':
-      // This block becomes example_node_view with $build_mode = 'print'
+      // This block becomes example_node_view with $view_mode = 'print'
       $hook = '_node_view';
-      $parameters = array('$node', '$build_mode = \'print\'');
+      $parameters = array('$node', '$view_mode = \'print\'');
       break;
     case 'rss item':
-      // This block becomes example_node_view with $build_mode = 'rss'
+      // This block becomes example_node_view with $view_mode = 'rss'
       $hook = '_node_view';
-      $parameters = array('$node', '$build_mode = \'rss\'');
+      $parameters = array('$node', '$view_mode = \'rss\'');
       break;
     case 'search result':
       // This block becomes example_node_search_result
@@ -1821,8 +1821,8 @@ function coder_upgrade_callback_nodeapi($node, $case_node, $operation = '') {
       $parameters = array('$node', '$form');
       break;
     case 'view':
-      // This block becomes example_node_view with $build_mode = 'full' by default
-      $parameters = array('$node', '$build_mode = \'full\'');
+      // This block becomes example_node_view with $view_mode = 'full' by default
+      $parameters = array('$node', '$view_mode = \'full\'');
       break;
     default:
       cdp("ERROR: Invalid case value");
@@ -1968,7 +1968,7 @@ function coder_upgrade_callback_user($node, $case_node, $operation = '') {
     case 'view':
       // The user's account information is being displayed. The module should format its custom additions for display, and add them to the $account->content array.
       // This block becomes example_user_view
-      $parameters = array('$account', '$build_mode');
+      $parameters = array('$account', '$view_mode');
       break;
     default:
       cdp("ERROR: Invalid case value");

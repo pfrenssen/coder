@@ -2,6 +2,12 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-03-04):
+  * coder_upgrade.call.inc (by duellj)
+  * - implement #placeholder, #node_type_get_functions, #node_invoke_nodeapi
+  * coder_upgrade.function.inc
+  * - revise #remove_op: revert $build_mode to $view_mode in hook_nodeapi and hook_user
+
 - Changes (2010-03-01):
   * coder_upgrade.info, coder_upgrade.main.inc
   * - reflect the renamed grammar parser module 
