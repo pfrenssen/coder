@@ -30,6 +30,7 @@
  * http://drupal.org/node/224333#schema_translation
  * http://drupal.org/node/224333#schema_html
  * http://drupal.org/node/224333#install-schema
+ * http://drupal.org/node/224333#block_deltas_renamed
  *
  *
  * Menus
@@ -38,6 +39,7 @@
  *
  * Blocks
  * http://drupal.org/node/224333#remove_op (DUP Node API)
+ * http://drupal.org/node/224333#block_deltas_renamed (DUP Database)
  *
  *
  * Comments
@@ -86,6 +88,7 @@ function coder_upgrade_upgrade_hook_action_info_alter(&$node, &$reader) {
  * Implements hook_upgrade_hook_block_alter().
  */
 function coder_upgrade_upgrade_hook_block_alter(&$node, &$reader) {
+  // Changes: block_deltas_renamed
   // Changes: remove_op
   $callback = 'coder_upgrade_callback_block';
   $op_index = 0;
@@ -1686,6 +1689,28 @@ function coder_upgrade_callback_block($node, $case_node, $operation = '') {
     default:
       cdp("ERROR: Invalid case value");
       return;
+  }
+
+  // http://drupal.org/node/224333#block_deltas_renamed
+  // Change numeric block keys to strings
+  $editor = new PGPEditor();
+  $body = &$case_node->data->body;
+  $text = $body->toString();
+  $search = array(
+    '/\$blocks\[(\d+)\]/si',
+    '/\$delta ?([=!])= ?(\d+)/si',
+    '/case (\d+)/si',
+  );
+  $replace = array(
+    '$blocks[\'delta-\1\']',
+    '$delta \1= \'delta-\2\'',
+    'case \'delta-\1\'',
+  );
+  $count = 0;
+  $text = preg_replace($search, $replace, $text, -1, $count);
+  if ($count) {
+    $body = $editor->textToStatements($text);
+    $body->insertFirst($editor->commentToStatement('// TODO Rename block deltas (e.g. delta-0) to readable strings.', 'comment'));
   }
 
   // Create the new hook function.

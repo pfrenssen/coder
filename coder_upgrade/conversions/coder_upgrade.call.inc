@@ -41,6 +41,7 @@
  *
  * Menu
  * http://drupal.org/node/224333#comment_load (DUP Comments)
+ * http://drupal.org/node/224333#menu_tree_data
  *
  *
  * Comments
@@ -112,6 +113,8 @@
  * http://drupal.org/node/224333#actions_synchronize
  * http://drupal.org/node/224333#url_is_external
  * http://drupal.org/node/224333#drupal_valid_path
+ * http://drupal.org/node/224333#format_date
+ * http://drupal.org/node/224333#url_query_parameter
  */
 
 /**
@@ -1205,6 +1208,26 @@ function coder_upgrade_upgrade_call_filter_formats_alter(&$item, &$reader) { // 
 }
 
 /**
+ * Implements hook_upgrade_call_format_date_alter().
+ */
+function coder_upgrade_upgrade_call_format_date_alter(&$item, &$reader) {
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Change date types
+  $date_type = $item->printParameter(1);
+  $date_type = trim($date_type, "'\"");
+  switch ($date_type) {
+    case 'small';
+      $editor->setParameter($item, 1, "'short'");
+      break;
+    case 'large':
+      $editor->setParameter($item, 1, "'long'");
+      break;
+  }
+}
+
+/**
  * Implements hook_upgrade_call_format_plural_alter().
  */
 function coder_upgrade_upgrade_call_format_plural_alter(&$item, &$reader) { // DONE
@@ -1251,6 +1274,35 @@ function coder_upgrade_upgrade_call_menu_path_is_external_alter(&$item, &$reader
   // Process function call.
   $name = &$item->name;
   $name['value'] = 'url_is_external';
+}
+
+/**
+ * Implements hook_upgrade_call_menu_tree_data().
+ */
+function coder_upgrade_upgrade_call_menu_tree_data_alter(&$item, &$reader) {
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Function now expects an array of links, rather than a query resource.
+  $p1 = $item->getParameter()->getElement();
+  if (!is_object($p1)) {
+    // TODO
+    return;
+  }
+  elseif (get_class($p1) == 'PGPOperand') {
+    $resource = $p1->toString();
+  }
+  elseif (get_class($p1) == 'PGPFunctionCall') {
+    $resource = '$result';
+    $statement = $editor->textToStatements('$result = '. $p1->toString())->getElement(0);
+    $item->insertStatementBefore($statement);
+  }
+  // Insert statements.
+  $statement = $editor->textToStatements('$list = array()')->getElement(0);
+  $item->insertStatementBefore($statement);
+  $statement = $editor->textToStatements("foreach ({$resource} as \$item) {\n\t\$list[] = \$item;\n}")->getElement(0);
+  $item->insertStatementBefore($statement);
+  $editor->setParameter($item, 0, '$list');
 }
 
 /**
@@ -1794,6 +1846,35 @@ function coder_upgrade_upgrade_call_time_alter(&$item, &$reader) { // DONE
   $expression = $editor->expressionToStatement('REQUEST_TIME');
   cdp($expression->print_r());
   $item = $expression->getElement(0);
+}
+
+/**
+* Implements hook_upgrade_call_url_alter().
+*/
+function coder_upgrade_upgrade_call_url_alter(&$item, &$reader) {
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  if ($item->parameterCount() < 2) {
+    // Nothing to do.
+    return;
+  }
+
+  // Convert query string into an array
+  $p1 = $item->getParameter(1)->getElement();
+  if (!is_object($p1) || !$p1->isType(/*'PGPArray'*/ T_ARRAY)) {
+    // Add TODO comment.
+    $item->insertStatementBefore($editor->commentToStatement('// TODO The second parameter to this function call should be an array.'));
+    return;
+  }
+
+  if ($query = &$p1->findValue('query')) {
+    if ($query->isType(T_CONSTANT_ENCAPSED_STRING)) {
+      parse_str(trim($query->first()->data['value'], "'\""), $query_str);
+      // TODO This leaves an inline array expression with a trailing comma.
+      $query = $editor->expressionToStatement(str_replace(array("\n", "  "), '', var_export($query_str, TRUE)));
+    }
+  }
 }
 
 /**
