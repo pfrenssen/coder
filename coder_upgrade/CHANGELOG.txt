@@ -3,8 +3,11 @@
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
 - Changes (2010-03-05):
-  * coder_upgrade.call.inc, coder_upgrade.function.inc (by duellj)
-  * - implement #block_deltas_renamed, #format_date, #menu_tree_data, #url_query_parameter
+  * coder_upgrade.call.inc (by duellj)
+  * - implement #format_date, #menu_tree_data, #url_query_parameter
+  * - implement #theme_pager, #theme_username
+  * coder_upgrade.function.inc (by duellj)
+  * - implement #block_deltas_renamed
 
 - Changes (2010-03-04):
   * coder_upgrade.call.inc (by duellj)
