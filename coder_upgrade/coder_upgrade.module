@@ -18,6 +18,7 @@
  */
 
 module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
+module_load_include('inc', 'coder_upgrade', 'coder_upgrade.help');
 module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.list');
 
 /**

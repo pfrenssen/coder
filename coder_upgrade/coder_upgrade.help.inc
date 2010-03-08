@@ -11,7 +11,7 @@
 /**
  * Implements hook_help().
  */
-function coder_upgrade_help($path) {
+function coder_upgrade_help($path, $arg) {
   $input = file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);
   $output = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
   switch ($path) {
@@ -28,13 +28,20 @@ function coder_upgrade_help($path) {
       return tp('The purpose of this module is to automate as much as possible the task of updating a contributed module for Drupal API changes.' .
                 ' This particular module helps update the 6.x version of a contributed module to the 7.x version API.' .
                 ' Relative to the Drupal core APIs, the list of automated conversions to be applied is indicated !link.' .
-                ' Contributed modules that define an API may add their own list of automated conversions to be applied by utilizing the Upgrades API provided by this module.' .
-                ' The Upgrades API is documented in coder_upgrade.api.php.',
+                ' Contributed modules that define an API may add their own list of automated conversions to be applied by utilizing the Upgrade API provided by this module.' .
+                ' The Upgrade API is documented in coder_upgrade.api.php.',
                  array('!link' => l(t('here'), 'http://drupal.org/node/394070'))) .
-             tp('The conversion process involves searching the module files (i.e., those files with extensions of .info, .install, .module, .inc, .profile, .theme, and .php) for 6.x syntax and replacing the text with the 7.x equivalent.' .
-                ' In many cases, this can be easily done in an automated fashion.' .
-                ' However, some of the API changes do not easily lend themselves to search and replace automation.' .
-                ' In those cases, and when a conversion routine has not been provided, manual intervention by the module maintainer is required.') .
+             tp('The primary conversion process involves parsing the module files (i.e., those files with extensions of .info, .install, .module, .inc, .profile, .theme, and .php) using the !link, iterating the list of core functions and hooks for those that have been modified, and programmatically upgrading these items based on the 7.x equivalent.' .
+                ' The grammar structure and editing API provided by the grammar parser allow for more precise manipulation of the code than do regular expressions.' .
+                ' To learn more about how to write upgrade routines, read the !link2.',
+                 array('!link' => l(t('Grammar Parser Library'), 'http://drupal.org/project/grammar_parser'),
+                        '!link2' => l(t('automated updates documentation'), 'http://drupal.org/node/712078'))) .
+             tp('The secondary conversion process involves searching the module files for 6.x syntax and replacing the text with the 7.x equivalent.' .
+                ' Because regular expressions may generate false positives, this type of change is only used in limited situations.') .
+             tp(' In many cases, the API changes can be made in an automated fashion. ' .
+                ' However, there are usually some changes that do not easily lend themselves to automated upgrade.' .
+                ' In those cases, and when a conversion routine has not been provided, manual intervention by the module maintainer is required.' .
+                ' As a convenience, this module wiil place TODO comments in the code where manual intervention is likely required.') .
              tp('<b>Conversion Process</b>') .
              tp('Begin the conversion process by uploading your module\'s files to a directory beneath the <b>module input directory</b> (currently set to <b>!input</b>).' .
                 ' A directory (with the same name) for the converted files will automatically be created for you beneath the <b>module output directory</b> (currently set to <b>!output</b>).' .

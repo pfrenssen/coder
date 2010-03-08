@@ -11,6 +11,9 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
   *   - use with #theme_alter
   * coder_upgrade.module
   * - enhance coder_upgrade_module_list to use with theme registry caching
+  * - enable help information
+  * coder_upgrade.help.inc
+  * - update documentation
 
 - Changes (2010-03-06):
   * coder_upgrade.install.inc
