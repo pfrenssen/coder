@@ -507,11 +507,17 @@ function coder_upgrade_selections_extract($values) {
 /**
  * Returns list of contributed modules.
  *
+ * @param null $core
+ *   Indicates whether to return core modules regardless of settings variable.
+ * @param integer $status
+ *   Indicates status of modules to return.
  * @return array
  *   Array of contributed modules.
  */
-function coder_upgrade_module_list() {
-  $like = variable_get('coder_upgrade_upgrade_core', FALSE) ? 'LIKE' : 'NOT LIKE';
+function coder_upgrade_module_list($core = NULL, $status = -1) {
+  $test = is_null($core) ? variable_get('coder_upgrade_upgrade_core', FALSE) : $core;
+  $like = $test ? 'LIKE' : 'NOT LIKE';
+  $where = $status == -1 ? '' : 'AND status = :status';
 
   // Faster to query DB than to rescan files using _system_get_module_data().
   $sql = "SELECT name, filename, type, status, info,
@@ -519,9 +525,10 @@ function coder_upgrade_module_list() {
           FROM {system}
           WHERE type = 'module'
           AND filename $like 'modules/%'
+          $where
           ORDER BY directory, name";
   $default_value = 0;
-  $results = db_query($sql);
+  $results = db_query($sql, array(':status' => $status));
   $rows = array();
   foreach ($results as $module) {
     $info = unserialize($module->info);
@@ -529,6 +536,8 @@ function coder_upgrade_module_list() {
     $row['name'] = $info['name'];
     $row['path'] = dirname($module->filename); // $module->filename;
     $row['dir'] = $module->directory; // dirname($module->filename);
+//    $row['filename'] = $module->filename; // Add this for later calls to module_list().
+//    $row['status'] = $module->status;
     // TODO Pull files from this table???
     // Would need to change the conversion code to not read the filesystem.
 

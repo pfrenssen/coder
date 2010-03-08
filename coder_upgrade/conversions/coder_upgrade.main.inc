@@ -57,6 +57,7 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
 
   // Load code.
   coder_upgrade_load_code($upgrades);
+  coder_upgrade_load_parser();
 
   // Set file replacement parameter.
   $replace_files = variable_get('coder_upgrade_replace_files', FALSE);
@@ -67,7 +68,7 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
 //    $_coder_upgrade_dirname = $item['old_dir'];
 
     // Process the directory before conversion routines are applied.
-    coder_upgrade_convert_begin($item['old_dir']);
+    coder_upgrade_convert_begin($item);
 
     // Call main conversion loop.
     coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive);
@@ -106,18 +107,40 @@ function coder_upgrade_load_code(&$upgrades) {
 }
 
 /**
+ * Loads grammer parser code files.
+ */
+function coder_upgrade_load_parser() {
+  static $parser_loaded = FALSE;
+  if (!$parser_loaded) {
+    $parser_loaded = TRUE;
+    // Include parser files.
+    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.parser');
+    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.reader');
+    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.writer');
+    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.editor');
+    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.list');
+    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.object');
+    pgp_log_memory_use('load code');
+  }
+}
+
+/**
  * Processes the directory before conversion routines are applied.
  *
  * This hook can be used to cache information needed by other routines.
  * Example: core changes need to know about hook_theme or hook_menu to make
  * theme changes and form API changes.
  *
- * @param string $dirname
- *   The name of the directory with the original files.
+ * @param array $item
+ *   Array of a directory containing the files to convert.
  */
-function coder_upgrade_convert_begin($dirname) {
+function coder_upgrade_convert_begin($item) {
+  $dirname = $item['old_dir'];
+  coder_upgrade_log_print("\n*************************");
+  coder_upgrade_log_print('Pre-processing the directory => ' . $dirname);
+  coder_upgrade_log_print("*************************");
   coder_upgrade_log_print("Calling hook_upgrade_begin_alter");
-  drupal_alter('upgrade_begin', $dirname);
+  drupal_alter('upgrade_begin', $item);
   coder_upgrade_log_print("Completed hook_upgrade_begin_alter");
 }
 
@@ -128,6 +151,10 @@ function coder_upgrade_convert_begin($dirname) {
  *   The name of the directory with the converted files.
  */
 function coder_upgrade_convert_end($dirname) {
+//  $dirname = $item['old_dir'];
+  coder_upgrade_log_print("\n*************************");
+  coder_upgrade_log_print('Post-processing the directory => ' . $dirname);
+  coder_upgrade_log_print("*************************");
   coder_upgrade_log_print("Calling hook_upgrade_end_alter");
   drupal_alter('upgrade_end', $dirname);
   coder_upgrade_log_print("Completed hook_upgrade_end_alter");
@@ -290,19 +317,6 @@ function coder_upgrade_apply_parser($filename, &$new) {
   if ($is_info_file) {
     // Grammar parser only parses PHP code files.
     return;
-  }
-
-  static $parser_loaded = FALSE;
-  if (!$parser_loaded) {
-    $parser_loaded = TRUE;
-    // Include parser files.
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.parser');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.reader');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.writer');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.editor');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.list');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.object');
-    pgp_log_memory_use('load code');
   }
 
   // Create reader object; pass it to the routines.

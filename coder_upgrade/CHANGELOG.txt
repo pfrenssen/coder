@@ -2,6 +2,22 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-03-08):
+  * coder_upgrade.begin.inc (also coder_upgrade.list.inc, coder_upgrade.info)
+  * - add this file to handle module preprocessing
+  * coder_upgrade.function.inc
+  * - restore hook_install_alter
+  * - implement new coder_upgrade_convert_return
+  *   - use with #theme_alter
+  * coder_upgrade.module
+  * - enhance coder_upgrade_module_list to use with theme registry caching
+
+- Changes (2010-03-06):
+  * coder_upgrade.install.inc
+  * - #728252: Array error when checking for @file in install files
+  * coder_upgrade.api.php
+  * - update documentation
+
 - Changes (2010-03-05):
   * coder_upgrade.call.inc (by duellj)
   * - implement #format_date, #menu_tree_data, #url_query_parameter

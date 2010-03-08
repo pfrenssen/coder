@@ -47,7 +47,7 @@ function coder_upgrade_convert_install_file_comment(&$reader) {
   $comments = &$reader->getComments();
   foreach ($comments as &$comment) {
     if (is_array($comment) && !empty($comment)) {
-      if (preg_match('#*\s+ @file#', $comment)) {
+      if (preg_match('#*\s+ @file#', $comment['value'])) {
         // The file already includes a file comment.
         return;
       }

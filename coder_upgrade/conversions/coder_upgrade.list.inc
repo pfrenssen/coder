@@ -32,6 +32,7 @@ function coder_upgrade_upgrade_info() {
     'title' => t('Core API changes from 6.x to 7.x (parser routines)'),
     'link' => 'http://drupal.org/node/394070',
     'files' => array(
+      'conversions/coder_upgrade.begin.inc',
       'conversions/coder_upgrade.call.inc',
       'conversions/coder_upgrade.db.inc',
       'conversions/coder_upgrade.end.inc',

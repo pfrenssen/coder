@@ -114,7 +114,7 @@ function hook_upgrade_call_FUNCTION_NAME_alter(&$item, &$reader) {
  * @param $name
  *   The name of the function.
  */
-function coder_upgrade_upgrade_call_alter(&$item, &$reader, $name) {
+function hook_upgrade_call_alter(&$item, &$reader, $name) {
   // Modify function call.
   switch ($name) {
     case 'foo':
@@ -210,7 +210,7 @@ function hook_upgrade_hook_HOOK_NAME_alter(&$node, &$reader) {
  * that was parsed. However, the function name must follow the naming convention
  * for a hook, i.e, your_module_name_hook. If your module declares a hook for
  * another module or otherwise digresses from the standard naming convention,
- * then you will need to add a converion routine to the list to be able to alter
+ * then you will need to add a conversion routine to the list to be able to alter
  * this function.
  *
  * Refer to the grammar parser documentation for details of the function object
@@ -325,10 +325,10 @@ function hook_upgrade_parser_install_alter(&$reader) {
  * example, core changes need to know about hook_theme or hook_menu to make
  * theme changes and form API changes.
  *
- * @param string $dirname
- *   The name of the directory with the original files.
+ * @param array $item
+ *   Array of a directory containing the files to convert.
  */
-function hook_upgrade_begin_alter($dirname) {
+function hook_upgrade_begin_alter($item) {
   // Do something.
 }
 

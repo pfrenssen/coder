@@ -1,0 +1,142 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * End conversion routine file for the coder_upgrade module.
+ * These routines upgrade the converted directory after upgrade routines are
+ * applied to the files.
+ *
+ * The functions in this conversion routine file correspond to topics in the
+ * category roadmap at http://drupal.org/node/394070 that are marked with a
+ * green check mark in the Upgrade column.
+ *
+ * Copyright 2009-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ */
+
+/**
+ * Implements hook_upgrade_begin_alter().
+ *
+ * @param array $item
+ *   Array of a directory containing the files to convert.
+ */
+function coder_upgrade_upgrade_begin_alter($item) {
+//  return; // TODO Temporary
+//  cdp("inside " . __FUNCTION__);
+  /*
+   * TODO Should we:
+   * - write the core cache to a file (and commit the file?)
+   * - make an admin settings page button to generate this cache (and any others we need)
+   * - check for existence of cache if core upgrades are being run
+   */
+  coder_upgrade_cache_theme_registry();
+  coder_upgrade_cache_hook_theme($item);
+}
+
+/**
+ * Caches the theme registry from core files (including disabled modules).
+ */
+function coder_upgrade_cache_theme_registry() {
+//  cdp("inside " . __FUNCTION__);
+  global $upgrade_theme_registry;
+
+  if (!$upgrade_theme_registry) {
+    // Cache the theme registry (includes only enabled modules).
+    $upgrade_theme_registry = theme_get_registry();
+    if (!$upgrade_theme_registry) {
+      drupal_theme_initialize();
+      $upgrade_theme_registry = theme_get_registry();
+    }
+    // Build and cache the theme registry for disabled modules.
+    $upgrade_theme_registry += coder_upgrade_theme_build_registry();
+  }
+}
+
+/**
+ * Builds theme registry for disabled core modules.
+ *
+ * Adapted from _theme_build_registry().
+ *
+ * @return unknown_type
+ */
+function coder_upgrade_theme_build_registry() {
+//  cdp("inside " . __FUNCTION__);
+  // Get the list of disabled core modules.
+  $list = coder_upgrade_module_list(TRUE, 0);
+
+  $cache = array();
+  $hook = 'theme';
+  // TODO In the D8 release of this module, will need to use the correct file.
+  // $hook_info = module_hook_info();
+  foreach($list as $module => $stuff) { // foreach (module_implements('theme') as $module) {
+    module_load_include('module', $module);
+    if (module_hook($module, $hook)) { // || (isset($hook_info[$hook]['group']) && $include_file = module_load_include('inc', $module, $module . '.' . $hook_info[$hook]['group']) && module_hook($module, $hook))) {
+      _theme_process_registry($cache, $module, 'module', $module, $path = drupal_get_path('module', $module));
+    }
+  }
+  return $cache;
+}
+
+/**
+ * Caches the hook_theme() entries for the modules being converted.
+ *
+ * @param array $item
+ *   Array of a directory containing the files to convert.
+ */
+function coder_upgrade_cache_hook_theme($item) {
+//  cdp("inside " . __FUNCTION__);
+  global $_coder_upgrade_module_name, $upgrade_theme_registry;
+  static $ignore = array('.', '..', 'CVS', '.svn');
+  static $extensions = array('module', 'inc');
+
+  $dirname = $item['old_dir'];
+
+  // Determine module name.
+  coder_upgrade_module_name($dirname, $item);
+  $_coder_upgrade_module_name = $item['module'] ? $item['module'] : $_coder_upgrade_module_name;
+
+  // Find hook_theme for this module  and cache its result.
+  $filenames = scandir($dirname . '/');
+  foreach ($filenames as $filename) {
+    if (!in_array($filename, $ignore)) {
+      if (is_dir($dirname . '/' . $filename)) {
+        if ($recursive) {
+          // TODO Fix this!!!
+          $new_item = array(
+            'name' => $item['name'],
+            'old_dir' => $dirname . '/' . $filename,
+          );
+          coder_upgrade_cache_theme_registry($new_item);
+          // Reset the module name.
+          $_coder_upgrade_module_name = $item['module'];
+        }
+      }
+      elseif (in_array(pathinfo($filename, PATHINFO_EXTENSION), array_keys($extensions))) {
+        $cur = file_get_contents($dirname . '/' . $filename);
+        // Create reader object.
+        $reader = PGPReader::getInstance();
+        $reader->setSnippet($cur);
+        $reader->addTokenNames();
+        $reader->buildGrammar();
+
+        $functions = $reader->getFunctions();
+        foreach ($functions as $function) {
+//          cdp("name = {$function->data->name}");
+          if ($function->data->name == $_coder_upgrade_module_name . '_theme') {
+            $module_theme = eval($function->data->body->toString());
+            foreach ($module_theme as $key => &$value) {
+              $value['variables'] = $value['arguments'];
+              unset($value['arguments']);
+//              $module_theme[$key] = $value;
+            }
+            $upgrade_theme_registry = array_merge($upgrade_theme_registry, $module_theme);
+            break 2;
+          }
+        }
+        // Free up memory.
+        $reader->reset();
+        pgp_log_memory_use('reset reader');
+      }
+    }
+  }
+}

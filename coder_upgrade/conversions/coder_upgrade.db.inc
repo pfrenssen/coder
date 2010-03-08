@@ -73,7 +73,10 @@ function coder_upgrade_parse_query_string(&$item, &$operand, &$reader) {
    */
   $new = array();
   $sql = trim($operand['value'], "'\"");
-  if (strpos($sql, 'INSERT') === 0) {
+  if (strpos($sql, 'SELECT') === 0) {
+    return;
+  }
+  elseif (strpos($sql, 'INSERT') === 0) {
     // INSERT INTO {mytable_longer_name} (intvar, stringvar, floatvar) VALUES (%d, '%s', %f)
     $find = '@INSERT INTO\s+{(\w+)}\s+\((.*?)\)\s+VALUES\s+\((.*?)\)@';
     preg_match($find, $sql, $matches);

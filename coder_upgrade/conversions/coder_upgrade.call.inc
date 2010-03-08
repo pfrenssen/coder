@@ -77,6 +77,8 @@
  * http://drupal.org/node/224333#rebuild_functions (DUP System)
  * http://drupal.org/node/224333#theme_changes
  * http://drupal.org/node/224333#placeholder
+ * http://drupal.org/node/224333#theme_pager
+ * http://drupal.org/node/224333#theme_username
  *
  *
  * Form API
@@ -1101,7 +1103,7 @@ function coder_upgrade_ereg_to_preg($string) {
   }
 
   if (!$delimiter) {
-    clp('ERROR: could not find a suitable delimiter for the regular exprssion');
+    clp('ERROR: Could not find a suitable delimiter for the regular exprssion');
     $delimiter = '/';
     $string = str_replace('/', '\/', $string);
   }
@@ -1738,13 +1740,23 @@ function coder_upgrade_upgrade_call_taxonomy_save_vocabulary_alter(&$item, &$rea
 /**
  * Implements hook_upgrade_call_theme_alter().
  */
-function coder_upgrade_upgrade_call_theme_alter(&$item, &$reader) { // NEEDS WORK
+function coder_upgrade_upgrade_call_theme_alter(&$item, &$reader) { // DONE
+  global $upgrade_theme_registry;
+
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
   // Process function call.
   $name = &$item->name;
 
+  $p0 = $item->getParameter();
+  if (!$p0->isType(T_CONSTANT_ENCAPSED_STRING)) {
+    // TODO Look for the assignment to the theme hook (a variable or expression).
+    $item->insertStatementBefore($editor->commentToStatement('// TODO Please change this theme call to use an associative array for the $variables parameter.'));
+    return;
+  }
+
+  // Process changes to specific themes.
   $theme = trim($item->printParameter(), "'\"");
   // http://drupal.org/node/224333#placeholder
   // theme('placeholder') has been replaced by drupal_placeholder().
@@ -1755,97 +1767,56 @@ function coder_upgrade_upgrade_call_theme_alter(&$item, &$reader) { // NEEDS WOR
   }
   // http://drupal.org/node/224333#theme_username
   // theme('username') parameters have changed.
-  if ($theme == 'username') {
-    $p1 = $item->printParameter(1);
-    $p1 = "array('account' => $p1)";
-    $editor->setParameter($item, 1, $p1);
-    return;
-  }
+  // Note: this is automatically handled below.
+//  if ($theme == 'username') { // DONE
+//    $p1 = $item->printParameter(1);
+//    $p1 = "array('account' => $p1)";
+//    $editor->setParameter($item, 1, $p1);
+//    return;
+//  }
   // http://drupal.org/node/224333##theme_pager
   // Limit parameter has been removed.
-  if ($theme == 'pager') {
+  if ($theme == 'pager') { // DONE
     $item->deleteParameter(2); // Does nothing if no third parameter.
   }
 
   /*
    * http://drupal.org/node/224333#theme_changes
    *
-   * Create a static variable to hold the array of theme registrations.
-   * Find the theme in the list so we know the names of its parameters.
+   * In module pre-processing, create a global variable to hold the array of
+   * theme registrations for all core files (including disabled modules). Add
+   * to this array the theme entries for the current module. Find the current
+   * theme call in the global list to get the names of its parameters.
    * Array-itize the parameters.
    *
-   * Find the hook_theme function (using $reader passed to this function)
-   * and save its contents. This assumes the hook_theme is defined in this
-   * file!!! The theme call could be to any core theme or a dependent contrib
-   * theme. Can we build an array of the core theme items so we know the
-   * parameters? Search on 'function theme_' in includes and modules. The
-   * former are more general; many of the latter relate to admin page items.
-   * How can we easily gather the array keys in order? Use ourselves to read
-   * all theme_ functions and convert variable name to a key?
-   * See drupal_common_theme() in common.inc. Also hook_theme in the modules.
+   * See drupal_common_theme() in common.inc and hook_theme in the core modules.
    *
    * See http://drupal.org/files/issues/theme-wip-572618-83.patch
-   *
-   * Add helper functions to PGPArray to get the keys and values as arrays.
-   * TODO Refactor any existing code that does this.
-   *
-   * static $themes = array();
-   *
-   * $p0 = $item->getParameter(0);
-   * $theme = $themes[$p0];
-   * $keys = keys from $theme
-   * $string = 'array(';
-   * foreach ($keys as $key) {
-   *   $string .= "'$key' => $p{$i},";
-   * }
-   * $string = ');
    */
-  cdp(__FUNCTION__ . " inside theme case");
-  global $_coder_upgrade_module_name;
-  // Find the hook_theme function object.
-  $function = $editor->findFunction($reader->getFunctions(), $_coder_upgrade_module_name . '_theme');
-  if (is_null($function)) {
-    cdp("no theme hook");
+
+  $theme = trim($item->printParameter(0), "'\"");
+  if (!isset($upgrade_theme_registry[$theme])) {
+    clp("ERROR: Theme entry for '$theme' not found in theme registry or hook_theme");
+    $item->insertStatementBefore($editor->commentToStatement('// TODO Please change this theme call to use an associative array for the $variables parameter.'));
     return;
   }
+  $hook = $upgrade_theme_registry[$theme];
 
-  // Get the keys for the appropriate theme.
-  $body = &$function->body;
-
-  if (!($return = $body->searchBackward('PGPFunctionCall', 'name', 'value', 'return'))) { // if (!($return = $body->find(T_RETURN, 'reverse'))) {
-    clp("ERROR: return statement not found in hook_theme");
-    return;
-  }
-//  $value = &$return->value; // $value = &$return->value;
-  $array = $return->parameters->getElement(0)->getElement(0); // $array = $value->getElement(0);
-  if (get_class($array) == 'PGPArray') {
-    if (!($theme = $array->findValue($item->getParameter(0)->toString()))) {
-      clp("ERROR: theme entry not found in hook_theme");
+  if (isset($hook['variables'])) {
+    $count = $item->parameterCount();
+    // TODO Incorporate default value elimination into this.
+    if ($count == 1 /*|| $count - 1 != count($hook['variables'])*/) {
+      // This theme call is missing some or all of the variables parameters.
+      $item->insertStatementBefore($editor->commentToStatement('// TODO Please change this theme call to use an associative array for the $variables parameter.'));
       return;
     }
-    $array = $theme->getElement(0);
-    $arguments = $array->findValue("'arguments'");
-    $keys = $arguments->getElement(0)->keysToArray();
-    if (empty($keys)) {
-      return;
-    }
-    // Remove the quotes surrounding the keys.
-    foreach ($keys as $index => $key) {
-      $keys[$index] = trim($key, "'\"");
-    }
+    $defaults = array_fill(0, $count - 1, "'XXX_YYY'");
+    $string = $editor->arrayitize($item, 1, array_keys($hook['variables']), $defaults);
+
+    $temp = $editor->expressionToStatement($string);
+    $temp->getElement(0)->multiline = 0;
+    $item->setParameter(1, $temp);
   }
-
-  $count = $item->parameters->count();
-  if ($count == 1) {
-    return;
-  }
-
-  $defaults = array_fill(0, $count - 1, "'XXX_YYY'");
-  $string = $editor->arrayitize($item, 1, $keys, $defaults);
-
-  $temp = $editor->expressionToStatement($string);
-  $temp->getElement(0)->multiline = 0;
-  $item->setParameter(1, $temp);
 }
 
 /**
@@ -1919,7 +1890,7 @@ function coder_upgrade_upgrade_call_user_authenticate_alter(&$item, &$reader) { 
   $class = get_class($operand);
   if ($class == 'PGPOperand') {
     // Get the variable name used as the parameter.
-    $parameter = $item->getParameter()->toString();
+    $parameter = $item->printParameter();
     // Make variable assignments referring to two new parameters.
     $assign1 = $editor->textToStatements('$name = ' . $parameter . "['name']; // TODO Set these variables");
     $assign2 = $editor->textToStatements('$password = ' . $parameter . "['pass'];")->getElement(0);
@@ -2055,7 +2026,7 @@ function coder_upgrade_convert_menu_valid_path(&$item, &$reader, &$editor) { // 
       $current = $current->previous;
     }
     if (!$count) {
-      clp("ERROR: assignment statement to parameter variable not found in menu_valid_path");
+      clp("ERROR: Assignment statement to parameter variable not found in menu_valid_path");
       return;
     }
   }
