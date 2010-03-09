@@ -25,4 +25,6 @@ files[] = conversions/coder_upgrade.main.inc
 ; files[] = conversions/coder_upgrade.other.inc ; Deprecated
 files[] = conversions/coder_upgrade.regex.inc
 
+configure = admin/config/development/coder/upgrade/settings
+
 core = 7.x
