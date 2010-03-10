@@ -2,13 +2,21 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-03-10):
+  * coder_upgrade.call.inc
+  * - implement #theme_page
+  * coder_upgrade.function.inc
+  * - refactor routines to use new coder_upgrade_convert_return pattern
+  *   - #trigger_overhaul: hook_action_info, hook_hook_info
+  *   - #node_type_base: hook_node_info
+
 - Changes (2010-03-08):
   * coder_upgrade.begin.inc (also coder_upgrade.list.inc, coder_upgrade.info)
   * - add this file to handle module preprocessing
   * coder_upgrade.function.inc
   * - restore hook_install_alter
   * - implement new coder_upgrade_convert_return
-  *   - use with #theme_alter
+  *   - use with #hook_theme_render_changes
   * coder_upgrade.module
   * - enhance coder_upgrade_module_list to use with theme registry caching
   * - enable help information
@@ -165,7 +173,7 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
    *   - drupal_set_html_head: insert new required parameter when first parameter is set
    *   - node_type_base
    * - functions
-   *   - action_info, filter, hook_info, link
+   *   - action_info, filter, hook_info, link, theme (NOT DONE)
    *   - node_type_base
 
 - Changes (2009-12-09):

@@ -75,6 +75,7 @@
  *
  * Theming
  * http://drupal.org/node/224333#rebuild_functions (DUP System)
+ * http://drupal.org/node/224333#theme_page
  * http://drupal.org/node/224333#theme_changes
  * http://drupal.org/node/224333#placeholder
  * http://drupal.org/node/224333#theme_pager
@@ -1758,6 +1759,21 @@ function coder_upgrade_upgrade_call_theme_alter(&$item, &$reader) { // DONE
 
   // Process changes to specific themes.
   $theme = trim($item->printParameter(), "'\"");
+  // http://drupal.org/node/224333#theme_page
+  if ($theme == 'page') { // DONE
+    $item->insertStatementBefore($editor->commentToStatement('// TODO Please change this theme call as discussed at http://drupal.org/node/224333#theme_page.'));
+    // Get the statement (i.e. node) this function call is part of.
+    $parent = &$item->parent;
+    // Comment out the statement.
+    $text = $parent->data->toString();
+    $parent->data = $editor->textToStatements('// ' . $text)->getElement();
+    return;
+  }
+  // http://drupal.org/node/224333##theme_pager
+  // Limit parameter has been removed.
+  if ($theme == 'pager') { // DONE
+    $item->deleteParameter(2); // Does nothing if no third parameter.
+  }
   // http://drupal.org/node/224333#placeholder
   // theme('placeholder') has been replaced by drupal_placeholder().
   if ($theme == 'placeholder') { // DONE
@@ -1774,11 +1790,6 @@ function coder_upgrade_upgrade_call_theme_alter(&$item, &$reader) { // DONE
 //    $editor->setParameter($item, 1, $p1);
 //    return;
 //  }
-  // http://drupal.org/node/224333##theme_pager
-  // Limit parameter has been removed.
-  if ($theme == 'pager') { // DONE
-    $item->deleteParameter(2); // Does nothing if no third parameter.
-  }
 
   /*
    * http://drupal.org/node/224333#theme_changes

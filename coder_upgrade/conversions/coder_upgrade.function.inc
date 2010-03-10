@@ -85,7 +85,7 @@ function coder_upgrade_upgrade_hook_access_alter(&$node, &$reader) {
  */
 function coder_upgrade_upgrade_hook_action_info_alter(&$node, &$reader) {
   // Changes: trigger_overhaul
-  coder_upgrade_convert_action_info($node);
+  coder_upgrade_convert_return($node, 'action_info');
 }
 
 /**
@@ -122,7 +122,17 @@ function coder_upgrade_upgrade_hook_filter_alter(&$node, &$reader) {
  */
 function coder_upgrade_upgrade_hook_hook_info_alter(&$node, &$reader) {
   // Changes: trigger_overhaul
-  coder_upgrade_convert_hook_info($node);
+  $item = &$node->data;
+
+  global $_coder_upgrade_module_name;
+
+  // Rename function.
+  $item->name = $_coder_upgrade_module_name . '_trigger_info';
+  // Update document comment.
+  $item->comment = preg_replace('@hook_hook_info@', "hook_trigger_info", $item->comment);
+
+  // Restructure the triggers array.
+  coder_upgrade_convert_return($node, 'hook_info');
 }
 
 /**
@@ -172,7 +182,7 @@ function coder_upgrade_upgrade_hook_nodeapi_alter(&$node, &$reader) {
  */
 function coder_upgrade_upgrade_hook_node_info_alter(&$node, &$reader) {
   // Changes: node_type_base
-  coder_upgrade_convert_node_info($node);
+  coder_upgrade_convert_return($node, 'node_info');
 }
 
 /**
@@ -260,154 +270,6 @@ function coder_upgrade_convert_access(&$node) {
     $p1 = $item->getParameter(1);
     $item->setParameter(0, $p1);
     $item->setParameter(1, $p0);
-  }
-}
-
-/**
- * Updates hook_action_info().
- *
- * The arrays returned by hook_action_info(), hook_action_info_alter(),
- * actions_list(), actions_get_all_actions(), actions_actions_map() were
- * changed.
- *
- * @todo Database table {actions} - 'description' field is now called 'label'.
- *
- * @param PGPNode $node
- *   A node object containing a PGPClass (or function) item.
- */
-function coder_upgrade_convert_action_info(&$node) { // DONE
-  cdp("inside " . __FUNCTION__);
-  $item = &$node->data;
-  //  cdp($item->print_r());
-
-  // Restructure the actions array.
-  $body = &$item->body;
-
-  if (!($return = $body->find(T_RETURN, 'reverse'))) {
-    clp("ERROR: return statement not found in hook_action_info");
-    return;
-  }
-  //  cdp("Printing return item");
-  $value = &$return->value;
-  cdp($value->print_r());
-  cdp($value->toString());
-  //  cdp("Printing return item DONE");
-
-  // Examine the type of the operand in the return statement.
-  $operand = $return->value->getElement();
-  if (get_class($operand) == 'PGPArray') {
-    // Use case 1 - returns array directly.
-    // The keys of this array are the hook function names.
-    $array1 = $value->getElement();
-    if (!is_a($array1, 'PGPArray')) {
-      clp("ERROR: return statement does not include an array of values in hook_action_info");
-      return;
-    }
-    coder_upgrade_callback_action_info($array1);
-  }
-  elseif (get_class($operand) == 'PGPOperand') {
-    // Use case 2 - assigns array to variable, then returns variable.
-    // TODO Do callback on body statements until find the assignment to the return variable.
-    $variable = $operand->toString();
-    if (!($assign = $body->find(T_ASSIGNMENT))) {
-      clp("ERROR: assignment statement not found in hook_action_info");
-      return;
-    }
-    $variable2 = $assign->values->getElement()->getElement()->toString();
-    if ($variable == $variable2) {
-      cdp("Assignment variable matches return variable");
-      //      $array1 = $assign->values->getElement()->last();
-      $value1 = $assign->values->getElement();
-      $array1 = $value1->getElement($value1->count() - 1);
-      if (!is_a($array1, 'PGPArray')) {
-        clp("ERROR: assignment statement does not include an array of values in hook_action_info");
-        return;
-      }
-      coder_upgrade_callback_action_info($array1);
-    }
-  }
-}
-
-function coder_upgrade_callback_action_info(&$array) { // DONE
-  // The keys of this array are the action function names.
-  //  $array = $value->getElement();
-  if (!is_a($array, 'PGPArray')) {
-    clp("ERROR: return statement does not include an array of values in hook_action_info");
-    return;
-  }
-
-  // This check duplicates above - go with one of them.
-  if (get_class($array) == 'PGPArray') {
-    // Grab the PGPList of values.
-    $actions = $array->values;
-
-    $current = $actions->first();
-    while ($current->next != NULL) {
-      //      cdp('$current->type = '. $current->type);
-      if ($current->type == 'key') {
-        //        $key = &$current->data; // This is not the one needed; we need the next level down.
-      }
-      elseif ($current->type == 'value') {
-        // This is the value expression for an action key.
-        $value = $current->data;
-        //        cdp('class = ' . get_class($value));
-        if (get_class($value) != 'PGPExpression') {
-          $current = &$current->next;
-          continue;
-        }
-        // This is the array of action items.
-        $action_items = $value->getElement();
-        //        cdp('class = ' . get_class($action_items));
-        if (get_class($action_items) != 'PGPArray') {
-          $current = &$current->next;
-          continue;
-        }
-        if (($key = $action_items->findKey("'description'")) !== FALSE) {
-          //          cdp("Found the description key");
-          // Change key from 'description' to 'label.'
-          $element = &$key->getElement(); // $key->setElement();
-          $element['value'] = "'label'";
-        }
-        if (($key = $action_items->findKey("'hooks'")) !== FALSE) {
-          //          cdp("Found the hooks key");
-          // Change key from 'hooks' to 'triggers.'
-          $element = &$key->getElement(); // $key->setElement();
-          $element['value'] = "'triggers'";
-
-          $editor = PGPEditor::getInstance();
-          $list = new PGPList();
-
-          // This should be a PGPArray object.
-          $triggers = &$action_items->findValue("'triggers'")->getElement();
-          $trigger = $triggers->values->first();
-          while ($trigger->next != NULL) {
-            if ($trigger->type == 'key') {
-              // This is the module (or content type) the action pertains to.
-              $prefix = trim($trigger->data->toString(), "'\"");
-            }
-            elseif ($trigger->type == 'value') {
-              // This is the value expression for an action key.
-              $value2 = $trigger->data;
-              // This is the array of action operation items.
-              $operation_items = $value2->getElement();
-              $string = $operation_items->values->toString();
-              //              print_r($string . "\n");
-              $ops = explode(', ', $string);
-              foreach ($ops as $id => $op) {
-                $ops[$id] = "'{$prefix}_" . trim($op, "'\"") . "'";
-              }
-              $string = 'array(' . implode(', ', $ops) . ')';
-              //              print_r($string . "\n");
-              $list->insertLast($editor->expressionToStatement($string), 'value');
-              //              cdp($list->toString());
-            }
-            $trigger = &$trigger->next;
-          }
-          $triggers = $list;
-        }
-      }
-      $current = &$current->next;
-    }
   }
 }
 
@@ -774,204 +636,6 @@ function coder_upgrade_new_filter_tips_hook($node, $hook, $parameters, $body) { 
 }
 
 /**
- * Updates hook_hook_info().
- *
- * hook_hook_info() is now called hook_trigger_info(), and its return value has
- * been changed and simplified.
- *
- * @todo Database table {trigger_assignments} - 'op' field was removed, and the
- * 'hook' field now contains the full function name.
- *
- * @param PGPNode $node
- *   A node object containing a PGPClass (or function) item.
- */
-function coder_upgrade_convert_hook_info(&$node) { // DONE
-  cdp("inside " . __FUNCTION__);
-  $item = &$node->data;
-  //  cdp($item->print_r());
-
-  global $_coder_upgrade_module_name;
-
-  // Rename function.
-  $item->name = $_coder_upgrade_module_name . '_trigger_info';
-  // Update document comment.
-  $item->comment = preg_replace('@hook_hook_info@', "hook_trigger_info", $item->comment);
-
-  // Restructure the triggers array.
-  $body = &$item->body;
-
-  if (!($return = $body->find(T_RETURN, 'reverse'))) {
-    clp("ERROR: return statement not found in hook_hook_info");
-    return;
-  }
-  //  cdp("Printing return item");
-  $value = &$return->value;
-  cdp($value->print_r());
-  cdp($value->toString());
-  //  cdp("Printing return item DONE");
-
-  // Examine the type of the operand in the return statement.
-  $operand = $return->value->getElement();
-  if (get_class($operand) == 'PGPArray') {
-    // Use case 1 - returns array directly.
-    // The keys of this array are the hook function names.
-    $array1 = $value->getElement();
-    if (!is_a($array1, 'PGPArray')) {
-      clp("ERROR: return statement does not include an array of values in hook_hook_info");
-      return;
-    }
-    coder_upgrade_callback_hook_info($array1);
-  }
-  elseif (get_class($operand) == 'PGPOperand') {
-    // Use case 2 - assigns array to variable, then returns variable.
-    // TODO Do callback on body statements until find the assignment to the return variable.
-    $variable = $operand->toString();
-    if (!($assign = $body->find(T_ASSIGNMENT))) {
-      clp("ERROR: assignment statement not found in hook_hook_info");
-      return;
-    }
-    $variable2 = $assign->values->getElement()->getElement()->toString();
-    if ($variable == $variable2) {
-      cdp("Assignment variable matches return variable");
-      //      $array1 = $assign->values->getElement()->last();
-      $value1 = $assign->values->getElement();
-      $array1 = $value1->getElement($value1->count() - 1);
-      if (!is_a($array1, 'PGPArray')) {
-        clp("ERROR: assignment statement does not include an array of values in hook_hook_info");
-        return;
-      }
-      coder_upgrade_callback_hook_info($array1);
-    }
-  }
-}
-
-/*
-   *
-L0  return array(
-L1    'node' => array(
-L2      'nodeapi' => array(
-L3        'presave' => array(
-L4          'runs when' => t('When either saving a new post or updating an existing post'),
-          ),
-   *
-   */
-
-function coder_upgrade_callback_hook_info(&$array1) { // DONE
-  cdp("inside " . __FUNCTION__);
-
-  $editor = PGPEditor::getInstance();
-  //  $list = new PGPList();
-
-  // The keys of this array are the hook function names.
-  //  $array1 = $value->getElement();
-  if (!is_a($array1, 'PGPArray')) {
-    clp("ERROR: return statement does not include an array of values in hook_hook_info");
-    return;
-  }
-
-  // This check duplicates above - go with one of them.
-  if (get_class($array1) == 'PGPArray') {
-    // Grab the PGPList of values.
-    $values1 = $array1->values;
-
-    $current1 = $values1->first();
-    while ($current1->next != NULL) {
-      //      cdp('$current1->type = '. $current1->type);
-      if ($current1->type == 'key') {
-        //        $key = &$current1->data; // This is not the one needed; we need the next level down.
-      }
-      elseif ($current1->type == 'value') {
-        // This is the value expression for an hook key.
-        $value1 = $current1->data;
-        //        cdp('class = ' . get_class($value));
-        if (get_class($value1) != 'PGPExpression') {
-          $current1 = &$current1->next;
-          continue;
-        }
-        // This is the array of hook items.
-        $array2 = $value1->getElement();
-        if (!is_a($array2, 'PGPArray')) {
-          clp("ERROR: array2 is not an array of values in hook_hook_info");
-          return;
-        }
-        $values2 = $array2->values;
-        $current2 = $values2->first();
-        while ($current2->next != NULL) {
-          if ($current2->type == 'key') {
-            // This is the module (or content type) the hook pertains to.
-            $prefix = trim($current2->data->toString(), "'\"");
-            // TODO Other prefixes may need to be modified.
-            $prefix = ($prefix == 'nodeapi') ? 'node' : $prefix;
-          }
-          elseif ($current2->type == 'value') {
-            // This is the value expression for an hook key.
-            $value2 = $current2->data;
-            // This is the array of hook operation items.
-            $array3 = $value2->getElement();
-            if (!is_a($array3, 'PGPArray')) {
-              clp("ERROR: array3 is not an array of values in hook_hook_info");
-              return;
-            }
-            $values3 = $array3->values;
-            $current3 = $values3->first();
-            while ($current3->next != NULL) {
-              if ($current3->type == 'key') {
-                // This is the module (or content type) the hook pertains to. ???
-                // Concatenate prefix with key.
-                $suffix = trim($current3->data->toString(), "'\"");
-                $new_key = "'{$prefix}_$suffix'";
-                $current3->data = $editor->expressionToStatement($new_key);
-              }
-              elseif ($current3->type == 'value') {
-                // This is the value expression for an hook key.
-                $value3 = $current3->data;
-                // This is the array of hook operation items.
-                $array4 = $value3->getElement();
-                if (!is_a($array4, 'PGPArray')) {
-                  clp("ERROR: array4 is not an array of values in hook_hook_info");
-                  return;
-                }
-                $values4 = $array4->values;
-                $current4 = $values4->first();
-                while ($current4->next != NULL) {
-                  if ($current4->type == 'key') {
-                    // Change key from 'runs when' to 'label'.
-                    $old_key = trim($current4->data->toString(), "'\"");
-                    if ($old_key == 'runs when') {
-                      $new_key = "'label'";
-                      $current4->data = $editor->expressionToStatement($new_key);
-                    }
-/*
-                    if ($leve3->type == 'key') {
-                      // This is the module (or content type) the hook pertains to.
-                      $element = $leve3->getElement();
-                      if (is_array($element) && trim($element['value'], "'\"") == 'runs when') {
-                        $element['value'] = "'label'";
-                      }
-                      $prefix = trim($current2->data->toString(), "'\"");
-                    }
-*/
-                  }
-                  $current4 = $current4->next;
-                }
-              }
-              //              $list->insertLast($current3->data);
-              //              cdp($list->toString());
-
-              $current3 = $current3->next;
-            }
-            // Move up level 3 to level 2 of the array.
-            $array2->values = $array3->values;
-          }
-          $current2 = $current2->next;
-        }
-      }
-      $current1 = $current1->next;
-    }
-  }
-}
-
-/**
  * Updates hook_install() or hook_uninstall().
  *
  * Database schema (un)installed automatically.
@@ -1147,180 +811,6 @@ function coder_upgrade_convert_menu_link_alter(&$node) {
     $item->deleteParameter(1);
   }
   // TODO Do we need to check for $menu in the body of this hook?
-}
-
-/**
- * Updates hook_node_info().
- *
- * In hook_node_info() change 'module' back to 'base' and change 'node' to
- * 'node_content'.
- *
- * @todo A similar change applies to the array passed as the parameter to
- * node_type_set_defaults($example_node_type).
- *
- * NOTE
- * In general, there are 3 typical cases (or code styles):
- * - return array('key1' => array('key2' => ...);
- * - $var = array('key1' => array('key2' => ...); return $var;
- * - $var = array(); $var['key1'] = array('key2' => ...); return $var;
- *
- * The inner array to modify is 3 levels deep in the first 2 cases, but only
- * 2 levels deep in the third. In the first 2 cases, we can loop on the key1
- * arrays. In the third, the loop is on assignment statements.
- *
- */
-function coder_upgrade_convert_node_info(&$node) { // DONE
-  cdp("inside " . __FUNCTION__);
-  $item = &$node->data;
-  //  cdp($item->print_r());
-
-  // Get the function body.
-  $body = &$item->body;
-
-  if (!($return = $body->find(T_RETURN, 'reverse'))) {
-    clp("ERROR: return statement not found in hook_node_info");
-    return;
-  }
-
-  $value = &$return->value;
-
-  // Examine the type of the operand in the return statement.
-  $operand = $return->value->getElement();
-  if (get_class($operand) == 'PGPArray') {
-    // Use case 1 - returns array directly.
-    // The keys of this array are the node type items.
-    $array1 = $value->getElement();
-    coder_upgrade_callback_node_case1($array1);
-  }
-  elseif (get_class($operand) == 'PGPOperand') {
-
-    /*
-     * Loop on body statements until we find an assignment to the return variable.
-     * The assignment could be to an array element like $info['node_type_name'] = array(...).
-     * Or directly to the variable like $info = array('node_type_name' = array(...)).
-     */
-
-    $return_variable = $operand->toString();
-    $count = 0;
-
-    $current = $body->first();
-    while ($current->next != NULL) {
-      if (is_object($current->data) && $current->data->type == T_ASSIGNMENT) {
-        $assignment = $current->data;
-        $assign_variable = $assignment->values->getElement()->getElement()->toString();
-        if ($return_variable == $assign_variable) {
-          // Use case 2: makes one assignment to array variable; returns variable.
-          cdp("Assignment variable matches return variable");
-          $value1 = $assignment->values->getElement();
-          $array1 = $value1->getElement($value1->count() - 1);
-          coder_upgrade_callback_node_case1($array1);
-          $count++;
-        }
-        elseif (strpos($assign_variable, $return_variable) !== FALSE) {
-          // Use case 3: makes multiple assignments to array variable; returns variable.
-          cdp("Assignment variable matches return variable");
-          $value1 = $assignment->values->getElement();
-          $array1 = $value1->getElement($value1->count() - 1);
-          coder_upgrade_callback_node_info($array1);
-          $count++;
-        }
-      }
-      $current = $current->next;
-    }
-    if (!$count) {
-      clp("ERROR: assignment statement to return variable not found in hook_node_info");
-      return;
-    }
-  }
-}
-
-/**
- * Loops on elements of first-level array.
- *
- * @todo Abstract to the PGPArray object: traverse with callback.
- * This is setting up as a nice recursive function.
- *
- * @param PGPArray $array1
- */
-function coder_upgrade_callback_node_case1(&$array1) { // DONE
-  cdp("inside " . __FUNCTION__);
-
-  // The keys of this array are the node types.
-  if (!is_a($array1, 'PGPArray')) {
-    clp("ERROR: array1 is not a PGPArray object in hook_node_info");
-    return;
-  }
-
-  // Grab the PGPList of values.
-  $values1 = $array1->values;
-
-  $current1 = $values1->first();
-  while ($current1->next != NULL) {
-    if ($current1->type == 'key') {
-      $key1 = $current1->data;
-      // Do something if appropriate.
-      // This is not the one needed; we need the next level down.
-    }
-    elseif ($current1->type == 'value') {
-      // This is the value expression for a node type key.
-      $value1 = $current1->data;
-      if (get_class($value1) != 'PGPExpression') {
-        clp("ERROR: value1 is not a PGPExpression object in hook_node_info");
-        return;
-      }
-      // This is the array of node type items.
-      $array2 = $value1->getElement();
-      coder_upgrade_callback_node_info($array2);
-    }
-    $current1 = $current1->next;
-  }
-}
-
-/**
- * Loops on elements of second-level array.
- *
- * @todo Abstract to the PGPArray object: traverse with callback.
- *
- * @param PGPArray $array2
- */
-function coder_upgrade_callback_node_info(&$array2) { // DONE
-  cdp("inside " . __FUNCTION__);
-
-  // The keys of this array are the node type items.
-  if (!is_a($array2, 'PGPArray')) {
-    clp("ERROR: array2 is not a PGPArray object in hook_node_info");
-    return;
-  }
-
-  $editor = PGPEditor::getInstance();
-  $change_value = FALSE;
-
-  // Grab the PGPList of values.
-  $values2 = $array2->values;
-
-  $current2 = $values2->first();
-  while ($current2->next != NULL) {
-    if ($current2->type == 'key') {
-      // This is the node type item key.
-      $key2 = trim($current2->data->toString(), "'\"");
-      if ($key2 == 'module') {
-        // Change key to 'base'.
-        $current2->data = $editor->expressionToStatement("'base'");
-        $change_value = TRUE;
-      }
-    }
-    elseif ($current2->type == 'value') {
-      if ($change_value) {
-        $change_value = FALSE;
-        $value2 = trim($current2->data->toString(), "'\"");
-        if ($value2 == 'node') {
-          // Change value to 'node_content'.
-          $current2->data = $editor->expressionToStatement("'node_content'");
-        }
-      }
-    }
-    $current2 = $current2->next;
-  }
 }
 
 /**
@@ -2128,7 +1618,6 @@ function coder_upgrade_convert_return(&$node, $hook, $callback = '') { // (OMIT)
   $msg = '// TODO The array elements in this hook function need to be changed.';
 
   $item = &$node->data;
-  //  cdp($item->print_r());
 
   // Get the function body.
   $body = &$item->body;
@@ -2139,10 +1628,10 @@ function coder_upgrade_convert_return(&$node, $hook, $callback = '') { // (OMIT)
     return;
   }
 
-  $value = &$return->getParameter(); // $value = &$return->value;
+  $value = &$return->getParameter();
 
   // Examine the type of the operand in the return statement.
-  $operand = $value->getElement(); // $operand = $return->value->getElement();
+  $operand = $value->getElement();
   if (get_class($operand) == 'PGPArray') {
     // Use case 1 - returns array directly.
     // The keys of this array are the node type items.
@@ -2280,14 +1769,330 @@ function coder_upgrade_callback_return_case3(&$array2, $hook, $callback = '') { 
   while ($current2->next != NULL) {
     if ($current2->type == 'key') {
       $key2 = trim($current2->data->toString(), "'\"");
-      $callback($current2, $current2->type, $key2, NULL);
+      $callback($array2, $current2, $hook, $current2->type, $key2, NULL);
     }
     elseif ($current2->type == 'value') {
       $value2 = trim($current2->data->toString(), "'\"");
-      $callback($current2, $current2->type, $key2, $value2);
+      $callback($array2, $current2, $hook, $current2->type, $key2, $value2);
       $key2 = ''; // Clear key in case not all elements have keys.
     }
     $current2 = $current2->next;
+  }
+}
+
+/**
+ * Updates hook_action_info() arrays.
+ *
+ * The arrays returned by hook_action_info(), hook_action_info_alter(),
+ * actions_list(), actions_get_all_actions(), actions_actions_map() were
+ * changed.
+ *
+ * @todo The other functions listed above.
+ * @todo Database table {actions} - 'description' field is now called 'label'.
+ *
+ * @param PGPArray $array2
+ *   The array object containing the array element ($current2).
+ * @param PGPNode $current2
+ *   The node object of the array element.
+ * @param string $hook
+ *   The hook name.
+ * @param string $type
+ *   The type (key or value) of the array element.
+ * @param string $key
+ *   The key of the array element (or the most recent key).
+ * @param string $value
+ *   The value of the array element (or NULL if element is a key).
+ */
+function coder_upgrade_callback_action_info(&$array2, &$current2, $hook, $type, $key, $value) { // DONE (NEEDS WORK on other functions listed above)
+  cdp("inside " . __FUNCTION__);
+
+  if (!is_a($current2, 'PGPNode')) {
+    clp("ERROR: current2 is not a PGPNode object in hook_$hook");
+    return;
+  }
+
+  $editor = PGPEditor::getInstance();
+
+  // The keys of this array are the action function items.
+  if ($type == 'key' && $key == 'description') {
+    cdp("Found the description key");
+    if (!$current2->data->isType(T_CONSTANT_ENCAPSED_STRING)) {
+      clp("ERROR: key expression is not a string in hook_$hook");
+      return;
+    }
+    // Change key from 'description' to 'label.'
+    $current2->data = $editor->expressionToStatement("'label'");
+  }
+  elseif ($type == 'key' && $key == 'hooks') {
+    cdp("Found the hooks key");
+    if (!$current2->data->isType(T_CONSTANT_ENCAPSED_STRING)) {
+      clp("ERROR: key expression is not a string in hook_$hook");
+      return;
+    }
+    // Change key from 'hooks' to 'triggers.'
+    $current2->data = $editor->expressionToStatement("'triggers'");
+
+    // Find the value element for this key.
+    if (!$array2->findNextValue($current2)) {
+      clp("ERROR: did not find a value expression for the triggers key in hook_$hook");
+      return;
+    }
+
+    if (!$current2->data->isType(T_ARRAY)) {
+      clp("ERROR: value expression is not a PGPArray object in hook_$hook");
+      return;
+    }
+
+    /*
+     * The triggers (formerly hooks) element is an associative array keyed by
+     * module name with its value being an array of actions. The new format
+     * combines the module name and action, eliminating one nested array.
+     * Example:
+     * 'hooks' => array(
+     *   'comment' => array('insert', 'update'),
+     *   "taxonomy" => array("insert", "update", "delete", "view"),
+     * )
+     *
+     * 'triggers' => array(
+     *   'comment_insert', 'comment_update',
+     *   'taxonomy_insert', 'taxonomy_update', 'taxonomy_delete', 'taxonomy_view'
+     * )
+     */
+    $triggers = &$current2->data->getElement();
+
+    $ops = array();
+
+    $trigger = $triggers->values->first();
+    while ($trigger->next != NULL) {
+      if ($trigger->type == 'key') {
+        // This is the module (or content type) the action pertains to.
+        $prefix = trim($trigger->data->toString(), "'\"");
+      }
+      elseif ($trigger->type == 'value') {
+        if (!$trigger->data->isType(T_ARRAY)) {
+          clp("ERROR: trigger value expression is not a PGPArray object in hook_$hook");
+          return;
+        }
+
+        // This is the array of action operation items.
+        $operation_items = $trigger->data->getElement();
+        $string = $operation_items->values->toString();
+        $items = explode(', ', $string);
+        foreach ($items as $op) {
+          $ops[] = "'{$prefix}_" . trim($op, "'\"") . "'";
+        }
+      }
+      $trigger = &$trigger->next;
+    }
+    $string = 'array(' . implode(', ', $ops) . ')';
+    $editor = PGPEditor::getInstance();
+    $expression = $editor->expressionToStatement($string);
+    // TODO Use multiline format? Depending on number of items?
+    $expression->getElement()->multiline = 1;
+    $expression->getElement()->preserve = 0;
+    // Replace the triggers nested array with new array.
+    $triggers = $expression;
+  }
+}
+
+/**
+ * Updates hook_hook_info() arrays.
+ *
+ * hook_hook_info() is now called hook_trigger_info(), and its return value has
+ * been changed and simplified.
+ *
+ * @todo Database table {trigger_assignments} - 'op' field was removed, and the
+ * 'hook' field now contains the full function name.
+ *
+ * @param PGPArray $array2
+ *   The array object containing the array element ($current2).
+ * @param PGPNode $current2
+ *   The node object of the array element.
+ * @param string $hook
+ *   The hook name.
+ * @param string $type
+ *   The type (key or value) of the array element.
+ * @param string $key
+ *   The key of the array element (or the most recent key).
+ * @param string $value
+ *   The value of the array element (or NULL if element is a key).
+ */
+function coder_upgrade_callback_hook_info(&$array2, &$current2, $hook, $type, $key, $value) { // DONE
+  cdp("inside " . __FUNCTION__);
+
+  if (!is_a($current2, 'PGPNode')) {
+    clp("ERROR: current2 is not a PGPNode object in hook_$hook");
+    return;
+  }
+
+  $editor = PGPEditor::getInstance();
+
+  /*
+   * Array levels
+   * - L0 return array(
+   * - L1   'node' => array(
+   * - L2     'nodeapi' => array(
+   * - L3       'presave' => array(
+   * - L4         'runs when' => t('When either saving a new post or updating an existing post'),
+   */
+
+  // The keys of this array are the module (or content type) the hook pertains to.
+  if ($type == 'key') {
+    cdp("Found the module (or content type) key");
+    if (!$current2->data->isType(T_CONSTANT_ENCAPSED_STRING)) {
+      clp("ERROR: key expression is not a string in hook_$hook");
+      return;
+    }
+
+    // This is the module (or content type) the hook pertains to.
+    // TODO Other prefixes may need to be modified.
+    switch ($key) {
+      case 'nodeapi':
+        $prefix = 'node';
+        break;
+      case 'taxonomy':
+        $prefix = 'taxonomy_term';
+        break;
+      default:
+        $prefix = $key;
+        break;
+    }
+
+    // Find the value element for this key.
+    if (!$array2->findNextValue($current2)) {
+      clp("ERROR: did not find a value expression for the triggers key in hook_$hook");
+      return;
+    }
+
+    if (!$current2->data->isType(T_ARRAY)) {
+      clp("ERROR: value expression is not a PGPArray object in hook_$hook");
+      return;
+    }
+
+    /*
+     * The triggers information element is an associative array doubly keyed by
+     * module name with its value being an array of action information. The new
+     * format combines the module name and action, eliminating one nested array.
+     * Example:
+     * 'node' => array(
+     *   'nodeapi' => array(
+     *     'presave' => array(
+     *       'runs when' => t('When either saving a new post or updating an existing post'),
+     *     ),
+     *   ),
+     * ),
+     *
+     * 'node' => array(
+     *   'node_presave' => array(
+     *     'label' => t('When either saving a new post or updating an existing post'),
+     *   ),
+     * ),
+     */
+    $triggers = &$current2->data->getElement();
+
+    $trigger = $triggers->values->first();
+    while ($trigger->next != NULL) {
+      if ($trigger->type == 'key') {
+        if (!$trigger->data->isType(T_CONSTANT_ENCAPSED_STRING)) {
+          clp("ERROR: trigger key expression is not a string in hook_$hook");
+          return;
+        }
+        // This is the module (or content type) the hook pertains to.
+        // Concatenate prefix with key.
+        $suffix = trim($trigger->data->toString(), "'\"");
+        $new_key = "'{$prefix}_$suffix'";
+        $trigger->data = $editor->expressionToStatement($new_key);
+      }
+      elseif ($trigger->type == 'value') {
+        if (!$trigger->data->isType(T_ARRAY)) {
+          clp("ERROR: trigger value expression is not a PGPArray object in hook_$hook");
+          return;
+        }
+
+        // This is the array of trigger information items.
+        // Currently, the only key is 'label' (formerly 'runs when').
+        $information_items = &$trigger->data->getElement();
+        $information_items->multiline = 1;
+        $information_items->preserve = 0;
+
+        if (!$information_items->changeKey('runs when', "'label'")) {
+          clp("ERROR: could not change 'runs when' key expression in hook_$hook");
+          clp($information_items->toString());
+          return;
+        }
+      }
+      $trigger = &$trigger->next;
+    }
+    // Move up level 3 (triggers info) to level 2 (redundant module name) of the array.
+    $array2->values = $triggers->values; // $array2->values = $array3->values;
+    /*
+     * Set array properties so the rewritten array:
+     * - has a comma after all values
+     * - is not indented one level too many
+     */
+    $array2->count = $triggers->count;
+    $array2->commaCount = $triggers->count;
+    $array2->multiline = 1;
+    $array2->preserve = 0;
+  }
+}
+
+/**
+ * Updates hook_node_info() arrays.
+ *
+ * In hook_node_info() change 'module' back to 'base' and change 'node' to
+ * 'node_content'.
+ *
+ * @todo A similar change applies to the array passed as the parameter to
+ * node_type_set_defaults($example_node_type).
+ *
+ * @param PGPArray $array2
+ *   The array object containing the array element ($current2).
+ * @param PGPNode $current2
+ *   The node object of the array element.
+ * @param string $hook
+ *   The hook name.
+ * @param string $type
+ *   The type (key or value) of the array element.
+ * @param string $key
+ *   The key of the array element (or the most recent key).
+ * @param string $value
+ *   The value of the array element (or NULL if element is a key).
+ */
+function coder_upgrade_callback_node_info(&$array2, &$current2, $hook, $type, $key, $value) { // DONE
+  cdp("inside " . __FUNCTION__);
+
+  if (!is_a($current2, 'PGPNode')) {
+    clp("ERROR: current2 is not a PGPNode object in hook_$hook");
+    return;
+  }
+
+  $editor = PGPEditor::getInstance();
+
+  // The keys of this array are the node type items.
+  if ($type == 'key' && $key == 'module') {
+    cdp("Found the module key");
+    if (!$current2->data->isType(T_CONSTANT_ENCAPSED_STRING)) {
+      clp("ERROR: key expression is not a string in hook_$hook");
+      return;
+    }
+    // Change key from 'module' to 'base.'
+    $current2->data = $editor->expressionToStatement("'base'");
+
+    // Find the value element for this key.
+    if (!$array2->findNextValue($current2)) {
+      clp("ERROR: did not find a value expression for the base key in hook_$hook");
+      return;
+    }
+
+    if (!$current2->data->isType(T_CONSTANT_ENCAPSED_STRING)) {
+      clp("ERROR: value expression is not a string in hook_$hook");
+      return;
+    }
+    if (trim($current2->data->toString(), "'\"") == 'node') {
+      // Change value from 'node' to 'node_content.'
+      $current2->data = $editor->expressionToStatement("'node_content'");
+    }
   }
 }
 
@@ -2296,62 +2101,64 @@ function coder_upgrade_callback_return_case3(&$array2, $hook, $callback = '') { 
  *
  * Each theme function must register how it integrates with drupal_render().
  *
+ * @param PGPArray $array2
+ *   The array object containing the array element ($current2).
  * @param PGPNode $current2
- *   The node of the array element.
+ *   The node object of the array element.
+ * @param string $hook
+ *   The hook name.
+ * @param string $type
+ *   The type (key or value) of the array element.
  * @param string $key
  *   The key of the array element (or the most recent key).
- * @param
+ * @param string $value
+ *   The value of the array element (or NULL if element is a key).
  */
-function coder_upgrade_callback_theme(&$current2, $type, $key, $value) { // (OMIT)
+function coder_upgrade_callback_theme(&$array2, &$current2, $hook, $type, $key, $value) { // DONE
   cdp("inside " . __FUNCTION__);
 
-  // The keys of this array are the node type items.
   if (!is_a($current2, 'PGPNode')) {
-    clp("ERROR: current2 is not a PGPNode object in hook_theme");
+    clp("ERROR: current2 is not a PGPNode object in hook_$hook");
     return;
   }
 
+  $editor = PGPEditor::getInstance();
+
+  // The keys of this array are the theme items.
   if ($type == 'key' && $key == 'arguments') {
     cdp("Found the arguments key");
-    $key_expression = $current2->data;
-    if (!$key_expression->isType(T_CONSTANT_ENCAPSED_STRING)) {
-      clp("ERROR: key expression is not a string in hook_theme");
+    if (!$current2->data->isType(T_CONSTANT_ENCAPSED_STRING)) {
+      clp("ERROR: key expression is not a string in hook_$hook");
       return;
     }
-    $key_element = &$key_expression->getElement();
+    // Save the key expression for possible modification.
+    $key_expression = &$current2->data;
 
     // Find the value element for this key.
-    $current2 = $current2->next; // $current2 = $values2->first();
-    while ($current2->next != NULL) {
-      if ($current2->type == 'value') {
-        break;
-      }
-      $current2 = $current2->next;
-    }
-    if ($current2->next == NULL) {
-      clp("ERROR: did not find a value expression for the arguments key in hook_theme");
+    if (!$array2->findNextValue($current2)) {
+      clp("ERROR: did not find a value expression for the arguments key in hook_$hook");
       return;
     }
 
-    $expression = $current2->data;
-    if (!$expression->isType(T_ARRAY)) {
-      clp("ERROR: value expression is not a PGPArray object in hook_theme");
+    if (!$current2->data->isType(T_ARRAY)) {
+      clp("ERROR: value expression is not a PGPArray object in hook_$hook");
       return;
     }
 
     $array = $current2->data->getElement();
     $key0 = trim($array->getKey()->toString(), "'\"");
-    // At a minimum, an array with key-value pairs will have 4 keys
-    // after one pair: lparens, key, assign, and value.
+    // At a minimum, an array with key-value pairs will have 4 keys after one
+    // pair: lparens, key, assign, and value.
     // What other likely values are there for a render element?
     // Does $form ever appear with other variables? If so, how is this to be handled?
-    if ($array->count == 1 && in_array($key0, array('form', 'element'))) { // if ($array->values->count() == 4 && in_array($key0, array('form', 'element'))) {
+    // TODO This is not a deterministic way of setting the key.
+    if ($array->count == 1 && in_array($key0, array('form', 'element', 'elements'))) { // if ($array->values->count() == 4 && in_array($key0, array('form', 'element'))) {
       // Change key from 'arguments' to 'render element.'
-      $key_element['value'] = "'render element'";
+      $key_expression = $editor->expressionToStatement("'render element'");
     }
     else {
       // Change key from 'arguments' to 'variables.'
-      $key_element['value'] = "'variables'";
+      $key_expression = $editor->expressionToStatement("'variables'");
     }
   }
 }
