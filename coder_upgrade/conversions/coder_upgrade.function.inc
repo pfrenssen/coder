@@ -1019,9 +1019,10 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
   // SWITCH condition.
   $current = $body->first();
   while ($current->next != NULL) {
+    $found = FALSE;
     $statement = &$current->data;
     if (is_object($statement)) {
-      cdp($statement->print_r());
+      cdp($statement);
     }
     if (is_a($statement, 'PGPConditional')) {
       //      cdp("inside PGPConditional check");
@@ -1035,6 +1036,7 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
         $operand = $condition->toString();
         // If the condition variable matches the $op variable, then go to work.
         if ($op == $operand) {
+          $found = TRUE;
           $cases = $statement->body;
           $node->traverse($cases, $callback);
         }
@@ -1051,6 +1053,7 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
         $operations = coder_upgrade_extract_operations($statement->conditions, $op);
         // Loop on the extracted operations.
         foreach ($operations as $operation) {
+          $found = TRUE;
           // Change a T_ELSEIF to a T_IF in the new hook function.
           $statement->type = T_IF; // If it isn't already.
           $block = new stdClass();
@@ -1061,11 +1064,22 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
         }
       }
     }
+    elseif (is_array($statement) && $statement['type'] == T_WHITESPACE) {
+      // Remove whitespace.
+      $found = TRUE;
+    }
     // Move to next node.
     $current = &$current->next;
-    // Get the statement list the switch statement (or if block) node is part of.
-    $container = &$current->container;
-    $container->delete($current->previous);
+    if ($found) {
+      // Get the statement list the switch statement (or if block) node is part of.
+      $container = &$current->container;
+      $container->delete($current->previous);
+    }
+  }
+  if ($body->count()) {
+    $editor = PGPEditor::getInstance();
+    // TODO Insert comment indicating the block was not changed.
+    $body->insertFirst($editor->commentToStatement('// TODO Remaining code in this function needs to be moved to the appropriate new hook function.')/*, 'comment'*/);
   }
 }
 
@@ -1198,7 +1212,7 @@ function coder_upgrade_callback_block($node, $case_node, $operation = '') {
 
   // http://drupal.org/node/224333#block_deltas_renamed
   // Change numeric block keys to strings
-  $editor = new PGPEditor();
+  $editor = PGPEditor::getInstance();
   $body = &$case_node->data->body;
   $text = $body->toString();
   $search = array(
@@ -1215,7 +1229,7 @@ function coder_upgrade_callback_block($node, $case_node, $operation = '') {
   $text = preg_replace($search, $replace, $text, -1, $count);
   if ($count) {
     $body = $editor->textToStatements($text);
-    $body->insertFirst($editor->commentToStatement('// TODO Rename block deltas (e.g. delta-0) to readable strings.', 'comment'));
+    $body->insertFirst($editor->commentToStatement('// TODO Rename block deltas (e.g. delta-0) to readable strings.'), 'comment');
   }
 
   // Create the new hook function.
@@ -1612,7 +1626,7 @@ function coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters) {
  * arrays. In the third, the loop is on assignment statements.
  *
  */
-function coder_upgrade_convert_return(&$node, $hook, $callback = '') { // (OMIT)
+function coder_upgrade_convert_return(&$node, $hook, $callback = '') { // DONE
   cdp("inside " . __FUNCTION__);
   $editor = PGPEditor::getInstance();
   $msg = '// TODO The array elements in this hook function need to be changed.';
@@ -1624,7 +1638,7 @@ function coder_upgrade_convert_return(&$node, $hook, $callback = '') { // (OMIT)
 
   if (!($return = $body->find(T_RETURN, 'reverse'))) {
     clp("ERROR: return statement not found in hook_$hook");
-    $body->insertFirst($editor->commentToStatement($msg, 'comment'));
+    $body->insertFirst($editor->commentToStatement($msg), 'comment');
     return;
   }
 
@@ -1648,57 +1662,71 @@ function coder_upgrade_convert_return(&$node, $hook, $callback = '') { // (OMIT)
 
     $return_variable = $operand->toString();
     $count = 0;
-
-    $current = $body->first();
-    while ($current->next != NULL) {
-      if (is_object($current->data) && $current->data->type == T_ASSIGNMENT) { // if ($current->data->isType(T_ASSIGNMENT)) {
-        $assignment = $current->data;
-        $assign_variable = $assignment->values->getElement()->getElement()->stripComments()->toString();
-        if ($return_variable == $assign_variable) {
-          // Use case 2: makes one assignment to array variable; returns variable.
-          cdp("Assignment variable matches return variable");
-          /*
-           * TODO This equality check would fail if comments are embedded between
-           * variable and operator.
-           * Example: $theme /**\/ = $array + array(..);
-           */
-          $value1 = $assignment->values->getElement();
-          /*
-           * TODO Find the operand of class PGPArray.
-           * Example: $theme /**\/ = $array + array(..);
-           */
-          $array1 = $value1->getElement($value1->count() - 1);
-          if (!is_object($current->data) || get_class($array1) != 'PGPArray') {
-            continue;
-          }
-          coder_upgrade_callback_return_case1($array1, $hook, $callback);
-          $count++;
-        }
-        elseif (strpos($assign_variable, $return_variable) !== FALSE) {
-          // Use case 3: makes multiple assignments to array variable; returns variable.
-          cdp("Assignment variable matches return variable");
-          /*
-           * TODO This substring check would fail if comments are embedded between
-           * variable and operator.
-           * Example: $theme /**\/ = $array + array(..);
-           */
-          $value1 = $assignment->values->getElement();
-          $array1 = $value1->getElement($value1->count() - 1);
-          coder_upgrade_callback_return_case3($array1, $hook, $callback);
-          $count++;
-        }
-      }
-      $current = $current->next;
-    }
+    coder_upgrade_convert_return_loop($body->first(), $count, $return_variable, $hook, $callback);
     if (!$count) {
       clp("ERROR: assignment statement to return variable not found in hook_$hook");
-      $body->insertFirst($editor->commentToStatement($msg, 'comment'));
+      $body->insertFirst($editor->commentToStatement($msg), 'comment');
       return;
     }
   }
   else {
     clp("ERROR: operand of return statement is not an array or variable in hook_$hook");
-    $body->insertFirst($editor->commentToStatement($msg, 'comment'));
+    $body->insertFirst($editor->commentToStatement($msg), 'comment');
+  }
+}
+
+function coder_upgrade_convert_return_loop(&$node, &$count, $return_variable, $hook, $callback = '') { // NOT DONE
+  cdp("inside " . __FUNCTION__);
+
+  /*
+   * Loop on body statements until we find an assignment to the return variable.
+   * The assignment could be to an array element like $info['node_type_name'] = array(...).
+   * Or directly to the variable like $info = array('node_type_name' = array(...)).
+   */
+
+  $current = $node;
+  while ($current->next != NULL) {
+    if (is_object($current->data) && $current->data->type == T_ASSIGNMENT) { // if ($current->data->isType(T_ASSIGNMENT)) {
+      $assignment = $current->data;
+      $assign_variable = $assignment->values->getElement()->getElement()->stripComments()->toString();
+      if ($return_variable == $assign_variable) {
+        // Use case 2: makes one assignment to array variable; returns variable.
+        cdp("Assignment variable matches return variable");
+        /*
+         * TODO This equality check would fail if comments are embedded between
+         * variable and operator.
+         * Example: $theme /**\/ = $array + array(..);
+         */
+        $value1 = $assignment->values->getElement();
+        /*
+         * TODO Find the operand of class PGPArray.
+         * Example: $theme /**\/ = $array + array(..);
+         */
+        $array1 = $value1->getElement($value1->count() - 1);
+        if (!is_object($current->data) || get_class($array1) != 'PGPArray') {
+          continue;
+        }
+        coder_upgrade_callback_return_case1($array1, $hook, $callback);
+        $count++;
+      }
+      elseif (strpos($assign_variable, $return_variable) !== FALSE) {
+        // Use case 3: makes multiple assignments to array variable; returns variable.
+        cdp("Assignment variable matches return variable");
+        /*
+         * TODO This substring check would fail if comments are embedded between
+         * variable and operator.
+         * Example: $theme /**\/ = $array + array(..);
+         */
+        $value1 = $assignment->values->getElement();
+        $array1 = $value1->getElement($value1->count() - 1);
+        coder_upgrade_callback_return_case3($array1, $hook, $callback);
+        $count++;
+      }
+    }
+    elseif (is_a($current->data, 'PGPConditional')) {
+      coder_upgrade_convert_return_loop($current->data->body->first(), $count, $return_variable, $hook, $callback);
+    }
+    $current = $current->next;
   }
 }
 
@@ -1710,7 +1738,7 @@ function coder_upgrade_convert_return(&$node, $hook, $callback = '') { // (OMIT)
  *
  * @param PGPArray $array1
  */
-function coder_upgrade_callback_return_case1(&$array1, $hook, $callback = '') { // (OMIT)
+function coder_upgrade_callback_return_case1(&$array1, $hook, $callback = '') { // DONE
   cdp("inside " . __FUNCTION__);
 
   // The keys of this array are the node types.
@@ -1751,7 +1779,7 @@ function coder_upgrade_callback_return_case1(&$array1, $hook, $callback = '') { 
  *
  * @param PGPArray $array2
  */
-function coder_upgrade_callback_return_case3(&$array2, $hook, $callback = '') { // (OMIT)
+function coder_upgrade_callback_return_case3(&$array2, $hook, $callback = '') { // DONE
   cdp("inside " . __FUNCTION__);
   $callback = $callback == '' ? "coder_upgrade_callback_$hook" : $callback;
 

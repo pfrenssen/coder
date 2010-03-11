@@ -32,15 +32,15 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
     file_put_contents('output.html', __METHOD__ . "\n", FILE_APPEND);
     file_put_contents('output.html', $this->site_directory . "\n", FILE_APPEND);
     parent::setUp('grammar_parser', 'coder_upgrade'); //, 'gpui');
-  	// Create output file directories.
-//  	module_load_include('install', 'gpui'); // module_load_include('install', 'grammar_parser');
-  	module_load_include('install', 'coder_upgrade');
+    // Create output file directories.
+//    module_load_include('install', 'gpui'); // module_load_include('install', 'grammar_parser');
+    module_load_include('install', 'coder_upgrade');
 //    gpui_install();
-  	coder_upgrade_install();
+    coder_upgrade_install();
 
-  	// Enable debug printing.
-  	global $debug;
-  	$debug = TRUE;
+    // Enable debug printing.
+    global $debug;
+    $debug = TRUE;
   }
 
   /**

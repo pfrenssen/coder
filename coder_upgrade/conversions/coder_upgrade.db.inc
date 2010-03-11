@@ -26,6 +26,9 @@
  * @param PGPFunctionCall $item
  */
 function coder_upgrade_upgrade_call_db_query_alter(&$item, &$reader) {
+  // Disable this routine until it is improved.
+  return;
+
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 

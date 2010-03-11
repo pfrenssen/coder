@@ -96,6 +96,7 @@
  *
  * User API
  * http://drupal.org/node/224333#user_cancel (ALSO in convert_functions)
+ * http://drupal.org/node/224333#user_load_multiple
  * http://drupal.org/node/224333#user_authenticate
  *
  *
@@ -1038,7 +1039,6 @@ function coder_upgrade_upgrade_call_file_scan_directory_alter(&$item, &$reader) 
       $variable = $operand->findNode('value');
       $parent = $item->parent;
       $statement = $parent->container->searchBackward('PGPAssignment', 'values', 0, $variable, $parent);
-
     }
     // Edge case: the parameter could have a comment.
     // Make a general function to clean the parameter of comments and whitespace so we can truly evaluate it.
@@ -1936,6 +1936,121 @@ function coder_upgrade_upgrade_call_user_delete_alter(&$item, &$reader) { // DON
   $name = &$item->name;
   $name['value'] = 'user_cancel';
   $editor->setParameter($item, 2, "\$method = 'user_cancel_block' /* TODO Set this variable */");
+}
+
+/**
+ * Implements hook_upgrade_call_user_load_alter().
+ */
+function coder_upgrade_upgrade_call_user_load_alter(&$item, &$reader) { // DONE
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Process function call.
+  $name = &$item->name;
+  $name['value'] = 'user_load_multiple';
+
+  if (!$item->parameterCount()) {
+    // No parameters is an acceptable default.
+    return;
+  }
+
+  /*
+   * Steps
+   * - parameter may be a value, array, or variable (with a preceding assignment)
+   * - value: wrap in an array
+   * - array
+   *   - extract 'uid' element
+   *   - leave remaining items as $conditions in new function
+   * - variable: apply above to the assignment value
+   */
+
+  if ($item->getParameter()->isType(T_VARIABLE)) {
+    // Parameter is a variable.
+    $variable = $item->getParameter()->getElement()->findNode('value');
+    $parent = $item->parent;
+    // TODO This single search won't find multiple assignments to array variable.
+    $statement = $parent->container->searchBackward('PGPAssignment', 'values', 0, $variable, $parent);
+    if ($statement) {
+      $operand = &$statement->values->getElement()->findNode('operand', 'backward');
+      $p0 = coder_upgrade_convert_user_load($item, $operand, FALSE);
+    }
+  }
+  else {
+    $operand = &$item->getParameter()->getElement();
+    $p0 = coder_upgrade_convert_user_load($item, $operand);
+    if ($item->getParameter()->isType(T_ARRAY)) {
+      // Parameter is an array.
+      $array = $item->getParameter()->getElement();
+      if (!$array->count) {
+        $item->deleteParameter();
+      }
+    }
+  }
+  if ($p0) {
+    $item->insertParameter(0, $p0);
+  }
+}
+
+function coder_upgrade_convert_user_load(&$item, &$operand, $is_parameter = TRUE) { // DONE
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // TODO We need an isType() that is not a class method.
+  if (is_array($operand) && $operand['type'] == T_CONSTANT_ENCAPSED_STRING) {
+    // Value is a string. (Assume it is an integer.)
+    $uid = trim($operand['value'], "'\"");
+    $operand = $editor->expressionToStatement("array($uid)");
+    return FALSE; // return $is_parameter ? $operand : FALSE;
+  }
+  elseif (is_array($operand)) {
+    // Unexpected.
+  }
+  elseif (is_object($operand) && $operand->isType(T_ARRAY)) {
+    $array = &$operand;
+    if ($uid = $array->findValue('uid')) {
+      // Array contains a value for key = 'uid'
+      $p0 = $editor->expressionToStatement("array(" . $uid->toString() . ")");
+      $array->deleteKey('uid');
+    }
+    else {
+      // Create empty array for $uids parameter.
+      $p0 = $editor->expressionToStatement('array()');
+    }
+    return $p0;
+  }
+  elseif (is_object($operand)) {
+    // Unexpected.
+  }
+  else {
+    // Value is a number.
+    $uid = trim($operand, "'\"");
+    $operand = $editor->expressionToStatement("array($uid)");
+    return FALSE; // return $is_parameter ? $operand : FALSE;
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_upgrade_call_variable_get_alter().
+ */
+function coder_upgrade_upgrade_call_variable_get_alter(&$item, &$reader) { // (OMIT)
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Process function call.
+  $name = &$item->name;
+}
+
+/**
+ * Implements hook_upgrade_call_variable_set_alter().
+ */
+function coder_upgrade_upgrade_call_variable_set_alter(&$item, &$reader) { // (OMIT)
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Process function call.
+  $name = &$item->name;
 }
 
 /**
