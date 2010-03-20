@@ -41,6 +41,7 @@
  *
  * Menu
  * http://drupal.org/node/224333#comment_load (DUP Comments)
+ * http://drupal.org/node/224333#admin_path_changes
  * http://drupal.org/node/224333#menu_tree_data
  *
  *
@@ -70,6 +71,7 @@
  *
  * CSS
  * http://drupal.org/node/224333#drupal_add_js_options (DUP Javascript)
+ * http://drupal.org/node/224333#drupal_add_css_inline
  * http://drupal.org/node/224333#drupal_add_css_weight (Should have a DUP in Javascript)
  *
  *
@@ -176,6 +178,23 @@ function coder_upgrade_upgrade_call_alter(&$item, &$reader, $name) { // NEEDS WO
        * These could be moved to the install file although it may be possible to
        * call them in other files.
        */
+      break;
+
+    // http://drupal.org/node/224333#admin_path_changes
+    // logout path changed to user/logout.
+    case 'drupal_goto':
+    case 'url':
+    case 'drupal_get_path_alias':
+    case 'drupal_get_normal_path':
+      if (trim($item->printParameter(), "'\"") == 'logout') {
+        $editor->setParameter($item, 0, "'user/logout'");
+      }
+      break;
+    case 'drupal_lookup_path':
+    case 'l':
+      if (trim($item->printParameter(1), "'\"") == 'logout') {
+        $editor->setParameter($item, 1, "'user/logout'");
+      }
       break;
 
     case 'require':

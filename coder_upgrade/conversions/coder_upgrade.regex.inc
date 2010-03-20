@@ -25,6 +25,10 @@
  * http://drupal.org/node/224333#php_permissions
  *
  *
+ * Menu
+ * http://drupal.org/node/224333#admin_path_changes
+ *
+ *
  * Input Sanitization and Input Formats
  * http://drupal.org/node/224333#filter_urls
  *
@@ -33,7 +37,7 @@
  */
 
 /**
- * Implements hook_upgrade_regex_alter.
+ * Implements hook_upgrade_regex_alter().
  *
  * Upgrades text using simple regular expressions.
  */
@@ -47,17 +51,49 @@ function coder_upgrade_upgrade_regex_alter(&$file) {
   $to = array();
 
   // Moved admin/reports/settings to admin/config/system/statistics (replacing admin/settings/statistics).
-  $from[] = "@'admin/reports/settings'@";
-  $to[] = "'admin/config/system/statistics'";
+//  $from[] = "@'admin/reports/settings'@";
+//  $to[] = "'admin/config/system/statistics'";
+
+  // Moved admin/settings/filters/* to admin/settings/filter/*
+//  $from[] = '@admin\/settings\/filters(\/.*?)@';
+//  $to[] = "admin\/settings\/filter$1";
+
+  coder_upgrade_upgrade_admin_path_changes($from, $to);
 
   // Replace "use PHP for block visibility" with "use PHP for settings."
   $from[] = '/(\'|")use PHP for block visibility(\'|")/';
   $to[] = "$1use PHP for settings$1";
 
-  // Moved admin/settings/filters/* to admin/settings/filter/*
-  $from[] = '@admin\/settings\/filters(\/.*?)@';
-  $to[] = "admin\/settings\/filter$1";
-
   coder_upgrade_do_conversions($from, $to, $new);
   coder_upgrade_save_changes($cur, $new, $file, $hook);
+}
+
+/**
+ * Upgrades admin paths.
+ *
+ * http://drupal.org/node/224333#admin_path_changes
+ */
+function coder_upgrade_upgrade_admin_path_changes(&$from, &$to) {
+  $path_conversions = array(
+    'admin/reports/settings' => 'admin/config/system/statistics',
+    'admin/settings/filters' => 'admin/config/content/filter',
+    'admin/build/modules' => 'admin/modules',
+    'admin/build/themes' => 'admin/appearance',
+    'admin/build/path' => 'admin/config/search/path',
+    'admin/content/types' => 'admin/structure/types',
+    'admin/content/taxonomy' => 'admin/structure/taxonomy',
+    'admin/content/forum' => 'admin/structure/forum',
+    'admin/build/testing' => 'admin/config/development/testing',
+    'admin/settings/site-maintenance' => 'admin/config/development/maintenance',
+    'admin/settings/performance' => 'admin/config/development/performance',
+    'admin/settings/search' => 'admin/config/search/settings',
+    'admin/settings/clean-urls' => 'admin/config/search/clean-urls',
+    'admin/settings' => 'admin/config',
+    'admin/build' => 'admin/structure',
+  );
+
+  foreach ($path_conversions as $old_path => $new_path) {
+    $from[] = "@(['\"])$old_path(/?.*?)(['\"])@";
+    $to[] = "$1$new_path$2$1";
+  }
 }

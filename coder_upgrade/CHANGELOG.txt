@@ -4,9 +4,12 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
 - Changes (2010-03-20):
   * coder_upgrade.call.inc
-  * - implement #drupal_goto_params, revise #url_query_parameter
+  * - implement #drupal_goto_params, #drupal_add_css_inline, and #admin_path_changes
+  * - revise #url_query_parameter
   * coder_upgrade.function.inc
   * - implement #implementation_hook_comment and #hook_element_info
+  * coder_upgrade.regex.inc
+  * - implement #admin_path_changes
 
 - Changes (2010-03-11):
   * coder_upgrade.db.inc
