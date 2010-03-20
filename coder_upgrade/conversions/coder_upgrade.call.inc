@@ -117,6 +117,7 @@
  * http://drupal.org/node/224333#actions_synchronize
  * http://drupal.org/node/224333#url_is_external
  * http://drupal.org/node/224333#drupal_valid_path
+ * http://drupal.org/node/224333#drupal_goto_params
  * http://drupal.org/node/224333#format_date
  * http://drupal.org/node/224333#url_query_parameter
  */
@@ -730,6 +731,110 @@ function coder_upgrade_upgrade_call_drupal_get_headers_alter(&$item, &$reader) {
 //  $name['value'] = 'drupal_get_header'; // Overwritten by following change.
   // http://drupal.org/node/224333#drupal_set_header_renamed
   $name['value'] = 'drupal_get_http_header';
+}
+
+/**
+* Implements hook_upgrade_call_drupal_goto_alter().
+*/
+function coder_upgrade_upgrade_call_drupal_goto_alter(&$item, &$reader) {
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  if ($item->parameterCount() < 2) {
+    // Nothing to do.
+    return;
+  }
+
+  // Convert query and fragment parameters into an array.
+
+  // Save the http_response_code parameter.
+  $http_code = $item->getParameter(3);
+  $item->deleteParameter(3);
+
+  if ($item->parameterCount() > 1) {
+    // Convert query string into an array
+    $query = $item->getParameter(1);
+    $operand = $query->getElement();
+    $value = $query->toString();
+    if ($query->isType(T_CONSTANT_ENCAPSED_STRING)) {
+      // Parameter is a string.
+      $query = coder_upgrade_query_to_array($item->printParameter(1));
+      $item->setParameter(1, $query);
+    }
+    elseif ($query->isType(T_VARIABLE)) {
+      // Parameter is a variable.
+      $variable = $operand->findNode('value');
+      // Get the parent = statement (i.e. node) this function call is part of.
+      $parent = $item->parent; // $parent = &$item->parent;
+      // Get the statement list the parent is part of.
+      $statement = $parent->container->searchBackward('PGPAssignment', 'values', 0, $variable, $parent);
+      if ($statement) {
+        $operand2 = &$statement->values->getElement()->findNode('operand', 'backward');
+        // TODO A pattern here - this is the same code as above but executed on a different object.
+        if (is_array($operand2) && $operand2['type'] == T_CONSTANT_ENCAPSED_STRING) {
+          $operand2 = coder_upgrade_query_to_array($operand2['value']);
+        }
+        else {
+          clp("ERROR: Could not find a string to change in " . __FUNCTION__);
+          $item->insertStatementBefore($editor->commentToStatement('// TODO ' . $item->printParameter(1) . ' needs to be an array of keys and values instead of a string.'));
+        }
+      }
+      else {
+        clp("ERROR: Could not find a string to change in " . __FUNCTION__);
+        $item->insertStatementBefore($editor->commentToStatement('// TODO ' . $item->printParameter(1) . ' needs to be an array of keys and values instead of a string.'));
+      }
+    }
+    elseif ($query->isType(T_STRING)) {
+      // Parameter is a constant.
+      if ($value != 'NULL') {
+        $item->insertStatementBefore($editor->commentToStatement('// TODO ' . $item->printParameter(1) . ' needs to be an array of keys and values instead of a string.'));
+      }
+      // TODO Handle constants - add todo comment - try to find the define?
+    }
+    else {
+//      clp("ERROR: Could not find a string to change in " . __FUNCTION__);
+      $item->insertStatementBefore($editor->commentToStatement('// TODO ' . $item->printParameter(1) . ' needs to be an array of keys and values instead of a string.'));
+    }
+  }
+
+  // Arrayitize the parameters.
+  $keys = array('query', 'fragment');
+  $defaults = array('NULL', 'NULL');
+  $string = $editor->arrayitize($item, 1, $keys, $defaults);
+
+  if (is_object($http_code) || $string != 'array()') {
+    $temp = $editor->expressionToStatement($string);
+    $temp->getElement(0)->multiline = 0;
+    $item->setParameter(1, $temp);
+  }
+  if (is_object($http_code)) {
+    $item->setParameter(2, $http_code);
+  }
+}
+
+/**
+ * Converts a url query string to an associative array.
+ *
+ * @param string $string
+ * @return PGPExpression
+ *   The associative array.
+ */
+function coder_upgrade_query_to_array($string) {
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  $string = trim($string, "'\"");
+  if ($string == '') {
+    // Empty string is equivalent to NULL in this case.
+    return $editor->expressionToStatement('NULL');
+  }
+  parse_str($string, $query_str);
+  // This removes a trailing comma from an inline array expression.
+  $editor->getReader()->setPreserveArrayFormat(FALSE);
+  $query = $editor->expressionToStatement(str_replace(array("\n", "  "), '', var_export($query_str, TRUE)));
+  $query->getElement()->multiline = 0;
+  $editor->getReader()->setPreserveArrayFormat(TRUE);
+  return $query;
 }
 
 /**
@@ -1847,7 +1952,7 @@ function coder_upgrade_upgrade_call_time_alter(&$item, &$reader) { // DONE
 /**
 * Implements hook_upgrade_call_url_alter().
 */
-function coder_upgrade_upgrade_call_url_alter(&$item, &$reader) {
+function coder_upgrade_upgrade_call_url_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
@@ -1866,9 +1971,7 @@ function coder_upgrade_upgrade_call_url_alter(&$item, &$reader) {
 
   if ($query = &$p1->findValue('query')) {
     if ($query->isType(T_CONSTANT_ENCAPSED_STRING)) {
-      parse_str(trim($query->first()->data['value'], "'\""), $query_str);
-      // TODO This leaves an inline array expression with a trailing comma.
-      $query = $editor->expressionToStatement(str_replace(array("\n", "  "), '', var_export($query_str, TRUE)));
+      $query = coder_upgrade_query_to_array($query->first()->data['value']);
     }
   }
 }

@@ -54,6 +54,10 @@
  * http://drupal.org/node/224333#hook_theme_render_changes
  *
  *
+ * Form API
+ * http://drupal.org/node/224333#hook_element_info
+ *
+ *
  * User API
  * http://drupal.org/node/224333#user_cancel (DONE with remove_op)
  * http://drupal.org/node/224333#remove_op (DUP Node API)
@@ -69,8 +73,22 @@
  *
  *
  * Miscellaneous
+ * http://drupal.org/node/224333#implementation_hook_comment
  * http://drupal.org/node/224333#trigger_overhaul
  */
+
+/**
+ * Implements hook_upgrade_hook_alter().
+ */
+function coder_upgrade_upgrade_hook_alter(&$node, &$reader) {
+  cdp("inside " . __FUNCTION__);
+  // Changes: implementation_hook_comment
+  $item = &$node->data;
+
+  // Update document comment.
+  $item->comment = preg_replace('@\*\s+[iI]mplement.*?(hook_.*?)(\(\)|)(\.|)$@m', "* Implements $1().", $item->comment);
+  // TODO If no comment, then add one?
+}
 
 /**
  * Implements hook_upgrade_hook_access_alter().
@@ -107,6 +125,18 @@ function coder_upgrade_upgrade_hook_comment_alter(&$node, &$reader) {
   $callback = 'coder_upgrade_callback_comment';
   $op_index = 1;
   coder_upgrade_convert_op($node, $callback, $op_index);
+}
+
+/**
+* Implements hook_upgrade_hook_elements_alter().
+*/
+function coder_upgrade_upgrade_hook_elements_alter(&$node, &$reader) {
+  global $_coder_upgrade_module_name;
+  $item = &$node->data;
+  // Rename function.
+  $item->name = $_coder_upgrade_module_name . '_element_info';
+  // Update document comment.
+  $item->comment = preg_replace('@hook_elements@', "hook_element_info", $item->comment);
 }
 
 /**
