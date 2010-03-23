@@ -11,8 +11,27 @@
  */
 function coder_review_drush_help($section) {
   switch ($section) {
-    case 'drush:coder review':
-      return dt('Run code reviews');
+    case 'drush:coder-review':
+      return dt("usage: drush coder-review [options] [severity] [review] [what]"
+                . "\n  options:"
+                . "\n    summary - display summary information only, no warning output"
+                . "\n    no-empty - hide results that are empty"
+                . "\n  severity: show warnings at or above severity level"
+                . "\n     major|minor|critical"
+                . "\n  review: one or more reviews"
+                . "\n     upgrade7x|comment|i18n|security|sql|style"
+                . "\n       * style is the default"
+                . "\n  what:"
+                . "\n    all - review all modules and themes"
+                . "\n      * this is the default if nothing is explicitly specified"
+                . "\n    active - review all active modules and themes"
+                . "\n    core - review all of core, modules, themes, and includes"
+                . "\n    contrib - review all non-core modules"
+                . "\n    default - review 'default' modules and themes, as defined by settings"
+                . "\n    <name> - review specified module or theme name, i.e. taxonomy"
+                . "\n    no-<name> - exclude named modules and themes, i.e. no-taxonomy"
+                . "\n     combine with active|core|contrib|all|default"
+               );
   }
 }
 
@@ -20,7 +39,7 @@ function coder_review_drush_help($section) {
  * Implements hook_drush_command().
  */
 function coder_review_drush_command() {
-  $items['coder review'] = array(
+  $items['coder-review'] = array(
     'callback' => 'coder_review_drush_review',
     'description' => dt('Run code reviews'),
     'drupal dependencies' => array('coder_review'),
@@ -76,6 +95,22 @@ function coder_review_drush_review() {
             _coder_review_set_form_modules($settings);
             unset($settings['coder_modules-' . substr($arg, 3)]);
           }
+          elseif (strpos($arg, '*') !== FALSE || strpos($arg, '%') !== FALSE) {
+            $result = db_query('SELECT name FROM {system} WHERE name LIKE :name', array(':name' => str_replace('*', '%', $arg)));
+            foreach ($result as $system) {
+              $settings['coder_modules-' . $system->name] = 1;
+              $match = TRUE;
+            }
+            if (!isset($match)) {
+              drush_print(dt('no matches found for @name', array('@name' => $arg)));
+              return;
+            }
+            unset($settings['coder_active_modules']);
+            unset($settings['coder_core']);
+            unset($settings['coder_all']);
+            unset($settings['coder_modules']);
+            $settings['coder_includes'] = TRUE;
+          }
           else {
             if (_coder_review_drush_is_patch_arg($arg)) {
               $settings['coder_patches'] = 1;
@@ -112,7 +147,7 @@ function coder_review_drush_review() {
   $settings['op'] = 'drush';
 
   $form_state['storage'] = $settings;
-  coder_review_page_form($form_state);
+  coder_review_page_form(array(), $form_state);
 }
 
 function _coder_review_drush_is_patch_arg(&$arg) {
@@ -129,13 +164,20 @@ function _coder_review_drush_is_patch_arg(&$arg) {
   }
 }
 
-function theme_drush_coder_review($name, $filename, $results) {
+function theme_drush_coder_review($variables) {
+  $name = $variables['name'];
+  $filename = $variables['filename'];
+  $results = $variables['results'];
   if (!_coder_review_drush_is_option('summary') && !empty($results) && ((count($results) && !isset($results[0])) || !_coder_review_drush_is_option('no-empty'))) {
     drush_print($filename . ":\n " . implode("\n ", $results) . "\n");
   }
 }
 
-function theme_drush_coder_review_warning($warning, $severity_name, $lineno = 0, $line = '') {
+function theme_drush_coder_review_warning($variables) {
+  $warning = $variables['warning'];
+  $severity_name = $variables['severity_name'];
+  $lineno = isset($variables['lineno']) ? $variables['lineno'] : 0;
+  $line = isset($variables['line']) ? $variables['line'] : '';
   $output  = $lineno ? '+' . $lineno . ': ' : '';
   $output .= is_array($warning) ? $warning['#warning'] : $warning;
   return _coder_review_drush_output($output);

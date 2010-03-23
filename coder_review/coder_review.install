@@ -7,13 +7,6 @@
  */
 
 /**
- * Implements hook_install().
- */
-function coder_review_install() {
-  drupal_install_schema('coder_review');
-}
-
-/**
  * Implements hook_uninstall().
  */
 function coder_review_uninstall() {
@@ -26,8 +19,6 @@ function coder_review_uninstall() {
   variable_del('coder_includes_exclusions');
   variable_del('coder_modules');
   variable_del('coder_themes');
-
-  drupal_uninstall_schema('coder_review');
 }
 
 /**

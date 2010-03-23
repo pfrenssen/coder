@@ -839,13 +839,8 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
           else {
             $form[$name]['#collapsed'] = FALSE;
           }
-          $form[$name]['output'] = array(
-            '#theme' => 'coder_review',
-            '#name' => $name,
-            '#filename' => $filename,
-            '#results' => $results,
-            '#weight' => -1,
-          );
+          $form[$name]['output'] = _coder_review_form_output($name, $filename, $results);
+          $form[$name]['output']['#weight'] = -1;
 
           // Process the same directory include files.
           if (!empty($settings['coder_includes'])) {
@@ -978,14 +973,33 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
       $form[$name][$filename]['#collapsed'] = FALSE;
       $form[$name]['#collapsed'] = FALSE;
     }
-    $form[$name][$filename]['output'] = array(
-      '#theme' => 'coder_review',
-      '#name' => $name,
-      '#filename' => $filename,
-      '#results' => $results,
-    );
+    if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+      theme('coder_review', array('name' => $name, 'filename' => $filename, 'results' => $results));
+    }
+    else {
+      $form[$name][$filename]['output'] = array(
+        '#theme' => 'coder_review',
+        '#name' => $name,
+        '#filename' => $filename,
+        '#results' => $results,
+      );
+    }
   }
   return $stats;
+}
+
+function _coder_review_form_output($name, $filename, $results) {
+  $output = array(
+    '#theme' => 'coder_review',
+    '#name' => $name,
+    '#filename' => $filename,
+    '#results' => $results,
+  );
+  // When using Drush, render this element so that the theme output gets recorded.
+  if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+    render($output);
+  }
+  return $output;
 }
 
 /**
@@ -1956,14 +1970,14 @@ function coder_review_theme() {
  *   Array list of results HTML to display. See do_coder_reviews() for format.
  */
 function theme_coder_review($variables) {
+  // theme the output for the Drupal shell
+  if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+    return theme_drush_coder_review($variables);
+  }
+
   $name = $variables['name'];
   $filename = $variables['filename'];
   $results = $variables['results'];
-
-  // theme the output for the Drupal shell
-  if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
-    return theme_drush_coder_review(array('name' => $name, 'filename' => $filename, 'results' => $results));
-  }
 
   $output = '<div class="coder"><h2>' . basename($filename) . '</h2>';
   if (!empty($results)) {
@@ -2028,20 +2042,15 @@ function _coder_review_warning($rule) {
  *   String contents of line.
  */
 function theme_coder_review_warning($variables) {
+  // theme the output for the Drupal shell
+  if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+    return theme_drush_coder_review_warning($variables);
+  }
+
   $warning = $variables['warning'];
   $severity_name = $variables['severity_name'];
   $lineno = $variables['lineno'];
   $line = $variables['line'];
-
-  // theme the output for the Drupal shell
-  if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
-    return theme_drush_coder_review_warning(array(
-      'warning' => $warning,
-      'severity_name' => $severity_name,
-      'lineno' => $lineno,
-      'line' => $line,
-    ));
-  }
 
   // Extract description from warning.
   if (is_array($warning)) {
