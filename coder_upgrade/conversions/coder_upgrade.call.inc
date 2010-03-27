@@ -73,6 +73,7 @@
  * http://drupal.org/node/224333#drupal_add_js_options (DUP Javascript)
  * http://drupal.org/node/224333#drupal_add_css_inline
  * http://drupal.org/node/224333#drupal_add_css_weight (Should have a DUP in Javascript)
+ * http://drupal.org/node/224333#form_clean_id
  *
  *
  * Theming
@@ -94,6 +95,7 @@
  * http://drupal.org/node/224333#file_set_status
  * http://drupal.org/node/224333#preg_match
  * http://drupal.org/node/224333#file_scan_directory_property_names
+ * http://drupal.org/node/224333#file_prepare_directory
  *
  *
  * User API
@@ -941,22 +943,73 @@ function coder_upgrade_upgrade_call_drupal_set_header_alter(&$item, &$reader) { 
   $name = &$item->name;
   // http://drupal.org/node/224333#drupal_set_header_renamed
   $name['value'] = 'drupal_add_http_header';
-  // TODO the hook_file_download() changes. Use parser on the entire function.
-  $temp = $item->printParameters();
-  if (strpos($temp, 'Content-Type:') !== FALSE) {
-    $temp = explode(':', $temp);
-    foreach ($temp as $key => $string) {
-      $temp[$key] = "'" . trim($string, "' ") . "'";
+
+  $temp = $item->printParameter();
+  $p0 = $item->getParameter();
+  if ($p0->count() > 1) {
+    // This is a complex expression.
+    if ($p0->isType(T_CONSTANT_ENCAPSED_STRING)) {
+      $operand = &$p0->getElement();
+      if (($pos = strpos($operand['value'], ':')) !== FALSE) {
+        $type = trim(substr($operand['value'], 0, $pos), "'\" ");
+        /*
+         * Retain the existing quote type in case of any embedded quotes and
+         * other quoted items in the rest of the expression.
+         * Ex: 'Content-Disposition: attachment; filename="'
+         */
+        $operand['value'] = str_replace(array($type, ': ', ':'), '', $operand['value']);
+        // Append the charset onto the parameter string.
+//        if ($type == 'Content-Type' && strpos($value, 'charset') === FALSE) {
+//          $value .= '; charset=utf-8';
+//        }
+        $type = "'$type'";
+        // if value == '', then remove operator == '.' from expression
+        if ($operand['value'] == "''" || $operand['value'] == '""') {
+          $p0->deleteElement();
+          $p0->deleteElement(); // Delete the first operator.
+        }
+        $editor->insertParameter($item, 0, $type);
+      }
     }
-    $editor->setParameters($item, $temp);
+    elseif ($p0->isType(T_VARIABLE)) {
+      $temp = $p0->getElement()->toString();
+      if (strpos($temp, "\$_SERVER['SERVER_PROTOCOL']") !== FALSE ||
+          strpos($temp, '$_SERVER["SERVER_PROTOCOL"]') !== FALSE) {
+        $p0->deleteElement();
+        $p0->deleteElement(); // Delete the first operator.
+        if ($p0->isType(T_CONSTANT_ENCAPSED_STRING)) {
+          // Remove a leading space, e.g. ' 500 Internal server error'.
+          $operand = &$p0->getElement();
+          $operand['value'] = str_replace(array('" ', "' "), array('"', "'"), $operand['value']);
+        }
+        $editor->insertParameter($item, 0, "'Status'");
+      }
+    }
   }
-  elseif (strpos($temp, "\$_SERVER['SERVER_PROTOCOL']") !== FALSE ||
-              strpos($temp, '\$_SERVER["SERVER_PROTOCOL"]') !== FALSE) {
-    $from = '@\$_SERVER\[(\'|")SERVER_PROTOCOL(\'|")\]\s*\.\s*(\'|")\s*(.*?)(\'|")@';
-    $to = "$3$4$3";
-    $temp = preg_replace($from, $to, $temp);
-    $editor->setParameters($item, array($temp));
+  else {
+    if ($p0->isType(T_CONSTANT_ENCAPSED_STRING)) {
+      if (strpos($temp, 'HTTP/') !== FALSE) {
+        $temp = trim(substr($temp, 9), "'\" "); // Assumes protocol = HTTP/n.n where n is a digit.
+        $editor->setParameters($item, array("'Status'", "'$temp'"));
+      }
+      elseif (strpos($temp, ':') !== FALSE) {
+        list($type, $value) = explode(':', $temp);
+        $type = trim($type, "'\" ");
+        $value = trim($value, "'\" ");
+        if ($type == 'Content-Type' && strpos($value, 'charset') === FALSE) {
+          $value .= '; charset=utf-8';
+        }
+        $type = "'$type'";
+        $value = "'$value'";
+        $editor->setParameters($item, array($type, $value));
+      }
+    }
+    else {
+      // Could be a variable that we could search for and change?
+    }
   }
+
+  // TODO the hook_file_download() changes. Use parser on the entire function.
 }
 
 /**
@@ -972,6 +1025,17 @@ function coder_upgrade_upgrade_call_drupal_set_html_head_alter(&$item, &$reader)
 
   $count = $item->parameters->count();
   if ($count == 1) {
+    // http://drupal.org/node/224333#drupal_add_css_inline
+    // Inline css can be now added via drupal_add_css
+    $p0 = $item->printParameter();
+    if (preg_match('#^([\'"])\s*<style type=[\'"]text/css[\'"]>(.*)</style>#si', $p0, $matches)) {
+      $name['value'] = 'drupal_add_css';
+//      $temp = $editor->expressionToStatement($matches[1] . $matches[2] . $matches[1]);
+//      $item->setParameter(0, $temp);
+      $editor->setParameters($item, array($matches[1] . $matches[2] . $matches[1], "array('type' => 'inline')"));
+      return;
+    }
+
     $key = '$key = NULL /* TODO Set this variable. */';
     // Insert new required parameter when first parameter is set.
     $editor->insertParameter($item, 1, $key);
@@ -1057,6 +1121,15 @@ function coder_upgrade_upgrade_call_drupal_uninstall_module_alter(&$item, &$read
   $name['value'] = 'drupal_uninstall_modules';
   $temp = $item->printParameters();
   $editor->setParameters($item, array('array(' . $temp . ')'));
+}
+
+/**
+* Implements hook_upgrade_call_file_check_directory_alter().
+*/
+function coder_upgrade_upgrade_call_file_check_directory_alter(&$item, &$reader) {
+  // http://drupal.org/node/224333#file_prepare_directory
+  $name = &$item->name;
+  $name['value'] = 'file_prepare_directory';
 }
 
 /**
@@ -1376,6 +1449,15 @@ function coder_upgrade_upgrade_call_format_plural_alter(&$item, &$reader) { // D
   $temp->getElement(0)->multiline = 0;
   cdp($temp->print_r());
   $item->setParameter(4, $temp);
+}
+
+/**
+* Implements hook_upgrade_call_form_clean_id_alter().
+*/
+function coder_upgrade_upgrade_call_form_clean_id_alter(&$item, &$reader) {
+  // http://drupal.org/node/224333#form_clean_id
+  $name = &$item->name;
+  $name['value'] = 'drupal_clean_css_identifier';
 }
 
 /**

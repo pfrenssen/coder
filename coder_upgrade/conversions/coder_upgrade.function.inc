@@ -852,10 +852,10 @@ function coder_upgrade_convert_menu_link_alter(&$node) {
  * @param PGPNode $node
  *   A node object containing a PGPClass (or function) item.
  */
-function coder_upgrade_convert_perm(&$node) {
+function coder_upgrade_convert_perm(&$node) { // NEEDS REVISION
   cdp("inside " . __FUNCTION__);
   $item = &$node->data;
-  cdp($item->print_r());
+//  cdp($item->print_r());
 
   // Rename function.
   $item->name .= 'ission';
@@ -870,11 +870,14 @@ function coder_upgrade_convert_perm(&$node) {
     return;
   }
   //  cdp("Printing return item");
-  $value = &$return->value;
-  cdp($value->print_r());
-  cdp($value->toString());
+  $value = &$return->getParameter();
+//  cdp($value->print_r());
+//  cdp($value->toString());
   //  cdp("Printing return item DONE");
 
+  // TODO This fits with the coder_upgrade_convert_return pattern.
+
+  // Examine the type of the operand in the return statement.
   $array = $value->getElement();
   if (!is_a($array, 'PGPArray')) {
     clp("ERROR: return statement does not include an array of values in hook_perm");
@@ -908,12 +911,14 @@ function coder_upgrade_convert_perm(&$node) {
     $current = &$current->next;
   }
   $string .= ");\n";
-  //  cdp($string);
+//  cdp($string);
   $editor = PGPEditor::getInstance();
+  // TODO There may be other routines that need this setting. Should we set it once up front or routine-by-routine?
+  $editor->getReader()->setPreserveArrayFormat();
   $expression = $editor->expressionToStatement($string);
-  //  cdp("PRINT NEW expression");
-  //  cdp($expression->print_r(3));
-  //  cdp("PRINT NEW expression DONE");
+  $expression->multiline = 1;
+  $expression->preserve = 0;
+  $editor->getReader()->setPreserveArrayFormat(TRUE);
 
   // Set the return array to the new array.
   $value->setElement(0, $expression);
@@ -937,7 +942,9 @@ function coder_upgrade_convert_schema(&$node) {
   //  cdp("Printing return item");
   cdp($item->print_r(0, $return));
   //  cdp("Printing return item DONE");
-  $variable = $return->value->first();
+  $variable = &$return->getParameter()->getElement();
+
+  // TODO This fits with the coder_upgrade_convert_return pattern.
 
   /*
    * Traverse the body statements looking for:
@@ -949,7 +956,7 @@ function coder_upgrade_convert_schema(&$node) {
    *     - value whose first operand is PGPArray (recurse into this)
    *       - if the value calls t() then remove t()
    */
-  $body->searchCallback('coder_upgrade_convert_schema_callback', 'PGPFunctionCall', 'name', 'value', 't');
+  $body->searchCallback($body, 'coder_upgrade_convert_schema_callback', 'PGPFunctionCall', 'name', 'value', 't');
 }
 
 function coder_upgrade_convert_schema_callback(&$item /*&$node*/) {

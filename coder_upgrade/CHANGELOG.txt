@@ -2,6 +2,21 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-03-27):
+  * coder_upgrade.begin.inc
+  * - fix recursive calls in coder_upgrade_cache_hook_theme()
+  * coder_upgrade.call.inc
+  * - implement #form_clean_id and #file_prepare_directory
+  * - improve #http_header_functions to handle other header types and to add 'Status' as first parameter when no colon to delimit type and value
+  * coder_upgrade.end.inc
+  * - fix recursive calls in coder_upgrade_add_file_entries()
+  * coder_upgrade.function.inc
+  * - fix calls to PGPList::searchCallback
+  * - conform upgrade routines to Grammar Parser changes
+  *   - T_RETURN statements changed from PGPExpression to PGPFunctionCall
+  *   - missed in coder_upgrade_convert_schema() and coder_upgrade_convert_perm() when added coder_upgrade_convert_return pattern
+  * - utilize PGPReader::setPreserveArrayFormat() (with latest modification to ignore whitespace)
+
 - Changes (2010-03-20):
   * coder_upgrade.call.inc
   * - implement #drupal_goto_params, #drupal_add_css_inline, and #admin_path_changes
@@ -61,7 +76,7 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 
 - Changes (2010-03-01):
   * coder_upgrade.info, coder_upgrade.main.inc
-  * - reflect the renamed grammar parser module 
+  * - reflect the renamed grammar parser module
   * coder_upgrade.install, coder_upgrade.module
   * - minor cleanup
   * coder_upgrade.test, tests directory

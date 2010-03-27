@@ -116,6 +116,7 @@ function coder_upgrade_add_file_entries($dirname = '', $files = array(), &$items
   // Create list of files for registry.
   // TODO Allow for custom extensions!!!
   $extensions = array('inc', 'install', 'module', 'php', 'test', 'upgrade');
+  $dirname .= $path != '' ? '/' . $path : '';
   $path = $path != '' ? $path . '/' : $path;
   foreach ($files as $file) {
     if (is_array($file)) {
@@ -128,7 +129,6 @@ function coder_upgrade_add_file_entries($dirname = '', $files = array(), &$items
       }
       elseif ($extension == 'info') {
         // Save the name of the .info file.
-        $dirname .= $path != '' ? '/' . $path : '';
         $info_file = $dirname . '/' . $file;
       }
     }

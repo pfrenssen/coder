@@ -83,7 +83,7 @@ function coder_upgrade_theme_build_registry() {
  * @param array $item
  *   Array of a directory containing the files to convert.
  */
-function coder_upgrade_cache_hook_theme($item) {
+function coder_upgrade_cache_hook_theme($item, $recursive = TRUE) {
 //  cdp("inside " . __FUNCTION__);
   global $_coder_upgrade_module_name, $upgrade_theme_registry;
   static $ignore = array('.', '..', 'CVS', '.svn');
@@ -106,7 +106,7 @@ function coder_upgrade_cache_hook_theme($item) {
             'name' => $item['name'],
             'old_dir' => $dirname . '/' . $filename,
           );
-          coder_upgrade_cache_theme_registry($new_item);
+          coder_upgrade_cache_hook_theme($new_item, $recursive);
           // Reset the module name.
           $_coder_upgrade_module_name = $item['module'];
         }
