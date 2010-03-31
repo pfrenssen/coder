@@ -7,6 +7,8 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
   * - restore missed calls to PGPArray::findValue() which now trims the quotes
   * coder_upgrade.test
   * - refactor setup method to run the theme caching before starting the test method
+  * tests directory
+  * - update the input and expected test file: example.module
 
 - Changes (2010-03-27):
   * coder_upgrade.begin.inc

@@ -193,8 +193,25 @@ function example_drupal_eval() {
 
 function example_http_header_functions() {
   // drupal_set_header() -- Change the next line but leave this alone
-  drupal_set_header('Content-Type: text/plain');
   drupal_set_header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal server error');
+  drupal_set_header('HTTP/1.1 503 Service unavailable');
+  drupal_set_header('HTTP/1.1 403 Forbidden');
+  drupal_set_header('Content-Type: text/plain');
+  drupal_set_header('Content-Type: text/javascript; charset=utf-8');
+  drupal_set_header('Content-Type: octet/stream');
+  drupal_set_header('Content-Disposition: attachment; filename="'. $filename .'"');
+  drupal_set_header('Content-Length: '.filesize(file_directory_path().'/'.$filename));
+
+  // Double quotes.
+  drupal_set_header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal server error");
+  drupal_set_header("HTTP/1.1 503 Service unavailable");
+  drupal_set_header("HTTP/1.1 403 Forbidden");
+  drupal_set_header("Content-Type: text/plain");
+  drupal_set_header("Content-Type: text/javascript; charset=utf-8");
+  drupal_set_header("Content-Type: octet/stream");
+  drupal_set_header("Content-Disposition: attachment; filename='". $filename ."'");
+  drupal_set_header("Content-Length: ".filesize(file_directory_path()."/".$filename));
+
   // drupal_get_headers() -- Change the next line but leave this alone
   $headers = drupal_get_headers();
   foreach (drupal_get_headers() as $name => $value) {
@@ -421,13 +438,60 @@ function example_menu_link_alter(&$item, $menu) {
   }
 }
 
+// http://drupal.org/node/224333#admin_path_changes
+function example_admin_path_changes() {
+  $menu['admin/reports/settings'] = array();
+  $menu['admin/build/modules/'] = array();
+  $menu['admin/build/modules/custom-module'] = array();
+  $menu['admin/build/themes'] = array();
+  $menu['admin/build/themes/custom-theme'] = array();
+  $menu['admin/build/path'] = array();
+  $menu['admin/build/path/path-setting'] = array();
+  $menu['admin/build/block'] = array();
+  $menu['admin/build/block/block-setting'] = array();
+  $menu['admin/build/menu'] = array();
+  $menu['admin/build/menu/menu-setting'] = array();
+  $menu['admin/content/types'] = array();
+  $menu['admin/content/taxonomy'] = array();
+  $menu['admin/content/forum'] = array();
+  $menu['admin/build/testing'] = array();
+  $menu['admin/settings/site-maintenance'] = array();
+  $menu['admin/settings/performance'] = array();
+  $menu['admin/settings/filters'] = array();
+  $menu['admin/settings/search'] = array();
+  $menu['admin/settings/clean-urls'] = array();
+}
+
+// Where is http://drupal.org/node/224333#menu-link-hooks?
+
+// http://drupal.org/node/224333#menu_tree_data
+function example_menu_tree_data() {
+  $sql = "menu_tree_data
+    SELECT m.load_functions, m.to_arg_functions, m.access_callback, m.access_arguments, m.page_callback, m.page_arguments, m.title, m.title_callback, m.title_arguments, m.type, m.description, ml.*
+    FROM {menu_links} ml LEFT JOIN {menu_router} m ON m.path = ml.router_path
+    WHERE ml.menu_name = '%s'
+    ORDER BY p1 ASC, p2 ASC, p3 ASC, p4 ASC, p5 ASC, p6 ASC, p7 ASC, p8 ASC, p9 ASC";
+  $result = db_query($sql, $menu['menu_name']);
+  $tree = menu_tree_data($result);
+
+  $sql = "
+    SELECT b.*, m.load_functions, m.to_arg_functions, m.access_callback, m.access_arguments, m.page_callback, m.page_arguments, m.title, m.title_callback, m.title_arguments, m.type, ml.*
+    FROM {menu_links} ml INNER JOIN {menu_router} m ON m.path = ml.router_path
+    INNER JOIN {book} b ON ml.mlid = b.mlid
+    WHERE ". implode(' AND ', $match) ."
+    ORDER BY p1 ASC, p2 ASC, p3 ASC, p4 ASC, p5 ASC, p6 ASC, p7 ASC, p8 ASC, p9 ASC";
+  $data['tree'] = menu_tree_data(db_query($sql, $args), array(), $item['depth']);
+}
+
 /*
  * Blocks
  */
 
 /**
-* Implementation of hook_block().
-*/
+ * Implementation of hook_block().
+ *
+ * http://drupal.org/node/224333#remove_op
+ */
 function example_block($op, $delta, $edit) {
   if ($op == 'configure') {
     // Configuration form for the block.
@@ -535,6 +599,59 @@ function example_block($op, $delta, $edit) {
             'subject' => t('Default title of the amazing block'),
             'content' => mymodule_display_block_amazing(),
           );
+          break;
+      }
+      return $block;
+      break;
+  }
+
+  foreach (array('configure', 'list', 'view') as $op) {
+    // Do something.
+  }
+}
+
+/**
+ * Implementation of hook_block().
+ *
+ * http://drupal.org/node/224333#block_deltas_renamed
+ */
+function example_block($op, $delta = 0, $edit = array()) {
+  switch ($op) {
+    case 'list':
+      $blocks[0] = array(
+        'info' => t('Example block #1'),
+      );
+      $blocks[1] = array(
+        'info' => t('Example block #2'),
+      );
+      return $blocks;
+      break;
+
+    case 'configure':
+      if ($delta == 0) {
+        $form['block_example'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Block Example Field'),
+          '#default_value' => variable_get('example_block_example_field', ''),
+        );
+      }
+      break;
+
+    case 'save':
+      if ($delta == 0) {
+        variable_set('example_block_example_field', $edit['block_example_string']);
+      }
+      break;
+
+    case 'view':
+      switch ($delta) {
+        case 0:
+          $block['subject'] = t('Example Block #1');
+          $block['content'] = variable_get('example_block_example_field', '');
+          break;
+        case 1:
+          $block['subject'] = t('Example Block #1');
+          $block['content'] = t('Example Block #2');
           break;
       }
       return $block;
@@ -911,6 +1028,8 @@ function example_taxonomy_crud() {
  * CSS
  */
 
+// http://drupal.org/node/224333#drupal_add_js_options
+// http://drupal.org/node/224333#drupal_add_css_weight
 function example_drupal_add_js_options() {
   drupal_add_js('misc/collapse.js');
   drupal_add_js('misc/collapse.js', 'module');
@@ -934,6 +1053,30 @@ function example_drupal_add_js_options() {
   drupal_add_css('/modules/devel/devel.css', 'theme', 'all', FALSE);
 }
 
+// http://drupal.org/node/224333#drupal_add_css_inline
+function example_drupal_add_css_inline() {
+  $color = variable_get('backgroundcolor', '#FFFFFF');
+  drupal_set_html_head("<style type='text/css'>body {background-color: $color}</style>");
+
+  drupal_set_html_head('<style type="text/css">div {background-url: url("images/test.png");}</style>');
+  drupal_set_html_head('
+    <style type="text/css">
+      div {
+        background-url: url("images/test.png");
+      }
+    </style>
+  ');
+}
+
+// http://drupal.org/node/224333#form_clean_id
+function example_form_clean_id() {
+  $class = form_clean_id('string');
+  $id = form_clean_id($id);
+  $class = form_clean_id(impode('-', $form['element']['#parents']));
+
+  $form['element']['#attributes']['class'] = form_clean_id(implode('-', $form['element']['#parents']));
+}
+
 /*
  * Theming
  */
@@ -946,29 +1089,29 @@ function example_drupal_add_js_options() {
  */
 function example_theme() {
   return array(
-    'node_list' => array(
+    'example_node_list' => array(
       'arguments' => array('items' => NULL, 'title' => NULL),
     ),
-    'node_search_admin' => array(
+    'example_node_search_admin' => array(
       'arguments' => array('form' => NULL),
     ),
-    'user_list' => array(
+    'example_user_list' => array(
       'arguments' => array('users' => NULL, 'title' => NULL),
     ),
-    'user_list_2' => array(
+    'example_user_list_2' => array(
       'arguments' => array('users1' => NULL, 'title1' => NULL, 'users2' => NULL, 'title2' => NULL),
     ),
-    'coder_review_warning_msg' => array(
+    'example_coder_review_warning_msg' => array(
       'arguments' => array(
         'error' => NULL,
       ),
     ),
-    'coder_review_table_cols' => array(
+    'example_coder_review_table_cols' => array(
       'arguments' => array(
         'form' => NULL,
       ),
     ),
-    'phpapi' => array(
+    'example_phpapi' => array(
       'arguments' => array(
         'function' => NULL,
       ),
@@ -983,35 +1126,35 @@ function example_theme() {
  */
 function example_theme() {
   $theme = array(
-    'node_list' => array(
+    'example_node_list' => array(
       'arguments' => array('items' => NULL, 'title' => NULL),
     ),
-    'node_search_admin' => array(
+    'example_node_search_admin' => array(
       'arguments' => array('form' => NULL),
     ),
-    'user_list' => array(
+    'example_user_list' => array(
       'arguments' => array('users' => NULL, 'title' => NULL),
     ),
-    'user_list_2' => array(
+    'example_user_list_2' => array(
       'arguments' => array('users1' => NULL, 'title1' => NULL, 'users2' => NULL, 'title2' => NULL),
     ),
-    'coder_review_warning_msg' => array(
+    'example_coder_review_warning_msg' => array(
       'arguments' => array(
         'error' => NULL,
       ),
     ),
-    'coder_review_table_cols' => array(
+    'example_coder_review_table_cols' => array(
       'arguments' => array(
         'form' => NULL,
       ),
     ),
-    'phpapi' => array(
+    'example_phpapi' => array(
       'arguments' => array(
         'function' => NULL,
       ),
     ),
   );
-  return theme;
+  return $theme;
 }
 
 /*
@@ -1026,29 +1169,29 @@ to: $theme[\1] = array(
  */
 function example_theme() {
   $theme = array();
-  $theme['node_list'] = array(
+  $theme['example_node_list'] = array(
     'arguments' => array('items' => NULL, 'title' => NULL),
   );
-  $theme['node_search_admin'] = array(
+  $theme['example_node_search_admin'] = array(
     'arguments' => array('form' => NULL),
   );
-  $theme['user_list'] = array(
+  $theme['example_user_list'] = array(
     'arguments' => array('users' => NULL, 'title' => NULL),
   );
-  $theme['user_list_2'] = array(
+  $theme['example_user_list_2'] = array(
     'arguments' => array('users1' => NULL, 'title1' => NULL, 'users2' => NULL, 'title2' => NULL),
   );
-  $theme['coder_review_warning_msg'] = array(
+  $theme['example_coder_review_warning_msg'] = array(
     'arguments' => array(
       'error' => NULL,
     ),
   );
-  $theme['coder_review_table_cols'] = array(
+  $theme['example_coder_review_table_cols'] = array(
     'arguments' => array(
       'form' => NULL,
     ),
   );
-  $theme['phpapi'] = array(
+  $theme['example_phpapi'] = array(
     'arguments' => array(
       'function' => NULL,
     ),
@@ -1057,12 +1200,75 @@ function example_theme() {
 }
 
 function example_theme_changes() {
+  // Themes in uninstalled core modules.
+  theme('aggregator_summary_items',$summary_items, $source);
+  theme('book_export_html', $title, $contents, $depth);
+
+  // Themes in installed core modules.
   // Single quotes.
   theme('user_list', $users, $title);
-  theme('user_list_2', $users1, $title1, $users2, $title2);
+  theme('image_style', $style_name, $path, $alt, $title, $attributes, $getsize);
+  theme('menu_admin_overview', $title, $name, $description);
+  theme('rdf_template_variable_wrapper', $content, $attributes, $context, $inline);
+
   // Double quotes.
   theme("user_list", $users, $title);
-  theme("user_list_2", $users1, $title1, $users2, $title2);
+
+  // Themes in this module.
+  // Single quotes.
+  theme('example_user_list', $users, $title);
+  theme('example_user_list_2', $users1, $title1, $users2, $title2);
+  // Double quotes.
+  theme("example_user_list", $users, $title);
+  theme("example_user_list_2", $users1, $title1, $users2, $title2);
+
+  // Missing themes.
+  theme('example_user_list_xx', $users, $title);
+  theme("example_user_list_xx", $users, $title);
+  theme('xxx', $users, $title);
+
+  // Find the hook assignment.
+  $hook = 'user_list';
+  theme($hook, $users, $title);
+
+  // Missing variables parameters.
+  theme('user_list');
+  theme('example_user_list');
+}
+
+// http://drupal.org/node/224333#theme_page
+function example_theme_page() {
+  $form = array();
+  print theme('page', $form);
+  print theme("page", $form);
+  return theme('page', $output);
+}
+
+// http://drupal.org/node/224333#placeholder
+function example_placeholder() {
+  // theme('placeholder') -- Change the next line but leave this alone
+  $placeholder = theme('placeholder');
+  $placeholder = theme("placeholder");
+  $placeholder = theme('placeholder', array('text' => $format->name));
+  $placeholder = theme("placeholder", array("text" => $format->name));
+}
+
+// http://drupal.org/node/224333#theme_pager
+function example_theme_pager() {
+  $pager = theme('pager', $tags, $limit, $element, $parameters, $quantity);
+  $pager = theme('pager', $tags, $limit, $element, $parameters);
+  $pager = theme('pager', $tags, $limit, $element);
+  $pager = theme('pager', $tags, $limit);
+  $pager = theme('pager', $tags);
+  $pager = theme('pager', array(), 100, 0, array(), 200);
+  $pager = theme('pager');
+}
+
+// http://drupal.org/node/224333#theme_username
+function example_theme_username() {
+  $user = user_load(1);
+  print theme('username', $user);
+  print theme("username", $user_load(1));
 }
 
 /*
@@ -1146,6 +1352,16 @@ function my_form($form_state) {
   return $form;
 }
 
+/**
+ * Implementation of hook_elements().
+ *
+ * http://drupal.org/node/224333#hook_element_info
+ */
+function example_elements() {
+  $type['filter_format'] = array('#input' => TRUE);
+  return $type;
+}
+
 /*
  * File API
  */
@@ -1205,6 +1421,12 @@ function example_drupal_system_listing() {
   $mask = '\.module$';
   $files = drupal_system_listing($mask, 'modules', 'name', 0);
 }
+
+function example_file_prepare_directory() {
+  file_check_directory($full_path, FILE_CREATE_DIRECTORY);
+  file_check_directory('file/test', FILE_CREATE_DIRECTORY);
+}
+
 /*
 function example_() {
   // () -- Change the next line but leave this alone
@@ -1226,7 +1448,8 @@ function example_() {
  * User API
  */
 
-function example_delete($edit, $uid) {
+// http://drupal.org/node/224333#user_cancel
+function example_user_cancel($edit, $uid) {
   // user_delete() -- Change the next line but leave this alone
   user_delete($form_state['values'], $form_state['values']['_account']->uid);
 }
@@ -1323,6 +1546,44 @@ function example_user($op, &$edit, &$user, $category = NULL) {
   }
 }
 
+// http://drupal.org/node/224333#user_load_multiple
+function example_user_load_multiple() {
+  // user_load() -- Change the next line but leave this alone
+  user_load();
+  user_load(100);
+  user_load('100');
+
+  $uid = 100;
+  user_load($uid);
+
+  $uid = '100';
+  user_load($uid);
+
+  $user_params = array('uid' => arg(1));
+  user_load($user_params);
+
+  $user_params = array('name' => $edit['author']);
+  user_load($user_params);
+
+  $user_params = array('uid' => arg(1), 'mail' => $name, 'status' => 1);
+  user_load($user_params);
+
+  if (isset($edit['author']) && !$account = user_load(array('name' => $edit['author']))) {
+    form_set_error('author', t('You have to specify a valid author.'));
+  }
+
+  $account = user_load(array('uid' => $node->uid));
+  if ($account = user_load(array('uid' => arg(1)))) {
+  }
+
+  if ($account = user_load(array('uid' => arg(1), 'mail' => $name, 'status' => 1))) {
+  }
+
+  $user = user_load(array('uid' => $array['uid']));
+  $account = user_load(array('uid' => (int)$uid));
+  $account = user_load(array('mail' => $name, 'status' => 1));
+}
+
 function example_user_authenticate() {
   // () -- Change the next line but leave this alone
   global $user;
@@ -1348,12 +1609,12 @@ function example_node_info() {
       'module' => 'blog',
       'description' => t('A <em>blog entry</em> is a single post to an online journal.'),
     ),
-    'example_item' => array(
-      'name' => t('Example item'),
-      'module' => 'node',
-      'description' => 'Test the node to node_content upgrade.',
-      'title_label' => t('Example item'),
-      'body_label' => t('Description'),
+    "example_item" => array(
+      "name" => t('Example item'),
+      "module" => 'node',
+      "description" => 'Test the node to node_content upgrade.',
+      "title_label" => t('Example item'),
+      "body_label" => t('Description'),
     )
   );
 }
@@ -1371,12 +1632,12 @@ function example_node_info() {
       'description' => t('A <em>forum topic</em> starts a new discussion thread within a forum.'),
       'title_label' => t('Subject'),
     ),
-    'example_item' => array(
-      'name' => t('Example item'),
-      'module' => 'node',
-      'description' => 'Test the node to node_content upgrade.',
-      'title_label' => t('Example item'),
-      'body_label' => t('Description'),
+    "example_item" => array(
+      "name" => t('Example item'),
+      "module" => 'node',
+      "description" => 'Test the node to node_content upgrade.',
+      "title_label" => t('Example item'),
+      "body_label" => t('Description'),
     )
   );
   return $info;
@@ -1397,11 +1658,11 @@ function example_node_info() {
     'body_label' => t('Description'),
   );
   $info['example_item'] = array(
-    'name' => t('Example item'),
-    'module' => 'node',
-    'description' => 'Test the node to node_content upgrade.',
-    'title_label' => t('Example item'),
-    'body_label' => t('Description'),
+    "name" => t('Example item'),
+    "module" => 'node',
+    "description" => 'Test the node to node_content upgrade.',
+    "title_label" => t('Example item'),
+    "body_label" => t('Description'),
   );
   return $info;
 }
@@ -1410,6 +1671,9 @@ function example_node_info() {
  * Implementation of hook_node_info().
  *
  * Create node types for each product class and other product modules.
+ *
+ * Use case 4: makes multiple assignments to array variable; returns variable.
+ * (inside a while loop)
  */
 function example_node_info($reset = FALSE) {
   static $types = array();
@@ -1721,6 +1985,94 @@ function example_node_type($op, $info) {
   }
 }
 
+// http://drupal.org/node/224333#node_invoke_nodeapi
+function example_node_invoke_nodeapi() {
+  node_invoke_nodeapi($node, 'alter');
+  node_invoke_nodeapi($node, 'delete');
+  node_invoke_nodeapi($node, 'delete revision');
+  node_invoke_nodeapi($node, 'insert');
+  node_invoke_nodeapi($node, 'load');
+  node_invoke_nodeapi($node, 'prepare');
+  node_invoke_nodeapi($node, 'prepare translation');
+  node_invoke_nodeapi($node, 'presave');
+  node_invoke_nodeapi($node, 'search result');
+  node_invoke_nodeapi($node, 'update index');
+  node_invoke_nodeapi($node, 'update');
+  node_invoke_nodeapi($node, 'print');
+  node_invoke_nodeapi($node, 'rss item');
+  node_invoke_nodeapi($node, 'view');
+  node_invoke_nodeapi($node, 'view', TRUE);
+  node_invoke_nodeapi($node, 'view', FALSE, TRUE);
+  node_invoke_nodeapi($node, 'view', NULL, TRUE);
+  node_invoke_nodeapi($node, 'validate', $form);
+  node_invoke_nodeapi($node, $op);
+  node_invoke_nodeapi($node, $op, $a3);
+  node_invoke_nodeapi($node, $op, $a3, $a4);
+}
+
+// http://drupal.org/node/224333#node_type_get_functions
+function example_node_type_get_functions() {
+  $types = node_get_types();
+
+  // Without a $node parameter, $op should be plural.
+  $type = node_get_types('type');
+  $base = node_get_types('module'); // 'module' becomes 'base'
+  $name = node_get_types('name');
+  $types = node_get_types('types');
+  $names = node_get_types('names');
+
+  // With a $node parameter, $op should be singular.
+  $type = node_get_types('type', $node);
+  $base = node_get_types('module', $node); // 'module' becomes 'base'
+  $name = node_get_types('name', $node);
+  $types = node_get_types('types', $node);
+  $names = node_get_types('names', $node);
+
+  // Reset cache.
+  $type = node_get_types('type', $node, TRUE);
+  $base = node_get_types('module', $node, TRUE); // 'module' becomes 'base'
+  $name = node_get_types('name', $node, TRUE);
+  $node_types = node_get_types('types', NULL, TRUE);
+  $node_types = node_get_types('types', $node, TRUE);
+  $node_names = node_get_types('names', NULL, TRUE);
+  $node_names = node_get_types('names', $node, TRUE);
+
+  // Remove default parameters. (Some combinations are invalid.)
+  $type = node_get_types('type', NULL, FALSE);
+  $base = node_get_types('module', NULL, FALSE); // 'module' becomes 'base'
+  $name = node_get_types('name', NULL, FALSE);
+  $node_types = node_get_types('types', NULL, FALSE);
+  $node_types = node_get_types('types', NULL, FALSE);
+  $node_names = node_get_types('names', NULL, FALSE);
+  $node_names = node_get_types('names', NULL, FALSE);
+
+  // Variable for $op parameter.
+  $op = 'type';
+  $type = node_get_types($op, NULL, FALSE);
+
+  // Embedded examples.
+  $node_types = array_map('check_plain', node_get_types('names'));
+  $node_types = array_keys(node_get_types());
+  $type_array = array (
+    'bundles' => node_get_types('names'),
+  );
+  $forum_types[$type] = array('title' => t('Post new @node_type', array('@node_type' => node_get_types('name', $type))), 'href' => 'node/add/' . str_replace('_', '-', $type) . '/' . $variables['tid']);
+  $form['name'][$node->nid] =  array('#markup' => check_plain(node_get_types('name', $node)));
+  $form['name'][$node->nid] =  array('#markup' => check_plain(node_get_types('name', $node, TRUE)));
+
+  $type = node_get_types('type', str_replace('-', '_', $arg[2]));
+  $function = node_get_types('base', $type) . '_load';
+
+  foreach (node_get_types() as $type => $name) {
+  }
+
+  foreach (node_get_types('types', NULL, TRUE) as $type) {
+  }
+
+  foreach (node_get_types('types', NULL, FALSE) as $type) {
+  }
+}
+
 /*
  * Multi-lingual
  */
@@ -1746,6 +2098,41 @@ function example_locale_context() {
 /*
  * Miscellaneous
  */
+
+/**
+ * Implement hook_example().
+ *
+ * http://drupal.org/node/224333#implementation_hook_comment
+ */
+function example_example() {
+  // Do something.
+}
+
+/**
+ * Implementation of hook_example().
+ *
+ * http://drupal.org/node/224333#implementation_hook_comment
+ */
+function example_example() {
+  // Do something.
+}
+/**
+ * Implement hook_example.
+ *
+ * http://drupal.org/node/224333#implementation_hook_comment
+ */
+function example_example() {
+  // Do something.
+}
+
+/**
+ * Implementation of hook_example
+ *
+ * http://drupal.org/node/224333#implementation_hook_comment
+ */
+function example_example() {
+  // Do something.
+}
 
 function example_book_toc() {
   $toc = book_toc($bid, array(), 9);
@@ -1839,6 +2226,7 @@ function example_action_info() {
       'configurable' => TRUE,
       'hooks' => array(
         'comment' => array('insert', 'update'),
+        "taxonomy" => array("insert", "update", "delete", "view"),
       )
     )
   );
@@ -1847,7 +2235,7 @@ function example_action_info() {
 /**
  * Implement hook_action_info().
  *
- * Use case 2 - assigns variable, then returns variable.
+ * Use case 2 - makes one assignment to array variable; returns variable.
  */
 function example_action_info() {
   $info = array(
@@ -1865,7 +2253,34 @@ function example_action_info() {
       'configurable' => TRUE,
       'hooks' => array(
         'comment' => array('insert', 'update'),
+        "taxonomy" => array("insert", "update", "delete", "view"),
       )
+    )
+  );
+  return $info;
+}
+
+/**
+ * Implement hook_action_info().
+ *
+ * Use case 3: makes multiple assignments to array variable; returns variable.
+ */
+function example_action_info() {
+  $info['comment_unpublish_action'] = array(
+    'description' => t('Unpublish comment'),
+    'type' => 'comment',
+    'configurable' => FALSE,
+    'hooks' => array(
+      'comment' => array('insert', 'update'),
+    )
+  );
+  $info['comment_unpublish_by_keyword_action'] = array(
+    'description' => t('Unpublish comment containing keyword(s)'),
+    'type' => 'comment',
+    'configurable' => TRUE,
+    'hooks' => array(
+      'comment' => array('insert', 'update'),
+      "taxonomy" => array("insert", "update", "delete", "view"),
     )
   );
   return $info;
@@ -1897,13 +2312,26 @@ function example_hook_info() {
         ),
       ),
     ),
+    'taxonomy' => array(
+      'taxonomy' => array(
+        'insert' => array(
+          'runs when' => t('After saving a new term to the database'),
+        ),
+        'update' => array(
+          'runs when' => t('After saving an updated term to the database'),
+        ),
+        'delete' => array(
+          'runs when' => t('After deleting a term'),
+        ),
+      ),
+    ),
   );
 }
 
 /**
  * Implement hook_hook_info().
  *
- * Use case 2 - assigns variable, then returns variable.
+ * Use case 2 - makes one assignment to array variable; returns variable.
  */
 function example_hook_info() {
   $info = array(
@@ -1926,6 +2354,116 @@ function example_hook_info() {
         ),
       ),
     ),
+    'taxonomy' => array(
+      'taxonomy' => array(
+        'insert' => array(
+          'runs when' => t('After saving a new term to the database'),
+        ),
+        'update' => array(
+          'runs when' => t('After saving an updated term to the database'),
+        ),
+        'delete' => array(
+          'runs when' => t('After deleting a term'),
+        ),
+      ),
+    ),
   );
   return $info;
+}
+
+/**
+ * Implementation of hook_hook_info().
+ *
+ * Use case 3: makes multiple assignments to array variable; returns variable.
+ */
+function example_hook_info() {
+  $info['node'] = array(
+    'nodeapi' => array(
+      'presave' => array(
+        'runs when' => t('When either saving a new post or updating an existing post'),
+      ),
+      'insert' => array(
+        'runs when' => t('After saving a new post'),
+      ),
+      'update' => array(
+        'runs when' => t('After saving an updated post'),
+      ),
+      'delete' => array(
+        'runs when' => t('After deleting a post')
+      ),
+      'view' => array(
+        'runs when' => t('When content is viewed by an authenticated user')
+      ),
+    ),
+  );
+  $info['taxonomy'] = array(
+    'taxonomy' => array(
+      'insert' => array(
+        'runs when' => t('After saving a new term to the database'),
+      ),
+      'update' => array(
+        'runs when' => t('After saving an updated term to the database'),
+      ),
+      'delete' => array(
+        'runs when' => t('After deleting a term'),
+      ),
+    ),
+  );
+  return $info;
+}
+
+// http://drupal.org/node/224333#drupal-goto-params
+function example_drupal_goto_params() {
+  drupal_goto('/node/1');
+  drupal_goto('/node/1', 'a=b&c=d');
+  drupal_goto('/node/1', 'a=b&c=d', $fragment);
+  drupal_goto('/node/1', $query, $fragment);
+  drupal_goto('/node/1', 'a=b&c=d', $fragment, 301);
+  drupal_goto('/node/1', NULL, $fragment);
+  drupal_goto('/node/1', NULL, NULL, 301);
+
+  drupal_goto('/node/1', '');
+  drupal_goto('/node/1', "");
+
+  $query = 'a=b&c=d';
+  drupal_goto($path);
+  drupal_goto($path, $query);
+  drupal_goto($path, $query, $fragment);
+  drupal_goto($path, $query, $fragment);
+  drupal_goto($path, $query, $fragment, 301);
+  drupal_goto($path, NULL, $fragment);
+  drupal_goto($path, NULL, NULL, 301);
+
+  drupal_goto($path, QUERY, FRAGMENT);
+}
+
+function example_date_format() {
+  $shortdate = format_date($log->timestamp, 'small');
+  $mediumdate = format_date($log->timestamp, 'medium');
+  $longdate = format_date($log->timestamp, 'large');
+}
+
+function example_url_query_parameter() {
+  // Nothing to change.
+  $url = url("node/1");
+  $url = url("node/1", array("absolute" => TRUE));
+  // Query parameter is a string.
+  $url = url("node/1", array("query" => "a=b&c=d%40e"));
+  $url = url("node/1", array("absolute" => TRUE, "query" => "a=b&c=d%40e"));
+  $url = url('node/1', array('absolute' => TRUE, 'query' => 'a=b&c[]=d&c[]=e'));
+  $url = url("node/1", array(
+    "alias" => TRUE,
+    "query" => "a=b&c=d%40e",
+    "fragment" => 'test',
+    )
+  );
+  // Query parameter is an array.
+  $url = url("node/1", array('query' => array('a' => 'b', 'c' => 'd%40e')));
+  $url = url('node/1', array('absolute' => TRUE, 'query' => array('a' => 'b', 'c' => array('d', 'e'))));
+  $url = url("node/1", array(
+    "alias" => TRUE,
+    "query" => array('a' => 'b', 'c' => 'd%40e'),
+    "fragment" => 'test',
+    )
+  );
 }
