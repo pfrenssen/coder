@@ -2122,8 +2122,8 @@ function coder_upgrade_upgrade_call_user_authenticate_alter(&$item, &$reader) { 
     $editor->setParameters($item, array('$name', '$password'));
   }
   elseif ($class == 'PGPArray') {
-    $name = $operand->findValue("'name'")->toString();
-    $password = $operand->findValue("'pass'")->toString();
+    $name = $operand->findValue('name')->toString();
+    $password = $operand->findValue('pass')->toString();
     // Set the parameters on this function call.
     $editor->setParameters($item, array($name, $password));
   }
@@ -2371,7 +2371,7 @@ function coder_upgrade_convert_menu_valid_path(&$item, &$reader, &$editor) { // 
 function coder_upgrade_callback_menu_valid_path(&$item, &$operand) { // DONE
   cdp("inside " . __FUNCTION__);
   // TODO This key value could also be in double quotes.
-  $value = $operand->findValue("'link_path'");
+  $value = $operand->findValue('link_path');
   cdp($value->print_r());
   $item->setParameter(0, $value);
   cdp($item->toString());

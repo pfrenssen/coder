@@ -26,21 +26,69 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
   }
 */
   protected function setUp() {
-    // Save the live site files directory path.
-    $this->site_directory = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
+    /*
+     * When running a unit test case, we do not have access to a database once
+     * the parent::setUp() method is called. If there are any pre-processing
+     * tasks that require database access, we need to do them first.
+     */
+
     file_put_contents('output.html', '');
     file_put_contents('output.html', __METHOD__ . "\n", FILE_APPEND);
+    // Build theme registry cache.
+    $this->captureThemeInfo();
+    file_put_contents('output.html', "after captureThemeInfo\n", FILE_APPEND);
+    // Save the live site files directory path.
+    $this->site_directory = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
     file_put_contents('output.html', $this->site_directory . "\n", FILE_APPEND);
-    parent::setUp('grammar_parser', 'coder_upgrade'); //, 'gpui');
+
+    parent::setUp('grammar_parser', 'coder_upgrade');
     // Create output file directories.
-//    module_load_include('install', 'gpui'); // module_load_include('install', 'grammar_parser');
     module_load_include('install', 'coder_upgrade');
-//    gpui_install();
     coder_upgrade_install();
+    file_put_contents('output.html', "after install\n", FILE_APPEND);
 
     // Enable debug printing.
     global $debug;
     $debug = TRUE;
+  }
+
+  /**
+   * Stores the theme registry for core modules and the modules being upgraded.
+   */
+  protected function captureThemeInfo() {
+    if (variable_get('coder_upgrade_replace_files', FALSE)) {
+      return;
+    }
+
+    pgp_log_memory_use('', TRUE); // This would give an error (except the module is loaded by drupal_bootstrap).
+    pgp_log_memory_use('initial');
+
+    // Include necessary files.
+    $module_dirname = DRUPAL_ROOT . '/' . drupal_get_path('module', 'grammar_parser');
+    require_once $module_dirname . '/engine/grammar_parser.parser.inc';
+    require_once $module_dirname . '/engine/grammar_parser.reader.inc';
+    pgp_log_memory_use('load code');
+
+    // TODO Move the debug_print method to .inc file??? Then avoid this load at this time.
+    $module_dirname = DRUPAL_ROOT . '/' . drupal_get_path('module', 'coder_upgrade');
+    require_once $module_dirname . '/conversions/coder_upgrade.main.inc';
+    require_once $module_dirname . '/conversions/coder_upgrade.begin.inc';
+    coder_upgrade_debug_print("module = $module_dirname");
+
+    $in_dirname = $module_dirname . '/tests/old/';
+    $out_dirname = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
+
+    $directories = array($this->test_directory => 1);
+    foreach ($directories as $key => $directory) {
+      $items[] = array(
+        'name' => $key,
+        'old_dir' => $in_dirname . $key,
+        'new_dir' => $out_dirname . $key,
+      );
+    }
+
+    // Build theme registry cache.
+    coder_upgrade_upgrade_begin_alter($items[0]);
   }
 
   /**
@@ -57,28 +105,11 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
     }
     file_put_contents('output.html', __METHOD__ . "\n", FILE_APPEND);
 
-    pgp_log_memory_use('', TRUE);
-    pgp_log_memory_use('initial');
-
-    // Include necessary files.
-    $module_dirname = DRUPAL_ROOT . '/' . drupal_get_path('module', 'grammar_parser');
-    // Always add these since not running WebTestCase.
-    require_once $module_dirname . '/grammar_parser.module'; // require_once $module_dirname . '/grammar_parser.inc';
-    require_once $module_dirname . '/engine/grammar_parser.parser.inc';
-    require_once $module_dirname . '/engine/grammar_parser.reader.inc';
-    require_once $module_dirname . '/engine/grammar_parser.writer.inc';
-    require_once $module_dirname . '/engine/grammar_parser.list.inc';
-    require_once $module_dirname . '/engine/grammar_parser.object.inc';
-    pgp_log_memory_use('load code');
-
-    // TODO Move the debug_print method to .inc file??? Then avoid this load at this time.
     $module_dirname = DRUPAL_ROOT . '/' . drupal_get_path('module', 'coder_upgrade');
-    require_once $module_dirname . '/conversions/coder_upgrade.main.inc';
-    coder_upgrade_debug_print("module = $module_dirname");
-
     $in_dirname = $module_dirname . '/tests/old/';
     $expected_dirname = $module_dirname . '/tests/new/';
     $out_dirname = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
+    file_put_contents('output.html', "$out_dirname\n", FILE_APPEND);
 
     $upgrades = coder_upgrade_upgrade_info();
 
@@ -102,21 +133,26 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
       );
     }
 
-    // Apply conversion functions.
-//    module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
+    // If Drupal won't commit patch to DrupalUnitTestCase.php, then use a global.
+    global $is_test;
+    $is_test = TRUE;
+
+    // Apply upgrade routines.
+    module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
     if (coder_upgrade_start($upgrades, $extensions, $items)) {
     }
 
     $ignore = array('.', '..', 'CVS', '.svn');
 
     // Loop on files.
+    // TODO This needs to recurse if there are subdirectories.
     $filenames = scandir($in_dirname . $key . '/');
     cdp($filenames);
     foreach ($filenames as $filename) {
       if (in_array($filename, $ignore)) {
         continue;
       }
-      // Set file name to be compared.
+      // Set file names to be compared.
       $expected_filename = $expected_dirname . $key . '/' . $filename;
       $out_filename = $out_dirname . $key . '/' . $filename;
       coder_upgrade_debug_print("exp = $expected_filename");
@@ -133,14 +169,15 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
     $this->assertTrue($b1, 'Expected file exists', $name);
     $b2 = file_exists($out_filename);
     $this->assertTrue($b2, 'Output file exists', $name);
+    // Save a copy outside of the simpletest directory that will be deleted.
+    // TODO This copy may have name clashes.
+    copy($out_filename, $this->site_directory . $name);
     if ($b1 && $b2) {
       $expected = file_get_contents($expected_filename);
       $actual = file_get_contents($out_filename);
       $this->assertEqual($expected, $actual, 'Contents of output file match that of expected file', $name);
     }
     else {
-      // TODO This copy may have name clashes.
-      copy($out_filename, $this->site_directory . $name);
       $this->assertEqual('expected', 'actual', 'Contents of output file match that of expected file', $name);
     }
   }

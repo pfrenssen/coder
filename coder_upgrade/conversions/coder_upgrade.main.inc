@@ -28,7 +28,7 @@
  */
 function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) {
   // Declare global variables.
-  global $log, $debug, $_coder_upgrade_module_name, $replace_files;
+  global $log, $debug, $_coder_upgrade_module_name, $replace_files, $is_test;
 //  global $_coder_upgrade_dirname; // Not used.
 
   // Check lists in case this function is called apart from form submit.
@@ -67,8 +67,10 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
     $_coder_upgrade_module_name = '';
 //    $_coder_upgrade_dirname = $item['old_dir'];
 
-    // Process the directory before conversion routines are applied.
-    coder_upgrade_convert_begin($item);
+    if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'simpletest') === FALSE) { // if (!$is_test) {
+      // Process the directory before conversion routines are applied.
+      coder_upgrade_convert_begin($item);
+    }
 
     // Call main conversion loop.
     coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive);
