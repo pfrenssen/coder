@@ -2,6 +2,10 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-03-31):
+  * coder_upgrade.call.inc, coder_upgrade.regex.inc (by duellj with modifications)
+  * - implement #drupal_add_js_external, #jquery_ui, and #custom_block
+
 - Changes (2010-03-30):
   * coder_upgrade.call.inc
   * - restore missed calls to PGPArray::findValue() which now trims the quotes

@@ -45,6 +45,10 @@
  * http://drupal.org/node/224333#menu_tree_data
  *
  *
+ * Blocks
+ * http://drupal.org/node/224333#custom_block
+ *
+ *
  * Comments
  * http://drupal.org/node/224333#comment_load
  * http://drupal.org/node/224333#comment_validate_removed
@@ -66,6 +70,8 @@
  * Javascript
  * http://drupal.org/node/224333#drupal_add_js_options
  * http://drupal.org/node/224333#drupal_add_js_weight (Included with above)
+ * http://drupal.org/node/224333#drupal_add_js_external
+ * http://drupal.org/node/224333#jquery_ui
  * http://drupal.org/node/224333#rename-drupal-to-js
  *
  *
@@ -137,6 +143,16 @@ function coder_upgrade_upgrade_call_alter(&$item, &$reader, $name) { // NEEDS WO
 //  $name = &$item->name;
 
   switch ($name) {
+    // http://drupal.org/node/224333#custom_block
+    // All 'box' functions renamed to 'custom_block'.
+    case 'block_box_delete':
+    case 'block_box_delete_submit':
+    case 'block_box_form':
+    case 'block_box_get':
+    case 'block_box_save':
+      $item->name['value'] = str_replace('box', 'custom_block', $item->name['value']);
+      break;
+
     case 'db_add_field':
       // includes/database.pgsql.inc Add a new field to a table.
     case 'db_add_index':
@@ -1030,9 +1046,15 @@ function coder_upgrade_upgrade_call_drupal_set_html_head_alter(&$item, &$reader)
     $p0 = $item->printParameter();
     if (preg_match('#^([\'"])\s*<style type=[\'"]text/css[\'"]>(.*)</style>#si', $p0, $matches)) {
       $name['value'] = 'drupal_add_css';
-//      $temp = $editor->expressionToStatement($matches[1] . $matches[2] . $matches[1]);
-//      $item->setParameter(0, $temp);
       $editor->setParameters($item, array($matches[1] . $matches[2] . $matches[1], "array('type' => 'inline')"));
+      return;
+    }
+    // http://drupal.org/node/224333#drupal_add_js_external
+    // External JavaScript files can be now added via drupal_add_js
+    if (preg_match('#^[\'"]<script.*src=[\'"](.*?)[\'"]#i', $p0, $matches)) {
+      $name['value'] = 'drupal_add_js';
+      $editor->setParameter($item, 0, "'" . $matches[1] . "'");
+      $editor->setParameter($item, 1, "array('type' => 'external')");
       return;
     }
 
@@ -1471,6 +1493,70 @@ function coder_upgrade_upgrade_call_function_exists_alter(&$item, &$reader) { //
   $name = &$item->name;
   // Change was reverted.
   //      $name['value'] = 'drupal_function_exists';
+}
+
+/**
+* Implements hook_upgrade_call_jquery_ui_add_alter().
+*/
+function coder_upgrade_upgrade_call_jquery_ui_add_alter(&$item, &$reader) {
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // http://drupal.org/node/224333#jquery_ui
+  // jquery_ui_add is now drupal_add_library which loads a single library.
+  $name = &$item->name;
+  $name['value'] = 'drupal_add_library';
+
+  /*
+   * Note: This is an interesting pattern that can be applied elsewhere.
+   * If the parameter is a variable, then find the variable assignment and
+   * replace the operand accordingly. Then go through the rest of the code.
+   */
+  $operand = $item->getParameter()->getElement();
+  if ($item->getParameter()->isType(T_VARIABLE)) {
+    // Parameter is a variable.
+    $variable = $item->getParameter()->getElement()->findNode('value');
+    $parent = $item->parent;
+    // TODO This single search won't find multiple assignments to array variable.
+    $statement = $parent->container->searchBackward('PGPAssignment', 'values', 0, $variable, $parent);
+    if ($statement) {
+      $operand = &$statement->values->getElement()->findNode('operand', 'backward');
+      cdp($operand);
+    }
+  }
+
+  // Examine the type of the operand in the parameter.
+  if (is_array($operand)) {
+    // This is a simple string.
+    $value = trim($operand['value'], "'\"");
+    $editor->setParameter($item, 0, "'$value'");
+  }
+  elseif (get_class($operand) == 'PGPArray') {
+    $current = $operand->values->first();
+    while ($current->next != NULL) {
+      if ($current->type == 'value') {
+        $values[] = $current->data->toString();
+      }
+      $current = $current->next;
+    }
+    $editor->setParameter($item, 0, array_pop($values));
+    if ($values) {
+      $parent = &$item->parent;
+      $container = &$parent->container;
+      foreach ($values as $value) {
+        $temp = $editor->textToStatements("drupal_add_library('system', {$value})")->getElement();
+        $container->insertBefore($parent, $temp);
+      }
+    }
+  }
+  else { // elseif (get_class($operand) == 'PGPOperand') {
+    // This would be a variable and should not occur.
+    $statement = $editor->commentToStatement("// TODO {$operand->toString()} needs to be a string or multiple calls to drupal_add_library need to be made.");
+    $item->insertStatementBefore($statement);
+  }
+
+  // Insert a new first parameter.
+  $editor->insertParameter($item, 0, "'system'");
 }
 
 /**

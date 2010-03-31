@@ -29,6 +29,10 @@
  * http://drupal.org/node/224333#admin_path_changes
  *
  *
+ * Blocks
+ * http://drupal.org/node/224333#custom_block
+ *
+ *
  * Input Sanitization and Input Formats
  * http://drupal.org/node/224333#filter_urls
  *
@@ -59,6 +63,8 @@ function coder_upgrade_upgrade_regex_alter(&$file) {
 //  $to[] = "admin\/settings\/filter$1";
 
   coder_upgrade_upgrade_admin_path_changes($from, $to);
+  // TODO Intend to do all of these when converting db_query calls.
+  coder_upgrade_upgrade_database_tables($from, $to);
 
   // Replace "use PHP for block visibility" with "use PHP for settings."
   $from[] = '/(\'|")use PHP for block visibility(\'|")/';
@@ -95,5 +101,18 @@ function coder_upgrade_upgrade_admin_path_changes(&$from, &$to) {
   foreach ($path_conversions as $old_path => $new_path) {
     $from[] = "@(['\"])$old_path(/?.*?)(['\"])@";
     $to[] = "$1$new_path$2$1";
+  }
+}
+
+/**
+ * Upgrades database tables.
+ */
+function coder_upgrade_upgrade_database_tables(&$from, &$to) {
+  $table_conversion = array(
+    'box' => 'custom_block',
+  );
+  foreach ($table_conversion as $old_table => $new_table) {
+    $from[] = '/\{' . $old_table . '\}/i';
+    $to[] = '{' . $new_table . '}';
   }
 }
