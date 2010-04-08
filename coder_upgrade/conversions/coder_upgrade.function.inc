@@ -1040,8 +1040,13 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
   $item->name .= '_OLD';
   // Get the operation function parameter, usually called $op.
   $count = $item->parameters->count();
-  // TODO This gets the entire parameter including any default value. Hook_block has $op = 'list'.
-  $op = $item->printParameter($op_index);
+  // Extract the first operand from the parameter to omit any embedded comments
+  // or default value. Hook_block has $op = 'list'.
+  if (!($variable = $item->getParameter($op_index)->findNode('operand'))) {
+    clp("ERROR: Variable not found in hook_op parameter $op_index");
+    return;
+  }
+  $op = $variable->toString();
 
   // Get the function body statements.
   $body = &$item->body;
@@ -1059,13 +1064,13 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
     $found = FALSE;
     $statement = &$current->data;
     if (is_object($statement)) {
-      cdp($statement);
+//      cdp($statement);
     }
     if (is_a($statement, 'PGPConditional')) {
-      //      cdp("inside PGPConditional check");
-      //      cdp("statement->type = " . $statement->type);
+//      cdp("inside PGPConditional check");
+//      cdp("statement->type = " . $statement->type);
       if ($statement->type == T_SWITCH) {
-        //        cdp("inside T_SWITCH check");
+//        cdp("inside T_SWITCH check");
         // Get the list of conditions.
         $conditions = $statement->conditions;
         // Get the first condition. (With a switch there should only be one condition.)
@@ -1079,7 +1084,7 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
         }
       }
       elseif (in_array($statement->type, array(T_IF, T_ELSEIF/*, T_ELSE*/))) {
-        //        cdp("inside T_IF check");
+        cdp("inside T_IF check");
         /*
          * Extract the conditions referencing the $op variable and loop on them.
          * These are conditions of the form $op == 'operation'.
@@ -1255,12 +1260,12 @@ function coder_upgrade_callback_block($node, $case_node, $operation = '') {
   $search = array(
     '/\$blocks\[(\d+)\]/si',
     '/\$delta ?([=!])= ?(\d+)/si',
-    '/case (\d+)/si',
+    '/case (\'|"|)(\d+)(\'|"|)/si',
   );
   $replace = array(
     '$blocks[\'delta-\1\']',
     '$delta \1= \'delta-\2\'',
-    'case \'delta-\1\'',
+    'case \'delta-\2\'',
   );
   $count = 0;
   $text = preg_replace($search, $replace, $text, -1, $count);

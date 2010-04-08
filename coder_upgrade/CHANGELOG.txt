@@ -2,6 +2,15 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-04-07):
+  * coder_upgrade.begin.inc, coder_upgrade.call.inc
+  * - #765070: allow for a theme without variables
+  * coder_upgrade.function.inc
+  * - improve coder_upgrade_convert_op() to extract the $op variable from the parameter
+  * - improve coder_upgrade_callback_block to find quoted numeric deltas
+  * coder_upgrade.install.inc
+  * - 765070: fix regex in convert_install_file_comment()
+
 - Changes (2010-03-31):
   * coder_upgrade.call.inc, coder_upgrade.regex.inc (by duellj with modifications)
   * - implement #drupal_add_js_external, #jquery_ui, and #custom_block

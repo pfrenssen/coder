@@ -1589,7 +1589,7 @@ function coder_upgrade_upgrade_call_menu_tree_data_alter(&$item, &$reader) {
   }
   elseif (get_class($p1) == 'PGPFunctionCall') {
     $resource = '$result';
-    $statement = $editor->textToStatements('$result = '. $p1->toString())->getElement(0);
+    $statement = $editor->textToStatements('$result = ' . $p1->toString())->getElement(0);
     $item->insertStatementBefore($statement);
   }
   // Insert statements.
@@ -1721,7 +1721,7 @@ function coder_upgrade_upgrade_call_node_get_types_alter(&$item, &$reader) { // 
   }
 
   $name = &$item->name;
-  $name['value'] = 'node_type_get_'. $op;
+  $name['value'] = 'node_type_get_' . $op;
 
   // node_type_clear() (to clear the static cache) is now a separate function.
   if ($reset && $reset != 'FALSE') {
@@ -1813,7 +1813,7 @@ function coder_upgrade_upgrade_call_node_invoke_nodeapi_alter(&$item, &$reader) 
     $p0 = "'node_" . $operation . "'";
   }
   else {
-    $p0 = "'node_' . ". $op->toString();
+    $p0 = "'node_' . " . $op->toString();
     // Let's assume $p2 is valid.
 //    $p2 .= $p2 ? " /* TODO: Set this parameter based on the " . $op->toString() . " hook */" : '';
   }
@@ -1877,7 +1877,7 @@ function coder_upgrade_convert_require(&$item, &$reader) { // DONE
       cdp('found ./');
       // Remove './' from the beginning of the string.
       $operand['value'] = str_replace('./', '', $operand['value']);
-      cdp('value = '. $operand['value']);
+      cdp('value = ' . $operand['value']);
       if ($operand['value'] == "''" || $operand['value'] == '""') {
         cdp('deleteElement');
         $p0->deleteElement();
@@ -2105,7 +2105,7 @@ function coder_upgrade_upgrade_call_theme_alter(&$item, &$reader) { // DONE
   }
   $hook = $upgrade_theme_registry[$theme];
 
-  if (isset($hook['variables'])) {
+  if (isset($hook['variables']) && $hook['variables']) {
     $count = $item->parameterCount();
     // TODO Incorporate default value elimination into this.
     if ($count == 1 /*|| $count - 1 != count($hook['variables'])*/) {

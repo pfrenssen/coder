@@ -68,7 +68,7 @@ function coder_upgrade_theme_build_registry() {
   $hook = 'theme';
   // TODO In the D8 release of this module, will need to use the correct file.
   // $hook_info = module_hook_info();
-  foreach($list as $module => $stuff) { // foreach (module_implements('theme') as $module) {
+  foreach ($list as $module => $stuff) { // foreach (module_implements('theme') as $module) {
     module_load_include('module', $module);
     if (module_hook($module, $hook)) { // || (isset($hook_info[$hook]['group']) && $include_file = module_load_include('inc', $module, $module . '.' . $hook_info[$hook]['group']) && module_hook($module, $hook))) {
       _theme_process_registry($cache, $module, 'module', $module, $path = drupal_get_path('module', $module));
@@ -125,7 +125,7 @@ function coder_upgrade_cache_hook_theme($item, $recursive = TRUE) {
           if ($function->data->name == $_coder_upgrade_module_name . '_theme') {
             $module_theme = eval($function->data->body->toString());
             foreach ($module_theme as $key => &$value) {
-              $value['variables'] = $value['arguments'];
+              $value['variables'] = isset($value['arguments']) ? $value['arguments'] : array();
               unset($value['arguments']);
 //              $module_theme[$key] = $value;
             }
