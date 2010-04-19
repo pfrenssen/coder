@@ -2216,6 +2216,11 @@ function coder_upgrade_callback_theme(&$array2, &$current2, $hook, $type, $key, 
     }
 
     $array = $current2->data->getElement();
+    if (!($key0 = $array->getKey())) {
+      // Change key from 'arguments' to 'variables.'
+      $key_expression = $editor->expressionToStatement("'variables'");
+      return;
+    }
     $key0 = trim($array->getKey()->toString(), "'\"");
     // At a minimum, an array with key-value pairs will have 4 keys after one
     // pair: lparens, key, assign, and value.

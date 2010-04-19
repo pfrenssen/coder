@@ -37,6 +37,7 @@
  *
  * Database
  * http://drupal.org/node/224333#schema_ret
+ * #db_result (not documented)
  *
  *
  * Menu
@@ -65,6 +66,7 @@
  * Taxonomy
  * http://drupal.org/node/224333#taxonomy_get_tree
  * http://drupal.org/node/224333#taxonomy_crud
+ * http://drupal.org/node/224333#no-synonyms-taxonomy
  *
  *
  * Javascript
@@ -111,6 +113,7 @@
  *
  *
  * Node API
+ * http://drupal.org/node/224333#node_load_multiple
  * http://drupal.org/node/224333#node_type_base (ALSO in convert_functions)
  * http://drupal.org/node/224333#node_invoke_nodeapi
  * http://drupal.org/node/224333#node_type_get_functions
@@ -222,6 +225,13 @@ function coder_upgrade_upgrade_call_alter(&$item, &$reader, $name) { // NEEDS WO
       // These are included by $reader in function call list.
       // Use with http://drupal.org/node/224333#absolute_includes
       coder_upgrade_convert_require($item, $reader);
+      break;
+
+    // http://drupal.org/node/224333#no-synonyms-taxonomy
+    // Taxonomy synonyms have been removed.
+    case 'taxonomy_get_synonyms':
+    case 'taxonomy_get_synonym_root':
+      coder_upgrade_convert_taxonomy_synonyms($item);
       break;
 
     default:
@@ -548,6 +558,19 @@ function coder_upgrade_upgrade_call_db_rename_table_alter(&$item, &$reader) { //
   // includes/database.pgsql.inc Rename a table.
   $item->deleteParameter();
 }*/
+
+/**
+ * Implements hook_upgrade_call_db_result_alter().
+ */
+function coder_upgrade_upgrade_call_db_result_alter(&$item, &$reader) {
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Process function call.
+  $p0 = $item->printParameter();
+  $temp = $editor->textToStatements(trim($p0) .'->fetchField();');
+  $item = $temp->getElement(0);
+}
 
 /**
  * Implements hook_upgrade_call_drupal_add_css_alter().
@@ -1825,6 +1848,47 @@ function coder_upgrade_upgrade_call_node_invoke_nodeapi_alter(&$item, &$reader) 
 }
 
 /**
+* Implements hook_upgrade_call_node_load_alter().
+*/
+function coder_upgrade_upgrade_call_node_load_alter(&$item, &$reader) {
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // First parameter no longer an array, so we need to use node_load_multiple().
+  $p0 = $item->getParameter()->getElement();
+  if (is_object($p0) && get_class($p0) == 'PGPArray') {
+    if ($nid = $p0->findValue('nid')) {
+      $item->setParameter(0, $nid);
+    }
+    else {
+      $name = &$item->name;
+      $name = 'node_load_multiple';
+
+      if ($item->parameterCount() > 1) {
+        // Add vid to conditions array if present
+        // TODO Would it work to have passed nid and vid as params in D6?
+        // If so, then we should allow for this.
+        $key = $editor->expressionToStatement("'vid'");
+        // TODO Add an API function to insert array item with or w/o key.
+        $p0->values->insertLast($key, 'key');
+        $assign = '=>';
+        $p0->values->insertLast($assign, 'assign');
+  //      $value = $editor->expressionToStatement($item->printParameter(1));
+        $p0->values->insertLast($item->getParameter(1), 'value');
+        $p0->count++;
+        cdp($p0);
+  //      $p1 = $item->printParameter(1); // TODO What if this has an assignment?
+        $item->deleteParameter(1);
+
+        $editor->insertParameter($item, 0, 'array()');
+      }
+      // TODO Maybe use array_shift to get the first node?
+      $item->insertStatementBefore($editor->commentToStatement('// TODO node_load_multiple returns an array of nodes, rather than a single node'));
+    }
+  }
+}
+
+/**
  * Implements hook_upgrade_call__node_type_set_defaults_alter().
  */
 function coder_upgrade_upgrade_call__node_type_set_defaults_alter(&$item, &$reader) { // DONE
@@ -2461,4 +2525,19 @@ function coder_upgrade_callback_menu_valid_path(&$item, &$operand) { // DONE
   cdp($value->print_r());
   $item->setParameter(0, $value);
   cdp($item->toString());
+}
+
+/**
+ * Comments out taxonomy synonym functions.
+ */
+function coder_upgrade_convert_taxonomy_synonyms(&$item) {
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Comment out function.
+  // Replace function call with default return value (so code will theoretically still run).
+  $item->insertStatementBefore($editor->commentToStatement('// TODO The taxonomy synonym functionality has been removed.'));
+  $item->insertStatementBefore($editor->commentToStatement('// To replace this functionality, you can add a synonym field to your vocabulary.'));
+  $temp = $item->toString();
+  $item = $editor->expressionToStatement('array() /*' . $temp . '*/');
 }

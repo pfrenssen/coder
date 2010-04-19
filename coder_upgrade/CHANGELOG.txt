@@ -2,6 +2,14 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-04-17):
+  * coder_upgrade.call.inc
+  * - #db_result (not documented), #no-synonyms-taxonomy, #node_load_multiple (by duellj with modifications)
+  * coder_upgrade.function.inc
+  * - improve coder_upgrade_callback_theme() to handle empty array as arguments parameter
+  * coder_upgrade.regex.inc (by duellj)
+  * - #remove_FILE_STATUS_TEMPORARY
+
 - Changes (2010-04-07):
   * coder_upgrade.begin.inc, coder_upgrade.call.inc
   * - #765070: allow for a theme without variables

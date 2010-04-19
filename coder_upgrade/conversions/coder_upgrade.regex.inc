@@ -36,6 +36,10 @@
  * Input Sanitization and Input Formats
  * http://drupal.org/node/224333#filter_urls
  *
+ *
+ * File API
+ * http://drupal.org/node/224333#remove_FILE_STATUS_TEMPORARY
+ *
  * @param string $file
  *   The text of the file to convert.
  */
@@ -69,6 +73,10 @@ function coder_upgrade_upgrade_regex_alter(&$file) {
   // Replace "use PHP for block visibility" with "use PHP for settings."
   $from[] = '/(\'|")use PHP for block visibility(\'|")/';
   $to[] = "$1use PHP for settings$1";
+
+  // FILE_STATUS_TEMPORARY has been removed.
+  $from[] = "/FILE_STATUS_TEMPORARY/";
+  $to[] = "~FILE_STATUS_PERMANENT";
 
   coder_upgrade_do_conversions($from, $to, $new);
   coder_upgrade_save_changes($cur, $new, $file, $hook);
