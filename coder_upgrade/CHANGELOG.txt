@@ -2,6 +2,12 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-04-21):
+  * coder_upgrade.begin.inc, coder_upgrade.call.inc
+  * - #hook_forms_signature
+  * coder_upgrade.function.inc
+  * - #hook_forms_signature, #hook_load_signature, #hook-user-changes
+
 - Changes (2010-04-17):
   * coder_upgrade.call.inc
   * - #db_result (not documented), #no-synonyms-taxonomy, #node_load_multiple (by duellj with modifications)

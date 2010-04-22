@@ -55,12 +55,14 @@
  *
  *
  * Form API
+ * http://drupal.org/node/224333#hook_forms_signature
  * http://drupal.org/node/224333#hook_element_info
  *
  *
  * User API
  * http://drupal.org/node/224333#user_cancel (DONE with remove_op)
  * http://drupal.org/node/224333#remove_op (DUP Node API)
+ * http://drupal.org/node/224333#hook-user-changes (two alter hooks in this file)
  *
  *
  * Node API
@@ -70,6 +72,7 @@
  * http://drupal.org/node/224333#node_build_rss
  * http://drupal.org/node/224333#build_mode
  * http://drupal.org/node/224333#hook_node_xxx
+ * http://drupal.org/node/224333#hook_load_signature
  *
  *
  * Miscellaneous
@@ -88,6 +91,31 @@ function coder_upgrade_upgrade_hook_alter(&$node, &$reader) {
   // Update document comment.
   $item->comment = preg_replace('@\*\s+[iI]mplement.*?(hook_.*?)(\(\)|)(\.|)$@m', "* Implements $1().", $item->comment);
   // TODO If no comment, then add one?
+
+  global $upgrade_menu_registry;
+  cdp($node->data->name);
+  if (in_array($node->data->name, $upgrade_menu_registry)) {
+    // http://drupal.org/node/224333#hook_forms_signature
+    coder_upgrade_convert_form_callback($node);
+  }
+}
+
+function coder_upgrade_convert_form_callback(&$node) {
+  cdp("inside " . __FUNCTION__);
+  $item = &$node->data;
+
+  $editor = PGPEditor::getInstance();
+  if (!$item->parameterCount()) {
+    // No parameters; insert the $form and $form_state parameters.
+    $item->insertParameter(0, $editor->expressionToStatement('$form'));
+    $item->insertParameter(1, $editor->expressionToStatement('&$form_state'));
+    return;
+  }
+  // Insert the $form parameter (if not already inserted).
+  $p0 = $item->getParameter()->stripComments()->toString();
+  if ($p0 == '&$form_state' || $p0 == '$form_state' || $p0 != '$form') { // if ($p0 != '$form') {
+    $item->insertParameter(0, $editor->expressionToStatement('$form'));
+  }
 }
 
 /**
@@ -190,6 +218,62 @@ function coder_upgrade_upgrade_hook_link_alter(&$node, &$reader) {
 }
 
 /**
+ * Implements hook_upgrade_hook_load_alter().
+ */
+function coder_upgrade_upgrade_hook_load_alter(&$node, &$reader) {
+  // Changes: hook_load_signature
+  $item = &$node->data;
+
+  global $_coder_upgrade_module_name;
+
+  // Save name of first parameter.
+  $p0 = $item->getParameter()->stripComments()->toString();
+  $p0_new = $p0 . 's';
+  // Add 's' to name of first parameter.
+  $editor = PGPEditor::getInstance();
+  $editor->setParameter($item, 0, $p0_new);
+  // Insert statement to redeclare the former first parameter.
+//  $statement = $editor->textToStatements("$p0 = {$p0}s[0]")->getElement();
+//  $item->body->insertFirst($statement);
+
+  // Get the function body.
+  $body = &$item->body;
+
+  if (!($return = &$body->find(T_RETURN, 'reverse'))) {
+    clp("ERROR: return statement not found in hook_load");
+    $body->insertFirst($editor->commentToStatement($msg), 'comment');
+    return;
+  }
+
+  $value = &$return->getParameter();
+  $return_parameter = $value->toString();
+  // Comment out the return statement.
+  if (!$value->isType(T_VARIABLE)) {
+    $statement = $editor->textToStatements('$node_additions = ' . $value->toString())->getElement();
+    $return->insertStatementBefore($statement);
+    $return = $editor->textToStatements('return $node_additions')->getElement();
+    $return_parameter = '$node_additions';
+  }
+
+  // Replace the return variable with a foreach loop on each node object.
+  $strings[] = 'foreach (' . $return_parameter . ' as $property => &$value) {';
+  $strings[] = '  ' . $p0 . '->$property = $value;';
+  $strings[] = '}';
+  $return = $editor->textToStatements(implode("\n", $strings))->getElement();
+
+  // Wrap the body in a foreach loop on $nodes.
+  unset($strings);
+  $strings[] = 'foreach (' . $p0_new . ' as $nid => &' . $p0 . ') {';
+  $strings[] = '}';
+  $loop = $editor->textToStatements(implode("\n", $strings))->getElement();
+
+  $loop->body = $item->body;
+  $body = new PGPBody();
+  $body->insertLast($loop);
+  $item->body = $body;
+}
+
+/**
  * Implements hook_upgrade_hook_menu_link_alter_alter().
  */
 function coder_upgrade_upgrade_hook_menu_link_alter_alter(&$node, &$reader) {
@@ -231,6 +315,26 @@ function coder_upgrade_upgrade_hook_node_type_alter(&$node, &$reader) {
 function coder_upgrade_upgrade_hook_perm_alter(&$node, &$reader) {
   // Changes: hook_permission and descriptions_permissions
   coder_upgrade_convert_perm($node);
+}
+
+/**
+ * Implements hook_upgrade_hook_profile_alter_alter().
+ */
+function coder_upgrade_upgrade_hook_profile_alter_alter(&$node, &$reader) {
+  // Changes: hook-user-changes
+  $item = &$node->data;
+
+  global $_coder_upgrade_module_name;
+
+  // Rename function.
+  $item->name = $_coder_upgrade_module_name . '_user_view';
+  // Update document comment.
+  $item->comment['value'] = preg_replace('@hook_profile_alter([^i])@', "hook_user_view$1", $item->comment['value']);
+  // Remove '&' from first parameter.
+  $p0 = str_replace('&', '', $item->getParameter()->stripComments()->toString());
+  // Add $view_mode parameter.
+  $editor = PGPEditor::getInstance();
+  $editor->setParameters($item, array($p0, '$view_mode'));
 }
 
 /**
@@ -1471,6 +1575,9 @@ function coder_upgrade_callback_node_type($node, $case_node, $operation = '') {
 function coder_upgrade_callback_user($node, $case_node, $operation = '') {
   cdp("inside " . __FUNCTION__);
 
+  // http://drupal.org/node/224333#remove_op
+  // http://drupal.org/node/224333#hook-user-changes
+
   if (!$operation) {
     $case = &$case_node->data;
     if (!is_a($case, 'PGPCase')) {
@@ -1733,7 +1840,7 @@ function coder_upgrade_convert_return_loop(&$node, &$count, $return_variable, $h
       $assign_variable = $assignment->values->getElement()->getElement()->stripComments()->toString();
       if ($return_variable == $assign_variable) {
         // Use case 2: makes one assignment to array variable; returns variable.
-        cdp("Assignment variable matches return variable");
+        cdp("Use case 2: Assignment variable matches return variable");
         /*
          * TODO This equality check would fail if comments are embedded between
          * variable and operator.
@@ -1753,19 +1860,54 @@ function coder_upgrade_convert_return_loop(&$node, &$count, $return_variable, $h
       }
       elseif (strpos($assign_variable, $return_variable) !== FALSE) {
         // Use case 3: makes multiple assignments to array variable; returns variable.
-        cdp("Assignment variable matches return variable");
+        cdp("Use case 3: Assignment variable includes return variable");
         /*
          * TODO This substring check would fail if comments are embedded between
          * variable and operator.
          * Example: $theme /**\/ = $array + array(..);
          */
+        $assign_variable2 = $assignment->values->getElement()->getElement()->stripComments();
         $value1 = $assignment->values->getElement();
-        $array1 = $value1->getElement($value1->count() - 1);
-        coder_upgrade_callback_return_case3($array1, $hook, $callback);
-        $count++;
+        if ($assign_variable2->countType('index') == 1) {
+          cdp('variable has one index');
+          $array1 = $value1->getElement($value1->count() - 1);
+          coder_upgrade_callback_return_case3($array1, $hook, $callback);
+          $count++;
+        }
+        elseif ($assign_variable2->countType('index') == 2) {
+          cdp('variable has two indices');
+          /*
+           * TODO Use case 5
+           * Assignment to array variable at an index
+           * $items[$admin_path] = array_merge($default_menu_fields, $menu_item);
+           * $items[$admin_path]['page callback'][] = 'example_admin_form';
+           * We need to count the indices; check for last index == []
+           * The second index is usually the item to be inspected
+           */
+          $key2 = $assign_variable2->getType('index', 2);
+          coder_upgrade_callback_return_case5($assignment, /*$key2,*/ $hook, $callback);
+        }
+        elseif ($assign_variable2->countType('index') == 3 && $assign_variable2->getType('index', 3)->toString() == '') {
+          cdp('variable has three indices');
+          /*
+           * TODO Use case 5
+           * Assignment to array variable at an index
+           * $items[$admin_path] = array_merge($default_menu_fields, $menu_item);
+           * $items[$admin_path]['page callback'][] = 'example_admin_form';
+           * We need to count the indices; check for last index == []
+           * The second index is usually the item to be inspected
+           */
+          $key2 = $assign_variable2->getType('index', 2);
+          coder_upgrade_callback_return_case5($assignment, /*$key2,*/ $hook, $callback);
+        }
+        else {
+          clp("ERROR: Assignment variable has more than three index levels");
+          cdp("ERROR: Assignment variable has more than three index levels");
+          cdp($assign_variable2->getType('index', 3)->toString());
+        }
       }
     }
-    elseif (is_a($current->data, 'PGPConditional')) {
+    elseif (is_object($current->data) && in_array(get_class($current->data), array('PGPConditional', 'PGPFor', 'PGPForeach'))) { // elseif (is_a($current->data, 'PGPConditional')) {
       coder_upgrade_convert_return_loop($current->data->body->first(), $count, $return_variable, $hook, $callback);
     }
     $current = $current->next;
@@ -1828,6 +1970,8 @@ function coder_upgrade_callback_return_case3(&$array2, $hook, $callback = '') { 
   // The keys of this array are the node type items.
   if (!is_a($array2, 'PGPArray')) {
     clp("ERROR: array2 is not a PGPArray object in hook_$hook");
+    cdp("ERROR: array2 is not a PGPArray object in hook_$hook");
+    cdp($array2);
     return;
   }
 
@@ -1848,6 +1992,33 @@ function coder_upgrade_callback_return_case3(&$array2, $hook, $callback = '') { 
     }
     $current2 = $current2->next;
   }
+}
+
+function coder_upgrade_callback_return_case5(/*&*/$assignment, $hook, $callback = '') { // NOT DONE
+  cdp("inside " . __FUNCTION__);
+  /*
+   * TODO Convert the assingment into an array expression. Then pass off the
+   * array to coder_upgrade_callback_return_case3.
+   *
+   * Loop on assignment to remove all nodes up to and including the assignment
+   * operator. Grab the second index from the first node. Then toString() and
+   * build an array with the second index as the key.
+   */
+  $assign_variable2 = $assignment->values->getElement()->getElement()->stripComments();
+  $key2 = $assign_variable2->getType('index', 2);
+  if ($assignment->values->getElement()->get(1)->type != 'assign') {
+    clp("ERROR: second element of assignment is not the assignment operator");
+    return;
+  }
+  $editor = PGPEditor::getInstance();
+  // Remove the assignee and the assignment operator.
+  $assignment = $assignment->values->getElement();
+  $assignment->deleteElement();
+  $assignment->deleteElement();
+  $temp = $assignment; //->values->getElement()->getElement(2); // ->stripComments();
+  $key = trim($key2->toString(), "'\"");
+  $array2 = $editor->expressionToStatement("array('$key' => {$temp->toString()})")->getElement();
+  coder_upgrade_callback_return_case3($array2, $hook, $callback);
 }
 
 /**

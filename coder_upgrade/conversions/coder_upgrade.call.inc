@@ -95,6 +95,7 @@
  *
  * Form API
  * http://drupal.org/node/224333#drupal_execute_drupal_form_submit
+ * http://drupal.org/node/224333#hook_forms_signature
  *
  *
  * File API
@@ -766,7 +767,6 @@ function coder_upgrade_upgrade_call_drupal_execute_alter(&$item, &$reader) { // 
   $name['value'] = 'drupal_form_submit';
 }
 
-
 /**
  * Implements hook_upgrade_call_drupal_get_content_alter().
  */
@@ -777,6 +777,94 @@ function coder_upgrade_upgrade_call_drupal_get_content_alter(&$item, &$reader) {
   // Process function call.
   $name = &$item->name;
   $name['value'] = 'drupal_get_region_content';
+}
+
+/**
+ * Implements hook_upgrade_call_drupal_get_form_alter().
+ */
+function coder_upgrade_upgrade_call_drupal_get_form_alter(&$item, &$reader) { // DONE
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Process function call.
+  $name = &$item->name;
+  // http://drupal.org/node/224333#hook_forms_signature
+  /*
+   * This needs to be approached from multiple angles.
+   *
+   * Up-front processing: read hook_menu and hook_theme
+   * (the latter for the theme change).
+   * Look for calls to drupal_get_form or system_settings_form.
+   * The latter already passes the $form array.
+   * Find the function whose name is the first parameter name.
+   * Add $form as a parameter.
+   * The first parameter may be a variable, in which case we could try to
+   * find it and get the string value.
+   *
+   * Recurse over menu items with page callback = drupal_get_form
+   * and look for functions with name = first parameter of page arguments.
+   * Add $form as a parameter.
+   * This could be done from the convert_functions routine for hook_menu.
+   */
+
+  $count = $item->parameters->count();
+  if ($count == 0) {
+    return;
+  }
+
+  $form = $item->getParameter();
+  $operand = $form->getElement();
+  $value = $form->toString();
+  if ($form->isType(T_CONSTANT_ENCAPSED_STRING)) {
+    // Parameter is a string.
+    // Get the function name.
+    $value = trim($operand['value'], "'\"");
+    // Find the function object with this name.
+    $function = $editor->findFunction($reader->getFunctions(), $value);
+    if (!is_null($function)) {
+      // Insert the $form parameter (if not already inserted).
+      $p0 = $function->getParameter()->stripComments()->toString();
+      if ($p0 != '$form') {
+        $function->insertParameter(0, $editor->expressionToStatement('$form'));
+      }
+    }
+  }
+  elseif ($form->isType(T_VARIABLE)) {
+    // Parameter is a variable.
+    $variable = $operand->findNode('value');
+    // Get the parent = statement (i.e. node) this function call is part of.
+    $parent = $item->parent; // $parent = &$item->parent;
+    // Get the statement list the parent is part of.
+    $statement = $parent->container->searchBackward('PGPAssignment', 'values', 0, $variable, $parent);
+    if ($statement) {
+      $operand2 = &$statement->values->getElement()->findNode('operand', 'backward');
+      // TODO A pattern here - this is the same code as above but executed on a different object.
+      if (is_array($operand2) && $operand2['type'] == T_CONSTANT_ENCAPSED_STRING) {
+        $value = trim($operand2['value'], "'\"");
+        $function = $editor->findFunction($reader->getFunctions(), $value);
+        if (!is_null($function)) {
+          // Insert the $form parameter (if not already inserted).
+          $p0 = $function->getParameter()->stripComments()->toString();
+          if ($p0 != '$form') {
+            $function->insertParameter(0, $editor->expressionToStatement('$form'));
+          }
+        }
+      }
+      else {
+        clp("ERROR: Could not find a string to change in " . __FUNCTION__);
+        $item->insertStatementBefore($editor->commentToStatement('// TODO ' . $item->printParameter(1) . ' needs to have $form as its first parameter.'));
+      }
+    }
+    else {
+      clp("ERROR: Could not find a string to change in " . __FUNCTION__);
+      $item->insertStatementBefore($editor->commentToStatement('// TODO ' . $item->printParameter(1) . ' needs to have $form as its first parameter.'));
+    }
+  }
+  else {
+    clp("ERROR: Form callback is not a string or variable" . __FUNCTION__);
+    $item->insertStatementBefore($editor->commentToStatement('// TODO ' . $item->printParameter(1) . ' needs to have $form as its first parameter.'));
+  }
+  // TODO Comment out an assignment of $form = array();
 }
 
 /**

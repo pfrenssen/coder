@@ -23,6 +23,10 @@
 function coder_upgrade_upgrade_begin_alter($item) {
 //  return; // TODO Temporary
 //  cdp("inside " . __FUNCTION__);
+  global $upgrade_menu_registry;
+  if (!$upgrade_menu_registry) {
+    $upgrade_menu_registry = array();
+  }
   /*
    * TODO Should we:
    * - write the core cache to a file (and commit the file?)
@@ -30,7 +34,8 @@ function coder_upgrade_upgrade_begin_alter($item) {
    * - check for existence of cache if core upgrades are being run
    */
   coder_upgrade_cache_theme_registry();
-  coder_upgrade_cache_hook_theme($item);
+  coder_upgrade_cache_info_hooks($item);
+  cdp($upgrade_menu_registry);
 }
 
 /**
@@ -78,14 +83,14 @@ function coder_upgrade_theme_build_registry() {
 }
 
 /**
- * Caches the hook_theme() entries for the modules being converted.
+ * Caches hook_theme() and hook_menu() entries for the modules being converted.
  *
  * @param array $item
  *   Array of a directory containing the files to convert.
  */
-function coder_upgrade_cache_hook_theme($item, $recursive = TRUE) {
+function coder_upgrade_cache_info_hooks($item, $recursive = TRUE) {
 //  cdp("inside " . __FUNCTION__);
-  global $_coder_upgrade_module_name, $upgrade_theme_registry;
+  global $_coder_upgrade_module_name, $upgrade_theme_registry, $upgrade_menu_registry;
   static $ignore = array('.', '..', 'CVS', '.svn');
   static $extensions = array('module', 'inc');
 
@@ -95,7 +100,7 @@ function coder_upgrade_cache_hook_theme($item, $recursive = TRUE) {
   coder_upgrade_module_name($dirname, $item);
   $_coder_upgrade_module_name = $item['module'] ? $item['module'] : $_coder_upgrade_module_name;
 
-  // Find hook_theme for this module  and cache its result.
+  // Find hook_theme for this module and cache its result.
   $filenames = scandir($dirname . '/');
   foreach ($filenames as $filename) {
     if (!in_array($filename, $ignore)) {
@@ -106,12 +111,12 @@ function coder_upgrade_cache_hook_theme($item, $recursive = TRUE) {
             'name' => $item['name'],
             'old_dir' => $dirname . '/' . $filename,
           );
-          coder_upgrade_cache_hook_theme($new_item, $recursive);
+          coder_upgrade_cache_info_hooks($new_item, $recursive);
           // Reset the module name.
           $_coder_upgrade_module_name = $item['module'];
         }
       }
-      elseif (in_array(pathinfo($filename, PATHINFO_EXTENSION), array_keys($extensions))) {
+      elseif (in_array(pathinfo($filename, PATHINFO_EXTENSION), $extensions)) {
         $cur = file_get_contents($dirname . '/' . $filename);
         // Create reader object.
         $reader = PGPReader::getInstance();
@@ -130,7 +135,11 @@ function coder_upgrade_cache_hook_theme($item, $recursive = TRUE) {
 //              $module_theme[$key] = $value;
             }
             $upgrade_theme_registry = array_merge($upgrade_theme_registry, $module_theme);
-            break 2;
+//            break 2;
+          }
+          elseif ($function->data->name == $_coder_upgrade_module_name . '_menu') {
+            $module_menu = coder_upgrade_convert_return($function, 'menu');
+//            break 2;
           }
         }
         // Free up memory.
@@ -139,4 +148,82 @@ function coder_upgrade_cache_hook_theme($item, $recursive = TRUE) {
       }
     }
   }
+}
+
+/**
+ * Caches hook_menu() arrays.
+ *
+ * Save a list of form callback routines (including arguments to drupal_get_form()).
+ *
+ * @param PGPArray $array2
+ *   The array object containing the array element ($current2).
+ * @param PGPNode $current2
+ *   The node object of the array element.
+ * @param string $hook
+ *   The hook name.
+ * @param string $type
+ *   The type (key or value) of the array element.
+ * @param string $key
+ *   The key of the array element (or the most recent key).
+ * @param string $value
+ *   The value of the array element (or NULL if element is a key).
+ */
+function coder_upgrade_callback_menu(&$array2, &$current2, $hook, $type, $key, $value) { // NOT DONE
+//  cdp("inside " . __FUNCTION__);
+  global $upgrade_menu_registry;
+
+  if (!is_a($current2, 'PGPNode')) {
+    clp("ERROR: current2 is not a PGPNode object in hook_$hook");
+    return;
+  }
+
+  $editor = PGPEditor::getInstance();
+
+  /*
+   * With a nice array that includes all the menu items, we can check for a
+   * page callback of 'drupal_get_form'. However, this is a default and could
+   * be omitted. But because there could be 'funny' code such as inside the
+   * foreach loop in our example function, we do not have an easy way to
+   * determine if the menu item is a callback to be changed.
+   *
+   * Unlike other uses for this pattern, get in on the first call, do our
+   * business, and then set the array pointer to the last item to avoid
+   * redundant looping.
+   */
+
+  $callback = $array2->findValue('page callback');
+  $arguments = $array2->findValue('page arguments');
+  if ($callback && trim($callback->toString(), "'\"") == 'drupal_get_form') {
+    if ($arguments) {
+      $operand = $arguments->getElement();
+      if ($arguments->isType(T_ARRAY)) {
+        $form = trim($operand->getValue()->toString(), "'\"");
+        $upgrade_menu_registry[] = $form;
+      }
+      elseif ($arguments->isType(T_CONSTANT_ENCAPSED_STRING)) {
+        $form = trim($arguments->toString(), "'\"");
+        $upgrade_menu_registry[] = $form;
+      }
+    }
+  }
+  elseif ($callback) {
+    // These callbacks are not affected by this change.
+//    $form = trim($callback->toString(), "'\"");
+//    $upgrade_menu_registry[] = $form;
+  }
+  elseif ($arguments) {
+    // Depending on the code style, some of these will include callbacks.
+    // But we can not be sure. Check for first paramter being $form_state.
+    $operand = $arguments->getElement();
+    if ($arguments->isType(T_ARRAY)) {
+      $form = trim($operand->getValue()->toString(), "'\"");
+      $upgrade_menu_registry[] = $form;
+    }
+    elseif ($arguments->isType(T_CONSTANT_ENCAPSED_STRING)) {
+      $form = trim($arguments->toString(), "'\"");
+      $upgrade_menu_registry[] = $form;
+    }
+  }
+  // Set $current2 to last item in list to avoid redundant looping.
+  $current2 = $array2->values->last();
 }
