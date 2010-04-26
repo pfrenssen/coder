@@ -561,6 +561,14 @@ function coder_upgrade_upgrade_call_db_rename_table_alter(&$item, &$reader) { //
 }*/
 
 /**
+ * Implements hook_upgrade_call_db_column_exists_alter().
+ */
+function coder_upgrade_upgrade_call_db_column_exists_alter(&$item, &$reader) {
+  // Process function call.
+  $item->name['value'] = 'db_field_exists';
+}
+
+/**
  * Implements hook_upgrade_call_db_result_alter().
  */
 function coder_upgrade_upgrade_call_db_result_alter(&$item, &$reader) {
@@ -1477,23 +1485,24 @@ function coder_upgrade_upgrade_call_file_set_status_alter(&$item, &$reader) { //
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
-  // Process function call.
-  $name = &$item->name;
+  // Get the text of the function call and its parent statement.
+  $temp1 = $item->toString();
+  $temp2 = $editor->statementsToText($item->parent); // This includes a ';' at end.
 
   if ($item->parameters->count() == 2) {
     $p0 = $item->printParameter(0);
     $p1 = $item->printParameter(1);
 
     // Insert statement.
-    $temp = $editor->textToStatements("{$p0}->status &= $p1");
-    $parent = $item->parent;
-    $parent->container->insertBefore($parent, $temp->getElement(0));
+    $statement = $editor->textToStatements("{$p0}->status &= $p1")->getElement(0);
+    $item->insertStatementBefore($statement);
 
     // Change statement.
     $from = $temp1;
     $to = "$p0 = file_save($p0)";
     $temp = str_replace($from, $to, $temp2);
     $temp = $editor->textToStatements($temp);
+    $parent = $item->parent;
     $parent->data = $temp->getElement(0);
   }
 }

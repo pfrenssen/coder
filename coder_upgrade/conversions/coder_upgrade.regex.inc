@@ -40,6 +40,10 @@
  * File API
  * http://drupal.org/node/224333#remove_FILE_STATUS_TEMPORARY
  *
+ *
+ * Miscellaneous
+ * http://drupal.org/node/224333#watchdog_emerg
+ *
  * @param string $file
  *   The text of the file to convert.
  */
@@ -78,6 +82,10 @@ function coder_upgrade_upgrade_regex_alter(&$file) {
   $from[] = "/FILE_STATUS_TEMPORARY/";
   $to[] = "~FILE_STATUS_PERMANENT";
 
+  // Renamed WATCHDOG_EMERG to WATCHDOG_EMERGENCY.
+  $from[] = '@WATCHDOG_EMERG@';
+  $to[] = 'WATCHDOG_EMERGENCY';
+
   coder_upgrade_do_conversions($from, $to, $new);
   coder_upgrade_save_changes($cur, $new, $file, $hook);
 }
@@ -86,6 +94,7 @@ function coder_upgrade_upgrade_regex_alter(&$file) {
  * Upgrades admin paths.
  *
  * http://drupal.org/node/224333#admin_path_changes
+ * http://drupal.org/node/224333#clean_urls_search_paths
  */
 function coder_upgrade_upgrade_admin_path_changes(&$from, &$to) {
   $path_conversions = array(
@@ -100,8 +109,10 @@ function coder_upgrade_upgrade_admin_path_changes(&$from, &$to) {
     'admin/build/testing' => 'admin/config/development/testing',
     'admin/settings/site-maintenance' => 'admin/config/development/maintenance',
     'admin/settings/performance' => 'admin/config/development/performance',
+    'admin/settings/filters' => 'admin/config/content/formats',
     'admin/settings/search' => 'admin/config/search/settings',
     'admin/settings/clean-urls' => 'admin/config/search/clean-urls',
+    'admin/settings/image' => 'admin/config/media/image',
     'admin/settings' => 'admin/config',
     'admin/build' => 'admin/structure',
   );

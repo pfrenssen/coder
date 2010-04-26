@@ -1001,7 +1001,7 @@ function coder_upgrade_convert_perm(&$node) { // NEEDS REVISION
       $type = is_object($expression) ? '$expression->type' : $expression['type']; // Operand object does not have a type parameter // $type = is_object($expression) ? $expression->type : $expression['type'];
       $add_quotes = $type == T_CONSTANT_ENCAPSED_STRING;
 
-      $permission = &$current->data->toString();
+      $permission = $current->data->toString();
       //      cdp("permission = $permission");
       $permission = trim($permission, "'\"");
       if ($add_quotes) {

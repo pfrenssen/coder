@@ -2,6 +2,14 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-04-26):
+  * coder_upgrade.call.inc
+  * - #db_column_exists (not documented), improve #file_set_status
+  * coder_upgrade.regex.inc
+  * - #clean_urls_search_paths, #logout_path (both were done with #admin_path_changes on 03-20)
+  * - the latter had its anchor replaced with http://drupal.org/node/719612
+  * - #watchdog_emerg
+
 - Changes (2010-04-21):
   * coder_upgrade.begin.inc, coder_upgrade.call.inc
   * - #hook_forms_signature
