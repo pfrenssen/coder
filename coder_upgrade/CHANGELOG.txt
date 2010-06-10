@@ -2,6 +2,12 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-06-10):
+  * coder_upgrade.test
+  * - #820140: undefined DEADWOOD_OLD
+  * coder.module, coder_review.module, coder_upgrade.module
+  * - #824320: eliminate warnings when only one of the Review or Upgrade modules is enabled
+
 - Changes (2010-04-26):
   * coder_upgrade.call.inc
   * - #db_column_exists (not documented), improve #file_set_status

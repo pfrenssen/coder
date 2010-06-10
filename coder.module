@@ -7,29 +7,23 @@
  */
 
 /**
- * Implement hook_menu().
+ * Implements hook_menu().
  */
 function coder_menu() {
-  $items['admin/config/development/coder/configure'] = array(
-    'title' => 'Configure',
-    'description' => 'Select code review plugins and modules, and upgrade files.',
-    'access arguments' => array('administer site configuration'),
-    'type' => MENU_LOCAL_TASK,
-  );
   $items['admin/config/development/coder'] = array(
     'title' => 'Coder',
     'description' => 'Select code review plugins and modules, and upgrade files.',
+    'page callback' => 'coder_display_required_module_message',
     'access arguments' => array('administer site configuration'),
   );
-  if (!module_exists('coder_review') && !module_exists('coder_upgrade')) {
-    $items['admin/config/development/coder/configure']['page callback'] = 'coder_display_required_module_message';
-    $items['admin/config/development/coder']['page callback'] = 'coder_display_required_module_message';
-  }
   return $items;
 }
 
+/**
+ * Returns form items for the required module message.
+ */
 function coder_display_required_module_message() {
-  $message = t('Please enable the "coder review" or "coder upgrade" module.');
+  $message = t('Please enable one or both of the "Coder Review" or "Coder Upgrade" modules.');
   $build['coder_message']['#markup'] = $message;
   return $build;
 }

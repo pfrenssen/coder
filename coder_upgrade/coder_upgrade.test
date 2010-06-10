@@ -6,6 +6,8 @@
  * Tests for the Coder Upgrade module.
  */
 
+module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
+
 /**
  * Unit tests for the upgrade routines.
  */

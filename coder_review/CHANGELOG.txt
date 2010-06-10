@@ -1,7 +1,13 @@
 // $Id$
 
-Coder Review 7.x-3.x, xxxx-xx-xx
+Coder Review 7.x-1.x, xxxx-xx-xx
 ---------------------------------
+- Changes (2010-06-10):
+  * coder.module, coder_review.module, coder_upgrade.module
+  * - #776996, #824268: eliminate strict warning in coder_review_page()
+  * - #636608: move settings menu items to local task of Review
+  * - #824320: eliminate warnings when only one of the Review or Upgrade modules is enabled
+
 #698054 by hctom:
  - patch to shorten cache keys and add hook_flush_caches().
 #689758 by solotandem:

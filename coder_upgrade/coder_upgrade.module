@@ -77,6 +77,19 @@ function coder_upgrade_menu() {
 }
 
 /**
+ * Implements hook_menu_alter().
+ */
+function coder_upgrade_menu_alter(&$items) {
+  if (!module_exists('coder_review')) {
+    // Redesignate the default menu items.
+    $items['admin/config/development/coder']['title'] = 'Coder Upgrade';
+    $items['admin/config/development/coder']['page callback'] = 'drupal_get_form';
+    $items['admin/config/development/coder']['page arguments'] = array('coder_upgrade_conversions_form');
+    $items['admin/config/development/coder/upgrade']['type'] = MENU_DEFAULT_LOCAL_TASK;
+  }
+}
+
+/**
  * Form builder for the settings form.
  */
 function coder_upgrade_settings_form($form, &$form_state) {
@@ -216,7 +229,7 @@ function coder_upgrade_conversions_form($form, &$form_state) {
     '#header' => $header,
     '#options' => $rows,
     '#default_value' => isset($upgrades) ? $upgrades : array(),
-    '#empty' => t('No comments available'),
+    '#empty' => t('No routines available'),
   );
 
   // Build the file extension list.
@@ -255,7 +268,7 @@ function coder_upgrade_conversions_form($form, &$form_state) {
     '#header' => $header,
     '#options' => $rows,
     '#default_value' => isset($extensions) ? $extensions : array(),
-    '#empty' => t('No comments available'),
+    '#empty' => t('No extensions available'),
   );
 
   // Build the directory list.
@@ -291,7 +304,7 @@ function coder_upgrade_conversions_form($form, &$form_state) {
     '#header' => $header,
     '#options' => $rows,
     '#default_value' => isset($directories) ? $directories : array(),
-    '#empty' => t('No comments available'),
+    '#empty' => t('No directories available'),
   );
 
   // Build the module list.
@@ -316,7 +329,7 @@ function coder_upgrade_conversions_form($form, &$form_state) {
     '#header' => $header,
     '#options' => $rows,
     '#default_value' => isset($modules) ? $modules : array(),
-    '#empty' => t('No comments available'),
+    '#empty' => t('No modules available'),
   );
 
   // Build the form.
@@ -332,7 +345,7 @@ function coder_upgrade_conversions_form($form, &$form_state) {
 //  $form['notice'] = array(
 //    '#type' => 'item',
 //    '#title' => t('Notice'),
-//    '#markup' => t("The 'Convert files' button below has been disabled pending a major refactoring of the !link module.", array('!link' => l('Grammar Parser', 'http://drupal.org/project/pgp'))),
+//    '#markup' => t("The 'Convert files' button below has been disabled pending a major refactoring of the !link module.", array('!link' => l('Grammar Parser', 'http://drupal.org/project/grammar_parser'))),
 //  );
 
   $form['convert'] = array(
@@ -440,7 +453,8 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
 /**
  * Sets the default values to display on the module conversions form.
  *
- * @return array of default values.
+ * @return array
+ *   Arrays of default values.
  */
 function coder_upgrade_conversions_form_defaults($form_state) {
   // D7: the key is used (and the value is irrelevant); D6: the value.
@@ -474,7 +488,7 @@ function coder_upgrade_conversions_form_defaults($form_state) {
  *
  * @param array $values
  *   Array of $form_state['values'].
- * @return arrays
+ * @return array
  *   Arrays of submitted values.
  */
 function coder_upgrade_selections($values) {

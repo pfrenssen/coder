@@ -149,13 +149,14 @@ function coder_review_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 2,
   );
-  $items['admin/config/development/coder/configure/review'] = array(
-    'title' => 'Review',
+  $items['admin/config/development/coder/review/settings'] = array(
+    'title' => 'Settings',
     'description' => 'Select code review plugins and modules',
+    'page callback' => 'drupal_get_form',
     'page arguments' => array('coder_review_admin_settings'),
     'access arguments' => array('administer site configuration'),
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => 0,
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 3,
   );
 
   return $items;
@@ -164,12 +165,8 @@ function coder_review_menu() {
 /**
  * Implements hook_menu_alter().
  */
-function coder_review_menu_alter(&$callbacks) {
-  $callbacks['admin/config/development/coder']['page callback'] = 'coder_review_page';
-  $callbacks['admin/config/development/coder/configure']['page callback'] = 'drupal_get_form';
-  $callbacks['admin/config/development/coder/configure']['page arguments'] = array('coder_review_admin_settings');
-  $callbacks['admin/config/development/coder/configure/review']['page callback'] = 'drupal_get_form';
-  $callbacks['admin/config/development/coder/configure/review']['page arguments'] = array('coder_review_admin_settings');
+function coder_review_menu_alter(&$items) {
+  $items['admin/config/development/coder']['page callback'] = 'coder_review_page';
 }
 
 /**
@@ -622,8 +619,9 @@ function _coder_review_settings_array(&$form_state, $type) {
  * Code review page.
  */
 function coder_review_page($type = '') {
+  $form = drupal_get_form('coder_review_page_form', $type);
   $output = '<div class="coder-disclaimer">' . coder_review_help('coder#disclaimer', array()) . '</div>';
-  $output .= drupal_render(drupal_get_form('coder_review_page_form', $type));
+  $output .= drupal_render($form);
   return $output;
 }
 
