@@ -666,7 +666,7 @@ function coder_page_form_submit($form, &$form_state) {
 }
 
 /**
- * Return the extensions used by the reviews, that aren's part of the default extensions.
+ * Return the extensions used by the reviews, that aren't part of the default extensions.
  */
 function _coder_get_reviews_extensions($defaults, $reviews) {
   $extensions = array();
@@ -916,6 +916,7 @@ function _coder_page_form_includes(&$form, $coder_args, $name, $files, $offset, 
     $php_extensions = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
     $coder_args['#filename'] = $filename;
     $coder_args['#php_extensions'] = $php_extensions;
+    $coder_args['#include_extensions'] = _coder_get_reviews_extensions($php_extensions, $coder_args['#reviews']);
     $results = do_coder_reviews($coder_args);
     $stats[$filename] = $results['#stats'];
     unset($results['#stats']);
