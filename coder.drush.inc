@@ -2,13 +2,52 @@
 // $Id$
 
 /**
- * Implementation of hook_drush_command().
+ * Implements hook_drush_help().
+ */
+function coder_drush_help($section) {
+  switch ($section) {
+    case 'drush:coder':
+      return dt("Review source files for code that doesn't follow Drupal's coding standards or that needs to change due to Drupal API changes. If no arguments specified, the default settings configured at admin/settings/coder will be used.");
+  }
+}
+
+/**
+ * Implements hook_drush_command().
  */
 function coder_drush_command() {
   $items['coder'] = array(
     'callback' => 'coder_drush_review',
     'description' => dt('Run code reviews'),
     'drupal dependencies' => array('coder'),
+    'examples' => array(
+      'drush coder active' =>  'Review all active modules and themes.',
+      'drush coder contrib critical' => 'Review installed contrib modules and themes, but only return critical warnings found.',
+      'drush coder major cck' => 'Review cck module for major or higher level warnings.',
+      'drush coder style zen' => 'Review zen theme for coding style standards.',
+      'drush coder style sql zen' => 'Review zen theme for coding style and sql standards.',
+      'drush coder http://example.com/foo.patch' => 'Review a patch file.',
+      'drush coder /src/myfile.patch' => 'Review a local patch file.',
+    ),
+    'options' => array(
+      'summary' => 'Display summary statistics instead of default detailed messages.',
+      'no-empty' => 'Only display files with warning or error messages.',
+      'active' => 'Review all active projects.',
+      'core' => 'Review all core modules and themes.',
+      'contrib' => 'Review all contributed projects.',
+      'all' => 'Review all projects, both in core and contrib.',
+      'default' => 'Review all projects configured in the default set via the UI.',
+      'critical' => 'Only return results with the critical severity.',
+      'major' => 'Return results with the major and critical severities.',
+      'minor' => 'Return results marked as minor severity.',
+      'upgrade47' => 'Converting 4.6.x modules to 4.7.x',
+      'upgrade50' => 'Converting 4.7.x modules to 5.x',
+      'upgrade6x' => 'Converting 5.x modules to 6.x',
+      'comment' => 'Drupal Commenting Standards',
+      'i18n' => 'Internationalization',
+      'security' => 'Drupal Security Checks',
+      'sql' => 'Drupal SQL Standards',
+      'style' => 'Drupal Coding Standards',
+    ),
   );
   return $items;
 }
