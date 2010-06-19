@@ -28,7 +28,7 @@
  */
 function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) {
   // Declare global variables.
-  global $log, $debug, $_coder_upgrade_module_name, $replace_files, $is_test;
+  global $log, $debug, $_coder_upgrade_module_name, $replace_files;
 //  global $_coder_upgrade_dirname; // Not used.
 
   // Check lists in case this function is called apart from form submit.
@@ -67,7 +67,7 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
     $_coder_upgrade_module_name = '';
 //    $_coder_upgrade_dirname = $item['old_dir'];
 
-    if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'simpletest') === FALSE) { // if (!$is_test) {
+    if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'simpletest') === FALSE) {
       // Process the directory before conversion routines are applied.
       coder_upgrade_convert_begin($item);
     }
@@ -531,8 +531,8 @@ function coder_upgrade_make_patch_file($item, $replace_files = FALSE) {
   // Swap directories if files are replaced.
   $old_dir = $replace_files ? $item['new_dir'] : $item['old_dir'];
   $new_dir = $replace_files ? $item['old_dir'] : $item['new_dir'];
-  coder_upgrade_log_print("Making patch file: diff -u -r {$old_dir} {$new_dir} > {$patch_filename}");
-  shell_exec("diff -u -r {$old_dir} {$new_dir} > {$patch_filename}");
+  coder_upgrade_log_print("Making patch file: diff -up -r {$old_dir} {$new_dir} > {$patch_filename}");
+  shell_exec("diff -up -r {$old_dir} {$new_dir} > {$patch_filename}");
 }
 
 /**

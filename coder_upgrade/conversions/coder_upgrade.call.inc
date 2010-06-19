@@ -1395,7 +1395,7 @@ function coder_upgrade_upgrade_call_file_scan_directory_alter(&$item, &$reader) 
     $item->setParameter(2, $temp);
   }
   if (is_object($depth)) {
-    $item->setParameter(7, $depth);
+    $item->setParameter(3, $depth);
   }
 
   // TODO Could regex for '->filename' and change to '->filepath'???

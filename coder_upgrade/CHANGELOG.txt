@@ -2,6 +2,12 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-06-18):
+  * coder_upgrade.module
+  * - enable customization of the module conversion form steps (build, validate and submit)
+  * coder_upgrade.main.inc
+  * - include function reference in patch file (diff -up)
+
 - Changes (2010-06-10):
   * coder_upgrade.test
   * - #820140: undefined DEADWOOD_OLD

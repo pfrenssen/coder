@@ -181,11 +181,42 @@ function coder_upgrade_settings_form_submit($form, &$form_state) {
 
 /**
  * Form builder for the module conversion form.
+ *
+ * The tab contents are assembled in helper functions which allows other modules
+ * to "customize" this form directly without resorting to hook_form_alter.
  */
 function coder_upgrade_conversions_form($form, &$form_state) {
   // Set default values.
   list($upgrades, $extensions, $directories, $modules) = coder_upgrade_conversions_form_defaults($form_state);
 
+  // Build the form.
+  $form['tabs'] = array(
+    '#type' => 'vertical_tabs',
+    '#default_tab' => 'edit-directories',
+  );
+  $form['tabs']['upgrades'] = coder_upgrade_upgrades_build($upgrades);
+  $form['tabs']['extensions'] = coder_upgrade_extensions_build($extensions);
+  $form['tabs']['directories'] = coder_upgrade_directories_build($directories);
+  $form['tabs']['modules'] = coder_upgrade_modules_build($modules);
+
+  $form['convert'] = array(
+    '#type' => 'submit',
+    '#value' => t('Convert files'),
+//    '#disabled' => empty($form['tabs']['directories']['list']['#options']),
+  );
+
+  return $form;
+}
+
+/**
+ * Returns form content for upgrades tab.
+ *
+ * @param array $upgrades
+ *   User selections or default values.
+ * @return array
+ *   Form item.
+ */
+function coder_upgrade_upgrades_build(&$upgrades) {
   // Create the list of upgrade options from the coder upgrade plug-ins.
   // Maintain a secondary list based on title only, to make sorting possible.
   $upgrades_all = _coder_upgrade_upgrades();
@@ -232,6 +263,18 @@ function coder_upgrade_conversions_form($form, &$form_state) {
     '#empty' => t('No routines available'),
   );
 
+  return $upgrade_fs;
+}
+
+/**
+ * Returns form content for file extensions tab.
+ *
+ * @param array $extensions
+ *   User selections or default values.
+ * @return array
+ *   Form item.
+ */
+function coder_upgrade_extensions_build(&$extensions) {
   // Build the file extension list.
   $types = array(
     'inc' => 'PHP code files',
@@ -271,6 +314,18 @@ function coder_upgrade_conversions_form($form, &$form_state) {
     '#empty' => t('No extensions available'),
   );
 
+  return $extension_fs;
+}
+
+/**
+ * Returns form content for directories tab.
+ *
+ * @param array $directories
+ *   User selections or default values.
+ * @return array
+ *   Form item.
+ */
+function coder_upgrade_directories_build(&$directories) {
   // Build the directory list.
   $deadwood_dir = variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);
   $path = realpath(file_directory_path() . '/' . $deadwood_dir);
@@ -307,6 +362,18 @@ function coder_upgrade_conversions_form($form, &$form_state) {
     '#empty' => t('No directories available'),
   );
 
+  return $directory_fs;
+}
+
+/**
+ * Returns form content for modules tab.
+ *
+ * @param array $modules
+ *   User selections or default values.
+ * @return array
+ *   Form item.
+ */
+function coder_upgrade_modules_build(&$modules) {
   // Build the module list.
   $header = array(
     'name' => array('data' => t('Name'), 'field' => 'name'),
@@ -332,40 +399,20 @@ function coder_upgrade_conversions_form($form, &$form_state) {
     '#empty' => t('No modules available'),
   );
 
-  // Build the form.
-  $form['tabs'] = array(
-    '#type' => 'vertical_tabs',
-    '#default_tab' => 'edit-directories',
-  );
-  $form['tabs']['upgrades'] = $upgrade_fs;
-  $form['tabs']['extensions'] = $extension_fs;
-  $form['tabs']['directories'] = $directory_fs;
-  $form['tabs']['modules'] = $module_fs;
-
-//  $form['notice'] = array(
-//    '#type' => 'item',
-//    '#title' => t('Notice'),
-//    '#markup' => t("The 'Convert files' button below has been disabled pending a major refactoring of the !link module.", array('!link' => l('Grammar Parser', 'http://drupal.org/project/grammar_parser'))),
-//  );
-
-  $form['convert'] = array(
-    '#type' => 'submit',
-    '#value' => t('Convert files'),
-    '#disabled' => !$dirs,
-  );
-
-  return $form;
+  return $module_fs;
 }
 
 /**
  * Validation handler for the module conversion form.
  */
 function coder_upgrade_conversions_form_validate($form, &$form_state) {
+  // Set keys to validate.
+  $keys = coder_upgrade_selection_types($form_state);
   $count = 0;
   // Validate the user selections.
   $values = $form_state['values'];
   foreach ($values as $key => $list) {
-    if (!in_array($key, array('upgrades', 'extensions', 'directories', 'modules'))) {
+    if (!in_array($key, $keys)) {
       continue;
     }
     $selections = coder_upgrade_selections_extract($list['list']);
@@ -376,7 +423,9 @@ function coder_upgrade_conversions_form_validate($form, &$form_state) {
       $count += count($selections);
     }
   }
-  if (!$count) {
+  // Determine if keys contains both 'directories' and 'modules'.
+  $test = array_diff(array('directories', 'modules'), $keys);
+  if (!$count && empty($test)) {
     form_set_error($key, t('Please select at least one item in the %item1 or %item2 tabs.', array('%item1' => ucfirst('directories'), '%item2' => ucfirst('modules'))));
   }
 }
@@ -391,8 +440,27 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
   // Rebuild form with user selections.
   $form_state['rebuild'] = TRUE;
 
+  // Prepare conversion parameters.
+  list($upgrades, $extensions, $items) = coder_upgrade_conversions_prepare($form_state);
+
+  // Apply conversion functions.
+  module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
+  if (coder_upgrade_start($upgrades, $extensions, $items)) {
+    drupal_set_message(t('Module conversion code was run.'));
+    drupal_set_message(t('Click to view the !log.', array('!log' => l(t('conversion log file'), coder_upgrade_log_path()))));
+    drupal_set_message(t('Patch files may be viewed by clicking on Name links in the Directories and Modules tabs below.'));
+  }
+  else {
+    drupal_set_message(t('Module conversion code was not run.'), 'error');
+  }
+}
+
+/**
+ * Returns the parameters to submit for module conversion.
+ */
+function coder_upgrade_conversions_prepare($form_state) {
   // Gather the submitted parameters.
-  list($upgrades, $extensions, $directories, $modules) = coder_upgrade_selections($form_state['values']);
+  list($upgrades, $extensions, $directories, $modules) = coder_upgrade_selections($form_state);
 
   // TODO Cache this list so we don't have to query all the files again.
   $upgrades_all = _coder_upgrade_upgrades();
@@ -438,16 +506,7 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
     }
   }
 
-  // Apply conversion functions.
-  module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
-  if (coder_upgrade_start($upgrades, $extensions, $items)) {
-    drupal_set_message(t('Module conversion code was run.'));
-    drupal_set_message(t('Click to view the !log.', array('!log' => l(t('conversion log file'), coder_upgrade_log_path()))));
-    drupal_set_message(t('Patch files may be viewed by clicking on Name links in the Directories and Modules tabs below.'));
-  }
-  else {
-    drupal_set_message(t('Module conversion code was not run.'), 'error');
-  }
+  return array($upgrades, $extensions, $items);
 }
 
 /**
@@ -480,7 +539,7 @@ function coder_upgrade_conversions_form_defaults($form_state) {
   }
 
   // Set defaults from submitted values.
-  return coder_upgrade_selections($form_state['values']);
+  return coder_upgrade_selections($form_state);
 }
 
 /**
@@ -491,9 +550,16 @@ function coder_upgrade_conversions_form_defaults($form_state) {
  * @return array
  *   Arrays of submitted values.
  */
-function coder_upgrade_selections($values) {
+function coder_upgrade_selections($form_state) {
+  // Initialize these as not all may be set by some form users.
+  $upgrades = $extensions = $directories = $modules = array();
+
+  // Set keys to validate.
+  $keys = coder_upgrade_selection_types($form_state);
+
   // Build arrays of each user selection type.
-  foreach (array('upgrades', 'extensions', 'directories', 'modules') as $key) {
+  $values = $form_state['values'];
+  foreach ($keys as $key) {
     if (isset($values[$key])) {
       $$key = coder_upgrade_selections_extract($values[$key]['list']);
     }
@@ -517,6 +583,21 @@ function coder_upgrade_selections_extract($values) {
     }
   }
   return $selections;
+}
+
+/**
+ * Returns a list of selection types.
+ *
+ * @param array $form_state
+ *   Array of form state information.
+ * @return array
+ *   Array of selection types to process.
+ */
+function coder_upgrade_selection_types($form_state) {
+  if (isset($form_state['defaults']) && is_array($form_state['defaults']) && $form_state['defaults']) {
+    return $form_state['defaults'];
+  }
+  return array('upgrades', 'extensions', 'directories', 'modules');
 }
 
 /**
