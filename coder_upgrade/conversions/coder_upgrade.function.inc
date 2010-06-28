@@ -51,10 +51,13 @@
  *
  *
  * Theming
+ * http://drupal.org/node/224333#drupal_render_children
+ * http://drupal.org/node/224333#theme_changes
  * http://drupal.org/node/224333#hook_theme_render_changes
  *
  *
  * Form API
+ * http://drupal.org/node/224333#node_form
  * http://drupal.org/node/224333#hook_forms_signature
  * http://drupal.org/node/224333#hook_element_info
  *
@@ -92,11 +95,22 @@ function coder_upgrade_upgrade_hook_alter(&$node, &$reader) {
   $item->comment = preg_replace('@\*\s+[iI]mplement.*?(hook_.*?)(\(\)|)(\.|)$@m', "* Implements $1().", $item->comment);
   // TODO If no comment, then add one?
 
-  global $upgrade_menu_registry;
+  global $upgrade_menu_registry, $upgrade_theme_registry;
   cdp($node->data->name);
   if (in_array($node->data->name, $upgrade_menu_registry)) {
     // http://drupal.org/node/224333#hook_forms_signature
     coder_upgrade_convert_form_callback($node);
+  }
+  elseif (strpos($node->data->name, 'theme_') === 0) {
+    $theme_name = substr($node->data->name, strpos($node->data->name, "theme_") + 6);
+    if ($upgrade_theme_registry[$theme_name]) {
+      // http://drupal.org/node/224333#drupal_render_children
+      // http://drupal.org/node/224333#theme_changes
+      coder_upgrade_convert_theme_callback($node);
+    }
+    else {
+      clp('ERROR: theme function ' . $theme_name . ' is not declared in hook_theme()');
+    }
   }
 }
 
@@ -115,6 +129,66 @@ function coder_upgrade_convert_form_callback(&$node) {
   $p0 = $item->getParameter()->stripComments()->toString();
   if ($p0 == '&$form_state' || $p0 == '$form_state' || $p0 != '$form') { // if ($p0 != '$form') {
     $item->insertParameter(0, $editor->expressionToStatement('$form'));
+  }
+}
+
+/**
+ * Updates theme_xxx() calls.
+ *
+ * Parameters are arrayitized.
+ *
+ * @param PGPNode $node
+ *   A node object containing a PGPClass (or function) item.
+ */
+function coder_upgrade_convert_theme_callback(&$node) {
+  global $upgrade_theme_registry;
+
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Function parameters are now a single array.
+  $item = &$node->data;
+  $body = &$item->body;
+
+  // Save the parameters for later.
+  for ($i = 0; $i < $item->parameterCount(); $i++) {
+    // Allow for default values, e.g. $var = NULL.
+    $parameters[] = $item->getParameter($i)->getType('operand')->toString();
+  }
+  // Replace the parameters by $variable, an array.
+  $item->parameters->clear();
+  $editor->setParameter($item, 0, '$variables');
+
+  // Reassign function parameters to corresponding $variables array key.
+  $theme_name = substr($item->name, strpos($item->name, "theme_") + 6);
+  if ($upgrade_theme_registry[$theme_name]) {
+    $hook = $upgrade_theme_registry[$theme_name];
+    if (isset($hook['render element'])) {
+      $string = $parameters[0] . ' = $variables[\'' . $hook['render element'] .'\']';
+    }
+    else {
+      $empty = FALSE;
+      if (!($sentinel = $body->get(0))) {
+        // Add a sentinel -- a marker for insertion.
+        $sentinel = $body->insertFirst(NULL, 'sentinel');
+        $empty = TRUE;
+      }
+      // Add an assignment statement for each of the previous function parameters.
+      $i = 0;
+      foreach ($hook['variables'] as $key => $value) {
+        $string = $parameters[$i++] . ' = $variables[\'' . $key ."'];\n";
+        $body->insertBefore($sentinel, $editor->textToStatements($string)->getElement(0));
+      }
+      if ($empty) {
+        $body->delete($sentinel);
+      }
+    }
+  }
+
+  // If theme function calls drupal_render, make sure last call is to drupal_render_children
+  // to avoid endless loops: http://drupal.org/node/224333#drupal_render_children
+  if ($statement = $body->searchBackward('PGPFunctionCall', 'name', 'value', 'drupal_render')) {
+    $statement->name['value'] = 'drupal_render_children';
   }
 }
 
@@ -173,6 +247,48 @@ function coder_upgrade_upgrade_hook_elements_alter(&$node, &$reader) {
 function coder_upgrade_upgrade_hook_filter_alter(&$node, &$reader) {
   // Changes: hook_filter_info
   coder_upgrade_convert_filter($node, $reader);
+}
+
+/**
+ * Implements hook_upgrade_hook_form_alter().
+ */
+function coder_upgrade_upgrade_hook_form_alter_alter(&$node, &$reader) {
+  // Changes: node_form
+  $editor = PGPEditor::getInstance();
+
+  /*
+   * What if:
+   * - the code uses a name other than $form?
+   * - the conditions are in different order or on multiple lines?
+   */
+
+  // Conditions to test for a node edit form.
+  $node_form_conditional =
+    '/isset\(\$form\[\'type\'\]\)\s*&&\s*' .
+    'isset\(\$form\[\'#node\'\]\)\s*&&\s*' .
+    '\$form\[\'type\'\]\[\'#value\'\]\s*.\s*\'_node_form\' == \$form_id/';
+
+  // Loop on the body statements looking for conditional statment.
+  $current = &$node->data->body->first();
+  while ($current->next != NULL) {
+    $statement = &$current->data;
+    if (is_a($statement, 'PGPConditional')) {
+      // Get the list of conditons.
+      $conditions = $statement->conditions;
+
+      // Check if conditions match node form check.
+      if (is_a($conditions, 'PGPList')) {
+        $conditions = $conditions->toString();
+        if (preg_match($node_form_conditional, $conditions)) {
+          // Replace verbose node edit form condtional.
+          $conditions = preg_replace($node_form_conditional, '!empty($form[\'#node_edit_form\'])', $conditions);
+          $statement->conditions = $editor->expressionToStatement($conditions);
+        }
+      }
+    }
+    // Move to next node.
+    $current = &$current->next;
+  }
 }
 
 /**
@@ -1997,7 +2113,7 @@ function coder_upgrade_callback_return_case3(&$array2, $hook, $callback = '') { 
 function coder_upgrade_callback_return_case5(/*&*/$assignment, $hook, $callback = '') { // NOT DONE
   cdp("inside " . __FUNCTION__);
   /*
-   * TODO Convert the assingment into an array expression. Then pass off the
+   * TODO Convert the assignment into an array expression. Then pass off the
    * array to coder_upgrade_callback_return_case3.
    *
    * Loop on assignment to remove all nodes up to and including the assignment

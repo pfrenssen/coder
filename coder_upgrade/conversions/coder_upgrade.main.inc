@@ -430,6 +430,12 @@ function coder_upgrade_convert_functions(&$reader) {
     $name = &$item->name;
     cdp("name = $name");
 
+    // Convert theme_xxx function calls.
+//    if (strpos($name, 'theme_') === 0) {
+//      drupal_alter('upgrade_theme', $node, $reader);
+//      continue;
+//    }
+
     /*
      * If the function name does not begin with the module name, then ignore it.
      * This assumes such a function would be an instance of an API hook defined
@@ -445,8 +451,8 @@ function coder_upgrade_convert_functions(&$reader) {
      * a switch statement. In some cases (e.g. hook_update_N), some additional
      * manipulation and checking needs to be done.
      */
-    if (strpos($name, $_coder_upgrade_module_name . '_') !== 0) {
-      clp("Ignoring function '$name' as its name does not begin with the module name");
+    if (strpos($name, $_coder_upgrade_module_name . '_') !== 0 && strpos($name, 'theme_') !== 0) {
+      clp("Ignoring function '$name' as its name does not begin with the module name or 'theme_'");
       continue;
     }
 
@@ -466,8 +472,8 @@ function coder_upgrade_convert_functions(&$reader) {
     if (!isset($item) ||!is_object($item) || !is_a($item, 'PGPClass') || $item->type != T_FUNCTION) {
       continue;
     }
-    if (strpos($name, $_coder_upgrade_module_name . '_') !== 0) {
-      clp("Ignoring function '$name' as its name does not begin with the module name");
+    if (strpos($name, $_coder_upgrade_module_name . '_') !== 0 && strpos($name, 'theme_') !== 0) {
+      clp("Ignoring function '$name' as its name does not begin with the module name or 'theme_'");
       continue;
     }
     drupal_alter('upgrade_hook', $node, $reader, $hook);

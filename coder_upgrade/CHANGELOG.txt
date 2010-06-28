@@ -2,7 +2,15 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
-- Changes (2010-06-28):
+- Changes (2010-06-28): (part 2)
+  * coder_upgrade.call.inc
+  * - #taxonomy_form_all
+  * coder_upgrade.function.inc
+  * - #node_form, #drupal_render_children
+  * coder_upgrade.regex.inc
+  * - #block_tables_renamed, #fapi_changes
+
+- Changes (2010-06-28): (part 1)
   * coder_upgrade.main.inc
   * - enhance cdp() to allow for a description
   * coder_upgrade.regex.inc
