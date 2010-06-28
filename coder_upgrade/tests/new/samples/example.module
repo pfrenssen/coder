@@ -469,6 +469,30 @@ function example_schema_ret() {
   db_rename_table($table, $new_name);
 }
 
+// #db_result (not documented); see #741998
+function example_db_result() {
+  $val = db_query('SELECT nid FROM {node}')->fetchField();
+  $val = db_query('
+      SELECT nid FROM {node}
+      LIMIT 1
+    ')->fetchField();
+  $val = db_query('SELECT title FROM {node} WHERE nid = %d ', $nid)->fetchField();
+  $val = db_query('
+      SELECT title FROM {node}
+      WHERE nid = %d
+    ', $nid)->fetchField();
+  $query = db_query('SELECT * FROM {node}');
+  $val = $query->fetchField();
+}
+
+// #db_column_exists (not documented)
+function example_db_column_exists() {
+  $ret = db_field_exists('table', 'field');
+  $ret = db_field_exists($table, $field);
+  if ($ret = db_field_exists('table', 'field')) {
+  }
+}
+
 /*
  * Menus
  */
@@ -499,7 +523,7 @@ function example_admin_path_changes() {
   $menu['admin/config/development/testing'] = array();
   $menu['admin/config/development/maintenance'] = array();
   $menu['admin/config/development/performance'] = array();
-  $menu['admin/config/content/filter'] = array();
+  $menu['admin/config/content/formats'] = array();
   $menu['admin/config/search/settings'] = array();
   $menu['admin/config/search/clean-urls'] = array();
 }
@@ -761,6 +785,18 @@ function example_block_view($delta) {
  */
 function example_block_OLD($op, $delta = 0, $edit = array()) { }
 
+// http://drupal.org/node/224333#custom_block
+function example_custom_block() {
+  block_custom_block_delete($form);
+  block_custom_block_delete_submit();
+  block_custom_block_form();
+  $box = block_custom_block_get(1);
+  $box = block_custom_block_get($id);
+  block_custom_block_save($edit, $delta);
+  db_query("SELECT * FROM {custom_block}");
+  db_query("SELECT * FROM {custom_block}");
+}
+
 /*
  * Comments
  */
@@ -777,7 +813,7 @@ function example_comment_load() {
 }
 
 /**
- * Implmentation of hook_menu().
+ * Implements hook_menu().
  *
  * Example for comment_wildcard.
  */
@@ -786,21 +822,21 @@ function example_menu() {
   $items = array();
   $access = user_access('administer all signups');
 
-  $items[] = array(
-    'path' => 'node/%_comment/signup',
-    'description' => t('Add a signup node.'),
-    'access' => $access,
-    'callback' => 'drupal_get_form',
-    'callback arguments' => array('signup_settings_page'),
+  $items['node/%_comment/signup'] = array(
     'title' => user_access('access administration pages') ? t('Signup') : t('Signup settings'),
+    'description' => 'Add a signup node.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('signup_settings_page'),
+    'access callback' => $access,
+    'type' => MENU_LOCAL_TASK,
   );
 
-  $items[] = array(
-    'path' => 'admin/content/signup',
+  $items['admin/content/signup'] = array(
+    'title' => 'Signup overview',
     'description' => t('View all signup-enabled posts, and open or close signups on them.'),
-    'access' => $access,
-    'callback' => 'signup_admin_page',
-    'title' => t('Signup overview'),
+    'page callback' => 'example_signup_admin_form',
+    'access callback' => $access,
+    'type' => MENU_LOCAL_TASK,
   );
 }
 
@@ -1041,9 +1077,9 @@ function example_filter_tips_XXX($format, $long = FALSE) { }
 
 function example_hook_filter_urls() {
   $form[$id]['roles'] = array('#markup' => $default ? t('All roles may use default format') : ($roles ? implode(', ', $roles) : t('No roles may use this format')));
-  $form[$id]['edit'] = array('#markup' => l(t('edit'), 'admin/config/content/filter/' . $id));
-  $form[$id]['delete'] = array('#markup' => $default ? '' : l(t('delete'), 'admin/config/content/filter/delete/' . $id));
-  if ($url = 'admin/config/content/filter/delete/' . $id) {
+  $form[$id]['edit'] = array('#markup' => l(t('edit'), 'admin/config/content/formats/' . $id));
+  $form[$id]['delete'] = array('#markup' => $default ? '' : l(t('delete'), 'admin/config/content/formats/delete/' . $id));
+  if ($url = 'admin/config/content/formats/delete/' . $id) {
   }
 }
 
@@ -1117,10 +1153,10 @@ function example_taxonomy_tables() {
   }
   $result = db_query(db_rewrite_sql('SELECT t.tid, t.vid, t.name, t.description, t.weight FROM {taxonomy_term_data} t WHERE t.tid = %d AND t.vid = %d', 't', 'tid'), $tid, variable_get('forum_nav_vocabulary', ''));
   foreach ($node->taxonomy as $term) {
-    if (db_result(db_query('SELECT COUNT(*) FROM {taxonomy_term_data} WHERE tid = %d AND vid = %d', $term, $vocabulary))) {
+    if (db_query('SELECT COUNT(*) FROM {taxonomy_term_data} WHERE tid = %d AND vid = %d', $term, $vocabulary)->fetchField()) {
     }
   }
-  $old_tid = db_result(db_query_range("SELECT t.tid FROM {taxonomy_term_node} t INNER JOIN {node} n ON t.vid = n.vid WHERE n.nid = %d ORDER BY t.vid DESC", $node->nid, 0, 1));
+  $old_tid = db_query_range("SELECT t.tid FROM {taxonomy_term_node} t INNER JOIN {node} n ON t.vid = n.vid WHERE n.nid = %d ORDER BY t.vid DESC", $node->nid, 0, 1)->fetchField();
   if ($op == 'delete' && $term['vid'] == variable_get('forum_nav_vocabulary', '')) {
     switch ($type) {
       case 'term':
@@ -1144,7 +1180,7 @@ function example_taxonomy_tables() {
   $sql = "SELECT n.nid, n.title, n.sticky, l.comment_count, l.last_comment_timestamp FROM {node} n INNER JOIN {node_comment_statistics} l ON n.nid = l.nid INNER JOIN {taxonomy_term_node} r ON n.nid = r.nid AND r.tid = %d WHERE n.status = 1 ORDER BY n.sticky DESC, " . _forum_get_topic_order_sql(variable_get('forum_order', 1));
   // Verify forum.
   $term = db_fetch_array(db_query("SELECT * FROM {taxonomy_term_data} t WHERE t.vid = %d AND t.name = '%s' AND t.description = '%s'", variable_get('forum_nav_vocabulary', ''), $name, $description));
-  $parent_tid = db_result(db_query("SELECT t.parent FROM {taxonomy_term_hierarchy} t WHERE t.tid = %d", $tid));
+  $parent_tid = db_query("SELECT t.parent FROM {taxonomy_term_hierarchy} t WHERE t.tid = %d", $tid)->fetchField();
   /*
    * @param array $forum Forum array (a row from term_data table).
    * @param array $forum Forum array (a row from term_data table).
@@ -1177,11 +1213,45 @@ function example_taxonomy_crud() {
   taxonomy_vocabulary_delete($vid); // taxonomy_vocabulary_delete($vid)
 }
 
+// http://drupal.org/node/224333#no-synonyms-taxonomy
+function example_no_synonyms_taxonomy() {
+  // TODO The taxonomy synonym functionality has been removed.
+  // To replace this functionality, you can add a synonym field to your vocabulary.
+  $synonyms = array() /*taxonomy_get_synonyms($tid)*/;
+  // TODO The taxonomy synonym functionality has been removed.
+  // To replace this functionality, you can add a synonym field to your vocabulary.
+  $synonyms = array() /*taxonomy_get_synonyms(0)*/;
+  // TODO The taxonomy synonym functionality has been removed.
+  // To replace this functionality, you can add a synonym field to your vocabulary.
+  function_call(array() /*taxonomy_get_synonyms($tid)*/);
+  // TODO The taxonomy synonym functionality has been removed.
+  // To replace this functionality, you can add a synonym field to your vocabulary.
+  $root = array() /*taxonomy_get_synonym_root($synonyms[0])*/;
+  // TODO The taxonomy synonym functionality has been removed.
+  // To replace this functionality, you can add a synonym field to your vocabulary.
+  $root = array() /*taxonomy_get_synonym_root(0)*/;
+  $synonyms = db_query("SELECT * FROM {taxonomy_term_synonym} s WHERE s.name = '%s'", $synonym);
+}
+
 /*
- * CSS
+ * Javascript
  */
 
+// http://drupal.org/node/224333#drupal_add_js_external
+function example_drupal_add_js_external() {
+  // Single quotes.
+  drupal_add_js('http://example.com/example.js', array('type' => 'external'));
+  drupal_add_js('http://example.com/example.js', array('type' => 'external'));
+  drupal_add_js('http://example.com/example.js', array('type' => 'external'));
+
+  // Double quotes.
+  drupal_add_js('http://example.com/example.js', array('type' => 'external'));
+  drupal_add_js('http://example.com/example.js', array('type' => 'external'));
+  drupal_add_js('http://example.com/example.js', array('type' => 'external'));
+}
+
 // http://drupal.org/node/224333#drupal_add_js_options
+// http://drupal.org/node/224333#drupal_add_js_weight
 // http://drupal.org/node/224333#drupal_add_css_weight
 function example_drupal_add_js_options() {
   drupal_add_js('misc/collapse.js');
@@ -1205,6 +1275,22 @@ function example_drupal_add_js_options() {
   drupal_add_css('/modules/devel/devel.css', array('type' => 'file', 'weight' => CSS_THEME, 'media' => 'screen'));
   drupal_add_css('/modules/devel/devel.css', array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
 }
+
+// http://drupal.org/node/224333#jquery_ui
+function example_jquery_ui() {
+  drupal_add_library('system', 'ui.accordion');
+  drupal_add_library('system', 'ui.dialog');
+  drupal_add_library('system', 'ui.accordion');
+  $files = array('ui.accordion', 'ui.dialog');
+  drupal_add_library('system', 'ui.accordion');
+  drupal_add_library('system', 'ui.dialog');
+  $file = 'ui.accordion';
+  drupal_add_library('system', 'ui.accordion');
+}
+
+/*
+ * CSS
+ */
 
 // http://drupal.org/node/224333#drupal_add_css_inline
 function example_drupal_add_css_inline() {
@@ -1266,6 +1352,13 @@ function example_theme() {
       'variables' => array(
         'function' => NULL,
       ),
+    ),
+    // No arguments.
+    'example_missing' => array(
+    ),
+    // Why would you define this with empty arguments?
+    'example_empty' => array(
+      'variables' => array(),
     ),
   );
 }
@@ -1485,9 +1578,11 @@ function example_drupal_execute() {
 
 /**
  * Implements hook_menu().
+ *
+ * Example for hook_forms_signature.
  */
 function example_menu() {
-  // Conversion items.
+  // Using drupal_get_form.
   $items['admin/config/development/coder/upgrade'] = array(
     'title' => 'Upgrade',
     'description' => 'Convert module code from version 6.x to 7.x.',
@@ -1496,19 +1591,107 @@ function example_menu() {
     'access arguments' => array('administer code conversions'),
     'type' => MENU_LOCAL_TASK,
   );
+
+  // Not using drupal_get_form.
+  $items['admin/content/signup'] = array(
+    'title' => 'Signup overview',
+    'description' => 'View all signup-enabled posts, and open or close signups on them.',
+    'page callback' => 'example_signup_admin_form',
+    'access callback' => $access,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  // Items inside a loop.
+  $loop_items = example_items_get();
+  foreach ($loop_items as $key => $loop_item) {
+    if (!empty($loop_item['menu'])) {
+      foreach ($loop_item['menu'] as $op => $menu_item) {
+        if ($menu_item != EXAMPLE_MENU_DISABLED) {
+          if ($menu_item == EXAMPLE_MENU_DEFAULT) {
+            $menu_item = !empty($info['default']['menu'][$op]) ? $info['default']['menu'][$op] : array();
+          }
+          // Set other items.
+          $items['admin/config/development/coder/upgrade2'] = array(
+            'title' => 'Upgrade',
+            'description' => 'Convert module code from version 6.x to 7.x.',
+            'page callback' => 'drupal_get_form',
+            'page arguments' => array('example_conversions_form2'),
+            'access arguments' => array('administer code conversions'),
+            'type' => MENU_LOCAL_TASK,
+          );
+          $items['admin/content/signup2'] = array(
+            'title' => $op,
+            'page callback' => 'example_user_form2',
+            'access callback' => 'example_user_access',
+            'type' => MENU_CALLBACK,
+            'file path' => drupal_get_path('module', $loop_item['module']),
+          );
+
+          // Set admin items.
+          $default_menu_fields = array(
+            'title' => $op,
+            'page callback' => 'drupal_get_form',
+            'access callback' => 'example_user_access',
+            'type' => MENU_CALLBACK,
+            'file path' => drupal_get_path('module', $loop_item['module']),
+          );
+          $admin_path = 'admin/%/' . $op . '/' . $loop_item['handler'];
+          $items[$admin_path] = array_merge($default_menu_fields, $menu_item);
+          $items[$admin_path]['page arguments'][] = 'example_admin_form3';
+          $items[$admin_path]['page arguments'][] = 1;
+
+          // Set user items.
+          $default_menu_fields = array(
+            'title' => $op,
+            'page callback' => 'example_user_form3',
+            'access callback' => 'example_user_access',
+            'type' => MENU_CALLBACK,
+            'file path' => drupal_get_path('module', $loop_item['module']),
+          );
+          $user_path = 'user/%user/example/%/' . $op . '/' . $loop_item['handler'];
+          $default_menu_fields['access arguments'] = array(1, 3, 4);
+          $items[$user_path] = array_merge($default_menu_fields, $menu_item);
+          $items[$user_path]['page arguments'][] = 1;
+          $items[$user_path]['page arguments'][] = 3;
+        }
+      }
+    }
+  }
+  return $items;
 }
 
-function example_conversions_form(&$form_state) {
+function example_conversions_form($form, &$form_state) {
+  $form = array();
+  return $form;
+}
+
+function example_signup_admin_form(&$form_state) {
+  $form = array();
+  return $form;
+}
+
+function example_conversions_form2($form, &$form_state) {
+  $form = array();
+  return $form;
+}
+
+function example_admin_form3($form, &$form_state, $p0) {
+  $form = array();
+  return $form;
+}
+
+function example_user_form2(&$form_state, $p0, $p1) {
   $form = array();
   return $form;
 }
 
 function example_drupal_get_form() {
-  $form = drupal_get_form('my_form', $p0);
+  $form = drupal_get_form('example_my_form', $p0);
+  // TODO  needs to have $form as its first parameter.
   return drupal_get_form($form_id);
 }
 
-function my_form($form, $form_state) {
+function example_my_form($form, &$form_state, $p0) {
   $form = array();
   return $form;
 }
@@ -1572,6 +1755,15 @@ function example_file_set_status() {
   // The following lines are the new code. Documentation example uses |= while patch has &=???
   $file->status &= FILE_STATUS_PERMANENT;
   $file = file_save($file);
+}
+
+// http://drupal.org/node/224333#remove_~FILE_STATUS_PERMANENT
+function example_remove_file_status_temporary() {
+  $file->status = ~FILE_STATUS_PERMANENT;
+  $file = array(
+    'status' => ~FILE_STATUS_PERMANENT,
+  );
+  function_call(~FILE_STATUS_PERMANENT);
 }
 
 function example_drupal_system_listing() {
@@ -1818,9 +2010,50 @@ function example_user_authenticate() {
   $user = $username($username, $password);
 }
 
+/**
+ * Implements hook_user_view().
+ *
+ * Example for hook-user-changes.
+ */
+function example_user_view($account, $view_mode) {
+  foreach ($account->content as $key => $field) {
+    // do something
+  }
+}
+
 /*
  * Node API
  */
+
+// http://drupal.org/node/224333#node_load_multiple
+function example_node_load() {
+  $node = node_load(1);
+  $node = node_load($nid);
+  $node = node_load(1);
+  $node = node_load(arg(1));
+  if ($node = node_load(1)) {
+  }
+
+  $node = node_load(1, 1);
+  $node = node_load($nid, $revision);
+  $node = node_load(1, 1);
+  $node = node_load(1, 1, TRUE);
+  $node = node_load(1, 1, TRUE);
+  $node = node_load($nid, $revision, $reset);
+
+  // TODO node_load_multiple returns an array of nodes, rather than a single node
+  $node = node_load_multiple(array('title' => $title));
+  // TODO node_load_multiple returns an array of nodes, rather than a single node
+  $node = node_load_multiple(array(), array('title' => $title, 'vid' => 1));
+  // TODO node_load_multiple returns an array of nodes, rather than a single node
+  $node = node_load_multiple(array(), array('title' => $title, 'vid' => $vid));
+  // TODO node_load_multiple returns an array of nodes, rather than a single node
+  $node = node_load_multiple(array(), array('title' => $title, 'vid' => 1), TRUE);
+  // TODO node_load_multiple returns an array of nodes, rather than a single node
+  if ($node = node_load_multiple(array('title' => $title))) {
+
+  }
+}
 
 // http://drupal.org/node/224333#node_type_base
 /**
@@ -2828,4 +3061,11 @@ function example_url_query_parameter() {
     "fragment" => 'test',
     )
   );
+}
+
+// http://drupal.org/node/224333#watchdog_emerg
+function example_watchdog_emerg() {
+  watchdog('example', 'This is an example emergency message', WATCHDOG_EMERGENCY);
+  $severity = WATCHDOG_EMERGENCY;
+  watchdog('example', 'This is an example emergency message', $severity);
 }

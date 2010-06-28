@@ -701,7 +701,11 @@ function clp($text) {
   coder_upgrade_log_print($text);
 }
 
-function cdp($text) {
+function cdp($text, $description = '') {
+  if ($description) {
+    $description .= ' ==>'; // Use two '=' so easier to find in file.
+    coder_upgrade_debug_print($description);
+  }
   coder_upgrade_debug_print($text);
 }
 

@@ -2,6 +2,17 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-06-28):
+  * coder_upgrade.main.inc
+  * - enhance cdp() to allow for a description
+  * coder_upgrade.regex.inc
+  * - #taxonomy_tables
+  * tests/samples directory
+  * - update the input and expected test file: example.module
+  * - #db_result, #db_column_exists, #custom_block, #comment_wildcard, #no-synonyms-taxonomy,
+  * - #drupal_add_js_external, #drupal_add_js_weight, #jquery_ui, #theme_changes, #hook_forms_signature,
+  * - #remove_FILE_STATUS_TEMPORARY, #hook-user-changes, #node_load_multiple, #watchdog_emerg
+
 - Changes (2010-06-18):
   * coder_upgrade.module
   * - enable customization of the module conversion form steps (build, validate and submit)
