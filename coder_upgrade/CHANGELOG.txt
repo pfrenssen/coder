@@ -2,6 +2,11 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-06-29):
+  * coder_upgrade.call.inc
+  * - #db_is_active, #remove-drupal-urlencode
+  * - improve #user_load_multiple to not always change call to user_load_multiple()
+
 - Changes (2010-06-28): (part 2)
   * coder_upgrade.call.inc
   * - #taxonomy_form_all

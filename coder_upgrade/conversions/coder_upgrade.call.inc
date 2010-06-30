@@ -33,11 +33,13 @@
  * http://drupal.org/node/224333#drupal_set_content
  * http://drupal.org/node/224333#time_limit
  * http://drupal.org/node/224333#drupal_set_header_renamed
+ * http://drupal.org/node/224333#remove-drupal-urlencode
  *
  *
  * Database
  * http://drupal.org/node/224333#schema_ret
  * #db_result (not documented)
+ * http://drupal.org/node/224333#db_is_active
  *
  *
  * Menu
@@ -213,11 +215,17 @@ function coder_upgrade_upgrade_call_alter(&$item, &$reader, $name) { // NEEDS WO
         $editor->setParameter($item, 0, "'user/logout'");
       }
       break;
+
     case 'drupal_lookup_path':
     case 'l':
       if (trim($item->printParameter(1), "'\"") == 'logout') {
         $editor->setParameter($item, 1, "'user/logout'");
       }
+      break;
+
+    case 'drupal_urlencode':
+      // http://drupal.org/node/224333#remove-drupal-urlencode
+      $item->name['value'] = 'drupal_encode_path';
       break;
 
     case 'require':
@@ -567,6 +575,35 @@ function coder_upgrade_upgrade_call_db_rename_table_alter(&$item, &$reader) { //
 function coder_upgrade_upgrade_call_db_column_exists_alter(&$item, &$reader) {
   // Process function call.
   $item->name['value'] = 'db_field_exists';
+}
+
+/**
+ * Implements hook_upgrade_call_db_is_active_alter().
+ */
+function coder_upgrade_upgrade_call_db_is_active_alter(&$item, &$reader) {
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // db_is_active() has been been replaced by proper exception catching.
+  $container = &$item->parent->container;
+  $parent = &$item->parent->data;
+  if (get_class($parent) == 'PGPConditional' && $parent->type == T_IF) {
+    // Build try/catch block.
+    $try = new PGPTryCatch();
+    $try->type = T_TRY;
+    $try->body = $parent->body;
+
+    $catch = new PGPTryCatch();
+    $catch->type = T_CATCH;
+    $catch->exception = $editor->expressionToStatement('Exception $e');
+    $catch->body = new PGPBody();
+    $catch->body->insertFirst($editor->commentToStatement('// Database is unavailable.'), 'comment');
+
+    // Replace the if block with a try block.
+    $parent = $try;
+    // Insert catch block following the recast try block.
+    $container->insertAfter($item->parent, $catch);
+  }
 }
 
 /**
@@ -1614,6 +1651,14 @@ function coder_upgrade_upgrade_call_function_exists_alter(&$item, &$reader) { //
   $name = &$item->name;
   // Change was reverted.
   //      $name['value'] = 'drupal_function_exists';
+
+  // Change: db_is_active
+  $p0 = trim($item->getParameter()->stripComments()->toString(), "'\"");
+  if ($p0 == 'db_is_active') {
+    // Replace with "class_exists('Database', FALSE)".
+    $item->name['value'] = 'class_exists';
+    $editor->setParameters($item, array("'Database'", 'FALSE'));
+  }
 }
 
 /**
@@ -2413,25 +2458,32 @@ function coder_upgrade_upgrade_call_user_load_alter(&$item, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
-  // Process function call.
-  $name = &$item->name;
-  $name['value'] = 'user_load_multiple';
-
   if (!$item->parameterCount()) {
-    // No parameters is an acceptable default.
+    // No parameters is an acceptable default in D7, but should cause an
+    // uncaught error in D6. In D7, this will cause all users to be loaded.
+    $item->name['value'] = 'user_load_multiple';
     return;
   }
 
   /*
    * Steps
    * - parameter may be a value, array, or variable (with a preceding assignment)
-   * - value: wrap in an array
+   * - value:
+   *   - leave as is
    * - array
    *   - extract 'uid' element
    *   - leave remaining items as $conditions in new function
-   * - variable: apply above to the assignment value
+   *   - change function to user_load_multiple
+   *   - wrap in array_shift to return first item
+   * - variable:
+   *   - if variable is an array item, eg. $var['uid']
+   *     - then handle like value above (NOT DONE -- could also be an array)
+   *   - if variable has an assignment statement in scope
+   *     - then handle like array above
+   *       (attempt to extract uid from other conditions)
    */
 
+  $p0 = FALSE;
   if ($item->getParameter()->isType(T_VARIABLE)) {
     // Parameter is a variable.
     $variable = $item->getParameter()->getElement()->findNode('value');
@@ -2441,6 +2493,16 @@ function coder_upgrade_upgrade_call_user_load_alter(&$item, &$reader) { // DONE
     if ($statement) {
       $operand = &$statement->values->getElement()->findNode('operand', 'backward');
       $p0 = coder_upgrade_convert_user_load($item, $operand, FALSE);
+      if (is_object($operand) && $operand->isType(T_ARRAY) && !$operand->count) {
+        // Assignment variable has no more value in its array.
+        // So delete this parameter from the function call.
+        $item->deleteParameter();
+      }
+    }
+    else {
+      // Assume the variable is the uid?
+      $text = $item->printParameter();
+      $item->insertStatementBefore($editor->commentToStatement('// TODO Convert "user_load" to "user_load_multiple" if the variable "' . $text . '" is an array of conditions.'));
     }
   }
   else {
@@ -2457,6 +2519,11 @@ function coder_upgrade_upgrade_call_user_load_alter(&$item, &$reader) { // DONE
   if ($p0) {
     $item->insertParameter(0, $p0);
   }
+  if ($item->name['value'] == 'user_load_multiple') {
+    // Wrap current call with array_shift to return first object from array.
+    $call = $item->toString();
+    $item = $editor->expressionToStatement("array_shift($call)");
+  }
 }
 
 function coder_upgrade_convert_user_load(&$item, &$operand, $is_parameter = TRUE) { // DONE
@@ -2466,8 +2533,8 @@ function coder_upgrade_convert_user_load(&$item, &$operand, $is_parameter = TRUE
   // TODO We need an isType() that is not a class method.
   if (is_array($operand) && $operand['type'] == T_CONSTANT_ENCAPSED_STRING) {
     // Value is a string. (Assume it is an integer.)
-    $uid = trim($operand['value'], "'\"");
-    $operand = $editor->expressionToStatement("array($uid)");
+//    $uid = trim($operand['value'], "'\"");
+//    $operand = $editor->expressionToStatement("array($uid)");
     return FALSE; // return $is_parameter ? $operand : FALSE;
   }
   elseif (is_array($operand)) {
@@ -2477,12 +2544,21 @@ function coder_upgrade_convert_user_load(&$item, &$operand, $is_parameter = TRUE
     $array = &$operand;
     if ($uid = $array->findValue('uid')) {
       // Array contains a value for key = 'uid'
-      $p0 = $editor->expressionToStatement("array(" . $uid->toString() . ")");
       $array->deleteKey('uid');
+      if ($array->count) {
+        // If other conditions, then need to use user_load_multiple.
+        $p0 = $editor->expressionToStatement("array(" . $uid->toString() . ")");
+        $item->name['value'] = 'user_load_multiple';
+      }
+      else {
+        // Stay with user_load.
+        $p0 = $editor->expressionToStatement($uid->toString());
+      }
     }
     else {
       // Create empty array for $uids parameter.
       $p0 = $editor->expressionToStatement('array()');
+      $item->name['value'] = 'user_load_multiple';
     }
     return $p0;
   }
@@ -2491,8 +2567,8 @@ function coder_upgrade_convert_user_load(&$item, &$operand, $is_parameter = TRUE
   }
   else {
     // Value is a number.
-    $uid = trim($operand, "'\"");
-    $operand = $editor->expressionToStatement("array($uid)");
+//    $uid = trim($operand, "'\"");
+//    $operand = $editor->expressionToStatement("array($uid)");
     return FALSE; // return $is_parameter ? $operand : FALSE;
   }
 
