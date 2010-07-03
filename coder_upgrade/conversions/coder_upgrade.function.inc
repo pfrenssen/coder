@@ -88,12 +88,18 @@
  */
 function coder_upgrade_upgrade_hook_alter(&$node, &$reader) {
   cdp("inside " . __FUNCTION__);
-  // Changes: implementation_hook_comment
   $item = &$node->data;
 
-  // Update document comment.
-  $item->comment = preg_replace('@\*\s+[iI]mplement.*?(hook_.*?)(\(\)|)(\.|)$@m', "* Implements $1().", $item->comment);
-  // TODO If no comment, then add one?
+  $editor = PGPEditor::getInstance();
+  // Changes: implementation_hook_comment
+  if ($item->comment) {
+    // Update document comment for hook implementations.
+    $item->comment = preg_replace('@\*\s+[iI]mplement.*?(hook_.*?)(\(\)|)(\.|)$@m', "* Implements $1().", $item->comment);
+  }
+  else {
+    // Add a document comment.
+    $item->comment = $editor->commentToStatement("/**\n * @todo Please document this function.\n * @see http://drupal.org/node/1354\n */");
+  }
 
   global $upgrade_menu_registry, $upgrade_theme_registry;
   cdp($node->data->name);
@@ -1824,7 +1830,7 @@ function coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters) {
   // Set values for the new hook function.
   $comment = array(
     'type' => T_DOC_COMMENT,
-    'value' => "/**\n * Implements hook$hook.\n */",
+    'value' => "/**\n * Implements hook$hook().\n */",
   );
   $name = $_coder_upgrade_module_name . $hook;
 
@@ -1907,7 +1913,7 @@ function coder_upgrade_convert_return(&$node, $hook, $callback = '') { // DONE
     return;
   }
 
-  $value = &$return->getParameter();
+  $value = &$return->getParameter(); // @todo Strip comments.
 
   // Examine the type of the operand in the return statement.
   $operand = $value->getElement();

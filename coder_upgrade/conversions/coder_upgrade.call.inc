@@ -1229,26 +1229,22 @@ function coder_upgrade_upgrade_call_drupal_set_title_alter(&$item, &$reader) { /
   $editor = PGPEditor::getInstance();
 
   // Process function call.
-  $name = &$item->name;
-  $temp = $item->printParameters();
-  cdp("temp = $temp");
-
-  if (strpos($temp, 'check_plain') !== FALSE) {
-    // TODO Could check for isset, count of parameters, etc.???
-    // check_plain could be part of an expression (e.g. concatenation).
-    $temp = $item->getParameter(0);
-    $temp = $temp->getElement(0);
-    cdp("Printing the first ");
-    cdp($temp->print_r());
-    $editor->setParameter($item, 0, $temp->printParameter(0));
-    cdp($item->print_r());
-    return;
-  }
   $parameters = &$item->parameters;
-  if ($call = & $parameters->search('PGPFunctionCall', 'name', 'value', 't')) {
+  // Find all calls to check_plain() in the parameter expression.
+  while ($node = &$parameters->search('PGPFunctionCall', 'name', 'value', 'check_plain', TRUE)) {
+    // Insert the nodes in the parameter expression to check_plain()
+    // into the parameter expression to drupal_set_title() right before the call
+    // to check_plain().
+    $parameters->insertListBefore($node, $node->data->getParameter());
+    // Remove the check_plain() call as drupal_set_title() now does this.
+    $parameters->delete($node);
+  }
+  // TODO Should check the argument keys not the text to the t().
+  if ($item->parameterCount() == 1 && $call = &$parameters->search('PGPFunctionCall', 'name', 'value', 't')) {
     $temp = $call->toString();
     cdp("temp = $temp");
-    if (preg_match('#(\'|")@\w+(\'|")\s*=>\s*#', $temp)) {
+    if (preg_match('#(\'|")[@|%]\w+(\'|")\s*=>\s*#', $temp) && preg_match('#(\'|")!\w+(\'|")\s*=>\s*#', $temp) === 0) {
+      // This is a likely condition for setting 'PASS_THROUGH' but not an absolute.
       $editor->setParameter($item, 1, 'PASS_THROUGH');
       cdp($item->print_r(0, $item));
     }
@@ -2169,8 +2165,8 @@ function coder_upgrade_upgrade_call_taxonomy_del_vocabulary_alter(&$item, &$read
 }
 
 /**
-* Implements hook_upgrade_call_taxonomy_form_all_alter().
-*/
+ * Implements hook_upgrade_call_taxonomy_form_all_alter().
+ */
 function coder_upgrade_upgrade_call_taxonomy_form_all_alter(&$item, &$reader) {
   cdp(__FUNCTION__);
   // Create helper objects.
@@ -2486,7 +2482,7 @@ function coder_upgrade_upgrade_call_user_load_alter(&$item, &$reader) { // DONE
   $p0 = FALSE;
   if ($item->getParameter()->isType(T_VARIABLE)) {
     // Parameter is a variable.
-    $variable = $item->getParameter()->getElement()->findNode('value');
+    $variable = $item->getParameter()->findNode('operand')->findNode('value');
     $parent = $item->parent;
     // TODO This single search won't find multiple assignments to array variable.
     $statement = $parent->container->searchBackward('PGPAssignment', 'values', 0, $variable, $parent);
@@ -2501,12 +2497,14 @@ function coder_upgrade_upgrade_call_user_load_alter(&$item, &$reader) { // DONE
     }
     else {
       // Assume the variable is the uid?
-      $text = $item->printParameter();
-      $item->insertStatementBefore($editor->commentToStatement('// TODO Convert "user_load" to "user_load_multiple" if the variable "' . $text . '" is an array of conditions.'));
+      $text = $item->getParameter()->stripComments()->toString();
+      $item->insertStatementBefore($editor->commentToStatement('// TODO Convert "user_load" to "user_load_multiple" if "' . $text . '" is other than a uid.'));
+      $item->insertStatementBefore($editor->commentToStatement('// To return a single user object, wrap "user_load_multiple" with "array_shift" or equivalent.'));
+      $item->insertStatementBefore($editor->commentToStatement('// Example: array_shift(user_load_multiple(array(), ' . $text . '))'));
     }
   }
   else {
-    $operand = &$item->getParameter()->getElement();
+    $operand = &$item->getParameter()->findNode('operand');
     $p0 = coder_upgrade_convert_user_load($item, $operand);
     if ($item->getParameter()->isType(T_ARRAY)) {
       // Parameter is an array.

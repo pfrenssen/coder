@@ -2,6 +2,16 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-07-03):
+  * coder_upgrade.db.inc
+  * - improve sql parsing and conversion to DBTNG syntax (by duellj and adrian)
+  * coder_upgrade.call.inc
+  * - improve #drupal_set_title to only find calls to check_plain()
+  * - improve #user_load_multiple to handle inline comments in parameters
+  * coder_upgrade.function.inc
+  * - #833972: conform doc_comment to Drupal standards for inserted hook_op functions
+  * - add a doc_comment to each function missing one 
+
 - Changes (2010-06-29):
   * coder_upgrade.call.inc
   * - #db_is_active, #remove-drupal-urlencode

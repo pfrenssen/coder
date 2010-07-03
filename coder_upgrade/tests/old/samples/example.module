@@ -247,6 +247,13 @@ function example_time_limit() {
     //
   }
 }
+
+// http://drupal.org/node/224333#remove-drupal-urlencode
+function example_remove_drupal_urlencode() {
+  // drupal_urlencode() -- Change the next line but leave this alone
+  $string = drupal_urlencode('test');
+}
+
 /*
 function example_() {
 
@@ -336,8 +343,10 @@ function example_dbtng() {
   $values= array(5, 'hello world', 3.14);
   db_query($sql, $values);
   $id = db_last_insert_id();
+
   // Update query.
   db_query("UPDATE {node} SET title='%s', status=%d WHERE uid=%d", 'hello world', 1, 5);
+
   // Delete query.
   db_query("DELETE FROM {node} WHERE uid=%d AND created < %d", 5, time() - 3600);
 }
@@ -452,6 +461,18 @@ function example_db_column_exists() {
   $ret = db_column_exists('table', 'field');
   $ret = db_column_exists($table, $field);
   if ($ret = db_column_exists('table', 'field')) {
+  }
+}
+
+// http://drupal.org/node/224333#db_is_active
+function example_db_is_active() {
+  // db_is_active() -- Change the next line but leave this alone
+  if (db_is_active()) {
+    // Database is active.
+  }
+  // function_exists() -- Change the next line but leave this alone
+  if (function_exists('db_is_active')) {
+    // Do something.
   }
 }
 
@@ -687,6 +708,13 @@ function example_block($op, $delta = 0, $edit = array()) {
   }
 }
 
+// http://drupal.org/node/224333#block_tables_renamed
+function example_block_db_tables() {
+  $result = db_query("SELECT * FROM {blocks}");
+  $result = db_query("SELECT * FROM {blocks_roles}");
+  $result = db_query("SELECT * FROM {boxes}");
+}
+
 // http://drupal.org/node/224333#custom_block
 function example_custom_block() {
   block_box_delete($form);
@@ -830,10 +858,15 @@ function example_check_markup() {
 
 function example_drupal_set_title() {
   // drupal_set_title() -- Change the next line but leave this alone
+  drupal_set_title($node->title);
   drupal_set_title(check_plain($node->title));
   drupal_set_title(t("@name's blog", array('@name' => $account->name)));
+  drupal_set_title(t("@name's blog is %status", array('@name' => $account->name, '%status' => 'very popular')));
+  drupal_set_title(t("@name's blog is %status in !country", array('@name' => $account->name, '%status' => 'very popular', '!country' => 'my country')));
   if (drupal_set_title(t("@name's blog", array('@name' => $account->name)))) {
   }
+  drupal_set_title('check_plain' . ($node->title));
+  drupal_set_title(/* smoke screen */ 'check_plain' . check_plain($node->title/* smoke screen1 */ . 'xxx') . 'yyy' . check_plain($node->title2/* smoke screen2 */));
 }
 
 /**
@@ -1062,6 +1095,31 @@ function example_taxonomy_crud() {
   taxonomy_vocabulary_load($vid);
   taxonomy_save_vocabulary($edit);   // taxonomy_vocabulary_save($vocabulary)
   taxonomy_del_vocabulary($vid);      // taxonomy_vocabulary_delete($vid)
+}
+
+// http://drupal.org/node/224333#taxonomy_form_all
+function example_taxonomy_form_all() {
+  $form = array();
+
+  $form['term'] = array(
+    '#type' => 'select',
+    '#title' => t('Term'),
+    '#options' => taxonomy_form_all(),
+    '#description' => t('Select a term to apply to the node. Keep in mind that the selected product node type must have the selected vocabulary enabled.'),
+    '#default_value' => $settings['term'],
+  );
+
+  $terms = taxonomy_form_all();
+  if ($terms) {
+    $form['term'] = array(
+      '#type' => 'select',
+      '#title' => t('Term'),
+      '#options' => $terms,
+      '#description' => t('Select a term to apply to the node. Keep in mind that the selected product node type must have the selected vocabulary enabled.'),
+      '#default_value' => $settings['term'],
+    );
+  }
+  return $form;
 }
 
 // http://drupal.org/node/224333#no-synonyms-taxonomy
@@ -1321,6 +1379,35 @@ function example_theme_changes() {
   theme('example_user_list');
 }
 
+// http://drupal.org/node/224333#drupal_render_children
+// http://drupal.org/node/224333#theme_changes
+function theme_example_node_list($items = NULL, $title = NULL) {
+  // Render one specific child of the current element.
+  $output = '<blink>' . drupal_render($element['child1']) . '</blink>';
+
+  // Render all the remaining children of the current element.
+  $output .= drupal_render($element);
+  return $output;
+}
+
+function theme_example_node_search_admin($form = NULL) {
+}
+
+function theme_example_user_list($users = NULL, $title = NULL) {
+}
+
+function theme_example_user_list_2($users1 = NULL, $title1 = NULL, $users2 => NULL, $title2 => NULL) {
+}
+
+function theme_example_coder_review_warning_msg($error = NULL) {
+}
+
+function theme_example_coder_review_table_cols($form = NULL) {
+}
+
+function theme_example_phpapi($function = NULL) {
+}
+
 // http://drupal.org/node/224333#theme_page
 function example_theme_page() {
   $form = array();
@@ -1360,6 +1447,33 @@ function example_theme_username() {
  * Form API
  */
 
+/**
+ * Implemenatation of hook_form_alter().
+ *
+ * http://drupal.org/node/224333#node_form
+ */
+function example_form_alter() {
+  if (isset($form['type']) && isset($form['#node']) && $form['type']['#value'] .'_node_form' == $form_id) {
+    // Alter node form.
+  }
+  if (isset($form['type']) && isset($form['#node']) && $form['type']['#value'] .'_node_form' == $form_id && $form['type']['#value'] == 'page') {
+    // Alter page node form.
+  }
+  // Try to make it harder to detect.
+  if (isset($form['type']) &&
+      isset($form['#node']) &&
+      $form['type']['#value'] .'_node_form' == $form_id) {
+    // Alter node form.
+  }
+// Change the condition order (not handled by routine).
+  if (isset($form['#node']) &&
+      isset($form['type']) &&
+      $form['type']['#value'] .'_node_form' == $form_id) {
+    // Alter node form.
+  }
+}
+
+// http://drupal.org/node/224333#process_functions
 // http://drupal.org/files/issues/unify-process-callbacks_0.patch
 function example_process_functions() {
   $form['element'] = array(
@@ -1400,6 +1514,7 @@ function example_process_functions() {
   );
 }
 
+// http://drupal.org/node/224333#drupal_execute_drupal_form_submit
 function example_drupal_execute() {
   // drupal_execute() -- Change the next line but leave this alone
   drupal_execute('story_node_form', $form_state, (object)$node);
@@ -1411,6 +1526,7 @@ function example_drupal_execute() {
  * Implementation of hook_menu().
  *
  * Example for hook_forms_signature.
+ * http://drupal.org/node/224333#hook_forms_signature
  */
 function example_menu() {
   // Using drupal_get_form.
@@ -1534,6 +1650,17 @@ function example_my_form(&$form_state, $p0) {
 function example_elements() {
   $type['filter_format'] = array('#input' => TRUE);
   return $type;
+}
+
+// http://drupal.org/node/224333#fapi_changes
+function example_fapi_changes() {
+  $form['#redirect'] = 'node/1';
+  $form["#redirect"] = $node;
+  $form_state['#redirect'] = 'node/1';
+
+  $_REQUEST['destination'] = 'node/1';
+  $_REQUEST["destination"] = $node;
+  $_GET['destination'] = 'node/1';
 }
 
 /*
@@ -1765,6 +1892,11 @@ function example_user_load_multiple() {
   $user = user_load(array('uid' => $array['uid']));
   $account = user_load(array('uid' => (int)$uid));
   $account = user_load(array('mail' => $name, 'status' => 1));
+}
+
+function example_2_user_load_multiple($parameter) {
+  // Add comment as we can not easily determine the nature of $parameter.
+  $user = user_load(/*x*/$parameter/*y*/);
 }
 
 function example_user_authenticate() {
@@ -2290,6 +2422,26 @@ function example_node_type_get_functions() {
 
   foreach (node_get_types('types', NULL, FALSE) as $type) {
   }
+}
+
+// http://drupal.org/node/224333#hook_load_signature
+/**
+ * Implementation of hook_theme().
+ *
+ * Use case 1: returns object directly.
+ */
+function example_load($node) {
+  $additions = db_fetch_object(db_query('SELECT * FROM {mytable} WHERE vid = %d', $node->vid));
+  return $additions;
+}
+
+/**
+ * Implementation of hook_theme().
+ *
+ * Use case 2: makes assignment to variable; returns variable.
+ */
+function example_load($node) {
+  return db_fetch_object(db_query('SELECT * FROM {mytable} WHERE vid = %d', $node->vid));
 }
 
 /*
