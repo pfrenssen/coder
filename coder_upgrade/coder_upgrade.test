@@ -75,6 +75,7 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
     $module_dirname = DRUPAL_ROOT . '/' . drupal_get_path('module', 'coder_upgrade');
     require_once $module_dirname . '/conversions/coder_upgrade.main.inc';
     require_once $module_dirname . '/conversions/coder_upgrade.begin.inc';
+    require_once $module_dirname . '/conversions/coder_upgrade.function.inc';
     coder_upgrade_debug_print("module = $module_dirname");
 
     $in_dirname = $module_dirname . '/tests/old/';
