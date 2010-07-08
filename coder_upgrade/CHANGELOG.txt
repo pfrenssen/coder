@@ -2,6 +2,14 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-07-08):
+  * coder_upgrade.call.inc
+  * - #update_sql
+  * - #847914: drupal_get_form() upgrade routine fails when form callback has no parameters
+  * coder_upgrade.function.inc
+  * - #837258: add T_ELSE_IF to condition check in coder_upgrade_convert_op()
+  * - #update_sql: changes to hook_update_N()
+
 - Changes (2010-07-03):
   * coder_upgrade.db.inc
   * - improve sql parsing and conversion to DBTNG syntax (by duellj and adrian)

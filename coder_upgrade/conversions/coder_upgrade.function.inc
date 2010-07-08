@@ -479,7 +479,7 @@ function coder_upgrade_upgrade_hook_theme_alter(&$node, &$reader) { // (OMIT)
  * Implements hook_upgrade_hook_update_N_alter().
  */
 function coder_upgrade_upgrade_hook_update_N_alter(&$node, &$reader) {
-  // Changes: update_php
+  // Changes: update_php, update_sql
   coder_upgrade_convert_update_N($node);
 }
 
@@ -1216,16 +1216,18 @@ function coder_upgrade_convert_schema_callback(&$item /*&$node*/) {
  * Updates hook_update_N().
  *
  * Check hook_update_N for a Doxygen style comment.
+ * Update hooks now return strings or throw exceptions.
  *
  * @todo These hooks do not need to carry over from one version to the next.
- *   So we could simply delete the hook or its body.
+ *   So we could simply delete the hook or its body. For those inclined to keep
+ *   these hooks, we can modify the return statement (if any) to conform to D7.
  * @param PGPNode $node
  *   A node object containing a PGPClass (or function) item.
  */
 function coder_upgrade_convert_update_N(&$node) {
   cdp("inside " . __FUNCTION__);
+  // Changes: update_php, update_sql
   $item = &$node->data;
-  //  cdp($item->print_r());
 
   $comment = &$item->comment;
   if (!is_array($comment) || empty($comment)) {
@@ -1239,6 +1241,33 @@ function coder_upgrade_convert_update_N(&$node) {
       'type' => T_DOC_COMMENT,
       'value' => "/**\n * @todo Please insert a Doxygen style comment for this hook_update_N.\n *\n *" . $comment['value'] . "\n */",
     );
+  }
+
+  $editor = PGPEditor::getInstance();
+
+  // Get the function body.
+  $body = &$item->body;
+
+  // Find return statement.
+  // find() only looks at statements in the list, while search() recurses through inner lists.
+  if (!($return = $body->search('PGPFunctionCall', 'name', 'value', 'return', FALSE, 'backward'))) { // if (!($return = $body->find(T_RETURN, 'reverse'))) {
+//    clp("ERROR: return statement not found in hook_update_N");
+//    $body->insertFirst($editor->commentToStatement($msg), 'comment');
+    return;
+  }
+  else {
+    // Strip inline comment delimiter tokens from the parameter.
+    $string = str_replace(array('/*', '*/'), '', $return->getParameter()->toString()); // $string = $return->getParameter()->stripComments()->toString();
+    // To use PGPList->insertListBefore() need the node of $return.
+//    $statement = $editor->textToStatements("// hook_update_N() no longer returns a \$ret array.\n//Instead, it should return nothing or a translated string to be displayed to the user indicating that the update ran successfully.\nSee http://drupal.org/node/224333#update_sql.");
+    $statement = $editor->commentToStatement("// hook_update_N() no longer returns a \$ret array. Instead, return ");
+    $return->insertStatementBefore($statement);
+    $statement = $editor->commentToStatement("// nothing or a translated string indicating the update ran successfully.");
+    $return->insertStatementBefore($statement);
+    $statement = $editor->commentToStatement("// See http://drupal.org/node/224333#update_sql.");
+    $return->insertStatementBefore($statement);
+    // Replace the return() operand with t().
+    $editor->setParameter($return, 0, "t('TODO Add a descriptive string here to show in the UI.') /* $string */");
   }
 }
 
@@ -1266,9 +1295,9 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
   $item->name .= '_OLD';
   // Get the operation function parameter, usually called $op.
   $count = $item->parameters->count();
-  // Extract the first operand from the parameter to omit any embedded comments
-  // or default value. Hook_block has $op = 'list'.
-  if (!($variable = $item->getParameter($op_index)->findNode('operand'))) {
+  // Extract and strip the first operand from the parameter to omit any embedded
+  // comments or default value. Hook_block has $op = 'list'.
+  if (!($variable = $item->getParameter($op_index)->findNode('operand')->stripComments())) {
     clp("ERROR: Variable not found in hook_op parameter $op_index");
     return;
   }
@@ -1300,7 +1329,7 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
         // Get the list of conditions.
         $conditions = $statement->conditions;
         // Get the first condition. (With a switch there should only be one condition.)
-        $condition = $conditions->getElement();
+        $condition = $conditions->getElement()->findNode('operand')->stripComments(); // $condition = $conditions->getElement();
         $operand = $condition->toString();
         // If the condition variable matches the $op variable, then go to work.
         if ($op == $operand) {
@@ -1309,7 +1338,7 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
           $node->traverse($cases, $callback);
         }
       }
-      elseif (in_array($statement->type, array(T_IF, T_ELSEIF/*, T_ELSE*/))) {
+      elseif (in_array($statement->type, array(T_IF, T_ELSEIF, T_ELSE_IF/*, T_ELSE*/))) {
         cdp("inside T_IF check");
         /*
          * Extract the conditions referencing the $op variable and loop on them.
@@ -1795,7 +1824,7 @@ function coder_upgrade_callback_user($node, $case_node, $operation = '') {
 }
 
 /**
- * Creates hook_$op function from the case (of if) block of an $op-style hook.
+ * Creates hook_$op function from the case (or if) block of an $op-style hook.
  *
  * @param PGPNode $node
  *   A node object containing a PGPClass (or function) item.
@@ -1928,7 +1957,7 @@ function coder_upgrade_convert_return(&$node, $hook, $callback = '') { // DONE
     /*
      * Loop on body statements until we find an assignment to the return variable.
      * The assignment could be to an array element like $info['node_type_name'] = array(...).
-     * Or directly to the variable like $info = array('node_type_name' = array(...)).
+     * Or directly to the variable like $info = array('node_type_name' => array(...)).
      */
 
     $return_variable = $operand->toString();
@@ -1952,7 +1981,7 @@ function coder_upgrade_convert_return_loop(&$node, &$count, $return_variable, $h
   /*
    * Loop on body statements until we find an assignment to the return variable.
    * The assignment could be to an array element like $info['node_type_name'] = array(...).
-   * Or directly to the variable like $info = array('node_type_name' = array(...)).
+   * Or directly to the variable like $info = array('node_type_name' => array(...)).
    */
 
   $current = $node;

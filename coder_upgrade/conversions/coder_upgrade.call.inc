@@ -16,6 +16,10 @@
 /**
  * The upgrades to these functions are documented at the following urls.
  *
+ * Module Info / Install
+ * http://drupal.org/node/224333#update_sql (OMITS the update hooks part)
+ *
+ *
  * System
  * http://drupal.org/node/224333#absolute_includes
  * http://drupal.org/node/224333#registry
@@ -868,9 +872,9 @@ function coder_upgrade_upgrade_call_drupal_get_form_alter(&$item, &$reader) { //
     // Find the function object with this name.
     $function = $editor->findFunction($reader->getFunctions(), $value);
     if (!is_null($function)) {
-      // Insert the $form parameter (if not already inserted).
-      $p0 = $function->getParameter()->stripComments()->toString();
+      $p0 = $function->parameterCount() ? $function->getParameter()->stripComments()->toString() : '';
       if ($p0 != '$form') {
+        // Insert the $form parameter (if not already inserted).
         $function->insertParameter(0, $editor->expressionToStatement('$form'));
       }
     }
@@ -889,9 +893,9 @@ function coder_upgrade_upgrade_call_drupal_get_form_alter(&$item, &$reader) { //
         $value = trim($operand2['value'], "'\"");
         $function = $editor->findFunction($reader->getFunctions(), $value);
         if (!is_null($function)) {
-          // Insert the $form parameter (if not already inserted).
-          $p0 = $function->getParameter()->stripComments()->toString();
+          $p0 = $function->parameterCount() ? $function->getParameter()->stripComments()->toString() : '';
           if ($p0 != '$form') {
+            // Insert the $form parameter (if not already inserted).
             $function->insertParameter(0, $editor->expressionToStatement('$form'));
           }
         }
@@ -2353,6 +2357,29 @@ function coder_upgrade_upgrade_call_time_alter(&$item, &$reader) { // DONE
   $expression = $editor->expressionToStatement('REQUEST_TIME');
   cdp($expression->print_r());
   $item = $expression->getElement(0);
+}
+
+/**
+ * Implements hook_upgrade_call_update_sql_alter().
+ */
+function coder_upgrade_upgrade_call_update_sql_alter(&$item, &$reader) {
+  cdp(__FUNCTION__);
+  // Change: update_sql
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  $item->insertStatementBefore($editor->commentToStatement('// TODO update_sql has been removed. Use the database API for any schema or data changes.'));
+
+  // Replace function call with array().
+  $string = str_replace(array('/*', '*/'), '', $item->toString());
+  // This is an example of changing a function call reference.
+  // This code works, but it results in a grammar structure that does not match
+  // what would be produced by the parser. The single operand in the expression
+  // containing the function call is replaced by an expression with two
+  // operands. These two operands should be separate elements in the expression.
+  // Changes this after refactoring functionCalls array to hold the node not the
+  // function call object.
+  $item = $editor->expressionToStatement("array() /* $string */");
 }
 
 /**
