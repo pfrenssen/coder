@@ -26,12 +26,15 @@
  *
  * @param PGPFunctionCall $item
  */
-function coder_upgrade_upgrade_call_db_query_alter(&$item, &$reader) { // NEEDS WORK
+function coder_upgrade_upgrade_call_db_query_alter(&$node, &$reader) { // NEEDS WORK
   // Disable this routine until it is improved.
 //  return;
 
   // Create helper objects.
 //  $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   /*
    * Use cases
@@ -60,13 +63,16 @@ function coder_upgrade_upgrade_call_db_query_alter(&$item, &$reader) { // NEEDS 
  *
  * @param PGPFunctionCall $item
  */
-function coder_upgrade_upgrade_call_db_rewrite_sql_alter(&$item, &$reader) {
+function coder_upgrade_upgrade_call_db_rewrite_sql_alter(&$node, &$reader) {
   // TODO This is not ready as the call to arrayitize() on a SELECT will
   // look at the count of parameters to db_rewrite_sql() which are not the
   // same as count of parameters to db_query().
   return;
   // Create helper objects.
 //  $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   /*
    * Use cases
@@ -190,12 +196,19 @@ function coder_upgrade_parse_query_string(&$item, &$operand) {
   }
   elseif (strpos($sql, 'UPDATE') === 0) {
     // UPDATE {node} SET title='%s', status=%d WHERE uid=%d
-    $find = '@^UPDATE\s+{(\w+)}\s+SET\s+(.*?)\s+WHERE\s+(.*?)$@m';
+    // Regex needs to handle multi-line strings. The parsing and exploding of
+    // fields and conditions fails on this.
+    // Also, if there are multiple values to be replaced and only a single value
+    // as parameter to drupal_query, then assume it is an array and apply it in
+    // order by index to the substitutions.
+    // db_update('quotes_blocks')->fields(array('name' => $vals[0], 'block_type' => $vals[1], ...)
+    $find = '@^UPDATE\s+{(\w+)}\s+SET\s+(.*?)\s+WHERE\s+(.*?)$@s'; // TODO remove m switch, add s.
     // TODO Check for WHERE and use a different regex.
     preg_match($find, $sql, $matches);
-    cdp($matches);
+    cdp($matches, '$matches');
+    if (!isset($matches[2])) cdp($sql, '$sql');
     $fields = explode(', ', $matches[2]);
-    cdp($fields);
+    cdp($fields, '$fields');
     $new[] = "db_update('{$matches[1]}')";
     $new[] = "\t->fields(array(";
     foreach ($fields as $field) {

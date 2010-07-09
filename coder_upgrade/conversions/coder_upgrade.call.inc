@@ -146,9 +146,12 @@
 /**
  * Implements hook_upgrade_call_alter().
  */
-function coder_upgrade_upgrade_call_alter(&$item, &$reader, $name) { // NEEDS WORK
+function coder_upgrade_upgrade_call_alter(&$node, &$reader, $name) { // NEEDS WORK
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
 //  $name = &$item->name;
@@ -249,7 +252,6 @@ function coder_upgrade_upgrade_call_alter(&$item, &$reader, $name) { // NEEDS WO
       break;
 
     default:
-      ;
       break;
   }
 }
@@ -257,9 +259,12 @@ function coder_upgrade_upgrade_call_alter(&$item, &$reader, $name) { // NEEDS WO
 /**
  * Implements hook_upgrade_call_actions_synchronize_alter().
  */
-function coder_upgrade_upgrade_call_actions_synchronize_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_actions_synchronize_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -272,9 +277,12 @@ function coder_upgrade_upgrade_call_actions_synchronize_alter(&$item, &$reader) 
 /**
  * Implements hook_upgrade_call_book_toc_alter().
  */
-function coder_upgrade_upgrade_call_book_toc_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_book_toc_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -300,9 +308,12 @@ function coder_upgrade_upgrade_call_book_toc_alter(&$item, &$reader) { // DONE
 /**
  * Implements hook_upgrade_call_check_markup_alter().
  */
-function coder_upgrade_upgrade_call_check_markup_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_check_markup_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -314,9 +325,12 @@ function coder_upgrade_upgrade_call_check_markup_alter(&$item, &$reader) { // DO
 /**
  * Implements hook_upgrade_call__comment_load_alter().
  */
-function coder_upgrade_upgrade_call__comment_load_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call__comment_load_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -327,27 +341,29 @@ function coder_upgrade_upgrade_call__comment_load_alter(&$item, &$reader) { // D
 /**
  * Implements hook_upgrade_call_comment_node_url_alter().
  */
-function coder_upgrade_upgrade_call_comment_node_url_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_comment_node_url_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
+  // Get the function call object.
+  $item = &$node->data;
+
   // Process function call.
-  $name = &$item->name;
-  $parent = $item->parent;
-  $temp = $editor->statementsToText($parent);
-  $from = '@comment_node_url()@';
-  $to = "'comment/' . \$comment->cid";
-  $temp = preg_replace($from, $to, $temp);
-  $temp = $editor->textToStatements($temp);
-  $parent->data = $temp->getElement(0);
+  $item->insertStatementBefore($editor->commentToStatement('// TODO Please make sure $comment is a valid comment object.'));
+  $temp = $editor->expressionToStatement("'comment/' . \$comment->cid");
+  $node->container->insertListBefore($node, $temp);
+  $node->container->delete($node);
 }
 
 /**
  * Implements hook_upgrade_call_comment_validate_alter().
  */
-function coder_upgrade_upgrade_call_comment_validate_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_comment_validate_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -576,7 +592,10 @@ function coder_upgrade_upgrade_call_db_rename_table_alter(&$item, &$reader) { //
 /**
  * Implements hook_upgrade_call_db_column_exists_alter().
  */
-function coder_upgrade_upgrade_call_db_column_exists_alter(&$item, &$reader) {
+function coder_upgrade_upgrade_call_db_column_exists_alter(&$node, &$reader) {
+  // Get the function call object.
+  $item = &$node->data;
+
   // Process function call.
   $item->name['value'] = 'db_field_exists';
 }
@@ -584,9 +603,12 @@ function coder_upgrade_upgrade_call_db_column_exists_alter(&$item, &$reader) {
 /**
  * Implements hook_upgrade_call_db_is_active_alter().
  */
-function coder_upgrade_upgrade_call_db_is_active_alter(&$item, &$reader) {
+function coder_upgrade_upgrade_call_db_is_active_alter(&$node, &$reader) {
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // db_is_active() has been been replaced by proper exception catching.
   $container = &$item->parent->container;
@@ -613,22 +635,28 @@ function coder_upgrade_upgrade_call_db_is_active_alter(&$item, &$reader) {
 /**
  * Implements hook_upgrade_call_db_result_alter().
  */
-function coder_upgrade_upgrade_call_db_result_alter(&$item, &$reader) {
+function coder_upgrade_upgrade_call_db_result_alter(&$node, &$reader) {
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
+  // Get the function call object.
+  $item = &$node->data;
+
   // Process function call.
   $p0 = $item->printParameter();
-  $temp = $editor->textToStatements(trim($p0) .'->fetchField();');
+  $temp = $editor->textToStatements(trim($p0) . '->fetchField();');
   $item = $temp->getElement(0);
 }
 
 /**
  * Implements hook_upgrade_call_drupal_add_css_alter().
  */
-function coder_upgrade_upgrade_call_drupal_add_css_alter(&$item, &$reader) { // DONE (UPDATED)
+function coder_upgrade_upgrade_call_drupal_add_css_alter(&$node, &$reader) { // DONE (UPDATED)
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -688,9 +716,12 @@ function coder_upgrade_css_weight($type) {
 /**
  * Implements hook_upgrade_call_drupal_add_js_alter().
  */
-function coder_upgrade_upgrade_call_drupal_add_js_alter(&$item, &$reader) { // DONE (UPDATED)
+function coder_upgrade_upgrade_call_drupal_add_js_alter(&$node, &$reader) { // DONE (UPDATED)
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -715,8 +746,7 @@ function coder_upgrade_upgrade_call_drupal_add_js_alter(&$item, &$reader) { // D
   }
   if ($count == 2) {
     $type = trim($item->printParameter(1), "'\"");
-    if ($type == 'module') {
- // if (in_array($type, array('module', ''))) {
+    if ($type == 'module') { // if (in_array($type, array('module', ''))) {
       $item->deleteParameter(1);
       return;
     }
@@ -770,9 +800,12 @@ function coder_upgrade_js_weight($type) {
 /**
  * Implements hook_upgrade_call_drupal_clone_alter().
  */
-function coder_upgrade_upgrade_call_drupal_clone_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_clone_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -783,9 +816,12 @@ function coder_upgrade_upgrade_call_drupal_clone_alter(&$item, &$reader) { // DO
 /**
  * Implements hook_upgrade_call_drupal_eval_alter().
  */
-function coder_upgrade_upgrade_call_drupal_eval_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_eval_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -808,9 +844,12 @@ function coder_upgrade_upgrade_call_drupal_eval_alter(&$item, &$reader) { // DON
 /**
  * Implements hook_upgrade_call_drupal_execute_alter().
  */
-function coder_upgrade_upgrade_call_drupal_execute_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_execute_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -820,9 +859,12 @@ function coder_upgrade_upgrade_call_drupal_execute_alter(&$item, &$reader) { // 
 /**
  * Implements hook_upgrade_call_drupal_get_content_alter().
  */
-function coder_upgrade_upgrade_call_drupal_get_content_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_get_content_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -832,9 +874,12 @@ function coder_upgrade_upgrade_call_drupal_get_content_alter(&$item, &$reader) {
 /**
  * Implements hook_upgrade_call_drupal_get_form_alter().
  */
-function coder_upgrade_upgrade_call_drupal_get_form_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_get_form_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -920,9 +965,12 @@ function coder_upgrade_upgrade_call_drupal_get_form_alter(&$item, &$reader) { //
 /**
  * Implements hook_upgrade_call_drupal_get_headers_alter().
  */
-function coder_upgrade_upgrade_call_drupal_get_headers_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_get_headers_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -932,11 +980,14 @@ function coder_upgrade_upgrade_call_drupal_get_headers_alter(&$item, &$reader) {
 }
 
 /**
-* Implements hook_upgrade_call_drupal_goto_alter().
-*/
-function coder_upgrade_upgrade_call_drupal_goto_alter(&$item, &$reader) {
+ * Implements hook_upgrade_call_drupal_goto_alter().
+ */
+function coder_upgrade_upgrade_call_drupal_goto_alter(&$node, &$reader) {
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   if ($item->parameterCount() < 2) {
     // Nothing to do.
@@ -1038,9 +1089,12 @@ function coder_upgrade_query_to_array($string) {
 /**
  * Implements hook_upgrade_call_drupal_http_request_alter().
  */
-function coder_upgrade_upgrade_call_drupal_http_request_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_http_request_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1064,9 +1118,12 @@ function coder_upgrade_upgrade_call_drupal_http_request_alter(&$item, &$reader) 
 /**
  * Implements hook_upgrade_call_drupal_json_alter().
  */
-function coder_upgrade_upgrade_call_drupal_json_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_json_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1076,9 +1133,12 @@ function coder_upgrade_upgrade_call_drupal_json_alter(&$item, &$reader) { // DON
 /**
  * Implements hook_upgrade_call_drupal_rebuild_code_registry_alter().
  */
-function coder_upgrade_upgrade_call_drupal_rebuild_code_registry_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_rebuild_code_registry_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1088,9 +1148,12 @@ function coder_upgrade_upgrade_call_drupal_rebuild_code_registry_alter(&$item, &
 /**
  * Implements hook_upgrade_call_drupal_rebuild_theme_registry_alter().
  */
-function coder_upgrade_upgrade_call_drupal_rebuild_theme_registry_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_rebuild_theme_registry_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1100,9 +1163,12 @@ function coder_upgrade_upgrade_call_drupal_rebuild_theme_registry_alter(&$item, 
 /**
  * Implements hook_upgrade_call_drupal_set_content_alter().
  */
-function coder_upgrade_upgrade_call_drupal_set_content_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_set_content_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1112,9 +1178,12 @@ function coder_upgrade_upgrade_call_drupal_set_content_alter(&$item, &$reader) {
 /**
  * Implements hook_upgrade_call_drupal_set_header_alter().
  */
-function coder_upgrade_upgrade_call_drupal_set_header_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_set_header_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1192,9 +1261,12 @@ function coder_upgrade_upgrade_call_drupal_set_header_alter(&$item, &$reader) { 
 /**
  * Implements hook_upgrade_call_drupal_set_html_head_alter().
  */
-function coder_upgrade_upgrade_call_drupal_set_html_head_alter(&$item, &$reader) { // DONE (UPDATED)
+function coder_upgrade_upgrade_call_drupal_set_html_head_alter(&$node, &$reader) { // DONE (UPDATED)
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1228,20 +1300,23 @@ function coder_upgrade_upgrade_call_drupal_set_html_head_alter(&$item, &$reader)
 /**
  * Implements hook_upgrade_call_drupal_set_title_alter().
  */
-function coder_upgrade_upgrade_call_drupal_set_title_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_set_title_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $parameters = &$item->parameters;
   // Find all calls to check_plain() in the parameter expression.
-  while ($node = &$parameters->search('PGPFunctionCall', 'name', 'value', 'check_plain', TRUE)) {
+  while ($node2 = &$parameters->search('PGPFunctionCall', 'name', 'value', 'check_plain', TRUE)) {
     // Insert the nodes in the parameter expression to check_plain()
     // into the parameter expression to drupal_set_title() right before the call
     // to check_plain().
-    $parameters->insertListBefore($node, $node->data->getParameter());
+    $parameters->insertListBefore($node2, $node2->data->getParameter());
     // Remove the check_plain() call as drupal_set_title() now does this.
-    $parameters->delete($node);
+    $parameters->delete($node2);
   }
   // TODO Should check the argument keys not the text to the t().
   if ($item->parameterCount() == 1 && $call = &$parameters->search('PGPFunctionCall', 'name', 'value', 't')) {
@@ -1258,9 +1333,12 @@ function coder_upgrade_upgrade_call_drupal_set_title_alter(&$item, &$reader) { /
 /**
  * Implements hook_upgrade_call_drupal_system_listing_alter().
  */
-function coder_upgrade_upgrade_call_drupal_system_listing_alter(&$item, &$reader) { // DONE (Revise like file_scan_directory)
+function coder_upgrade_upgrade_call_drupal_system_listing_alter(&$node, &$reader) { // DONE (Revise like file_scan_directory)
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1279,9 +1357,12 @@ function coder_upgrade_upgrade_call_drupal_system_listing_alter(&$item, &$reader
 /**
  * Implements hook_upgrade_call_drupal_to_js_alter().
  */
-function coder_upgrade_upgrade_call_drupal_to_js_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_to_js_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1291,9 +1372,12 @@ function coder_upgrade_upgrade_call_drupal_to_js_alter(&$item, &$reader) { // DO
 /**
  * Implements hook_upgrade_call_drupal_uninstall_module_alter().
  */
-function coder_upgrade_upgrade_call_drupal_uninstall_module_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_drupal_uninstall_module_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1303,9 +1387,12 @@ function coder_upgrade_upgrade_call_drupal_uninstall_module_alter(&$item, &$read
 }
 
 /**
-* Implements hook_upgrade_call_file_check_directory_alter().
-*/
-function coder_upgrade_upgrade_call_file_check_directory_alter(&$item, &$reader) {
+ * Implements hook_upgrade_call_file_check_directory_alter().
+ */
+function coder_upgrade_upgrade_call_file_check_directory_alter(&$node, &$reader) {
+  // Get the function call object.
+  $item = &$node->data;
+
   // http://drupal.org/node/224333#file_prepare_directory
   $name = &$item->name;
   $name['value'] = 'file_prepare_directory';
@@ -1314,10 +1401,13 @@ function coder_upgrade_upgrade_call_file_check_directory_alter(&$item, &$reader)
 /**
  * Implements hook_upgrade_call_file_scan_directory_alter().
  */
-function coder_upgrade_upgrade_call_file_scan_directory_alter(&$item, &$reader) { // DONE (IN PROGRESS)
+function coder_upgrade_upgrade_call_file_scan_directory_alter(&$node, &$reader) { // DONE (IN PROGRESS)
   cdp(__FUNCTION__);
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1424,7 +1514,7 @@ function coder_upgrade_upgrade_call_file_scan_directory_alter(&$item, &$reader) 
   // http://drupal.org/node/224333#file_scan_directory_array_itize
   // Arrayitize the parameters.
   $keys = array('nomask', 'callback', 'recurse', 'key', 'min_depth');
-  $defaults = array(/*"array('.', '..', 'CVS')"*/ "'/(\.\.?|CVS)$/'", '0', 'TRUE', /*"'filename'"*/"'uri'", 0);
+  $defaults = array(/*"array('.', '..', 'CVS')"*/ "'/(\.\.?|CVS)$/'", '0', 'TRUE', /*"'filename'"*/ "'uri'", 0);
   $string = $editor->arrayitize($item, 2, $keys, $defaults);
 
   if (is_object($depth) || $string != 'array()') {
@@ -1519,9 +1609,12 @@ function coder_upgrade_array_to_preg($operand) {
 /**
  * Implements hook_upgrade_call_file_set_status_alter().
  */
-function coder_upgrade_upgrade_call_file_set_status_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_file_set_status_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Get the text of the function call and its parent statement.
   $temp1 = $item->toString();
@@ -1548,9 +1641,12 @@ function coder_upgrade_upgrade_call_file_set_status_alter(&$item, &$reader) { //
 /**
  * Implements hook_upgrade_call_filter_formats_alter().
  */
-function coder_upgrade_upgrade_call_filter_formats_alter(&$item, &$reader) { // DONE (UPDATED)
+function coder_upgrade_upgrade_call_filter_formats_alter(&$node, &$reader) { // DONE (UPDATED)
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1590,15 +1686,18 @@ function coder_upgrade_upgrade_call_filter_formats_alter(&$item, &$reader) { // 
 /**
  * Implements hook_upgrade_call_format_date_alter().
  */
-function coder_upgrade_upgrade_call_format_date_alter(&$item, &$reader) {
+function coder_upgrade_upgrade_call_format_date_alter(&$node, &$reader) {
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Change date types
   $date_type = $item->printParameter(1);
   $date_type = trim($date_type, "'\"");
   switch ($date_type) {
-    case 'small';
+    case 'small':
       $editor->setParameter($item, 1, "'short'");
       break;
     case 'large':
@@ -1610,9 +1709,12 @@ function coder_upgrade_upgrade_call_format_date_alter(&$item, &$reader) {
 /**
  * Implements hook_upgrade_call_format_plural_alter().
  */
-function coder_upgrade_upgrade_call_format_plural_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_format_plural_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1632,9 +1734,12 @@ function coder_upgrade_upgrade_call_format_plural_alter(&$item, &$reader) { // D
 }
 
 /**
-* Implements hook_upgrade_call_form_clean_id_alter().
-*/
-function coder_upgrade_upgrade_call_form_clean_id_alter(&$item, &$reader) {
+ * Implements hook_upgrade_call_form_clean_id_alter().
+ */
+function coder_upgrade_upgrade_call_form_clean_id_alter(&$node, &$reader) {
+  // Get the function call object.
+  $item = &$node->data;
+
   // http://drupal.org/node/224333#form_clean_id
   $name = &$item->name;
   $name['value'] = 'drupal_clean_css_identifier';
@@ -1643,9 +1748,12 @@ function coder_upgrade_upgrade_call_form_clean_id_alter(&$item, &$reader) {
 /**
  * Implements hook_upgrade_call_function_exists_alter().
  */
-function coder_upgrade_upgrade_call_function_exists_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_function_exists_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1662,11 +1770,14 @@ function coder_upgrade_upgrade_call_function_exists_alter(&$item, &$reader) { //
 }
 
 /**
-* Implements hook_upgrade_call_jquery_ui_add_alter().
-*/
-function coder_upgrade_upgrade_call_jquery_ui_add_alter(&$item, &$reader) {
+ * Implements hook_upgrade_call_jquery_ui_add_alter().
+ */
+function coder_upgrade_upgrade_call_jquery_ui_add_alter(&$node, &$reader) {
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // http://drupal.org/node/224333#jquery_ui
   // jquery_ui_add is now drupal_add_library which loads a single library.
@@ -1728,9 +1839,12 @@ function coder_upgrade_upgrade_call_jquery_ui_add_alter(&$item, &$reader) {
 /**
  * Implements hook_upgrade_call_menu_path_is_external_alter().
  */
-function coder_upgrade_upgrade_call_menu_path_is_external_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_menu_path_is_external_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1740,9 +1854,12 @@ function coder_upgrade_upgrade_call_menu_path_is_external_alter(&$item, &$reader
 /**
  * Implements hook_upgrade_call_menu_tree_data().
  */
-function coder_upgrade_upgrade_call_menu_tree_data_alter(&$item, &$reader) {
+function coder_upgrade_upgrade_call_menu_tree_data_alter(&$node, &$reader) {
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Function now expects an array of links, rather than a query resource.
   $p1 = $item->getParameter()->getElement();
@@ -1769,9 +1886,12 @@ function coder_upgrade_upgrade_call_menu_tree_data_alter(&$item, &$reader) {
 /**
  * Implements hook_upgrade_call_menu_valid_path_alter().
  */
-function coder_upgrade_upgrade_call_menu_valid_path_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_menu_valid_path_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name; // NOT DONE
@@ -1788,9 +1908,12 @@ function coder_upgrade_upgrade_call_menu_valid_path_alter(&$item, &$reader) { //
 /**
  * Implements hook_upgrade_call_module_invoke_alter().
  */
-function coder_upgrade_upgrade_call_module_invoke_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_module_invoke_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1828,9 +1951,12 @@ function coder_upgrade_upgrade_call_module_invoke_alter(&$item, &$reader) { // D
 /**
  * Implements hook_upgrade_call_module_list_alter().
  */
-function coder_upgrade_upgrade_call_module_list_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_module_list_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1841,9 +1967,12 @@ function coder_upgrade_upgrade_call_module_list_alter(&$item, &$reader) { // DON
 /**
  * Implements hook_upgrade_call_module_rebuild_cache_alter().
  */
-function coder_upgrade_upgrade_call_module_rebuild_cache_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_module_rebuild_cache_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1851,11 +1980,14 @@ function coder_upgrade_upgrade_call_module_rebuild_cache_alter(&$item, &$reader)
 }
 
 /**
-* Implements hook_upgrade_call_node_get_types_alter().
-*/
-function coder_upgrade_upgrade_call_node_get_types_alter(&$item, &$reader) { // DONE
+ * Implements hook_upgrade_call_node_get_types_alter().
+ */
+function coder_upgrade_upgrade_call_node_get_types_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   if ($item->parameterCount() && !$item->getParameter()->isType(T_CONSTANT_ENCAPSED_STRING)) {
     // Add TODO comment.
@@ -1864,7 +1996,7 @@ function coder_upgrade_upgrade_call_node_get_types_alter(&$item, &$reader) { // 
   }
 
   $op = $item->printParameter(0);
-  $node = $item->printParameter(1);
+  $node2 = $item->printParameter(1);
   $reset = $item->printParameter(2);
 
   // node_get_types($op) is now node_type_get_$op.
@@ -1878,11 +2010,11 @@ function coder_upgrade_upgrade_call_node_get_types_alter(&$item, &$reader) { // 
     case 'name':
     case 'type':
       $todo = '';
-      if (strtoupper($node) == 'NULL' || $node == '') {
-        $node = $node == '' ? '$node' : $node;
+      if (strtoupper($node2) == 'NULL' || $node2 == '') {
+        $node2 = $node2 == '' ? '$node' : $node2;
         $todo = ' /* TODO The $node parameter should not be null. Please declare and initialize a $node parameter. */';
       }
-      $editor->setParameter($item, 0, $node . $todo);
+      $editor->setParameter($item, 0, $node2 . $todo);
       break;
   }
 
@@ -1896,11 +2028,14 @@ function coder_upgrade_upgrade_call_node_get_types_alter(&$item, &$reader) { // 
   }
 }
 /**
-* Implements hook_upgrade_call_node_invoke_nodeapi_alter().
-*/
-function coder_upgrade_upgrade_call_node_invoke_nodeapi_alter(&$item, &$reader) { // DONE
+ * Implements hook_upgrade_call_node_invoke_nodeapi_alter().
+ */
+function coder_upgrade_upgrade_call_node_invoke_nodeapi_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -1991,11 +2126,14 @@ function coder_upgrade_upgrade_call_node_invoke_nodeapi_alter(&$item, &$reader) 
 }
 
 /**
-* Implements hook_upgrade_call_node_load_alter().
-*/
-function coder_upgrade_upgrade_call_node_load_alter(&$item, &$reader) {
+ * Implements hook_upgrade_call_node_load_alter().
+ */
+function coder_upgrade_upgrade_call_node_load_alter(&$node, &$reader) {
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // First parameter no longer an array, so we need to use node_load_multiple().
   $p0 = $item->getParameter()->getElement();
@@ -2016,11 +2154,11 @@ function coder_upgrade_upgrade_call_node_load_alter(&$item, &$reader) {
         $p0->values->insertLast($key, 'key');
         $assign = '=>';
         $p0->values->insertLast($assign, 'assign');
-  //      $value = $editor->expressionToStatement($item->printParameter(1));
+//      $value = $editor->expressionToStatement($item->printParameter(1));
         $p0->values->insertLast($item->getParameter(1), 'value');
         $p0->count++;
         cdp($p0);
-  //      $p1 = $item->printParameter(1); // TODO What if this has an assignment?
+//      $p1 = $item->printParameter(1); // TODO What if this has an assignment?
         $item->deleteParameter(1);
 
         $editor->insertParameter($item, 0, 'array()');
@@ -2034,9 +2172,12 @@ function coder_upgrade_upgrade_call_node_load_alter(&$item, &$reader) {
 /**
  * Implements hook_upgrade_call__node_type_set_defaults_alter().
  */
-function coder_upgrade_upgrade_call__node_type_set_defaults_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call__node_type_set_defaults_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2047,9 +2188,12 @@ function coder_upgrade_upgrade_call__node_type_set_defaults_alter(&$item, &$read
 /**
  * Implements hook_upgrade_call_referer_uri_alter().
  */
-function coder_upgrade_upgrade_call_referer_uri_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_referer_uri_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2099,9 +2243,12 @@ function coder_upgrade_convert_require(&$item, &$reader) { // DONE
 /**
  * Implements hook_upgrade_call_set_time_limit_alter().
  */
-function coder_upgrade_upgrade_call_set_time_limit_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_set_time_limit_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2111,9 +2258,12 @@ function coder_upgrade_upgrade_call_set_time_limit_alter(&$item, &$reader) { // 
 /**
  * Implements hook_upgrade_call_system_theme_data_alter().
  */
-function coder_upgrade_upgrade_call_system_theme_data_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_system_theme_data_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2123,9 +2273,12 @@ function coder_upgrade_upgrade_call_system_theme_data_alter(&$item, &$reader) { 
 /**
  * Implements hook_upgrade_call_t_alter().
  */
-function coder_upgrade_upgrade_call_t_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_t_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2147,9 +2300,12 @@ function coder_upgrade_upgrade_call_t_alter(&$item, &$reader) { // DONE
 /**
  * Implements hook_upgrade_call_taxonomy_del_term_alter().
  */
-function coder_upgrade_upgrade_call_taxonomy_del_term_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_taxonomy_del_term_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2159,9 +2315,12 @@ function coder_upgrade_upgrade_call_taxonomy_del_term_alter(&$item, &$reader) { 
 /**
  * Implements hook_upgrade_call_taxonomy_del_vocabulary_alter().
  */
-function coder_upgrade_upgrade_call_taxonomy_del_vocabulary_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_taxonomy_del_vocabulary_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2171,25 +2330,33 @@ function coder_upgrade_upgrade_call_taxonomy_del_vocabulary_alter(&$item, &$read
 /**
  * Implements hook_upgrade_call_taxonomy_form_all_alter().
  */
-function coder_upgrade_upgrade_call_taxonomy_form_all_alter(&$item, &$reader) {
+function coder_upgrade_upgrade_call_taxonomy_form_all_alter(&$node, &$reader) {
   cdp(__FUNCTION__);
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
+  // Get the function call object.
+  $item = &$node->data;
+
   $item->insertStatementBefore($editor->commentToStatement('// TODO taxonomy_form_all has been removed, use an autocomplete field instead.'));
 
   // Replace function call with array().
-  $string = $item->toString();
-  // This is an example of changing a function call reference.
-  $item = $editor->expressionToStatement("array() /* $string */");
+  // This is an example of deleting a function call reference.
+  $string = str_replace(array('/*', '*/'), '', $item->toString());
+  $temp = $editor->expressionToStatement("array() /* $string */");
+  $node->container->insertListBefore($node, $temp);
+  $node->container->delete($node);
 }
 
 /**
  * Implements hook_upgrade_call_taxonomy_get_term_alter().
  */
-function coder_upgrade_upgrade_call_taxonomy_get_term_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_taxonomy_get_term_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2199,9 +2366,12 @@ function coder_upgrade_upgrade_call_taxonomy_get_term_alter(&$item, &$reader) { 
 /**
  * Implements hook_upgrade_call_taxonomy_get_tree_alter().
  */
-function coder_upgrade_upgrade_call_taxonomy_get_tree_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_taxonomy_get_tree_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2228,9 +2398,12 @@ function coder_upgrade_upgrade_call_taxonomy_get_tree_alter(&$item, &$reader) { 
 /**
  * Implements hook_upgrade_call_taxonomy_save_term_alter().
  */
-function coder_upgrade_upgrade_call_taxonomy_save_term_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_taxonomy_save_term_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2242,9 +2415,12 @@ function coder_upgrade_upgrade_call_taxonomy_save_term_alter(&$item, &$reader) {
 /**
  * Implements hook_upgrade_call_taxonomy_save_vocabulary_alter().
  */
-function coder_upgrade_upgrade_call_taxonomy_save_vocabulary_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_taxonomy_save_vocabulary_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2256,11 +2432,14 @@ function coder_upgrade_upgrade_call_taxonomy_save_vocabulary_alter(&$item, &$rea
 /**
  * Implements hook_upgrade_call_theme_alter().
  */
-function coder_upgrade_upgrade_call_theme_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_theme_alter(&$node, &$reader) { // DONE
   global $upgrade_theme_registry;
 
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2348,9 +2527,12 @@ function coder_upgrade_upgrade_call_theme_alter(&$item, &$reader) { // DONE
 /**
  * Implements hook_upgrade_call_time_alter().
  */
-function coder_upgrade_upgrade_call_time_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_time_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2362,32 +2544,34 @@ function coder_upgrade_upgrade_call_time_alter(&$item, &$reader) { // DONE
 /**
  * Implements hook_upgrade_call_update_sql_alter().
  */
-function coder_upgrade_upgrade_call_update_sql_alter(&$item, &$reader) {
+function coder_upgrade_upgrade_call_update_sql_alter(&$node, &$reader) {
   cdp(__FUNCTION__);
   // Change: update_sql
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
+  // Get the function call object.
+  $item = &$node->data;
+
   $item->insertStatementBefore($editor->commentToStatement('// TODO update_sql has been removed. Use the database API for any schema or data changes.'));
 
   // Replace function call with array().
+  // This is an example of deleting a function call reference.
   $string = str_replace(array('/*', '*/'), '', $item->toString());
-  // This is an example of changing a function call reference.
-  // This code works, but it results in a grammar structure that does not match
-  // what would be produced by the parser. The single operand in the expression
-  // containing the function call is replaced by an expression with two
-  // operands. These two operands should be separate elements in the expression.
-  // Changes this after refactoring functionCalls array to hold the node not the
-  // function call object.
-  $item = $editor->expressionToStatement("array() /* $string */");
+  $temp = $editor->expressionToStatement("array() /* $string */");
+  $node->container->insertListBefore($node, $temp);
+  $node->container->delete($node);
 }
 
 /**
-* Implements hook_upgrade_call_url_alter().
-*/
-function coder_upgrade_upgrade_call_url_alter(&$item, &$reader) { // DONE
+ * Implements hook_upgrade_call_url_alter().
+ */
+function coder_upgrade_upgrade_call_url_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   if ($item->parameterCount() < 2) {
     // Nothing to do.
@@ -2412,9 +2596,12 @@ function coder_upgrade_upgrade_call_url_alter(&$item, &$reader) { // DONE
 /**
  * Implements hook_upgrade_call_user_authenticate_alter().
  */
-function coder_upgrade_upgrade_call_user_authenticate_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_user_authenticate_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2464,9 +2651,12 @@ function coder_upgrade_upgrade_call_user_authenticate_alter(&$item, &$reader) { 
 /**
  * Implements hook_upgrade_call_user_delete_alter().
  */
-function coder_upgrade_upgrade_call_user_delete_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_user_delete_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2477,9 +2667,12 @@ function coder_upgrade_upgrade_call_user_delete_alter(&$item, &$reader) { // DON
 /**
  * Implements hook_upgrade_call_user_load_alter().
  */
-function coder_upgrade_upgrade_call_user_load_alter(&$item, &$reader) { // DONE
+function coder_upgrade_upgrade_call_user_load_alter(&$node, &$reader) { // DONE
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   if (!$item->parameterCount()) {
     // No parameters is an acceptable default in D7, but should cause an
@@ -2603,9 +2796,12 @@ function coder_upgrade_convert_user_load(&$item, &$operand, $is_parameter = TRUE
 /**
  * Implements hook_upgrade_call_variable_get_alter().
  */
-function coder_upgrade_upgrade_call_variable_get_alter(&$item, &$reader) { // (OMIT)
+function coder_upgrade_upgrade_call_variable_get_alter(&$node, &$reader) { // (OMIT)
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;
@@ -2614,9 +2810,12 @@ function coder_upgrade_upgrade_call_variable_get_alter(&$item, &$reader) { // (O
 /**
  * Implements hook_upgrade_call_variable_set_alter().
  */
-function coder_upgrade_upgrade_call_variable_set_alter(&$item, &$reader) { // (OMIT)
+function coder_upgrade_upgrade_call_variable_set_alter(&$node, &$reader) { // (OMIT)
   // Create helper objects.
   $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
 
   // Process function call.
   $name = &$item->name;

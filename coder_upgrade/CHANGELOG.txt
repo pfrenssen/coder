@@ -2,6 +2,13 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-07-09):
+  * coder_upgrade.call.inc, coder_upgrade.main.inc
+  * - revise code to reflect change to PGPReader::getFunctionCalls() which now returns a list of nodes
+  *   (NOTE: this change was made using an upgrade routine and this module)
+  * coder_upgrade.call.inc
+  * - enhance #comment_node_url, #taxonomy_form_all, and #update_sql to utilize the node now returned by getFunctionCalls()
+
 - Changes (2010-07-08):
   * coder_upgrade.call.inc
   * - #update_sql
