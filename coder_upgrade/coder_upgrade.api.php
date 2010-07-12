@@ -68,21 +68,26 @@ function hook_upgrade_info() {
  * @endcode
  *
  * Coder Upgrade will call this alter hook for each function call in the file
- * that was parsed. Refer to the grammar parser documentation for details of the
- * function call object.
+ * that was parsed. However, the function name must be a string, not a variable
+ * expression. To modify the latter, use hook_upgrade_file_alter(). Refer to the
+ * grammar parser documentation for details of the function call object.
  *
+ * @see hook_upgrade_file_alter
  * @see PGPFunctionCall
  *
- * @param PGPFunctionCall $item
- *   A function call object of the expression or statement.
+ * @param PGPFunctionCall $node
+ *   A node object containing a function call object.
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
  */
-function hook_upgrade_call_FUNCTION_NAME_alter(&$item, &$reader) {
-  // Change the function name.
-  $item->name = 'new_name';
+function hook_upgrade_call_FUNCTION_NAME_alter(&$node, &$reader) {
+  // Get the function call object.
+  $item = &$node->data;
 
-  if ($item->parameters->count() > 0) {
+  // Change the function name.
+  $item->name['value'] = 'new_name';
+
+  if ($item->parameterCount() > 0) {
     // Delete the first parameter.
     $item->deleteParameter();
   }
@@ -102,20 +107,25 @@ function hook_upgrade_call_FUNCTION_NAME_alter(&$item, &$reader) {
  * @endcode
  *
  * Coder Upgrade will call this alter hook for each function call in the file
- * that was parsed. Refer to the grammar parser documentation for details of the
- * function call object.
+ * that was parsed. However, the function name must be a string, not a variable
+ * expression. To modify the latter, use hook_upgrade_file_alter(). Refer to the
+ * grammar parser documentation for details of the function call object.
  *
+ * @see hook_upgrade_file_alter
  * @see PGPFunctionCall
  *
- * @param PGPFunctionCall $item
- *   A function call object of the expression or statement.
+ * @param PGPFunctionCall $node
+ *   A node object containing a function call object.
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.
  * @param $name
  *   The name of the function.
  */
-function hook_upgrade_call_alter(&$item, &$reader, $name) {
-  // Modify function call.
+function hook_upgrade_call_alter(&$node, &$reader, $name) {
+  // Get the function call object.
+  $item = &$node->data;
+
+  // Modify the function call.
   switch ($name) {
     case 'foo':
       $item->deleteParameter();
@@ -151,8 +161,7 @@ function hook_upgrade_call_alter(&$item, &$reader, $name) {
  * that was parsed. However, the function name must follow the naming convention
  * for a hook, i.e, your_module_name_hook. If your module declares a hook for
  * another module or otherwise digresses from the standard naming convention,
- * then you will need to add a converion routine to the list to be able to alter
- * this function.
+ * then use hook_upgrade_file_alter() to alter this function.
  *
  * Refer to the grammar parser documentation for details of the function object
  * (i.e. PGPClass).
@@ -176,7 +185,7 @@ function hook_upgrade_hook_HOOK_NAME_alter(&$node, &$reader) {
   // Update the document comment.
   $item->comment['value'] = preg_replace('@\* Implement\s+@', "* Implements ", $item->comment['value']);
 
-  if ($item->parameters->count() > 1) {
+  if ($item->parameterCount() > 1) {
     // Switch the first two parameters.
     $p0 = $item->getParameter(0);
     $p1 = $item->getParameter(1);
@@ -210,8 +219,7 @@ function hook_upgrade_hook_HOOK_NAME_alter(&$node, &$reader) {
  * that was parsed. However, the function name must follow the naming convention
  * for a hook, i.e, your_module_name_hook. If your module declares a hook for
  * another module or otherwise digresses from the standard naming convention,
- * then you will need to add a conversion routine to the list to be able to alter
- * this function.
+ * then use hook_upgrade_file_alter() to alter this function.
  *
  * Refer to the grammar parser documentation for details of the function object
  * (i.e. PGPClass).
@@ -240,7 +248,7 @@ function hook_upgrade_hook_alter(&$node, &$reader, &$hook) {
       // Update the document comment.
       $item->comment['value'] = preg_replace('@\* Implement\s+@', "* Implements ", $item->comment['value']);
 
-      if ($item->parameters->count() > 1) {
+      if ($item->parameterCount() > 1) {
         // Switch the first two parameters.
         $p0 = $item->getParameter(0);
         $p1 = $item->getParameter(1);
@@ -271,9 +279,10 @@ function hook_upgrade_file_alter(&$reader) {
    */
 
   // Get list of function calls (including the calls to class methods).
-  $items = &$reader->getFunctionCalls();
+  $nodes = &$reader->getFunctionCalls();
   // Loop on list.
-  foreach ($items as &$item) {
+  foreach ($nodes as &$node) {
+    $item = &$node->data;
     if (!isset($item) || !is_object($item) || !is_a($item, 'PGPFunctionCall') || $item->type != T_FUNCTION_CALL) {
       /*
        * These checks are necessary as the reference (i.e. $item) could have
@@ -446,11 +455,14 @@ function your_module_name_upgrade_info() {
 /**
  * Implements hook_upgrade_call_FUNCTION_NAME_alter().
  */
-function your_module_name_upgrade_call_function_name_alter(&$item, &$reader) {
-  // Change the function name.
-  $item->name = 'new_name';
+function your_module_name_upgrade_call_function_name_alter(&$node, &$reader) {
+  // Get the function call object.
+  $item = &$node->data;
 
-  if ($item->parameters->count() > 0) {
+  // Change the function name.
+  $item->name['value'] = 'new_name';
+
+  if ($item->parameterCount() > 0) {
     // Delete the first parameter.
     $item->deleteParameter();
   }
@@ -470,7 +482,7 @@ function your_module_name_upgrade_hook_hook_name_alter(&$node, &$reader) {
   // Update the document comment.
   $item->comment['value'] = preg_replace('@\* Implement\s+@', "* Implements ", $item->comment['value']);
 
-  if ($item->parameters->count() > 1) {
+  if ($item->parameterCount() > 1) {
     // Switch the first two parameters.
     $p0 = $item->getParameter(0);
     $p1 = $item->getParameter(1);

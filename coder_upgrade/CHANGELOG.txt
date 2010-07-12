@@ -2,8 +2,14 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-07-12):
+  * coder_upgrade.api.php
+  * - update documentation to reflect the node being returned by getFunctionCalls()
+  * coder_upgrade.db.inc
+  * - improve sql parsing and conversion to DBTNG syntax
+
 - Changes (2010-07-09):
-  * coder_upgrade.call.inc, coder_upgrade.main.inc
+  * coder_upgrade.call.inc, coder_upgrade.db.inc, and coder_upgrade.main.inc
   * - revise code to reflect change to PGPReader::getFunctionCalls() which now returns a list of nodes
   *   (NOTE: this change was made using an upgrade routine and this module)
   * coder_upgrade.call.inc
