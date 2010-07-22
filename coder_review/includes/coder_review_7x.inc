@@ -1982,7 +1982,7 @@ function _coder_review_7x_ahah_now_ajax_warning() {
 
 function _coder_review_7x_select_count_warning() {
   return array(
-    '#warning' => t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actualy numer of rows.'),
+    '#warning' => t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existence of any rows, rather than actually counting the number of rows.'),
     '#link' => 'http://drupal.org/node/224333#select_count',
   );
 }
