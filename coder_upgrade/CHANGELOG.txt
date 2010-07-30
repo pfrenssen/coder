@@ -2,6 +2,17 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-07-29):
+  * coder_upgrade.db.inc
+  * - improve sql parsing and conversion to DBTNG syntax
+  * coder_upgrade.begin.inc
+  * - refactor call to coder_upgrade_convert_return() and associated callback
+  * coder_upgrade.function.inc
+  * - enhance coder_upgrade_convert_op() to use new getParameterVariable() API function
+  * - refactor the convert return pattern of routines: coder_upgrade_convert_return(), coder_upgrade_convert_return_loop(), and coder_upgrade_callback_return_caseN()
+  * tests/samples directory
+  * - update the input and expected test file: example.module
+
 - Changes (2010-07-12):
   * coder_upgrade.api.php
   * - update documentation to reflect the node being returned by getFunctionCalls()

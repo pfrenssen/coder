@@ -457,8 +457,9 @@ function example_node_access($node, $op, $account) {
 function example_dbtng() {
   // db_query() -- Change the next line but leave this alone
   // Insert query.
-  db_query("INSERT INTO {mytable} (intvar, stringvar, floatvar) VALUES (%d, '%s', %f)", 5, 'hello world', 3.14);
-  $id = db_insert('mytable')
+  // TODO Please review the conversion of this statement to the D7 database API syntax.
+  /* db_query("INSERT INTO {mytable} (intvar, stringvar, floatvar) VALUES (%d, '%s', %f)", 5, 'hello world', 3.14) */
+$id = db_insert('mytable')
   ->fields(array(
     'intvar' => 5,
     'stringvar' => 'hello world',
@@ -466,14 +467,31 @@ function example_dbtng() {
   ))
   ->execute();
   $sql = "INSERT INTO {mytable} (intvar, stringvar, floatvar) VALUES (%d, '%s', %f)";
-  db_query($sql, 5, 'hello world', 3.14);
+  // TODO Please review the conversion of this statement to the D7 database API syntax.
+  /* db_query($sql, 5, 'hello world', 3.14) */
+$id = db_insert('mytable')
+  ->fields(array(
+    'intvar' => 5,
+    'stringvar' => 'hello world',
+    'floatvar' => 3.14,
+  ))
+  ->execute();
   $values = array(5, 'hello world', 3.14);
-  db_query($sql, $values);
+  // TODO Please review the conversion of this statement to the D7 database API syntax.
+  /* db_query($sql, $values) */
+$id = db_insert('mytable')
+  ->fields(array(
+    'intvar' => $values['0'],
+    'stringvar' => $values['1'],
+    'floatvar' => $values['2'],
+  ))
+  ->execute();
   $id = db_last_insert_id();
 
   // Update query.
-  db_query("UPDATE {node} SET title='%s', status=%d WHERE uid=%d", 'hello world', 1, 5);
-  db_update('node')
+  // TODO Please review the conversion of this statement to the D7 database API syntax.
+  /* db_query("UPDATE {node} SET title='%s', status=%d WHERE uid=%d", 'hello world', 1, 5) */
+db_update('node')
   ->fields(array(
     'title' => 'hello world',
     'status' => 1,
@@ -482,8 +500,9 @@ function example_dbtng() {
   ->execute();
 
   // Delete query.
-  db_query("DELETE FROM {node} WHERE uid=%d AND created < %d", 5, REQUEST_TIME - 3600);
-  db_delete('node')
+  // TODO Please review the conversion of this statement to the D7 database API syntax.
+  /* db_query("DELETE FROM {node} WHERE uid=%d AND created < %d", 5, REQUEST_TIME - 3600) */
+db_delete('node')
     ->condition('uid', 5)
     ->condition('created', REQUEST_TIME - 3600, '<')
   ->execute();
@@ -542,8 +561,9 @@ function example_install() {
 function example_uninstall() {
   $result = db_query("SELECT * FROM {example}");
   while ($data = db_fetch_object($result)) {
-    db_query("DELETE FROM {variable} WHERE name = '%s'", 'example_' . $data->nid);
-    db_delete('variable')
+    // TODO Please review the conversion of this statement to the D7 database API syntax.
+    /* db_query("DELETE FROM {variable} WHERE name = '%s'", 'example_' . $data->nid) */
+db_delete('variable')
     ->condition('name', 'example_' . $data->nid)
   ->execute();
   }
@@ -715,6 +735,7 @@ function example_menu_tree_data() {
     INNER JOIN {book} b ON ml.mlid = b.mlid
     WHERE " . implode(' AND ', $match) . "
     ORDER BY p1 ASC, p2 ASC, p3 ASC, p4 ASC, p5 ASC, p6 ASC, p7 ASC, p8 ASC, p9 ASC";
+  // TODO Please convert this statement to the D7 database API syntax.
   $result = db_query($sql, $args);
   $list = array();
   foreach ($result as $item) {
@@ -948,7 +969,8 @@ function example_block_view($delta) {
  *
  * http://drupal.org/node/224333#block_deltas_renamed
  */
-function example_block_OLD($op, $delta = 0, $edit = array()) { }
+function example_block_OLD($op, $delta = 0, $edit = array()) {
+}
 
 // http://drupal.org/node/224333#block_tables_renamed
 /**
@@ -988,6 +1010,7 @@ function example_custom_block() {
 function example_comment_load() {
   if ($value) {
     // perform the update action, then refresh node statistics
+    // TODO Please convert this statement to the D7 database API syntax.
     db_query($query, $cid);
     // _comment_load() -- Change the next line but leave this alone
     $comment = comment_load($cid);
@@ -1041,10 +1064,13 @@ function example_comment_validate() {
  */
 function example_comment_node_url() {
   // comment_node_url() -- Change the next line but leave this alone
-  $var = 'xx/' . 'comment/' . $comment->cid() . 'yy';
-  if ('comment/' . $comment->cid() == '') {
+  // TODO Please make sure $comment is a valid comment object.
+  $var = 'xx/' . 'comment/' . $comment->cid . 'yy';
+  // TODO Please make sure $comment is a valid comment object.
+  if ('comment/' . $comment->cid == '') {
   }
-  return 'comment/' . $comment->cid();
+  // TODO Please make sure $comment is a valid comment object.
+  return 'comment/' . $comment->cid;
 }
 
 /**
@@ -1230,7 +1256,8 @@ function example_filter_info() {
 /**
  * Implements hook_filter().
  */
-function example_filter_XXX($op, $delta = 0, $format = -1, $text = '', $cache_id = 0) { }
+function example_filter_XXX($op, $delta = 0, $format = -1, $text = '', $cache_id = 0) {
+}
 
 /**
  * Filter tips callback function for $filters[0] in hook_filter_info().
@@ -1278,7 +1305,8 @@ function example_filter_tips_4($format, $long = FALSE) {
 /**
  * Implements hook_filter_tips().
  */
-function example_filter_tips_XXX($format, $long = FALSE) { }
+function example_filter_tips_XXX($format, $long = FALSE) {
+}
 
 /**
  * @todo Please document this function.
@@ -1362,8 +1390,10 @@ function example_taxonomy_tables() {
    *   {menu}, {taxonomy_term_data} or {taxonomy_vocabulary}. However, in most cases the usual
    *   {menu}, {taxonomy_term_data} or {taxonomy_vocabulary}. However, it is more common to use the
    */
+  // TODO Please convert this statement to the D7 database API syntax.
   $result = db_query(db_rewrite_sql("SELECT t.tid, t.vid FROM {taxonomy_term_data} t INNER JOIN {taxonomy_vocabulary_node_type} n ON t.vid = n.vid WHERE t.tid IN (" . db_placeholders($term_list) . ") AND n.type = '%s'", 't', 'tid'), $params);
   // Look up all the vocabularies for this node type.
+  // TODO Please convert this statement to the D7 database API syntax.
   $result2 = db_query(db_rewrite_sql("SELECT v.vid, v.name, v.required, v.multiple FROM {taxonomy_vocabulary} v INNER JOIN {taxonomy_vocabulary_node_type} n ON v.vid = n.vid WHERE n.type = '%s'", 'v', 'vid'), $node->type);
   // Check each vocabulary associated with this node type.
   while ($vocabulary = db_fetch_object($result2)) {
@@ -1372,12 +1402,13 @@ function example_taxonomy_tables() {
       'description' => 'The {taxonomy_term_data}.tid of the forum term assigned to the node.',
     );
   }
+  // TODO Please convert this statement to the D7 database API syntax.
   $result = db_query(db_rewrite_sql('SELECT t.tid, t.vid, t.name, t.description, t.weight FROM {taxonomy_term_data} t WHERE t.tid = %d AND t.vid = %d', 't', 'tid'), $tid, variable_get('forum_nav_vocabulary', ''));
   foreach ($node->taxonomy as $term) {
     if (db_query('SELECT COUNT(*) FROM {taxonomy_term_data} WHERE tid = :tid AND vid = :vid', array(':tid' => $term, ':vid' => $vocabulary))->fetchField()) {
     }
   }
-  $old_tid = db_query_range("SELECT t.tid FROM {taxonomy_term_node} t INNER JOIN {node} n ON t.vid = n.vid WHERE n.nid = %d ORDER BY t.vid DESC", $node->nid, 0, 1)->fetchField();
+  $old_tid = db_query_range("SELECT t.tid FROM {taxonomy_term_node} t INNER JOIN {node} n ON t.vid = n.vid WHERE n.nid = :n.nid ORDER BY t.vid DESC", array(':n.nid' => $node->nid))->fetchField();
   if ($op == 'delete' && $term['vid'] == variable_get('forum_nav_vocabulary', '')) {
     switch ($type) {
       case 'term':
@@ -1413,9 +1444,11 @@ function example_taxonomy_tables() {
     'description' => 'The {taxonomy_term_data}.tid of the term.',
   );
   $results = pager_query(db_rewrite_sql('SELECT t.*, h.parent FROM {taxonomy_term_data} t INNER JOIN {taxonomy_term_hierarchy} h ON t.tid = h.tid WHERE t.vid = %d ORDER BY weight, name', 't', 'tid'), $page_increment, 0, NULL, $vocabulary->vid);
+  // TODO Please convert this statement to the D7 database API syntax.
   $total_entries = db_query(db_rewrite_sql('SELECT count(*) FROM {taxonomy_term_data} t INNER JOIN {taxonomy_term_hierarchy} h ON t.tid = h.tid WHERE t.vid = :vid'), array(':vid' => $vocabulary->vid));
-  db_query('UPDATE {taxonomy_term_data} SET weight = 0 WHERE vid = :vid', array(':vid' => $form_state['values']['vid']));
-  db_update('taxonomy_term_data')
+  // TODO Please review the conversion of this statement to the D7 database API syntax.
+  /* db_query('UPDATE {taxonomy_term_data} SET weight = 0 WHERE vid = :vid', array(':vid' => $form_state['values']['vid'])) */
+db_update('taxonomy_term_data')
   ->fields(array(
     'weight' =>  0,
   ))
@@ -2291,15 +2324,17 @@ function example_user_cancel($edit, $uid) {
  */
 function example_user_cancel($edit, $account, $method) {
   if (TRUE) {
-    db_query('UPDATE {node} SET uid = 0 WHERE uid = %d', $user->uid);
-    db_update('node')
+    // TODO Please review the conversion of this statement to the D7 database API syntax.
+    /* db_query('UPDATE {node} SET uid = 0 WHERE uid = %d', $user->uid) */
+db_update('node')
   ->fields(array(
     'uid' =>  0,
   ))
     ->condition('uid', $user->uid)
   ->execute();
-    db_query('UPDATE {node_revisions} SET uid = 0 WHERE uid = %d', $user->uid);
-    db_update('node_revisions')
+    // TODO Please review the conversion of this statement to the D7 database API syntax.
+    /* db_query('UPDATE {node_revisions} SET uid = 0 WHERE uid = %d', $user->uid) */
+db_update('node_revisions')
   ->fields(array(
     'uid' =>  0,
   ))
@@ -2441,15 +2476,17 @@ function example_user_OLD($op, &$edit, &$user, $category = NULL) {
   // TODO Remaining code in this function needs to be moved to the appropriate new hook function.
   else {
     // Why would we have an ELSE in this situation?
-    db_query('UPDATE {node} SET uid = 0 WHERE uid = %d', $user->uid);
-    db_update('node')
+    // TODO Please review the conversion of this statement to the D7 database API syntax.
+    /* db_query('UPDATE {node} SET uid = 0 WHERE uid = %d', $user->uid) */
+db_update('node')
   ->fields(array(
     'uid' =>  0,
   ))
     ->condition('uid', $user->uid)
   ->execute();
-    db_query('UPDATE {node_revisions} SET uid = 0 WHERE uid = %d', $user->uid);
-    db_update('node_revisions')
+    // TODO Please review the conversion of this statement to the D7 database API syntax.
+    /* db_query('UPDATE {node_revisions} SET uid = 0 WHERE uid = %d', $user->uid) */
+db_update('node_revisions')
   ->fields(array(
     'uid' =>  0,
   ))
@@ -2821,7 +2858,8 @@ function example_link($type, $node = NULL, $teaser = FALSE) {
  * @param $build_mode
  *   Build mode, e.g. 'full', 'teaser'...
  */
-function node_build_content($node, $build_mode = 'full') { }
+function node_build_content($node, $build_mode = 'full') {
+}
 // http://drupal.org/node/224333#node_build_rss
 // Should there be a $build_mode parameter?
 // See http://api.drupal.org/api/function/hook_node_view/7
@@ -3083,7 +3121,8 @@ function example_node_type_update($info) {
 /**
  * Implements hook_node_type().
  */
-function example_node_type_OLD($op, $info) { }
+function example_node_type_OLD($op, $info) {
+}
 
 // http://drupal.org/node/224333#node_invoke_nodeapi
 /**
@@ -3338,7 +3377,8 @@ function example_actions_synchronize() {
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */
-function example_url_is_external() { }
+function example_url_is_external() {
+}
 
 /**
  * @todo Please document this function.

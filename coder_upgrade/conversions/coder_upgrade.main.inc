@@ -348,7 +348,7 @@ function coder_upgrade_apply_parser($filename, &$new) {
   coder_upgrade_log_print("Calling hook_upgrade_file_alter");
   drupal_alter('upgrade_file', $reader);
   coder_upgrade_log_print("Completed hook_upgrade_file_alter");
-  pgp_log_memory_use('apply hook function conversions');
+  pgp_log_memory_use('apply file conversions');
 
   if ($is_install_file) {
     // Apply parser conversion routines for install file.

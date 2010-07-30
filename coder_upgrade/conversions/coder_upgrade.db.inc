@@ -28,12 +28,6 @@ function coder_upgrade_upgrade_call_db_query_alter(&$node, &$reader) { // NEEDS 
   // Disable this routine until it is improved.
 //  return;
 
-  // Create helper objects.
-  $editor = PGPEditor::getInstance();
-
-  // Get the function call object.
-  $item = &$node->data;
-
   /*
    * Use cases
    * - query is a string: parse directly
@@ -41,55 +35,47 @@ function coder_upgrade_upgrade_call_db_query_alter(&$node, &$reader) { // NEEDS 
    * - query is an expression (leave this alone)
    */
 
-  // Process function call.
-  $p0 = $item->getParameter(0)->stripComments();
-  if ($p0->count() == 1) {
-    $operand0 = $p0->getElement();
-    if ($p0->isType(T_CONSTANT_ENCAPSED_STRING)) {
-      // Convert values to strings.
-      // Parse the string.
-      coder_upgrade_parse_query_string($node, $operand0);
-    }
-    elseif ($p0->isType(T_VARIABLE)) {
-      cdp('inside T_VARIABLE');
-      $operand0 = $p0->getElement();
-      // Parameter is a variable.
-      $variable = $operand0->findNode('value');
-      cdp($variable, '$variable');
-      // Get the parent = statement (i.e. node) this function call is part of.
-      $parent = $item->parent; // $parent = &$item->parent;
-      // Find the assignment in the statement list the parent is part of.
-      $statement = $parent->container->searchBackward('PGPAssignment', 'values', 0, $variable, $parent);
-      cdp($statement, '$statement');
-      if ($statement && $statement->values->getElement()->countType('operand') == 2) {
-        cdp('inside $statement->values->countType == 2');
-        // This assignment could look like $foo = 'bar'
-        $operand2 = &$statement->values->getElement()->findNode('operand', 'backward');
-        // TODO A pattern here - this is the same code as above but executed on a different object.
-        if (is_array($operand2) && $operand2['type'] == T_CONSTANT_ENCAPSED_STRING) {
-          // Replace first parameter with sql assignment string found above.
-          $editor->setParameter($item, 0, $operand2['value']);
-          $operand0 = $item->getParameter(0)->getElement();
-          // Parse the string.
-          coder_upgrade_parse_query_string($node, $operand0);
-        }
-        else {
-          clp("ERROR: Could not find a string to change in " . __FUNCTION__);
-          $item->insertStatementBefore($editor->commentToStatement('// TODO Please convert this statement to the D7 database API syntax.'));
-        }
-      }
-      else {
-        clp("ERROR: Could not find a string to change in " . __FUNCTION__);
-        $item->insertStatementBefore($editor->commentToStatement('// TODO Please convert this statement to the D7 database API syntax.'));
-      }
-    }
-    else {
-      $item->insertStatementBefore($editor->commentToStatement('// TODO Please convert this statement to the D7 database API syntax.'));
-    }
+  if ($sql = coder_upgrade_locate_query_string($node)) {
+    // Parse the string.
+    coder_upgrade_parse_query_string($node, $sql);
+  }
+}
+
+/**
+ * Implements hook_upgrade_call_db_query_range_alter().
+ */
+function coder_upgrade_upgrade_call_db_query_range_alter(&$node, &$reader) { // NEEDS WORK
+  // Disable this routine until it is improved.
+//  return;
+
+  // Get the function call object.
+  $item = &$node->data;
+
+  $from = $count = 0;
+  if ($item->parameterCount() < 3) {
+    clp("ERROR: db_query_range() has less than three parameters.");
+    // Nothing to do.
+//    return;
   }
   else {
-    $item->insertStatementBefore($editor->commentToStatement('// TODO Please convert this statement to the D7 database API syntax.'));
+    // Save the values from and delete the last two parameters.
+    $i = $item->parameterCount() - 1;
+    $from = $item->getParameter($i)->stripComments()->toString();
+    $item->deleteParameter($i);
+    $i--;
+    $count = $item->getParameter($i)->stripComments()->toString();
+    $item->deleteParameter($i);
   }
+
+//  coder_upgrade_upgrade_call_db_query_alter($node, $reader);
+  if ($sql = coder_upgrade_locate_query_string($node)) {
+    // Parse the string.
+    coder_upgrade_parse_query_string($node, $sql, $from, $count); // @todo Add last 2 params to the called function.
+  }
+
+  // Add finishing touches to new query syntax for a range query.
+  // See http://drupal.org/node/310075.
+  // ->range($from, $count)
 }
 
 /**
@@ -131,21 +117,92 @@ function coder_upgrade_upgrade_call_db_rewrite_sql_alter(&$node, &$reader) {
 }
 
 /**
+ * Returns the query string if found.
+ *
+ * @param PGPNode $node
+ *   The node containing the function call object to be replaced.
+ * @param PGPOperand $operand
+ *   The query string to be parsed (first parameter to $item).
+ * @return string
+ *   The query string or FALSE.
+ */
+function coder_upgrade_locate_query_string(&$node) { // NEEDS WORK
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Get the function call object.
+  $item = &$node->data;
+
+  /*
+   * Use cases
+   * - query is a string: parse directly
+   * - query is a variable: find the variable and see if it is a string (assigned only once or always from strings, no expressions)
+   * - query is an expression (leave this alone)
+   */
+
+  // Find the query string. (TODO Are there any API functions in which the query parameter is not in slot zero?)
+  $found = FALSE;
+  $p0 = $item->getParameter(0)->stripComments();
+  if ($p0->count() == 1) {
+    // The parameter is a single item expression.
+//    $operand0 = $p0->getElement();
+    if ($p0->isType(T_CONSTANT_ENCAPSED_STRING)) {
+      // The parameter is a string containing the query expression.
+      $found = TRUE;
+      return $p0->toString();
+    }
+    elseif ($p0->isType(T_VARIABLE)) {
+      // The parameter is a variable containing the query expression.
+      cdp('inside T_VARIABLE');
+//      $operand0 = $p0->getElement();
+      // Parameter is a variable.
+      $variable = $p0->getElement()->findNode('value'); // $variable = $operand0->findNode('value');
+      cdp($variable, '$variable');
+      // Get the parent = statement (i.e. node) this function call is part of.
+//      $parent = $item->parent; // $parent = &$item->parent;
+      // Find the assignment in the statement list the parent is part of.
+      $statement = $item->searchBackward('PGPAssignment', 'values', 0, $variable); // $statement = $parent->container->searchBackward('PGPAssignment', 'values', 0, $variable, $parent);
+      cdp($statement, '$statement');
+      if ($statement && $statement->values->getElement()->countType('operand') == 2) {
+        cdp('inside $statement->values->countType == 2');
+        // This assignment could look like $foo = 'bar'.
+        $operand2 = &$statement->values->getElement()->findNode('operand', 'backward');
+        // TODO A pattern here - this is the same code as above but executed on a different object.
+        if (is_array($operand2) && $operand2['type'] == T_CONSTANT_ENCAPSED_STRING) {
+          // The parameter variable is assigned a string containing the query expression.
+          $found = TRUE;
+          return $operand2['value'];
+        }
+      }
+    }
+  }
+  clp("ERROR: Could not find a SQL string to parse in " . __FUNCTION__);
+  $item->insertStatementBefore($editor->commentToStatement('// TODO Please convert this statement to the D7 database API syntax.'));
+  return FALSE;
+}
+
+/**
  * Replaces D6 database API call with D7 equivalent.
  *
  * @todo Fill in this with unhandled items.
  *
  * @param PGPNode $node
  *   The node containing the function call object to be replaced.
- * @param PGPOperand $operand
- *   The query string to be parsed (first parameter to $item).
+ * [@param PGPOperand $operand
+ *   The query string to be parsed (first parameter to $item).]
+ * @param string $sql
+ *   The query string to be parsed
+ * @param integer $from
+ *   The first record from the result set to return.
+ * @param integer $count
+ *   The number of records to return from the result set.
  */
-function coder_upgrade_parse_query_string(&$node, &$operand) {
+function coder_upgrade_parse_query_string(&$node, /*&$operand*/ $sql, $from = 0, $count = 0) {
   global $replacement_values_is_array, $replacement_index;
   $replacement_index = 0;
 
   // Create helper objects.
-  $editor = PGPEditor::getInstance();
+//  $editor = PGPEditor::getInstance();
 
   // Get the function call object.
   $item = &$node->data;
@@ -167,56 +224,25 @@ function coder_upgrade_parse_query_string(&$node, &$operand) {
    * Ex: taxonomy, block, etc.
    */
   $new = array();
+
+  $delimiter = $sql[0]; // Save this for SELECT queries.
+  // Alter the string for these SQL types as we are making entirely new syntax.
   // Trim won't work here, since it'll trim off the last ' if the string ends in '%s'
-  $sql = substr($operand['value'], 1, -1);
+  $sql = substr($sql, 1, -1); // $sql = substr($operand['value'], 1, -1);
+  // Assume there is no literal string containing any new lines or commas.
+//  $sql = preg_replace("@\n@", ' ', $sql);
+
+  if (strpos($sql, 'SELECT') === 0) {
+    // @todo If $sql is defined outside of db_query(), then this approach will
+    // replace the variable with the new string and leave the assignment alone.
+    $new = coder_upgrade_parse_select_query_string($node, $sql, $values, $delimiter);
+//    coder_upgrade_insert_dbtng_statement($node, $new); // ???
+  }
+
   // Assume there is no literal string containing any new lines or commas.
   $sql = preg_replace("@\n@", ' ', $sql);
-  if (strpos($sql, 'SELECT') === 0) {
-    $find = '@^(SELECT.*?WHERE\s+)(.*?)$@ms';
-    preg_match($find, $sql, $matches);
-    cdp($matches, '$matches');
-    // Convert conditions from field = '%s' to field = :field
-    // TODO handle more complex conditions
-    if (isset($matches[2]) && $matches[2]) {
-      preg_match_all('/
-        (\S*)\s*([!=<>]+)\s*[\'"]?%[sdfb][\'"]? # Match field = %d
-        |
-        (\S*)\s*([!=<>]+)\s*([\'"].*?[\'"]|\S*) # Match field literals
-        |
-        (\S*)\s+IN\s?\([\'"]%s[\'"]?\) # Match field IN(%s)
-      /x', $matches[2], $conditions);
-      cdp($conditions, '$conditions');
-      $condition_keys = array();
-      foreach ($conditions[0] as $key => $condition) {
-        if ($conditions[1][$key]) {
-          // field = %d condition
-          $condition_keys[] = ':'. $conditions[1][$key];
-          $operand['value'] = str_replace($condition, $conditions[1][$key] . ' ' . $conditions[2][$key] . ' :' . $conditions[1][$key], $operand['value']);
-        }
-        else if ($conditions[3][$key]) {
-          // field = literal condition
-          $condition_keys[] = ':'. $conditions[3][$key];
-          $operand['value'] = str_replace($condition, $conditions[3][$key] . ' ' . $conditions[4][$key] . ' :' . $conditions[3][$key], $operand['value']);
-          $item->insertParameter($key + 1, $editor->expressionToStatement($conditions[5][$key]));
-        }
-        else if ($conditions[6][$key]) {
-          // field IN (%s) condition
-          $condition_keys[] = ':'. $conditions[6][$key];
-          $operand['value'] = str_replace($condition, $conditions[6][$key] . ' IN (:' . $conditions[6][$key] . ')', $operand['value']);
-          // D6 convention was to use implode(",", $array).  Now we can just pass in the array.
-          $param = $item->getParameter($key + 1)->getElement()->getParameter(1);
-          $item->setParameter($key + 1, $param);
-        }
-      }
-      $editor->setParameter($item, 0, $operand['value']);
-      $string = $editor->arrayitize($item, 1, $condition_keys, array_fill(0, count($condition_keys), "'XXX_YYY'"));
-      cdp($string, '$string');
-      $temp = $editor->expressionToStatement($string);
-      $temp->getElement(0)->multiline = 0;
-      $item->setParameter(1, $temp);
-    }
-  }
-  elseif (strpos($sql, 'INSERT') === 0) {
+
+  if (strpos($sql, 'INSERT') === 0) {
     $new = coder_upgrade_parse_insert_query_string($sql, $values);
     coder_upgrade_insert_dbtng_statement($node, $new);
   }
@@ -235,13 +261,72 @@ function coder_upgrade_parse_query_string(&$node, &$operand) {
  *
  * @todo Fill in this with unhandled items.
  *
+ * @param PGPNode $node
+ *   The node containing the function call object to be replaced.
  * @param string $sql
  *   The SQL query string to parse.
  * @param array $values
  *   List of replacement values passed to db_query().
  */
-function coder_upgrade_parse_select_query_string($sql, $values) {
+function coder_upgrade_parse_select_query_string($node, $sql, $values, $delimiter) {
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
 
+  // Get the function call object.
+  $item = &$node->data;
+
+  $find = '@^(SELECT.*?WHERE\s+)(.*?)$@s';
+  preg_match($find, $sql, $matches);
+  cdp($matches, '$matches');
+  if (empty($matches) /*|| !isset($matches[2])*/) {
+    cdp($sql, '$sql');
+    clp('ERROR: could not parse sql SELECT statement.');
+    return array('NULL'); // $new;
+  }
+  // Convert conditions to use named placeholders (i.e., from field = '%s' to
+  // field = :field).
+  // TODO handle more complex conditions
+//  if (isset($matches[2]) && $matches[2]) {
+    preg_match_all('/
+      (\S*)\s*([!=<>]+)\s*[\'"]?%[sdfb][\'"]? # Match field = %d
+      |
+      (\S*)\s*([!=<>]+)\s*([\'"].*?[\'"]|\S*) # Match field literals
+      |
+      (\S*)\s+IN\s?\([\'"]%s[\'"]?\) # Match field IN(%s)
+    /x', $matches[2], $conditions);
+    cdp($conditions, '$conditions');
+    $condition_keys = array();
+    foreach ($conditions[0] as $key => $condition) {
+      if ($conditions[1][$key]) {
+        // field = %d condition
+        $condition_keys[] = ':'. $conditions[1][$key];
+        $sql /*$operand['value']*/ = str_replace($condition, $conditions[1][$key] . ' ' . $conditions[2][$key] . ' :' . $conditions[1][$key], $sql /*$operand['value']*/);
+      }
+      else if ($conditions[3][$key]) {
+        // field = literal condition
+        $condition_keys[] = ':'. $conditions[3][$key];
+        $sql /*$operand['value']*/ = str_replace($condition, $conditions[3][$key] . ' ' . $conditions[4][$key] . ' :' . $conditions[3][$key], $sql /*$operand['value']*/);
+        $item->insertParameter($key + 1, $editor->expressionToStatement($conditions[5][$key]));
+      }
+      else if ($conditions[6][$key]) {
+        // field IN (%s) condition
+        $condition_keys[] = ':'. $conditions[6][$key];
+        $sql /*$operand['value']*/ = str_replace($condition, $conditions[6][$key] . ' IN (:' . $conditions[6][$key] . ')', $sql /*$operand['value']*/);
+        // D6 convention was to use implode(",", $array).  Now we can just pass in the array.
+        $param = $item->getParameter($key + 1)->getElement()->getParameter(1);
+        $item->setParameter($key + 1, $param);
+      }
+    }
+    // Replace the $sql parameter.
+    $editor->setParameter($item, 0, $delimiter . $sql . $delimiter /*$operand['value']*/);
+
+    // Arrayitize the values array.
+    $string = $editor->arrayitize($item, 1, $condition_keys, array_fill(0, count($condition_keys), "'XXX_YYY'"));
+    cdp($string, '$string');
+    $temp = $editor->expressionToStatement($string);
+    $temp->getElement(0)->multiline = 0;
+    $item->setParameter(1, $temp);
+//  }
 }
 
 /**
@@ -261,7 +346,7 @@ function coder_upgrade_parse_insert_query_string($sql, $values) {
   // Look for query with a WHERE clause.
   // INSERT INTO {mytable_longer_name} (intvar, stringvar, floatvar) VALUES (%d, '%s', %f)
   // TODO How does DBTNG handle multiple rows to insert?
-  $find = '@INSERT INTO\s+{(\w+)}\s+\((.*?)\)\s+VALUES\s+\((.*?)\)@';
+  $find = '@INSERT INTO\s+{(\w+)}\s+\((.*?)\)\s+VALUES\s+\((.*?)\)@s';
   preg_match($find, $sql, $matches);
   cdp($matches);
   if (empty($matches) /*|| !isset($matches[2])*/) {
@@ -455,7 +540,14 @@ function coder_upgrade_insert_dbtng_statement(&$node, $new) {
   $new = str_replace("\t", '  ', $new);
   cdp($new, '$new');
 
-  $item->insertStatementBefore($editor->commentToStatement('// TODO Please review the conversion of this statement to the D7 database API syntax.'));
+  if ($new == 'NULL') {
+    clp("ERROR: Could not parse the SQL string");
+    $comment = '// TODO Please convert this statement to the D7 database API syntax.';
+  }
+  else {
+    $comment = '// TODO Please review the conversion of this statement to the D7 database API syntax.';
+  }
+  $item->insertStatementBefore($editor->commentToStatement($comment));
 
   // Replace function call with array().
   // This is an example of deleting a function call reference.

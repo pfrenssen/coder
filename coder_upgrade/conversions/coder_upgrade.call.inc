@@ -929,7 +929,7 @@ function coder_upgrade_upgrade_call_drupal_get_form_alter(&$node, &$reader) { //
     $variable = $operand->findNode('value');
     // Get the parent = statement (i.e. node) this function call is part of.
     $parent = $item->parent; // $parent = &$item->parent;
-    // Get the statement list the parent is part of.
+    // Find the assignment in the statement list the parent is part of.
     $statement = $parent->container->searchBackward('PGPAssignment', 'values', 0, $variable, $parent);
     if ($statement) {
       $operand2 = &$statement->values->getElement()->findNode('operand', 'backward');
@@ -2543,6 +2543,8 @@ function coder_upgrade_upgrade_call_time_alter(&$node, &$reader) { // DONE
 
 /**
  * Implements hook_upgrade_call_update_sql_alter().
+ *
+ * @todo Move this routine to db.inc.
  */
 function coder_upgrade_upgrade_call_update_sql_alter(&$node, &$reader) {
   cdp(__FUNCTION__);

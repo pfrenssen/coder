@@ -16,6 +16,11 @@
 /**
  * The upgrades to these functions are documented at the following urls.
  *
+ *
+ * System
+ * http://drupal.org/node/224333#search-api (TODO another hook_$op change)
+ *
+ *
  * Module Info / Install
  * http://drupal.org/node/224333#update_php
  *
@@ -211,7 +216,7 @@ function coder_upgrade_upgrade_hook_access_alter(&$node, &$reader) {
  */
 function coder_upgrade_upgrade_hook_action_info_alter(&$node, &$reader) {
   // Changes: trigger_overhaul
-  coder_upgrade_convert_return($node, 'action_info');
+  coder_upgrade_convert_return($node->data->body, 'action_info', '', 1, 1);
 }
 
 /**
@@ -312,7 +317,7 @@ function coder_upgrade_upgrade_hook_hook_info_alter(&$node, &$reader) {
   $item->comment = preg_replace('@hook_hook_info@', "hook_trigger_info", $item->comment);
 
   // Restructure the triggers array.
-  coder_upgrade_convert_return($node, 'hook_info');
+  coder_upgrade_convert_return($node->data->body, 'hook_info', '', 1, 1);
 }
 
 /**
@@ -418,7 +423,7 @@ function coder_upgrade_upgrade_hook_nodeapi_alter(&$node, &$reader) {
  */
 function coder_upgrade_upgrade_hook_node_info_alter(&$node, &$reader) {
   // Changes: node_type_base
-  coder_upgrade_convert_return($node, 'node_info');
+  coder_upgrade_convert_return($node->data->body, 'node_info', '', 1, 1);
 }
 
 /**
@@ -472,7 +477,7 @@ function coder_upgrade_upgrade_hook_schema_alter(&$node, &$reader) {
  */
 function coder_upgrade_upgrade_hook_theme_alter(&$node, &$reader) { // (OMIT)
   // Changes: hook_theme_render_changes
-  coder_upgrade_convert_return($node, 'theme');
+  coder_upgrade_convert_return($node->data->body, 'theme', '', 1, 1);
 }
 
 /**
@@ -1182,7 +1187,7 @@ function coder_upgrade_convert_schema(&$node) {
    *     - value whose first operand is PGPArray (recurse into this)
    *       - if the value calls t() then remove t()
    */
-  $body->searchCallback($body, 'coder_upgrade_convert_schema_callback', 'PGPFunctionCall', 'name', 'value', 't');
+  $body->searchCallback('coder_upgrade_convert_schema_callback', 'PGPFunctionCall', 'name', 'value', 't');
 }
 
 function coder_upgrade_convert_schema_callback(&$item /*&$node*/) {
@@ -1272,7 +1277,7 @@ function coder_upgrade_convert_update_N(&$node) {
 }
 
 /**
- * Initiates the transformation of $op hook to a new hook_$op style function.
+ * Initiates the transformation of a hook($op) to a new hook_$op style function.
  *
  * @param PGPNode $node
  *   A node object containing a PGPClass (or function) item.
@@ -1293,12 +1298,11 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
   $item = &$node->data;
   // Rename the function in case any code is left over.
   $item->name .= '_OLD';
-  // Get the operation function parameter, usually called $op.
-  $count = $item->parameters->count();
-  // Extract and strip the first operand from the parameter to omit any embedded
-  // comments or default value. Hook_block has $op = 'list'.
-  if (!($variable = $item->getParameter($op_index)->findNode('operand')->stripComments())) {
-    clp("ERROR: Variable not found in hook_op parameter $op_index");
+  // Get the operation variable from the function parameter at index $op_index.
+  // This function removes any default value assignment (e.g. $op = 'list') or
+  // inline comments included in the parameter expression.
+  if (!($variable = $item->getParameterVariable($op_index))) {
+    clp("ERROR: Variable not found in hook(\$op) parameter $op_index");
     return;
   }
   $op = $variable->toString();
@@ -1308,19 +1312,15 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
 
   /*
    * Two likely cases: switch statement or series of if blocks.
-   * Do the if blocks later.
-   * Compare the second parameter to the function with the switch operand.
+   * Compare the $op_index parameter to the function with the switch operand.
    */
 
-  // Loop on the body statements looking for the $op parameter in an IF or
+  // Loop on the body statements looking for the $op variable in an IF or
   // SWITCH condition.
   $current = $body->first();
   while ($current->next != NULL) {
     $found = FALSE;
     $statement = &$current->data;
-    if (is_object($statement)) {
-//      cdp($statement);
-    }
     if (is_a($statement, 'PGPConditional')) {
 //      cdp("inside PGPConditional check");
 //      cdp("statement->type = " . $statement->type);
@@ -1329,7 +1329,7 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
         // Get the list of conditions.
         $conditions = $statement->conditions;
         // Get the first condition. (With a switch there should only be one condition.)
-        $condition = $conditions->getElement()->findNode('operand')->stripComments(); // $condition = $conditions->getElement();
+        $condition = $conditions->getElement()->findNode('operand')->stripComments();
         $operand = $condition->toString();
         // If the condition variable matches the $op variable, then go to work.
         if ($op == $operand) {
@@ -1925,8 +1925,164 @@ function coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters) {
  * 2 levels deep in the third. In the first 2 cases, we can loop on the key1
  * arrays. In the third, the loop is on assignment statements.
  *
+ * This new routine was failing on hook_hook_info() because the keys are not
+ * distinguishable. Ie, we can not tell what level of the array we are on if
+ * the array is inline and has 3 levels. Previously, return_case1() would strip
+ * off the first layer and get to the second level. There is no guarantee of
+ * nice code anyway.
+ *
+ * This new routine was failing on capturing drupal_get_form() callbacks
+ * on case 5, like example_admin_form3() defined in
+ * $items[$admin_path]['page arguments'][] = 'example_admin_form3'. This again
+ * relates to a depth parameter and that we are always looking for an array.
+ *
+ * Should we pass a depth parameter, or figure it dynamically?
+ *
+ * @param PGPList $body
+ *   List of statements in a block.
+ * @param string $hook
+ *   Name of the hook being modified.
+ * @param string $callback
+ *   A string of the callback function for the hook..
  */
-function coder_upgrade_convert_return(&$node, $hook, $callback = '') { // DONE
+function coder_upgrade_convert_return(&$body, $hook, $callback = '', $start_depth = 0, $remaining_depth = -1) { // DONE
+  cdp("inside " . __FUNCTION__);
+
+  // Initialize.
+  $editor = PGPEditor::getInstance();
+  $callback = $callback == '' ? "coder_upgrade_callback_$hook" : $callback;
+  $msg = '// TODO The array elements in this hook function need to be changed.';
+
+  // Get a list of return statements in the body statements.
+  $nodes = $body->searchAll('PGPFunctionCall', 'name', 'value', 'return', TRUE);
+
+  // Keep track of return variables to avoid redundant searching.
+  $already_searched = array();
+
+  while(!empty($nodes)) {
+    cdp('while(!empty($nodes)) ' . __FUNCTION__);
+    $return_node = array_shift($nodes);
+    $return = $return_node->data;
+
+    // Evaluate the return operand.
+    if (get_class($return) == 'PGPFunctionCall') {
+      $value = /*&*/$return->getParameter();
+      $depth = 0;
+    }
+    elseif (get_class($return) == 'PGPAssignment') {
+      // Get the operands to the right of the assignment operator.
+      $value = $return->getValue();
+      cdp($return->toString(), '$return AFTER');
+
+      // Evaluate the "depth" of the assignment based on number of indices in
+      // the assignment variable.
+      // Examples: the operand on the RHS is at
+      //   level 1: $var = array(key => array(..), ..)
+      //   level 2: $var[key1] = array(..)
+      //   level 3: $var[key1][key2] = array(..)
+      // This mimics what was done in return_caseN(). We went down to level 2
+      // from case1 to case3.
+      $assign_variable = $return->values->getElement()->getType('operand')->stripComments();
+      // @todo This should handle most cases, but will fail depending on code style.
+      // If depth is > start_depth (like case5), then reconstruct an array at
+      // the desired depth using toString() and reparsing (see case5).
+      $depth = $assign_variable->countType('index');
+      if ($depth > $start_depth) {
+        $value = coder_upgrade_reconstruct_array($assign_variable, $value);
+        $depth = 1; // $assign_variable->countType('index');
+      }
+    }
+    cdp($value->toString(), '$value');
+
+    $occurrence = 1;
+    // Loop on all operands in expression (e.g. $array + array(..)).
+    while ($occurrence < $value->countType('operand') + 1) {
+      $operand = $value->getType('operand', $occurrence);
+      if ($operand) {
+        cdp('inside if ($operand)');
+        if (!is_object($operand)) {
+          // @todo This hits stuff like $items[$admin_path]['page arguments'][] = 'example_admin_form3';
+          cdp('!is_object($operand)');
+          cdp($operand, '$operand');
+          $occurrence++;
+          continue;
+        }
+        cdp($operand->toString(), '$operand');
+        if (get_class($operand) == 'PGPArray') {
+          // Use case 1 - returns array directly.
+          $operand->traverse2($return_node, $hook, $callback, $start_depth - $depth, $remaining_depth);
+        }
+        elseif (get_class($operand) == 'PGPOperand') {
+          // Avoid redundant searching.
+          if (in_array($operand->toString(), $already_searched)) {
+            $occurrence++;
+            continue;
+          }
+
+          /*
+           * Search body statements for all assignments to the return variable.
+           * The assignment could be to an array element like $info['node_type_name'] = array(...).
+           * Or directly to the variable like $info = array('node_type_name' => array(...)).
+           */
+
+          $already_searched[] = $return_variable = $operand->toString();
+          // @todo Limit search to nodes preceding the statement.
+          $nodes = array_merge($nodes, $body->searchAll('PGPAssignment', 'values', 0, $return_variable, TRUE/*, 'backward', $parent*/));
+        }
+        else {
+          clp("ERROR: operand of return statement is not an array or variable in hook_$hook");
+          cdp("ERROR: operand of return statement is not an array or variable in hook_$hook");
+          cdp($operand, '$operand');
+          $body->insertFirst($editor->commentToStatement($msg), 'comment');
+        }
+      }
+      $occurrence++;
+    }
+  }
+}
+
+/**
+ * Returns array with another level whose key is from assignment variable.
+ *
+ * @param PGPExpression $variable
+ *   The assignment variable (left of assignment operator).
+ * @param PGPExpression $value
+ *   The assignment value (right of assignment operator).
+ * @return PGPExpression
+ *   The new array expression.
+ */
+function coder_upgrade_reconstruct_array($variable, $value) {
+  cdp("inside " . __FUNCTION__);
+
+  if ($variable->countType('index') < 2) {
+    return new PGPExpression();
+  }
+
+  $editor = PGPEditor::getInstance();
+
+  $key = trim($variable->getType('index', 2)->toString(), "'\"");
+  $array = $editor->expressionToStatement("array('$key' => {$value->toString()})"); //->getElement();
+  cdp($array->toString(), '$array');
+  return $array;
+}
+
+/**
+ * Initiates the transformation of array assignments in a hook.
+ *
+ * Applies to: hook_action_info(), hook_hook_info(), hook_node_info(), hook_theme().
+ *
+ * NOTE
+ * In general, there are 3 typical cases (or code styles):
+ * - return array('key1' => array('key2' => ...);
+ * - $var = array('key1' => array('key2' => ...); return $var;
+ * - $var = array(); $var['key1'] = array('key2' => ...); return $var;
+ *
+ * The inner array to modify is 3 levels deep in the first 2 cases, but only
+ * 2 levels deep in the third. In the first 2 cases, we can loop on the key1
+ * arrays. In the third, the loop is on assignment statements.
+ *
+ */
+function coder_upgrade_convert_return_OLD(&$node, $hook, $callback = '') { // DONE
   cdp("inside " . __FUNCTION__);
   $editor = PGPEditor::getInstance();
   $msg = '// TODO The array elements in this hook function need to be changed.';
@@ -1962,7 +2118,7 @@ function coder_upgrade_convert_return(&$node, $hook, $callback = '') { // DONE
 
     $return_variable = $operand->toString();
     $count = 0;
-    coder_upgrade_convert_return_loop($body->first(), $count, $return_variable, $hook, $callback);
+    coder_upgrade_convert_return_loop_OLD($body->first(), $count, $return_variable, $hook, $callback);
     if (!$count) {
       clp("ERROR: assignment statement to return variable not found in hook_$hook");
       $body->insertFirst($editor->commentToStatement($msg), 'comment');
@@ -1975,8 +2131,9 @@ function coder_upgrade_convert_return(&$node, $hook, $callback = '') { // DONE
   }
 }
 
-function coder_upgrade_convert_return_loop(&$node, &$count, $return_variable, $hook, $callback = '') { // NOT DONE
+function coder_upgrade_convert_return_loop_OLD(&$node, &$count, $return_variable, $hook, $callback = '') { // NOT DONE
   cdp("inside " . __FUNCTION__);
+  (is_object($node->data)) ? cdp($node->data->toString(), __FUNCTION__ . ' $node') : cdp($node->data, __FUNCTION__ . ' $node');
 
   /*
    * Loop on body statements until we find an assignment to the return variable.
@@ -2058,8 +2215,12 @@ function coder_upgrade_convert_return_loop(&$node, &$count, $return_variable, $h
         }
       }
     }
-    elseif (is_object($current->data) && in_array(get_class($current->data), array('PGPConditional', 'PGPFor', 'PGPForeach'))) { // elseif (is_a($current->data, 'PGPConditional')) {
+    elseif (is_object($current->data) && in_array(get_class($current->data), array('PGPConditional', 'PGPFor', 'PGPForeach', 'PGPCase'))) { // elseif (is_a($current->data, 'PGPConditional')) {
       coder_upgrade_convert_return_loop($current->data->body->first(), $count, $return_variable, $hook, $callback);
+    }
+    else {
+      cdp('fell thru conditions in ' . __FUNCTION__);
+      (is_object($current->data)) ? cdp($current->data->toString(), __FUNCTION__ . ' $current') : cdp($current->data, __FUNCTION__ . ' $current');
     }
     $current = $current->next;
   }
@@ -2182,6 +2343,8 @@ function coder_upgrade_callback_return_case5(/*&*/$assignment, $hook, $callback 
  * @todo The other functions listed above.
  * @todo Database table {actions} - 'description' field is now called 'label'.
  *
+ * @param PGPNode $node
+ *   The node of the statement containing the array object.
  * @param PGPArray $array2
  *   The array object containing the array element ($current2).
  * @param PGPNode $current2
@@ -2195,7 +2358,7 @@ function coder_upgrade_callback_return_case5(/*&*/$assignment, $hook, $callback 
  * @param string $value
  *   The value of the array element (or NULL if element is a key).
  */
-function coder_upgrade_callback_action_info(&$array2, &$current2, $hook, $type, $key, $value) { // DONE (NEEDS WORK on other functions listed above)
+function coder_upgrade_callback_action_info($node, &$array2, &$current2, $hook, $type, $key, $value) { // DONE (NEEDS WORK on other functions listed above)
   cdp("inside " . __FUNCTION__);
 
   if (!is_a($current2, 'PGPNode')) {
@@ -2296,6 +2459,8 @@ function coder_upgrade_callback_action_info(&$array2, &$current2, $hook, $type, 
  * @todo Database table {trigger_assignments} - 'op' field was removed, and the
  * 'hook' field now contains the full function name.
  *
+ * @param PGPNode $node
+ *   The node of the statement containing the array object.
  * @param PGPArray $array2
  *   The array object containing the array element ($current2).
  * @param PGPNode $current2
@@ -2309,7 +2474,7 @@ function coder_upgrade_callback_action_info(&$array2, &$current2, $hook, $type, 
  * @param string $value
  *   The value of the array element (or NULL if element is a key).
  */
-function coder_upgrade_callback_hook_info(&$array2, &$current2, $hook, $type, $key, $value) { // DONE
+function coder_upgrade_callback_hook_info($node, &$array2, &$current2, $hook, $type, $key, $value) { // DONE
   cdp("inside " . __FUNCTION__);
 
   if (!is_a($current2, 'PGPNode')) {
@@ -2438,6 +2603,8 @@ function coder_upgrade_callback_hook_info(&$array2, &$current2, $hook, $type, $k
  * @todo A similar change applies to the array passed as the parameter to
  * node_type_set_defaults($example_node_type).
  *
+ * @param PGPNode $node
+ *   The node of the statement containing the array object.
  * @param PGPArray $array2
  *   The array object containing the array element ($current2).
  * @param PGPNode $current2
@@ -2451,7 +2618,7 @@ function coder_upgrade_callback_hook_info(&$array2, &$current2, $hook, $type, $k
  * @param string $value
  *   The value of the array element (or NULL if element is a key).
  */
-function coder_upgrade_callback_node_info(&$array2, &$current2, $hook, $type, $key, $value) { // DONE
+function coder_upgrade_callback_node_info($node, &$array2, &$current2, $hook, $type, $key, $value) { // DONE
   cdp("inside " . __FUNCTION__);
 
   if (!is_a($current2, 'PGPNode')) {
@@ -2493,6 +2660,8 @@ function coder_upgrade_callback_node_info(&$array2, &$current2, $hook, $type, $k
  *
  * Each theme function must register how it integrates with drupal_render().
  *
+ * @param PGPNode $node
+ *   The node of the statement containing the array object.
  * @param PGPArray $array2
  *   The array object containing the array element ($current2).
  * @param PGPNode $current2
@@ -2506,7 +2675,7 @@ function coder_upgrade_callback_node_info(&$array2, &$current2, $hook, $type, $k
  * @param string $value
  *   The value of the array element (or NULL if element is a key).
  */
-function coder_upgrade_callback_theme(&$array2, &$current2, $hook, $type, $key, $value) { // DONE
+function coder_upgrade_callback_theme($node, &$array2, &$current2, $hook, $type, $key, $value) { // DONE
   cdp("inside " . __FUNCTION__);
 
   if (!is_a($current2, 'PGPNode')) {
