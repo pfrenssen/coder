@@ -16,6 +16,20 @@ function coder_review_security_reviews() {
   $rules = array(
     array(
       '#type' => 'regex',
+      '#value' => '[\s\(]drupal_set_title\s*\(.*\$',
+      '#never' => '(^function\s|drupal_set_title\s*\(\s*(((st|t|\$t)\s*\(.*?array\([^!]+\))|(format_plural|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+      '#source' => 'allphp',
+      '#warning_callback' => '_coder_review_security_drupal_set_title_filter_warning',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]drupal_set_message\s*\(.*\$',
+      '#never' => '(^function\s|drupal_set_message\s*\(\s*(((st|t|\$t)\s*\(.*?array\([^!]+\))|(format_plural|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+      '#source' => 'allphp',
+      '#warning_callback' => '_coder_review_security_drupal_set_message_filter_warning',
+    ),
+    array(
+      '#type' => 'regex',
       '#value' => '[\s\(]l\(check_plain\(.*',
       '#never' => '[\'"]html[\'"]\s*=>\s*(TRUE|1)',
       '#source' => 'allphp',
@@ -50,6 +64,27 @@ function coder_review_security_reviews() {
       '#source' => 'quote',
       '#warning' => 'SQL query handling data in a potentially insecure way by using the %%s placeholder without wrapping it in single quotes.  This is a potential source of SQL injection attacks when the value can come from user data.',
     ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'allphp', // allow us to look inside the regex string
+      '#value' => '\bpreg_replace\s*\(\s*(\'(.)([^\'\\\\]|\\\\.)*\\2([^\'\\\\]|\\\\.)*|"(.)([^"\\\\]|\\\\.)*\\5([^"\\\\]|\\\\.)*)e',
+      '#warning' => "Use preg_replace_callback() instead of the 'e' modifier to preg_replace()",
+      '#severity' => 'critical',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '.*[\'"]SELECT\s+.*\s+(FROM|JOIN)\s+\{node\}',
+      '#never' => '[\s\(]db_rewrite_sql\s*\(',
+      '#source' => 'allphp',
+      '#warning_callback' => '_coder_review_security_db_rewrite_sql',
+    ),
+    array(
+      '#type' => 'regex',
+      '#value' => '[\s\(]db_rewrite_sql\(\s*[\'"]SELECT\s+.*\s+(FROM|JOIN)\s+\{node\}([,\'"]+|\s+(ON|WHERE|HAVING|LIMIT|ORDER|GROUP)\s+)',
+      '#never' => '[\s\(]db_rewrite_sql\(\s*[\'"]SELECT\s+.*\s+(FROM|JOIN)\s+\{node\}([,\'"]+|\s+(ON|WHERE|HAVING|LIMIT|ORDER|GROUP)\s+).*?,\s*[\'"]{node}[\'"]',
+      '#source' => 'allphp',
+      '#warning_callback' => '_coder_review_security_db_rewrite_sql',
+    ),
   );
   $review = array(
     '#title' => 'Drupal Security Checks',
@@ -77,6 +112,28 @@ function coder_review_security_reviews() {
  * Define the warning callbacks.
  */
 
+function _coder_review_security_drupal_set_title_filter_warning() {
+  return t('!drupal_set_title() only accepts filtered text, be sure to use !t(), !check_plain(), !filter_xss_admin() or similar.',
+    array(
+      '!drupal_set_title' => theme('drupalapi', 'drupal_set_title'),
+      '!t' => theme('drupalapi', 't'),
+      '!check_plain' => theme('drupalapi', 'check_plain'),
+      '!filter_xss_admin' => theme('drupalapi', 'filter_xss_admin'),
+    )
+  );
+}
+
+function _coder_review_security_drupal_set_message_filter_warning() {
+  return t('!drupal_set_message() only accepts filtered text, be sure to use !t(), !check_plain(), !filter_xss_admin() or similar.',
+    array(
+      '!drupal_set_message' => theme('drupalapi', 'drupal_set_message'),
+      '!t' => theme('drupalapi', 't'),
+      '!check_plain' => theme('drupalapi', 'check_plain'),
+      '!filter_xss_admin' => theme('drupalapi', 'filter_xss_admin'),
+    )
+  );
+}
+
 function _coder_review_security_l_check_plain_warning() {
   return t('!l() already contains a !check_plain() call by default',
     array(
@@ -103,5 +160,15 @@ function _coder_review_security_sql_var_warning() {
     ),
     '#link' => 'http://drupal.org/writing-secure-code',
     '#description' => t('Use %s and %d variable substitution.  When inserting an array of values use <code>$placeholders = implode(\',\', array_fill(0, count($args), "\'%s\'"));</code>'),
+  );
+}
+
+function _coder_review_security_db_rewrite_sql() {
+  return array(
+    '#warning' => t('"SELECT FROM {node}" statements should probably be wrapped in !db_rewrite_sql and with the alias for {node} table defined (e.g. {node} n)',
+      array(
+        '!db_rewrite_sql' => theme('drupalapi', 'db_rewrite_sql'),
+      )
+    ),
   );
 }

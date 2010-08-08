@@ -32,11 +32,13 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   function testSecuritySQLVariableInjection() {
-    $this->assertCoderReviewFail('  $results = db_query("SELECT * FROM {node} WHERE nid=$nid");');
+    $this->assertCoderReviewFail('  $results = db_query("SELECT * FROM {node_revisions} WHERE nid=$nid");');
     $this->assertCoderReviewPass('  $results = db_query("SELECT * FROM {false_accounts} WHERE uids REGEXP \'^%s,|,%s,|,%s$\'");');
     $this->assertCoderReviewPass('  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=\'%s\' AND (r.title REGEXP \'^[^[:alpha:]].*$\')");');
-    $this->assertCoderReviewFail('  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=\'%s\' AND (r.title REGEXP \'^[^[:alpha:]].*$\') AND nid=$nid");');
+    $this->assertCoderReviewPass('  $results = db_query(db_rewrite_sql("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=\'%s\' AND (r.title REGEXP \'^[^[:alpha:]].*$\')"));');
+    $this->assertCoderReviewFail('  $results = db_query(db_rewrite_sql("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=\'%s\' AND (r.title REGEXP \'^[^[:alpha:]].*$\') AND nid=$nid"));');
     $this->assertCoderReviewFail('  $results = db_query("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=$type AND (r.title REGEXP \'^[^[:alpha:]].*$\')");');
+    $this->assertCoderReviewFail('  $results = db_query(db_rewrite_sql("SELECT COUNT(n.nid) FROM {node} n INNER JOIN {node_revisions} r USING (nid, vid) WHERE n.type=$type AND (r.title REGEXP \'^[^[:alpha:]].*$\')"));');
     $this->assertCoderReviewFail('  $results = db_query("SELECT * FROM {foo} WHERE name=$name");');
     $this->assertCoderReviewFail('  db_query("INSERT INTO {foo} SET name=\'$name\'");');
     $this->assertCoderReviewFail('  $sql = "INSERT INTO {foo} SET name=\'$name\'";');
@@ -57,5 +59,53 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  $sql = "INSERT INTO {foo} (%d)";');
     $this->assertCoderReviewPass('  $sql = "INSERT INTO {foo} (1,%d)";');
     $this->assertCoderReviewPass('  $sql = "INSERT INTO {foo} (1, %d)";');
+  }
+
+  function testDrupalSetMessageTitle() {
+    $this->assertCoderReviewPass('  drupal_set_message(t("Here is some safe_data"));');
+    $this->assertCoderReviewPass('  drupal_set_message(t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
+    $this->assertCoderReviewPass('  drupal_set_message(t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
+    $this->assertCoderReviewPass('  drupal_set_message(check_plain($tainted_data));');
+    $this->assertCoderReviewPass('  drupal_set_message(filter_xss_admin($tainted_data));');
+    $this->assertCoderReviewPass('  drupal_set_message(format_plural($tainted_count, "1 item", "@count items"));');
+    $this->assertCoderReviewPass('  drupal_set_message(check_markup($tainted_data));');
+    $this->assertCoderReviewFail('  drupal_set_message($tainted_data);');
+    $this->assertCoderReviewFail('  drupal_set_message("Here is some ". $tainted_data);');
+    $this->assertCoderReviewFail('  drupal_set_message("Here is some $tainted_data");');
+    $this->assertCoderReviewFail('  drupal_set_message(t("Here is some ". $tainted_data));');
+    $this->assertCoderReviewFail('  drupal_set_message(t("Here is some !tainted_data", array("!tainted_data" => $tainted_data)));');
+
+    $this->assertCoderReviewPass('  drupal_set_title(t("Here is some safe_data"));');
+    $this->assertCoderReviewPass('  drupal_set_title(t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
+    $this->assertCoderReviewPass('  drupal_set_title(t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
+    $this->assertCoderReviewPass('  drupal_set_title(check_plain($tainted_data));');
+    $this->assertCoderReviewPass('  drupal_set_title(filter_xss_admin($tainted_data));');
+    $this->assertCoderReviewPass('  drupal_set_title(format_plural($tainted_count, "1 item", "@count items"));');
+    $this->assertCoderReviewPass('  drupal_set_title(check_markup($tainted_data));');
+    $this->assertCoderReviewFail('  drupal_set_title($tainted_data);');
+    $this->assertCoderReviewFail('  drupal_set_title("Here is some ". $tainted_data);');
+    $this->assertCoderReviewFail('  drupal_set_title("Here is some $tainted_data");');
+    $this->assertCoderReviewFail('  drupal_set_title(t("Here is some ". $tainted_data));');
+    $this->assertCoderReviewFail('  drupal_set_title(t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
+  }
+
+  function testPregReplaceEval() {
+    $this->assertCoderReviewPass('  $txt = preg_replace("@(<a href=(.\S+?)[^>]*>(.+?)</a>)@mi", "myfunction("\\2", "\\3")", $txt);');
+    $this->assertCoderReviewFail('  $txt = preg_replace("@(<a href=(.\S+?)[^>]*>(.+?)</a>)@emi", "myfunction("\\2", "\\3")", $txt);');
+    $this->assertCoderReviewPass('  $txt = preg_replace("/(<link[^>]+href=?|<object[^>]+codebase=?|@import |src=?)?/mis", "myfunction($foo)", $txt);');
+    $this->assertCoderReviewFail('  $txt = preg_replace("/(<link[^>]+href=?|<object[^>]+codebase=?|@import |src=?)?/emis", "myfunction($foo)", $txt);');
+    $this->assertCoderReviewPass('  $text=preg_replace("/^((> ?)+)([^>])/m", "EMAILDIV". ($oldest - substr_count("$1",">")).":$3", $text);');
+    $this->assertCoderReviewFail('  $text=preg_replace("/^((> ?)+)([^>])/me", "EMAILDIV". ($oldest - substr_count("$1",">")).":$3", $text);');
+  }
+
+  function testSecurityDbRewrite() {
+    $this->assertCoderReviewPass('  $results = db_query(db_rewrite_sql("SELECT * FROM {node} n"));');
+    $this->assertCoderReviewPass('  $results = db_query(db_rewrite_sql("SELECT * FROM {node} foo", "foo"));');
+    $this->assertCoderReviewPass('  $results = db_query(db_rewrite_sql("SELECT * FROM {node}", "{node}"));');
+    $this->assertCoderReviewPass('  $results = db_query(db_rewrite_sql("SELECT * FROM {mytable} t INNER JOIN {node} n ON t.nid = n.nid"));');
+    $this->assertCoderReviewFail('  $results = db_query("SELECT * FROM {node}");');
+    $this->assertCoderReviewFail('  $results = db_query(db_rewrite_sql("SELECT * FROM {node}"));');
+    $this->assertCoderReviewFail('  $results = db_query("SELECT * FROM {mytable} t INNER JOIN {node} n ON t.nid = n.nid");');
+    $this->assertCoderReviewFail('  $results = db_query(db_rewrite_sql("SELECT * FROM {mytable} t INNER JOIN {node} ON t.nid = n.nid"));');
   }
 }
