@@ -729,6 +729,7 @@ function coder_page_form($form_state) {
       $coder_args = array(
         '#reviews' => $reviews,
         '#severity' => $settings['coder_severity'],
+        '#include_extensions' => array(),
 //      '#filename' => $filename,
       );
 
