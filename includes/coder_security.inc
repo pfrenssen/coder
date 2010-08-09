@@ -136,7 +136,7 @@ function _coder_security_drupal_set_message_filter_warning() {
 }
 
 function _coder_security_l_check_plain_warning() {
-  return t('!l() already contains a !check_plain() call by default',
+  return t('!l() already contains a !check_plain() call by default. See http://drupal.org/node/28984',
     array(
       '!l' => theme('drupalapi', 'l'),
       '!check_plain' => theme('drupalapi', 'check_plain'),
