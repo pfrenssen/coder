@@ -30,6 +30,7 @@ function coder_review_security_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#severity' => 'minor',
       '#value' => '[\s\(]l\(check_plain\(.*',
       '#never' => '[\'"]html[\'"]\s*=>\s*(TRUE|1)',
       '#source' => 'allphp',
