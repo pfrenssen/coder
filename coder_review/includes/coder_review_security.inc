@@ -16,14 +16,14 @@ function coder_review_security_reviews() {
   $rules = array(
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]drupal_set_title\s*\(.*\$',
+      '#value' => '[\s\(]drupal_set_title\s*\(\s*[^\$]+.+\$',
       '#never' => '(^function\s|drupal_set_title\s*\(\s*(((st|t|\$t)\s*\(.*?array\([^!]+\))|(format_plural|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_review_security_drupal_set_title_filter_warning',
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]drupal_set_message\s*\(.*\$',
+      '#value' => '[\s\(]drupal_set_message\s*\(\s*[^\$]+.+\$',
       '#never' => '(^function\s|drupal_set_message\s*\(\s*(((st|t|\$t)\s*\(.*?array\([^!]+\))|(format_plural|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_review_security_drupal_set_message_filter_warning',
@@ -36,10 +36,6 @@ function coder_review_security_reviews() {
       '#source' => 'allphp',
       '#warning_callback' => '_coder_review_security_l_check_plain_warning',
     ),
-/*  array(
-      '#type' => 'callback',
-      '#value' => _coder_review_security_callback,
-    ), */
     array(
       '#type' => 'regex',
       '#value' => '(?-i)\$REQUEST_URI',
@@ -86,6 +82,10 @@ function coder_review_security_reviews() {
       '#source' => 'allphp',
       '#warning_callback' => '_coder_review_security_db_rewrite_sql',
     ),
+    array(
+      '#type' => 'callback',
+      '#value' => '_coder_review_security_callback',
+    ),
   );
   $review = array(
     '#title' => 'Drupal Security Checks',
@@ -102,19 +102,74 @@ function coder_review_security_reviews() {
  * Define the rule callbacks.
  */
 
-/* function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &$results) {
+  $severity_name = _coder_severity_name($coder_args, $review, $rule);
+  /*
   if (!isset($coder_args['#tokens'])) {
     $source = implode('', $lines);
     $coder_args['#tokens'] = token_get_all($source);
   }
-} */
+  */
+
+  // Check for calls to drupal_set_title() and drupal_set_message() on $vars
+  // without a sanitizing function. If found, look back up within current
+  // function.
+  $this_function = '';
+  $function_paren = 0;
+  foreach ($coder_args['#all_lines'] as $lineno => $line) {
+    // Start of a function, store the line.
+    if (preg_match('/function (\w+)\(/', $line, $match)) {
+      $this_function = $line;
+    }
+    // Within a function.
+    elseif ($function_paren > 0) {
+      $this_function .= $line;
+    }
+    // Check to see if we're still in a function by counting number of {} chars.
+   if (preg_match('/([{}])/', $line, $match)) {
+      $function_paren += ($match[0] == '{') ? 1 : -1;
+    }
+    // If we're not in a function, continue.
+    if ($function_paren < 0 || $this_function == '') {
+      continue;
+    }
+
+    // Run our reviews.
+    // drupal_set_title()
+    $regex = '/[\s\(]drupal_set_title\s*\(\s*\$(\w+)\s*[,\)]/';
+    $never_regex = '/(^function\s|drupal_set_title\s*\(\s*(((st|t|\$t)\s*\(.*?array\([^!]+\))|(format_plural|filter_xss_admin|check_plain|check_markup)\s*\().*$)/';
+    if (preg_match($regex, $line, $matches)) {
+      if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
+        $before_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(format_plural|filter_xss_admin|check_plain|check_markup)\s*\(/';
+        if (!preg_match($before_regex, $this_function, $sanitized_matches)) {
+          $msg = _coder_review_security_drupal_set_title_filter_warning();
+          $rule = array('#warning' => $msg);
+          _coder_error($results, $rule, $severity_name, $lineno, $line);
+        }
+      }
+    }
+    // drupal_set_message()
+    $regex = '/[\s\(]drupal_set_message\s*\(\s*\$(\w+)\s*[,\)]/';
+    $never_regex = '/(^function\s|drupal_set_message\s*\(\s*(((st|t|\$t)\s*\(.*?array\([^!]+\))|(format_plural|filter_xss_admin|check_plain|check_markup)\s*\().*$)/';
+    if (preg_match($regex, $line, $matches)) {
+      if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
+        $before_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(format_plural|filter_xss_admin|check_plain|check_markup)\s*\(/';
+        if (!preg_match($before_regex, $this_function, $sanitized_matches)) {
+          $msg = _coder_review_security_drupal_set_message_filter_warning();
+          $rule = array('#warning' => $msg);
+          _coder_error($results, $rule, $severity_name, $lineno, $line);
+        }
+      }
+    }
+  }
+}
 
 /**
  * Define the warning callbacks.
  */
 
 function _coder_review_security_drupal_set_title_filter_warning() {
-  return t('!drupal_set_title() only accepts filtered text, be sure to use !t(), !check_plain(), !filter_xss_admin() or similar.',
+  return t('!drupal_set_title() only accepts filtered text, be sure to use !t(), !check_plain(), !filter_xss_admin() or similar to ensure your $variable is fully sanitized.',
     array(
       '!drupal_set_title' => theme('drupalapi', 'drupal_set_title'),
       '!t' => theme('drupalapi', 't'),
@@ -125,7 +180,7 @@ function _coder_review_security_drupal_set_title_filter_warning() {
 }
 
 function _coder_review_security_drupal_set_message_filter_warning() {
-  return t('!drupal_set_message() only accepts filtered text, be sure to use !t(), !check_plain(), !filter_xss_admin() or similar.',
+  return t('!drupal_set_message() only accepts filtered text, be sure to use !t(), !check_plain(), !filter_xss_admin() or similar to ensure your $variable is fully sanitized.',
     array(
       '!drupal_set_message' => theme('drupalapi', 'drupal_set_message'),
       '!t' => theme('drupalapi', 't'),

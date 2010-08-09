@@ -69,7 +69,8 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  drupal_set_message(filter_xss_admin($tainted_data));');
     $this->assertCoderReviewPass('  drupal_set_message(format_plural($tainted_count, "1 item", "@count items"));');
     $this->assertCoderReviewPass('  drupal_set_message(check_markup($tainted_data));');
-    $this->assertCoderReviewFail('  drupal_set_message($tainted_data);');
+    $this->assertCoderReviewPass("  function abc() {\n \$tainted_data = check_plain('mystring');\n  drupal_set_message(\$tainted_data);");
+    $this->assertCoderReviewFail("  function abc() {\n drupal_set_message(\$tainted_data);");
     $this->assertCoderReviewFail('  drupal_set_message("Here is some ". $tainted_data);');
     $this->assertCoderReviewFail('  drupal_set_message("Here is some $tainted_data");');
     $this->assertCoderReviewFail('  drupal_set_message(t("Here is some ". $tainted_data));');
@@ -82,7 +83,8 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  drupal_set_title(filter_xss_admin($tainted_data));');
     $this->assertCoderReviewPass('  drupal_set_title(format_plural($tainted_count, "1 item", "@count items"));');
     $this->assertCoderReviewPass('  drupal_set_title(check_markup($tainted_data));');
-    $this->assertCoderReviewFail('  drupal_set_title($tainted_data);');
+    $this->assertCoderReviewPass("  function abc() {\n \$tainted_data = check_plain('mystring');\n  drupal_set_title(\$tainted_data);");
+    $this->assertCoderReviewFail("  function abc() {\n drupal_set_title(\$tainted_data);");
     $this->assertCoderReviewFail('  drupal_set_title("Here is some ". $tainted_data);');
     $this->assertCoderReviewFail('  drupal_set_title("Here is some $tainted_data");');
     $this->assertCoderReviewFail('  drupal_set_title(t("Here is some ". $tainted_data));');
