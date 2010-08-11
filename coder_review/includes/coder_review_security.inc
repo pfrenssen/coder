@@ -99,6 +99,13 @@ function coder_review_security_reviews() {
       '#function-not' => '_cron$',
     ),
     array(
+      '#type' => 'regex',
+      '#value' => '[\'"]access callback.*=.*\(',
+      '#source' => 'allphp',
+      '#warning_callback' => '_coder_review_security_menu_access_callback_warning',
+      '#function' => '_menu$',
+    ),
+    array(
       '#type' => 'callback',
       '#value' => '_coder_review_security_callback',
     ),
@@ -120,6 +127,7 @@ function coder_review_security_reviews() {
 
 function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &$results) {
   $severity_name = _coder_severity_name($coder_args, $review, $rule);
+  $ignores = $coder_args['#ignore_lines'][$review['#review_name']];
   /*
   if (!isset($coder_args['#tokens'])) {
     $source = implode('', $lines);
@@ -154,7 +162,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
           if (!preg_match($after_never_regex, $this_function, $sanitized_matches)) {
             $msg = _coder_review_security_db_rewrite_sql();
             $rule = array('#warning' => $msg);
-            _coder_error($results, $rule, $severity_name, $lineno, $line);
+            _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
           }
         }
         $forward_matches = array();
@@ -175,7 +183,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
           $msg = _coder_review_security_drupal_set_title_filter_warning();
           $rule = array('#warning' => $msg);
-          _coder_error($results, $rule, $severity_name, $lineno, $line);
+          _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
@@ -188,7 +196,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
           $msg = _coder_review_security_drupal_set_message_filter_warning();
           $rule = array('#warning' => $msg);
-          _coder_error($results, $rule, $severity_name, $lineno, $line);
+          _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
@@ -284,3 +292,11 @@ function _coder_review_security_db_rewrite_sql() {
     ),
   );
 }
+
+function _coder_review_security_menu_access_callback_warning() {
+  return array(
+    '#warning' => t("The value for the 'access callback' must always be a string which is the the name of the function - never a function call. It may also be assigned the value TRUE or FALSE if the callback is always (or never) accessible."),
+    '#link' => 'http://drupal.org/node/109157',
+  );
+}
+

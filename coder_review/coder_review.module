@@ -29,6 +29,17 @@ define('SEVERITY_NORMAL', 5);
 define('SEVERITY_CRITICAL', 9);
 
 /**
+ * Implements hook_coder_review_ignore().
+ */
+/*
+function coder_review_coder_review_ignore() {
+  return array(
+    'path' => drupal_get_path('module', 'coder_review'),
+  );
+}
+*/
+
+/**
  * Implements hook_flush_caches().
  */
 function coder_review_flush_caches() {
@@ -755,6 +766,9 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
     // Get the includes_exclusions settings once, it is used multiple times.
     $coder_includes_exclusions = isset($settings['coder_includes_exclusions']) ? $settings['coder_includes_exclusions'] : '';
 
+    // Get the list of lines to ignore.
+    $ignores = coder_review_get_ignores();
+
     // Code review non-module core files.
     $module_weight = 0;
     if (isset($settings['coder_core']) && $settings['coder_core']) {
@@ -775,7 +789,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         '#weight' => ++ $module_weight,
       );
       $phpfiles = file_scan_directory('.', '/.*\.php/', array('recurse' => FALSE, 'key' => 'name'));
-      _coder_review_page_form_includes($form, $coder_args, 'core_php', $phpfiles, 2, 0, $coder_includes_exclusions);
+      _coder_review_page_form_includes($form, $coder_args, 'core_php', $phpfiles, 2, 0, $coder_includes_exclusions, $ignores);
 
       $form['core_includes'] = array(
         '#type' => 'fieldset',
@@ -785,7 +799,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         '#weight' => ++ $module_weight,
       );
       $includefiles = drupal_system_listing('/.*\.inc$/', 'includes', 'filepath', 0);
-      _coder_review_page_form_includes($form, $coder_args, 'core_includes', $includefiles, 0, $coder_includes_exclusions);
+      _coder_review_page_form_includes($form, $coder_args, 'core_includes', $includefiles, 0, $coder_includes_exclusions, $ignores);
     }
 
     // Loop through the selected modules and themes.
@@ -818,6 +832,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
             '#patch' => $patch,
             '#php_extensions' => $php_extensions,
             '#include_extensions' => $include_extensions,
+            '#ignore_lines' => is_array($ignores[$filename]) ? $ignores[$filename] : array(),
           );
           $results = do_coder_reviews($coder_args);
           $stats[$filename] = $results['#stats'];
@@ -853,24 +868,26 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
                 $regex = '/\.(' . implode('|', $includes) . ')$/';
                 $includefiles = drupal_system_listing($regex, dirname($filename), 'filepath', 0);
                 $offset = strpos($filename, dirname($filename));
-                $stats[$filename]['#includes'] = _coder_review_page_form_includes($form, $coder_args, $name, $includefiles, $offset, $coder_includes_exclusions);
+                $stats[$filename]['#includes'] = _coder_review_page_form_includes($form, $coder_args, $name, $includefiles, $offset, $coder_includes_exclusions, $ignores);
               }
             }
           }
         }
       }
       if (count($stats)) {
-        $summary = array('files' => 0, 'minor' => 0, 'normal' => 0, 'critical' => 0);
+        $summary = array('files' => 0, 'minor' => 0, 'normal' => 0, 'critical' => 0, 'ignored' => 0);
         foreach ($stats as $stat) {
           $summary['minor'] += $stat['minor'];
           $summary['normal'] += $stat['normal'];
           $summary['critical'] += $stat['critical'];
+          $summary['ignored'] += $stat['ignored'];
           if (isset($stat['#includes'])) {
             foreach ($stat['#includes'] as $includestat) {
               $summary['files'] ++;
               $summary['minor'] += $includestat['minor'];
               $summary['normal'] += $includestat['normal'];
               $summary['critical'] += $includestat['critical'];
+              $summary['ignored'] += $includestat['ignored'];
             }
           }
           $summary['files'] ++;
@@ -888,6 +905,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
             $display[] = t('@count %severity_name warnings', array('@count' => $summary[$severity_name], '%severity_name' => $severity_name));
           }
         }
+        $display[] = t('@count warnings were flagged to be ignored', array('@count' => $summary['ignored']));
         drupal_set_message(implode(', ', $display));
 
         if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
@@ -935,11 +953,13 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
  *   Integer offset to munge filenames with.
  * @param $exclusions
  *   Exclusions that should be ignored in $files.
+ * @param $ignores
+ *   Array of lines per file to be skipped for defined reviews.
  * @return
  *   Statistics array in form: string filename => array value of
  *   '#stats' from do_coder_reviews().
  */
-function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $offset, $exclusions) {
+function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $offset, $exclusions, $ignores) {
   $stats = array();
   $coder_args['#name'] = $name;
   $weight = 0;
@@ -952,6 +972,7 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
     $php_extensions = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
     $coder_args['#filename'] = $filename;
     $coder_args['#php_extensions'] = $php_extensions;
+    $coder_args['#ignore_lines'] = is_array($ignores[$filename]) ? $ignores[$filename] : array();
     $results = do_coder_reviews($coder_args);
     $stats[$filename] = $results['#stats'];
     unset($results['#stats']);
@@ -1049,7 +1070,7 @@ function do_coder_reviews($coder_args) {
     }
   }
 
-  $results = array('#stats' => array('minor' => 0, 'normal' => 0, 'critical' => 0));
+  $results = array('#stats' => array('minor' => 0, 'normal' => 0, 'critical' => 0, 'ignored' => 0));
 
   // Skip php include files when the user requested severity is above minor.
   if (isset($coder_args['#php_minor']) && drupal_substr($coder_args['#filename'], -4) == '.php') {
@@ -1062,9 +1083,11 @@ function do_coder_reviews($coder_args) {
   if (_coder_review_read_and_parse_file($coder_args)) {
     // Do all of the code reviews.
     $errors = array();
-    foreach ($coder_args['#reviews'] as $review) {
+    foreach ($coder_args['#reviews'] as $review_name => $review) {
+      $review['#review_name'] = $review_name;
       if ($result = do_coder_review($coder_args, $review)) {
-        foreach (array('critical', 'normal', 'minor') as $severity_level) {
+        // ignored isn't a severity level, but is a stat we need to track.
+        foreach (array('critical', 'normal', 'minor', 'ignored') as $severity_level) {
           if (isset($result['#stats'][$severity_level])) {
             $results['#stats'][$severity_level] += $result['#stats'][$severity_level];
           }
@@ -1575,7 +1598,7 @@ function _coder_review_severity_name($coder_args, $review, $rule) {
  *   Array results, see do_coder_reviews() return value for format.
  */
 function do_coder_review($coder_args, $review) {
-  $results = array('#stats' => array('minor' => 0, 'normal' => 0, 'critical' => 0));
+  $results = array('#stats' => array('minor' => 0, 'normal' => 0, 'critical' => 0, 'ignored' => 0));
   $allowed_extensions = array_merge($coder_args['#php_extensions'], $coder_args['#include_extensions'], array('module'));
   if ($review['#rules']) {
     // Get the review's severity, used when the rule severity is not defined.
@@ -1726,7 +1749,7 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
 
           $line = $coder_args['#all_lines'][$lineno];
           $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-          _coder_review_error($results, $rule, $severity_name, $lineno, $line);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $coder_args['#ignore_lines'][$review['#review_name']]);
         }
       }
     }
@@ -1749,14 +1772,20 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
  * @param $original
  *   Deprecated.
  */
-function _coder_review_error(&$results, $rule, $severity_name, $lineno = -1, $line = '') {
+function _coder_review_error(&$results, $rule, $severity_name, $lineno = -1, $line = '', $ignores = array()) {
   // Note: The use of the $key allows multiple errors on one line.
   // This assumes that no line of source has more than 10000 lines of code
   // and that we have fewer than 10000 errors.
   global $_coder_errno;
-  $key = ($lineno + 1) * 10000 + ($_coder_errno ++);
-  $results[$key] = array('rule' => $rule, 'severity_name' => $severity_name, 'lineno' => $lineno, 'line' => $line);
-  $results['#stats'][$severity_name] ++;
+  // Skip warnings we've been told to ignore.
+  if (is_array($ignores) && in_array($lineno, $ignores)) {
+    $results['#stats']['ignored']++;
+  }
+  else {
+    $key = ($lineno + 1) * 10000 + ($_coder_errno ++);
+    $results[$key] = array('rule' => $rule, 'severity_name' => $severity_name, 'lineno' => $lineno, 'line' => $line);
+    $results['#stats'][$severity_name] ++;
+  }
 }
 
 /**
@@ -1771,7 +1800,7 @@ function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
         if (_coder_review_search_string($line, $rule)) {
           $line = $coder_args['#all_lines'][$lineno];
           $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-          _coder_review_error($results, $rule, $severity_name, $lineno, $line);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $coder_args['#ignore_lines'][$review['#review_name']]);
         }
       }
     }
@@ -1904,6 +1933,46 @@ function _coder_review_is_drupal_core($module) {
     );
   }
   return isset($core[$module->name]) ? 1 : 0;
+}
+
+/**
+ * Get list of lines to ignore.
+ */
+function coder_review_get_ignores() {
+  $ignores = coder_review_parse_ignores(drupal_get_path('module', 'coder') . '/core.coder_review_ignores.txt');
+  foreach (module_implements('coder_review_ignore') as $module) {
+    $function = $module . '_coder_review_ignore';
+    $info = $function();
+    $ignores += coder_review_parse_ignores($info['path'] . '/' . $module . '.coder_review_ignores.txt');
+  }
+  return $ignores;
+}
+
+/**
+ * Parse an 'ignore' file.
+ */
+function coder_review_parse_ignores($filepath) {
+  $ignores = array();
+
+  // Ensure the file exists.
+  if (!is_file($filepath) || !is_readable($filepath)) {
+    drupal_set_message(t("File %file doesn't exist or isn't readable.", array('%file' => $filepath)));
+    return array();+  }
+
+  // Read in the file contents.
+  $lines = file($filepath);
+
+  // Parse the contents.
+  foreach ($lines as $line) {
+    if (empty($line) || preg_match('/^;/', $line, $matches)) {
+      continue;
+    }
+    // filename:lineo:review
+    $parts = explode(':', trim($line));
+    // $ignores[filename][review][] = lineno
+    $ignores[$parts[0]][$parts[2]][] = $parts[1];
+  }
+  return $ignores;
 }
 
 /**
