@@ -49,7 +49,8 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
     pgp_log_memory_use('', TRUE);
     pgp_log_memory_use('initial');
   }
-  $debug = FALSE; // TRUE; //
+  // Set debug output preference.
+  $debug = variable_get('coder_upgrade_enable_debug_output', FALSE); // Commit to CVS with FALSE.
   // Clear the debug file.
   if ($debug) {
     file_put_contents(coder_upgrade_debug_path(), '');
@@ -101,7 +102,7 @@ function coder_upgrade_load_code(&$upgrades) {
         require_once $path . '/' . $file;
       }
     }
-    else {
+    elseif (file_exists($path . '/' . $module . '.upgrade')) {
       // Default file name is module.upgrade in the module's root directory.
       require_once $path . '/' . $module . '.upgrade';
     }
@@ -321,14 +322,18 @@ function coder_upgrade_apply_parser($filename, &$new) {
     return;
   }
 
-  // Create reader object; pass it to the routines.
+  // Create reader object.
   $reader = PGPReader::getInstance();
   pgp_log_memory_use('create reader for file ' . $filename);
+  // Set array formatting preference.
+  $reader->setPreserveArrayFormat(variable_get('coder_upgrade_preserve_array_format', FALSE));
+  // Set debug output preference.
+  $reader->setDebug(variable_get('coder_upgrade_enable_parser_debug_output', FALSE)); //  $reader->setDebug(TRUE);
   $reader->setSnippet($new);
   pgp_log_memory_use('set snippet');
-//  $reader->setDebug(TRUE);
   $reader->addTokenNames();
   pgp_log_memory_use('add token names');
+  // Parse code file.
   $reader->buildGrammar();
   pgp_log_memory_use('build grammar');
 

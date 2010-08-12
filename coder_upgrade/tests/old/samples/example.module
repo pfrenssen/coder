@@ -1396,7 +1396,7 @@ function theme_example_node_search_admin($form = NULL) {
 function theme_example_user_list($users = NULL, $title = NULL) {
 }
 
-function theme_example_user_list_2($users1 = NULL, $title1 = NULL, $users2 => NULL, $title2 => NULL) {
+function theme_example_user_list_2($users1 = NULL, $title1 = NULL, $users2 = NULL, $title2 = NULL) {
 }
 
 function theme_example_coder_review_warning_msg($error = NULL) {

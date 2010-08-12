@@ -1190,6 +1190,11 @@ function coder_upgrade_upgrade_call_drupal_set_header_alter(&$node, &$reader) { 
   // http://drupal.org/node/224333#drupal_set_header_renamed
   $name['value'] = 'drupal_add_http_header';
 
+  if (!$item->parameterCount()) {
+    // Nothing else to do.
+    return;
+  }
+
   $temp = $item->printParameter();
   $p0 = $item->getParameter();
   if ($p0->count() > 1) {

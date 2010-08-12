@@ -282,6 +282,7 @@ function hook_upgrade_file_alter(&$reader) {
   $nodes = &$reader->getFunctionCalls();
   // Loop on list.
   foreach ($nodes as &$node) {
+    // Get the function call object.
     $item = &$node->data;
     if (!isset($item) || !is_object($item) || !is_a($item, 'PGPFunctionCall') || $item->type != T_FUNCTION_CALL) {
       /*

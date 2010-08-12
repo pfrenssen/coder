@@ -969,8 +969,7 @@ function example_block_view($delta) {
  *
  * http://drupal.org/node/224333#block_deltas_renamed
  */
-function example_block_OLD($op, $delta = 0, $edit = array()) {
-}
+function example_block_OLD($op, $delta = 0, $edit = array()) { }
 
 // http://drupal.org/node/224333#block_tables_renamed
 /**
@@ -1256,8 +1255,7 @@ function example_filter_info() {
 /**
  * Implements hook_filter().
  */
-function example_filter_XXX($op, $delta = 0, $format = -1, $text = '', $cache_id = 0) {
-}
+function example_filter_XXX($op, $delta = 0, $format = -1, $text = '', $cache_id = 0) { }
 
 /**
  * Filter tips callback function for $filters[0] in hook_filter_info().
@@ -1305,8 +1303,7 @@ function example_filter_tips_4($format, $long = FALSE) {
 /**
  * Implements hook_filter_tips().
  */
-function example_filter_tips_XXX($format, $long = FALSE) {
-}
+function example_filter_tips_XXX($format, $long = FALSE) { }
 
 /**
  * @todo Please document this function.
@@ -2858,8 +2855,7 @@ function example_link($type, $node = NULL, $teaser = FALSE) {
  * @param $build_mode
  *   Build mode, e.g. 'full', 'teaser'...
  */
-function node_build_content($node, $build_mode = 'full') {
-}
+function node_build_content($node, $build_mode = 'full') { }
 // http://drupal.org/node/224333#node_build_rss
 // Should there be a $build_mode parameter?
 // See http://api.drupal.org/api/function/hook_node_view/7
@@ -3121,8 +3117,7 @@ function example_node_type_update($info) {
 /**
  * Implements hook_node_type().
  */
-function example_node_type_OLD($op, $info) {
-}
+function example_node_type_OLD($op, $info) { }
 
 // http://drupal.org/node/224333#node_invoke_nodeapi
 /**
@@ -3377,8 +3372,7 @@ function example_actions_synchronize() {
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */
-function example_url_is_external() {
-}
+function example_url_is_external() { }
 
 /**
  * @todo Please document this function.

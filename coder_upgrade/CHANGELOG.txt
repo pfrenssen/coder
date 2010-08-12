@@ -2,6 +2,16 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-08-11):
+  * coder_upgrade.call.inc
+  * - #878470: enhance #drupal_set_header_renamed to handle no parameters
+  * coder_upgrade.function.inc
+  * - enhance #hook_load_signature to clean the parameter variable
+  * coder_upgrade.list.inc
+  * - add routine entry for grammar parser
+  * coder_upgrade.main.inc, coder_upgrade.module
+  * - implement settings for preserving array format and debug output by coder upgrade and grammar parser
+
 - Changes (2010-07-29):
   * coder_upgrade.db.inc
   * - improve sql parsing and conversion to DBTNG syntax

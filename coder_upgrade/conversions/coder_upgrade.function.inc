@@ -354,7 +354,7 @@ function coder_upgrade_upgrade_hook_load_alter(&$node, &$reader) {
   global $_coder_upgrade_module_name;
 
   // Save name of first parameter.
-  $p0 = $item->getParameter()->stripComments()->toString();
+  $p0 = $item->getParameterVariable()->toString();
   $p0_new = $p0 . 's';
   // Add 's' to name of first parameter.
   $editor = PGPEditor::getInstance();
