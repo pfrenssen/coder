@@ -1957,7 +1957,8 @@ function coder_review_parse_ignores($filepath) {
   // Ensure the file exists.
   if (!is_file($filepath) || !is_readable($filepath)) {
     drupal_set_message(t("File %file doesn't exist or isn't readable.", array('%file' => $filepath)));
-    return array();+  }
+    return array();
+  }
 
   // Read in the file contents.
   $lines = file($filepath);
