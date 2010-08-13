@@ -2,6 +2,15 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-08-13):
+  * coder_upgrade.db.inc
+  * - enhance coder_upgrade_insert_dbtng_statement() to properly insert statements
+  * coder_upgrade.function.inc
+  * - enhance coder_upgrade_op_to_hook() to not use clone and to allow for more than one case statement with no body
+  * - this eliminates the 2 WARNING messages when the samples/test/example.module is upgraded
+  * tests/samples directory
+  * - update the input and expected test file: example.module
+
 - Changes (2010-08-11):
   * coder_upgrade.call.inc
   * - #878470: enhance #drupal_set_header_renamed to handle no parameters
