@@ -533,12 +533,10 @@ function coder_upgrade_insert_dbtng_statement(&$node, $new) {
   // Get the function call object.
   $item = &$node->data;
 
-//  cdp($node->data, '$node');
+  // Create the expression text to be inserted.
   // TODO Handle the indentation of the output string in the toString() routine.
-  cdp($new, '$new');
   $new = implode("\n", $new);
   $new = str_replace("\t", '  ', $new);
-  cdp($new, '$new');
 
   if ($new == 'NULL') {
     clp("ERROR: Could not parse the SQL string");
@@ -547,18 +545,23 @@ function coder_upgrade_insert_dbtng_statement(&$node, $new) {
   else {
     $comment = '// TODO Please review the conversion of this statement to the D7 database API syntax.';
   }
+  // Insert a comment before the statement containing the function call.
   $item->insertStatementBefore($editor->commentToStatement($comment));
 
-  // Replace function call with array().
-  // This is an example of deleting a function call reference.
+  // Insert a multiline-safe comment with the original function call.
   $string = str_replace(array('/*', '*/'), '', $item->toString());
-  $temp = $editor->expressionToStatement("/* $string */\n$new");
-//  cdp($temp, '$temp');
-//  return;
+  $item->insertStatementBefore($editor->commentToStatement("/* $string */"));
+
+  // Create a new DBTNG expression (of chained operations).
+  $temp = $editor->expressionToStatement($new);
+  // Insert the expression in the containing statement before the function call.
   $node->container->insertListBefore($node, $temp);
-  $parent = &$item->parent; // TEMP for debug printing
+  // Delete the function call.
+  // NOTE: This is an example of deleting a function call reference.
   $node->container->delete($node);
-  cdp($parent->data, '$parent->data');
+  // NOTE: If the replacement was another function call, then we could write:
+  //   $temp->parent = $item->parent;
+  //   $item = $temp;
 }
 
 /**
@@ -690,10 +693,10 @@ function coder_upgrade_parse_sql_conditions($string, $values) {
     // TODO Handle function conditions such as LIKE, MIN, SUM
     switch ($operator) {
       case '=':
-        $parsed_conditions[] = "\t\t->condition('$condition', $value)";
+        $parsed_conditions[] = "\t->condition('$condition', $value)";
         break;
       default:
-        $parsed_conditions[] = "\t\t->condition('$condition', $value, '$operator')";
+        $parsed_conditions[] = "\t->condition('$condition', $value, '$operator')";
         break;
     }
   }

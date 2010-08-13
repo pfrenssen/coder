@@ -1,5 +1,5 @@
 <?php
-// $Id$
+// $\Id: example.module,v 1.7 2010/08/13 07:00:00 solotandem Exp $
 
 /*
  * Module Info / Install
@@ -459,7 +459,7 @@ function example_dbtng() {
   // Insert query.
   // TODO Please review the conversion of this statement to the D7 database API syntax.
   /* db_query("INSERT INTO {mytable} (intvar, stringvar, floatvar) VALUES (%d, '%s', %f)", 5, 'hello world', 3.14) */
-$id = db_insert('mytable')
+  $id = db_insert('mytable')
   ->fields(array(
     'intvar' => 5,
     'stringvar' => 'hello world',
@@ -469,7 +469,7 @@ $id = db_insert('mytable')
   $sql = "INSERT INTO {mytable} (intvar, stringvar, floatvar) VALUES (%d, '%s', %f)";
   // TODO Please review the conversion of this statement to the D7 database API syntax.
   /* db_query($sql, 5, 'hello world', 3.14) */
-$id = db_insert('mytable')
+  $id = db_insert('mytable')
   ->fields(array(
     'intvar' => 5,
     'stringvar' => 'hello world',
@@ -479,7 +479,7 @@ $id = db_insert('mytable')
   $values = array(5, 'hello world', 3.14);
   // TODO Please review the conversion of this statement to the D7 database API syntax.
   /* db_query($sql, $values) */
-$id = db_insert('mytable')
+  $id = db_insert('mytable')
   ->fields(array(
     'intvar' => $values['0'],
     'stringvar' => $values['1'],
@@ -491,20 +491,20 @@ $id = db_insert('mytable')
   // Update query.
   // TODO Please review the conversion of this statement to the D7 database API syntax.
   /* db_query("UPDATE {node} SET title='%s', status=%d WHERE uid=%d", 'hello world', 1, 5) */
-db_update('node')
+  db_update('node')
   ->fields(array(
     'title' => 'hello world',
     'status' => 1,
   ))
-    ->condition('uid', 5)
+  ->condition('uid', 5)
   ->execute();
 
   // Delete query.
   // TODO Please review the conversion of this statement to the D7 database API syntax.
   /* db_query("DELETE FROM {node} WHERE uid=%d AND created < %d", 5, REQUEST_TIME - 3600) */
-db_delete('node')
-    ->condition('uid', 5)
-    ->condition('created', REQUEST_TIME - 3600, '<')
+  db_delete('node')
+  ->condition('uid', 5)
+  ->condition('created', REQUEST_TIME - 3600, '<')
   ->execute();
 }
 
@@ -563,8 +563,8 @@ function example_uninstall() {
   while ($data = db_fetch_object($result)) {
     // TODO Please review the conversion of this statement to the D7 database API syntax.
     /* db_query("DELETE FROM {variable} WHERE name = '%s'", 'example_' . $data->nid) */
-db_delete('variable')
-    ->condition('name', 'example_' . $data->nid)
+    db_delete('variable')
+  ->condition('name', 'example_' . $data->nid)
   ->execute();
   }
   // TODO The drupal_(un)install_schema functions are called automatically in D7.;
@@ -1445,11 +1445,11 @@ function example_taxonomy_tables() {
   $total_entries = db_query(db_rewrite_sql('SELECT count(*) FROM {taxonomy_term_data} t INNER JOIN {taxonomy_term_hierarchy} h ON t.tid = h.tid WHERE t.vid = :vid'), array(':vid' => $vocabulary->vid));
   // TODO Please review the conversion of this statement to the D7 database API syntax.
   /* db_query('UPDATE {taxonomy_term_data} SET weight = 0 WHERE vid = :vid', array(':vid' => $form_state['values']['vid'])) */
-db_update('taxonomy_term_data')
+  db_update('taxonomy_term_data')
   ->fields(array(
-    'weight' =>  0,
+    'weight' => 0,
   ))
-    ->condition('vid', vid)
+  ->condition('vid', vid)
   ->execute();
   db_insert('taxonomy_term_synonym');
 }
@@ -2323,19 +2323,19 @@ function example_user_cancel($edit, $account, $method) {
   if (TRUE) {
     // TODO Please review the conversion of this statement to the D7 database API syntax.
     /* db_query('UPDATE {node} SET uid = 0 WHERE uid = %d', $user->uid) */
-db_update('node')
+    db_update('node')
   ->fields(array(
-    'uid' =>  0,
-  ))
-    ->condition('uid', $user->uid)
+      'uid' => 0,
+    ))
+  ->condition('uid', $user->uid)
   ->execute();
     // TODO Please review the conversion of this statement to the D7 database API syntax.
     /* db_query('UPDATE {node_revisions} SET uid = 0 WHERE uid = %d', $user->uid) */
-db_update('node_revisions')
+    db_update('node_revisions')
   ->fields(array(
-    'uid' =>  0,
-  ))
-    ->condition('uid', $user->uid)
+      'uid' => 0,
+    ))
+  ->condition('uid', $user->uid)
   ->execute();
   }
 }
@@ -2475,19 +2475,19 @@ function example_user_OLD($op, &$edit, &$user, $category = NULL) {
     // Why would we have an ELSE in this situation?
     // TODO Please review the conversion of this statement to the D7 database API syntax.
     /* db_query('UPDATE {node} SET uid = 0 WHERE uid = %d', $user->uid) */
-db_update('node')
+    db_update('node')
   ->fields(array(
-    'uid' =>  0,
-  ))
-    ->condition('uid', $user->uid)
+      'uid' => 0,
+    ))
+  ->condition('uid', $user->uid)
   ->execute();
     // TODO Please review the conversion of this statement to the D7 database API syntax.
     /* db_query('UPDATE {node_revisions} SET uid = 0 WHERE uid = %d', $user->uid) */
-db_update('node_revisions')
+    db_update('node_revisions')
   ->fields(array(
-    'uid' =>  0,
-  ))
-    ->condition('uid', $user->uid)
+      'uid' => 0,
+    ))
+  ->condition('uid', $user->uid)
   ->execute();
   }
   switch ($op_test) {

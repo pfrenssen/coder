@@ -1876,12 +1876,15 @@ function coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters) {
   // Copy the case (or if) block as the body of the function.
   $function->body = $case->body;
   if ($function->body->isEmpty()) {
-    // TODO Clone the node??? Use a while loop since there could be more than two cases back to back.
-    $case_node2 = &$case_node->next;
-    $case2 = &$case_node2->data;
-    $body2 = $case2->body;
-    if (!$body2->isEmpty()) {
-      $function->body = clone $case2->body;
+    // Find the next case with a body.
+    $case_node2 = $case_node->next;
+    while ($case_node2->next != NULL) {
+      $case2 = $case_node2->data;
+      $body2 = $case2->body;
+      if (!$body2->isEmpty()) {
+        $function->body = $case2->body;
+        break;
+      }
     }
   }
 
