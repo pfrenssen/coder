@@ -16,7 +16,7 @@ function coder_review_security_reviews() {
   $rules = array(
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]drupal_set_title\s*\(\s*[^\$]+.+\$',
+      '#value' => '[\s\(]drupal_set_title\s*\(\s*[^\$)]+.+\$',
       '#never' => '(^function\s|drupal_set_title\s*\(\s*(((st|t|\$t)\s*\()|(format_plural|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_review_security_drupal_set_title_filter_warning',
@@ -30,7 +30,7 @@ function coder_review_security_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]drupal_set_message\s*\(\s*[^\$]+.+\$',
+      '#value' => '[\s\(]drupal_set_message\s*\(\s*[^\$)]+.+\$',
       '#never' => '(^function\s|drupal_set_message\s*\(\s*(((st|t|\$t)\s*\(.*?array\([^!]+\))|(format_plural|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_review_security_drupal_set_message_filter_warning',
@@ -54,14 +54,14 @@ function coder_review_security_reviews() {
       '#type' => 'regex',
       '#value' => '(?-i)\$REQUEST_URI',
       '#warning_callback' => '_coder_review_security_request_uri_warning',
-      '#function-not' => '^request_uri$',
+      '#function-not' => '^(request_uri|drupal_detect_baseurl)$',
     ),
     array(
       '#type' => 'regex',
       '#source' => 'allphp',
       '#value' => '(?-i)\"REQUEST_URI\"|\'REQUEST_URI\'',
       '#warning_callback' => '_coder_review_security_request_uri_warning',
-      '#function-not' => '^request_uri$',
+      '#function-not' => '^(request_uri|drupal_detect_baseurl)$',
     ),
     array(
       '#type' => 'regex',
