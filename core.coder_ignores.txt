@@ -1,4 +1,5 @@
 ; Drupal Core ignores
+
 ; scripts and includes
 install.php:912:security
 install.php:924:security
@@ -20,6 +21,9 @@ modules/book/book.install:219:security
 modules/comment/comment.module:324:security
 modules/comment/comment.module:1161:security
 modules/comment/comment.module:1936:security
+
+; forum module
+modules/forum/forum.module:252:security
 
 ; locale module
 modules/locale/locale.install:189:security
