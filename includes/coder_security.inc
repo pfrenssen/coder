@@ -54,12 +54,14 @@ function coder_security_reviews() {
       '#type' => 'regex',
       '#value' => '(?-i)\$REQUEST_URI',
       '#warning_callback' => '_coder_security_request_uri_warning',
+      '#function-not' => '^request_uri$',
     ),
     array(
       '#type' => 'regex',
       '#source' => 'allphp',
       '#value' => '(?-i)\"REQUEST_URI\"|\'REQUEST_URI\'',
       '#warning_callback' => '_coder_security_request_uri_warning',
+      '#function-not' => '^request_uri$',
     ),
     array(
       '#type' => 'regex',
