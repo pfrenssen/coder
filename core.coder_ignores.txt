@@ -1,15 +1,16 @@
 ; Drupal Core ignores
 
 ; scripts and includes
-install.php:912:security
-install.php:924:security
+install.php:932:security
+install.php:944:security
 update.php:556:security
-includes/common.inc:616:security
-includes/form.inc:786:security
-includes/install.inc:138:security
-includes/install.inc:729:security
-includes/locale.inc:1169:security
-includes/unicode.inc:345:security
+includes/common.inc:660:security
+includes/common.inc:808:security
+includes/form.inc:812:security
+includes/install.inc:139:security
+includes/install.inc:730:security
+includes/locale.inc:1248:security
+includes/unicode.inc:351:security
 
 ; blog module
 modules/blog/blog.pages.inc:44:security
@@ -18,34 +19,37 @@ modules/blog/blog.pages.inc:44:security
 modules/book/book.install:219:security
 
 ; comment module
-modules/comment/comment.module:324:security
-modules/comment/comment.module:1161:security
-modules/comment/comment.module:1936:security
+modules/comment/comment.module:325:security
+modules/comment/comment.module:1166:security
+modules/comment/comment.module:1951:security
 
 ; forum module
-modules/forum/forum.module:252:security
+modules/forum/forum.module:258:security
 
 ; locale module
-modules/locale/locale.install:189:security
+;modules/locale/locale.install:189:security
 
 ; node module
-modules/node/node.module:268:security
-modules/node/node.module:746:security
-modules/node/node.module:749:security
-modules/node/node.module:1152:security
-modules/node/node.module:1153:security
-modules/node/node.module:1334:security
-modules/node/node.module:1588:security
-modules/node/node.module:1597:security
-modules/node/node.module:1770:security
-modules/node/node.module:2018:security
-modules/node/node.module:2130:security
-modules/node/node.module:2295:security
-modules/node/node.module:2330:security
-modules/node/node.module:2335:security
+;modules/node/node.module:274:security
+modules/node/node.module:752:security
+modules/node/node.module:755:security
+modules/node/node.module:1155:security
+modules/node/node.module:1156:security
+modules/node/node.module:1354:security
+modules/node/node.module:1613:security
+modules/node/node.module:1622:security
+modules/node/node.module:1810:security
+modules/node/node.module:2060:security
+modules/node/node.module:2172:security
+modules/node/node.module:2337:security
+modules/node/node.module:2372:security
+modules/node/node.module:2377:security
 modules/node/content_types.inc:386:security
-modules/node/node.admin.inc:467:security
-modules/node/node.admin.inc:608:security
+modules/node/node.admin.inc:459:security
+modules/node/node.admin.inc:600:security
+
+; openid module
+modules/openid/openid.module:450:security
 
 ; php module
 modules/php/php.install:20:security
@@ -54,20 +58,20 @@ modules/php/php.install:20:security
 modules/profile/profile.pages.inc:58:security
 
 ; search module
-modules/search/search.module:502:security
-modules/search/search.module:939:security
-modules/search/search.module:948:security
+modules/search/search.module:503:security
+modules/search/search.module:944:security
+modules/search/search.module:953:security
 
 ; system module
-modules/system/system.module:1137:security
-modules/system/system.admin.inc:288:security
-modules/system/system.install:2264:security
+modules/system/system.module:1204:security
+modules/system/system.admin.inc:295:security
+modules/system/system.install:2329:security
 
 ; translation module
-modules/translation/translation.module:245:security
-modules/translation/translation.module:255:security
+modules/translation/translation.module:256:security
+modules/translation/translation.module:266:security
 
 ; user module
 modules/user/user.module:247:security
-modules/user/user.module:1095:security
+modules/user/user.module:1117:security
 
