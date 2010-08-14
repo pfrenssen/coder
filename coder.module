@@ -965,7 +965,7 @@ function _coder_modified() {
   static $_coder_mtime;
   if (!isset($_coder_mtime)) {
     $path = drupal_get_path('module', 'coder');
-    $includefiles = drupal_system_listing('.*\.(inc|module)$', $path .'/includes', 'filename', 0);
+    $includefiles = drupal_system_listing('.*\.(inc|module|coder_ignores.txt)$', $path .'/includes', 'filename', 0);
     $_coder_mtime = filemtime(realpath($path .'/coder.module'));
     foreach ($includefiles as $file) {
       $mtime = filemtime(realpath($file->filename));
