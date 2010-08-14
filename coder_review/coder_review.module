@@ -1028,7 +1028,7 @@ function _coder_review_modified() {
   static $_coder_mtime;
   if (!isset($_coder_mtime)) {
     $path = drupal_get_path('module', 'coder_review');
-    $includefiles = drupal_system_listing('/.*\.(inc|module)$/', $path . '/includes', 'filepath', 0);
+    $includefiles = drupal_system_listing('/.*\.(inc|module|coder_review_ignores.txt)$/', $path . '/includes', 'filepath', 0);
     $_coder_mtime = filemtime(realpath($path . '/coder_review.module'));
     foreach ($includefiles as $file) {
       $mtime = filemtime(realpath($path . '/includes/' . $file->filename));
