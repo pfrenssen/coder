@@ -6,8 +6,11 @@ install.php:944:security
 update.php:556:security
 includes/common.inc:660:security
 includes/common.inc:808:security
+includes/file.inc:135:security
 includes/form.inc:812:security
-includes/install.inc:139:security
+includes/form.inc:690:security
+includes/form.inc:695:security
+includes/form.inc:847:security
 includes/install.inc:730:security
 includes/locale.inc:1248:security
 includes/unicode.inc:351:security
@@ -27,10 +30,10 @@ modules/comment/comment.module:1951:security
 modules/forum/forum.module:258:security
 
 ; locale module
-;modules/locale/locale.install:189:security
+modules/locale/locale.install:189:security
 
 ; node module
-;modules/node/node.module:274:security
+modules/node/node.module:274:security
 modules/node/node.module:752:security
 modules/node/node.module:755:security
 modules/node/node.module:1155:security
@@ -45,6 +48,7 @@ modules/node/node.module:2337:security
 modules/node/node.module:2372:security
 modules/node/node.module:2377:security
 modules/node/content_types.inc:386:security
+modules/node/content_types.inc:393:security
 modules/node/node.admin.inc:459:security
 modules/node/node.admin.inc:600:security
 
@@ -66,6 +70,9 @@ modules/search/search.module:953:security
 modules/system/system.module:1204:security
 modules/system/system.admin.inc:295:security
 modules/system/system.install:2329:security
+
+; taxonomy module
+modules/taxonomy/taxonomy.admin.inc:821:security
 
 ; translation module
 modules/translation/translation.module:256:security
