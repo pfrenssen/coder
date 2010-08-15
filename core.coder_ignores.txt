@@ -20,6 +20,10 @@ modules/blog/blog.pages.inc:44:security
 
 ; book module
 modules/book/book.install:219:security
+modules/book/book.pages.inc:230:security
+
+; contact module
+modules/contact/contact.module:126:security
 
 ; comment module
 modules/comment/comment.module:325:security
@@ -57,6 +61,9 @@ modules/openid/openid.module:450:security
 
 ; php module
 modules/php/php.install:20:security
+
+; poll module
+modules/poll/poll.module:328:security
 
 ; profile module
 modules/profile/profile.pages.inc:58:security
