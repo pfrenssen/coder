@@ -27,9 +27,6 @@ modules/blog/blog.pages.inc:44:security
 modules/book/book.install:219:security
 modules/book/book.pages.inc:230:security
 
-; contact module
-modules/contact/contact.install:126:security
-
 ; comment module
 modules/comment/comment.module:325:security
 modules/comment/comment.module:1166:security
