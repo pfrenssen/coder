@@ -1,11 +1,16 @@
 ; Drupal Core ignores
 
+; due to simpletest patch - remove
+install.php:940:security
+install.php:952:security
+
 ; scripts and includes
 install.php:932:security
 install.php:944:security
 update.php:556:security
 includes/common.inc:660:security
 includes/common.inc:808:security
+includes/common.inc:4059:security
 includes/file.inc:135:security
 includes/form.inc:812:security
 includes/form.inc:690:security
@@ -23,7 +28,7 @@ modules/book/book.install:219:security
 modules/book/book.pages.inc:230:security
 
 ; contact module
-modules/contact/contact.module:126:security
+modules/contact/contact.install:126:security
 
 ; comment module
 modules/comment/comment.module:325:security
