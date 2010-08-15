@@ -2178,5 +2178,5 @@ function theme_drupalapi($variables) {
  */
 function theme_phpapi($variables) {
   $function = $variables['function'];
-  return l($function, "http://us.php.net/$function");
+  return l($function, "http://php.net/$function");
 }
