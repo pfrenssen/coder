@@ -1965,11 +1965,12 @@ function coder_review_parse_ignores($filepath) {
 
   // Parse the contents.
   foreach ($lines as $line) {
+    $line = trim($line);
     if (empty($line) || preg_match('/^;/', $line, $matches)) {
       continue;
     }
     // filename:lineo:review
-    $parts = explode(':', trim($line));
+    $parts = explode(':', $line);
     // $ignores[filename][review][] = lineno
     $ignores[$parts[0]][$parts[2]][] = $parts[1];
   }
