@@ -1883,11 +1883,12 @@ function coder_parse_ignores($filepath) {
 
   // Parse the contents.
   foreach ($lines as $line) {
+    $line = trim($line);
     if (empty($line) || preg_match('/^;/', $line, $matches)) {
       continue;
     }
     // filename:lineo:review
-    $parts = explode(':', trim($line));
+    $parts = explode(':', $line);
     // $ignores[filename][review][] = lineno
     $ignores[$parts[0]][$parts[2]][] = $parts[1];
   }
@@ -1913,6 +1914,7 @@ function coder_theme() {
     'coder_warning_msg' => array('arguments' => array('error')),
     'cols' => array('arguments' => array('form')),
     'drupalapi' => array('arguments' => array('function', 'version')),
+    'phpapi' => array('arguments' => array('function')),
   );
 }
 
@@ -2042,5 +2044,5 @@ function theme_drupalapi($function, $version = '') {
  *   Function to link to.
  */
 function theme_phpapi($function) {
-  return l($function, "http://us.php.net/$function");
+  return l($function, "http://php.net/$function");
 }
