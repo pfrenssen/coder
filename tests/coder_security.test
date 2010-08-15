@@ -53,7 +53,7 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderPass('  $sql = "INSERT INTO {foo} (1, %d)";');
   }
 
-  function testDrupalSetMessageTitle() {
+  function testDrupalSetMessage() {
     $this->assertCoderPass('  drupal_set_message(t("Here is some safe_data"));');
     $this->assertCoderPass('  drupal_set_message(t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
     $this->assertCoderPass('  drupal_set_message(t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
@@ -69,7 +69,27 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail('  drupal_set_message("Here is some $tainted_data");');
     $this->assertCoderFail('  drupal_set_message(t("Here is some ". $tainted_data));');
     $this->assertCoderFail('  drupal_set_message(t("Here is some !tainted_data", array("!tainted_data" => $tainted_data)));');
+  }
 
+  function testTriggerError() {
+    $this->assertCoderPass('  trigger_error(t("Here is some safe_data"));');
+    $this->assertCoderPass('  trigger_error(t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
+    $this->assertCoderPass('  trigger_error(t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
+    $this->assertCoderPass('  trigger_error(t("Here is some @safe_data", $safe_data_array));');
+    $this->assertCoderPass('  trigger_error(check_plain($tainted_data));');
+    $this->assertCoderPass('  trigger_error(filter_xss_admin($tainted_data));');
+    $this->assertCoderPass('  trigger_error(format_plural($tainted_count, "1 item", "@count items"));');
+    $this->assertCoderPass('  trigger_error(check_markup($tainted_data));');
+    $this->assertCoderPass("  function abc() {\n \$tainted_data = check_plain('mystring');\n  trigger_error(\$tainted_data);\n}");
+    $this->assertCoderFail("  function abc() {\n trigger_error(\$tainted_data);\n}");
+    $this->assertCoderFail('  trigger_error(t($tainted_data));');
+    $this->assertCoderFail('  trigger_error("Here is some ". $tainted_data);');
+    $this->assertCoderFail('  trigger_error("Here is some $tainted_data");');
+    $this->assertCoderFail('  trigger_error(t("Here is some ". $tainted_data));');
+    $this->assertCoderFail('  trigger_error(t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
+  }
+
+  function testDrupalSetTitle() {
     $this->assertCoderPass('  drupal_set_title(t("Here is some safe_data"));');
     $this->assertCoderPass('  drupal_set_title(t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
     $this->assertCoderPass('  drupal_set_title(t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
@@ -87,6 +107,92 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail('  drupal_set_title(t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
   }
 
+  function testFormError() {
+    $this->assertCoderPass('  form_error("name", t("Here is some safe_data"));');
+    $this->assertCoderPass('  form_error($name, t("Here is some safe_data"));');
+    $this->assertCoderPass('  form_error($name, t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
+    $this->assertCoderPass('  form_error($name, t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
+    $this->assertCoderPass('  form_error($name, t("Here is some @safe_data", $safe_data_array));');
+    $this->assertCoderPass('  form_error($name, check_plain($tainted_data));');
+    $this->assertCoderPass('  form_error($name, filter_xss_admin($tainted_data));');
+    $this->assertCoderPass('  form_error($name, format_plural($tainted_count, "1 item", "@count items"));');
+    $this->assertCoderPass('  form_error($name, check_markup($tainted_data));');
+    $this->assertCoderPass("  function abc() {\n \$tainted_data = check_plain('mystring');\n  form_error(\$name, \$tainted_data);\n}");
+    $this->assertCoderFail("  function abc() {\n form_error(\$name, \$tainted_data);\n}");
+    $this->assertCoderFail('  form_error($name, t($tainted_data));');
+    $this->assertCoderFail('  form_error($name, "Here is some ". $tainted_data);');
+    $this->assertCoderFail('  form_error($name, "Here is some $tainted_data");');
+    $this->assertCoderFail('  form_error($name, t("Here is some ". $tainted_data));');
+    $this->assertCoderFail('  form_error($name, t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
+  }
+
+  function testFormSetError() {
+    $this->assertCoderPass('  form_set_error("name", t("Here is some safe_data"));');
+    $this->assertCoderPass('  form_set_error($name, t("Here is some safe_data"));');
+    $this->assertCoderPass('  form_set_error($name, t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
+    $this->assertCoderPass('  form_set_error($name, t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
+    $this->assertCoderPass('  form_set_error($name, t("Here is some @safe_data", $safe_data_array));');
+    $this->assertCoderPass('  form_set_error($name, check_plain($tainted_data));');
+    $this->assertCoderPass('  form_set_error($name, filter_xss_admin($tainted_data));');
+    $this->assertCoderPass('  form_set_error($name, format_plural($tainted_count, "1 item", "@count items"));');
+    $this->assertCoderPass('  form_set_error($name, check_markup($tainted_data));');
+    $this->assertCoderPass("  function abc() {\n \$tainted_data = check_plain('mystring');\n  form_set_error(\$name, \$tainted_data);\n}");
+    $this->assertCoderFail("  function abc() {\n form_set_error(\$name, \$tainted_data);\n}");
+    $this->assertCoderFail('  form_set_error($name, t($tainted_data));');
+    $this->assertCoderFail('  form_set_error($name, "Here is some ". $tainted_data);');
+    $this->assertCoderFail('  form_set_error($name, "Here is some $tainted_data");');
+    $this->assertCoderFail('  form_set_error($name, t("Here is some ". $tainted_data));');
+    $this->assertCoderFail('  form_set_error($name, t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
+  }
+
+  function testConfirmForm() {
+    $this->assertCoderPass('  confirm_form($form, t("Here is some safe_question"), $path);');
+    $this->assertCoderPass('  confirm_form($form, t("Here is some @safe_question", array("@safe_question" => $tainted_question), $path);');
+    $this->assertCoderPass('  confirm_form($form, t("Here is some %safe_question", array("%safe_question" => $tainted_question), $path);');
+    $this->assertCoderPass('  confirm_form($form, t("Here is some @safe_question", $safe_question_array), $path);');
+    $this->assertCoderPass('  confirm_form($form, check_plain($tainted_question), $path);');
+    $this->assertCoderPass('  confirm_form($form, filter_xss_admin($tainted_question), $path);');
+    $this->assertCoderPass('  confirm_form($form, format_plural($tainted_count, "1 item", "@count items"), $path);');
+    $this->assertCoderPass('  confirm_form($form, check_markup($tainted_question), $path);');
+    $this->assertCoderPass("  function abc() {\n \$tainted_question = check_plain('mystring');\n  confirm_form(\$form, \$tainted_question, \$path);\n}");
+    $this->assertCoderFail("  function abc() {\n confirm_form(\$form, \$tainted_question, \$path);\n}");
+    $this->assertCoderFail('  confirm_form($form, t($tainted_question), $path);');
+    $this->assertCoderFail('  confirm_form($form, "Here is some ". $tainted_question, $path);');
+    $this->assertCoderFail('  confirm_form($form, "Here is some $tainted_question", $path);');
+    $this->assertCoderFail('  confirm_form($form, t("Here is some ". $tainted_question), $path);');
+    $this->assertCoderFail('  confirm_form($form, t("Here is some !tainted_question", array("!tainted_question" => $tainted_question), $path);');
+
+    $this->assertCoderPass('  confirm_form($form, t("Here is some safe_question"), $path, t("safe_description"));');
+    $this->assertCoderPass('  confirm_form($form, t("Here is some safe_question"), $path, t("some @safe_desc", array("@safe_desc" => $tainted_desc)));');
+    $this->assertCoderPass('  confirm_form($form, t("Here is some safe_question"), $path, t("safe_description"), t("safe_yes"));');
+    $this->assertCoderPass('  confirm_form($form, t("Here is some safe_question"), $path, t("some @safe_desc", array("@safe_desc" => $tainted_desc)), t("safe_yes"));');
+    $this->assertCoderPass('  confirm_form($form, t("Here is some safe_question"), $path, t("safe_description"), t("safe_yes"), t("safe_no"));');
+    $this->assertCoderPass('  confirm_form($form, t("Here is some safe_question"), $path, t("some @safe_desc", array("@safe_desc" => $tainted_desc)), t("safe_yes"), t("safe_no"));');
+
+    $this->assertCoderPass('  confirm_form($form, t("Here is some safe_question"), $path, check_plain($tainted_desc"));');
+    $this->assertCoderPass('  confirm_form($form, t("Here is some safe_question"), $path, t("safe_description"), check_plain($tainted_yes));');
+    $this->assertCoderPass('  confirm_form($form, t("Here is some safe_question"), $path, t("safe_description"), t("safe_yes"), check_plain($tainted_no));');
+    $this->assertCoderPass('  confirm_form($form, check_plain($tainted_question), $path, check_plain($tainted_desc), check_plain($tainted_yes), check_plain($tainted_no));');
+    $this->assertCoderPass('  confirm_form($form, check_plain($tainted_question), $path, filter_xss_admin($tainted_desc));');
+    $this->assertCoderPass('  confirm_form($form, check_plain($tainted_question), $path, check_markup($tainted_desc));');
+    $this->assertCoderPass('  confirm_form($form, check_plain($tainted_question), $path, format_plural($tainted_count, "1 item", "@count items"));');
+    $this->assertCoderPass('  confirm_form($form, format_plural($tainted_count, "1 item", "@count items"), $path, format_plural($tainted_desc, "1 item", "@count items"));');
+    $this->assertCoderPass("  function abc() {\n \$tainted_q = check_plain('abc');\n  \$tainted_desc = check_plain('string');\n  confirm_form(\$form, \$tainted_q, \$path, \$tainted_desc);\n}");
+    $this->assertCoderPass("  function abc() {\n \$tainted_desc = check_plain('mystring');\n  confirm_form(\$form, check_plain(\$tainted_question), \$path, \$tainted_desc);\n}");
+
+    $this->assertCoderFail("  function abc() {\n confirm_form(\$form, check_plain(\$tainted_question), \$path, \$tainted_desc);\n}");
+    $this->assertCoderFail("  function abc() {\n confirm_form(\$form, check_plain(\$tainted_question), \$path, t(\$tainted_desc));\n}");
+    $this->assertCoderFail("  function abc() {\n confirm_form(\$form, check_plain(\$tainted_question), \$path, check_plain(\$tainted_desc), t(\$yes));\n}");
+    $this->assertCoderFail('  confirm_form($form, check_plain($tainted_question), $path, check_plain($tainted_desc), $yes);');
+    $this->assertCoderFail('  confirm_form($form, check_plain($tainted_question), $path, check_plain($tainted_desc), check_plain($yes), $no);');
+    $this->assertCoderFail('  confirm_form($form, check_plain($tainted_question), $path, "Here is some ". $tainted_desc);');
+    $this->assertCoderFail('  confirm_form($form, check_plain($tainted_question), $path, "Here is some $tainted_desc");');
+    $this->assertCoderFail('  confirm_form($form, check_plain($tainted_question), $path, check_plain($tainted_desc), "Tainted " . $yes);');
+    $this->assertCoderFail('  confirm_form($form, check_plain($tainted_question), $path, check_plain($tainted_desc), "Tainted $yes");');
+    $this->assertCoderFail('  confirm_form($form, check_plain($tainted_question), $path, t("Here is some ". $tainted_desc));');
+    $this->assertCoderFail('  confirm_form($form, check_plain($tainted_question), $path, t("Here is some !tainted_desc", array("!tainted_desc" =>  $tainted_desc)));');
+  }
+
   function testPregReplaceEval() {
     $this->assertCoderPass('  $txt = preg_replace("@(<a href=(.\S+?)[^>]*>(.+?)</a>)@mi", "myfunction("\\2", "\\3")", $txt);');
     $this->assertCoderFail('  $txt = preg_replace("@(<a href=(.\S+?)[^>]*>(.+?)</a>)@emi", "myfunction("\\2", "\\3")", $txt);');
@@ -97,15 +203,16 @@ class CoderSecurityTest extends CoderTestCase {
   }
 
   function testSecurityDbRewrite() {
-    $this->assertCoderPass('  $results = db_query(db_rewrite_sql("SELECT * FROM {node} n"));');
-    $this->assertCoderPass('  $results = db_query(db_rewrite_sql("SELECT * FROM {node} foo", "foo"));');
-    $this->assertCoderPass('  $results = db_query(db_rewrite_sql("SELECT * FROM {node}", "{node}"));');
-    $this->assertCoderPass('  $results = db_query(db_rewrite_sql("SELECT * FROM {mytable} t INNER JOIN {node} n ON t.nid = n.nid"));');
+    // Have to put all in a function foo() because tests don't work correctly due to #function-not in rule.
+    $this->assertCoderPass("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {node} n\"));\n}");
+    $this->assertCoderPass("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {node} foo\", \"foo\"));\n}");
+    $this->assertCoderPass("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {node}\", \"{node}\"));\n}");
+    $this->assertCoderPass("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {mytable} t INNER JOIN {node} n ON t.nid = n.nid\"));\n}");
     $this->assertCoderPass("  function bar() {\n  \$bar = \"SELECT * FROM {node}\";\n  \$sql = db_rewrite_sql(\$bar);\n}");
     $this->assertCoderFail("  function foo() {\n  \$foo = \"SELECT * FROM {node}\";\n}");
-    $this->assertCoderFail('  $results = db_query("SELECT * FROM {node}");');
-    $this->assertCoderFail('  $results = db_query(db_rewrite_sql("SELECT * FROM {node}"));');
-    $this->assertCoderFail('  $results = db_query("SELECT * FROM {mytable} t INNER JOIN {node} n ON t.nid = n.nid");');
-    $this->assertCoderFail('  $results = db_query(db_rewrite_sql("SELECT * FROM {mytable} t INNER JOIN {node} ON t.nid = n.nid"));');
+    $this->assertCoderFail("  function foo() {\n  \$results = db_query(\"SELECT * FROM {node}\");\n}");
+    $this->assertCoderFail("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {node}\"));\n}");
+    $this->assertCoderFail("  function foo() {\n  \$results = db_query(\"SELECT * FROM {mytable} t INNER JOIN {node} n ON t.nid = n.nid\");\n}");
+    $this->assertCoderFail("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {mytable} t INNER JOIN {node} ON t.nid = n.nid\"));\n}");
   }
 }
