@@ -53,7 +53,7 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderPass('  $sql = "INSERT INTO {foo} (1, %d)";');
   }
 
-  function testDrupalSetMessage() {
+  function testSecurityDrupalSetMessage() {
     $this->assertCoderPass('  drupal_set_message(t("Here is some safe_data"));');
     $this->assertCoderPass('  drupal_set_message(t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
     $this->assertCoderPass('  drupal_set_message(t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
@@ -71,7 +71,7 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail('  drupal_set_message(t("Here is some !tainted_data", array("!tainted_data" => $tainted_data)));');
   }
 
-  function testTriggerError() {
+  function testSecurityTriggerError() {
     $this->assertCoderPass('  trigger_error(t("Here is some safe_data"));');
     $this->assertCoderPass('  trigger_error(t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
     $this->assertCoderPass('  trigger_error(t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
@@ -89,7 +89,7 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail('  trigger_error(t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
   }
 
-  function testDrupalSetTitle() {
+  function testSecurityDrupalSetTitle() {
     $this->assertCoderPass('  drupal_set_title(t("Here is some safe_data"));');
     $this->assertCoderPass('  drupal_set_title(t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
     $this->assertCoderPass('  drupal_set_title(t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
@@ -107,7 +107,7 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail('  drupal_set_title(t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
   }
 
-  function testFormError() {
+  function testSecurityFormError() {
     $this->assertCoderPass('  form_error("name", t("Here is some safe_data"));');
     $this->assertCoderPass('  form_error($name, t("Here is some safe_data"));');
     $this->assertCoderPass('  form_error($name, t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
@@ -126,7 +126,7 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail('  form_error($name, t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
   }
 
-  function testFormSetError() {
+  function testSecurityFormSetError() {
     $this->assertCoderPass('  form_set_error("name", t("Here is some safe_data"));');
     $this->assertCoderPass('  form_set_error($name, t("Here is some safe_data"));');
     $this->assertCoderPass('  form_set_error($name, t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
@@ -145,7 +145,7 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail('  form_set_error($name, t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
   }
 
-  function testConfirmForm() {
+  function testSecurityConfirmForm() {
     $this->assertCoderPass('  confirm_form($form, t("Here is some safe_question"), $path);');
     $this->assertCoderPass('  confirm_form($form, t("Here is some @safe_question", array("@safe_question" => $tainted_question), $path);');
     $this->assertCoderPass('  confirm_form($form, t("Here is some %safe_question", array("%safe_question" => $tainted_question), $path);');
@@ -193,7 +193,7 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail('  confirm_form($form, check_plain($tainted_question), $path, t("Here is some !tainted_desc", array("!tainted_desc" =>  $tainted_desc)));');
   }
 
-  function testPregReplaceEval() {
+  function testSecurityPregReplaceEval() {
     $this->assertCoderPass('  $txt = preg_replace("@(<a href=(.\S+?)[^>]*>(.+?)</a>)@mi", "myfunction("\\2", "\\3")", $txt);');
     $this->assertCoderFail('  $txt = preg_replace("@(<a href=(.\S+?)[^>]*>(.+?)</a>)@emi", "myfunction("\\2", "\\3")", $txt);');
     $this->assertCoderPass('  $txt = preg_replace("/(<link[^>]+href=?|<object[^>]+codebase=?|@import |src=?)?/mis", "myfunction($foo)", $txt);');
@@ -215,4 +215,17 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail("  function foo() {\n  \$results = db_query(\"SELECT * FROM {mytable} t INNER JOIN {node} n ON t.nid = n.nid\");\n}");
     $this->assertCoderFail("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {mytable} t INNER JOIN {node} ON t.nid = n.nid\"));\n}");
   }
+
+  function testSecurityPostGetRequest() {
+    $this->assertCoderPass('  $_POST["safe_data"] = "abc";');
+    $this->assertCoderPass('  $_POST["tainted_data"] .= "abc";');
+    $this->assertCoderPass('  $post = check_plain($_POST["tainted_data"]);');
+    $this->assertCoderPass('  $post = check_markup($_POST["tainted_data"]);');
+    $this->assertCoderPass('  $post = filter_xss($_POST["tainted_data"]);');
+    $this->assertCoderPass('  $post = filter_xss_admin($_POST["tainted_data"]);');
+    $this->assertCoderPass('  $post = form_set_cache($_POST["form_build_id"], $form_state);');
+    $this->assertCoderFail('  $post = $_POST["tainted_data"];');
+    $this->assertCoderFail('  t($_POST["tainted_data"]);');
+  }
+
 }
