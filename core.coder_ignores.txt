@@ -41,6 +41,7 @@ modules/comment/comment.module:1951:security
 
 ; forum module
 modules/forum/forum.module:258:security
+modules/forum/forum.module:440:security
 
 ; locale module
 modules/locale/locale.install:189:security
@@ -97,5 +98,6 @@ modules/translation/translation.module:266:security
 
 ; user module
 modules/user/user.module:247:security
+modules/user/user.module:748:security
 modules/user/user.module:1117:security
 
