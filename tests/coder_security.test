@@ -228,4 +228,9 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail('  t($_POST["tainted_data"]);');
   }
 
+  function testSecurityEval() {
+    $this->assertCoderFail('  return drupal_eval($code);');
+    $this->assertCoderFail('  print eval($code);');
+  }
+
 }

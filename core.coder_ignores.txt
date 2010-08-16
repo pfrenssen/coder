@@ -10,6 +10,7 @@ install.php:944:security
 update.php:556:security
 includes/common.inc:660:security
 includes/common.inc:808:security
+includes/common.inc:1695:security
 includes/common.inc:4059:security
 includes/file.inc:135:security
 includes/form.inc:812:security
@@ -19,6 +20,9 @@ includes/form.inc:847:security
 includes/install.inc:730:security
 includes/locale.inc:1248:security
 includes/unicode.inc:351:security
+
+; block module
+modules/block/block.module:466:security
 
 ; blog module
 modules/blog/blog.pages.inc:44:security
@@ -63,6 +67,7 @@ modules/openid/openid.module:450:security
 
 ; php module
 modules/php/php.install:20:security
+modules/php/php.module:82:security
 
 ; poll module
 modules/poll/poll.module:328:security

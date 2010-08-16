@@ -178,6 +178,13 @@ function coder_security_reviews() {
       '#warning_callback' => '_coder_security_post_get_request_filter_warning',
     ),
     array(
+      '#type' => 'regex',
+      '#value' => '[\s\(](drupal_)*?eval\s*\([^\)]*?\$',
+      '#never' => '(^function\s)',
+      '#source' => 'php',
+      '#warning_callback' => '_coder_security_eval_warning',
+    ),
+    array(
       '#type' => 'callback',
       '#value' => '_coder_security_callback',
     ),
@@ -494,11 +501,25 @@ function _coder_security_menu_access_callback_warning() {
 }
 
 function _coder_security_post_get_request_filter_warning() {
-  return t('Potential problem: ensure all $_POST variables are fully sanitized if displayed by using !check_plain(), !filter_xss() or similar.',
-    array(
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-      '!filter_xss' => theme('drupalapi', 'filter_xss'),
-    )
+  return array(
+    '#warning' => t('Potential problem: ensure all $_POST variables are fully sanitized if displayed by using !check_plain(), !filter_xss() or similar.',
+        array(
+          '!check_plain' => theme('drupalapi', 'check_plain'),
+          '!filter_xss' => theme('drupalapi', 'filter_xss'),
+        )
+    ),
+  );
+}
+
+function _coder_security_eval_warning() {
+  return array(
+    '#warning' => t("Using !eval() or !drupal_eval() in your module's code could have a security risk if the PHP input provided to the function contains malicious code.",
+      array(
+        '!eval' => theme('phpapi', 'eval'),
+        '!drupal_eval' => theme('drupalapi', 'drupal_eval'),
+      )
+    ),
+    '#link' => url('http://drupal.org/node/715010'),
   );
 }
 
