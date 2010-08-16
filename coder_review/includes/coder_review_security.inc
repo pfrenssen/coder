@@ -178,6 +178,13 @@ function coder_review_security_reviews() {
       '#warning_callback' => '_coder_review_security_post_get_request_filter_warning',
     ),
     array(
+      '#type' => 'regex',
+      '#value' => '[\s\(](drupal_)*?eval\s*\([^\)]*?\$',
+      '#never' => '(^function\s)',
+      '#source' => 'php',
+      '#warning_callback' => '_coder_security_eval_warning',
+    ),
+    array(
       '#type' => 'callback',
       '#value' => '_coder_review_security_callback',
     ),
@@ -502,3 +509,14 @@ function _coder_review_security_post_get_request_filter_warning() {
   );
 }
 
+function _coder_review_security_eval_warning() {
+  return array(
+    '#warning' => t("Using !eval() or !drupal_eval() in your module's code could have a security risk if the PHP input provided to the function contains malicious code.",
+      array(
+        '!eval' => theme('phpapi', 'eval'),
+        '!drupal_eval' => theme('drupalapi', 'drupal_eval'),
+      )
+    ),
+    '#link' => url('http://drupal.org/node/715010'),
+  );
+}
