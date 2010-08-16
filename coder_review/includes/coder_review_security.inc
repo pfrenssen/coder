@@ -179,10 +179,16 @@ function coder_review_security_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#source' => 'html',
+      '#value' => '<form[\s\'"]',
+      '#warning_callback' => '_coder_review_security_form_tag_warning',
+    ),
+    array(
+      '#type' => 'regex',
       '#value' => '[\s\(](drupal_)*?eval\s*\([^\)]*?\$',
       '#never' => '(^function\s)',
       '#source' => 'php',
-      '#warning_callback' => '_coder_security_eval_warning',
+      '#warning_callback' => '_coder_review_security_eval_warning',
     ),
     array(
       '#type' => 'callback',
@@ -501,11 +507,15 @@ function _coder_review_security_menu_access_callback_warning() {
 }
 
 function _coder_review_security_post_get_request_filter_warning() {
-  return t('Potential problem: ensure all $_POST variables are fully sanitized if displayed by using !check_plain(), !filter_xss() or similar.',
-    array(
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-      '!filter_xss' => theme('drupalapi', 'filter_xss'),
-    )
+  return array(
+    '#warning' => t('Potential problem: use the Form API to prevent against CSRF attacks. If you need to use $_POST variables, ensure they are fully sanitized if displayed by using !check_plain(), !f
+ilter_xss() or similar.',
+      array(
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/178896',
   );
 }
 
@@ -520,3 +530,11 @@ function _coder_review_security_eval_warning() {
     '#link' => url('http://drupal.org/node/715010'),
   );
 }
+
+function _coder_review_security_form_tag_warning() {
+  return array(
+    '#warning' => t('Use the Form API to build forms to help prevent against CSRF attacks.'),
+    '#link' => 'http://drupal.org/node/178896',
+  );
+}
+
