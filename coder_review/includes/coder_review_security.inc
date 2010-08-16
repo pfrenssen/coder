@@ -151,7 +151,7 @@ function coder_review_security_reviews() {
       '#value' => '.*[\'"]SELECT\s+.*\s+(FROM|JOIN)\s+\{node\}',
       '#never' => '([\s\(]db_rewrite_sql\s*\(|\s\$\w+\s*=\s*[\'"]SELECT)',
       '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_db_rewrite_sql',
+      '#warning_callback' => '_coder_review_security_db_rewrite_sql_warning',
       '#function-not' => '_cron$',
     ),
     array(
@@ -159,7 +159,7 @@ function coder_review_security_reviews() {
       '#value' => '[\s\(]db_rewrite_sql\(\s*[\'"]SELECT\s+.*\s+(FROM|JOIN)\s+\{node\}([,\'"]+|\s+(ON|WHERE|HAVING|LIMIT|ORDER|GROUP)\s+)',
       '#never' => '[\s\(]db_rewrite_sql\(\s*[\'"]SELECT\s+.*\s+(FROM|JOIN)\s+\{node\}([,\'"]+|\s+(ON|WHERE|HAVING|LIMIT|ORDER|GROUP)\s+).*?,\s*[\'"]{node}[\'"]',
       '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_db_rewrite_sql',
+      '#warning_callback' => '_coder_review_security_db_rewrite_sql_warning',
       '#function-not' => '_cron$',
     ),
     array(
@@ -168,6 +168,14 @@ function coder_review_security_reviews() {
       '#source' => 'allphp',
       '#warning_callback' => '_coder_review_security_menu_access_callback_warning',
       '#function' => '_menu$',
+    ),
+    array(
+      '#type' => 'regex',
+      '#severity' => 'minor',
+      '#value' => '\$_(POST)\[.+?\]',
+      '#never' => '((((==|!=|>=|<=|>|<)\s*|[!\s\(](form_get_cache|form_set_cache|format_plural|filter_xss|filter_xss_admin|check_plain|check_markup|isset|empty|foreach|while|if|elseif)\s*\(\s*)\$_(POST)\[.+?\])|\$_(POST)\[.+?\]\s*(\.=|=|!=))',
+      '#source' => 'allphp',
+      '#warning_callback' => '_coder_review_security_post_get_request_filter_warning',
     ),
     array(
       '#type' => 'callback',
@@ -228,7 +236,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
         if (isset($forward_matches['db_rewrite_sql'])) {
           $after_never_regex = '/[\s\(]db_rewrite_sql\s*\(\s*\$' . $forward_matches['db_rewrite_sql'] . '[\s,\)]/';
           if (!preg_match($after_never_regex, $this_function, $sanitized_matches)) {
-            $msg = _coder_review_security_db_rewrite_sql();
+            $msg = _coder_review_security_db_rewrite_sql_warning();
             $rule = array('#warning' => $msg);
             _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
           }
@@ -468,7 +476,7 @@ function _coder_review_security_sql_var_warning() {
   );
 }
 
-function _coder_review_security_db_rewrite_sql() {
+function _coder_review_security_db_rewrite_sql_warning() {
   return array(
     '#warning' => t('Potential problem: "SELECT FROM {node}" statements should probably be wrapped in !db_rewrite_sql and with the alias for {node} table defined (e.g. {node} n)',
       array(
@@ -482,6 +490,15 @@ function _coder_review_security_menu_access_callback_warning() {
   return array(
     '#warning' => t("The value for the 'access callback' must always be a string which is the the name of the function - never a function call. It may also be assigned the value TRUE or FALSE if the callback is always (or never) accessible."),
     '#link' => 'http://drupal.org/node/109157',
+  );
+}
+
+function _coder_review_security_post_get_request_filter_warning() {
+  return t('Potential problem: ensure all $_POST variables are fully sanitized if displayed by using !check_plain(), !filter_xss() or similar.',
+    array(
+      '!check_plain' => theme('drupalapi', 'check_plain'),
+      '!filter_xss' => theme('drupalapi', 'filter_xss'),
+    )
   );
 }
 

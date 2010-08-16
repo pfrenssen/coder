@@ -61,7 +61,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  $sql = "INSERT INTO {foo} (1, %d)";');
   }
 
-  function testDrupalSetMessage() {
+  function testSecurityDrupalSetMessage() {
     $this->assertCoderReviewPass('  drupal_set_message(t("Here is some safe_data"));');
     $this->assertCoderReviewPass('  drupal_set_message(t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
     $this->assertCoderReviewPass('  drupal_set_message(t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
@@ -79,7 +79,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  drupal_set_message(t("Here is some !tainted_data", array("!tainted_data" => $tainted_data)));');
   }
 
-  function testTriggerError() {
+  function testSecurityTriggerError() {
     $this->assertCoderReviewPass('  trigger_error(t("Here is some safe_data"));');
     $this->assertCoderReviewPass('  trigger_error(t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
     $this->assertCoderReviewPass('  trigger_error(t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
@@ -97,7 +97,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  trigger_error(t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
   }
 
-  function testDrupalSetTitle() {
+  function testSecurityDrupalSetTitle() {
     $this->assertCoderReviewPass('  drupal_set_title(t("Here is some safe_data"));');
     $this->assertCoderReviewPass('  drupal_set_title(t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
     $this->assertCoderReviewPass('  drupal_set_title(t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
@@ -115,7 +115,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  drupal_set_title(t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
   }
 
-  function testFormError() {
+  function testSecurityFormError() {
     $this->assertCoderReviewPass('  form_error("name", t("Here is some safe_data"));');
     $this->assertCoderReviewPass('  form_error($name, t("Here is some safe_data"));');
     $this->assertCoderReviewPass('  form_error($name, t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
@@ -134,7 +134,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  form_error($name, t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
   }
 
-  function testFormSetError() {
+  function testSecurityFormSetError() {
     $this->assertCoderReviewPass('  form_set_error("name", t("Here is some safe_data"));');
     $this->assertCoderReviewPass('  form_set_error($name, t("Here is some safe_data"));');
     $this->assertCoderReviewPass('  form_set_error($name, t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
@@ -153,7 +153,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  form_set_error($name, t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
   }
 
-  function testConfirmForm() {
+  function testSecurityConfirmForm() {
     $this->assertCoderReviewPass('  confirm_form($form, t("Here is some safe_question"), $path);');
     $this->assertCoderReviewPass('  confirm_form($form, t("Here is some @safe_question", array("@safe_question" => $tainted_question), $path);');
     $this->assertCoderReviewPass('  confirm_form($form, t("Here is some %safe_question", array("%safe_question" => $tainted_question), $path);');
@@ -201,7 +201,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  confirm_form($form, check_plain($tainted_question), $path, t("Here is some !tainted_desc", array("!tainted_desc" =>  $tainted_desc)));');
   }
 
-  function testPregReplaceEval() {
+  function testSecurityPregReplaceEval() {
     $this->assertCoderReviewPass('  $txt = preg_replace("@(<a href=(.\S+?)[^>]*>(.+?)</a>)@mi", "myfunction("\\2", "\\3")", $txt);');
     $this->assertCoderReviewFail('  $txt = preg_replace("@(<a href=(.\S+?)[^>]*>(.+?)</a>)@emi", "myfunction("\\2", "\\3")", $txt);');
     $this->assertCoderReviewPass('  $txt = preg_replace("/(<link[^>]+href=?|<object[^>]+codebase=?|@import |src=?)?/mis", "myfunction($foo)", $txt);');
@@ -223,4 +223,17 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  function foo() {\n  \$results = db_query(\"SELECT * FROM {mytable} t INNER JOIN {node} n ON t.nid = n.nid\");\n}");
     $this->assertCoderReviewFail("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {mytable} t INNER JOIN {node} ON t.nid = n.nid\"));\n}");
   }
+
+  function testSecurityPostGetRequest() {
+    $this->assertCoderReviewPass('  $_POST["safe_data"] = "abc";');
+    $this->assertCoderReviewPass('  $_POST["tainted_data"] .= "abc";');
+    $this->assertCoderReviewPass('  $post = check_plain($_POST["tainted_data"]);');
+    $this->assertCoderReviewPass('  $post = check_markup($_POST["tainted_data"]);');
+    $this->assertCoderReviewPass('  $post = filter_xss($_POST["tainted_data"]);');
+    $this->assertCoderReviewPass('  $post = filter_xss_admin($_POST["tainted_data"]);');
+    $this->assertCoderReviewPass('  $post = form_set_cache($_POST["form_build_id"], $form_state);');
+    $this->assertCoderReviewFail('  $post = $_POST["tainted_data"];');
+    $this->assertCoderReviewFail('  t($_POST["tainted_data"]);');
+  }
+
 }
