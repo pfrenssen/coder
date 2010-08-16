@@ -7,7 +7,9 @@ install.php:952:security
 ; scripts and includes
 install.php:932:security
 install.php:944:security
+update.php:380:security
 update.php:556:security
+update.php:601:security
 includes/common.inc:660:security
 includes/common.inc:808:security
 includes/common.inc:1695:security
@@ -17,6 +19,7 @@ includes/form.inc:812:security
 includes/form.inc:690:security
 includes/form.inc:695:security
 includes/form.inc:847:security
+includes/form.inc:2075:security
 includes/install.inc:730:security
 includes/locale.inc:1248:security
 includes/unicode.inc:351:security

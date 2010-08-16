@@ -233,4 +233,10 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail('  print eval($code);');
   }
 
+  function testSecurityFormTag() {
+    $this->assertCoderFail('  ?'. '><FORM action="foo.php"><?php');
+    $this->assertCoderFail('  ?'. '><form action="foo.php"><?php');
+    $this->assertCoderFail('  $form = \'<form action="foo.php">\'');
+  }
+
 }
