@@ -239,4 +239,11 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderFail('  $form = \'<form action="foo.php">\'');
   }
 
+  function testSecurityBlockSubject() {
+    $this->assertCoderPass("  function mymodule_block() {\n  \$block['subject'] = 'title';\n}");
+    $this->assertCoderPass("  function mymodule_block() {\n  \$block['subject'] = check_plain(\$title);\n}");
+    $this->assertCoderFail("  function mymodule_block() {\n  \$block['subject'] = \$title;\n}");
+    $this->assertCoderFail("  function mymodule_block() {\n  \$block = array(\n 'subject' => \$title,\n  );\n}");
+  }
+
 }

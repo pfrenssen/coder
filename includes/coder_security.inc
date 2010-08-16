@@ -191,6 +191,13 @@ function coder_security_reviews() {
       '#warning_callback' => '_coder_security_eval_warning',
     ),
     array(
+      '#type' => 'regex',
+      '#value' => '[\s\[][\'"]subject[\'"](\])*?\s*=(>)*?\s*\$',
+      '#source' => 'allphp',
+      '#warning_callback' => '_coder_security_block_title_warning',
+      '#function' => '_block$',
+    ),
+    array(
       '#type' => 'callback',
       '#value' => '_coder_security_callback',
     ),
@@ -354,126 +361,160 @@ function _coder_security_callback(&$coder_args, $review, $rule, $lines, &$result
  */
 
 function _coder_security_trigger_error_filter_warning() {
-  return t('Potential problem: !trigger_error() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
-    array(
-      '!trigger_error' => theme('phpapi', 'trigger_error'),
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-      '!filter_xss' => theme('drupalapi', 'filter_xss'),
-    )
+  return array(
+    '#warning' => t('Potential problem: !trigger_error() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+      array(
+        '!trigger_error' => theme('phpapi', 'trigger_error'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
   );
 }
 
 function _coder_security_trigger_error_filter_t_warning() {
-  return t('Potential problem: !trigger_error() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
-    array(
-      '!trigger_error' => theme('phpapi', 'trigger_error'),
-      '!t' => theme('drupalapi', 't'),
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-      '!filter_xss' => theme('drupalapi', 'filter_xss'),
-    )
+  return array(
+    '#warning' => t('Potential problem: !trigger_error() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
+      array(
+        '!trigger_error' => theme('phpapi', 'trigger_error'),
+        '!t' => theme('drupalapi', 't'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
   );
 }
 
 function _coder_security_drupal_set_title_filter_warning() {
-  return t('Potential problem: !drupal_set_title() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
-    array(
-      '!drupal_set_title' => theme('drupalapi', 'drupal_set_title'),
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-      '!filter_xss' => theme('drupalapi', 'filter_xss'),
-    )
+  return array(
+    '#warning' => t('Potential problem: !drupal_set_title() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+      array(
+        '!drupal_set_title' => theme('drupalapi', 'drupal_set_title'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
   );
 }
 
 function _coder_security_drupal_set_title_filter_t_warning() {
-  return t('Potential problem: !drupal_set_title() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
-    array(
-      '!drupal_set_title' => theme('drupalapi', 'drupal_set_title'),
-      '!t' => theme('drupalapi', 't'),
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-      '!filter_xss' => theme('drupalapi', 'filter_xss'),
-    )
+  return array(
+    '#warning' => t('Potential problem: !drupal_set_title() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
+      array(
+        '!drupal_set_title' => theme('drupalapi', 'drupal_set_title'),
+        '!t' => theme('drupalapi', 't'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
   );
 }
 
 function _coder_security_drupal_set_message_filter_warning() {
-  return t('Potential problem: !drupal_set_message() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
-    array(
-      '!drupal_set_message' => theme('drupalapi', 'drupal_set_message'),
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-      '!filter_xss' => theme('drupalapi', 'filter_xss'),
-    )
+  return array(
+    '#warning' => t('Potential problem: !drupal_set_message() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+      array(
+        '!drupal_set_message' => theme('drupalapi', 'drupal_set_message'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
   );
 }
 
 function _coder_security_drupal_set_message_filter_t_warning() {
-  return t('Potential problem: !drupal_set_message() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
-    array(
-      '!drupal_set_message' => theme('drupalapi', 'drupal_set_message'),
-      '!t' => theme('drupalapi', 't'),
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-      '!filter_xss' => theme('drupalapi', 'filter_xss'),
-    )
+  return array(
+    '#warning' => t('Potential problem: !drupal_set_message() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
+      array(
+        '!drupal_set_message' => theme('drupalapi', 'drupal_set_message'),
+        '!t' => theme('drupalapi', 't'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
   );
 }
 
 function _coder_security_form_set_error_filter_warning() {
-  return t('Potential problem: !form_set_error() and !form_error() only accept filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
-    array(
-      '!form_set_error' => theme('drupalapi', 'form_set_error'),
-      '!form_error' => theme('drupalapi', 'form_error'),
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-      '!filter_xss' => theme('drupalapi', 'filter_xss'),
-    )
+  return array(
+    '#warning' => t('Potential problem: !form_set_error() and !form_error() only accept filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+      array(
+        '!form_set_error' => theme('drupalapi', 'form_set_error'),
+        '!form_error' => theme('drupalapi', 'form_error'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
   );
 }
 
 function _coder_security_form_set_error_filter_t_warning() {
-  return t('Potential problem: !form_set_error() and !form_error() only accept filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
-    array(
-      '!form_set_error' => theme('drupalapi', 'form_set_error'),
-      '!form_error' => theme('drupalapi', 'form_error'),
-      '!t' => theme('drupalapi', 't'),
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-      '!filter_xss' => theme('drupalapi', 'filter_xss'),
-    )
+  return array(
+    '#warning' => t('Potential problem: !form_set_error() and !form_error() only accept filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
+      array(
+        '!form_set_error' => theme('drupalapi', 'form_set_error'),
+        '!form_error' => theme('drupalapi', 'form_error'),
+        '!t' => theme('drupalapi', 't'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
   );
 }
 
 function _coder_security_confirm_form_filter_warning() {
-  return t('Potential problem: !confirm_form() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
-    array(
-      '!confirm_form' => theme('drupalapi', 'confirm_form'),
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-      '!filter_xss' => theme('drupalapi', 'filter_xss'),
-    )
+  return array(
+    '#warning' => t('Potential problem: !confirm_form() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+      array(
+        '!confirm_form' => theme('drupalapi', 'confirm_form'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
   );
 }
 
 function _coder_security_confirm_form_filter_t_warning() {
-  return t('Potential problem: !confirm_form() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
-    array(
-      '!confirm_form' => theme('drupalapi', 'confirm_form'),
-      '!t' => theme('drupalapi', 't'),
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-      '!filter_xss' => theme('drupalapi', 'filter_xss'),
-    )
+  return array(
+    '#warning' => t('Potential problem: !confirm_form() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
+      array(
+        '!confirm_form' => theme('drupalapi', 'confirm_form'),
+        '!t' => theme('drupalapi', 't'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
   );
 }
 
 function _coder_security_l_check_plain_warning() {
-  return t('!l() already contains a !check_plain() call by default',
-    array(
-      '!l' => theme('drupalapi', 'l'),
-      '!check_plain' => theme('drupalapi', 'check_plain'),
-    )
+  return array(
+    '#warning' => t('!l() already contains a !check_plain() call by default',
+      array(
+        '!l' => theme('drupalapi', 'l'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+      )
+    ),
   );
 }
 
 function _coder_security_request_uri_warning() {
-  return t('the use of REQUEST_URI is prone to XSS exploits and does not work on IIS; use !request_uri() instead',
-    array(
-      '!request_uri' => theme('drupalapi', 'request_uri'),
-    )
+  return array(
+    '#warning' => t('the use of REQUEST_URI is prone to XSS exploits and does not work on IIS; use !request_uri() instead',
+      array(
+        '!request_uri' => theme('drupalapi', 'request_uri'),
+      )
+    ),
   );
 }
 
@@ -534,6 +575,19 @@ function _coder_security_form_tag_warning() {
   return array(
     '#warning' => t('Use the Form API to build forms to help prevent against CSRF attacks.'),
     '#link' => 'http://drupal.org/node/178896',
+  );
+}
+
+function _coder_security_block_title_warning() {
+  return array(
+    '#warning' => t('Potential problem: !hook_block() only accepts filtered text as the block title, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+      array(
+        '!hook_block' => theme('drupalapi', 'hook_block'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
   );
 }
 
