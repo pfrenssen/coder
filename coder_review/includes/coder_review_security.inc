@@ -191,6 +191,13 @@ function coder_review_security_reviews() {
       '#warning_callback' => '_coder_review_security_eval_warning',
     ),
     array(
+      '#type' => 'regex',
+      '#value' => '[\s\[][\'"]subject[\'"](\])*?\s*=(>)*?\s*\$',
+      '#source' => 'allphp',
+      '#warning_callback' => '_coder_review_security_block_title_warning',
+      '#function' => '_block$',
+    ),
+    array(
       '#type' => 'callback',
       '#value' => '_coder_review_security_callback',
     ),
@@ -569,6 +576,19 @@ function _coder_review_security_form_tag_warning() {
   return array(
     '#warning' => t('Use the Form API to build forms to help prevent against CSRF attacks.'),
     '#link' => 'http://drupal.org/node/178896',
+  );
+}
+
+function _coder_review_security_block_title_warning() {
+  return array(
+    '#warning' => t('Potential problem: !hook_block() only accepts filtered text as the block title, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+      array(
+        '!hook_block' => theme('drupalapi', 'hook_block'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
   );
 }
 
