@@ -192,6 +192,14 @@ function coder_security_reviews() {
     ),
     array(
       '#type' => 'regex',
+      '#value' => '[\'"]#(title|description)[\'"]\s*=>\s*[^,]*?\$',
+      '#never' => '((((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+      '#source' => 'allphp',
+      '#warning_callback' => '_coder_security_fapi_title_description_warning',
+      '#function' => '_form(_alter)*$',
+    ),
+    array(
+      '#type' => 'regex',
       '#value' => '[\s\[][\'"]subject[\'"](\])*?\s*=(>)*?\s*\$',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_security_block_title_warning',
@@ -583,6 +591,19 @@ function _coder_security_block_title_warning() {
     '#warning' => t('Potential problem: !hook_block() only accepts filtered text as the block title, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
       array(
         '!hook_block' => theme('drupalapi', 'hook_block'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
+  );
+}
+
+function _coder_security_fapi_title_description_warning() {
+  return array(
+    '#warning' => t("Potential problem: FAPI elements '#title' and '#description' only accept filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your \$variable is fully sanitized.",
+      array(
+        '!hook_form' => theme('drupalapi', 'hook_form'),
         '!check_plain' => theme('drupalapi', 'check_plain'),
         '!filter_xss' => theme('drupalapi', 'filter_xss'),
       )
