@@ -192,7 +192,7 @@ function coder_review_security_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\'"]#(title|description)[\'"]\s*=>\s*.*?\$',
+      '#value' => '[\'"]#(title|description)[\'"]\s*=>\s*[^,]*?\$',
       '#never' => '((((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_review_security_fapi_title_description_warning',
