@@ -254,5 +254,15 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderFail("  function mymodule_block() {\n  \$block = array(\n 'subject' => \$title,\n  );\n}");
   }
 
+  function testSecurityFAPITitleDescription() {
+    $this->assertCoderReviewPass("  function mymodule_form() {\n  \$field = array(\n '#title' => t('%title', array('%title' => \$title)),\n  );\n}");
+    $this->assertCoderReviewPass("  function mymodule_form() {\n  \$field = array(\n '#title' => 'abc',\n  );\n}");
+    $this->assertCoderReviewPass("  function mymodule_form() {\n  \$field = array(\n '#title' => check_plain(\$title),\n  );\n}");
+    $this->assertCoderReviewFail("  function mymodule_form() {\n  \$field = array(\n '#title' => \$title,\n  );\n}");
+    $this->assertCoderReviewFail("  function mymodule_form() {\n  \$field = array(\n '#description' => \$description,\n  );\n}");
+    $this->assertCoderReviewFail("  function mymodule_form_alter() {\n  \$field = array(\n '#title' => \$title,\n  );\n}");
+    $this->assertCoderReviewFail("  function mymodule_form() {\n  \$field = array(\n '#title' => t('!title', array('!title' => \$title)),\n  );\n}");
+  }
+
 }
 
