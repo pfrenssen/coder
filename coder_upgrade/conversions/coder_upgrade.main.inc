@@ -43,16 +43,16 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
   }
 
   $log = TRUE;
-  // Clear the log file.
   if ($log) {
+    // Clear the log file.
     file_put_contents(coder_upgrade_log_path(), '');
     pgp_log_memory_use('', TRUE);
     pgp_log_memory_use('initial');
   }
   // Set debug output preference.
   $debug = variable_get('coder_upgrade_enable_debug_output', FALSE); // Commit to CVS with FALSE.
-  // Clear the debug file.
   if ($debug) {
+    // Clear the debug file.
     file_put_contents(coder_upgrade_debug_path(), '');
   }
 
@@ -735,7 +735,7 @@ function coder_upgrade_log_path() {
   static $path = '';
 
   if (!$path) {
-    $path = file_directory_path() . '/' . DEADWOOD_DIR . '/log.txt';
+    $path = file_directory_path() . '/' . variable_get('coder_upgrade_dir', DEADWOOD_DIR) . '/log.txt';
   }
   return $path;
 }
@@ -750,7 +750,7 @@ function coder_upgrade_debug_path() {
   static $path = '';
 
   if (!$path) {
-    $path = file_directory_path() . '/' . DEADWOOD_DIR . '/debug.txt';
+    $path = file_directory_path() . '/' . variable_get('coder_upgrade_dir', DEADWOOD_DIR) . '/debug.txt';
   }
   return $path;
 }

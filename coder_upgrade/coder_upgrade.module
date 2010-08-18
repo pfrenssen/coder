@@ -81,11 +81,11 @@ function coder_upgrade_menu() {
  */
 function coder_upgrade_menu_alter(&$items) {
   if (!module_exists('coder_review')) {
-    // Redesignate the default menu items.
-    $items['admin/config/development/coder']['title'] = 'Coder Upgrade';
-    $items['admin/config/development/coder']['page callback'] = 'drupal_get_form';
-    $items['admin/config/development/coder']['page arguments'] = array('coder_upgrade_conversions_form');
-    $items['admin/config/development/coder/upgrade']['type'] = MENU_DEFAULT_LOCAL_TASK;
+    // Remove the Coder menu item.
+    unset($items['admin/config/development/coder']);
+    // Promote the menu items defined by this module.
+    $items['admin/config/development/coder/upgrade']['title'] = 'Coder Upgrade';
+    $items['admin/config/development/coder/upgrade']['type'] = MENU_NORMAL_ITEM;
   }
 }
 
@@ -98,37 +98,15 @@ function coder_upgrade_settings_form($form, &$form_state) {
   $parser = new PGPParser();
 
   $path = file_directory_path();
-  $form['coder_upgrade_dir_old'] = array(
-    '#title' => t('Module input directory'),
+  $form['coder_upgrade_dir'] = array(
+    '#title' => t('Module base directory'),
     '#type' => 'textfield',
     '#required' => TRUE,
-    '#default_value' => variable_get('coder_upgrade_dir_old', DEADWOOD_OLD),
-    '#description' => t('Directory beneath the file system path (!path) in which to upload 6.x module code. Default is !default.', array('!path' => $path, '!default' => DEADWOOD_OLD)),
+    '#default_value' => variable_get('coder_upgrade_dir', DEADWOOD_DIR),
+    '#description' => t('Directory beneath the file system path (!path) in which are housed the old, new and patch directories. Default is !default. In the old directory, place the 6.x module code to be upgraded. The upgraded code is saved to the new directory and patch files are written to the patch directory.', array('!path' => $path, '!default' => DEADWOOD_DIR)),
     '#size' => 30,
     '#maxlength' => 255,
-    '#validate' => array('coder_upgrade_validate_dir_old'),
-  );
-
-  $form['coder_upgrade_dir_new'] = array(
-    '#title' => t('Module output directory'),
-    '#type' => 'textfield',
-    '#required' => TRUE,
-    '#default_value' => variable_get('coder_upgrade_dir_new', DEADWOOD_NEW),
-    '#description' => t('Directory beneath the file system path (!path) in which to save the converted 7.x module code. Default is !default.', array('!path' => $path, '!default' => DEADWOOD_NEW)),
-    '#size' => 30,
-    '#maxlength' => 255,
-    '#validate' => array('coder_upgrade_validate_dir_new'),
-  );
-
-  $form['coder_upgrade_dir_patch'] = array(
-    '#title' => t('Module patch directory'),
-    '#type' => 'textfield',
-    '#required' => TRUE,
-    '#default_value' => variable_get('coder_upgrade_dir_patch', DEADWOOD_PATCH),
-    '#description' => t('Directory beneath the file system path (!path) in which to save the patch files from the converted modules. Default is !default.', array('!path' => $path, '!default' => DEADWOOD_PATCH)),
-    '#size' => 30,
-    '#maxlength' => 255,
-    '#validate' => array('coder_upgrade_validate_dir_patch'),
+    '#validate' => array('coder_upgrade_validate_dir'),
   );
 
   $form['coder_upgrade_upgrade_core'] = array(
@@ -166,6 +144,8 @@ function coder_upgrade_settings_form($form, &$form_state) {
     '#description' => t('If checked, then grammar parser debug output will be written to the file !file. WARNING: This option should NOT be enabled except for testing and development purposes, and then only on smaller files containing the code to be debugged.', array('!file' => $parser->debugPath())), // $path . '/' . DEADWOOD_DIR . '/debug.txt')),
   );
 
+  $form['#submit'][] = 'coder_upgrade_settings_form_submit';
+
   return system_settings_form($form);
 }
 
@@ -178,29 +158,20 @@ function coder_upgrade_settings_form_submit($form, &$form_state) {
   $values = $form_state['values'];
   $op = isset($values['op']) ? $values['op'] : '';
 
-  // TODO Make this into a foreach loop.
-  $cur = variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);
-  $new = $op == t('Reset to defaults') ? DEADWOOD_OLD : $values['coder_upgrade_dir_old'];
+  $cur = variable_get('coder_upgrade_dir', DEADWOOD_DIR);
+  $new = $op == t('Reset to defaults') ? DEADWOOD_DIR : $values['coder_upgrade_dir'];
   if ($new != $cur) {
-    $cur = file_directory_path() . '/' . $cur;
-    $new = file_directory_path() . '/' . $new;
-    rename($cur, $new);
-  }
-
-  $cur = variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
-  $new = $op == t('Reset to defaults') ? DEADWOOD_NEW : $values['coder_upgrade_dir_new'];
-  if ($new != $cur) {
-    $cur = file_directory_path() . '/' . $cur;
-    $new = file_directory_path() . '/' . $new;
-    rename($cur, $new);
-  }
-
-  $cur = variable_get('coder_upgrade_dir_patch', DEADWOOD_PATCH);
-  $new = $op == t('Reset to defaults') ? DEADWOOD_PATCH : $values['coder_upgrade_dir_patch'];
-  if ($new != $cur) {
-    $cur = file_directory_path() . '/' . $cur;
-    $new = file_directory_path() . '/' . $new;
-    rename($cur, $new);
+    if (rename(file_directory_path() . '/' . $cur, file_directory_path() . '/' . $new)) {
+      variable_set('coder_upgrade_dir_old', $new . '/old');
+      variable_set('coder_upgrade_dir_new', $new . '/new');
+      variable_set('coder_upgrade_dir_patch', $new . '/patch');
+      drupal_set_message(t('Base directory was renamed to ' . $new . '.'));
+    }
+    else {
+      // Reset the directory variable.
+      variable_set('coder_upgrade_dir', $cur);
+      drupal_set_message(t('Could not rename base directory'), 'error');
+    }
   }
 }
 

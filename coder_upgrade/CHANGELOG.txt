@@ -2,6 +2,14 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-08-17):
+  * coder_upgrade.module
+  * - improve the menu integration when only Coder Upgrade is enabled
+  * - only allow the base files directory to be renamed
+  * - enable the submit handler for the settings form
+  * coder_upgrade.main.inc
+  * - refactor the coder_upgrade_xxx_path() routines to reflect the coder_upgrade_dir variable
+
 - Changes (2010-08-13):
   * coder_upgrade.db.inc
   * - enhance coder_upgrade_insert_dbtng_statement() to properly insert statements
