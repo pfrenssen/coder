@@ -217,6 +217,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {node}\", \"{node}\"));\n}");
     $this->assertCoderReviewPass("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {mytable} t INNER JOIN {node} n ON t.nid = n.nid\"));\n}");
     $this->assertCoderReviewPass("  function bar() {\n  \$bar = \"SELECT * FROM {node}\";\n  \$sql = db_rewrite_sql(\$bar);\n}");
+    $this->assertCoderReviewPass("  function foo() {\n  \$foo = \"SELECT COUNT(*) FROM {node}\";\n}");
     $this->assertCoderReviewFail("  function foo() {\n  \$foo = \"SELECT * FROM {node}\";\n}");
     $this->assertCoderReviewFail("  function foo() {\n  \$results = db_query(\"SELECT * FROM {node}\");\n}");
     $this->assertCoderReviewFail("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {node}\"));\n}");
