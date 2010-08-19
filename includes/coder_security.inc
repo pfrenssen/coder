@@ -192,14 +192,6 @@ function coder_security_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '[\'"]#(title|description)[\'"]\s*=>\s*[^,]*?\$',
-      '#never' => '((((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_security_fapi_title_description_warning',
-      '#function' => '_form(_alter)*$',
-    ),
-    array(
-      '#type' => 'regex',
       '#value' => '[\s\[][\'"]subject[\'"](\])*?\s*=(>)*?\s*\$',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_security_block_title_warning',
@@ -215,7 +207,7 @@ function coder_security_reviews() {
     '#link' => 'http://drupal.org/node/28984',
     '#rules' => $rules,
     '#severity' => 'critical',
-    '#description' => t('very basic, needs work, but what it finds is good'),
+    '#description' => t('very basic, needs work, errs on the side of caution so may give false positives'),
   );
   return array('security' => $review);
 }
@@ -245,10 +237,12 @@ function _coder_security_callback(&$coder_args, $review, $rule, $lines, &$result
   $this_function = '';
   $function_paren = 0;
   $forward_matches = array();
+  $function_name = '';
   foreach ($coder_args['#all_lines'] as $lineno => $line) {
     // Start of a function, store the line.
     if (preg_match('/function (\w+)\(/', $line, $match)) {
       $this_function = $line;
+      $function_name = $match[1];
     }
     // Within a function.
     elseif ($function_paren > 0) {
@@ -258,6 +252,7 @@ function _coder_security_callback(&$coder_args, $review, $rule, $lines, &$result
     $tmp_line = preg_replace(array('/([^\\\])\'.+?[^\\\]\'/', '/([^\\\])".+?[^\\\]"/'), '$1', $line);
     if (preg_match('/([{}])/', $tmp_line, $match)) {
       $function_paren += ($match[0] == '{') ? 1 : -1;
+
       // If we've just exited a function, run forward match checks.
       if ($function_paren <= 0) {
         // db_rewrite_sql()
@@ -269,7 +264,19 @@ function _coder_security_callback(&$coder_args, $review, $rule, $lines, &$result
             _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
           }
         }
+        // FAPI #value
+        if (isset($forward_matches['fapi_markup_value'])) {
+          $find_match = '/[\s=]array\s*\(\s*([^\)]*?([\'"]#value[\'"]\s*=>\s*.*?\$' . $forward_matches['fapi_markup_value'] . '.*?))\);/';
+          if (preg_match($find_match, $this_function, $sanitized_matches)) {
+            if (!preg_match('/[\'"]#type[\'"]/', $sanitized_matches[1], $markup_matches) || preg_match('/[\'"]#type[\'"]\s*=>\s*[\'"]markup[\'"]/', $sanitized_matches[1], $markup_matches)) {
+              $msg = _coder_security_fapi_markup_value_warning();
+              $rule = array('#warning' => $msg);
+              _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
+            }
+          }
+        }
         $forward_matches = array();
+        $function_name = '';
       }
     }
     // If we're not in a function, continue.
@@ -360,6 +367,30 @@ function _coder_security_callback(&$coder_args, $review, $rule, $lines, &$result
     $regex = '/\$(\w+)\s*=\s*[\'"]SELECT\s+.*\s+(FROM|JOIN)\s+\{node\}/';
     if (preg_match($regex, $line, $matches)) {
       $forward_matches['db_rewrite_sql'] = $matches[1];
+    }
+    // FAPI #title and #description
+    $regex = '/[\'"]#(title|description)[\'"]\s*=>\s*.*?\$(\w+)\s*.*?[,\)]/';
+    $never_regex = '/([\'"]#(title|description)[\'"]\s*=>\s*((((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*))/';
+    if (preg_match($regex, $line, $matches) && preg_match('/_form(_alter)*$/', $function_name, $function_matches)) {
+      if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
+        $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
+        if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
+          $msg = _coder_security_fapi_title_description_warning();
+          $rule = array('#warning' => $msg);
+          _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
+        }
+      }
+    }
+    // FAPI #value
+    $regex = '/[\'"]#value[\'"]\s*=>\s*.*?\$(\w+)\s*.*?[,\)]/';
+    $never_regex = '/([\'"]#value[\'"]\s*=>\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*)/';
+    if (preg_match($regex, $line, $matches) && preg_match('/_form(_alter)*$/', $function_name, $function_matches)) {
+      if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
+        $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
+        if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
+          $forward_matches['fapi_markup_value'] = $matches[1];
+        }
+      }
     }
   }
 }
@@ -602,6 +633,19 @@ function _coder_security_block_title_warning() {
 function _coder_security_fapi_title_description_warning() {
   return array(
     '#warning' => t("Potential problem: FAPI elements '#title' and '#description' only accept filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your \$variable is fully sanitized.",
+      array(
+        '!hook_form' => theme('drupalapi', 'hook_form'),
+        '!check_plain' => theme('drupalapi', 'check_plain'),
+        '!filter_xss' => theme('drupalapi', 'filter_xss'),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/28984',
+  );
+}
+
+function _coder_security_fapi_markup_value_warning() {
+  return array(
+    '#warning' => t("Potential problem: when FAPI element '#type' is set to 'markup' (default), '#value' only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your \$variable is fully sanitized.",
       array(
         '!hook_form' => theme('drupalapi', 'hook_form'),
         '!check_plain' => theme('drupalapi', 'check_plain'),
