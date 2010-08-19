@@ -248,20 +248,37 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   function testSecurityBlockSubject() {
-    $this->assertCoderPass("  function mymodule_block() {\n  \$block['subject'] = 'title';\n}");
-    $this->assertCoderPass("  function mymodule_block() {\n  \$block['subject'] = check_plain(\$title);\n}");
-    $this->assertCoderFail("  function mymodule_block() {\n  \$block['subject'] = \$title;\n}");
-    $this->assertCoderFail("  function mymodule_block() {\n  \$block = array(\n 'subject' => \$title,\n  );\n}");
+    $this->assertCoderReviewPass("  function mymodule_block() {\n  \$block['subject'] = 'title';\n}");
+    $this->assertCoderReviewPass("  function mymodule_block() {\n  \$block['subject'] = check_plain(\$title);\n}");
+    $this->assertCoderReviewFail("  function mymodule_block() {\n  \$block['subject'] = \$title;\n}");
+    $this->assertCoderReviewFail("  function mymodule_block() {\n  \$block = array(\n 'subject' => \$title,\n  );\n}");
   }
 
   function testSecurityFAPITitleDescription() {
     $this->assertCoderReviewPass("  function mymodule_form() {\n  \$field = array(\n '#title' => t('%title', array('%title' => \$title)),\n  );\n}");
     $this->assertCoderReviewPass("  function mymodule_form() {\n  \$field = array(\n '#title' => 'abc',\n  );\n}");
     $this->assertCoderReviewPass("  function mymodule_form() {\n  \$field = array(\n '#title' => check_plain(\$title),\n  );\n}");
+    $this->assertCoderReviewPass("  function mymodule_form() {\n  \$field = array(\n '#title' => t('%title', array('%title' => \$title)),\n  );\n}");
+    $this->assertCoderReviewPass("  function mymodule_form() {\n  \$title = check_plain(\$title);\n  \$field = array(\n '#title' => \$title,\n  );\n}");
+    $this->assertCoderReviewPass("  function mymodule_form() {\n  \$title = check_plain(\$title);\n  \$field = array(\n '#title' => t('!title', array('!title' => \$title)),\n  );\n}");
     $this->assertCoderReviewFail("  function mymodule_form() {\n  \$field = array(\n '#title' => \$title,\n  );\n}");
     $this->assertCoderReviewFail("  function mymodule_form() {\n  \$field = array(\n '#description' => \$description,\n  );\n}");
     $this->assertCoderReviewFail("  function mymodule_form_alter() {\n  \$field = array(\n '#title' => \$title,\n  );\n}");
     $this->assertCoderReviewFail("  function mymodule_form() {\n  \$field = array(\n '#title' => t('!title', array('!title' => \$title)),\n  );\n}");
+  }
+
+  function testSecurityFAPIMarkupValue() {
+    $this->assertCoderReviewPass("  function mymodule_function() {\n  \$field = array(\n '#value' => \$value,\n  );\n}");
+    $this->assertCoderReviewPass("  function mymodule_form() {\n  \$field = array(\n '#value' => check_plain(\$value),\n  );\n}");
+    $this->assertCoderReviewPass("  function mymodule_form() {\n  \$field = array(\n '#value' => \$value,\n  '#type' => 'textfield',\n  );\n}");
+    $this->assertCoderReviewPass("  function mymodule_form() {\n  \$value = check_plain(\$value);\n  \$field = array(\n '#value' => \$value,\n  );\n}");
+    $this->assertCoderReviewPass("  function mymodule_form() {\n  \$field = array(\n '#value' => t('%value', array('%value' => \$value)),\n  );\n}");
+    $this->assertCoderReviewPass("  function mymodule_form() {\n  \$value = check_plain(\$value);\n  \$field = array(\n '#value' => t('!value', array('!value' => \$value)),\n  );\n}");
+    $this->assertCoderReviewFail("  function mymodule_form() {\n  \$field = array(\n '#value' => \$value,\n  );\n}");
+    $this->assertCoderReviewFail("  function mymodule_form_alter() {\n  \$field = array(\n '#value' => \$value,\n  );\n}");
+    $this->assertCoderReviewFail("  function mymodule_form() {\n  \$field = array(\n '#value' => \$value,\n  '#type' => 'markup',\n  );\n}");
+    $this->assertCoderReviewFail("  function mymodule_form() {\n  \$field = array(\n '#type' => 'markup',\n  '#value' => \$value,\n  );\n}");
+    $this->assertCoderReviewFail("  function mymodule_form() {\n  \$field = array(\n '#value' => t('!value', array('!value' => \$value)),\n  );\n}");
   }
 
 }
