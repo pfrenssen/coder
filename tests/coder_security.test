@@ -210,6 +210,8 @@ class CoderSecurityTest extends CoderTestCase {
     $this->assertCoderPass("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {mytable} t INNER JOIN {node} n ON t.nid = n.nid\"));\n}");
     $this->assertCoderPass("  function bar() {\n  \$bar = \"SELECT * FROM {node}\";\n  \$sql = db_rewrite_sql(\$bar);\n}");
     $this->assertCoderPass("  function foo() {\n  \$foo = \"SELECT COUNT(*) FROM {node}\";\n}");
+    $this->assertCoderPass("  function foo() {\n  \$foo = \"SELECT * FROM {node} WHERE nid = %d\";\n}");
+    $this->assertCoderPass("  function foo() {\n  \$results = db_query(\"SELECT * FROM {node} WHERE nid = %d\");\n}");
     $this->assertCoderFail("  function foo() {\n  \$foo = \"SELECT * FROM {node}\";\n}");
     $this->assertCoderFail("  function foo() {\n  \$results = db_query(\"SELECT * FROM {node}\");\n}");
     $this->assertCoderFail("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {node}\"));\n}");
