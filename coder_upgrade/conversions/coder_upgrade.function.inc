@@ -114,13 +114,15 @@ function coder_upgrade_upgrade_hook_alter(&$node, &$reader) {
   }
   elseif (strpos($node->data->name, 'theme_') === 0) {
     $theme_name = substr($node->data->name, strpos($node->data->name, "theme_") + 6);
-    if ($upgrade_theme_registry[$theme_name]) {
+    if (isset($upgrade_theme_registry[$theme_name])) {
       // http://drupal.org/node/224333#drupal_render_children
       // http://drupal.org/node/224333#theme_changes
       coder_upgrade_convert_theme_callback($node);
     }
     else {
-      clp('ERROR: theme function ' . $theme_name . ' is not declared in hook_theme()');
+      $msg = 'TODO: Should this theme ' . $theme_name . ' be declared in hook_theme()?';
+      clp($msg);
+      $node->data->body->insertFirst($editor->commentToStatement($msg));
     }
   }
 }
@@ -137,14 +139,14 @@ function coder_upgrade_convert_form_callback(&$node) {
     return;
   }
   // Insert the $form parameter (if not already inserted).
-  $p0 = $item->getParameter()->stripComments()->toString();
+  $p0 = $item->getParameter()->stripComments()->toString(); // TODOxxx use getParameterVariable???
   if ($p0 == '&$form_state' || $p0 == '$form_state' || $p0 != '$form') { // if ($p0 != '$form') {
     $item->insertParameter(0, $editor->expressionToStatement('$form'));
   }
 }
 
 /**
- * Updates theme_xxx() calls.
+ * Updates theme_xxx() functions.
  *
  * Parameters are arrayitized.
  *
@@ -157,27 +159,61 @@ function coder_upgrade_convert_theme_callback(&$node) {
   // Create helper objects.
   $editor = PGPEditor::getInstance();
 
-  // Function parameters are now a single array.
+  // Changes: drupal_render_children, theme_changes
   $item = &$node->data;
   $body = &$item->body;
 
   // Save the parameters for later.
+  $parameters = array();
   for ($i = 0; $i < $item->parameterCount(); $i++) {
     // Allow for default values, e.g. $var = NULL.
-    $parameters[] = $item->getParameter($i)->getType('operand')->toString();
+    if ($temp = $item->getParameterVariable($i)) {
+      // The parameter includes a variable; save the variable.
+      $parameters[] = $temp->toString();
+    }
+    else {
+      // The parameter has no variable.
+      // Example: function foo(/*$form = NULL*/, , 'xxx') {}
+      $parameters[] = '$xx_missing_xx';
+    }
   }
-  // Replace the parameters by $variable, an array.
+  // Delete the current parameters.
   $item->parameters->clear();
-  $editor->setParameter($item, 0, '$variables');
+
+  // Case 1: Theme function with no parameters
+  // - leave the new function with no parameters
+  // Case 2: Theme function whose signature omits some or all of the parameters
+  // declared in the module's hook_theme()
+  // - replace the function parameters with $variable
+  // - insert assignment statements for each of the declared parameters
+  // - log an error message about the missing signature parameters
 
   // Reassign function parameters to corresponding $variables array key.
   $theme_name = substr($item->name, strpos($item->name, "theme_") + 6);
-  if ($upgrade_theme_registry[$theme_name]) {
+  if (isset($upgrade_theme_registry[$theme_name])) {
     $hook = $upgrade_theme_registry[$theme_name];
     if (isset($hook['render element'])) {
+      // In coder_upgrade_cache_info_hooks(), $hook key === 'variables'
+      // for a theme defined by the module being upgraded, Thus, this
+      // condition is not hit.
+
+      // Replace the parameters by $variable, an array.
+      $editor->setParameter($item, 0, '$variables');
+      if (!isset($parameters[0])) {
+        clp('ERROR: No parameter in signature of theme_' . $theme_name . '()');
+        return;
+      }
       $string = $parameters[0] . ' = $variables[\'' . $hook['render element'] .'\']';
+      $body->insertFirst($editor->textToStatements($string)->getElement(0));
     }
-    else {
+    elseif (isset($hook['variables'])) {
+      if (empty($hook['variables'])) {
+        // New function should also have no parameters.
+        clp('INFO: hook_theme() for theme ' . $theme_name . ' has no parameters');
+        return;
+      }
+      // Replace the parameters by $variable, an array.
+      $editor->setParameter($item, 0, '$variables');
       $empty = FALSE;
       if (!($sentinel = $body->get(0))) {
         // Add a sentinel -- a marker for insertion.
@@ -187,8 +223,16 @@ function coder_upgrade_convert_theme_callback(&$node) {
       // Add an assignment statement for each of the previous function parameters.
       $i = 0;
       foreach ($hook['variables'] as $key => $value) {
-        $string = $parameters[$i++] . ' = $variables[\'' . $key ."'];\n";
+        if (!isset($parameters[$i])) {
+          clp('ERROR: No parameter ' . $i . ' in signature of theme_' . $theme_name . '()');
+          break;
+        }
+        if ($parameters[$i] == '$xx_missing_xx') {
+          $body->insertBefore($sentinel, $editor->commentToStatement('// TODO: Name this variable which was missing in the old function signature.'));
+        }
+        $string = $parameters[$i] . ' = $variables[\'' . $key ."'];\n";
         $body->insertBefore($sentinel, $editor->textToStatements($string)->getElement(0));
+        $i++;
       }
       if ($empty) {
         $body->delete($sentinel);
@@ -350,39 +394,46 @@ function coder_upgrade_upgrade_hook_link_alter(&$node, &$reader) {
 function coder_upgrade_upgrade_hook_load_alter(&$node, &$reader) {
   // Changes: hook_load_signature
   $item = &$node->data;
-
-  global $_coder_upgrade_module_name;
-
-  // Save name of first parameter.
-  $p0 = $item->getParameterVariable()->toString();
-  $p0_new = $p0 . 's';
-  // Add 's' to name of first parameter.
-  $editor = PGPEditor::getInstance();
-  $editor->setParameter($item, 0, $p0_new);
-  // Insert statement to redeclare the former first parameter.
-//  $statement = $editor->textToStatements("$p0 = {$p0}s[0]")->getElement();
-//  $item->body->insertFirst($statement);
-
-  // Get the function body.
   $body = &$item->body;
 
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
+
+  // Save the name of first parameter.
+  if ($p0 = $item->getParameterVariable()) {
+    // The parameter includes a variable; save the variable.
+    $p0 = $p0->toString();
+    $p0_new = $p0 . 's';
+  }
+  else {
+    // The parameter has no variable.
+    $p0 = '$xx_missing_xx';
+    $p0_new = '$nodes';
+    $body->insertFirst($editor->commentToStatement('// TODO: Name the variable ' . $p0 . ' which was missing in the old function signature.'));
+  }
+  // Add 's' to name of first parameter.
+  $editor->setParameter($item, 0, $p0_new);
+
+  // Search for a return statement.
   if (!($return = &$body->find(T_RETURN, 'reverse'))) {
-    clp("ERROR: return statement not found in hook_load");
+    $msg = 'ERROR: return statement not found in hook_load';
+    clp($msg);
     $body->insertFirst($editor->commentToStatement($msg), 'comment');
     return;
   }
 
   $value = &$return->getParameter();
   $return_parameter = $value->toString();
-  // Comment out the return statement.
   if (!$value->isType(T_VARIABLE)) {
+    // Insert an assignment statement with the value being the return operand.
     $statement = $editor->textToStatements('$node_additions = ' . $value->toString())->getElement();
     $return->insertStatementBefore($statement);
+    // Replace the operand to the return statement with a variable.
     $return = $editor->textToStatements('return $node_additions')->getElement();
     $return_parameter = '$node_additions';
   }
 
-  // Replace the return variable with a foreach loop on each node object.
+  // Replace the return statement with a foreach loop on each node object.
   $strings[] = 'foreach (' . $return_parameter . ' as $property => &$value) {';
   $strings[] = '  ' . $p0 . '->$property = $value;';
   $strings[] = '}';
@@ -450,6 +501,10 @@ function coder_upgrade_upgrade_hook_perm_alter(&$node, &$reader) {
 function coder_upgrade_upgrade_hook_profile_alter_alter(&$node, &$reader) {
   // Changes: hook-user-changes
   $item = &$node->data;
+  $body = &$item->body;
+
+  // Create helper objects.
+  $editor = PGPEditor::getInstance();
 
   global $_coder_upgrade_module_name;
 
@@ -457,10 +512,23 @@ function coder_upgrade_upgrade_hook_profile_alter_alter(&$node, &$reader) {
   $item->name = $_coder_upgrade_module_name . '_user_view';
   // Update document comment.
   $item->comment['value'] = preg_replace('@hook_profile_alter([^i])@', "hook_user_view$1", $item->comment['value']);
+
   // Remove '&' from first parameter.
-  $p0 = str_replace('&', '', $item->getParameter()->stripComments()->toString());
+//   $p0 = str_replace('&', '', $item->getParameter()->stripComments()->toString());
+
+  // Save the name of first parameter.
+  if ($p0 = $item->getParameterVariable()) {
+    // The parameter includes a variable; save the variable.
+    // Remove '&' from first parameter.
+    $p0 = str_replace('&', '', $p0->toString());
+  }
+  else {
+    // The parameter has no variable.
+    $p0 = '$xx_missing_xx';
+    $body->insertFirst($editor->commentToStatement('// TODO: Name the variable ' . $p0 . ' which was missing in the old function signature.'));
+  }
+
   // Add $view_mode parameter.
-  $editor = PGPEditor::getInstance();
   $editor->setParameters($item, array($p0, '$view_mode'));
 }
 
@@ -475,7 +543,7 @@ function coder_upgrade_upgrade_hook_schema_alter(&$node, &$reader) {
 /**
  * Implements hook_upgrade_hook_theme_alter().
  */
-function coder_upgrade_upgrade_hook_theme_alter(&$node, &$reader) { // (OMIT)
+function coder_upgrade_upgrade_hook_theme_alter(&$node, &$reader) {
   // Changes: hook_theme_render_changes
   coder_upgrade_convert_return($node->data->body, 'theme', '', 1, 1);
 }
@@ -523,7 +591,7 @@ function coder_upgrade_convert_access(&$node) {
   //  cdp("Printing parameters");
   cdp($item->parameters->print_r());
 
-  $count = $item->parameters->count();
+  $count = $item->parameterCount();
   // Adjust parameters.
   if ($count > 1) {
     // Switch places.
@@ -540,6 +608,8 @@ function coder_upgrade_convert_access(&$node) {
  * hook_filter() and hook_filter_tips() replaced by hook_filter_info().
  *
  * @todo Integrate hook_filter_tips() code with this function.
+ * @todo Allow for other code styles, e.g. if block instead of switch.
+ *   How similar is this use case to convert_return or convert_op?
  *
  * @param PGPNode $node
  *   A node object containing a PGPClass (or function) item.
@@ -556,6 +626,7 @@ function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
   $function_node = $editor->findFunction($reader->getFunctions(), $_coder_upgrade_module_name . '_filter_tips', 'node');
   if (!is_null($function_node)) {
     $tips = coder_upgrade_convert_filter_tips($function_node);
+    cdp($tips, '$tips');
   }
 
   // Rename function.
@@ -596,9 +667,21 @@ function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
    * - add tips_callback parameters to filter_info array items
    */
 
-  $operand1 = $switch1->conditions->toString();
-  if ($operand1 != $item->printParameter()) {
-    clp("ERROR: switch statement operand does not match first function parameter in hook_filter");
+  // Get the operation variable from the function parameter [at index $op_index].
+  // This function removes any default value assignment (e.g. $op = 'list') or
+  // inline comments included in the parameter expression.
+  $op_index = 0;
+  if (!($variable = $item->getParameterVariable($op_index))) {
+    clp("ERROR: Variable not found in hook(\$op) parameter $op_index");
+    return;
+  }
+  $op = $variable->toString();
+
+  // Get the first condition. (With a switch there should only be one condition.)
+  $condition1 = $switch1->conditions->getElement()->findNode('operand')->stripComments();
+  $operand1 = $condition1->toString();
+  if ($operand1 != $op) {
+    clp('ERROR: switch statement operand does not match first function parameter in hook_filter');
     return;
   }
 
@@ -612,13 +695,13 @@ function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
       $current1 = $current1->next;
       continue;
     }
-    $key1 = trim($case1->case->toString(), "'\"");
+    $key1 = trim($case1->case->stripComments()->toString(), "'\"");
     cdp("key1 = $key1");
     // TODO Convert key2 to new key: Ex. 'process' becomes 'process callback'
     $key1 = coder_upgrade_callback_filter($key1);
     cdp("new key1 = $key1");
     $body1 = $case1->body->getElement();
-    if (get_class($body1) == 'PGPAssignment' /*&& $body1->type == T_RETURN*/) {
+    if (get_class($body1) == 'PGPFunctionCall' /*&& $body1->type == T_RETURN*/) {
       // Use case 1: returns an array.
       cdp("body1 is an array");
       if ($key1 != 'name') {
@@ -629,14 +712,8 @@ function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
         clp("ERROR: switch statement body for 'list' key does not return an array in hook_filter");
         return;
       }
-      $value1 = $body1->value->getElement();
+      $value1 = $body1->getParameter()->getElement();
       if (get_class($value1) == 'PGPArray') {
-        //        eval("\$temp = " . $body1['value']->toString() . ";");
-        //        cdp(print_r($temp, 1));
-        //        foreach ($temp as $delta => $value) {
-        //          $filters[$delta][$key1] = $value;
-        //        }
-
         $node_x = $value1->values->first();
         while ($node_x->next != NULL) {
           $data = $node_x->data;
@@ -648,16 +725,13 @@ function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
           }
           $node_x = $node_x->next;
         }
-
-        //        $filters[$key1] = $value1->values->toString();
-        //        cdp($value1->values->toString());
       }
     }
     elseif (get_class($body1) == 'PGPConditional' && $body1->type == T_SWITCH) {
       // Use case 2: switch statement on $delta.
       $switch2 = &$body1;
       $operand2 = $switch2->conditions->toString();
-      if ($operand2 != $item->getParameter(1)->getElement()->toString()) {
+      if ($operand2 != $item->getParameterVariable(1)->toString()) {
         clp("ERROR: switch statement operand does not match second function parameter in hook_filter");
         return;
       }
@@ -670,29 +744,52 @@ function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
           $current2 = $current2->next;
           continue;
         }
-        $key2 = trim($case2->case->toString(), "'\"");
+        $key2 = trim($case2->case->stripComments()->toString(), "'\"");
         cdp("key2 = $key2");
         $body2 = $case2->body->getElement();
-        if (get_class($body2) == 'PGPAssignment') {
+        if (get_class($body2) == 'PGPFunctionCall') {
           // Use case 2: returns an array.
-          cdp("body2 is an array");
           if ($body2->type != T_RETURN) {
             clp("ERROR: switch statement operand does not match first function parameter in hook_filter");
             return;
           }
-          $value2 = $body2->value; // ->getElement();
+          $value2 = $body2->getParameter();
           if (get_class($value2) == 'PGPExpression') {
             // TODO On the callback items only want the callback function name, not the parameters!!!
-            $filters[$key2][$key1] = $body2->value->toString(); // $value2->values->toString();
-            cdp($body2->value->toString()); // $value2->values->toString() . "\n";
+            $filters[$key2][$key1] = $value2->toString();
+            cdp($value2/*->toString()*/, '$value2');
           }
+          if ($key1 == 'process callback' || $key1 == 'settings callback') {
+            if ($value2->isType(T_FUNCTION_CALL)) {
+              // For $value2 = trim(check_plain($text)), this will grab trim.
+              // The user needs to define a callback function to do both.
+              $call = &$value2->findNode('operand');
+              if (is_array($call->name)) {
+                // Name could be T_STRING or T_VARIABLE.
+                $name = $call->name['value'];
+                if ($call->name['type'] == T_STRING) {
+                  $name = "'$name'";
+                }
+              }
+              else {
+                // An object expression (should be unlikely).
+                $name = $call->name->toString();
+              }
+              $filters[$key2][$key1] = $name;
+            }
+          }
+//           else {
+//             $filters[$key2][$key1] = $value2->toString();
+//           }
         }
         $current2 = $current2->next;
       }
     }
     $current1 = $current1->next;
   }
-  cdp(print_r($filters, 1));
+  foreach ($tips as $key2 => $callback) {
+    $filters[$key2]['tips callback'] = "'$callback'";
+  }
 
   $hook = '_filter_info';
   coder_upgrade_new_filter_hook($node, $hook, $filters);
@@ -774,6 +871,8 @@ function coder_upgrade_new_filter_hook($node, $hook, $filters = array()) { // DO
  * Updates hook_filter_tips().
  *
  * hook_filter() and hook_filter_tips() replaced by hook_filter_info().
+ *
+ * @todo This should fit into the convert_op use case.
  *
  * @param PGPNode $node
  *   A node object containing a PGPClass (or function) item.
@@ -911,31 +1010,40 @@ function coder_upgrade_convert_install($node) {
   // Get body statements.
   $body = &$item->body;
 
+  $editor = PGPEditor::getInstance();
+
   /*
-   * In 6.x, drupal_install_schema has a return value, but not in 7.x.
+   * In 6.x, drupal_install_schema() has a return value, but not in 7.x.
    * The code below asssumes the return value is not utilized. Otherwise,
-   * set the variable to empty string.
+   * set the variable to array.
+   *
+   * @todo If there is a likelihood of multiple calls to these functions, then
+   * use $body->searchCallback().
    */
 
-  $current = $body->first();
-  while ($current->next != NULL) {
-    $statement = &$current->data;
-    cdp($statement);
-    if (is_a($statement, 'PGPAssignment')) {
-      $text = $statement->values->toString();
-      cdp($text);
-      if (preg_match('(drupal_install_schema|drupal_uninstall_schema)', $text)) {
-        $editor = PGPEditor::getInstance();
-        // Insert comment.
-        $statements = $editor->textToStatements('// TODO The drupal_(un)install_schema functions are called automatically in D7.');
-        $body->insertBefore($current, $statements->getElement(), 'comment');
+  foreach (array('drupal_install_schema', 'drupal_uninstall_schema') as $function) {
+    if ($call_node = $body->search('PGPFunctionCall', 'name', 'value', $function, TRUE)) {
+      // Get the function call object.
+      $call = $call_node->data;
+      // Insert a comment before the statement containing the function call.
+      $statement = $editor->commentToStatement("// TODO The drupal_(un)install_schema functions are called automatically in D7.");
+      $call->insertStatementBefore($statement);
+      // Get the expression containing the function call.
+      $container = $call_node->container;
+      if ($container->countType('operand') > 1) {
+        // The function call is part of a larger expression.
+        // Insert nodes to comment out the function call and replace it with default return value.
+        $statement = $editor->expressionToStatement('array()/*' . $call->toString() . '*/');
+        $container->insertListBefore($call_node, $statement);
+        // Delete the function call node.
+        $container->delete($call_node);
+      }
+      else {
+        // The function call is the sole expression on this statement.
         // Comment out the statement.
-        $statements = $editor->textToStatements('// ' . $text);
-        $statement = $statements->getElement();
-        break;
+        $call->parent->data = $editor->commentToStatement($call->toString());
       }
     }
-    $current = &$current->next;
   }
 }
 
@@ -971,7 +1079,7 @@ function coder_upgrade_convert_link(&$node) { // NOT DONE
   // Rename the function in case any code is left over.
   $item->name .= '_OLD'; // $item->name = $item->name . '_OLD'; // $item->name['value'] = $item->name['value'] . '_OLD';
   // Get the first function parameter, usually called $op.
-  $count = $item->parameters->count();
+  $count = $item->parameterCount();
   // TODO This gets the entire parameter including any default value. Hook_block has $op = 'list'.
   $op = $item->printParameter($op_index);
   //  cdp("op = '$op'");
@@ -1065,7 +1173,7 @@ function coder_upgrade_convert_link(&$node) { // NOT DONE
  */
 function coder_upgrade_convert_menu_link_alter(&$node) {
   $item = &$node->data;
-  $count = $item->parameters->count();
+  $count = $item->parameterCount();
   // Adjust parameters.
   if ($count > 1) {
     // Delete second parameter.

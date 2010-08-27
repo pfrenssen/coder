@@ -2,6 +2,22 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-08-27):
+  * coder_upgrade.function.inc
+  * - enhance #hook_filter_info
+  *   - update routine for parser API change for return statements from PGPAssignment to PGPFunctionCall
+  *     (the entire routine was broken because of this)
+  *   - grab the parameter variable from the switch operand
+  *   - clean the case operand
+  *   - handle variables and strings as names of function calls for callback items
+  *   - implement tips callback
+  * - enhance #install-schema to handle calls inside an expression
+  * - enhance #hook-user-changes to handle a parameter that has no variable
+  * - enhance #hook_load_signature to handle a parameter that has no variable
+  * - enhance #theme_changes
+  *   - omit $variables from new function signature when appropriate
+  *   - handle variables missing in the old function signature
+
 - Changes (2010-08-17):
   * coder_upgrade.module
   * - improve the menu integration when only Coder Upgrade is enabled

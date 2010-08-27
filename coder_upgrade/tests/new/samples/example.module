@@ -1,5 +1,5 @@
 <?php
-// $\Id: example.module,v 1.7 2010/08/13 07:00:00 solotandem Exp $
+// $\Id: example.module,v 1.8 2010/08/27 07:00:00 solotandem Exp $
 
 /*
  * Module Info / Install
@@ -11,7 +11,16 @@
  *
  */
 function example_update_7000() {
-
+  $ret = array();
+  return $ret;
+  return /*smoke1*/ $ret /*smoke2*/;
+  if (TRUE) {
+    $ret = array();
+    // hook_update_N() no longer returns a $ret array. Instead, return
+    // nothing or a translated string indicating the update ran successfully.
+    // See http://drupal.org/node/224333#update_sql.
+    return t('TODO Add a descriptive string here to show in the UI.') /* smoke1 $ret smoke2 */;
+  }
 }
 
 /* This function is missing a Doxygen style comment. */
@@ -20,14 +29,22 @@ function example_update_7000() {
  *
  */
 function example_update_7001() {
-
+  $ret = array();
+  // hook_update_N() no longer returns a $ret array. Instead, return
+  // nothing or a translated string indicating the update ran successfully.
+  // See http://drupal.org/node/224333#update_sql.
+  return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
 }
 
 /**
  * This function has a Doxygen style comment.
  */
 function example_update_7002() {
-
+  $ret = array();
+  // hook_update_N() no longer returns a $ret array. Instead, return
+  // nothing or a translated string indicating the update ran successfully.
+  // See http://drupal.org/node/224333#update_sql.
+  return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
 }
 
 /*
@@ -550,8 +567,11 @@ function example_schema() {
  * @see http://drupal.org/node/1354
  */
 function example_install() {
-  // TODO The drupal_(un)install_schema functions are called automatically in D7.;
-  // drupal_install_schema('example');
+  //   drupal_install_schema('example');
+  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+  if ($results = array()/*drupal_install_schema('example')*/) {
+    // Do something.
+  }
 }
 
 /**
@@ -567,8 +587,8 @@ function example_uninstall() {
   ->condition('name', 'example_' . $data->nid)
   ->execute();
   }
-  // TODO The drupal_(un)install_schema functions are called automatically in D7.;
-  // drupal_uninstall_schema('example');
+  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+  // drupal_uninstall_schema('example')
 }
 
 /**
@@ -1249,6 +1269,37 @@ function example_drupal_set_title() {
  * Implements hook_filter_info().
  */
 function example_filter_info() {
+  $filters[0] = array(
+	'name' => t('Limit allowed HTML tags'),
+	'description' => t('Allows you to restrict the HTML tags the user can use. It will also remove harmful content such as JavaScript events, JavaScript URLs and CSS styles from those tags that are not removed.'),
+	'process callback' => '_filter_html',
+	'settings callback' => '_filter_html_settings',
+	'tips callback' => 'example_filter_tips_0',
+);
+  $filters[1] = array(
+	'name' => t('Convert line breaks'),
+	'description' => t('Converts line breaks into HTML (i.e. &lt;br&gt; and &lt;p&gt;) tags.'),
+	'process callback' => '_filter_autop',
+	'tips callback' => 'example_filter_tips_1',
+);
+  $filters[2] = array(
+	'name' => t('Convert URLs into links'),
+	'description' => t('Turns web and e-mail addresses into clickable links.'),
+	'process callback' => '_filter_url',
+	'settings callback' => '_filter_url_settings',
+	'tips callback' => 'example_filter_tips_2',
+);
+  $filters[3] = array(
+	'name' => t('Correct broken HTML'),
+	'description' => t('Corrects faulty and chopped off HTML in postings.'),
+	'process callback' => '_filter_htmlcorrector',
+);
+  $filters[4] = array(
+	'name' => t('Escape all HTML'),
+	'description' => t('Escapes all HTML tags, so they will be visible instead of being effective.'),
+	'process callback' => 'trim',
+	'tips callback' => 'example_filter_tips_4',
+);
   return $filters;
 }
 
@@ -1873,6 +1924,20 @@ function theme_example_coder_review_table_cols($variables) {
  */
 function theme_example_phpapi($variables) {
   $function = $variables['function'];
+}
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function theme_example_missing() { }
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function theme_example_undefined($function = NULL) {
+  // TODO: Should this theme example_undefined be declared in hook_theme()?
 }
 
 // http://drupal.org/node/224333#theme_page
@@ -3227,28 +3292,28 @@ function example_node_type_get_functions() {
 
 // http://drupal.org/node/224333#hook_load_signature
 /**
- * Implements hook_theme().
+ * Implements hook_load().
  *
  * Use case 1: returns object directly.
  */
 function example_load($nodes) {
   foreach ($nodes as $nid => &$node) {
-    $additions = db_fetch_object(db_query('SELECT * FROM {mytable} WHERE vid = :vid', array(':vid' => $node->vid)));
-    foreach ($additions as $property => &$value) {
+    $node_additions = db_fetch_object(db_query('SELECT * FROM {mytable} WHERE vid = :vid', array(':vid' => $node->vid)));
+    foreach ($node_additions as $property => &$value) {
       $node->$property = $value;
     }
   }
 }
 
 /**
- * Implements hook_theme().
+ * Implements hook_load().
  *
  * Use case 2: makes assignment to variable; returns variable.
  */
 function example_load($nodes) {
   foreach ($nodes as $nid => &$node) {
-    $node_additions = db_fetch_object(db_query('SELECT * FROM {mytable} WHERE vid = :vid', array(':vid' => $node->vid)));
-    foreach ($node_additions as $property => &$value) {
+    $additions = db_fetch_object(db_query('SELECT * FROM {mytable} WHERE vid = :vid', array(':vid' => $node->vid)));
+    foreach ($additions as $property => &$value) {
       $node->$property = $value;
     }
   }

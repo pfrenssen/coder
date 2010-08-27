@@ -1,5 +1,5 @@
 <?php
-// $\Id: example.module,v 1.7 2010/08/13 07:00:00 solotandem Exp $
+// $\Id: example.module,v 1.8 2010/08/27 07:00:00 solotandem Exp $
 
 /*
  * Module Info / Install
@@ -7,19 +7,27 @@
 
 // This function is missing a Doxygen style comment.
 function example_update_7000() {
-
+  $ret = array();
+  return $ret;
+  return /*smoke1*/ $ret /*smoke2*/;
+  if (TRUE) {
+    $ret = array();
+    return /*smoke1*/ $ret /*smoke2*/;
+  }
 }
 
 /* This function is missing a Doxygen style comment. */
 function example_update_7001() {
-
+  $ret = array();
+  return $ret;
 }
 
 /**
  * This function has a Doxygen style comment.
  */
 function example_update_7002() {
-
+  $ret = array();
+  return $ret;
 }
 
 /*
@@ -385,7 +393,10 @@ function example_schema() {
 
 // Database schema (un)installed automatically
 function example_install() {
-  drupal_install_schema('example');
+//   drupal_install_schema('example');
+  if ($results = drupal_install_schema('example')) {
+    // Do something.
+  }
 }
 
 function example_uninstall() {
@@ -873,11 +884,11 @@ function example_drupal_set_title() {
  * Implement hook_filter().
  */
 function example_filter($op, $delta = 0, $format = -1, $text = '', $cache_id = 0) {
-  switch ($op) {
-    case 'list':
+  switch (/*smoke1*/ $op /*smoke2*/) {
+    case /*smoke1*/ 'list' /*smoke2*/:
       return array(0 => t('Limit allowed HTML tags'), 1 => t('Convert line breaks'), 2 => t('Convert URLs into links'), 3 => t('Correct broken HTML'), 4 => t('Escape all HTML'));
 
-    case 'description':
+    case /*smoke1*/ 'description' /*smoke2*/:
       switch ($delta) {
         case 0:
           return t('Allows you to restrict the HTML tags the user can use. It will also remove harmful content such as JavaScript events, JavaScript URLs and CSS styles from those tags that are not removed.');
@@ -1406,6 +1417,11 @@ function theme_example_coder_review_table_cols($form = NULL) {
 }
 
 function theme_example_phpapi($function = NULL) {
+}
+
+function theme_example_missing() {}
+
+function theme_example_undefined($function = NULL) {
 }
 
 // http://drupal.org/node/224333#theme_page
@@ -2426,22 +2442,22 @@ function example_node_type_get_functions() {
 
 // http://drupal.org/node/224333#hook_load_signature
 /**
- * Implementation of hook_theme().
+ * Implementation of hook_load().
  *
  * Use case 1: returns object directly.
  */
 function example_load($node) {
-  $additions = db_fetch_object(db_query('SELECT * FROM {mytable} WHERE vid = %d', $node->vid));
-  return $additions;
+  return db_fetch_object(db_query('SELECT * FROM {mytable} WHERE vid = %d', $node->vid));
 }
 
 /**
- * Implementation of hook_theme().
+ * Implementation of hook_load().
  *
  * Use case 2: makes assignment to variable; returns variable.
  */
 function example_load($node) {
-  return db_fetch_object(db_query('SELECT * FROM {mytable} WHERE vid = %d', $node->vid));
+  $additions = db_fetch_object(db_query('SELECT * FROM {mytable} WHERE vid = %d', $node->vid));
+  return $additions;
 }
 
 /*

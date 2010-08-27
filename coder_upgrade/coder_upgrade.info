@@ -6,7 +6,7 @@ description = "Module conversion suite -- generates code to assist with the upgr
                WARNING: Use only on contributed modules."
 
 package = Development
-dependencies[] = coder
+; dependencies[] = coder ; Not a dependency
 dependencies[] = grammar_parser
 
 files[] = coder_upgrade.help.inc
