@@ -222,7 +222,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
   $allphp_argex = '(((\$?)[a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'[^\']+\'|"[^"]+")';
   $sanitize_argex = '((t|st|\$t|check_plain|format_plural|check_markup|filter_xss|filter_xss_admin)\s*\([^\)]+?\))';
 
-  $severity_name = _coder_severity_name($coder_args, $review, $rule);
+  $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
   $ignores = $coder_args['#ignore_lines'][$review['#review_name']];
   /*
   if (!isset($coder_args['#tokens'])) {
@@ -260,7 +260,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
           $after_never_regex = '/[\s\(]db_rewrite_sql\s*\(\s*\$' . $forward_matches['db_rewrite_sql'] . '[\s,\)]/';
           if (!preg_match($after_never_regex, $this_function, $sanitized_matches)) {
             $rule = _coder_review_security_db_rewrite_sql_warning();
-            _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
+            _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
           }
         }
         // FAPI #value
@@ -269,7 +269,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
           if (preg_match($find_match, $this_function, $sanitized_matches)) {
             if (!preg_match('/[\'"]#type[\'"]/', $sanitized_matches[1], $markup_matches) || preg_match('/[\'"]#type[\'"]\s*=>\s*[\'"]markup[\'"]/', $sanitized_matches[1], $markup_matches)) {
               $rule = _coder_review_security_fapi_markup_value_warning();
-              _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
+              _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
             }
           }
         }
@@ -291,7 +291,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
         $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
           $rule = _coder_review_security_trigger_error_filter_warning();
-          _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
@@ -303,7 +303,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
         $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
           $rule = _coder_review_security_drupal_set_title_filter_warning();
-          _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
@@ -315,7 +315,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
         $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
           $rule = _coder_review_security_drupal_set_message_filter_warning();
-          _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
@@ -327,7 +327,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
         $before_never_regex = '/[\s]\$' . $matches[8] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
           $rule = _coder_review_security_form_set_error_filter_warning();
-          _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
@@ -339,7 +339,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
         $before_never_regex = '/[\s]\$' . $matches[7] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
           $rule = _coder_review_security_confirm_form_filter_warning();
-          _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
@@ -351,7 +351,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
         $before_never_regex = '/[\s]\$' . $matches[11] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
           $rule = _coder_review_security_confirm_form_filter_warning();
-          _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
@@ -368,7 +368,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
         $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
           $rule = _coder_review_security_fapi_title_description_warning();
-          _coder_error($results, $rule, $severity_name, $lineno, $line, $ignores);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
