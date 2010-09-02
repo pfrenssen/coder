@@ -299,18 +299,18 @@ function coder_upgrade_parse_select_query_string($node, $sql, $values, $delimite
     foreach ($conditions[0] as $key => $condition) {
       if ($conditions[1][$key]) {
         // field = %d condition
-        $condition_keys[] = ':'. $conditions[1][$key];
+        $condition_keys[] = ':' . $conditions[1][$key];
         $sql /*$operand['value']*/ = str_replace($condition, $conditions[1][$key] . ' ' . $conditions[2][$key] . ' :' . $conditions[1][$key], $sql /*$operand['value']*/);
       }
-      else if ($conditions[3][$key]) {
+      elseif ($conditions[3][$key]) {
         // field = literal condition
-        $condition_keys[] = ':'. $conditions[3][$key];
+        $condition_keys[] = ':' . $conditions[3][$key];
         $sql /*$operand['value']*/ = str_replace($condition, $conditions[3][$key] . ' ' . $conditions[4][$key] . ' :' . $conditions[3][$key], $sql /*$operand['value']*/);
         $item->insertParameter($key + 1, $editor->expressionToStatement($conditions[5][$key]));
       }
-      else if ($conditions[6][$key]) {
+      elseif ($conditions[6][$key]) {
         // field IN (%s) condition
-        $condition_keys[] = ':'. $conditions[6][$key];
+        $condition_keys[] = ':' . $conditions[6][$key];
         $sql /*$operand['value']*/ = str_replace($condition, $conditions[6][$key] . ' IN (:' . $conditions[6][$key] . ')', $sql /*$operand['value']*/);
         // D6 convention was to use implode(",", $array).  Now we can just pass in the array.
         $param = $item->getParameter($key + 1)->getElement()->getParameter(1);

@@ -2,6 +2,12 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-09-02):
+  * coder_upgrade.inc
+  * - define file_directory_path() in response to its removal from core
+  * coder_upgrade.db.inc, coder_upgrade.function.inc
+  * - coding style fixes
+
 - Changes (2010-08-27):
   * coder_upgrade.function.inc
   * - enhance #hook_filter_info
@@ -17,6 +23,8 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
   * - enhance #theme_changes
   *   - omit $variables from new function signature when appropriate
   *   - handle variables missing in the old function signature
+  * tests/samples directory
+  * - update the input and expected test file: example.module
 
 - Changes (2010-08-17):
   * coder_upgrade.module

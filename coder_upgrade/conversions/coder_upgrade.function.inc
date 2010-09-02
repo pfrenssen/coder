@@ -203,7 +203,7 @@ function coder_upgrade_convert_theme_callback(&$node) {
         clp('ERROR: No parameter in signature of theme_' . $theme_name . '()');
         return;
       }
-      $string = $parameters[0] . ' = $variables[\'' . $hook['render element'] .'\']';
+      $string = $parameters[0] . ' = $variables[\'' . $hook['render element'] . '\']';
       $body->insertFirst($editor->textToStatements($string)->getElement(0));
     }
     elseif (isset($hook['variables'])) {
@@ -230,7 +230,7 @@ function coder_upgrade_convert_theme_callback(&$node) {
         if ($parameters[$i] == '$xx_missing_xx') {
           $body->insertBefore($sentinel, $editor->commentToStatement('// TODO: Name this variable which was missing in the old function signature.'));
         }
-        $string = $parameters[$i] . ' = $variables[\'' . $key ."'];\n";
+        $string = $parameters[$i] . ' = $variables[\'' . $key . "'];\n";
         $body->insertBefore($sentinel, $editor->textToStatements($string)->getElement(0));
         $i++;
       }
@@ -2070,7 +2070,7 @@ function coder_upgrade_convert_return(&$body, $hook, $callback = '', $start_dept
   // Keep track of return variables to avoid redundant searching.
   $already_searched = array();
 
-  while(!empty($nodes)) {
+  while (!empty($nodes)) {
     cdp('while(!empty($nodes)) ' . __FUNCTION__);
     $return_node = array_shift($nodes);
     $return = $return_node->data;
