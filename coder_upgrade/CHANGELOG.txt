@@ -2,6 +2,14 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-09-08):
+  * coder_upgrade.function.inc
+  * - refactor #hook_permission to hook_upgrade_hook_perm_alter()
+  * - refactor #descriptions_permissions to use the convert_return() pattern (use cases 1 and 2)
+  * - refactor doc_comment checking in coder_upgrade_convert_update_N() to revert to that in hook_upgrade_hook_alter()
+  * tests/samples directory
+  * - update the input and expected test file: example.module
+
 - Changes (2010-09-02):
   * coder_upgrade.inc
   * - define file_directory_path() in response to its removal from core

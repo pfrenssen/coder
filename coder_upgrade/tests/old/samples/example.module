@@ -1,5 +1,5 @@
 <?php
-// $\Id: example.module,v 1.8 2010/08/27 07:00:00 solotandem Exp $
+// $\Id: example.module,v 1.9 2010/09/08 07:00:00 solotandem Exp $
 
 /*
  * Module Info / Install
@@ -280,11 +280,43 @@ function example_() {
 /**
  * Implement hook_perm.
  *
+ * Use case 1: returns array directly.
+ *
  * http://drupal.org/node/224333#hook_permission
  * http://drupal.org/node/224333#descriptions_permissions
  */
 function example_perm() {
   return array('administer my module', $perm_1['one'], 'permission two', $perm_2[1]['2']);
+}
+
+/**
+ * Implement hook_perm.
+ *
+ * Use case 2: makes one assignment to array variable; returns variable.
+ */
+function example_perm() {
+  $perm = array(
+    'administer my module',
+    $perm_1['one'],
+    'permission two',
+    $perm_2[1]['2'],
+  );
+  return $perm;
+}
+
+/**
+ * Implement hook_perm.
+ *
+ * Use case 3: makes multiple assignments to array variable; returns variable.
+ */
+function example_perm() {
+  // This use case does not apply as the permission strings do not have any values.
+  $perm = array();
+  $perm['administer my module'] = array();
+  $perm[$perm_1['one']] = array();
+  $perm['permission two'] = array();
+  $perm[$perm_2[1]['2']] = array();
+  return $perm;
 }
 
 /**
@@ -363,6 +395,69 @@ function example_dbtng() {
 
 // Schema descriptions are no longer translated.
 // Function name needs to be the hook name not the html tag on the change.
+
+// Use case 1: returns array directly.
+function example_schema() {
+  return array(
+    'forum' => array(
+      'description' => t('Stores the relationship of nodes to forum terms.'),
+      'fields' => array(
+        'nid' => array(
+          'description' => t('The {node}.nid of the node.'),
+        ),
+      ),
+    ),
+    // This tests the #schema_html upgrade.
+    'foo_url' => array(
+      'description' => t('Stores URLs that appear in &lt;a href=....&gt; tags.'),
+      'fields' => array(
+        'url' => array(
+          'description' => t('The URL.'),
+        ),
+      ),
+    ),
+    // When did the description item come into play between above and below???
+    'example' => array(
+      'fields' => array(
+        'nid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      ),
+      'primary key' => array('nid'),
+    ),
+  );
+}
+
+// Use case 2: makes one assignment to array variable; returns variable.
+function example_schema() {
+  $schema = array(
+    'forum' => array(
+      'description' => t('Stores the relationship of nodes to forum terms.'),
+      'fields' => array(
+        'nid' => array(
+          'description' => t('The {node}.nid of the node.'),
+        ),
+      ),
+    ),
+    // This tests the #schema_html upgrade.
+    'foo_url' => array(
+      'description' => t('Stores URLs that appear in &lt;a href=....&gt; tags.'),
+      'fields' => array(
+        'url' => array(
+          'description' => t('The URL.'),
+        ),
+      ),
+    ),
+    // When did the description item come into play between above and below???
+    'example' => array(
+      'fields' => array(
+        'nid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      ),
+      'primary key' => array('nid'),
+    ),
+  );
+  return $schema;
+}
+
+// Use case 3: makes multiple assignments to array variable; returns variable.
 function example_schema() {
   $schema['forum'] = array(
     'description' => t('Stores the relationship of nodes to forum terms.'),

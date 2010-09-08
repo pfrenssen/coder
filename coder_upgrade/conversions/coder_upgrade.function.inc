@@ -75,7 +75,7 @@
  *
  * Node API
  * http://drupal.org/node/224333#node_links (NOT DONE)
- * http://drupal.org/node/224333#node_type_base (NOT DONE)
+ * http://drupal.org/node/224333#node_type_base
  * http://drupal.org/node/224333#remove_op (SPANS MULTIPLE HOOKS)
  * http://drupal.org/node/224333#node_build_rss
  * http://drupal.org/node/224333#build_mode
@@ -492,7 +492,15 @@ function coder_upgrade_upgrade_hook_node_type_alter(&$node, &$reader) {
  */
 function coder_upgrade_upgrade_hook_perm_alter(&$node, &$reader) {
   // Changes: hook_permission and descriptions_permissions
-  coder_upgrade_convert_perm($node);
+  $item = &$node->data;
+
+  // Rename function.
+  $item->name .= 'ission';
+  // Update document comment.
+  $item->comment = preg_replace('@hook_perm([^i])@', "hook_permission$1", $item->comment);
+
+  // Restructure the permissions array.
+  coder_upgrade_convert_return($node->data->body, 'perm', '', 0, 0);
 }
 
 /**
@@ -1123,7 +1131,7 @@ function coder_upgrade_convert_link(&$node) { // NOT DONE
           //          $statement->body->clear();
         }
       }
-      elseif (in_array($statement->type, array(T_IF, T_ELSEIF/*, T_ELSE*/))) {
+      elseif (in_array($statement->type, array(T_IF, T_ELSEIF, T_ELSE_IF/*, T_ELSE*/))) {
         // Do something similar.
         //        cdp("inside T_IF check");
         // Get the list of conditions.
@@ -1180,87 +1188,6 @@ function coder_upgrade_convert_menu_link_alter(&$node) {
     $item->deleteParameter(1);
   }
   // TODO Do we need to check for $menu in the body of this hook?
-}
-
-/**
- * Updates hook_perm().
- *
- * Rename hook_perm() to hook_permission().
- * Permissions are required to have titles and descriptions.
- *
- * @param PGPNode $node
- *   A node object containing a PGPClass (or function) item.
- */
-function coder_upgrade_convert_perm(&$node) { // NEEDS REVISION
-  cdp("inside " . __FUNCTION__);
-  $item = &$node->data;
-//  cdp($item->print_r());
-
-  // Rename function.
-  $item->name .= 'ission';
-  // Update document comment.
-  $item->comment = preg_replace('@hook_perm([^i])@', "hook_permission$1", $item->comment);
-
-  // Restructure the permissions array.
-  $body = &$item->body;
-
-  if (!($return = $body->find(T_RETURN, 'reverse'))) {
-    clp("ERROR: return statement not found in hook_perm");
-    return;
-  }
-  //  cdp("Printing return item");
-  $value = &$return->getParameter();
-//  cdp($value->print_r());
-//  cdp($value->toString());
-  //  cdp("Printing return item DONE");
-
-  // TODO This fits with the coder_upgrade_convert_return pattern.
-
-  // Examine the type of the operand in the return statement.
-  $array = $value->getElement();
-  if (!is_a($array, 'PGPArray')) {
-    clp("ERROR: return statement does not include an array of values in hook_perm");
-    return;
-  }
-  // Grab the PGPList of values.
-  $values = $array->values;
-
-  $string = "array(\n";
-  $current = $values->first();
-  while ($current->next != NULL) {
-    if ($current->type == 'value') {
-      // If the permission is other than a string (e.g. T_VARIABLE expression),
-      // then do not enclose in quotes.
-      $expression = &$current->data->first()->data;
-      // TODO Fix next line when condition is TRUE
-      $type = is_object($expression) ? '$expression->type' : $expression['type']; // Operand object does not have a type parameter // $type = is_object($expression) ? $expression->type : $expression['type'];
-      $add_quotes = $type == T_CONSTANT_ENCAPSED_STRING;
-
-      $permission = $current->data->toString();
-      //      cdp("permission = $permission");
-      $permission = trim($permission, "'\"");
-      if ($add_quotes) {
-        $string .= "'$permission' => array('title' => t('$permission'), 'description' => t('TODO Add a description for $permission'),),\n";
-      }
-      else {
-        $permission2 = str_replace("'", "\'", $permission);
-        $string .= "$permission => array('title' => t($permission), 'description' => t('TODO Add a description for $permission2'),),\n";
-      }
-    }
-    $current = &$current->next;
-  }
-  $string .= ");\n";
-//  cdp($string);
-  $editor = PGPEditor::getInstance();
-  // TODO There may be other routines that need this setting. Should we set it once up front or routine-by-routine?
-  $editor->getReader()->setPreserveArrayFormat();
-  $expression = $editor->expressionToStatement($string);
-  $expression->multiline = 1;
-  $expression->preserve = 0;
-  $editor->getReader()->setPreserveArrayFormat(TRUE);
-
-  // Set the return array to the new array.
-  $value->setElement(0, $expression);
 }
 
 /**
@@ -1341,20 +1268,6 @@ function coder_upgrade_convert_update_N(&$node) {
   cdp("inside " . __FUNCTION__);
   // Changes: update_php, update_sql
   $item = &$node->data;
-
-  $comment = &$item->comment;
-  if (!is_array($comment) || empty($comment)) {
-    $comment = array(
-      'type' => T_DOC_COMMENT,
-      'value' => "/**\n * @todo Please insert a Doxygen style comment for this hook_update_N.\n *\n */",
-    );
-  }
-  elseif ($comment['type'] != T_DOC_COMMENT) {
-    $comment = array(
-      'type' => T_DOC_COMMENT,
-      'value' => "/**\n * @todo Please insert a Doxygen style comment for this hook_update_N.\n *\n *" . $comment['value'] . "\n */",
-    );
-  }
 
   $editor = PGPEditor::getInstance();
 
@@ -2054,7 +1967,11 @@ function coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters) {
  * @param string $hook
  *   Name of the hook being modified.
  * @param string $callback
- *   A string of the callback function for the hook..
+ *   A string of the callback function for the hook.
+ * @param integer $start_depth
+ *   The starting depth of nested arrays to traverse.
+ * @param integer $remaining_depth
+ *   The remaining depth of nested arrays to traverse. When equal to zero, stop.
  */
 function coder_upgrade_convert_return(&$body, $hook, $callback = '', $start_depth = 0, $remaining_depth = -1) { // DONE
   cdp("inside " . __FUNCTION__);
@@ -2099,6 +2016,9 @@ function coder_upgrade_convert_return(&$body, $hook, $callback = '', $start_dept
       // the desired depth using toString() and reparsing (see case5).
       $depth = $assign_variable->countType('index');
       if ($depth > $start_depth) {
+        // @todo This works in some use cases (menu stuff in begin.inc). If we
+        // need to change the original expression, this fails because $value is
+        // now disjoint from the original expression.
         $value = coder_upgrade_reconstruct_array($assign_variable, $value);
         $depth = 1; // $assign_variable->countType('index');
       }
@@ -2171,10 +2091,33 @@ function coder_upgrade_reconstruct_array($variable, $value) {
 
   $editor = PGPEditor::getInstance();
 
+  // This routine assumes the second index is the one to be reconstructed.
   $key = trim($variable->getType('index', 2)->toString(), "'\"");
   $array = $editor->expressionToStatement("array('$key' => {$value->toString()})"); //->getElement();
   cdp($array->toString(), '$array');
   return $array;
+
+/*
+  // The above works well for existing use cases, but fails for hook_perm possibly
+  // because the array traverse2() routine will skip the key when $depth != $start_depth.
+  $count = $variable->countType('index');
+  if (!$count) {
+    return new PGPExpression();
+  }
+
+  $editor = PGPEditor::getInstance();
+
+  // Allow for a key being a string or a variable expression.
+  $key = $variable->getType('index', $count)->toString(); // $key = trim($variable->getType('index', $count)->toString(), "'\"");
+  if ($key) {
+    $array = $editor->expressionToStatement("array($key => {$value->toString()})"); //->getElement();
+  }
+  else {
+    $array = $editor->expressionToStatement("array({$value->toString()})"); //->getElement();
+  }
+  cdp($array->toString(), '$array');
+  return $array;
+*/
 }
 
 /**
@@ -2763,6 +2706,64 @@ function coder_upgrade_callback_node_info($node, &$array2, &$current2, $hook, $t
       // Change value from 'node' to 'node_content.'
       $current2->data = $editor->expressionToStatement("'node_content'");
     }
+  }
+}
+
+/**
+ * Updates hook_perm() arrays.
+ *
+ * Permissions are required to have titles and descriptions.
+ *
+ * @param PGPNode $node
+ *   The node of the statement containing the array object.
+ * @param PGPArray $array2
+ *   The array object containing the array element ($current2).
+ * @param PGPNode $current2
+ *   The node object of the array element.
+ * @param string $hook
+ *   The hook name.
+ * @param string $type
+ *   The type (key or value) of the array element.
+ * @param string $key
+ *   The key of the array element (or the most recent key).
+ * @param string $value
+ *   The value of the array element (or NULL if element is a key).
+ */
+function coder_upgrade_callback_perm($node, &$array2, &$current2, $hook, $type, $key, $value) { // DONE
+  cdp("inside " . __FUNCTION__);
+
+  if (!is_a($current2, 'PGPNode')) {
+    clp("ERROR: current2 is not a PGPNode object in hook_$hook");
+    return;
+  }
+
+  $editor = PGPEditor::getInstance();
+
+  // The values of this array are the permission items.
+  // TODO If someone used keys with the values, this would result in consecutive
+  // keys in the array and likely fail.
+  if ($type == 'value' /*&& $key == ''*/) {
+    $current2->type = 'key';
+
+    $permission = $current2->data->toString();
+    $permission2 = str_replace("'", "\'", $permission);
+    $string = "array('title' => t($permission), 'description' => t('TODO Add a description for $permission2'),)";
+
+    // Create new array expression.
+    $editor->getReader()->setPreserveArrayFormat();
+    $expression = $editor->expressionToStatement($string);
+    $expression->multiline = 1;
+    $expression->preserve = 0;
+    $editor->getReader()->setPreserveArrayFormat(TRUE);
+
+    // Insert new expression nodes.
+    $new = /*&*/$array2->values->insertAfter($current2, $expression, 'value');
+    $array2->values->insertAfter($current2, '=>', 'assign');
+    // Force the settings on the original array (which is usually inline).
+    $array2->multiline = 1;
+    $array2->preserve = 0;
+    // Set $current2 to last item inserted above to avoid redundant looping.
+    $current2 = $new;
   }
 }
 
