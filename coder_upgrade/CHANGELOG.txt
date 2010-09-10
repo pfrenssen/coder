@@ -2,6 +2,11 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-09-09):
+  * coder_upgrade.install
+  * - hook_uninstall(): delete recently added settings variables
+  * - hook_requirements(): use get_t()
+
 - Changes (2010-09-08):
   * coder_upgrade.function.inc
   * - refactor #hook_permission to hook_upgrade_hook_perm_alter()

@@ -120,7 +120,7 @@ function coder_upgrade_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Replace files'),
     '#default_value' => variable_get('coder_upgrade_replace_files', FALSE),
-    '#description' => t('If checked, then the original file will be replaced with the upgraded file. Otherwise, the upgraded file will only be written to the output directory shown above.'),
+    '#description' => t('If checked, then the original file will be written to the output directory shown above and then replaced with the upgraded file. Otherwise, the upgraded file will be written to the output directory shown above.'),
   );
 
   $form['coder_upgrade_preserve_array_format'] = array(
