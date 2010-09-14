@@ -832,7 +832,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
             '#patch' => $patch,
             '#php_extensions' => $php_extensions,
             '#include_extensions' => $include_extensions,
-            '#ignore_lines' => is_array($ignores[$filename]) ? $ignores[$filename] : array(),
+            '#ignore_lines' => (isset($ignores[$filename]) && is_array($ignores[$filename])) ? $ignores[$filename] : array(),
           );
           $results = do_coder_reviews($coder_args);
           $stats[$filename] = $results['#stats'];
