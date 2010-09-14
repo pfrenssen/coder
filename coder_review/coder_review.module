@@ -546,6 +546,9 @@ function _coder_review_settings_form($settings, &$system, &$files) {
  * elements in a table column.
  */
 function theme_coder_review_table_cols($variables) {
+  if (!isset($variables['form']) || !is_array($variables['form'])) {
+    return '';
+  }
   $form = $variables['form'];
   $total = 0;
   $cols = isset($form['#cols']) ? $form['#cols'] : 3;
