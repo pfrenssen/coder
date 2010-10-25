@@ -207,6 +207,13 @@ function coder_upgrade_convert_theme_callback(&$node) {
       $body->insertFirst($editor->textToStatements($string)->getElement(0));
     }
     elseif (isset($hook['variables'])) {
+      if (count($parameters) != count($hook['variables'])) {
+        // The number of parameters to this theme function differs from the
+        // number of variables parameters defined in hook_theme.
+        clp("ERROR: Number of parameters in theme funcion '$theme_name' does not match number of parameters found in hook_theme");
+        $body->insertFirst($editor->commentToStatement('// TODO Number of parameters in this theme funcion does not match number of parameters found in hook_theme.'), 'comment');
+//         return;
+      }
       if (empty($hook['variables'])) {
         // New function should also have no parameters.
         clp('INFO: hook_theme() for theme ' . $theme_name . ' has no parameters');
@@ -2833,6 +2840,8 @@ function coder_upgrade_callback_theme($node, &$array2, &$current2, $hook, $type,
     if ($array->count == 1 && in_array($key0, array('form', 'element', 'elements'))) { // if ($array->values->count() == 4 && in_array($key0, array('form', 'element'))) {
       // Change key from 'arguments' to 'render element.'
       $key_expression = $editor->expressionToStatement("'render element'");
+      // Change value from an associative array to a string.
+      $current2->data = $editor->expressionToStatement("'$key0'");
     }
     else {
       // Change key from 'arguments' to 'variables.'

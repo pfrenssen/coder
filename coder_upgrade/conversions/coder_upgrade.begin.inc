@@ -215,7 +215,7 @@ function coder_upgrade_callback_menu($node, &$array2, &$current2, $hook, $type, 
   }
   elseif ($arguments) {
     // Depending on the code style, some of these will include callbacks.
-    // But we can not be sure. Check for first paramter being $form_state.
+    // But we can not be sure. Check for first parameter being $form_state.
     $operand = $arguments->getElement();
     if ($arguments->isType(T_ARRAY)) {
       $form = trim($operand->getValue()->toString(), "'\"");

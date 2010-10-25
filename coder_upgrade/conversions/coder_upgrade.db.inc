@@ -70,7 +70,7 @@ function coder_upgrade_upgrade_call_db_query_range_alter(&$node, &$reader) { // 
 //  coder_upgrade_upgrade_call_db_query_alter($node, $reader);
   if ($sql = coder_upgrade_locate_query_string($node)) {
     // Parse the string.
-    coder_upgrade_parse_query_string($node, $sql, $from, $count); // @todo Add last 2 params to the called function.
+    coder_upgrade_parse_query_string($node, $sql, $from, $count);
   }
 
   // Add finishing touches to new query syntax for a range query.
@@ -319,6 +319,13 @@ function coder_upgrade_parse_select_query_string($node, $sql, $values, $delimite
     }
     // Replace the $sql parameter.
     $editor->setParameter($item, 0, $delimiter . $sql . $delimiter /*$operand['value']*/);
+
+    if (empty($condition_keys)) {
+      // Parsing of conditions failed.
+      clp("ERROR: Could not parse the conditions to select query '$sql' in " . __FUNCTION__);
+      $item->insertStatementBefore($editor->commentToStatement('// TODO Please convert this statement to the D7 database API syntax.'));
+      return;
+    }
 
     // Arrayitize the values array.
     $string = $editor->arrayitize($item, 1, $condition_keys, array_fill(0, count($condition_keys), "'XXX_YYY'"));

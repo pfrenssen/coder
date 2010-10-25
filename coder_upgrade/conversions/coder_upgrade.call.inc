@@ -1575,7 +1575,7 @@ function coder_upgrade_ereg_to_preg($string) {
   }
 
   if (!$delimiter) {
-    clp('ERROR: Could not find a suitable delimiter for the regular exprssion');
+    clp('ERROR: Could not find a suitable delimiter for the regular expression');
     $delimiter = '/';
     $string = str_replace('/', '\/', $string);
   }
@@ -2520,9 +2520,16 @@ function coder_upgrade_upgrade_call_theme_alter(&$node, &$reader) { // DONE
       $item->insertStatementBefore($editor->commentToStatement('// TODO Please change this theme call to use an associative array for the $variables parameter.'));
       return;
     }
+    elseif ($count - 1 > count($hook['variables'])) {
+      // The number of parameters to this theme call exceeds the number of
+      // variables parameters defined in hook_theme.
+      clp("ERROR: Number of parameters in call to theme '$theme' exceeds the number of parameters found in theme registry or hook_theme");
+      $item->insertStatementBefore($editor->commentToStatement('// TODO Please change this theme call to use an associative array for the $variables parameter.'));
+      return;
+    }
+
     $defaults = array_fill(0, $count - 1, "'XXX_YYY'");
     $string = $editor->arrayitize($item, 1, array_keys($hook['variables']), $defaults);
-
     $temp = $editor->expressionToStatement($string);
     $temp->getElement(0)->multiline = 0;
     $item->setParameter(1, $temp);

@@ -2,6 +2,16 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-10-25):
+  * coder_upgrade.db.inc
+  * - enhance error handling by checking for conditions not being found in a select query
+  * coder_upgrade.call.inc
+  * - enhance #theme_changes: check for more parameters to theme_xxx() call than declared in hook_theme
+  * coder_upgrade.function.inc
+  * - enhance #theme_changes
+  *   - check for difference in number of parameters to theme_xxx() call and the hook_theme
+  *   - when setting theme key to 'render element,' also change value from an associative array to a string
+
 - Changes (2010-09-09):
   * coder_upgrade.install
   * - hook_uninstall(): delete recently added settings variables
