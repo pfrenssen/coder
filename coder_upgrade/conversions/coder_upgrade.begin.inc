@@ -21,39 +21,43 @@
  *   Array of a directory containing the files to convert.
  */
 function coder_upgrade_upgrade_begin_alter($item) {
-//  return; // TODO Temporary
 //  cdp("inside " . __FUNCTION__);
   global $upgrade_menu_registry;
   if (!$upgrade_menu_registry) {
     $upgrade_menu_registry = array();
   }
-  /*
-   * TODO Should we:
-   * - write the core cache to a file (and commit the file?)
-   * - make an admin settings page button to generate this cache (and any others we need)
-   * - check for existence of cache if core upgrades are being run
-   */
+  // TODO Automatically refresh the theme cache if core upgrades are being run?
   coder_upgrade_cache_theme_registry();
   coder_upgrade_cache_info_hooks($item);
-  cdp($upgrade_menu_registry);
 }
 
 /**
  * Caches the theme registry from core files (including disabled modules).
  */
 function coder_upgrade_cache_theme_registry() {
-//  cdp("inside " . __FUNCTION__);
   global $upgrade_theme_registry;
 
+  // If this condition is not met, then the code is being run in a separate
+  // process and the core theme information is read from a file.
   if (!$upgrade_theme_registry) {
-    // Cache the theme registry (includes only enabled modules).
-    $upgrade_theme_registry = theme_get_registry();
-    if (!$upgrade_theme_registry) {
-      drupal_theme_initialize();
-      $upgrade_theme_registry = theme_get_registry();
+    if ($cache = cache_get('upgrade_theme_registry', 'cache')) {
+      // @todo Compare mtime of newest core code file to the created timestamp field in the cache.
+      if (TRUE || ($cache->created > $mtime_newest_core_file)) {
+        $upgrade_theme_registry = $cache->data;
+      }
     }
-    // Build and cache the theme registry for disabled modules.
-    $upgrade_theme_registry += coder_upgrade_theme_build_registry();
+    else {
+      // Cache the theme registry (includes only enabled modules).
+      $upgrade_theme_registry = theme_get_registry();
+      if (!$upgrade_theme_registry) {
+        drupal_theme_initialize();
+        $upgrade_theme_registry = theme_get_registry();
+      }
+      // Build and cache the theme registry for disabled modules.
+      $upgrade_theme_registry += coder_upgrade_theme_build_registry();
+      // Store in persistent cache.
+      cache_set('upgrade_theme_registry', $upgrade_theme_registry, 'cache');
+    }
   }
 }
 
@@ -65,7 +69,6 @@ function coder_upgrade_cache_theme_registry() {
  * @return unknown_type
  */
 function coder_upgrade_theme_build_registry() {
-//  cdp("inside " . __FUNCTION__);
   // Get the list of disabled core modules.
   $list = coder_upgrade_module_list(TRUE, 0);
 
@@ -89,7 +92,6 @@ function coder_upgrade_theme_build_registry() {
  *   Array of a directory containing the files to convert.
  */
 function coder_upgrade_cache_info_hooks($item, $recursive = TRUE) {
-//  cdp("inside " . __FUNCTION__);
   global $_coder_upgrade_module_name, $upgrade_theme_registry, $upgrade_menu_registry;
   static $ignore = array('.', '..', 'CVS', '.svn');
   static $extensions = array('module', 'inc');
@@ -100,7 +102,7 @@ function coder_upgrade_cache_info_hooks($item, $recursive = TRUE) {
   coder_upgrade_module_name($dirname, $item);
   $_coder_upgrade_module_name = $item['module'] ? $item['module'] : $_coder_upgrade_module_name;
 
-  // Find hook_theme for this module and cache its result.
+  // Find hook_theme and hook_menu for this module and cache the results.
   $filenames = scandir($dirname . '/');
   foreach ($filenames as $filename) {
     if (!in_array($filename, $ignore)) {
@@ -117,12 +119,24 @@ function coder_upgrade_cache_info_hooks($item, $recursive = TRUE) {
         }
       }
       elseif (in_array(pathinfo($filename, PATHINFO_EXTENSION), $extensions)) {
+        $values = array(
+          $_coder_upgrade_module_name . '_theme',
+          $_coder_upgrade_module_name . '_menu',
+        );
         $cur = file_get_contents($dirname . '/' . $filename);
         // Create reader object.
         $reader = PGPReader::getInstance();
+        pgp_log_memory_use('create reader for file ' . $filename);
         $reader->setSnippet($cur);
-        $reader->addTokenNames();
-        $reader->buildGrammar();
+//         $reader->addTokenNames(); // @todo This is unnecessary.
+        if (FALSE) {
+          $reader->buildGrammar();
+          pgp_log_memory_use('build grammar');
+        }
+        else {
+          $reader->buildSpecific(T_FUNCTION, $values);
+          pgp_log_memory_use('build specific grammar');
+        }
 
         $functions = $reader->getFunctions();
         foreach ($functions as $function) {
@@ -171,7 +185,6 @@ function coder_upgrade_cache_info_hooks($item, $recursive = TRUE) {
  *   The value of the array element (or NULL if element is a key).
  */
 function coder_upgrade_callback_menu($node, &$array2, &$current2, $hook, $type, $key, $value) { // NOT DONE
-//  cdp("inside " . __FUNCTION__);
   global $upgrade_menu_registry;
 
   if (!is_a($current2, 'PGPNode')) {
@@ -179,7 +192,7 @@ function coder_upgrade_callback_menu($node, &$array2, &$current2, $hook, $type, 
     return;
   }
 
-  $editor = PGPEditor::getInstance();
+//   $editor = PGPEditor::getInstance(); // @todo Not used.
 
   /*
    * With a nice array that includes all the menu items, we can check for a

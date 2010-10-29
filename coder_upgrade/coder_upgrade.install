@@ -37,6 +37,9 @@ function coder_upgrade_install() {
   else {
     drupal_set_message(st('Your files directory at %directory can not be written to. Coder Upgrade places converted module code in subdirectories of this directory.', array('%directory' => $dir)), 'error');
   }
+
+  // Create a core theme information cache.
+  coder_upgrade_create_theme_cache_submit(NULL, NULL);
 }
 
 /**
@@ -62,6 +65,7 @@ function coder_upgrade_uninstall() {
   variable_del('coder_upgrade_preserve_array_format');
   variable_del('coder_upgrade_enable_debug_output');
   variable_del('coder_upgrade_enable_parser_debug_output');
+  variable_del('coder_upgrade_use_separate_process');
 }
 
 /**
