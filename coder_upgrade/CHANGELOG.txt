@@ -2,6 +2,14 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-10-29):
+  * coder_upgrade.inc, coder_upgrade.install, coder_upgrade.module, coder_upgrade.main.inc
+  * - refactor code to allow execution from a separate process outside of Drupal
+  * coder_upgrade.begin.inc
+  * - cache the core theme information in the persistent cache (includes disabled modules)
+  * coder_upgrade.main.inc
+  * - refactor coder_upgrade_debug_path() and coder_upgrade_log_path() into coder_upgrade_path()
+
 - Changes (2010-10-25):
   * coder_upgrade.db.inc
   * - enhance error handling by checking for conditions not being found in a select query
