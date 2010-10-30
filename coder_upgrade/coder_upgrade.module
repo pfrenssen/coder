@@ -480,9 +480,32 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
   // Rebuild form with user selections.
   $form_state['rebuild'] = TRUE;
 
+  // Apply conversion functions.
+  $success = coder_upgrade_conversions_apply($form_state);
+  if ($success) {
+    drupal_set_message(t('Module conversion code was run.'));
+    drupal_set_message(t('Click to view the !log.', array('!log' => l(t('conversion log file'), coder_upgrade_path('log')))));
+    drupal_set_message(t('Patch files may be viewed by clicking on Name links in the Directories and Modules tabs below.'));
+  }
+  else {
+    drupal_set_message(t('Module conversion code was not run.'), 'error');
+  }
+}
+
+/**
+ * Applies the module conversion code.
+ *
+ * Execute the selected module conversion code on the selected file types in the
+ * selected directories or modules.
+ *
+ * @return boolean
+ *   TRUE if conversion code was successful, FALSE otherwise.
+ */
+function coder_upgrade_conversions_apply($form_state) {
   // Prepare conversion parameters.
   list($upgrades, $extensions, $items) = coder_upgrade_conversions_prepare($form_state);
 
+  // Apply conversion functions.
   module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
   if (variable_get('coder_upgrade_use_separate_process', TRUE)) {
     // Conversion code will be run in a separate process.
@@ -499,19 +522,12 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
     }
   }
   else {
-    // Apply conversion functions.
+    // Conversion code will be run in the same process.
     drupal_set_message('Conversion code will be run in the same process.');
     $success = coder_upgrade_start($upgrades, $extensions, $items);
   }
 
-  if ($success) {
-    drupal_set_message(t('Module conversion code was run.'));
-    drupal_set_message(t('Click to view the !log.', array('!log' => l(t('conversion log file'), coder_upgrade_path('log')))));
-    drupal_set_message(t('Patch files may be viewed by clicking on Name links in the Directories and Modules tabs below.'));
-  }
-  else {
-    drupal_set_message(t('Module conversion code was not run.'), 'error');
-  }
+  return $success;
 }
 
 /**
