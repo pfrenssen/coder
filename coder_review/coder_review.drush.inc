@@ -179,6 +179,7 @@ function theme_drush_coder_review_warning($variables) {
   $lineno = isset($variables['lineno']) ? $variables['lineno'] : 0;
   $line = isset($variables['line']) ? $variables['line'] : '';
   $output  = $lineno ? '+' . $lineno . ': ' : '';
+  $output .= '[' . $severity_name . '] ';
   $output .= is_array($warning) ? $warning['#warning'] : $warning;
   return _coder_review_drush_output($output);
 }
