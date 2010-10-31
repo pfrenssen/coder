@@ -31,6 +31,8 @@ function coder_review_drush_help($section) {
                 . "\n    <name> - review specified module or theme name, i.e. taxonomy"
                 . "\n    no-<name> - exclude named modules and themes, i.e. no-taxonomy"
                 . "\n     combine with active|core|contrib|all|default"
+                . "\n    URL to patch"
+                . "\n    relative path to file or multiple files"
                );
   }
 }
@@ -112,7 +114,14 @@ function coder_review_drush_review() {
             $settings['coder_includes'] = TRUE;
           }
           else {
-            if (_coder_review_drush_is_patch_arg($arg)) {
+            if (file_exists($arg)) {
+              $settings['coder_files'] = 1;
+              if (empty($settings['coder_file_list'])) {
+                $settings['coder_file_list'] = '';
+              }
+              $settings['coder_file_list'] .= $arg . "\n";
+            }
+            elseif (_coder_review_drush_is_patch_arg($arg)) {
               $settings['coder_patches'] = 1;
               $settings['coder_patch_link'] = $arg;
             }

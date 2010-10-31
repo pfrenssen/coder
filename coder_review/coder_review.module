@@ -152,13 +152,21 @@ function coder_review_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
   );
+  $items['admin/config/development/coder/review/files'] = array(
+    'title' => 'Files',
+    'page callback' => 'coder_review_page',
+    'page arguments' => array('files'),
+    'access arguments' => array('view code review'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  );
   $items['admin/config/development/coder/review/patches'] = array(
     'title' => 'Patches',
     'page callback' => 'coder_review_page',
     'page arguments' => array('patches'),
     'access arguments' => array('view code review'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 2,
+    'weight' => 3,
   );
   $items['admin/config/development/coder/review/settings'] = array(
     'title' => 'Settings',
@@ -282,7 +290,34 @@ function _coder_review_settings_form($settings, &$system, &$files) {
     '#default_value' => $settings['coder_severity'],
   );
 
-  if (!empty($settings['coder_patches'])) {
+  if (!empty($settings['coder_files'])) {
+    $form['coder_what'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('What to review'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+    );
+    $form['coder_what']['coder_file_list'] = array(
+      '#type' => 'textarea',
+      '#title' => t('List of files'),
+      '#description' => t('List each relative file path on a separate line.'),
+      '#default_value' => isset($settings['coder_file_list']) ? $settings['coder_file_list'] : '',
+    );
+    $form['coder_files'] = array(
+      '#type' => 'value',
+      '#value' => 1,
+    );
+
+    if (!empty($settings['coder_file_list'])) {
+      $lines = explode("\n", $settings['coder_file_list']);
+      foreach ($lines as $line) {
+        $line = trim($line);
+        $system[$line] = $line;
+        $files[$line] = $line;
+      }
+    }
+  }
+  elseif (!empty($settings['coder_patches'])) {
     // Display what to review options.
     $form['coder_what'] = array(
       '#type' => 'fieldset',
@@ -679,6 +714,10 @@ function _coder_review_get_default_settings($arg = 'default') {
     case 'contrib':
       $settings['coder_includes'] = 1;
       $settings['coder_contrib'] = 1;
+      break;
+
+    case 'files':
+      $settings['coder_files'] = 1;
       break;
 
     case 'patches':
