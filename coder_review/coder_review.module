@@ -821,7 +821,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
           // Process this one file.
           $filename = isset($files[$name]) ? $files[$name] : FALSE;
           if (!$filename) {
-            drupal_set_message(t('Code Review file for %module not found', array('%module' => $name)));
+            drupal_set_message(t('Code Review file for %module not found', array('%module' => $name)), 'error');
             continue;
           }
           if (!empty($settings['coder_patches'])) {
@@ -1962,7 +1962,7 @@ function coder_review_parse_ignores($filepath) {
 
   // Ensure the file exists.
   if (!is_file($filepath) || !is_readable($filepath)) {
-    drupal_set_message(t("File %file doesn't exist or isn't readable.", array('%file' => $filepath)));
+    drupal_set_message(t("File %file doesn't exist or isn't readable.", array('%file' => $filepath)), 'error');
     return array();
   }
 
