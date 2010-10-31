@@ -1987,8 +1987,9 @@ function coder_review_get_ignores() {
   $ignores = coder_review_parse_ignores(drupal_get_path('module', 'coder_review') . '/core.coder_review_ignores.txt');
   foreach (module_implements('coder_review_ignore') as $module) {
     $function = $module . '_coder_review_ignore';
-    $info = $function();
-    $ignores += coder_review_parse_ignores($info['path'] . '/' . $module . '.coder_review_ignores.txt');
+    $default_info = array('path' => '', 'line prefix' => '');
+    $info = array_merge($default_info, $function());
+    $ignores += coder_review_parse_ignores($info['path'] . '/' . $module . '.coder_review_ignores.txt', $info['line prefix']);
   }
   return $ignores;
 }
@@ -1996,7 +1997,7 @@ function coder_review_get_ignores() {
 /**
  * Parse an 'ignore' file.
  */
-function coder_review_parse_ignores($filepath) {
+function coder_review_parse_ignores($filepath, $line_prefix = '') {
   $ignores = array();
 
   // Ensure the file exists.
@@ -2014,6 +2015,7 @@ function coder_review_parse_ignores($filepath) {
     if (empty($line) || preg_match('/^;/', $line, $matches)) {
       continue;
     }
+    $line = $line_prefix . $line;
     // filename:lineo:review
     $parts = explode(':', $line);
     // $ignores[filename][review][] = lineno
