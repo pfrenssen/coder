@@ -161,6 +161,7 @@ function theme_drush_coder($name, $filename, $results) {
 
 function theme_drush_coder_warning($warning, $severity_name, $lineno = 0, $line = '') {
   $output  = $lineno ? '+'. $lineno .': ' : '';
+  $output .= '[' . $severity_name . '] ';
   $output .= is_array($warning) ? $warning['#warning'] : $warning;
   return _coder_drush_output($output);
 }
