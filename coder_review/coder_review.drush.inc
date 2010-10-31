@@ -31,8 +31,8 @@ function coder_review_drush_help($section) {
                 . "\n    <name> - review specified module or theme name, i.e. taxonomy"
                 . "\n    no-<name> - exclude named modules and themes, i.e. no-taxonomy"
                 . "\n     combine with active|core|contrib|all|default"
-                . "\n    URL to patch"
-                . "\n    relative path to file or multiple files"
+                . "\n    <patch-url> - URL to patch file"
+                . "\n    <file-path> - path to file or multiple files, relative to Drupal installation"
                );
   }
 }
