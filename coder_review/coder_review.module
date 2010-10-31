@@ -1984,7 +1984,7 @@ function _coder_review_is_drupal_core($module) {
  * Get list of lines to ignore.
  */
 function coder_review_get_ignores() {
-  $ignores = coder_review_parse_ignores(drupal_get_path('module', 'coder') . '/core.coder_review_ignores.txt');
+  $ignores = coder_review_parse_ignores(drupal_get_path('module', 'coder_review') . '/core.coder_review_ignores.txt');
   foreach (module_implements('coder_review_ignore') as $module) {
     $function = $module . '_coder_review_ignore';
     $info = $function();
