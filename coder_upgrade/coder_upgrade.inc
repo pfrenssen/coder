@@ -93,6 +93,39 @@ function coder_upgrade_clean_directory($path, $remove_me = FALSE) {
 }
 
 /**
+ * Returns full directory path relative to sites directory.
+ *
+ * @param string $name
+ *   Name of the directory.
+ * @param boolean $add_slash
+ *   Indicates whether to add a trailing slash.
+ * @param boolean $stream_format
+ *   Indicates whether to use the actual path or a stream protocol.
+ * @return string
+ *   A string of the directory path.
+ */
+function coder_upgrade_directory_path($name, $add_slash = TRUE, $stream_format = FALSE) {
+  $slash = $add_slash ? '/' : '';
+  $prefix_no_slash = $stream_format ? file_default_scheme() . ':/' : file_directory_path();
+  $prefix = $prefix_no_slash . '/';
+
+  switch ($name) {
+    case 'base':
+      return $prefix . variable_get('coder_upgrade_dir', DEADWOOD_DIR) . $slash;
+    case 'old':
+      return $prefix . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD) . $slash;
+    case 'new':
+      return $prefix . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . $slash;
+    case 'patch':
+      return $prefix . variable_get('coder_upgrade_dir_patch', DEADWOOD_PATCH) . $slash;
+    case '':
+      return $prefix_no_slash; // @todo Is this correct with a stream format?
+    default:
+      return $prefix . $name . $slash;
+  }
+}
+
+/**
  * Returns the local public directory path.
  *
  * Adapted from function removed from core on 2010-09-01
@@ -127,10 +160,6 @@ if (!function_exists('file_directory_path')) {
 if (!function_exists('drupal_get_path')) {
   function drupal_get_path($type, $name) {
     global $modules_base;
-
-//     if ($name == 'coder_upgrade') {
-//       $name = 'coder/coder_upgrade';
-//     }
     return $modules_base . "/$name";
   }
 }

@@ -44,6 +44,8 @@ echo 'Curr 1: ' . number_format(memory_get_usage(TRUE), 0, '.', ',') . " bytes\n
 define('DRUPAL_ROOT', getcwd());
 
 ini_set('display_errors', 1);
+ini_set('memory_limit', '128M');
+ini_set('max_execution_time', 180);
 set_error_handler("error_handler");
 set_exception_handler("exception_handler");
 
@@ -126,13 +128,18 @@ function extract_arguments() {
       break;
 
     case 'cli':
-      if ($_SERVER['argc'] < 3) {
+      $skip_args = 2;
+      if ($_SERVER['argc'] == 2) {
+        $skip_args = 1;
+      }
+      elseif ($_SERVER['argc'] < 2) {
         echo 'file parameter is not set' . "\n";
         return;
       }
       foreach ($_SERVER['argv'] as $index => $arg) {
-        // First two arguments are script filename and '--'.
-        if ($index < 2) continue;
+        // First two arguments are usually script filename and '--'.
+        // Sometimes the '--' is omitted.
+        if ($index < $skip_args) continue;
         list($key, $value) = explode('=', $arg);
         $arguments[$key] = $value;
       }

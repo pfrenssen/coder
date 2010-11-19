@@ -17,19 +17,19 @@ function coder_upgrade_install() {
   // Create the top-level module directory.
   // Because the core function is now recursive, we could start with the
   // subdirectories. However, this code is clean and allows for one else block.
-  $dir = file_directory_path() . '/' . DEADWOOD_DIR;
+  $dir = coder_upgrade_directory_path('base', FALSE);
   if (file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
     // Create the old and new module directories.
-    $dir = file_directory_path() . '/' . DEADWOOD_OLD;
+    $dir = coder_upgrade_directory_path('old', FALSE);
     if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
       drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory searched by Coder Upgrade for modules to be converted.', array('%directory' => $dir)), 'error');
     }
-    $dir = file_directory_path() . '/' . DEADWOOD_NEW;
+    $dir = coder_upgrade_directory_path('new', FALSE);
       if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
         drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory to which Coder Upgrade writes converted module code.', array('%directory' => $dir)), 'error');
     }
     // Create the patch directory.
-    $dir = file_directory_path() . '/' . DEADWOOD_PATCH;
+    $dir = coder_upgrade_directory_path('patch', FALSE);
     if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
       drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory to which Coder Upgrade writes patch files.', array('%directory' => $dir)), 'error');
     }
@@ -48,11 +48,11 @@ function coder_upgrade_install() {
  */
 function coder_upgrade_uninstall() {
   // Remove the module input and output directories.
-  $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);
+  $dir = coder_upgrade_directory_path('old', FALSE);
   coder_upgrade_clean_directory($dir, TRUE);
-  $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
+  $dir = coder_upgrade_directory_path('new', FALSE);
   coder_upgrade_clean_directory($dir, TRUE);
-  $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_patch', DEADWOOD_PATCH);
+  $dir = coder_upgrade_directory_path('patch', FALSE);
   coder_upgrade_clean_directory($dir, TRUE);
 
   // Remove items from {variables} table.
@@ -87,7 +87,7 @@ function coder_upgrade_requirements($phase) {
         'severity' => REQUIREMENT_ERROR
       );
     }
-    $dir = file_directory_path();
+    $dir = coder_upgrade_directory_path('', FALSE);
     if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
       $requirements['coder_upgrade_files'] = array(
         'title' => $t('Files directory'),
@@ -97,7 +97,7 @@ function coder_upgrade_requirements($phase) {
     }
   }
   else {
-    $dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
+    $dir = coder_upgrade_directory_path('new', FALSE);
     if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
       $requirements['coder_upgrade_files'] = array(
         'title' => $t('Coder Upgrade directory'),

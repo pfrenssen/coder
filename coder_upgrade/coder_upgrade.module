@@ -100,7 +100,7 @@ function coder_upgrade_settings_form($form, &$form_state) {
   module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
   $parser = new PGPParser();
 
-  $path = file_directory_path();
+  $path = coder_upgrade_directory_path('', FALSE);
   $form['coder_upgrade_dir'] = array(
     '#title' => t('Module base directory'),
     '#type' => 'textfield',
@@ -185,7 +185,7 @@ function coder_upgrade_settings_form_submit($form, &$form_state) {
   $cur = variable_get('coder_upgrade_dir', DEADWOOD_DIR);
   $new = $op == t('Reset to defaults') ? DEADWOOD_DIR : $values['coder_upgrade_dir'];
   if ($new != $cur) {
-    if (rename(file_directory_path() . '/' . $cur, file_directory_path() . '/' . $new)) {
+    if (rename(coder_upgrade_directory_path($cur, FALSE), coder_upgrade_directory_path($new, FALSE))) {
       variable_set('coder_upgrade_dir_old', $new . '/old');
       variable_set('coder_upgrade_dir_new', $new . '/new');
       variable_set('coder_upgrade_dir_patch', $new . '/patch');
@@ -369,7 +369,7 @@ function coder_upgrade_extensions_build(&$extensions) {
 function coder_upgrade_directories_build(&$directories) {
   // Build the directory list.
   $deadwood_dir = variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);
-  $path = realpath(file_directory_path() . '/' . $deadwood_dir);
+  $path = realpath(coder_upgrade_directory_path('old', FALSE));
   $dirs = coder_upgrade_scan_directory($path);
   if (!$dirs) {
     drupal_set_message(t('Please place modules to be converted in @path.', array('@path' => $path)), 'error');
@@ -510,10 +510,10 @@ function coder_upgrade_conversions_apply($form_state) {
   module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
   if (variable_get('coder_upgrade_use_separate_process', TRUE)) {
     // Conversion code will be run in a separate process.
-    drupal_set_message('Conversion code will be run in a separate process.');
+    drupal_set_message('Module conversion code will run in a separate process.');
     $path = coder_upgrade_parameters_save($upgrades, $extensions, $items);
     $script = drupal_get_path('module', 'coder_upgrade') . '/scripts/coder_upgrade.run.php';
-//     $output = file_directory_path() . '/coder_upgrade/coder-upgrade-run.txt';
+//     $output = coder_upgrade_directory_path('base') . 'coder-upgrade-run.txt';
     $command = "php $script -- file=$path 2>&1"; // $command = "php $script -- file=$path > $output 2>&1";
     // Execute the command and capture the output.
     $output = shell_exec($command);
@@ -524,7 +524,7 @@ function coder_upgrade_conversions_apply($form_state) {
   }
   else {
     // Conversion code will be run in the same process.
-    drupal_set_message('Conversion code will be run in the same process.');
+    drupal_set_message('Module conversion code will run in the same process.');
     $success = coder_upgrade_start($upgrades, $extensions, $items);
   }
 
@@ -546,8 +546,8 @@ function coder_upgrade_conversions_prepare($form_state) {
     );
   }
 
-  $old_dir = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD) . '/';
-  $new_dir = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
+  $old_dir = DRUPAL_ROOT . '/' . coder_upgrade_directory_path('old');
+  $new_dir = DRUPAL_ROOT . '/' . coder_upgrade_directory_path('new');
 
   // Combine directory and module items into a single list.
   // Omit name from key so as to allow for duplicate names.
@@ -595,8 +595,8 @@ function coder_upgrade_parameters_save($upgrades, $extensions, $items) {
   }
   // Create paths array.
   $paths = array(
-    'files_base' => file_directory_path(),
-    'modules_base' => str_replace('files', 'modules', file_directory_path()),
+    'files_base' => coder_upgrade_directory_path('', FALSE),
+    'modules_base' => str_replace('files', 'modules', coder_upgrade_directory_path('', FALSE)),
   );
   // Create variables array.
   $variables = array(
@@ -793,7 +793,7 @@ function coder_upgrade_patch_path($filename) {
   static $dirname = '';
 
   if (!$dirname) {
-    $dirname = file_directory_path() . '/' . variable_get('coder_upgrade_dir_patch', DEADWOOD_PATCH);
+    $dirname = coder_upgrade_directory_path('patch');
   }
-  return $dirname . "/$filename";
+  return $dirname . "$filename";
 }

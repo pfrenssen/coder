@@ -551,7 +551,7 @@ function coder_upgrade_module_name($dirname, &$item) {
  */
 function coder_upgrade_make_patch_file($item, $replace_files = FALSE) {
   // Patch directory.
-  $patch_dir = file_directory_path() . '/' . variable_get('coder_upgrade_dir_patch', DEADWOOD_PATCH) . '/';
+  $patch_dir = coder_upgrade_directory_path('patch');
 
   // Make a patch file.
   coder_upgrade_log_print("\n*************************");
@@ -563,6 +563,12 @@ function coder_upgrade_make_patch_file($item, $replace_files = FALSE) {
   $new_dir = $replace_files ? $item['old_dir'] : $item['new_dir'];
   coder_upgrade_log_print("Making patch file: diff -up -r {$old_dir} {$new_dir} > {$patch_filename}");
   shell_exec("diff -up -r {$old_dir} {$new_dir} > {$patch_filename}");
+
+  // Remove the path strings from the patch file (for usability purposes).
+  $old1 = $old_dir . '/';
+  $new1 = $new_dir . '/';
+  $contents = file_get_contents($patch_filename);
+  file_put_contents($patch_filename, str_replace(array($old1, $new1), '', $contents));
 }
 
 /**
@@ -751,7 +757,7 @@ function coder_upgrade_path($type = '') {
   static $path = '';
 
   if (!$path) {
-    $path = file_directory_path() . '/' . variable_get('coder_upgrade_dir', DEADWOOD_DIR);
+    $path = coder_upgrade_directory_path('base', FALSE);
   }
   return $type ? $path . '/' . $type . '.txt' : $path;
 }

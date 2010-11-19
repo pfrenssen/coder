@@ -40,7 +40,7 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
     $this->captureThemeInfo();
     file_put_contents('output.html', "after captureThemeInfo\n", FILE_APPEND);
     // Save the live site files directory path.
-    $this->site_directory = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
+    $this->site_directory = DRUPAL_ROOT . '/' . coder_upgrade_directory_path('new');
     file_put_contents('output.html', $this->site_directory . "\n", FILE_APPEND);
 
     parent::setUp('grammar_parser', 'coder_upgrade');
@@ -79,7 +79,7 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
     coder_upgrade_debug_print("module = $module_dirname");
 
     $in_dirname = $module_dirname . '/tests/old/';
-    $out_dirname = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
+    $out_dirname = DRUPAL_ROOT . '/' . coder_upgrade_directory_path('new');
 
     $directories = array($this->test_directory => 1);
     foreach ($directories as $key => $directory) {
@@ -111,7 +111,7 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
     $module_dirname = DRUPAL_ROOT . '/' . drupal_get_path('module', 'coder_upgrade');
     $in_dirname = $module_dirname . '/tests/old/';
     $expected_dirname = $module_dirname . '/tests/new/';
-    $out_dirname = DRUPAL_ROOT . '/' . file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW) . '/';
+    $out_dirname = DRUPAL_ROOT . '/' . coder_upgrade_directory_path('new');
     file_put_contents('output.html', "$out_dirname\n", FILE_APPEND);
 
     $upgrades = coder_upgrade_upgrade_info();

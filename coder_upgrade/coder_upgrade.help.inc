@@ -12,8 +12,8 @@
  * Implements hook_help().
  */
 function coder_upgrade_help($path, $arg) {
-  $input = file_directory_path() . '/' . variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);
-  $output = file_directory_path() . '/' . variable_get('coder_upgrade_dir_new', DEADWOOD_NEW);
+  $input = coder_upgrade_directory_path('old', FALSE);
+  $output = coder_upgrade_directory_path('new', FALSE);
   switch ($path) {
     case 'admin/config/development/coder/upgrade/settings':
       return tp('This is a list of the variables used by the automated module conversion suite.');

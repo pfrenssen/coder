@@ -2,6 +2,14 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-11-19):
+  * coder_upgrade.main.inc
+  * - #245471 (comment #7): remove base directory path from patch file in coder_upgrade_make_patch_file()
+  * inc, install, help.inc, main.inc, module, test
+  * - refactor file_directory_path() references to coder_upgrade_directory_path()
+  * coder_upgrade.run.php
+  * - add php memory and time limits
+
 - Changes (2010-10-30):
   * coder_upgrade.module
   * - refactor form submission code to coder_upgrade_conversions_apply()
