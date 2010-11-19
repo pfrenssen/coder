@@ -997,6 +997,9 @@ function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, 
   $path_info = pathinfo($filename);
   list($modulename) = explode('.', $path_info['basename'], 2);
   $path = realpath($path_info['dirname'] . '/' . $modulename . '.info');
+  if (!$path || !is_file($path)) {
+    return;
+  }
   $ini = parse_ini_file($path);
 
   // Check if the dependency has been declared.

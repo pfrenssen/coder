@@ -1845,6 +1845,9 @@ function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
         if (_coder_review_search_string($line, $rule)) {
           $line = $coder_args['#all_lines'][$lineno];
           $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
+          if (!isset($coder_args['#ignore_lines'][$review['#review_name']])) {
+            $coder_args['#ignore_lines'][$review['#review_name']] = array();
+          }
           _coder_review_error($results, $rule, $severity_name, $lineno, $line, $coder_args['#ignore_lines'][$review['#review_name']]);
         }
       }

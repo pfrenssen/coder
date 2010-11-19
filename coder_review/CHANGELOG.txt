@@ -2,6 +2,10 @@
 
 Coder Review 7.x-1.x, xxxx-xx-xx
 ---------------------------------
+- Changes (2010-11-19):
+  * coder_review.module, coder_review_7x.include
+  * - #976940: eliminate php warnings related to files not present: core.coder_review_ignores.txt and info file
+
 - Changes (2010-06-10):
   * coder.module, coder_review.module, coder_upgrade.module
   * - #776996, #824268: eliminate strict warning in coder_review_page()
