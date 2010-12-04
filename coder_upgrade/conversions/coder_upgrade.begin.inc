@@ -126,16 +126,16 @@ function coder_upgrade_cache_info_hooks($item, $recursive = TRUE) {
         $cur = file_get_contents($dirname . '/' . $filename);
         // Create reader object.
         $reader = PGPReader::getInstance();
-        pgp_log_memory_use('create reader for file ' . $filename);
+        coder_upgrade_memory_print('create reader for file ' . $filename);
         $reader->setSnippet($cur);
 //         $reader->addTokenNames(); // @todo This is unnecessary.
         if (FALSE) {
           $reader->buildGrammar();
-          pgp_log_memory_use('build grammar');
+          coder_upgrade_memory_print('build grammar');
         }
         else {
           $reader->buildSpecific(T_FUNCTION, $values);
-          pgp_log_memory_use('build specific grammar');
+          coder_upgrade_memory_print('build specific grammar');
         }
 
         $functions = $reader->getFunctions();
@@ -158,7 +158,7 @@ function coder_upgrade_cache_info_hooks($item, $recursive = TRUE) {
         }
         // Free up memory.
         $reader->reset();
-        pgp_log_memory_use('reset reader');
+        coder_upgrade_memory_print('reset reader');
       }
     }
   }

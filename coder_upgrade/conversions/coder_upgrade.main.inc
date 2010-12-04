@@ -45,17 +45,17 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
   $log = TRUE;
   if ($log) {
     // Clear the log file.
-    file_put_contents(coder_upgrade_path('log'), '');
+    coder_upgrade_path_clear('log');
     if (!variable_get('coder_upgrade_use_separate_process', TRUE)) {
-      pgp_log_memory_use('', TRUE);
+      coder_upgrade_path_clear('memory');
     }
-    pgp_log_memory_use('initial');
+    coder_upgrade_memory_print('initial');
   }
   // Set debug output preference.
   $debug = variable_get('coder_upgrade_enable_debug_output', FALSE);
   if ($debug) {
     // Clear the debug file.
-    file_put_contents(coder_upgrade_path('debug'), '');
+    coder_upgrade_path_clear('debug');
   }
 
   // Load code.
@@ -120,7 +120,7 @@ function coder_upgrade_load_code(&$upgrades) {
       require_once $path . '/' . $module . '.upgrade';
     }
   }
-  pgp_log_memory_use('load upgrade code');
+  coder_upgrade_memory_print('load upgrade code');
 }
 
 /**
@@ -137,7 +137,7 @@ function coder_upgrade_load_parser() {
     module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.editor');
     module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.list');
     module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.object');
-    pgp_log_memory_use('load parser code');
+    coder_upgrade_memory_print('load parser code');
   }
 }
 
@@ -338,54 +338,54 @@ function coder_upgrade_apply_parser($filename, &$new) {
 
   // Create reader object.
   $reader = PGPReader::getInstance();
-  pgp_log_memory_use('create reader for file ' . $filename);
+  coder_upgrade_memory_print('create reader for file ' . $filename);
   // Set array formatting preference.
   $reader->setPreserveArrayFormat(variable_get('coder_upgrade_preserve_array_format', FALSE));
   // Set debug output preference.
   $reader->setDebug(variable_get('coder_upgrade_enable_parser_debug_output', FALSE));
   $reader->setSnippet($new);
-  pgp_log_memory_use('set snippet');
+  coder_upgrade_memory_print('set snippet');
   $reader->addTokenNames();
-  pgp_log_memory_use('add token names');
+  coder_upgrade_memory_print('add token names');
   // Parse code file.
   $reader->buildGrammar();
-  pgp_log_memory_use('build grammar');
+  coder_upgrade_memory_print('build grammar');
 
   // Apply parser conversion routines for function calls.
   coder_upgrade_log_print("Calling hook_upgrade_call_alter");
   coder_upgrade_convert_function_calls($reader);
   coder_upgrade_log_print("Completed hook_upgrade_call_alter");
-  pgp_log_memory_use('apply function call conversions');
+  coder_upgrade_memory_print('apply function call conversions');
 
   // Apply parser conversion routines for hook functions.
   coder_upgrade_log_print("Calling hook_upgrade_hook_alter");
   coder_upgrade_convert_functions($reader);
   coder_upgrade_log_print("Completed hook_upgrade_hook_alter");
-  pgp_log_memory_use('apply hook function conversions');
+  coder_upgrade_memory_print('apply hook function conversions');
 
   // Apply parser conversion routines for the file.
   coder_upgrade_log_print("Calling hook_upgrade_file_alter");
   drupal_alter('upgrade_file', $reader);
   coder_upgrade_log_print("Completed hook_upgrade_file_alter");
-  pgp_log_memory_use('apply file conversions');
+  coder_upgrade_memory_print('apply file conversions');
 
   if ($is_install_file) {
     // Apply parser conversion routines for install file.
     coder_upgrade_log_print("Calling hook_upgrade_parser_install_alter");
     drupal_alter('upgrade_parser_install', $reader);
     coder_upgrade_log_print("Completed hook_upgrade_parser_install_alter");
-    pgp_log_memory_use('apply install file conversions');
+    coder_upgrade_memory_print('apply install file conversions');
   }
 
   // Use writer to redo file.
   $writer = PGPWriter::getInstance();
-  pgp_log_memory_use('create writer');
+  coder_upgrade_memory_print('create writer');
   $new = $writer->toString($reader->getStatements());
-  pgp_log_memory_use('writer->toString');
+  coder_upgrade_memory_print('writer->toString');
 
   // Free up memory.
   $reader->reset();
-  pgp_log_memory_use('reset reader');
+  coder_upgrade_memory_print('reset reader');
 }
 
 /**
@@ -668,6 +668,25 @@ function coder_upgrade_save_changes($cur, $new, &$file, $hook) {
 }
 
 /**
+ * Prints memory usage to log.
+ *
+ * @param string $step
+ *   A string describing the code step when the memory usage is gathered.
+ */
+function coder_upgrade_memory_print($step) {
+  static $path = '';
+
+  if (!$path) {
+    $path = coder_upgrade_path('memory');
+    // Clearing here works except with run.php which runs in a separate process.
+//     coder_upgrade_path_clear('memory');
+  }
+  coder_upgrade_path_print($path, "\n\n\n====================\n$step");
+  coder_upgrade_path_print($path, 'Peak: ' . number_format(memory_get_peak_usage(TRUE), 0, '.', ',') . ' bytes');
+  coder_upgrade_path_print($path, 'Curr: ' . number_format(memory_get_usage(TRUE), 0, '.', ',') . ' bytes');
+}
+
+/**
  * Prints log information if log flag is on.
  *
  * @param mixed $text
@@ -682,22 +701,9 @@ function coder_upgrade_log_print($text) {
   }
   if (!$path) {
     $path = coder_upgrade_path('log');
+//     coder_upgrade_path_clear('log');
   }
-  if (is_a($text, 'PGPList')) {
-    file_put_contents($path, $text->print_r(), FILE_APPEND);
-  }
-  elseif (is_a($text, 'PGPBase')) {
-    file_put_contents($path, $text->print_r(), FILE_APPEND);
-  }
-  elseif (is_object($text)) {
-//    print_r($text);
-  }
-  elseif (is_array($text)) {
-    file_put_contents($path, print_r($text, 1), FILE_APPEND);
-  }
-  else {
-    file_put_contents($path, $text . "\n", FILE_APPEND);
-  }
+  coder_upgrade_path_print($path, $text);
 }
 
 /**
@@ -715,21 +721,50 @@ function coder_upgrade_debug_print($text) {
   }
   if (!$path) {
     $path = coder_upgrade_path('debug');
+//     coder_upgrade_path_clear('log');
   }
+  coder_upgrade_path_print($path, $text);
+}
+
+/**
+ * Clears the contents of a file.
+ *
+ * @param string $type
+ *   File type.
+ */
+function coder_upgrade_path_clear($type = 'debug') {
+  file_put_contents(coder_upgrade_path($type), '');
+}
+
+/**
+ * Prints information to a file.
+ *
+ * @param string $path
+ *   File path.
+ * @param mixed $text
+ *   A string, array, or object to print.
+ */
+function coder_upgrade_path_print($path, $text) {
   if (is_a($text, 'PGPList')) {
-    file_put_contents($path, $text->print_r(), FILE_APPEND);
+    $result = file_put_contents($path, $text->print_r(), FILE_APPEND);
   }
   elseif (is_a($text, 'PGPBase')) {
-    file_put_contents($path, $text->print_r(), FILE_APPEND);
+    $result = file_put_contents($path, $text->print_r(), FILE_APPEND);
+  }
+  elseif (is_a($text, 'stdClass')) {
+    $result = file_put_contents($path, print_r($text, 1), FILE_APPEND);
   }
   elseif (is_object($text)) {
-//    print_r($text);
+    $result = file_put_contents($path, "Unknown object class\n", FILE_APPEND);
   }
   elseif (is_array($text)) {
-    file_put_contents($path, print_r($text, 1), FILE_APPEND);
+    $result = file_put_contents($path, print_r($text, 1), FILE_APPEND);
   }
   else {
-    file_put_contents($path, $text . "\n", FILE_APPEND);
+    $result = file_put_contents($path, $text . "\n", FILE_APPEND);
+  }
+  if ($result === FALSE) {
+    echo "Unable to write to file: $path\n";
   }
 }
 

@@ -513,13 +513,12 @@ function coder_upgrade_conversions_apply($form_state) {
     drupal_set_message('Module conversion code will run in a separate process.');
     $path = coder_upgrade_parameters_save($upgrades, $extensions, $items);
     $script = drupal_get_path('module', 'coder_upgrade') . '/scripts/coder_upgrade.run.php';
-//     $output = coder_upgrade_directory_path('base') . 'coder-upgrade-run.txt';
-    $command = "php $script -- file=$path 2>&1"; // $command = "php $script -- file=$path > $output 2>&1";
+    $output = coder_upgrade_directory_path('base') . 'coder_upgrade.run.txt';
+    $command = "php $script -- file=$path > $output"; // " 2>&1";
     // Execute the command and capture the output.
-    $output = shell_exec($command);
-    $success = $output == TRUE;
-    if (!$success && isset($output)) {
-      drupal_set_message(trim($output), 'error');
+    exec($command, $errors, $success);
+    if (!$success && !empty($errors)) {
+      drupal_set_message(trim(implode("\n", $errors)), 'error');
     }
   }
   else {
@@ -528,7 +527,7 @@ function coder_upgrade_conversions_apply($form_state) {
     $success = coder_upgrade_start($upgrades, $extensions, $items);
   }
 
-  return $success;
+  return $success === 0;
 }
 
 /**
@@ -596,7 +595,7 @@ function coder_upgrade_parameters_save($upgrades, $extensions, $items) {
   // Create paths array.
   $paths = array(
     'files_base' => coder_upgrade_directory_path('', FALSE),
-    'modules_base' => str_replace('files', 'modules', coder_upgrade_directory_path('', FALSE)),
+    'modules_base' => str_replace('/coder', '', drupal_get_path('module', 'coder')),
   );
   // Create variables array.
   $variables = array(

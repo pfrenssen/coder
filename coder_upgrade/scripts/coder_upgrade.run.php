@@ -11,7 +11,7 @@
  * - enables a batch processing workflow
  *
  * Parameters to this script:
- * @param string $parameters
+ * @param string $path
  *   Path to a file containing runtime parameters
  *
  * The parameters should be stored as the serialized value of an associative
@@ -27,16 +27,35 @@
  * @see coder_upgrade_parameters_save()
  * @see coder_upgrade_start()
  *
- * To execute this script, run a command from the directory the standard output
- * file is written to:
- * - curl "http://dev.d7x.loc/coder_upgrade.run.php" > coder-upgrade-run.txt
+ * To execute this script, save the following shell script to a file and execute
+ * the shell script from the root directory of your Drupal installation. If you
+ * have changed the default coder_upgrade output directory name, then modify
+ * this script accordingly.
+ *
+ * #!/bin/sh
+ *
+ * MODULES_DIRECTORY=[fill this in, e.g. all or mysite]
+ * FILES_DIRECTORY=[fill this in, e.g. default or mysite]
+ * CODER_UPGRADE_DIRECTORY=coder_upgrade [unless you changed it]
+ * SCRIPT=sites/$MODULES_DIRECTORY/modules/coder/coder_upgrade/scripts/coder_upgrade.run.php
+ * RUNTIME=sites/$FILES_DIRECTORY/files/$CODER_UPGRADE_DIRECTORY/runtime.txt
+ * OUTPUT=sites/$FILES_DIRECTORY/files/$CODER_UPGRADE_DIRECTORY/coder_upgrade.run.txt
+ * 
+ * php $SCRIPT -- file=$RUNTIME > $OUTPUT 2>&1
+ *
+ * Alternatively, replace the bracketed items in the following command and
+ * execute it from the root directory of your Drupal installation.
+ *
+ * php sites/[modules_directory]/modules/coder/coder_upgrade/scripts/coder_upgrade.run.php \
+ *  -- file=sites/[files_directory]/files/coder_upgrade/runtime.txt \
+ *  > sites/[files_directory]/files/coder_upgrade/coder_upgrade.run.txt 2>&1
  *
  * Copyright 2009-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
-echo "Start\n";
-echo 'Peak 1: ' . number_format(memory_get_peak_usage(TRUE), 0, '.', ',') . " bytes\n";
-echo 'Curr 1: ' . number_format(memory_get_usage(TRUE), 0, '.', ',') . " bytes\n";
+// Save memory usage for printing later (when code is loaded).
+$usage = array();
+save_memory_usage('start', $usage);
 
 /**
  * Root directory of Drupal installation.
@@ -52,7 +71,8 @@ set_exception_handler("exception_handler");
 // Read command line arguments.
 $path = extract_arguments();
 if (is_null($path)) {
-  return 'No path to parameter file';
+  echo 'No path to parameter file';
+  return 2;
 }
 
 // Load runtime parameters.
@@ -62,30 +82,23 @@ $parameters = unserialize(file_get_contents($path));
 foreach ($parameters as $key => $variable) {
   $$key = $variable;
 }
+save_memory_usage('load runtime parameters', $usage);
 
 // Set directory paths.
 $files_base = $paths['files_base'];
 $modules_base = $paths['modules_base'];
 
-// Load parser module so we can log memory use.
-require_once DRUPAL_ROOT . '/' . $modules_base . '/grammar_parser/grammar_parser.module';
-
-pgp_log_memory_use('', TRUE);
-pgp_log_memory_use('load runtime parameters');
-
 // Load core theme cache.
 $upgrade_theme_registry = array();
 if (is_file($theme_cache)) {
-//   echo "yea, found the theme cache\n";
   $upgrade_theme_registry = unserialize(file_get_contents($theme_cache));
 }
-pgp_log_memory_use('load core theme cache');
+save_memory_usage('load core theme cache', $usage);
 
 // Load coder_upgrade bootstrap code.
 $path = $modules_base . '/coder/coder_upgrade';
 $files = array(
   'coder_upgrade.inc',
-  'coder_upgrade.module',
   'conversions/coder_upgrade.list.inc',
   'conversions/coder_upgrade.main.inc',
 );
@@ -93,10 +106,13 @@ foreach ($files as $file) {
   require_once DRUPAL_ROOT . '/' . $path . "/$file";
 }
 
+coder_upgrade_path_clear('memory');
+print_memory_usage($usage);
+
 // $trace_base = DRUPAL_ROOT . '/' . $files_base . '/coder_upgrade/coder_upgrade_';
 // $trace_file = $trace_base . '1.trace';
 // xdebug_start_trace($trace_file);
-pgp_log_memory_use('load coder_upgrade bootstrap code');
+coder_upgrade_memory_print('load coder_upgrade bootstrap code');
 // xdebug_stop_trace();
 
 // Apply conversion functions.
@@ -104,10 +120,10 @@ $success = coder_upgrade_start($upgrades, $extensions, $items);
 
 // $trace_file = $trace_base . '2.trace';
 // xdebug_start_trace($trace_file);
-pgp_log_memory_use('finish');
+coder_upgrade_memory_print('finish');
 // xdebug_stop_trace();
 
-return $success;
+return $success ? 0 : 1;
 
 /**
  * Returns command line arguments.
@@ -133,7 +149,7 @@ function extract_arguments() {
         $skip_args = 1;
       }
       elseif ($_SERVER['argc'] < 2) {
-        echo 'file parameter is not set' . "\n";
+        echo 'CLI-1: file parameter is not set' . "\n";
         return;
       }
       foreach ($_SERVER['argv'] as $index => $arg) {
@@ -144,7 +160,7 @@ function extract_arguments() {
         $arguments[$key] = $value;
       }
       if (!isset($arguments['file'])) {
-        echo 'file parameter is not set' . "\n";
+        echo 'CLI-2: file parameter is not set' . "\n";
         return;
       }
       $filename = $arguments['file'];
@@ -152,6 +168,31 @@ function extract_arguments() {
       break;
   }
   return $filename;
+}
+
+/**
+ * Saves memory usage for printing later.
+ *
+ * @param string $step
+ *   A string describing the code step when the memory usage is gathered.
+ *
+ * @return mixed
+ *   String or array of command line arguments.
+ */
+function save_memory_usage($step, &$usage) {
+  $usage[] = $step;
+  $usage[] = 'Peak: ' . number_format(memory_get_peak_usage(TRUE), 0, '.', ',') . ' bytes';
+  $usage[] = 'Curr: ' . number_format(memory_get_usage(TRUE), 0, '.', ',') . ' bytes';
+  $usage[] = '';
+  $usage[] = '';
+}
+
+function print_memory_usage($usage) {
+  $text = 'Missing memory usage information';
+  if (is_array($usage)) {
+    $text = implode("\n", $usage);
+  }
+  coder_upgrade_path_print(coder_upgrade_path('memory'), $text);
 }
 
 function exception_handler($e) {

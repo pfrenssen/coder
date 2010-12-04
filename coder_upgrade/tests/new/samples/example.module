@@ -1615,7 +1615,7 @@ function example_taxonomy_tables() {
   ->fields(array(
     'weight' => 0,
   ))
-  ->condition('vid', vid)
+  ->condition('vid', : vid)
   ->execute();
   db_insert('taxonomy_term_synonym');
 }
@@ -1812,7 +1812,7 @@ function example_theme() {
       'variables' => array('items' => NULL, 'title' => NULL),
     ),
     'example_node_search_admin' => array(
-      'render element' => array('form' => NULL),
+      'render element' => 'form',
     ),
     'example_user_list' => array(
       'variables' => array('users' => NULL, 'title' => NULL),
@@ -1826,9 +1826,7 @@ function example_theme() {
       ),
     ),
     'example_coder_review_table_cols' => array(
-      'render element' => array(
-        'form' => NULL,
-      ),
+      'render element' => 'form',
     ),
     'example_phpapi' => array(
       'variables' => array(
@@ -1856,7 +1854,7 @@ function example_theme() {
       'variables' => array('items' => NULL, 'title' => NULL),
     ),
     'example_node_search_admin' => array(
-      'render element' => array('form' => NULL),
+      'render element' => 'form',
     ),
     'example_user_list' => array(
       'variables' => array('users' => NULL, 'title' => NULL),
@@ -1870,9 +1868,7 @@ function example_theme() {
       ),
     ),
     'example_coder_review_table_cols' => array(
-      'render element' => array(
-        'form' => NULL,
-      ),
+      'render element' => 'form',
     ),
     'example_phpapi' => array(
       'variables' => array(
@@ -1899,7 +1895,7 @@ function example_theme() {
     'variables' => array('items' => NULL, 'title' => NULL),
   );
   $theme['example_node_search_admin'] = array(
-    'render element' => array('form' => NULL),
+    'render element' => 'form',
   );
   $theme['example_user_list'] = array(
     'variables' => array('users' => NULL, 'title' => NULL),
@@ -1913,9 +1909,7 @@ function example_theme() {
     ),
   );
   $theme['example_coder_review_table_cols'] = array(
-    'render element' => array(
-      'form' => NULL,
-    ),
+    'render element' => 'form',
   );
   $theme['example_phpapi'] = array(
     'variables' => array(

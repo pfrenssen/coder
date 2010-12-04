@@ -2,6 +2,22 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-12-04):
+  * coder_upgrade.module, coder_upgrade.test, coder_upgrade.begin.inc, coder_upgrade.main.inc, coder_upgrade.run.php
+  * - replace calls to pgp_log_memory_use() with coder_upgrade_memory_print()
+  * coder_upgrade.module
+  * - #982380: correct coder_upgrade_parameters_save() to use module directory instead of files directory
+  * - enhance coder_upgrade_conversions_apply() to capture errors and return code
+  * coder_upgrade.main.inc
+  * - refactor coder_upgrade_debug_print() and coder_upgrade_log_print() to use coder_upgrade_path_print()
+  * - add coder_upgrade_path_clear() and coder_upgrade_memory_print()
+  * coder_upgrade.run.php
+  * - enhance documentation
+  * coder_upgrade.test
+  * - refactor the getInfo() routines
+  * tests/samples directory
+  * - update the input and expected test file: example.module
+
 - Changes (2010-11-19):
   * coder_upgrade.main.inc
   * - #245471 (comment #7): remove base directory path from patch file in coder_upgrade_make_patch_file()
