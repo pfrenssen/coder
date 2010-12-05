@@ -12,7 +12,7 @@ class CoderUpgrade6xTest extends CoderTestCase {
   function __construct($id = NULL) {
     parent::__construct('upgrade6x', $id);
   }
-  
+
   public static function getInfo() {
     return array(
       'name' => t('Coder Upgrade 6.x Tests'),
