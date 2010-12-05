@@ -1,6 +1,10 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Set of tests for the coder_format script.
+ */
 
 /**
  * Represents coder test file for full coder_format_string_all() tests.
@@ -23,7 +27,7 @@ class CoderTestFile extends SimpleExpectation {
 
   /* Whether or not <?php and CVS Id should be added */
   var $full = 0;
-  
+
   /* Whether or not a specific test should be the only one tested */
   var $only = array();
 
@@ -38,14 +42,14 @@ class CoderTestFile extends SimpleExpectation {
     $fh             = fopen($filename, 'r');
     $state          = '';
     $unit           = 0;
-    
-    while (($line = fgets($fh)) !== false) {
+
+    while (($line = fgets($fh)) !== FALSE) {
       // Normalize newlines.
       $line = rtrim($line, "\n\r");
       // Detect INPUT and EXPECT sections.
       if (substr($line, 0, 2) == '--') {
         $state = trim($line, ' -');
-        
+
         // If a new INPUT section begins, start a new unit.
         if ($state == 'INPUT') {
           // If previous section has been marked with the keyword 'ONLY', break
@@ -75,13 +79,13 @@ class CoderTestFile extends SimpleExpectation {
           break;
 
         case 'INPUT':
-          $this->input[$unit] .= $line ."\n";
+          $this->input[$unit] .= $line . "\n";
           break;
 
         case 'EXPECT':
-          $this->expect[$unit] .= $line ."\n";
+          $this->expect[$unit] .= $line . "\n";
           break;
-        
+
         case 'ONLY':
           $this->only[$unit] = TRUE;
           break;
@@ -95,9 +99,9 @@ class CoderTestFile extends SimpleExpectation {
       }
       // If FULL was *not* defined, add a PHP header to contents.
       if (!$this->full) {
-        $prepend             = "<?php\n// $". "Id$\n\n";
-        $this->input[$unit]  = $prepend . rtrim($this->input[$unit], "\n") ."\n\n";
-        $this->expect[$unit] = $prepend . rtrim($this->expect[$unit], "\n") ."\n\n";
+        $prepend             = "<?php\n// $" . "Id$\n\n";
+        $this->input[$unit]  = $prepend . rtrim($this->input[$unit], "\n") . "\n\n";
+        $this->expect[$unit] = $prepend . rtrim($this->expect[$unit], "\n") . "\n\n";
       }
     }
     if (!empty($this->only[$unit])) {
@@ -111,24 +115,24 @@ class CoderTestFile extends SimpleExpectation {
    *
    * @param $filename Filename of test file to test.
    */
-  function test($filename = false) {
+  function test($filename = FALSE) {
     if ($filename) {
       $this->load($filename);
     }
-    
+
     // Perform test.
     // Test passes until proven invalid.
     $valid = TRUE;
     foreach ($this->input as $unit => $content) {
       // Parse input and store results.
       $this->actual[$unit] = coder_format_string_all($this->input[$unit]);
-      
+
       // Let this test fail, if a unit fails.
       if ($this->expect[$unit] !== $this->actual[$unit]) {
         $valid = FALSE;
       }
     }
-    
+
     return $valid;
   }
 
@@ -136,7 +140,7 @@ class CoderTestFile extends SimpleExpectation {
    * Implements SimpleExpectation::testMessage().
    */
   function testMessage() {
-    $message = $this->test .' test in '. htmlspecialchars(basename($this->filename));
+    $message = $this->test . ' test in ' . htmlspecialchars(basename($this->filename));
     return $message;
   }
 
@@ -144,20 +148,20 @@ class CoderTestFile extends SimpleExpectation {
    * Renders the test with an HTML diff table.
    */
   function render() {
-    drupal_add_css(drupal_get_path('module', 'coder') .'/scripts/coder_format/tests/coder-diff.css', 'module', 'all', false);
-    
+    drupal_add_css(drupal_get_path('module', 'coder') . '/scripts/coder_format/tests/coder-diff.css', 'module', 'all', FALSE);
+
     foreach ($this->input as $unit => $content) {
       // Do not output passed units.
       if ($this->expect[$unit] === $this->actual[$unit]) {
         continue;
       }
-      
+
       $diff     = new Text_Diff('auto', array(explode("\n", $this->expect[$unit]), explode("\n", $this->actual[$unit])));
-      $renderer = new Text_Diff_Renderer_parallel($this->test .' test in '. htmlspecialchars(basename($this->filename)));
-      
+      $renderer = new Text_Diff_Renderer_parallel($this->test . ' test in ' . htmlspecialchars(basename($this->filename)));
+
       $message .= $renderer->render($diff);
     }
-    
+
     return $message;
   }
 }
@@ -172,12 +176,12 @@ class Text_Diff_Renderer_parallel extends Text_Diff_Renderer {
 
   /* String header for right column */
   var $final = 'Actual';
-  
+
   // These are big to ensure entire string is output.
   var $_leading_context_lines  = 10000;
   var $_trailing_context_lines = 10000;
   var $title;
-  
+
   function Text_Diff_Renderer_parallel($title) {
     $this->title = $title;
   }
@@ -185,7 +189,7 @@ class Text_Diff_Renderer_parallel extends Text_Diff_Renderer {
   function _blockHeader() {}
 
   function _startDiff() {
-    return '<table class="diff"><thead><tr><th colspan="2">'. $this->title .'</th></tr><tr><th>'. $this->original .'</th><th>'. $this->final .'</th></tr></thead><tbody>';
+    return '<table class="diff"><thead><tr><th colspan="2">' . $this->title . '</th></tr><tr><th>' . $this->original . '</th><th>' . $this->final . '</th></tr></thead><tbody>';
   }
 
   function _endDiff() {
@@ -193,26 +197,26 @@ class Text_Diff_Renderer_parallel extends Text_Diff_Renderer {
   }
 
   function _context($lines) {
-    return '<tr><td><pre>'. $this->_renderLines($lines) .'</pre></td>
-          <td><pre>'. $this->_renderLines($lines) .'</pre></td></tr>';
+    return '<tr><td><pre>' . $this->_renderLines($lines) . '</pre></td>
+          <td><pre>' . $this->_renderLines($lines) . '</pre></td></tr>';
   }
 
   function _added($lines) {
-    return '<tr><td>&nbsp;</td><td class="added"><pre>'. $this->_renderLines($lines) .'</pre></td></tr>';
+    return '<tr><td>&nbsp;</td><td class="added"><pre>' . $this->_renderLines($lines) . '</pre></td></tr>';
   }
 
   function _deleted($lines) {
-    return '<tr><td class="deleted"><pre>'. $this->_renderLines($lines) .'</pre></td><td>&nbsp;</td></tr>';
+    return '<tr><td class="deleted"><pre>' . $this->_renderLines($lines) . '</pre></td><td>&nbsp;</td></tr>';
   }
 
   function _changed($orig, $final) {
-    return '<tr class="changed"><td><pre>'. $this->_renderLines($orig) .'</pre></td>
-        <td><pre>'. $this->_renderLines($final) .'</pre></td></tr>';
+    return '<tr class="changed"><td><pre>' . $this->_renderLines($orig) . '</pre></td>
+        <td><pre>' . $this->_renderLines($final) . '</pre></td></tr>';
   }
-  
+
   function _renderLines($lines) {
-    return str_replace("\n", "<strong>&para;</strong>\n", htmlspecialchars(implode("\n", $lines)."\n"));
+    return str_replace("\n", "<strong>&para;</strong>\n", htmlspecialchars(implode("\n", $lines) . "\n"));
   }
-  
+
 }
 
