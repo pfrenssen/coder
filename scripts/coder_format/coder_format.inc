@@ -2,6 +2,7 @@
 // $Id$
 
 /**
+ * @file
  * Coder format helper functions.
  */
 

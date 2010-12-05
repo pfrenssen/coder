@@ -43,7 +43,7 @@ class CoderTestFile extends SimpleExpectation {
     $state          = '';
     $unit           = 0;
 
-    while (($line = fgets($fh)) !== false) {
+    while (($line = fgets($fh)) !== FALSE) {
       // Normalize newlines.
       $line = rtrim($line, "\n\r");
       // Detect INPUT and EXPECT sections.
@@ -115,7 +115,7 @@ class CoderTestFile extends SimpleExpectation {
    *
    * @param $filename Filename of test file to test.
    */
-  function test($filename = false) {
+  function test($filename = FALSE) {
     if ($filename) {
       $this->load($filename);
     }
@@ -148,7 +148,7 @@ class CoderTestFile extends SimpleExpectation {
    * Renders the test with an HTML diff table.
    */
   function render() {
-    drupal_add_css(drupal_get_path('module', 'coder') .'/scripts/coder_format/tests/coder-diff.css', 'module', 'all', false);
+    drupal_add_css(drupal_get_path('module', 'coder') .'/scripts/coder_format/tests/coder-diff.css', 'module', 'all', FALSE);
 
     foreach ($this->input as $unit => $content) {
       // Do not output passed units.
@@ -215,7 +215,7 @@ class Text_Diff_Renderer_parallel extends Text_Diff_Renderer {
   }
 
   function _renderLines($lines) {
-    return str_replace("\n", "<strong>&para;</strong>\n", htmlspecialchars(implode("\n", $lines)."\n"));
+    return str_replace("\n", "<strong>&para;</strong>\n", htmlspecialchars(implode("\n", $lines) ."\n"));
   }
 
 }
