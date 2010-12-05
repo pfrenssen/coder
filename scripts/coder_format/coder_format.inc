@@ -26,7 +26,7 @@ function coder_format_recursive($directory, $undo = FALSE) {
 
   // Fetch files to process.
   $mask   = '\.php$|\.module$|\.inc$|\.install|\.profile$';
-  $nomask = array('.', '..', 'CVS', '.svn');
+  $nomask = array('.', '..', 'CVS', '.svn', '.git');
   $files  = file_scan_directory($directory, $mask, $nomask, 0, TRUE);
   foreach ($files as $file) {
     coder_format_file($file->filename, $undo);
@@ -58,7 +58,7 @@ function coder_format_file($filename, $undo = FALSE) {
     $basename = file_check_path($filename);
     // Find all backups.
     $mask  = '^'. preg_quote($basename) .'(\.coder\.orig)+$';
-    $nomask = array('.', '..', 'CVS', '.svn');
+    $nomask = array('.', '..', 'CVS', '.svn', '.git');
     $backups = file_scan_directory($filename, $mask, $nomask, 0, FALSE);
     // Find the latest backup to restore.
     ksort($backups);
