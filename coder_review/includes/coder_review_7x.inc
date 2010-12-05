@@ -906,7 +906,7 @@ function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule
 function _coder_review_7x_module_implements_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
   $depth = 0;
   foreach ($lines as $lineno => $line) {
-    if ($depth = 0) {
+    if ($depth == 0) {
       if (preg_match('/^\s+foreach\s*\(\s*module_list\s*\(\s*\)/', $line[0])) {
         $depth = 1;
       }
