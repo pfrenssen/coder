@@ -685,7 +685,7 @@ function _coder_review_6x_format_plural_warning() {
     '#warning' => t('!format_plural() accepts replacements, you no longer need to use !strtr()',
       array(
         '!format_plural' => theme('drupalapi', array('function' => 'format_plural', 'version' => '6')),
-        '!strtr' => theme('phpapi', 'strtr'),
+        '!strtr' => theme('phpapi', array('function' => 'strtr')),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#format-plural',

@@ -1210,7 +1210,7 @@ function _coder_review_7x_time_warning() {
   return array(
     '#warning' => t('For improved performance, it is highly recommended that time() is replaced with REQUEST_TIME',
       array(
-        '!time()' => theme('phpapi', 'time'),
+        '!time()' => theme('phpapi', array('function' => 'time')),
       )
     ),
     '#link' => 'http://drupal.org/node/224333#time',
@@ -1878,7 +1878,7 @@ function _coder_review_7x_time_limit_warning() {
     '#warning' => t('Use !drupal_set_time_limit() instead of !set_time_limit().',
       array(
         '!drupal_set_time_limit()' => theme('drupalapi', array('function' => 'drupal_set_time_limit', 'version' => 7)),
-        '!set_time_limit()' => theme('phpapi', 'set_time_limit()'),
+        '!set_time_limit()' => theme('phpapi', array('function' => 'set_time_limit')),
       )
     ),
     '#link' => 'http://drupal.org/node/224333#time_limit',
@@ -2016,7 +2016,7 @@ function _coder_review_7x_t_signature_warning() {
   return array(
     '#warning' => t('Context has been added to !t() as the third parameter, locale has to be an element in the array. Example: array("context" => "frontpage", "locale" => "de").',
       array(
-        '!t()' => theme('drupalapi', 't', 7),
+        '!t()' => theme('drupalapi', array('function' => 't', 'version' => 7)),
       )),
     '#link' => 'http://drupal.org/node/224333#locale_context',
   );
