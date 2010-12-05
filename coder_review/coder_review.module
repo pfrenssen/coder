@@ -1,10 +1,6 @@
 <?php
 // $Id$
 
-if (module_exists('drush')) {
-  include(drupal_get_path('module', 'coder_review') . '/coder_review.drush.inc');
-}
-
 /**
  * @file
  * Developer Module that assists with code review and version upgrade that
@@ -23,6 +19,10 @@ if (module_exists('drush')) {
  * Credit also to dries:
  * - http://cvs.drupal.org/viewcvs/drupal/drupal/scripts/code-style.pl
  */
+
+if (module_exists('drush')) {
+  include(drupal_get_path('module', 'coder_review') . '/coder_review.drush.inc');
+}
 
 define('SEVERITY_MINOR', 1);
 define('SEVERITY_NORMAL', 5);
