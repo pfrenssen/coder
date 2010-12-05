@@ -148,7 +148,7 @@ function coder_review_comment_reviews() {
 function _coder_review_comment_install_file_block_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // Only perform this check on install files.
   $filename = $coder_args['#filename'];
-  if (substr($filename, -7) == '.install') {
+  if (drupal_substr($filename, -7) == '.install') {
     $file_found = 0;
     $invalid_file_message = 0;
     foreach ($lines as $lineno => $line) {

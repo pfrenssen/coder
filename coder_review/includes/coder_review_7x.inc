@@ -81,7 +81,7 @@ function coder_review_7x_reviews() {
       // http://drupal.org/node/224333#drupal_http_request_parameters
       array(
         '#type' => 'regex',
-        '#value' => '[\s\(]drupal_http_request\s*\(\s*(' . $argex . '\s*,\s*){2,}(' . $argex .  ')\s*\)',
+        '#value' => '[\s\(]drupal_http_request\s*\(\s*(' . $argex . '\s*,\s*){2,}(' . $argex . ')\s*\)',
         '#warning_callback' => '_coder_review_7x_drupal_http_request_parameters_warning',
       ),
       // http://drupal.org/node/224333#moved_statistics_settings
@@ -374,7 +374,7 @@ function coder_review_7x_reviews() {
       array(
         '#type' => 'regex',
         '#source' => 'quote',
-        '#value' => '^(select\s+.*\s+from\s+' . $taxonomy_tables .  '|insert\s+into\s+' .  $taxonomy_tables . '|update\s+' .  $taxonomy_tables . '\s+set|delete\s+from\s+' . $taxonomy_tables . ')',
+        '#value' => '^(select\s+.*\s+from\s+' . $taxonomy_tables . '|insert\s+into\s+' . $taxonomy_tables . '|update\s+' . $taxonomy_tables . '\s+set|delete\s+from\s+' . $taxonomy_tables . ')',
         '#warning_callback' => '_coder_review_7x_taxonomy_tables_warning',
       ),
       // http://drupal.org/node/224333#taxonomy_crud
@@ -744,7 +744,7 @@ function coder_review_7x_reviews() {
       array(
         '#type' => 'regex',
         '#source' => 'allphp',
-        '#value' =>'[\s\(]node_load\s*\(\s*(\$param\s*[,\)]|array\s*\()',
+        '#value' => '[\s\(]node_load\s*\(\s*(\$param\s*[,\)]|array\s*\()',
         '#warning_callback' => '_coder_review_7x_node_load_warning',
       ),
       // http://drupal.org/node/224333#node_type_base
@@ -876,7 +876,7 @@ function coder_review_7x_reviews() {
 function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // Only perform this check for module's (not includes).
   $filename = $coder_args['#filename'];
-  if (substr($filename, -7) == '.module') {
+  if (drupal_substr($filename, -7) == '.module') {
 
     // @NOTE: no simpletest for this.
     // Read the .info file.
@@ -937,7 +937,7 @@ function _coder_review_7x_cache_implementation_review_callback(&$coder_args, $re
   }
   if (file_exists($filename)) {
     // Only do it for php files.
-    if (substr($filename, -7) == '.module' || substr($filename, -4) == '.php' || substr($filename, -4) == '.inc') {
+    if (drupal_substr($filename, -7) == '.module' || drupal_substr($filename, -4) == '.php' || drupal_substr($filename, -4) == '.inc') {
       if ($lines = file($filename)) {
         foreach ($lines as $lineno => $line) {
           if (preg_match('/function\s+(cache_set|cache_get|cache_clear_all)\s*\(/', $line)) {
@@ -957,7 +957,7 @@ function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review
   $filename = $coder_args['#filename'];
   if (file_exists($filename)) {
     // Only do it for js files.
-    if (substr($filename, -3) == '.js') {
+    if (drupal_substr($filename, -3) == '.js') {
       if ($lines = file($filename)) {
         $detach = FALSE;
         foreach ($lines as $lineno => $line) {

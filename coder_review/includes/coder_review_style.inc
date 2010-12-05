@@ -43,6 +43,7 @@ function coder_review_style_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '(\S=>|=>\S)',
+      '#source' => 'php',
       '#warning' => 'Arrays should be formatted with a space separating each element and assignment operator',
     ),
     array(

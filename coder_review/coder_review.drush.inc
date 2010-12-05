@@ -33,7 +33,7 @@ function coder_review_drush_help($section) {
                 . "\n     combine with active|core|contrib|all|default"
                 . "\n    <patch-url> - URL to patch file"
                 . "\n    <file-path> - path to file or multiple files, relative to Drupal installation"
-               );
+    );
   }
 }
 
@@ -93,9 +93,9 @@ function coder_review_drush_review() {
           if (isset($avail_reviews[$arg])) {
             $reviews[$arg] = $arg;
           }
-          elseif (substr($arg, 0, 3) == 'no-') {
+          elseif (drupal_substr($arg, 0, 3) == 'no-') {
             _coder_review_set_form_modules($settings);
-            unset($settings['coder_modules-' . substr($arg, 3)]);
+            unset($settings['coder_modules-' . drupal_substr($arg, 3)]);
           }
           elseif (strpos($arg, '*') !== FALSE || strpos($arg, '%') !== FALSE) {
             $result = db_query('SELECT name FROM {system} WHERE name LIKE :name', array(':name' => str_replace('*', '%', $arg)));
@@ -160,7 +160,7 @@ function coder_review_drush_review() {
 }
 
 function _coder_review_drush_is_patch_arg(&$arg) {
-  if (substr($arg, 0, 7) == 'http://' || is_file(realpath($arg))) {
+  if (drupal_substr($arg, 0, 7) == 'http://' || is_file(realpath($arg))) {
     return TRUE;
   }
   // @NOTE: relies on http://drupal.org/node/297611
@@ -195,7 +195,7 @@ function theme_drush_coder_review_warning($variables) {
 
 function coder_review_print_drush_messages() {
   foreach (drupal_get_messages() as $type => $messages) {
-    drush_print(dt(ucfirst($type) . ' Messages') . ":\n " . _coder_review_drush_output(implode("\n ", $messages)) . "\n");
+    drush_print(dt(drupal_ucfirst($type) . ' Messages') . ":\n " . _coder_review_drush_output(implode("\n ", $messages)) . "\n");
   }
 }
 

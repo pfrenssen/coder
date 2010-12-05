@@ -91,8 +91,8 @@ function coder_review_security_reviews() {
     // confirm_form 4th, 5th and 6th args
     array(
       '#type' => 'regex',
-      '#value' => '[\s\(]confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex .')\s*,\s*){3,5}([^\$\s]+.+\$[^,\)]+)(' . $allphp_argex . ')??\)\s*;',
-      '#never' => '(^function\s|confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex .')\s*,\s*){3,5}((st|t|\$t|format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\([^\)\$]+\)).*?(' . $allphp_argex . ')??\)\s*;)',
+      '#value' => '[\s\(]confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}([^\$\s]+.+\$[^,\)]+)(' . $allphp_argex . ')??\)\s*;',
+      '#never' => '(^function\s|confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}((st|t|\$t|format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\([^\)\$]+\)).*?(' . $allphp_argex . ')??\)\s*;)',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_review_security_confirm_form_filter_warning',
     ),
@@ -344,8 +344,8 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       }
     }
     // confirm_form() - 4th, 5th and 6th args
-    $regex = '/[\s\(]confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex .')\s*,\s*){3,5}\$(\w+)\s*[,\)]/';
-    $never_regex = '/(^function\s|confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex .')\s*,\s*){3,5}(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)/';
+    $regex = '/[\s\(]confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}\$(\w+)\s*[,\)]/';
+    $never_regex = '/(^function\s|confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)/';
     if (preg_match($regex, $line, $matches)) {
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[11] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';

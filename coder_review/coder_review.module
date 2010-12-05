@@ -37,7 +37,7 @@ function coder_review_coder_review_ignore() {
     'path' => drupal_get_path('module', 'coder_review'),
   );
 }
-*/
+ */
 
 /**
  * Implements hook_flush_caches().
@@ -398,7 +398,7 @@ function _coder_review_settings_form($settings, &$system, &$files) {
         $in_patch = 1;
       }
       elseif (preg_match("/^\s/", $line)) {
-        $patch .= substr($line, 1) . "\n";
+        $patch .= drupal_substr($line, 1) . "\n";
         $in_patch = 1;
       }
       else {
@@ -649,12 +649,12 @@ function coder_review_settings_form_submit($form, &$form_state) {
  */
 function _coder_review_settings_array(&$form_state, $type) {
   $typekey = "coder_{$type}s-";
-  $typelen = strlen($typekey);
+  $typelen = drupal_strlen($typekey);
   $systems = array();
   foreach ($form_state['storage'] as $key => $value) {
-    if (substr($key, 0, $typelen) == $typekey) {
+    if (drupal_substr($key, 0, $typelen) == $typekey) {
       if ($value == 1) {
-        $system = substr($key, $typelen);
+        $system = drupal_substr($key, $typelen);
         $systems[$system] = 1;
       }
       unset($form_state['storage'][$key]);
@@ -903,7 +903,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
             // doesn't return additional paths (i.e., try "module").
             if ($path = str_replace('\\', '/', dirname(realpath($filename)))) {
               if (!isset($dups[$path])) {
-                if (substr($filename, -7) == '.module') {
+                if (drupal_substr($filename, -7) == '.module') {
                   $coder_args['#php_minor'] = 1;
                 }
                 $dups[$path] = 1;
@@ -970,7 +970,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
     $form['settings'][] = $coder_form;
     $form['settings']['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Submit'),
+      '#value' => t('Run reviews'),
     );
     $form['#attached']['css'] = array(
       drupal_get_path('module', 'coder_review') . '/coder_review.css',
@@ -1384,8 +1384,8 @@ function _coder_review_read_and_parse_file(&$coder_args) {
         }
 
         elseif ($in_heredoc) {
-          if ($beginning_of_line && $char == $in_heredoc[0] && substr($content, $pos, $in_heredoc_length) == $in_heredoc) {
-            $this_all_lines .= substr($content, $pos + 1, $in_heredoc_length - 1);
+          if ($beginning_of_line && $char == $in_heredoc[0] && drupal_substr($content, $pos, $in_heredoc_length) == $in_heredoc) {
+            $this_all_lines .= drupal_substr($content, $pos + 1, $in_heredoc_length - 1);
             $in_heredoc = 0;
             $pos += $in_heredoc_length;
           }
@@ -1506,7 +1506,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
                 $this_all_lines .= '? ';
                 $pos += 2;
               }
-              elseif (substr($content, $pos + 2, 3) == 'php') {
+              elseif (drupal_substr($content, $pos + 2, 3) == 'php') {
                 $in_php = 1;
                 $in_allphp = 1;
                 $this_all_lines .= '?php';
@@ -1610,7 +1610,7 @@ function _coder_review_severity($severity_name, $default_value = SEVERITY_NORMAL
 function _coder_review_severity_name($coder_args, $review, $rule) {
   // NOTE: Warnings in php includes are suspicious because
   // php includes are frequently 3rd party products.
-  if (isset($coder_args['#php_minor']) && substr($coder_args['#filename'], -4) == '.php') {
+  if (isset($coder_args['#php_minor']) && drupal_substr($coder_args['#filename'], -4) == '.php') {
     return 'minor';
   }
 
@@ -2067,7 +2067,7 @@ function coder_review_theme() {
     'drupalapi' => array(
       'variables' => array(
         'function' => NULL,
-        'version' => substr(VERSION, 0, 1),
+        'version' => drupal_substr(VERSION, 0, 1),
       ),
     ),
     'phpapi' => array(

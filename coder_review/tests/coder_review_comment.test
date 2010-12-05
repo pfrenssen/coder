@@ -22,7 +22,7 @@ class CoderReviewCommentTest extends CoderReviewTestCase {
 
   function setUp() {
     parent::setUp();
-    $this->id_line = '// $Id$' ."\n";
+    $this->id_line = '// $Id$' . "\n";
     $this->file_line = "/**\n * @file\n * Foo\n */\n";
     $this->comment_header = $this->id_line . $this->file_line;
   }

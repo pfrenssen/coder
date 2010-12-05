@@ -501,7 +501,7 @@ function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$resul
   $ignores = $coder_args['#ignore_lines'][$review['#review_name']];
   // Only perform this check on module's (not includes).
   $filename = $coder_args['#filename'];
-  if (substr($filename, -7) == '.module') {
+  if (drupal_substr($filename, -7) == '.module') {
     // If there are any theme functions, make sure that a hook_theme exists.
     $theme = FALSE;
     $hook_theme = FALSE;
