@@ -1,6 +1,10 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Represents coder test file for full coder_format_string_all() tests.
+ */
 
 /**
  * Represents coder test file for full coder_format_string_all() tests.
@@ -23,7 +27,7 @@ class CoderTestFile extends SimpleExpectation {
 
   /* Whether or not <?php and CVS Id should be added */
   var $full = 0;
-  
+
   /* Whether or not a specific test should be the only one tested */
   var $only = array();
 
@@ -38,14 +42,14 @@ class CoderTestFile extends SimpleExpectation {
     $fh             = fopen($filename, 'r');
     $state          = '';
     $unit           = 0;
-    
+
     while (($line = fgets($fh)) !== false) {
       // Normalize newlines.
       $line = rtrim($line, "\n\r");
       // Detect INPUT and EXPECT sections.
       if (substr($line, 0, 2) == '--') {
         $state = trim($line, ' -');
-        
+
         // If a new INPUT section begins, start a new unit.
         if ($state == 'INPUT') {
           // If previous section has been marked with the keyword 'ONLY', break
@@ -81,7 +85,7 @@ class CoderTestFile extends SimpleExpectation {
         case 'EXPECT':
           $this->expect[$unit] .= $line ."\n";
           break;
-        
+
         case 'ONLY':
           $this->only[$unit] = TRUE;
           break;
@@ -115,20 +119,20 @@ class CoderTestFile extends SimpleExpectation {
     if ($filename) {
       $this->load($filename);
     }
-    
+
     // Perform test.
     // Test passes until proven invalid.
     $valid = TRUE;
     foreach ($this->input as $unit => $content) {
       // Parse input and store results.
       $this->actual[$unit] = coder_format_string_all($this->input[$unit]);
-      
+
       // Let this test fail, if a unit fails.
       if ($this->expect[$unit] !== $this->actual[$unit]) {
         $valid = FALSE;
       }
     }
-    
+
     return $valid;
   }
 
@@ -145,19 +149,19 @@ class CoderTestFile extends SimpleExpectation {
    */
   function render() {
     drupal_add_css(drupal_get_path('module', 'coder') .'/scripts/coder_format/tests/coder-diff.css', 'module', 'all', false);
-    
+
     foreach ($this->input as $unit => $content) {
       // Do not output passed units.
       if ($this->expect[$unit] === $this->actual[$unit]) {
         continue;
       }
-      
+
       $diff     = new Text_Diff('auto', array(explode("\n", $this->expect[$unit]), explode("\n", $this->actual[$unit])));
       $renderer = new Text_Diff_Renderer_parallel($this->test .' test in '. htmlspecialchars(basename($this->filename)));
-      
+
       $message .= $renderer->render($diff);
     }
-    
+
     return $message;
   }
 }
@@ -172,12 +176,12 @@ class Text_Diff_Renderer_parallel extends Text_Diff_Renderer {
 
   /* String header for right column */
   var $final = 'Actual';
-  
+
   // These are big to ensure entire string is output.
   var $_leading_context_lines  = 10000;
   var $_trailing_context_lines = 10000;
   var $title;
-  
+
   function Text_Diff_Renderer_parallel($title) {
     $this->title = $title;
   }
@@ -209,10 +213,10 @@ class Text_Diff_Renderer_parallel extends Text_Diff_Renderer {
     return '<tr class="changed"><td><pre>'. $this->_renderLines($orig) .'</pre></td>
         <td><pre>'. $this->_renderLines($final) .'</pre></td></tr>';
   }
-  
+
   function _renderLines($lines) {
     return str_replace("\n", "<strong>&para;</strong>\n", htmlspecialchars(implode("\n", $lines)."\n"));
   }
-  
+
 }
 

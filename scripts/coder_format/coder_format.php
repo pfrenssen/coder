@@ -46,12 +46,12 @@ if (!empty($_SERVER['argv'])) {
 
   // Process command-line arguments.
   $files    = array();
-  $undo     = false;
+  $undo     = FALSE;
 
   for ($c = 0, $cc = count($_SERVER['argv']); $c < $cc; ++$c) {
     switch ($_SERVER['argv'][$c]) {
       case '--undo':
-        $undo = true;
+        $undo = TRUE;
         break;
 
       default:

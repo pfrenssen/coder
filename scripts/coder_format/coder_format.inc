@@ -1,6 +1,9 @@
 <?php
 // $Id$
 
+/**
+ * Coder format helper functions.
+ */
 
 /**
  * Recursively process .module and .inc files in directory with coder_format_file().
@@ -10,7 +13,7 @@
  * @param $undo
  *   Boolean whether or not to undo batch replacements.
  */
-function coder_format_recursive($directory, $undo = false) {
+function coder_format_recursive($directory, $undo = FALSE) {
   // Convert Windows paths (only cosmetical).
   $directory = str_replace('\\', '/', $directory);
 
@@ -23,7 +26,7 @@ function coder_format_recursive($directory, $undo = false) {
   // Fetch files to process.
   $mask   = '\.php$|\.module$|\.inc$|\.install|\.profile$';
   $nomask = array('.', '..', 'CVS', '.svn');
-  $files  = file_scan_directory($directory, $mask, $nomask, 0, true);
+  $files  = file_scan_directory($directory, $mask, $nomask, 0, TRUE);
   foreach ($files as $file) {
     coder_format_file($file->filename, $undo);
   }
@@ -83,10 +86,10 @@ function coder_format_file($filename, $undo = FALSE) {
   $code = fread($fd, filesize($sourcefile));
   fclose($fd);
 
-  if ($code !== false) {
+  if ($code !== FALSE) {
     $code = coder_format_string_all($code);
 
-    if ($code !== false) {
+    if ($code !== FALSE) {
       // Write formatted source code to target file.
       $fd = fopen($sourcefile, 'w');
       $status = fwrite($fd, $code);
@@ -133,7 +136,7 @@ function coder_format_string_all($code) {
  * Format the source code according to Drupal coding style guidelines.
  *
  * This function uses PHP's tokenizer functions.
- * @see <http://www.php.net/manual/en/ref.tokenizer.php>
+ * @see http://www.php.net/manual/en/ref.tokenizer.php
  *
  * To achieve the desired coding style, we have to take some special cases
  * into account. These are:
@@ -242,14 +245,14 @@ function coder_format_string($code = '') {
 
   // Indent controls:
   $_coder_indent  = 0;
-  $in_case        = false;
+  $in_case        = FALSE;
   $switches       = 0;
   $parenthesis    = 0;
   $braces_in_case = array();
-  $in_brace       = false;
-  $in_heredoc     = false;
-  $first_php_tag  = true;
-  $in_do_while    = false;
+  $in_brace       = FALSE;
+  $in_heredoc     = FALSE;
+  $first_php_tag  = TRUE;
+  $in_do_while    = FALSE;
 
   // Whitespace controls:
   $in_object    = FALSE;
@@ -287,7 +290,7 @@ function coder_format_string($code = '') {
     define('T_ML_COMMENT', T_COMMENT);
   }
   // Mask T_DOC_COMMENT (PHP5) as T_ML_COMMENT (PHP4).
-  else if (!defined('T_DOC_COMMENT')) {
+  elseif (!defined('T_DOC_COMMENT')) {
     define('T_DOC_COMMENT', T_ML_COMMENT);
   }
 
@@ -316,7 +319,7 @@ function coder_format_string($code = '') {
             coder_br($result);
           }
           else {
-            $in_brace = true;
+            $in_brace = TRUE;
             $result .= $text;
           }
           break;
@@ -339,7 +342,7 @@ function coder_format_string($code = '') {
             if ($switches > 0) {
               $in_case = TRUE;
             }
-            
+
             if (!$after_php) {
               $result = rtrim($result);
               if (substr($result, -1) != '{') {
@@ -360,7 +363,7 @@ function coder_format_string($code = '') {
             }
           }
           else {
-            $in_brace = false;
+            $in_brace = FALSE;
             $result .= $text;
           }
           break;
@@ -381,12 +384,12 @@ function coder_format_string($code = '') {
             $result .= ' ';
           }
           if ($inline_if) {
-            $inline_if = false;
+            $inline_if = FALSE;
           }
           break;
 
         case '?':
-          $inline_if = true;
+          $inline_if = TRUE;
           $result .= ' '. $text .' ';
           break;
 
@@ -449,7 +452,7 @@ function coder_format_string($code = '') {
           break;
 
         case '@':
-          $in_at = true;
+          $in_at = TRUE;
           $result .= $text;
           break;
 
@@ -514,7 +517,7 @@ function coder_format_string($code = '') {
         case '"':
           // Toggle quote if the char is not escaped.
           if (rtrim($result) != "\\") {
-            $in_quote = $in_quote ? false : true;
+            $in_quote = $in_quote ? FALSE : TRUE;
           }
           if (substr($result, -3) == ' . ') {
             // Write string concatenation character directly before strings.
@@ -564,12 +567,12 @@ function coder_format_string($code = '') {
 
         case T_OPEN_TAG:
         case T_OPEN_TAG_WITH_ECHO:
-          $in_php = true;
+          $in_php = TRUE;
           // Add a line break between two PHP tags.
           if (substr(rtrim($result), -2) == '?>' && !$after_php) {
             coder_br($result);
           }
-          $after_php = true;
+          $after_php = TRUE;
           $nl = substr_count($text, "\n");
           $result .= trim($text);
           if ($first_php_tag) {
@@ -587,7 +590,7 @@ function coder_format_string($code = '') {
           break;
 
         case T_CLOSE_TAG:
-          $in_php = false;
+          $in_php = FALSE;
           if ($after_php) {
             $result = rtrim($result, ' ') .' ';
             $text = ltrim($text, ' ');
@@ -598,7 +601,7 @@ function coder_format_string($code = '') {
           break;
 
         case T_OBJECT_OPERATOR:
-          $in_object = true;
+          $in_object = TRUE;
           $result .= trim($text);
           break;
 
@@ -619,8 +622,8 @@ function coder_format_string($code = '') {
           // No space after object operator ($foo->bar) and error suppression (@function()).
           if ($in_object || $in_at) {
             $result    = rtrim($result) . trim($text);
-            $in_object = false;
-            $in_at     = false;
+            $in_object = FALSE;
+            $in_at     = FALSE;
           }
           else {
             // Insert a space after right parenthesis, but not after type casts.
@@ -629,7 +632,7 @@ function coder_format_string($code = '') {
             }
             $result .= trim($text);
           }
-          $in_variable = true;
+          $in_variable = TRUE;
           break;
 
         case T_ENCAPSED_AND_WHITESPACE:
@@ -684,14 +687,14 @@ function coder_format_string($code = '') {
 
         case T_DO:
           $result .= trim($text);
-          $in_do_while = true;
+          $in_do_while = TRUE;
           break;
 
         case T_WHILE:
           if ($in_do_while && substr(rtrim($result), -1) === '}') {
             // Write while after right parenthesis for do {...} while().
             $result = rtrim($result) .' ';
-            $in_do_while = false;
+            $in_do_while = FALSE;
           }
           // Append a space.
           $result .= trim($text) .' ';
@@ -709,9 +712,9 @@ function coder_format_string($code = '') {
         case T_DEFAULT:
           $braces_in_case[$switches] = 0;
           $result         = rtrim($result);
-          $after_case     = true;
+          $after_case     = TRUE;
           if (!$in_case) {
-            $in_case = true;
+            $in_case = TRUE;
             // Add a line break between cases.
             if (substr($result, -1) != '{') {
               coder_br($result);
@@ -740,7 +743,7 @@ function coder_format_string($code = '') {
           if ($in_case && !$braces_in_case[$switches]) {
             // Defer reduction of indent for later.
             ++$_coder_indent;
-            $after_return_in_case = true;
+            $after_return_in_case = TRUE;
           }
         case T_CONTINUE:
           coder_add_space($result);
@@ -748,7 +751,7 @@ function coder_format_string($code = '') {
           // Decrease indent only if we're not in a control structure inside a case.
           if ($in_case && !$braces_in_case[$switches]) {
             --$_coder_indent;
-            $in_case = false;
+            $in_case = FALSE;
           }
           break;
 
@@ -847,7 +850,7 @@ function coder_format_string($code = '') {
             $text = str_replace("\r", '', $text);
 
             $lines = explode("\n", $text);
-            $params_fixed = false;
+            $params_fixed = FALSE;
             for ($l = 0; $l < count($lines); ++$l) {
               $lines[$l] = trim($lines[$l]);
 
@@ -855,11 +858,11 @@ function coder_format_string($code = '') {
               if (!$params_fixed && substr($lines[$l], 0, 8) == '* @param' && $lines[$l - 1] != '*') {
                 $result .= ' *';
                 coder_br($result);
-                $params_fixed = true;
+                $params_fixed = TRUE;
               }
-              else if (!$params_fixed && substr($lines[$l], 0, 8) == '* @param') {
+              elseif (!$params_fixed && substr($lines[$l], 0, 8) == '* @param') {
                 // Do nothing if parameter description is properly formatted.
-                $params_fixed = true;
+                $params_fixed = TRUE;
               }
 
               // Add a new line between function params and return.
@@ -880,7 +883,7 @@ function coder_format_string($code = '') {
           }
           else {
             // Move the comment above if it's embedded.
-            $statement = false;
+            $statement = FALSE;
             // Some PHP versions throw a warning about wrong parameter count for
             // substr_count().
             $cc = substr_count(substr($result, $position_last_significant_token), "\n");
@@ -888,7 +891,7 @@ function coder_format_string($code = '') {
               $nl_position     = strrpos(rtrim($result, " \n"), "\n");
               $statement       = substr($result, $nl_position);
               $result          = substr($result, 0, $nl_position);
-              $after_semicolon = false;
+              $after_semicolon = FALSE;
               coder_br($result, $parenthesis);
             }
             $result .= trim($text);
@@ -976,7 +979,7 @@ function coder_format_string($code = '') {
  * @param $add_indent
  *   Whether to add current line indent after line feed.
  */
-function coder_br(&$result, $parenthesis = false, $add_indent = true) {
+function coder_br(&$result, $parenthesis = FALSE, $add_indent = TRUE) {
   global $_coder_indent;
 
   // Scan result backwards for whitespace.
@@ -998,7 +1001,7 @@ function coder_br(&$result, $parenthesis = false, $add_indent = true) {
     $result = rtrim($result);
     // This recursive call will only be done once, as $parenthesis is
     // set to false.
-    coder_br($result, false, $add_indent);
+    coder_br($result, FALSE, $add_indent);
     $_coder_indent = $_coder_indent - $parenthesis;
   }
   else {
@@ -1040,7 +1043,7 @@ function coder_trim_php($code) {
 
   // Insert CVS keyword Id.
   // Search in the very first 1000 chars, insert only one instance.
-  if (strpos(substr($code, 0, 1000), '$Id') === false) {
+  if (strpos(substr($code, 0, 1000), '$Id') === FALSE) {
     $code = preg_replace('/<\?php\n/', "<?php\n// \$Id\$\n\n", $code, 1);
   }
 
@@ -1091,7 +1094,7 @@ function coder_exec_processors($code, $prefix = '') {
   $tasks = get_defined_functions();
   $tasks = $tasks['user'];
   for ($c = 0, $cc = count($tasks); $c < $cc; ++$c) {
-    if (strpos($tasks[$c], $prefix) === false) {
+    if (strpos($tasks[$c], $prefix) === FALSE) {
       unset($tasks[$c]);
     }
     else {
@@ -1134,7 +1137,7 @@ function coder_order_processors($a, $b) {
     return $a['#weight'] - $b['#weight'];
   }
   else {
-    return isset($a['#weight']) ? false : true;
+    return isset($a['#weight']) ? FALSE : TRUE;
   }
 }
 
@@ -1326,7 +1329,7 @@ function coder_replace_indent_multiline_array($matches) {
   $return = '';
   foreach ($vars as $var) {
     list(, $indent, $key, , $value) = $var;
-    if ($key === null) {
+    if ($key === NULL) {
       $return .= "$indent),\n";
       continue;
     }
