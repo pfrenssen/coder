@@ -15,10 +15,17 @@ function coder_review_7x_reviews() {
 
   $rules = array(
     // Module Info / Install
-      // N/A - in comment review - http://drupal.org/node/224333#afile --- Add Doxygen @file tag to all install files
       // N/A - http://drupal.org/node/224333#module_file_during_install --- .module file available during install
       // N/A - http://drupal.org/node/224333#module_version_dependencies --- Module .info files can now optionally specify the version number of the module it depends on
 
+      // NO TESTS - http://drupal.org/node/224333#afile --- Add Doxygen @file tag to all install files
+      array(
+        '#type' => 'callback',
+        '#value' => '_coder_review_7x_comment_doxygen_file_review_callback',
+        // @NOTE: this warning_callback isn't used.  It only exists to catch
+        // potential errors in the code.
+        '#warning_callback' => '_coder_review_7x_comment_doxygen_file_review_callback_warning',
+      ),
       // NO TESTS - http://drupal.org/node/224333#registry
       array(
         '#type' => 'callback',
@@ -877,7 +884,6 @@ function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule
   // Only perform this check for module's (not includes).
   $filename = $coder_args['#filename'];
   if (drupal_substr($filename, -7) == '.module') {
-
     // @NOTE: no simpletest for this.
     // Read the .info file.
     $files_line = FALSE;
@@ -897,7 +903,6 @@ function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule
         }
       }
     }
-
   }
 }
 
@@ -980,6 +985,35 @@ function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review
   }
 }
 
+function _coder_review_7x_comment_doxygen_file_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+  // @NOTE: no simpletest for this.
+  // Only perform this check on install files.
+  $filename = $coder_args['#filename'];
+  if (drupal_substr($filename, -7) == '.install') {
+    $file_found = 0;
+    $invalid_file_message = 0;
+    foreach ($lines as $lineno => $line) {
+      if (preg_match('/^ * @file/', $line[0])) {
+        $file_found = 1;
+      }
+      // Immediately reset $file_found on the next line, and check if the
+      // comment matches the required format.
+      elseif ($file_found == 1) {
+        if (!preg_match('/^ * Install, update and uninstall functions for the \w+ module./', $line[0])) {
+          $invalid_file_message = 1;
+        }
+        $file_found = 0;
+      }
+    }
+    if ($invalid_file_message) {
+      $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
+      $tmprule = $rule;
+      $tmprule['#warning_callback'] = '_coder_review_7x_comment_doxygen_file_review_callback_warning';
+      _coder_review_error($results, $tmprule, $severity_name, $theme_lineno, $theme_line);
+    }
+  }
+}
+
 /**
  * Make sure user defined block module as a dependency if using block functions.
  *
@@ -1025,6 +1059,13 @@ function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, 
 /**
  * Define the warning callbacks.
  */
+function _coder_review_7x_comment_doxygen_file_review_callback_warning() {
+  return array(
+    '#warning' => t('For .install files, the @file description should be of the format "Install, update and uninstall functions for the XXX module.".'),
+    '#link' => 'http://drupal.org/node/224333#afile',
+  );
+}
+
 function _coder_review_7x_referer_uri_warning() {
   return array(
     '#warning' => t('!referer_uri() has been removed and replaced with the PHP global $_SERVER[\'HTTP_REFERER\']',
