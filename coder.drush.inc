@@ -2,6 +2,11 @@
 // $Id$
 
 /**
+ * @file
+ * Command line utility for coder.
+ */
+
+/**
  * Implements hook_drush_help().
  */
 function coder_drush_help($section) {
@@ -96,9 +101,9 @@ function coder_drush_review() {
           if (isset($avail_reviews[$arg])) {
             $reviews[$arg] = $arg;
           }
-          elseif (substr($arg, 0, 3) == 'no-') {
+          elseif (drupal_substr($arg, 0, 3) == 'no-') {
             _coder_set_form_modules($settings);
-            unset($settings['coder_modules-'. substr($arg, 3)]);
+            unset($settings['coder_modules-'. drupal_substr($arg, 3)]);
           }
           else {
             if (_coder_drush_is_patch_arg($arg)) {
@@ -140,7 +145,7 @@ function coder_drush_review() {
 }
 
 function _coder_drush_is_patch_arg(&$arg) {
-  if (substr($arg, 0, 7) == 'http://' || is_file(realpath($arg))) {
+  if (drupal_substr($arg, 0, 7) == 'http://' || is_file(realpath($arg))) {
     return TRUE;
   }
   // @NOTE: relies on http://drupal.org/node/297611
@@ -168,7 +173,7 @@ function theme_drush_coder_warning($warning, $severity_name, $lineno = 0, $line 
 
 function coder_print_drush_messages() {
   foreach (drupal_get_messages() as $type => $messages) {
-    drush_print(dt(ucfirst($type) .' Messages') .":\n ". _coder_drush_output(implode("\n ", $messages)) ."\n");
+    drush_print(dt(drupal_ucfirst($type) .' Messages') .":\n ". _coder_drush_output(implode("\n ", $messages)) ."\n");
   }
 }
 

@@ -1,4 +1,11 @@
 <?php
+// $Id$
+
+/**
+ * @file
+ * Test file for reviews for upgrading from 5x to 6x.
+ */
+
 require_once(dirname(__FILE__) .'/coder_test_case.tinc');
 
 class CoderUpgrade6xTest extends CoderTestCase {

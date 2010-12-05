@@ -1,11 +1,18 @@
 <?php
+// $Id$
+
+/**
+ * @file
+ * Tests for i18n reviews.
+ */
+
 require_once(dirname(__FILE__) .'/coder_test_case.tinc');
 
 class CoderI18NTest extends CoderTestCase {
   function __construct($id = NULL) {
     parent::__construct('i18n', $id);
   }
-  
+
   public static function getInfo() {
     return array(
       'name' => t('Coder I18N Tests'),
@@ -13,7 +20,7 @@ class CoderI18NTest extends CoderTestCase {
       'group' => t('Coder'),
     );
   }
-  
+
   function testI18NSpaces() {
     $this->assertCoderPass('  $var = t("Your rating");');
     $this->assertCoderFail('  $var = t(" Your rating");');

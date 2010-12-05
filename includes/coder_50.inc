@@ -91,7 +91,7 @@ function coder_50_reviews() {
 function _coder_50_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // Only perform this check on module's (not includes).
   $filename = $coder_args['#filename'];
-  if (substr($filename, -7) == '.module') {
+  if (drupal_substr($filename, -7) == '.module') {
     // Make sure that a .info file exists.
     $filename = drupal_substr(realpath($filename), 0, -7) .'.info';
     if (!file_exists($filename)) {

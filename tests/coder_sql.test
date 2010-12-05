@@ -1,11 +1,18 @@
 <?php
+// $Id$
+
+/**
+ * @file
+ * Tests for SQL reviews.
+ */
+
 require_once(dirname(__FILE__) .'/coder_test_case.tinc');
 
 class CoderSQLTest extends CoderTestCase {
   function __construct($id = NULL) {
     parent::__construct('sql', $id);
   }
-  
+
   public static function getInfo() {
     return array(
       'name' => t('Coder SQL Tests'),
@@ -13,7 +20,7 @@ class CoderSQLTest extends CoderTestCase {
       'group' => t('Coder'),
     );
   }
-  
+
   function testSQLLowerCaseKeywords() {
     $this->assertCoderFail('  $sql = "select * from {node}";');
     $this->assertCoderFail('  $sql = "insert into {node} (changed) VALUES (%d)";');
