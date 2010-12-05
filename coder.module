@@ -747,7 +747,7 @@ function coder_page_form($form_state) {
         '#collapsed' => TRUE,
         '#weight' => ++ $module_weight,
       );
-      $phpfiles = file_scan_directory('.', '.*\.php', array('.', '..', 'CVS'), 0, FALSE, 'name', 0);
+      $phpfiles = file_scan_directory('.', '.*\.php', array('.', '..', 'CVS', '.svn', '.git'), 0, FALSE, 'name', 0);
       _coder_page_form_includes($form, $coder_args, 'core_php', $phpfiles, 2, $coder_includes_exclusions, $ignores);
 
       $form['core_includes'] = array(
