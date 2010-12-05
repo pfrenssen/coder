@@ -37,6 +37,10 @@ function coder_review_7x_reviews() {
 
       // http://drupal.org/node/224333#api_php --- Code documentation to module.api.php
       // http://drupal.org/node/224333#update_php --- Update functions in .install files must include a Doxygen style comment
+      // http://drupal.org/node/224333#update_sql --- Update hooks now return strings or throw exceptions, and update_sql() is no more
+      // http://drupal.org/node/224333 --- Info file should specify core = 7.x
+      // http://drupal.org/node/224333#update_dependencies --- New update dependency system, affecting the order in which module updates are run
+      // http://drupal.org/node/224333#configure_info --- Module .info files can have configure line
 
 
     // System
@@ -887,6 +891,7 @@ function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule
     // @NOTE: no simpletest for this.
     // Read the .info file.
     $files_line = FALSE;
+    $core = FALSE;
     $filename = drupal_substr(realpath($filename), 0, -7) . '.info';
     if (file_exists($filename)) {
       if ($lines = file($filename)) {
@@ -894,11 +899,20 @@ function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule
           if (preg_match('/^files\s*\[\s*\]\s*=/', $line)) {
             $files_line = TRUE;
           }
+          if (preg_match('/^core\s*=\s*7/', $line)) {
+            $core = TRUE;
+          }
         }
         if (empty($files_line)) {
           $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
           $tmprule = $rule;
           $tmprule['#warning_callback'] = '_coder_review_7x_info_files_warning';
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
+        }
+        if (!$core) {
+          $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
+          $tmprule = $rule;
+          $tmprule['#warning_callback'] = '_coder_review_7x_core_warning';
           _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
         }
       }
@@ -1059,6 +1073,12 @@ function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, 
 /**
  * Define the warning callbacks.
  */
+function _coder_review_7x_core_warning() {
+  return array(
+    '#warning' => t('Info file should specify core=7.x'),
+  );
+}
+
 function _coder_review_7x_comment_doxygen_file_review_callback_warning() {
   return array(
     '#warning' => t('For .install files, the @file description should be of the format "Install, update and uninstall functions for the XXX module.".'),
