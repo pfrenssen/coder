@@ -58,6 +58,7 @@ function coder_review_7x_reviews() {
         '#type' => 'grep',
         '#value' => '$_SESSION',
         '#warning_callback' => '_coder_review_7x_session_warning',
+        '#severity' => 'minor',
       ),
       // http://drupal.org/node/224333#time
       array(
@@ -1061,11 +1062,7 @@ function _coder_review_7x_node_invoke_nodeapi_removed_warning() {
 
 function _coder_review_7x_session_warning() {
   return array(
-    '#warning' => t('Use !drupal_set_session() instead of $_SESSION',
-      array(
-        '!drupal_set_session()' => theme('drupalapi', array('function' => 'drupal_set_session', 'version' => '7')),
-      )
-    ),
+    '#warning' => t('Note that it is important that modules try not to use $_SESSION for anonymous users.'),
     '#link' => 'http://drupal.org/node/224333#drupal_set_session',
   );
 }
