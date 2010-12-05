@@ -14,5 +14,5 @@ Fixed coder_format.php startup script.
 Fixed wrong quotes in coder_preprocessor_line_breaks_*.
 Fixed CVS Id in coder_postprocessor_cvs_id().
 Disabled coder_postprocessor_array_rearrange().
-
+by stella: coding style fixes
 
