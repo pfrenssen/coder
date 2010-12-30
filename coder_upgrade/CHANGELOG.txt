@@ -2,6 +2,10 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2010-12-30):
+  * coder_upgrade.module
+  * - #1010762 by Placinta: fix inconsistent return value in coder_upgrade_conversions_apply()
+
 - Changes (2010-12-04):
   * coder_upgrade.module, coder_upgrade.test, coder_upgrade.begin.inc, coder_upgrade.main.inc, coder_upgrade.run.php
   * - replace calls to pgp_log_memory_use() with coder_upgrade_memory_print()

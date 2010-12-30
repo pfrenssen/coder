@@ -517,7 +517,8 @@ function coder_upgrade_conversions_apply($form_state) {
     $command = "php $script -- file=$path > $output"; // " 2>&1";
     // Execute the command and capture the output.
     exec($command, $errors, $success);
-    if (!$success && !empty($errors)) {
+    $success = $success === 0;
+    if ($success && !empty($errors)) {
       drupal_set_message(trim(implode("\n", $errors)), 'error');
     }
   }
@@ -527,7 +528,7 @@ function coder_upgrade_conversions_apply($form_state) {
     $success = coder_upgrade_start($upgrades, $extensions, $items);
   }
 
-  return $success === 0;
+  return $success;
 }
 
 /**
