@@ -22,9 +22,9 @@
  */
 function coder_upgrade_upgrade_begin_alter($item) {
 //  cdp("inside " . __FUNCTION__);
-  global $upgrade_menu_registry;
-  if (!$upgrade_menu_registry) {
-    $upgrade_menu_registry = array();
+  global $_coder_upgrade_menu_registry;
+  if (!$_coder_upgrade_menu_registry) {
+    $_coder_upgrade_menu_registry = array();
   }
   // TODO Automatically refresh the theme cache if core upgrades are being run?
   coder_upgrade_cache_theme_registry();
@@ -35,28 +35,28 @@ function coder_upgrade_upgrade_begin_alter($item) {
  * Caches the theme registry from core files (including disabled modules).
  */
 function coder_upgrade_cache_theme_registry() {
-  global $upgrade_theme_registry;
+  global $_coder_upgrade_theme_registry;
 
   // If this condition is not met, then the code is being run in a separate
   // process and the core theme information is read from a file.
-  if (!$upgrade_theme_registry) {
+  if (!$_coder_upgrade_theme_registry) {
     if ($cache = cache_get('upgrade_theme_registry', 'cache')) {
       // @todo Compare mtime of newest core code file to the created timestamp field in the cache.
       if (TRUE || ($cache->created > $mtime_newest_core_file)) {
-        $upgrade_theme_registry = $cache->data;
+        $_coder_upgrade_theme_registry = $cache->data;
       }
     }
     else {
       // Cache the theme registry (includes only enabled modules).
-      $upgrade_theme_registry = theme_get_registry();
-      if (!$upgrade_theme_registry) {
+      $_coder_upgrade_theme_registry = theme_get_registry();
+      if (!$_coder_upgrade_theme_registry) {
         drupal_theme_initialize();
-        $upgrade_theme_registry = theme_get_registry();
+        $_coder_upgrade_theme_registry = theme_get_registry();
       }
       // Build and cache the theme registry for disabled modules.
-      $upgrade_theme_registry += coder_upgrade_theme_build_registry();
+      $_coder_upgrade_theme_registry += coder_upgrade_theme_build_registry();
       // Store in persistent cache.
-      cache_set('upgrade_theme_registry', $upgrade_theme_registry, 'cache');
+      cache_set('upgrade_theme_registry', $_coder_upgrade_theme_registry, 'cache');
     }
   }
 }
@@ -92,7 +92,7 @@ function coder_upgrade_theme_build_registry() {
  *   Array of a directory containing the files to convert.
  */
 function coder_upgrade_cache_info_hooks($item, $recursive = TRUE) {
-  global $_coder_upgrade_module_name, $upgrade_theme_registry, $upgrade_menu_registry;
+  global $_coder_upgrade_module_name, $_coder_upgrade_theme_registry, $_coder_upgrade_menu_registry;
   static $ignore = array('.', '..', 'CVS', '.svn');
   static $extensions = array('module', 'inc');
 
@@ -148,7 +148,7 @@ function coder_upgrade_cache_info_hooks($item, $recursive = TRUE) {
               unset($value['arguments']);
 //              $module_theme[$key] = $value;
             }
-            $upgrade_theme_registry = array_merge($upgrade_theme_registry, $module_theme);
+            $_coder_upgrade_theme_registry = array_merge($_coder_upgrade_theme_registry, $module_theme);
 //            break 2;
           }
           elseif ($function->data->name == $_coder_upgrade_module_name . '_menu') {
@@ -185,7 +185,7 @@ function coder_upgrade_cache_info_hooks($item, $recursive = TRUE) {
  *   The value of the array element (or NULL if element is a key).
  */
 function coder_upgrade_callback_menu($node, &$array2, &$current2, $hook, $type, $key, $value) { // NOT DONE
-  global $upgrade_menu_registry;
+  global $_coder_upgrade_menu_registry;
 
   if (!is_a($current2, 'PGPNode')) {
     clp("ERROR: current2 is not a PGPNode object in hook_$hook");
@@ -213,18 +213,18 @@ function coder_upgrade_callback_menu($node, &$array2, &$current2, $hook, $type, 
       $operand = $arguments->getElement();
       if ($arguments->isType(T_ARRAY)) {
         $form = trim($operand->getValue()->toString(), "'\"");
-        $upgrade_menu_registry[] = $form;
+        $_coder_upgrade_menu_registry[] = $form;
       }
       elseif ($arguments->isType(T_CONSTANT_ENCAPSED_STRING)) {
         $form = trim($arguments->toString(), "'\"");
-        $upgrade_menu_registry[] = $form;
+        $_coder_upgrade_menu_registry[] = $form;
       }
     }
   }
   elseif ($callback) {
     // These callbacks are not affected by this change.
 //    $form = trim($callback->toString(), "'\"");
-//    $upgrade_menu_registry[] = $form;
+//    $_coder_upgrade_menu_registry[] = $form;
   }
   elseif ($arguments) {
     // Depending on the code style, some of these will include callbacks.
@@ -232,11 +232,11 @@ function coder_upgrade_callback_menu($node, &$array2, &$current2, $hook, $type, 
     $operand = $arguments->getElement();
     if ($arguments->isType(T_ARRAY)) {
       $form = trim($operand->getValue()->toString(), "'\"");
-      $upgrade_menu_registry[] = $form;
+      $_coder_upgrade_menu_registry[] = $form;
     }
     elseif ($arguments->isType(T_CONSTANT_ENCAPSED_STRING)) {
       $form = trim($arguments->toString(), "'\"");
-      $upgrade_menu_registry[] = $form;
+      $_coder_upgrade_menu_registry[] = $form;
     }
   }
   // Set $current2 to last item in list to avoid redundant looping.

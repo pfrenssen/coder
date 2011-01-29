@@ -84,19 +84,20 @@ foreach ($parameters as $key => $variable) {
 }
 save_memory_usage('load runtime parameters', $usage);
 
-// Set directory paths.
-$files_base = $paths['files_base'];
-$modules_base = $paths['modules_base'];
+// Set global variables (whose names do not align with extracted parameters).
+$_coder_upgrade_variables = $variables;
+$_coder_upgrade_files_base = $paths['files_base'];
+$_coder_upgrade_modules_base = $paths['modules_base'];
 
 // Load core theme cache.
-$upgrade_theme_registry = array();
+$_coder_upgrade_theme_registry = array();
 if (is_file($theme_cache)) {
-  $upgrade_theme_registry = unserialize(file_get_contents($theme_cache));
+  $_coder_upgrade_theme_registry = unserialize(file_get_contents($theme_cache));
 }
 save_memory_usage('load core theme cache', $usage);
 
 // Load coder_upgrade bootstrap code.
-$path = $modules_base . '/coder/coder_upgrade';
+$path = $_coder_upgrade_modules_base . '/coder/coder_upgrade';
 $files = array(
   'coder_upgrade.inc',
   'conversions/coder_upgrade.list.inc',
@@ -109,7 +110,7 @@ foreach ($files as $file) {
 coder_upgrade_path_clear('memory');
 print_memory_usage($usage);
 
-// $trace_base = DRUPAL_ROOT . '/' . $files_base . '/coder_upgrade/coder_upgrade_';
+// $trace_base = DRUPAL_ROOT . '/' . $_coder_upgrade_files_base . '/coder_upgrade/coder_upgrade_';
 // $trace_file = $trace_base . '1.trace';
 // xdebug_start_trace($trace_file);
 coder_upgrade_memory_print('load coder_upgrade bootstrap code');

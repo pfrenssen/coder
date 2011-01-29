@@ -137,11 +137,11 @@ function coder_upgrade_directory_path($name, $add_slash = TRUE, $stream_format =
  */
 if (!function_exists('file_directory_path')) {
   function file_directory_path($scheme = 'public') {
-    global $files_base;
+    global $_coder_upgrade_files_base;
 
-    if (isset($files_base)) {
+    if (isset($_coder_upgrade_files_base)) {
       // This is being run as a separate process outside of Drupal.
-      return $files_base;
+      return $_coder_upgrade_files_base;
     }
     elseif ($wrapper = file_stream_wrapper_get_instance_by_scheme($scheme)) {
       return $wrapper->getDirectoryPath();
@@ -159,8 +159,8 @@ if (!function_exists('file_directory_path')) {
 
 if (!function_exists('drupal_get_path')) {
   function drupal_get_path($type, $name) {
-    global $modules_base;
-    return $modules_base . "/$name";
+    global $_coder_upgrade_modules_base;
+    return $_coder_upgrade_modules_base . "/$name";
   }
 }
 
@@ -209,8 +209,8 @@ if (!function_exists('file_unmanaged_delete')) {
 
 if (!function_exists('variable_get')) {
   function variable_get($name, $default = NULL) {
-    global $variables;
+    global $_coder_upgrade_variables;
 
-    return isset($variables[$name]) ? $variables[$name] : $default;
+    return isset($_coder_upgrade_variables[$name]) ? $_coder_upgrade_variables[$name] : $default;
   }
 }

@@ -28,7 +28,7 @@
  */
 function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) {
   // Declare global variables.
-  global $log, $debug, $_coder_upgrade_module_name, $replace_files;
+  global $_coder_upgrade_log, $_coder_upgrade_debug, $_coder_upgrade_module_name, $_coder_upgrade_replace_files;
 //  global $_coder_upgrade_dirname; // Not used.
 
   // Check lists in case this function is called apart from form submit.
@@ -42,8 +42,8 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
     return FALSE;
   }
 
-  $log = TRUE;
-  if ($log) {
+  $_coder_upgrade_log = TRUE;
+  if ($_coder_upgrade_log) {
     // Clear the log file.
     coder_upgrade_path_clear('log');
     if (!variable_get('coder_upgrade_use_separate_process', TRUE)) {
@@ -52,8 +52,8 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
     coder_upgrade_memory_print('initial');
   }
   // Set debug output preference.
-  $debug = variable_get('coder_upgrade_enable_debug_output', FALSE);
-  if ($debug) {
+  $_coder_upgrade_debug = variable_get('coder_upgrade_enable_debug_output', FALSE);
+  if ($_coder_upgrade_debug) {
     // Clear the debug file.
     coder_upgrade_path_clear('debug');
   }
@@ -63,7 +63,7 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
   coder_upgrade_load_parser();
 
   // Set file replacement parameter.
-  $replace_files = variable_get('coder_upgrade_replace_files', FALSE);
+  $_coder_upgrade_replace_files = variable_get('coder_upgrade_replace_files', FALSE);
 
   // Loop on items.
   foreach ($items as $item) {
@@ -81,11 +81,11 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
 
     // Apply finishing touches to the directory.
     // Swap directories if files are replaced.
-    $new_dir = $replace_files ? $item['old_dir'] : $item['new_dir'];
+    $new_dir = $_coder_upgrade_replace_files ? $item['old_dir'] : $item['new_dir'];
     coder_upgrade_convert_end($new_dir);
 
     // Make a patch file.
-    coder_upgrade_make_patch_file($item, $replace_files);
+    coder_upgrade_make_patch_file($item, $_coder_upgrade_replace_files);
   }
 
   return TRUE;
@@ -192,7 +192,7 @@ function coder_upgrade_convert_end($dirname) {
 function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = TRUE) {
 //  global $_coder_upgrade_filename; // TODO Only referenced in this function -- remove global
   static $ignore = array('.', '..', 'CVS', '.svn');
-  global $_coder_upgrade_module_name, $replace_files;
+  global $_coder_upgrade_module_name, $_coder_upgrade_replace_files;
 
   $dirname = $item['old_dir'];
   $new_dirname = $item['new_dir'];
@@ -244,7 +244,7 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
         coder_upgrade_log_print("\n*************************");
         coder_upgrade_log_print('Converting the file => ' . $filename);
         coder_upgrade_log_print("*************************");
-        coder_upgrade_convert_file($dirname . '/' . $filename, $new_dirname . '/' . $filename, $replace_files);
+        coder_upgrade_convert_file($dirname . '/' . $filename, $new_dirname . '/' . $filename, $_coder_upgrade_replace_files);
       }
       else {
         copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
@@ -260,10 +260,10 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
  *   The original name of the file to convert.
  * @param string $filename
  *   The new name of the file to convert.
- * @param boolean $replace_files
+ * @param boolean $_coder_upgrade_replace_files
  *   Indicates wheter to replace the original files.
  */
-function coder_upgrade_convert_file($oldname, $filename, $replace_files = FALSE) {
+function coder_upgrade_convert_file($oldname, $filename, $_coder_upgrade_replace_files = FALSE) {
   if (!file_exists($filename)) {
     return FALSE;
   }
@@ -279,7 +279,7 @@ function coder_upgrade_convert_file($oldname, $filename, $replace_files = FALSE)
 
   // Write the new file.
   if ($new != $cur) {
-    $filename = $replace_files ? $oldname : $filename;
+    $filename = $_coder_upgrade_replace_files ? $oldname : $filename;
     if (file_put_contents($filename, $new) === FALSE) {
       coder_upgrade_log_print('File could not be written');
     }
@@ -546,10 +546,10 @@ function coder_upgrade_module_name($dirname, &$item) {
  *
  * @param array $item
  *   Array of the directory containing the files to convert.
- * @param boolean $replace_files
+ * @param boolean $_coder_upgrade_replace_files
  *   Indicates wheter to replace the original files.
  */
-function coder_upgrade_make_patch_file($item, $replace_files = FALSE) {
+function coder_upgrade_make_patch_file($item, $_coder_upgrade_replace_files = FALSE) {
   // Patch directory.
   $patch_dir = coder_upgrade_directory_path('patch');
 
@@ -559,8 +559,8 @@ function coder_upgrade_make_patch_file($item, $replace_files = FALSE) {
   coder_upgrade_log_print("*************************");
   $patch_filename = $patch_dir . $item['name'] . '.patch';
   // Swap directories if files are replaced.
-  $old_dir = $replace_files ? $item['new_dir'] : $item['old_dir'];
-  $new_dir = $replace_files ? $item['old_dir'] : $item['new_dir'];
+  $old_dir = $_coder_upgrade_replace_files ? $item['new_dir'] : $item['old_dir'];
+  $new_dir = $_coder_upgrade_replace_files ? $item['old_dir'] : $item['new_dir'];
   coder_upgrade_log_print("Making patch file: diff -up -r {$old_dir} {$new_dir} > {$patch_filename}");
   shell_exec("diff -up -r {$old_dir} {$new_dir} > {$patch_filename}");
 
@@ -693,10 +693,10 @@ function coder_upgrade_memory_print($step) {
  *   A string, array, or object to print.
  */
 function coder_upgrade_log_print($text) {
-  global $log;
+  global $_coder_upgrade_log;
   static $path = '';
 
-  if (!$log) {
+  if (!$_coder_upgrade_log) {
     return;
   }
   if (!$path) {
@@ -713,10 +713,10 @@ function coder_upgrade_log_print($text) {
  *   A string, array, or object to print.
  */
 function coder_upgrade_debug_print($text) {
-  global $debug;
+  global $_coder_upgrade_debug;
   static $path = '';
 
-  if (!$debug) {
+  if (!$_coder_upgrade_debug) {
     return;
   }
   if (!$path) {

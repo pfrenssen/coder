@@ -2,6 +2,10 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2011-01-29):
+  * various
+  * - #859314: rename global variables according to Drupal coding standards
+
 - Changes (2010-12-30):
   * coder_upgrade.module
   * - #1010762 by Placinta: fix inconsistent return value in coder_upgrade_conversions_apply()

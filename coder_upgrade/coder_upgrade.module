@@ -205,7 +205,7 @@ function coder_upgrade_settings_form_submit($form, &$form_state) {
  * This file is used when the upgrade routines are run in a separate process.
  */
 function coder_upgrade_create_theme_cache_submit($form, &$form_state) {
-  global $upgrade_theme_registry;
+  global $_coder_upgrade_theme_registry;
 
   module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
   module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.begin');
@@ -213,7 +213,7 @@ function coder_upgrade_create_theme_cache_submit($form, &$form_state) {
   coder_upgrade_cache_theme_registry();
   // Write cache to file.
   $path = coder_upgrade_path('theme_cache');
-  if (file_put_contents($path, serialize($upgrade_theme_registry)) === FALSE) {
+  if (file_put_contents($path, serialize($_coder_upgrade_theme_registry)) === FALSE) {
     drupal_set_message(t('Could not write to core theme information cache file.'), 'error');
     return;
   }
@@ -510,7 +510,7 @@ function coder_upgrade_conversions_apply($form_state) {
   module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
   if (variable_get('coder_upgrade_use_separate_process', TRUE)) {
     // Conversion code will be run in a separate process.
-    drupal_set_message('Module conversion code will run in a separate process.');
+    drupal_set_message(t('Module conversion code will run in a separate process.'));
     $path = coder_upgrade_parameters_save($upgrades, $extensions, $items);
     $script = drupal_get_path('module', 'coder_upgrade') . '/scripts/coder_upgrade.run.php';
     $output = coder_upgrade_directory_path('base') . 'coder_upgrade.run.txt';
@@ -524,7 +524,7 @@ function coder_upgrade_conversions_apply($form_state) {
   }
   else {
     // Conversion code will be run in the same process.
-    drupal_set_message('Module conversion code will run in the same process.');
+    drupal_set_message(t('Module conversion code will run in the same process.'));
     $success = coder_upgrade_start($upgrades, $extensions, $items);
   }
 

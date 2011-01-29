@@ -67,8 +67,8 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
     file_put_contents('output.html', "after install\n", FILE_APPEND);
 
     // Enable debug printing.
-    global $debug;
-    $debug = TRUE;
+    global $_coder_upgrade_debug;
+    $_coder_upgrade_debug = TRUE;
   }
 
   /**
@@ -115,11 +115,11 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
    */
   protected function testRunInterface() {
     file_put_contents('output.html', __METHOD__ . "\n", FILE_APPEND);
-    $replace_files = variable_get('coder_upgrade_replace_files', FALSE);
-    if ($replace_files) {
+    $_coder_upgrade_replace_files = variable_get('coder_upgrade_replace_files', FALSE);
+    if ($_coder_upgrade_replace_files) {
       $settings = l('here', 'admin/config/development/coder/upgrade/settings');
       $msg = "WARNING: Do not run this test if the \"Replace files\" option is checked for this module. Change this setting $settings.";
-      $this->assertFalse($replace_files, $msg, 'Settings');
+      $this->assertFalse($_coder_upgrade_replace_files, $msg, 'Settings');
       return;
     }
     file_put_contents('output.html', __METHOD__ . "\n", FILE_APPEND);
@@ -153,8 +153,8 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
     }
 
     // If Drupal won't commit patch to DrupalUnitTestCase.php, then use a global.
-    global $is_test;
-    $is_test = TRUE;
+    global $_coder_upgrade_is_test;
+    $_coder_upgrade_is_test = TRUE;
 
     // Apply upgrade routines.
     module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');

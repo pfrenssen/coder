@@ -2438,7 +2438,7 @@ function coder_upgrade_upgrade_call_taxonomy_save_vocabulary_alter(&$node, &$rea
  * Implements hook_upgrade_call_theme_alter().
  */
 function coder_upgrade_upgrade_call_theme_alter(&$node, &$reader) { // DONE
-  global $upgrade_theme_registry;
+  global $_coder_upgrade_theme_registry;
 
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -2505,12 +2505,12 @@ function coder_upgrade_upgrade_call_theme_alter(&$node, &$reader) { // DONE
    */
 
   $theme = trim($item->printParameter(0), "'\"");
-  if (!isset($upgrade_theme_registry[$theme])) {
+  if (!isset($_coder_upgrade_theme_registry[$theme])) {
     clp("ERROR: Theme entry for '$theme' not found in theme registry or hook_theme");
     $item->insertStatementBefore($editor->commentToStatement('// TODO Please change this theme call to use an associative array for the $variables parameter.'));
     return;
   }
-  $hook = $upgrade_theme_registry[$theme];
+  $hook = $_coder_upgrade_theme_registry[$theme];
 
   if (isset($hook['variables']) && $hook['variables']) {
     $count = $item->parameterCount();

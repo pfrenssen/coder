@@ -106,15 +106,15 @@ function coder_upgrade_upgrade_hook_alter(&$node, &$reader) {
     $item->comment = $editor->commentToStatement("/**\n * @todo Please document this function.\n * @see http://drupal.org/node/1354\n */");
   }
 
-  global $upgrade_menu_registry, $upgrade_theme_registry;
+  global $_coder_upgrade_menu_registry, $_coder_upgrade_theme_registry;
   cdp($node->data->name);
-  if (in_array($node->data->name, $upgrade_menu_registry)) {
+  if (in_array($node->data->name, $_coder_upgrade_menu_registry)) {
     // http://drupal.org/node/224333#hook_forms_signature
     coder_upgrade_convert_form_callback($node);
   }
   elseif (strpos($node->data->name, 'theme_') === 0) {
     $theme_name = substr($node->data->name, strpos($node->data->name, "theme_") + 6);
-    if (isset($upgrade_theme_registry[$theme_name])) {
+    if (isset($_coder_upgrade_theme_registry[$theme_name])) {
       // http://drupal.org/node/224333#drupal_render_children
       // http://drupal.org/node/224333#theme_changes
       coder_upgrade_convert_theme_callback($node);
@@ -154,7 +154,7 @@ function coder_upgrade_convert_form_callback(&$node) {
  *   A node object containing a PGPClass (or function) item.
  */
 function coder_upgrade_convert_theme_callback(&$node) {
-  global $upgrade_theme_registry;
+  global $_coder_upgrade_theme_registry;
 
   // Create helper objects.
   $editor = PGPEditor::getInstance();
@@ -190,8 +190,8 @@ function coder_upgrade_convert_theme_callback(&$node) {
 
   // Reassign function parameters to corresponding $variables array key.
   $theme_name = substr($item->name, strpos($item->name, "theme_") + 6);
-  if (isset($upgrade_theme_registry[$theme_name])) {
-    $hook = $upgrade_theme_registry[$theme_name];
+  if (isset($_coder_upgrade_theme_registry[$theme_name])) {
+    $hook = $_coder_upgrade_theme_registry[$theme_name];
     if (isset($hook['render element'])) {
       // In coder_upgrade_cache_info_hooks(), $hook key === 'variables'
       // for a theme defined by the module being upgraded, Thus, this
