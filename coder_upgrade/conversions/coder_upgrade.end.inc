@@ -49,13 +49,14 @@ function coder_upgrade_scan_directory_2($dirname, $retrieve = 'dirs') {
     return $dirs;
   }
 
-  static $ignore = array('.', '..', '.svn');
+  static $ignore = array(/*'.', '..', '.bzr', '.git', '.svn',*/ 'CVS');
   $files = scandir($dirname);
   $dirname .= '/';
 
   foreach ($files as $key => $file) {
     $file_path = $dirname . $file;
-    if (in_array(basename($file_path), $ignore)) {
+    if (substr(basename($file_path), 0, 1) == '.' || in_array(basename($file_path), $ignore)) {
+      // Ignore all hidden directories and CVS directory.
       unset($files[$key]);
     }
     elseif (is_dir($file_path)) {
@@ -124,7 +125,10 @@ function coder_upgrade_add_file_entries($dirname = '', $files = array(), &$items
     }
     else {
       $extension = pathinfo($file, PATHINFO_EXTENSION);
-      if (in_array($extension, $extensions)) {
+      if ($extension == 'php' && substr($file, -8) == '.tpl.php') {
+        // Exclude template files.
+      }
+      elseif (in_array($extension, $extensions)) {
         $items[] = $path . $file;
       }
       elseif ($extension == 'info') {

@@ -5,6 +5,8 @@ coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 - Changes (2011-01-29):
   * various
   * - #859314: rename global variables according to Drupal coding standards
+  * coder_upgrade.end.inc
+  * - ignore all hidden directories and exclude template files
 
 - Changes (2010-12-30):
   * coder_upgrade.module
