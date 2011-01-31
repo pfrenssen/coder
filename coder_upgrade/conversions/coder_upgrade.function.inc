@@ -292,8 +292,8 @@ function coder_upgrade_upgrade_hook_comment_alter(&$node, &$reader) {
 }
 
 /**
-* Implements hook_upgrade_hook_elements_alter().
-*/
+ * Implements hook_upgrade_hook_elements_alter().
+ */
 function coder_upgrade_upgrade_hook_elements_alter(&$node, &$reader) {
   global $_coder_upgrade_module_name;
   $item = &$node->data;

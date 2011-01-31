@@ -72,7 +72,7 @@ function hook_upgrade_info() {
  * expression. To modify the latter, use hook_upgrade_file_alter(). Refer to the
  * grammar parser documentation for details of the function call object.
  *
- * @see hook_upgrade_file_alter
+ * @see hook_upgrade_file_alter()
  * @see PGPFunctionCall
  *
  * @param PGPFunctionCall $node
@@ -111,7 +111,7 @@ function hook_upgrade_call_FUNCTION_NAME_alter(&$node, &$reader) {
  * expression. To modify the latter, use hook_upgrade_file_alter(). Refer to the
  * grammar parser documentation for details of the function call object.
  *
- * @see hook_upgrade_file_alter
+ * @see hook_upgrade_file_alter()
  * @see PGPFunctionCall
  *
  * @param PGPFunctionCall $node
@@ -166,7 +166,7 @@ function hook_upgrade_call_alter(&$node, &$reader, $name) {
  * Refer to the grammar parser documentation for details of the function object
  * (i.e. PGPClass).
  *
- * @see hook_upgrade_file_alter
+ * @see hook_upgrade_file_alter()
  * @see PGPClass
  *
  * @param PGPNode $node
@@ -224,7 +224,7 @@ function hook_upgrade_hook_HOOK_NAME_alter(&$node, &$reader) {
  * Refer to the grammar parser documentation for details of the function object
  * (i.e. PGPClass).
  *
- * @see hook_upgrade_file_alter
+ * @see hook_upgrade_file_alter()
  * @see PGPClass
  *
  * @param PGPNode $node
@@ -317,9 +317,9 @@ function hook_upgrade_file_alter(&$reader) {
  * the grammar parser. This hook allows for segregation of upgrade routines that
  * only apply to an install file (e.g. the database schema API).
  *
- * @see hook_upgrade_file_alter
- * @see hook_upgrade_hook_HOOK_NAME_alter
- * @see hook_upgrade_hook_alter
+ * @see hook_upgrade_file_alter()
+ * @see hook_upgrade_hook_HOOK_NAME_alter()
+ * @see hook_upgrade_hook_alter()
  *
  * @param PGPReader $reader
  *   The object containing the grammar statements of the file to convert.

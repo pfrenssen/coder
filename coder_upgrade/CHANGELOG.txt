@@ -2,6 +2,10 @@
 
 coder_upgrade 7.x-1.x, 2009-xx-xx (development version)
 ---------------------------------
+- Changes (2011-01-31):
+  * various
+  * - #859314: minor cleanup to conform to Drupal coding standards
+
 - Changes (2011-01-29):
   * various
   * - #859314: rename global variables according to Drupal coding standards

@@ -235,8 +235,8 @@ class CoderUpgradeUnitTestCase2 extends CoderUpgradeUnitTestCase {
 }
 
 /**
-* Functional tests for the admin interface (settings and execution).
-*/
+ * Functional tests for the admin interface (settings and execution).
+ */
 class CoderUpgradeWebTestCase extends DrupalWebTestCase {
 
   public static function getInfo() {

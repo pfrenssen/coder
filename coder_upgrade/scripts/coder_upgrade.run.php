@@ -40,7 +40,7 @@
  * SCRIPT=sites/$MODULES_DIRECTORY/modules/coder/coder_upgrade/scripts/coder_upgrade.run.php
  * RUNTIME=sites/$FILES_DIRECTORY/files/$CODER_UPGRADE_DIRECTORY/runtime.txt
  * OUTPUT=sites/$FILES_DIRECTORY/files/$CODER_UPGRADE_DIRECTORY/coder_upgrade.run.txt
- * 
+ *
  * php $SCRIPT -- file=$RUNTIME > $OUTPUT 2>&1
  *
  * Alternatively, replace the bracketed items in the following command and
