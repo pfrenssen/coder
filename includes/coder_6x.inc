@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /** @file
  * This include file implements coder functionality for 5.x -> 6.x upgrades

@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * Recursively process .module and .inc files in directory.
