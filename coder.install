@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 function coder_uninstall() {
   variable_del('coder_cache');
