@@ -1,4 +1,3 @@
-; $Id$
 name = "Coder Upgrade"
 
 description = "Module conversion suite -- generates code to assist with the upgrade of

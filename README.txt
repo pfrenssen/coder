@@ -1,4 +1,3 @@
-/* $Id$ */
 
 Developer Module that assists with code review and version upgrade that
 supports a plug-in extensible hook system so contributed modules can
