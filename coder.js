@@ -1,4 +1,3 @@
-// $Id$
 
 if (Drupal.jsEnabled) {
   jQuery.fn.extend({

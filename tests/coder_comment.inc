@@ -1,8 +1,6 @@
 <?php
 /* $Id .... $ */
 // $Id ....$
-// $Id$
-// $Id$ ok
 /**
  * @file
  * This file implements tests for the Drupal commenting standards.

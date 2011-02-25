@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 require_once drupal_get_path('module', 'coder') .'/scripts/coder_format/coder_format.inc';
 

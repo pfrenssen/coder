@@ -1,4 +1,3 @@
-// $Id$
 
 Coder_format x.x-x.x, xxxx-xx-xx
 --------------------------------
