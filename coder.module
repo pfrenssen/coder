@@ -791,10 +791,15 @@ function coder_page_form($form_state) {
             '#php_extensions' => $php_extensions,
             '#include_extensions' => $include_extensions,
             '#ignore_lines' => is_array($ignores[$filename]) ? $ignores[$filename] : array(),
+            '#cache' => TRUE,
           );
+          drupal_alter('coder_review_args', $coder_args);
+
           $results = do_coder_reviews($coder_args);
           $stats[$filename] = $results['#stats'];
           unset($results['#stats']);
+
+          module_invoke_all('coder_results_view', $results);
 
           // Output the results in a collapsible fieldset.
           $form[$name] = array(
@@ -993,7 +998,7 @@ function _coder_modified() {
  *     - integer ID => HTML error for display.
  */
 function do_coder_reviews($coder_args) {
-  if (empty($coder_args['#patch']) && empty($coder_args['#test'])) {
+  if (empty($coder_args['#patch']) && empty($coder_args['#test']) && $coder_args['#cache']) {
     // Load the cached results if they exist.
     $cache_key = 'coder:'.  md5(implode(':', array_keys($coder_args['#reviews']))) . $coder_args['#severity'] .':'. $coder_args['#filename'];
     if (file_exists($filepath = realpath($coder_args['#filename']))) {
@@ -1047,11 +1052,13 @@ function do_coder_reviews($coder_args) {
   }
 
   // Save the results in the cache.
-  $cache_results = array(
-    'mtime' => $cache_mtime,
-    'results' => $results,
-  );
-  cache_set($cache_key, $cache_results, 'cache_coder');
+  if (empty($coder_args['#patch']) && empty($coder_args['#test']) && $coder_args['#cache'] && isset($cache_mtime)) {
+    $cache_results = array(
+      'mtime' => $cache_mtime,
+      'results' => $results,
+    );
+    cache_set($cache_key, $cache_results, 'cache_coder');
+  }
 
   return $results;
 }
