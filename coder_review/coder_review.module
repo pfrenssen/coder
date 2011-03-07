@@ -877,6 +877,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
             '#cache' => TRUE,
           );
           drupal_alter('coder_review_args', $coder_args);
+
           $results = do_coder_reviews($coder_args);
           $stats[$filename] = $results['#stats'];
           unset($results['#stats']);
@@ -1103,7 +1104,7 @@ function _coder_review_modified() {
  */
 function do_coder_reviews($coder_args) {
   // Load the cached results if they exist, but not for patches.
-  if (empty($coder_args['#patch']) && empty($coder_args['#test']) && !$coder_args['#cache']) {
+  if (empty($coder_args['#patch']) && empty($coder_args['#test']) && $coder_args['#cache']) {
     $cache_key = 'coder:' . md5(implode(':', array_keys($coder_args['#reviews']))) . $coder_args['#severity'] . ':' . $coder_args['#filename'];
     if (file_exists($filepath = realpath($coder_args['#filename']))) {
       $cache_mtime = filemtime($filepath);
@@ -1157,7 +1158,7 @@ function do_coder_reviews($coder_args) {
   }
 
   // Save the results in the cache if we're not reviewing a patch.
-  if (empty($coder_args['#patch']) && empty($coder_args['#test']) && !$coder_args['#cache'] && isset($cache_mtime)) {
+  if (empty($coder_args['#patch']) && empty($coder_args['#test']) && $coder_args['#cache'] && isset($cache_mtime)) {
     $cache_results = array(
       'mtime' => $cache_mtime,
       'results' => $results,
