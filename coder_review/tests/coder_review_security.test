@@ -64,7 +64,6 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  drupal_set_message(t("Here is some safe_data"));');
     $this->assertCoderReviewPass('  drupal_set_message(t("Here is some @safe_data", array("@safe_data" => $tainted_data));');
     $this->assertCoderReviewPass('  drupal_set_message(t("Here is some %safe_data", array("%safe_data" => $tainted_data));');
-    $this->assertCoderReviewPass('  drupal_set_message(t("Here is some @safe_data", $safe_data_array));');
     $this->assertCoderReviewPass('  drupal_set_message(check_plain($tainted_data));');
     $this->assertCoderReviewPass('  drupal_set_message(filter_xss_admin($tainted_data));');
     $this->assertCoderReviewPass('  drupal_set_message(format_plural($tainted_count, "1 item", "@count items"));');
