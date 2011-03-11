@@ -11,6 +11,14 @@
 function coder_review_comment_reviews() {
   $rules = array(
     array(
+      '#type' => 'grep',
+      '#source' => 'comment',
+      '#value' => '$Id',
+      '#case-sensitive' => TRUE,
+      '#warning_callback' => '_coder_review_comment_Id_warning',
+      '#severity' => 'minor',
+    ),
+    array(
       '#type' => 'regex',
       '#source' => 'comment',
       '#value' => '^\*',
@@ -198,3 +206,11 @@ function _coder_review_comment_see_comment_style_warning() {
     '#link' => 'http://drupal.org/node/1354',
   );
 }
+
+function _coder_review_comment_Id_warning() {
+  return array(
+    '#warning' => t('Commits to the Git repository do not require the CVS $Id' . '$ keyword in each file.'),
+    '#link' => 'http://drupal.org/coding-standards',
+  );
+}
+

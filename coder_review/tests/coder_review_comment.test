@@ -31,6 +31,11 @@ class CoderReviewCommentTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail($this->comment_header . "/**\n *Comment.\n");
   }
 
+  function testIdCommentLine() {
+    $this->assertCoderReviewFail($this->comment_header . '// $Id$' . "\n");
+    $this->assertCoderReviewFail($this->comment_header . '/* $Id$ */' . "\n");
+  }
+
   function testHookImplementationComment() {
     $this->assertCoderReviewPass($this->comment_header . "/**\n * Implements hook_foo().\n */");
     $this->assertCoderReviewFail($this->comment_header . "/**\n * Implements hook_foo()\n */");
