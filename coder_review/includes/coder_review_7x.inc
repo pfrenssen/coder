@@ -163,12 +163,25 @@ function coder_review_7x_reviews() {
         '#function-not' => '^drupal_set_time_limit$',
         '#warning_callback' => '_coder_review_7x_time_limit_warning',
       ),
+      // http://drupal.org/node/224333#remove-drupal-urlencode --- drupal_urlencode() replaced by drupal_encode_path()
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]drupal_urlencode\s*\(',
+        '#warning_callback' => '_coder_review_7x_drupal_urlencode_warning',
+      ),
       // http://drupal.org/node/224333#search-api --- API for modules providing search has changed
       // http://drupal.org/node/224333#drupal_alter ---   drupal_alter() now takes at most 3 parameters by reference
       // http://drupal.org/node/224333#drupal_set_header_renamed --- drupal_set_header() and drupal_get_header() renamed to drupal_add_http_header() and drupal_get_http_header()
       // http://drupal.org/node/224333#email-html --- All e-mails are considered to originate as HTML
-      // http://drupal.org/node/224333#remove-drupal-urlencode --- drupal_urlencode() replaced by drupal_encode_path()
+
       // http://drupal.org/node/224333#watchdog_emerg --- WATCHDOG_EMERG was renamed to WATCHDOG_EMERGENCY
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(,]WATCHDOG_EMERG.*$',
+        '#not' => 'WATCHDOG_EMERGENCY',
+        '#warning_callback' => '_coder_review_7x_watchdog_emerg_warning',
+      ),
+
       // http://drupal.org/node/224333#system_retrieve_file ---  system_retrieve_file() API cleanup
 
 
@@ -962,6 +975,8 @@ function coder_review_7x_reviews() {
  * Define the rule callbacks for 7.x, see do_coder_review_callback().
  */
 function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+  $ignores = $coder_args['#ignore_lines'];
+  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   // Only perform this check for module's (not includes).
   $filename = $coder_args['#filename'];
   if (drupal_substr($filename, -7) == '.module') {
@@ -984,13 +999,13 @@ function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule
           $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
           $tmprule = $rule;
           $tmprule['#warning_callback'] = '_coder_review_7x_info_files_warning';
-          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
         }
         if (!$core) {
           $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
           $tmprule = $rule;
           $tmprule['#warning_callback'] = '_coder_review_7x_core_warning';
-          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
@@ -1001,6 +1016,8 @@ function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule
  * Define the rule callbacks for 7.x, see do_coder_review_callback().
  */
 function _coder_review_7x_module_implements_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+  $ignores = $coder_args['#ignore_lines'];
+  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   $depth = 0;
   foreach ($lines as $lineno => $line) {
     if ($depth == 0) {
@@ -1013,7 +1030,7 @@ function _coder_review_7x_module_implements_review_callback(&$coder_args, $revie
         $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
         $tmprule = $rule;
         $tmprule['#warning_callback'] = '_coder_review_7x_module_implements_warning';
-        _coder_review_error($results, $tmprule, $severity_name, $lineno, $line[0]);
+        _coder_review_error($results, $tmprule, $severity_name, $lineno, $line[0], $ignores);
       }
       if (strpos($line[0], '{') !== FALSE) {
         $depth --;
@@ -1027,6 +1044,8 @@ function _coder_review_7x_module_implements_review_callback(&$coder_args, $revie
 
 function _coder_review_7x_cache_implementation_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // @NOTE: no simpletest for this.
+  $ignores = $coder_args['#ignore_lines'];
+  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   $filename = $coder_args['#filename'];
   if ($filename == 'includes/cache-install.inc' || $filename == 'includes/cache.inc') {
     return;
@@ -1040,7 +1059,7 @@ function _coder_review_7x_cache_implementation_review_callback(&$coder_args, $re
             $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
             $tmprule = $rule;
             $tmprule['#warning_callback'] = '_coder_review_7x_cache_implementation_warning';
-            _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
+            _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
           }
         }
       }
@@ -1050,6 +1069,8 @@ function _coder_review_7x_cache_implementation_review_callback(&$coder_args, $re
 
 function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // @NOTE: no simpletest for this.
+  $ignores = $coder_args['#ignore_lines'];
+  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   $filename = $coder_args['#filename'];
   if (file_exists($filename)) {
     // Only do it for js files.
@@ -1068,7 +1089,7 @@ function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review
             $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
             $tmprule = $rule;
             $tmprule['#warning_callback'] = '_coder_review_7x_drupal_behaviors_warning';
-            _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
+            _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
           }
         }
       }
@@ -1079,6 +1100,8 @@ function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review
 function _coder_review_7x_comment_doxygen_file_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // @NOTE: no simpletest for this.
   // Only perform this check on install files.
+  $ignores = $coder_args['#ignore_lines'];
+  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   $filename = $coder_args['#filename'];
   if (drupal_substr($filename, -7) == '.install') {
     $file_found = 0;
@@ -1100,7 +1123,7 @@ function _coder_review_7x_comment_doxygen_file_review_callback(&$coder_args, $re
       $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
       $tmprule = $rule;
       $tmprule['#warning_callback'] = '_coder_review_7x_comment_doxygen_file_review_callback_warning';
-      _coder_review_error($results, $tmprule, $severity_name, $theme_lineno, $theme_line);
+      _coder_review_error($results, $tmprule, $severity_name, $theme_lineno, $theme_line, $ignores);
     }
   }
 }
@@ -1111,6 +1134,8 @@ function _coder_review_7x_comment_doxygen_file_review_callback(&$coder_args, $re
  * @see http://drupal.org/node/224333#block_optional
  */
 function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+  $ignores = $coder_args['#ignore_lines'];
+  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   $functions_to_check = array('block_list', 'block_custom_block_get', 'block_page_build');
   $filename = $coder_args['#filename'];
 
@@ -1139,7 +1164,7 @@ function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, 
             $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
             $tmprule = $rule;
             $tmprule['#warning_callback'] = '_coder_review_7x_optional_block_warning';
-            _coder_review_error($results, $tmprule, $severity_name, $lineno, $line);
+            _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
           }
         }
       }
@@ -2020,6 +2045,18 @@ function _coder_review_7x_time_limit_warning() {
   );
 }
 
+function _coder_review_7x_drupal_urlencode_warning() {
+  return array(
+    '#warning' => t('Use !drupal_encode_path() instead of !drupal_urlencode().',
+      array(
+        '!drupal_encode_path()' => theme('drupalapi', array('function' => 'drupal_encode_path', 'version' => 7)),
+        '!drupal_urlencode()' => theme('dr)upalapi', array('function' => 'drupal_urlencode', 'version' => 6)),
+      )
+    ),
+    '#link' => 'http://drupal.org/node/224333#remove-drupal-urlencode',
+  );
+}
+
 function _coder_review_7x_user_authenticate_warning() {
   return array(
     '#warning' => t('Parameters to !user_authenticate() have changed.',
@@ -2166,3 +2203,11 @@ function _coder_review_7x_format_plural_signature_warning() {
     '#link' => 'http://drupal.org/node/224333#locale_context',
   );
 }
+
+function _coder_review_7x_watchdog_emerg_warning() {
+  return array(
+    '#warning' => t('WATCHDOG_EMERG was renamed to WATCHDOG_EMERGENCY'),
+    '#link' => 'http://drupal.org/node/224333#watchdog_emerg',
+  );
+}
+

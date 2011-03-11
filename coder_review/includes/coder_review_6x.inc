@@ -497,7 +497,8 @@ function coder_review_6x_reviews() {
  * Define the rule callbacks for 6.x, see do_coder_review_callback().
  */
 function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
-  $ignores = $coder_args['#ignore_lines'][$review['#review_name']];
+  $ignores = $coder_args['#ignore_lines'];
+  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   // Only perform this check on module's (not includes).
   $filename = $coder_args['#filename'];
   if (drupal_substr($filename, -7) == '.module') {

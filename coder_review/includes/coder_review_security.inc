@@ -222,7 +222,8 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
   $sanitize_argex = '((t|st|\$t|check_plain|format_plural|check_markup|filter_xss|filter_xss_admin)\s*\([^\)]+?\))';
 
   $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-  $ignores = isset($coder_args['#ignore_lines'][$review['#review_name']]) ? $coder_args['#ignore_lines'][$review['#review_name']] : array();
+  $ignores = $coder_args['#ignore_lines'];
+  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   /*
   if (!isset($coder_args['#tokens'])) {
     $source = implode('', $lines);
