@@ -15,12 +15,7 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
   }
 
   function setUp() {
-    // Only do the setUp once per test case, not once per function call.
-    static $run_once;
-    if (!isset($run_once)) {
-      parent::setUp('coder_review');
-      $run_once = TRUE;
-    }
+    parent::setUp('coder_review');
   }
 
   function runTest($code, $severity = SEVERITY_MINOR) {
