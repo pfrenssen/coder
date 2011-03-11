@@ -11,22 +11,6 @@
 function coder_review_comment_reviews() {
   $rules = array(
     array(
-      '#type' => 'grep_invert',
-      '#source' => 'comment',
-      '#value' => '$Id',
-      '#case-sensitive' => TRUE,
-      '#warning_callback' => '_coder_review_comment_Id_warning',
-      '#filename-not' => array('patch'),
-    ),
-    array(
-      '#type' => 'regex',
-      '#source' => 'comment',
-      '#value' => '^.*\$Id.*$',
-      '#not' => '^\/\/\s+\$Id\$|^\/\/\s+\$Id' . ':[^\$]+\$',
-      '#case-sensitive' => TRUE,
-      '#warning_callback' => '_coder_review_comment_Id_warning',
-    ),
-    array(
       '#type' => 'regex',
       '#source' => 'comment',
       '#value' => '^\*',
@@ -114,13 +98,26 @@ function coder_review_comment_reviews() {
       '#warning' => 'Missing parenthesis after function name',
       '#severity' => 'minor',
     ),
-    // @TODO: fix?
     array(
       '#type' => 'regex',
       '#source' => 'comment',
-      '#value' => '^\s*\*\s*[a-zA-Z\s]+\s+hook_\w+',
+      '#value' => '\s*Implementation\s+of\s+hook_\w+',
+      '#warning' => 'Comment should be read "Implements hook_foo()."',
+      '#severity' => 'minor',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'comment',
+      '#value' => '^.*?\*\s*Implements\s+hook_\w+\(\)\.',
       '#not' => '^\s\*\sImplements*\s+hook_\w+',
       '#warning' => 'Format should be <code>* Implements hook_foo().</code>',
+      '#severity' => 'minor',
+    ),
+    array(
+      '#type' => 'regex',
+      '#source' => 'comment',
+      '#value' => '\/\/\s*Implements\s+hook_\w+\(\)\.',
+      '#warning' => 'Implements comment should be in a comment block.',
       '#severity' => 'minor',
     ),
     array(
@@ -175,13 +172,6 @@ function _coder_review_comment_install_file_block_callback(&$coder_args, $review
 function _coder_review_comment_install_file_warning() {
   return array(
     '#warning' => t('For .install files, the @file description should be of the format "Install, update and uninstall functions for the XXX module.".'),
-    '#link' => 'http://drupal.org/coding-standards',
-  );
-}
-
-function _coder_review_comment_Id_warning() {
-  return array(
-    '#warning' => t('Include the CVS keyword $Id' . '$ in each file.  This should be in the format <code>// $Id' . '$</code> or <code>// $Id' . '$</code>'),
     '#link' => 'http://drupal.org/coding-standards',
   );
 }
