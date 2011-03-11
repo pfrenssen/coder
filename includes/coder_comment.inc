@@ -11,18 +11,9 @@
 function coder_comment_reviews() {
   $rules = array(
     array(
-      '#type' => 'grep_invert',
+      '#type' => 'grep',
       '#source' => 'comment',
       '#value' => '$Id',
-      '#case-sensitive' => TRUE,
-      '#warning_callback' => '_coder_comment_Id_warning',
-      '#filename-not' => array('patch'),
-    ),
-    array(
-      '#type' => 'regex',
-      '#source' => 'comment',
-      '#value' => '^.*\$Id.*$',
-      '#not' => '^\/\/\s+\$Id\$|^\/\/\s+\$Id'.':[^\$]+\$',
       '#case-sensitive' => TRUE,
       '#warning_callback' => '_coder_comment_Id_warning',
     ),
@@ -136,7 +127,7 @@ function coder_comment_reviews() {
 
 function _coder_comment_Id_warning() {
   return array(
-    '#warning' => t('Include the CVS keyword $Id'.'$ in each file.  This should be in the format <code>// $Id'.'$</code> or <code>// $Id'.'$</code>'),
+    '#warning' => t('Commits to the Git repository do not require the CVS $Id' . '$ keyword in each file.'),
     '#link' => 'http://drupal.org/coding-standards',
   );
 }

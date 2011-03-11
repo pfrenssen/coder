@@ -27,9 +27,8 @@ class CoderCommentTest extends CoderTestCase {
   }
 
   function testIdCommentLine() {
-    $this->assertCoderPass('// $Id$' . "\n". $this->file_line);
-    $this->assertCoderPass('// $Id$' . "\n" . $this->file_line);
-    $this->assertCoderFail('/* $Id$ */' . "\n" . $this->file_line);
+    $this->assertCoderReviewFail($this->comment_header . '// $Id$' . "\n");
+    $this->assertCoderReviewFail($this->comment_header . '/* $Id$ */' . "\n");
   }
 
   function testGeneralCommentStyle() {
