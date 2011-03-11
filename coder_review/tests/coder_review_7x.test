@@ -43,6 +43,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // N/A - http://drupal.org/node/224333#variable_get_default_null
     // N/A - http://drupal.org/node/224333#hook_modules_action
     // N/A - http://drupal.org/node/224333#static_variable_api
+    // N/A - http://drupal.org/node/224333#archive-tar
+    // N/A - http://drupal.org/node/224333#user-1
+    // N/A - http://drupal.org/node/224333#hook_module_implements_alter
+    // N/A - http://drupal.org/node/224333#drupal_static_advanced
+    // N/A - http://drupal.org/node/224333#hook_update_index
 
     // http://drupal.org/node/224333#module_implements_not_module_list
     $this->assertCoderReviewFail("  foreach (module_list() as \$module) {\n  module_invoke(\$module, 'foo');\n}");
@@ -103,10 +108,13 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  drupal_eval(\'<?php print "Hello"; ?>\');');
 
     // http://drupal.org/node/224333#http_header_functions
-    $this->assertCoderReviewPass("  drupal_set_header('Content-Type', 'text/plain');");
+    // http://drupal.org/node/224333#drupal_set_header_renamed
+    $this->assertCoderReviewPass("  drupal_add_http_header('Content-Type', 'text/plain');");
     $this->assertCoderReviewFail("  drupal_set_header('Content-Type: text/plain');");
-    $this->assertCoderReviewPass("  drupal_set_header('500 Internal server error');");
+    $this->assertCoderReviewPass("  drupal_add_http_header('Status', '500 Internal server error');");
     $this->assertCoderReviewFail("  drupal_set_header(\$_SERVER['SERVER_PROTOCOL'] . ' 500 Internal server error');");
+    $this->assertCoderReviewPass("  drupal_get_http_header();");
+    $this->assertCoderReviewFail("  drupal_get_headers();");
 
     // http://drupal.org/node/224333#drupal_set_content
     $this->assertCoderReviewFail("  drupal_set_content('footer', 'Adding custom text to the footer');");
@@ -121,9 +129,24 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  function drupal_set_time_limit () {\n  set_time_limit(100);\n}");
     $this->assertCoderReviewPass("  function foo () {\n  drupal_set_time_limit(100);\n}");
 
-    // http://drupal.org/node/224333#archive-tar
     // http://drupal.org/node/224333#search-api
-    // http://drupal.org/node/224333#user-1
+    // http://drupal.org/node/224333#drupal_alter
+
+
+    // http://drupal.org/node/224333#new_hook_hook_info
+    // http://drupal.org/node/224333#email-html
+
+    // http://drupal.org/node/224333#remove-drupal-urlencode
+    $this->assertCoderReviewFail('  drupal_urlencode($url);');
+    $this->assertCoderReviewPass('  drupal_encode_path($url);');
+
+    // http://drupal.org/node/224333#watchdog_emerg
+    $this->assertCoderReviewFail("  watchdog('test', 'my message', array(), WATCHDOG_EMERG);");
+    $this->assertCoderReviewFail("  watchdog('test', 'my message', array(),WATCHDOG_EMERG);");
+    $this->assertCoderReviewPass("  watchdog('test', 'my message', array(), WATCHDOG_EMERGENCY);");
+
+    // http://drupal.org/node/224333#system_retrieve_file
+
 
   }
 

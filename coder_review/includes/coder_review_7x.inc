@@ -18,7 +18,6 @@ function coder_review_7x_reviews() {
       // N/A - http://drupal.org/node/224333#module_version_dependencies --- Module .info files can now optionally specify the version number of the module it depends on
       // N/A - http://drupal.org/node/224333#update_dependencies --- New update dependency system, affecting the order in which module updates are run
       // N/A - http://drupal.org/node/224333#configure_info --- Module .info files can have configure line
-      // N/A - http://drupal.org/node/224333#new_hook_hook_info --- New hook_hook_info() added
 
       // NO TESTS - http://drupal.org/node/224333#afile --- Add Doxygen @file tag to all install files
       array(
@@ -49,7 +48,6 @@ function coder_review_7x_reviews() {
       // N/A - http://drupal.org/node/224333#archive-tar -- New tar archive library added
       // N/A - http://drupal.org/node/224333#user-1 --- User 1 is now called site maintenance account
       // N/A - http://drupal.org/node/224333#hook_module_implements_alter --- New hook_module_implements_alter
-      // N/A - http://drupal.org/node/224333#new_hook_hook_info --- New hook_hook_info() added
       // N/A - http://drupal.org/node/224333#drupal_static_advanced --- Functions called very often that need a drupal_static() variable can use an optimized way of calling that function
       // N/A - http://drupal.org/node/224333#hook_update_index --- hook_update_index() only runs when searching enabled for a given module
 
@@ -130,13 +128,6 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]drupal_eval\s*\(',
         '#warning_callback' => '_coder_review_7x_php_eval_warning',
       ),
-      // http://drupal.org/node/224333#http_header_functions
-      array(
-        '#type' => 'regex',
-        '#source' => 'allphp',
-        '#value' => '[\s\(]drupal_set_header\s*\(\s*(\$_SERVER\[[\'"]SERVER_PROTOCOL[\'"]|[\'"][a-zA-Z_-\s]+:.*?[\'"])',
-        '#warning_callback' => '_coder_review_7x_http_header_functions_warning',
-      ),
       // http://drupal.org/node/224333#drupal_set_content
       array(
         '#type' => 'regex',
@@ -163,17 +154,15 @@ function coder_review_7x_reviews() {
         '#function-not' => '^drupal_set_time_limit$',
         '#warning_callback' => '_coder_review_7x_time_limit_warning',
       ),
-      // http://drupal.org/node/224333#remove-drupal-urlencode --- drupal_urlencode() replaced by drupal_encode_path()
-      array(
-        '#type' => 'regex',
-        '#value' => '[\s\(]drupal_urlencode\s*\(',
-        '#warning_callback' => '_coder_review_7x_drupal_urlencode_warning',
-      ),
       // http://drupal.org/node/224333#search-api --- API for modules providing search has changed
       // http://drupal.org/node/224333#drupal_alter ---   drupal_alter() now takes at most 3 parameters by reference
-      // http://drupal.org/node/224333#drupal_set_header_renamed --- drupal_set_header() and drupal_get_header() renamed to drupal_add_http_header() and drupal_get_http_header()
-      // http://drupal.org/node/224333#email-html --- All e-mails are considered to originate as HTML
 
+      // http://drupal.org/node/224333#drupal_set_header_renamed --- drupal_set_header() and drupal_get_headers() renamed to drupal_add_http_header() and drupal_get_http_header()
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(](drupal_set_header|drupal_get_headers)\s*\(',
+        '#warning_callback' => '_coder_review_7x_drupal_set_get_header_warning',
+      ),
       // http://drupal.org/node/224333#watchdog_emerg --- WATCHDOG_EMERG was renamed to WATCHDOG_EMERGENCY
       array(
         '#type' => 'regex',
@@ -181,7 +170,14 @@ function coder_review_7x_reviews() {
         '#not' => 'WATCHDOG_EMERGENCY',
         '#warning_callback' => '_coder_review_7x_watchdog_emerg_warning',
       ),
+      // http://drupal.org/node/224333#remove-drupal-urlencode --- drupal_urlencode() replaced by drupal_encode_path()
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]drupal_urlencode\s*\(',
+        '#warning_callback' => '_coder_review_7x_drupal_urlencode_warning',
+      ),
 
+      // http://drupal.org/node/224333#email-html --- All e-mails are considered to originate as HTML
       // http://drupal.org/node/224333#system_retrieve_file ---  system_retrieve_file() API cleanup
 
 
@@ -1812,9 +1808,10 @@ function _coder_review_7x_drupal_get_content_warning() {
 
 function _coder_review_7x_http_header_functions_warning() {
   return array(
-    '#warning' => t('Parameters to !drupal_set_header() have changed.',
+    '#warning' => t('Parameters to !drupal_set_header() have changed and it has been renamed to !drupal_add_http_header().',
       array(
-        '!drupal_set_header()' => theme('drupalapi', array('function' => 'drupal_set_header', 'version' => 7)),
+        '!drupal_set_header()' => theme('drupalapi', array('function' => 'drupal_set_header', 'version' => 6)),
+        '!drupal_add_http_header()' => theme('drupalapi', array('function' => 'drupal_add_http_header', 'version' => 7)),
       )
     ),
     '#link' => 'http://drupal.org/node/224333#http_header_functions',
@@ -2198,9 +2195,22 @@ function _coder_review_7x_format_plural_signature_warning() {
   return array(
     '#warning' => t('Context has been added to !format_plural() as the fifth parameter, locale has to be an element in the array. Example: array("context" => "frontpage", "locale" => "de").',
       array(
-        '!format_plural()' => theme('drupalapi', 'format_plural', 7),
+        '!format_plural()' => theme('drupalapi', array('function' => 'format_plural', 'version' => 7)),
       )),
     '#link' => 'http://drupal.org/node/224333#locale_context',
+  );
+}
+
+function _coder_review_7x_drupal_set_get_header_warning() {
+  return array(
+    '#warning' => t('!drupal_set_header() has been renamed to !drupal_add_http_header() and its parameters changed, and !drupal_get_headers() renamed to !drupal_get_http_header()',
+      array(
+        '!drupal_set_header()' => theme('drupalapi', array('function' => 'drupal_set_header', 'version' => 6)),
+        '!drupal_get_headers()' => theme('drupalapi', array('function' => 'drupal_get_headers', 'version' => 6)),
+        '!drupal_add_http_header()' => theme('drupalapi', array('function' => 'drupal_add_http_header', 'version' => 7)),
+        '!drupal_get_http_header()' => theme('drupalapi', array('function' => 'drupal_get_http_header', 'version' => 7)),
+      )),
+    '#link' => 'http://drupal.org/node/224333#drupal_set_header_renamed',
   );
 }
 
