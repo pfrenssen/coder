@@ -820,7 +820,9 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         '#php_extensions' => $php_extensions,
         '#include_extensions' => array(),
         //'#filename' => $filename,
+        '#cache' => TRUE,
       );
+      drupal_alter('coder_review_args', $coder_args);
 
       $form['core_php'] = array(
         '#type' => 'fieldset',
@@ -1022,6 +1024,7 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
     $results = do_coder_reviews($coder_args);
     $stats[$filename] = $results['#stats'];
     unset($results['#stats']);
+    module_invoke_all('coder_review_results_view', $results);
 
     // Output the results in a collapsible fieldset.
     $form[$name][$filename] = array(
