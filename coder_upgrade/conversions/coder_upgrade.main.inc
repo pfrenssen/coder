@@ -27,7 +27,7 @@
  */
 function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) {
   // Declare global variables.
-  global $_coder_upgrade_log, $_coder_upgrade_debug, $_coder_upgrade_module_name, $_coder_upgrade_replace_files;
+  global $_coder_upgrade_log, $_coder_upgrade_debug, $_coder_upgrade_module_name, $_coder_upgrade_replace_files, $_coder_upgrade_class_files;
 //  global $_coder_upgrade_dirname; // Not used.
 
   // Check lists in case this function is called apart from form submit.
@@ -63,6 +63,8 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
 
   // Set file replacement parameter.
   $_coder_upgrade_replace_files = variable_get('coder_upgrade_replace_files', FALSE);
+  // Initialize list of class files.
+  $_coder_upgrade_class_files = array();
 
   // Loop on items.
   foreach ($items as $item) {
@@ -190,7 +192,7 @@ function coder_upgrade_convert_end($dirname) {
  */
 function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = TRUE) {
 //  global $_coder_upgrade_filename; // TODO Only referenced in this function -- remove global
-  static $ignore = array('.', '..', 'CVS', '.svn');
+  static $ignore = array(/*'.', '..', '.bzr', '.git', '.svn',*/ 'CVS');
   global $_coder_upgrade_module_name, $_coder_upgrade_replace_files;
 
   $dirname = $item['old_dir'];
@@ -219,35 +221,46 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
   $filenames = scandir($dirname . '/');
   foreach ($filenames as $filename) {
 //    $_coder_upgrade_filename = $filename;
-    if (!in_array($filename, $ignore)) {
-      if (is_dir($dirname . '/' . $filename)) {
-        $new_filename = $filename;
-        // Handle D6 conversion item #79.
-        if ($filename == 'po') {
-          $new_filename = 'translations';
-        }
-        if ($recursive) {
-          // TODO Fix this!!!
-          $new_item = array(
-            'name' => $item['name'],
-            'old_dir' => $dirname . '/' . $filename,
-            'new_dir' => $new_dirname . '/' . $filename,
-          );
-          coder_upgrade_convert_dir($upgrades, $extensions, $new_item, $recursive);
-          // Reset the module name.
-          $_coder_upgrade_module_name = $item['module'];
-        }
+    if (substr(basename($filename), 0, 1) == '.' || in_array(basename($filename), $ignore)) {
+      // Ignore all hidden directories and CVS directory.
+      continue;
+    }
+    if (is_dir($dirname . '/' . $filename)) {
+      $new_filename = $filename;
+      // Handle D6 conversion item #79.
+      if ($filename == 'po') {
+        $new_filename = 'translations';
       }
-      elseif (in_array(pathinfo($filename, PATHINFO_EXTENSION), array_keys($extensions))) {
-        copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
-        coder_upgrade_log_print("\n*************************");
-        coder_upgrade_log_print('Converting the file => ' . $filename);
-        coder_upgrade_log_print("*************************");
-        coder_upgrade_convert_file($dirname . '/' . $filename, $new_dirname . '/' . $filename, $_coder_upgrade_replace_files);
+      if ($recursive) {
+        // TODO Fix this!!!
+        $new_item = array(
+          'name' => $item['name'],
+          'old_dir' => $dirname . '/' . $filename,
+          'new_dir' => $new_dirname . '/' . $filename,
+        );
+        coder_upgrade_convert_dir($upgrades, $extensions, $new_item, $recursive);
+        // Reset the module name.
+        $_coder_upgrade_module_name = $item['module'];
       }
-      else {
-        copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
+    }
+    elseif (in_array($extension = pathinfo($filename, PATHINFO_EXTENSION), array_keys($extensions))) {
+      copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
+      if ($extension == 'php' && substr($filename, -8) == '.tpl.php') {
+        // Exclude template files.
+        continue;
       }
+      coder_upgrade_log_print("\n*************************");
+      coder_upgrade_log_print('Converting the file => ' . $filename);
+      coder_upgrade_log_print("*************************");
+      coder_upgrade_convert_file($dirname . '/' . $filename, $new_dirname . '/' . $filename, $_coder_upgrade_replace_files);
+    }
+    elseif (in_array($extension, array('inc', 'install', 'module', 'php', 'profile', 'test', 'theme', 'upgrade'))) {
+      copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
+      // Check for a class declaration for use in the info file.
+      coder_upgrade_class_check($new_dirname . '/' . $filename);
+    }
+    else {
+      copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
     }
   }
 }
@@ -327,6 +340,7 @@ function coder_upgrade_apply_regex($filename, &$new) {
  *   The contents of the file to convert.
  */
 function coder_upgrade_apply_parser($filename, &$new) {
+  global $_coder_upgrade_class_files;
   // Categorize certain files.
   $is_info_file = pathinfo($filename, PATHINFO_EXTENSION) == 'info';
   $is_install_file = pathinfo($filename, PATHINFO_EXTENSION) == 'install';
@@ -349,6 +363,11 @@ function coder_upgrade_apply_parser($filename, &$new) {
   // Parse code file.
   $reader->buildGrammar();
   coder_upgrade_memory_print('build grammar');
+
+  $nodes = &$reader->getClasses();
+  if (!empty($nodes)) {
+    $_coder_upgrade_class_files[] = $filename;
+  }
 
   // Apply parser conversion routines for function calls.
   coder_upgrade_log_print("Calling hook_upgrade_call_alter");
@@ -767,7 +786,11 @@ function coder_upgrade_path_print($path, $text) {
   }
 }
 
-function clp($text) {
+function clp($text, $description = '') {
+  if ($description) {
+    $description .= ' ==>'; // Use two '=' so easier to find in file.
+    coder_upgrade_log_print($description);
+  }
   coder_upgrade_log_print($text);
 }
 
@@ -794,4 +817,20 @@ function coder_upgrade_path($type = '') {
     $path = coder_upgrade_directory_path('base', FALSE);
   }
   return $type ? $path . '/' . $type . '.txt' : $path;
+}
+
+function coder_upgrade_class_check($filename) {
+  global $_coder_upgrade_class_files;
+
+  // Read the file and copy the contents.
+  $snippet = file_get_contents($filename);
+  $tokens = token_get_all($snippet);
+//   clp($tokens, '$tokens');
+
+  foreach ($tokens as $token) {
+    if (is_array($token) && ($token[0] == T_CLASS || $token[0] == T_INTERFACE)) {
+      $_coder_upgrade_class_files[] = $filename;
+      return;
+    }
+  }
 }
