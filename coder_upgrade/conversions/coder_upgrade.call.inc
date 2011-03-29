@@ -1437,7 +1437,7 @@ function coder_upgrade_upgrade_call_file_scan_directory_alter(&$node, &$reader) 
       $mask = coder_upgrade_ereg_to_preg($item->printParameter(1));
       $editor->setParameter($item, 1, $mask);
     }
-    elseif (is_a($operand, 'PGPOperand') && $operand->findNode('type') == T_VARIABLE) {
+    elseif ($operand instanceof PGPOperand && $operand->findNode('type') == T_VARIABLE) {
       // Parameter is a variable.
       $variable = $operand->findNode('value');
       // Get the parent = statement (i.e. node) this function call is part of.
@@ -1466,12 +1466,12 @@ function coder_upgrade_upgrade_call_file_scan_directory_alter(&$node, &$reader) 
     // http://drupal.org/node/224333#file_scan_directory_nomask
     $nomask = $item->getParameter(2);
     $operand = $nomask->getElement();
-    if (is_a($operand, 'PGPArray')) {
+    if ($operand instanceof PGPArray) {
       // Parameter is an array.
       $nomask = coder_upgrade_array_to_preg($operand);
       $editor->setParameter($item, 2, $nomask);
     }
-    elseif (is_a($operand, 'PGPOperand') && $operand->findNode('type') == T_VARIABLE) {
+    elseif ($operand instanceof PGPOperand && $operand->findNode('type') == T_VARIABLE) {
       // Parameter is a variable.
       $variable = $operand->findNode('value');
       // Get the parent = statement (i.e. node) this function call is part of.
@@ -1481,7 +1481,7 @@ function coder_upgrade_upgrade_call_file_scan_directory_alter(&$node, &$reader) 
       if ($statement) {
         $operand2 = &$statement->values->getElement()->findNode('operand', 'backward');
         // TODO A pattern here - this is the same code as above but executed on a different object.
-        if (is_a($operand2, 'PGPArray')) {
+        if ($operand2 instanceof PGPArray) {
           $nomask = coder_upgrade_array_to_preg($operand2);
           $operand2 = array('type' => T_CONSTANT_ENCAPSED_STRING, 'value' => $nomask);
         }
@@ -1504,7 +1504,7 @@ function coder_upgrade_upgrade_call_file_scan_directory_alter(&$node, &$reader) 
       $key = coder_upgrade_file_key($item->printParameter(5));
       $editor->setParameter($item, 5, $key);
     }
-    elseif (is_a($operand, 'PGPOperand') && $operand->findNode('type') == T_VARIABLE) {
+    elseif ($operand instanceof PGPOperand && $operand->findNode('type') == T_VARIABLE) {
       // Parameter is a variable.
       $variable = $operand->findNode('value');
       $parent = $item->parent;
@@ -2222,7 +2222,7 @@ function coder_upgrade_convert_require(&$item, &$reader) { // DONE
   // Get first parameter.
   $p0 = $item->getParameter();
   $operand = $p0->getElement();
-  if (is_a($operand, 'PGPOperand') && $operand->findNode('type') == T_STRING && $operand->findNode('value') == 'DRUPAL_ROOT') {
+  if ($operand instanceof PGPOperand && $operand->findNode('type') == T_STRING && $operand->findNode('value') == 'DRUPAL_ROOT') {
     // Nothing to change.
     cdp('leaving the routine');
     return;

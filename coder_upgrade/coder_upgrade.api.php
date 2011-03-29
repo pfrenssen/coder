@@ -283,7 +283,7 @@ function hook_upgrade_file_alter(&$reader) {
   foreach ($nodes as &$node) {
     // Get the function call object.
     $item = &$node->data;
-    if (!isset($item) || !is_object($item) || !is_a($item, 'PGPFunctionCall') || $item->type != T_FUNCTION_CALL) {
+    if (!isset($item) || !is_object($item) || !($item instanceof PGPFunctionCall) || $item->type != T_FUNCTION_CALL) {
       /*
        * These checks are necessary as the reference (i.e. $item) could have
        * been changed in another routine so that it no longer refers to a
@@ -300,7 +300,7 @@ function hook_upgrade_file_alter(&$reader) {
      *
      * Review the grammar structure object using $item->print_r().
      */
-    if (is_a($item->name, 'PGPOperand') && $item->name->findNode('value') == '$this') {
+    if ($item->name instanceof PGPOperand && $item->name->findNode('value') == '$this') {
       // Strip '$this->' from the name.
       $name = substr($item->name->toString(), 7);
       // Modify the function call

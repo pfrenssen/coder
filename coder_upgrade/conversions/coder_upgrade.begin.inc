@@ -186,7 +186,7 @@ function coder_upgrade_cache_info_hooks($item, $recursive = TRUE) {
 function coder_upgrade_callback_menu($node, &$array2, &$current2, $hook, $type, $key, $value) { // NOT DONE
   global $_coder_upgrade_menu_registry;
 
-  if (!is_a($current2, 'PGPNode')) {
+  if (!($current2 instanceof PGPNode)) {
     clp("ERROR: current2 is not a PGPNode object in hook_$hook");
     return;
   }
