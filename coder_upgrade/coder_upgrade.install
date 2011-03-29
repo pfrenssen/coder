@@ -24,8 +24,8 @@ function coder_upgrade_install() {
       drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory searched by Coder Upgrade for modules to be converted.', array('%directory' => $dir)), 'error');
     }
     $dir = coder_upgrade_directory_path('new', FALSE);
-      if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
-        drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory to which Coder Upgrade writes converted module code.', array('%directory' => $dir)), 'error');
+    if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
+      drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory to which Coder Upgrade writes converted module code.', array('%directory' => $dir)), 'error');
     }
     // Create the patch directory.
     $dir = coder_upgrade_directory_path('patch', FALSE);
