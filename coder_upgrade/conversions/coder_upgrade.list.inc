@@ -30,11 +30,13 @@ function coder_upgrade_upgrade_info() {
   $format = array(
     'title' => t('Coding standards for 6.x and 7.x (parse and rewrite code files using the Grammar Parser) (it is recommended to run this routine before applying core API change routines so that the patch files accurately reflect the routines applied)'),
     'link' => 'http://drupal.org/coding-standards',
+    'module' => 'grammar_parser',
     'files' => array(),
   );
   $upgrade = array(
     'title' => t('Core API changes from 6.x to 7.x (also includes coding standards changes from rewrite of code files using the Grammar Parser)'),
     'link' => 'http://drupal.org/node/394070',
+    'module' => 'coder_upgrade',
     'files' => array(
       'conversions/coder_upgrade.begin.inc',
       'conversions/coder_upgrade.call.inc',

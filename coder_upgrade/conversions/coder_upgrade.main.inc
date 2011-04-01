@@ -102,23 +102,23 @@ function coder_upgrade_load_code(&$upgrades) {
   global $_coder_upgrade_upgrade_modules;
   $_coder_upgrade_upgrade_modules = array();
 
-  foreach ($upgrades as $module => $upgrade) {
-    $_coder_upgrade_upgrade_modules[] = $module;
+  foreach ($upgrades as $name => $upgrade) {
+    $_coder_upgrade_upgrade_modules[] = $upgrade['module'];
     if (isset($upgrade['path']) && !empty($upgrade['path'])) {
       // This is being run as a separate process outside of Drupal.
       $path = DRUPAL_ROOT . '/' . $upgrade['path'];
     }
     else {
-      $path = DRUPAL_ROOT . '/' . drupal_get_path('module', $module);
+      $path = DRUPAL_ROOT . '/' . drupal_get_path('module', $upgrade['module']);
     }
     if (isset($upgrade['files']) && !empty($upgrade['files'])) {
       foreach ($upgrade['files'] as $file) {
         require_once $path . '/' . $file;
       }
     }
-    elseif (file_exists($path . '/' . $module . '.upgrade')) {
+    elseif (file_exists($path . '/' . $upgrade['module'] . '.upgrade')) {
       // Default file name is module.upgrade in the module's root directory.
-      require_once $path . '/' . $module . '.upgrade';
+      require_once $path . '/' . $upgrade['module'] . '.upgrade';
     }
   }
   coder_upgrade_memory_print('load upgrade code');

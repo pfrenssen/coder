@@ -539,9 +539,10 @@ function coder_upgrade_conversions_prepare($form_state) {
 
   // TODO Cache this list so we don't have to query all the files again.
   $upgrades_all = _coder_upgrade_upgrades();
-  foreach ($upgrades as $module => $upgrade) {
-    $upgrades[$module] = array(
-      'files' => isset($upgrades_all[$module]['files']) ? $upgrades_all[$module]['files'] : array(),
+  foreach ($upgrades as $name => $upgrade) {
+    $upgrades[$name] = array(
+      'module' => isset($upgrades_all[$name]['module']) ? $upgrades_all[$name]['module'] : '',
+      'files' => isset($upgrades_all[$name]['files']) ? $upgrades_all[$name]['files'] : array(),
     );
   }
 
@@ -589,8 +590,8 @@ function coder_upgrade_conversions_prepare($form_state) {
  */
 function coder_upgrade_parameters_save($upgrades, $extensions, $items) {
   // Add path to upgrades array for use by script.
-  foreach ($upgrades as $module => &$upgrade) {
-    $upgrade['path'] = drupal_get_path('module', $module);
+  foreach ($upgrades as $name => &$upgrade) {
+    $upgrade['path'] = drupal_get_path('module', $upgrade['module']);
   }
   // Create paths array.
   $paths = array(

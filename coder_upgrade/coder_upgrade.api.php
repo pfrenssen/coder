@@ -34,7 +34,7 @@
  * @endcode
  *
  * @return
- *   An associative array (keyed on the module name) with each element being an
+ *   An associative array (keyed on the upgrade name) with each element being an
  *   associative array with the following elements:
  *   - 'title': A description of the upgrade routines provided by the upgrade set.
  *   - 'link': An optional link to an issue describing the upgrade routines.
@@ -46,11 +46,12 @@ function hook_upgrade_info() {
   $upgrade = array(
     'title' => t('Your module API changes from 6.x to 7.x'),
     'link' => 'http://...',
+    'module' => 'your_module_name',
     'files' => array(
       'upgrades/your_module_name.upgrade',
     ),
   );
-  return array('your_module_name' => $upgrade);
+  return array('your_upgrade_name' => $upgrade);
 }
 
 /**
