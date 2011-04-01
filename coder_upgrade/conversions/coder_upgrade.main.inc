@@ -45,7 +45,7 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
   if ($_coder_upgrade_log) {
     // Clear the log file.
     coder_upgrade_path_clear('log');
-    if (!variable_get('coder_upgrade_use_separate_process', TRUE)) {
+    if (!variable_get('coder_upgrade_use_separate_process', FALSE)) {
       coder_upgrade_path_clear('memory');
     }
     coder_upgrade_memory_print('initial');

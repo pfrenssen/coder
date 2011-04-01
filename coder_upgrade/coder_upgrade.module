@@ -157,7 +157,7 @@ function coder_upgrade_settings_form($form, &$form_state) {
   $form['performance']['coder_upgrade_use_separate_process'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use separate process'),
-    '#default_value' => variable_get('coder_upgrade_use_separate_process', TRUE),
+    '#default_value' => variable_get('coder_upgrade_use_separate_process', FALSE),
     '#description' => t('If checked, then coder upgrade will be run in a separate process without a Drupal bootstrap. This helps to minimize the chance of hitting PHP memory and processing time limits.'),
   );
 
@@ -507,7 +507,7 @@ function coder_upgrade_conversions_apply($form_state) {
 
   // Apply conversion functions.
   module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
-  if (variable_get('coder_upgrade_use_separate_process', TRUE)) {
+  if (variable_get('coder_upgrade_use_separate_process', FALSE)) {
     // Conversion code will be run in a separate process.
     drupal_set_message(t('Module conversion code will run in a separate process.'));
     $path = coder_upgrade_parameters_save($upgrades, $extensions, $items);
@@ -607,7 +607,7 @@ function coder_upgrade_parameters_save($upgrades, $extensions, $items) {
     'coder_upgrade_preserve_array_format' => variable_get('coder_upgrade_preserve_array_format', FALSE),
     'coder_upgrade_enable_debug_output' => variable_get('coder_upgrade_enable_debug_output', FALSE),
     'coder_upgrade_enable_parser_debug_output' => variable_get('coder_upgrade_enable_parser_debug_output', FALSE),
-    'coder_upgrade_use_separate_process' => variable_get('coder_upgrade_use_separate_process', TRUE),
+    'coder_upgrade_use_separate_process' => variable_get('coder_upgrade_use_separate_process', FALSE),
   );
   // Create parameters array.
   $parameters['paths'] = $paths;
