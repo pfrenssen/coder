@@ -382,7 +382,7 @@ function coder_upgrade_directories_build(&$directories) {
   $rows = array();
   foreach ($dirs as $dir) {
     $row = array();
-    $row['name'] = isset($directories[$dir]) ? l($dir, coder_upgrade_patch_link($dir)) : $dir;
+    $row['name'] = isset($directories[$dir]) ? l($dir, coder_upgrade_patch_link($dir), array('attributes' => array('target' => '_blank'))) : $dir;
     $row['path'] = $deadwood_dir . '/' . $dir;
     $row['#weight'] = ++$i;
 
@@ -484,8 +484,8 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
   $success = coder_upgrade_conversions_apply($form_state);
   if ($success) {
     drupal_set_message(t('Module conversion code was run.'));
-    drupal_set_message(t('Click to view the !log.', array('!log' => l(t('conversion log file'), coder_upgrade_path('log')))));
-    drupal_set_message(t('Patch files may be viewed by clicking on Name links in the Directories and Modules tabs below.'));
+    drupal_set_message(t('Click to view the !log.', array('!log' => l(t('conversion log file'), coder_upgrade_path('log'), array('attributes' => array('target' => '_blank'))))));
+    drupal_set_message(t('To view a patch file, click on a Name link in the Directories and Modules tabs below.'));
   }
   else {
     drupal_set_message(t('Module conversion code was not run.'), 'error');
