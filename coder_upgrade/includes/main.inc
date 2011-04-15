@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Main conversion routine file for the coder_upgrade module.
+ * Manages application of conversion routines, logging, and patch file creation.
  *
  * The functions in these conversion routine files correspond to the topics in
  * the category roadmap at http://drupal.org/node/394070 that are marked with
  * a green check mark in the Upgrade column.
  *
- * Copyright 2008-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2008-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -273,7 +273,7 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
  * @param string $filename
  *   The new name of the file to convert.
  * @param boolean $_coder_upgrade_replace_files
- *   Indicates wheter to replace the original files.
+ *   Indicates whether to replace the original files.
  */
 function coder_upgrade_convert_file($oldname, $filename, $_coder_upgrade_replace_files = FALSE) {
   if (!file_exists($filename)) {
@@ -419,7 +419,7 @@ function coder_upgrade_convert_function_calls(&$reader) {
     $item = &$node->data;
     if (!isset($item) || !is_object($item) || !($item instanceof PGPFunctionCall) || $item->type != T_FUNCTION_CALL) {
       // The reference could have been changed in another routine so that it
-      // no longer refers to an ojbect.
+      // no longer refers to an object.
       continue;
     }
     // If need to change other statements that we build as a function call,
@@ -465,7 +465,7 @@ function coder_upgrade_convert_functions(&$reader) {
     $item = &$node->data;
     if (!isset($item) || !is_object($item) || !($item instanceof PGPClass) || $item->type != T_FUNCTION) {
       // The reference could have been changed in another routine so that it
-      // no longer refers to an ojbect.
+      // no longer refers to an object.
       continue;
     }
 
@@ -800,23 +800,6 @@ function cdp($text, $description = '') {
     coder_upgrade_debug_print($description);
   }
   coder_upgrade_debug_print($text);
-}
-
-/**
- * Returns path to file or files directory.
- *
- * @param string $type
- *   Type of file to return path to. If blank, return directory path.
- * @return string
- *   Path to file or directory.
- */
-function coder_upgrade_path($type = '') {
-  static $path = '';
-
-  if (!$path) {
-    $path = coder_upgrade_directory_path('base', FALSE);
-  }
-  return $type ? $path . '/' . $type . '.txt' : $path;
 }
 
 function coder_upgrade_class_check($filename) {

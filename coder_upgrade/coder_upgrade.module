@@ -13,14 +13,14 @@
  * For a list of core API changes that are handled by this module, see:
  * - http://drupal.org/node/394070
  *
- * Copyright 2008-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2008-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 if (function_exists('t')) {
   // This code is being executed inside a process running Drupal.
   module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
-  module_load_include('inc', 'coder_upgrade', 'coder_upgrade.help');
-  module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.list');
+  module_load_include('inc', 'coder_upgrade', 'includes/help');
+  module_load_include('inc', 'coder_upgrade', 'conversions/list');
 }
 
 /**
@@ -96,7 +96,6 @@ function coder_upgrade_menu_alter(&$items) {
  */
 function coder_upgrade_settings_form($form, &$form_state) {
   module_load_include('inc', 'grammar_parser', 'grammar_parser.parser');
-  module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
   $parser = new PGPParser();
 
   $path = coder_upgrade_directory_path('', FALSE);
@@ -206,8 +205,8 @@ function coder_upgrade_settings_form_submit($form, &$form_state) {
 function coder_upgrade_create_theme_cache_submit($form, &$form_state) {
   global $_coder_upgrade_theme_registry;
 
-  module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
-  module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.begin');
+  module_load_include('inc', 'coder_upgrade', 'includes/main');
+  module_load_include('inc', 'coder_upgrade', 'conversions/begin');
   // Create a core theme information cache.
   coder_upgrade_cache_theme_registry();
   // Write cache to file.
@@ -483,12 +482,12 @@ function coder_upgrade_conversions_form_submit($form, &$form_state) {
   // Apply conversion functions.
   $success = coder_upgrade_conversions_apply($form_state);
   if ($success) {
-    drupal_set_message(t('Module conversion code was run.'));
+    drupal_set_message(t('Module conversion routines were applied.'));
     drupal_set_message(t('Click to view the !log.', array('!log' => l(t('conversion log file'), coder_upgrade_path('log'), array('attributes' => array('target' => '_blank'))))));
     drupal_set_message(t('To view a patch file, click on a Name link in the Directories and Modules tabs below.'));
   }
   else {
-    drupal_set_message(t('Module conversion code was not run.'), 'error');
+    drupal_set_message(t('Module conversion routines failed to complete.'), 'error');
   }
 }
 
@@ -506,10 +505,10 @@ function coder_upgrade_conversions_apply($form_state) {
   list($upgrades, $extensions, $items) = coder_upgrade_conversions_prepare($form_state);
 
   // Apply conversion functions.
-  module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
+  module_load_include('inc', 'coder_upgrade', 'includes/main');
   if (variable_get('coder_upgrade_use_separate_process', FALSE)) {
     // Conversion code will be run in a separate process.
-    drupal_set_message(t('Module conversion code will run in a separate process.'));
+    drupal_set_message(t('Module conversion routines will run in a separate process.'));
     $path = coder_upgrade_parameters_save($upgrades, $extensions, $items);
     $script = drupal_get_path('module', 'coder_upgrade') . '/scripts/coder_upgrade.run.php';
     $output = coder_upgrade_directory_path('base') . 'coder_upgrade.run.txt';
@@ -523,7 +522,7 @@ function coder_upgrade_conversions_apply($form_state) {
   }
   else {
     // Conversion code will be run in the same process.
-    drupal_set_message(t('Module conversion code will run in the same process.'));
+    drupal_set_message(t('Module conversion routines will run in the same process.'));
     $success = coder_upgrade_start($upgrades, $extensions, $items);
   }
 

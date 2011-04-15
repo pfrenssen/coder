@@ -2,9 +2,9 @@
 
 /**
  * @file
- * Help file for the coder_upgrade module.
+ * Provides help text.
  *
- * Copyright 2008-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2008-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -71,17 +71,17 @@ function coder_upgrade_help($path, $arg) {
                  <li>In the Directories and Modules tab, a patch file link is added to the names of each converted directory or module.</li>
                  <li>Click on the patch file link to review the changes made for each directory or module.</li>
                  <li>Otherwise, review the changes using your favorite directory or file comparison utility.</li>
-                 <li>Rerun the !coder to highlight the areas in your module\'s code needing manual review.</li>
                  <li>Copy the directory from the module output directory to the 7.x installation directory for your contributed modules (e.g., sites/all/modules or sites/default/modules).</li>
+                 <li>Run !coder to highlight the areas in your module\'s code needing manual review and make the necessary changes to your code.</li>
                  <li>Install the module through the !install and test it.</li>
                  </ol>',
                  array('!input' => $input,
                        '!output' => $output,
                        '!coder' => l(t('Coder Review'), 'admin/config/development/coder/review'),
-                       '!install' => l(t('Drupal interface'), 'admin/structure/modules'))) .
-             tp('<b>Manual Changes</b>') .
-             tp('After applying the automated conversions to your module, rerun the !coder to highlight the areas in your module\'s code needing manual review.',
-                 array('!coder' => l(t('Coder Review'), 'admin/config/development/coder/review'))) .
+                       '!install' => l(t('Drupal interface'), 'admin/modules'))) .
+//              tp('<b>Manual Changes</b>') .
+//              tp('After applying the automated conversions to your module, rerun the !coder to highlight the areas in your module\'s code needing manual review.',
+//                  array('!coder' => l(t('Coder Review'), 'admin/config/development/coder/review'))) .
              tp('<b>Feedback</b>') .
              tp('If any of the automated conversions are not successful with your module and you believe the conversion code could be changed to handle your module\'s code, please submit a project issue to the !issue <b>specifying "Coder Upgrade"</b> as the Component.' .
                 ' If you can also supply a patch for the change, that would be greatly appreciated too.',

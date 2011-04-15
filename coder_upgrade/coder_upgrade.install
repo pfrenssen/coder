@@ -4,7 +4,7 @@
  * @file
  * Install, uninstall, and update functions for the Coder Upgrade module.
  *
- * Copyright 2008-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2008-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 module_load_include('inc', 'coder_upgrade', 'coder_upgrade');

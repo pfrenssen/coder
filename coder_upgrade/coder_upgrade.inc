@@ -2,9 +2,9 @@
 
 /**
  * @file
- * Constants and utility functions for the coder_upgrade module.
+ * Provides constants and utility functions.
  *
- * Copyright 2008-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2008-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -89,6 +89,23 @@ function coder_upgrade_clean_directory($path, $remove_me = FALSE) {
   if ($remove_me) {
     rmdir($path);
   }
+}
+
+/**
+ * Returns path to file or files directory.
+ *
+ * @param string $type
+ *   Type of file to return path to. If blank, return directory path.
+ * @return string
+ *   Path to file or directory.
+ */
+function coder_upgrade_path($type = '') {
+  static $path = '';
+
+  if (!$path) {
+    $path = coder_upgrade_directory_path('base', FALSE);
+  }
+  return $type ? $path . '/' . $type . '.txt' : $path;
 }
 
 /**

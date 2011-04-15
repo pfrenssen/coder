@@ -8,7 +8,7 @@
  * the category roadmap at http://drupal.org/node/394070 that are marked with
  * a green check mark in the Upgrade column.
  *
- * Copyright 2009-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2009-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -38,13 +38,13 @@ function coder_upgrade_upgrade_info() {
     'link' => 'http://drupal.org/node/394070',
     'module' => 'coder_upgrade',
     'files' => array(
-      'conversions/coder_upgrade.begin.inc',
-      'conversions/coder_upgrade.call.inc',
-      'conversions/coder_upgrade.db.inc',
-      'conversions/coder_upgrade.end.inc',
-      'conversions/coder_upgrade.function.inc',
-      'conversions/coder_upgrade.install.inc',
-      'conversions/coder_upgrade.regex.inc',
+      'conversions/begin.inc',
+      'conversions/call.inc',
+      'conversions/db.inc',
+      'conversions/end.inc',
+      'conversions/function.inc',
+      'conversions/install.inc',
+      'conversions/regex.inc',
     ),
   );
   return array(

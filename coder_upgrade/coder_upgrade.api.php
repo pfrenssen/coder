@@ -2,9 +2,9 @@
 
 /**
  * @file
- * Hooks provided by the Coder Upgrade module.
+ * Documents hooks provided by this module.
  *
- * Copyright 2009-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2009-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
