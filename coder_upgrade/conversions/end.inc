@@ -1,10 +1,9 @@
 <?php
-
 /**
  * @file
- * End conversion routine file for the coder_upgrade module.
- * These routines upgrade the converted directory after upgrade routines are
- * applied to the files.
+ * Provides conversion routines applied to the directory after routines are applied to the files.
+ *
+ * These routines use the grammar parser.
  *
  * The functions in this conversion routine file correspond to topics in the
  * category roadmap at http://drupal.org/node/394070 that are marked with a
@@ -43,6 +42,7 @@ function coder_upgrade_upgrade_end_alter($dirname) {
  *
  * @param string $dirname
  *   Directory path to scan.
+ *
  * @return array
  *   Array of file and/or directory names.
  */

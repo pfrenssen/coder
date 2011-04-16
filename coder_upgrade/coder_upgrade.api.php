@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Documents hooks provided by this module.

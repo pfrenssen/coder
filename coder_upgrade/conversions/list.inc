@@ -1,8 +1,7 @@
 <?php
-
 /**
  * @file
- * List of conversion routines for the coder_upgrade module.
+ * Provides list of conversion routines.
  *
  * The functions in these conversion routine files correspond to the topics in
  * the category roadmap at http://drupal.org/node/394070 that are marked with

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Invokes the Coder Upgrade conversion routines as a separate process.
@@ -100,6 +99,7 @@ $path = $_coder_upgrade_modules_base . '/coder/coder_upgrade';
 $files = array(
   'coder_upgrade.inc',
   'includes/main.inc',
+  'includes/utility.inc',
 );
 foreach ($files as $file) {
   require_once DRUPAL_ROOT . '/' . $path . "/$file";

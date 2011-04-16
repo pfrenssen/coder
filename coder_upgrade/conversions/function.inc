@@ -1,9 +1,9 @@
 <?php
-
 /**
  * @file
- * Function (or hook) conversion routine file for the coder_upgrade module.
- * These routines upgrade functions (or hooks) using the grammar parser.
+ * Provides conversion routines applied to functions (or hooks).
+ *
+ * These routines use the grammar parser.
  *
  * The functions in this conversion routine file correspond to topics in the
  * category roadmap at http://drupal.org/node/394070 that are marked with a
@@ -90,7 +90,7 @@
 /**
  * Implements hook_upgrade_hook_alter().
  */
-function coder_upgrade_upgrade_hook_alter(&$node, &$reader) {
+function coder_upgrade_upgrade_hook_alter(&$node, &$reader, $hook) {
   cdp("inside " . __FUNCTION__);
   $item = &$node->data;
 
@@ -890,6 +890,7 @@ function coder_upgrade_new_filter_hook($node, $hook, $filters = array()) { // DO
  *
  * @param PGPNode $node
  *   A node object containing a PGPClass (or function) item.
+ *
  * @return array
  *   Array of tip callback functions indexed by $delta.
  */
@@ -1414,6 +1415,7 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
  *   A list of conditions to an if block.
  * @param string $op
  *   A string of the hook operation.
+ *
  * @return array
  *   Array of operations referenced in the if block.
  */
@@ -1994,7 +1996,7 @@ function coder_upgrade_convert_return(&$body, $hook, $callback = '', $start_dept
   $already_searched = array();
 
   while (!empty($nodes)) {
-    cdp('while(!empty($nodes)) ' . __FUNCTION__);
+    cdp('while (!empty($nodes)) ' . __FUNCTION__);
     $return_node = array_shift($nodes);
     $return = $return_node->data;
 
@@ -2085,6 +2087,7 @@ function coder_upgrade_convert_return(&$body, $hook, $callback = '', $start_dept
  *   The assignment variable (left of assignment operator).
  * @param PGPExpression $value
  *   The assignment value (right of assignment operator).
+ *
  * @return PGPExpression
  *   The new array expression.
  */

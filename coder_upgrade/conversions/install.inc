@@ -1,9 +1,9 @@
 <?php
-
 /**
  * @file
- * Install conversion routine file for the coder_upgrade module.
- * These routines upgrade function calls using the grammar parser.
+ * Provides conversion routines applied to install files.
+ *
+ * These routines use the grammar parser.
  *
  * The functions in this conversion routine file correspond to topics in the
  * category roadmap at http://drupal.org/node/394070 that are marked with a
@@ -113,32 +113,4 @@ function coder_upgrade_add_install_file_comment(&$reader, $position) {
     'value' => "/**\n * @file\n * Install, update and uninstall functions for the $_coder_upgrade_module_name module.\n *\n */",
   );
   $statements->insertElement($position, $comment);
-}
-
-/**
- * Implements hook_upgrade_regex_info_alter().
- *
- * Alters the text of a code file using regular expressions.
- *
- * Module Info / Install
- * http://drupal.org/node/224333#info_core_7 (this anchor does not exist on the chronological page)
- *
- * @param string $file
- *   The text of the file to convert.
- */
-function coder_upgrade_upgrade_regex_info_alter(&$file) {
-  cdp("inside " . __FUNCTION__);
-  $hook = 'info_file';
-  $cur = $file;
-  $new = $cur;
-
-  $from = array();
-  $to = array();
-
-  // Info file should specify core = 7.x.
-  $from[] = '@^core\s+=\s+.*?$@m';
-  $to[] = 'core = 7.x';
-
-  coder_upgrade_do_conversions($from, $to, $new);
-  coder_upgrade_save_changes($cur, $new, $file, $hook);
 }

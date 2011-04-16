@@ -1,8 +1,7 @@
 <?php
-
 /**
  * @file
- * Tests for the Coder Upgrade module.
+ * Provides tests.
  */
 
 module_load_include('inc', 'coder_upgrade', 'coder_upgrade');

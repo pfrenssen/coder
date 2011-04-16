@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Provides help text.
@@ -10,7 +9,7 @@
 /**
  * Implements hook_help().
  */
-function coder_upgrade_help($path, $arg) {
+function _coder_upgrade_help($path, $arg) {
   $input = coder_upgrade_directory_path('old', FALSE);
   $output = coder_upgrade_directory_path('new', FALSE);
   switch ($path) {

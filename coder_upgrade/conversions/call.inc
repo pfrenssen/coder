@@ -1,9 +1,9 @@
 <?php
-
 /**
  * @file
- * Function call conversion routine file for the coder_upgrade module.
- * These routines upgrade function calls using the grammar parser.
+ * Provides conversion routines applied to function calls.
+ *
+ * These routines use the grammar parser.
  *
  * The functions in this conversion routine file correspond to topics in the
  * category roadmap at http://drupal.org/node/394070 that are marked with a
@@ -697,6 +697,7 @@ function coder_upgrade_upgrade_call_drupal_add_css_alter(&$node, &$reader) { // 
  * Returns the new css weight parameter.
  *
  * @param string $type
+ *
  * @return string
  */
 function coder_upgrade_css_weight($type) {
@@ -778,6 +779,7 @@ function coder_upgrade_upgrade_call_drupal_add_js_alter(&$node, &$reader) { // D
  * Returns the new js weight parameter.
  *
  * @param string $type
+ *
  * @return string
  */
 function coder_upgrade_js_weight($type) {
@@ -1064,6 +1066,7 @@ function coder_upgrade_upgrade_call_drupal_goto_alter(&$node, &$reader) {
  * Converts a url query string to an associative array.
  *
  * @param string $string
+ *
  * @return PGPExpression
  *   The associative array.
  */
@@ -1538,6 +1541,7 @@ function coder_upgrade_upgrade_call_file_scan_directory_alter(&$node, &$reader) 
  * Returns the new file key parameter.
  *
  * @param string $key
+ *
  * @return string
  */
 function coder_upgrade_file_key($key) {
@@ -1560,6 +1564,7 @@ function coder_upgrade_file_key($key) {
  * Converts an ereg string to a preg string.
  *
  * @param string $string
+ *
  * @return string
  */
 function coder_upgrade_ereg_to_preg($string) {
@@ -1587,6 +1592,7 @@ function coder_upgrade_ereg_to_preg($string) {
  * Returns a preg string for the nomask parameter.
  *
  * @param PGPOperand $nomask
+ *
  * @return string
  */
 function coder_upgrade_array_to_preg($operand) {

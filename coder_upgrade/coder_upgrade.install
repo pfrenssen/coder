@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Install, uninstall, and update functions for the Coder Upgrade module.
@@ -18,11 +17,12 @@ function coder_upgrade_install() {
   // subdirectories. However, this code is clean and allows for one else block.
   $dir = coder_upgrade_directory_path('base', FALSE);
   if (file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
-    // Create the old and new module directories.
+    // Create the old module directory.
     $dir = coder_upgrade_directory_path('old', FALSE);
     if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
       drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory searched by Coder Upgrade for modules to be converted.', array('%directory' => $dir)), 'error');
     }
+    // Create the new module directory.
     $dir = coder_upgrade_directory_path('new', FALSE);
     if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
       drupal_set_message(st('The files directory at %directory can not be written to. This is the default directory to which Coder Upgrade writes converted module code.', array('%directory' => $dir)), 'error');
@@ -47,11 +47,7 @@ function coder_upgrade_install() {
  */
 function coder_upgrade_uninstall() {
   // Remove the module input and output directories.
-  $dir = coder_upgrade_directory_path('old', FALSE);
-  coder_upgrade_clean_directory($dir, TRUE);
-  $dir = coder_upgrade_directory_path('new', FALSE);
-  coder_upgrade_clean_directory($dir, TRUE);
-  $dir = coder_upgrade_directory_path('patch', FALSE);
+  $dir = coder_upgrade_directory_path('base', FALSE);
   coder_upgrade_clean_directory($dir, TRUE);
 
   // Remove items from {variables} table.
@@ -90,12 +86,13 @@ function coder_upgrade_requirements($phase) {
     if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
       $requirements['coder_upgrade_files'] = array(
         'title' => $t('Files directory'),
-        'description' => $t('Your files directory at %directory can not be written to. Coder Upgrade places converted module code in subdirectories of this directory.', array('%directory' => $dir)),
+        'description' => $t('Your files directory at %directory can not be written to. Coder Upgrade places converted module code and other files in subdirectories of this directory.', array('%directory' => $dir)),
         'severity' => REQUIREMENT_ERROR
       );
     }
   }
   else {
+    // @todo Check all of the subdirectories.
     $dir = coder_upgrade_directory_path('new', FALSE);
     if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
       $requirements['coder_upgrade_files'] = array(

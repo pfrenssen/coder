@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Manages application of conversion routines, logging, and patch file creation.
@@ -22,6 +21,7 @@
  *   Array of directories containing the files to convert.
  * @param boolean $recursive
  *   Indicates whether to recurse the subdirectories of each $item.
+ *
  * @return boolean
  *   Indicates whether the conversion code was successfully applied.
  */
@@ -565,7 +565,7 @@ function coder_upgrade_module_name($dirname, &$item) {
  * @param array $item
  *   Array of the directory containing the files to convert.
  * @param boolean $_coder_upgrade_replace_files
- *   Indicates wheter to replace the original files.
+ *   Indicates whether to replace the original files.
  */
 function coder_upgrade_make_patch_file($item, $_coder_upgrade_replace_files = FALSE) {
   // Patch directory.
@@ -604,6 +604,7 @@ function coder_upgrade_make_patch_file($item, $_coder_upgrade_replace_files = FA
  *   When TRUE, find all functions with $hook in the name.
  * @param boolean $hook_is_suffix
  *   The $hook is only the suffix of the function name.
+ *
  * @return string
  *   The function text.
  */
