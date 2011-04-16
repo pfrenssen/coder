@@ -1183,7 +1183,7 @@ function example_taxonomy_tables() {
   );
   $results = pager_query(db_rewrite_sql('SELECT t.*, h.parent FROM {term_data} t INNER JOIN {term_hierarchy} h ON t.tid = h.tid WHERE t.vid = %d ORDER BY weight, name', 't', 'tid'), $page_increment, 0, NULL, $vocabulary->vid);
   $total_entries = db_query(db_rewrite_sql('SELECT count(*) FROM {term_data} t INNER JOIN {term_hierarchy} h ON t.tid = h.tid WHERE t.vid = :vid'), array(':vid' => $vocabulary->vid));
-  db_query('UPDATE {term_data} SET weight = 0 WHERE vid = :vid', array(':vid' => $form_state['values']['vid']));
+  db_query('UPDATE {term_data} SET weight = 0 WHERE vid = %d', $form_state['values']['vid']);
   db_insert('term_synonym');
 }
 
@@ -1314,7 +1314,7 @@ function example_drupal_add_css_inline() {
 function example_form_clean_id() {
   $class = form_clean_id('string');
   $id = form_clean_id($id);
-  $class = form_clean_id(impode('-', $form['element']['#parents']));
+  $class = form_clean_id(implode('-', $form['element']['#parents']));
 
   $form['element']['#attributes']['class'] = form_clean_id(implode('-', $form['element']['#parents']));
 }
@@ -1563,7 +1563,7 @@ function example_theme_username() {
  *
  * http://drupal.org/node/224333#node_form
  */
-function example_form_alter() {
+function example_form_alter(&$form, &$form_state, $form_id) {
   if (isset($form['type']) && isset($form['#node']) && $form['type']['#value'] .'_node_form' == $form_id) {
     // Alter node form.
   }
@@ -2304,8 +2304,8 @@ function node_build_content($node, $build_mode = 'full') {
 // Should there be a $build_mode parameter?
 // See http://api.drupal.org/api/function/hook_node_view/7
 /**
-* An implementation of hook_node_view().
-*/
+ * An implementation of hook_node_view().
+ */
 function taxonomy_node_view($node) {
   if ($node->build_mode == NODE_BUILD_RSS) {
     foreach ($node->taxonomy as $term) {
