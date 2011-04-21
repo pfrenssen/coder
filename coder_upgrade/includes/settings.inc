@@ -120,7 +120,7 @@ function coder_upgrade_settings_form_submit($form, &$form_state) {
 function coder_upgrade_create_theme_cache_submit($form, &$form_state) {
   global $_coder_upgrade_theme_registry;
 
-  module_load_include('inc', 'coder_upgrade', 'includes/main');
+  module_load_include('inc', 'coder_upgrade', 'includes/conversion');
   module_load_include('inc', 'coder_upgrade', 'conversions/begin');
   // Create a core theme information cache.
   coder_upgrade_cache_theme_registry();

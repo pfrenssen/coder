@@ -38,6 +38,7 @@ function coder_upgrade_install() {
   }
 
   // Create a core theme information cache.
+  module_load_include('inc', 'coder_upgrade', 'includes/settings');
   $form_state = array();
   coder_upgrade_create_theme_cache_submit(array(), $form_state);
 }
