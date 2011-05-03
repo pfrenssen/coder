@@ -132,12 +132,7 @@ function coder_upgrade_load_parser() {
   if (!$parser_loaded) {
     $parser_loaded = TRUE;
     // Include parser files.
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.parser');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.reader');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.writer');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.editor');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.list');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.object');
+    libraries_load('grammar_parser');
     coder_upgrade_memory_print('load parser code');
   }
 }
