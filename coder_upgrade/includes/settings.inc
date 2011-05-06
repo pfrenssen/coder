@@ -10,7 +10,7 @@
  * Form builder for the settings form.
  */
 function coder_upgrade_settings_form($form, &$form_state) {
-  module_load_include('inc', 'grammar_parser', 'grammar_parser.parser');
+  require_once DRUPAL_ROOT . '/' . libraries_get_path('grammar_parser') . '/engine/parser.inc';
   $parser = new PGPParser();
 
   $path = coder_upgrade_directory_path('', FALSE);
