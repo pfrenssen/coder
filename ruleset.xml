@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<ruleset name="Drupal">
+ <description>A coding standard based on the Drupal coding standard.</description>
+
+ <!-- Include some sniffs from all around the place -->
+ <rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
+ <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
+ <rule ref="Generic.PHP.UpperCaseConstant"/>
+ <rule ref="Generic.PHP.NoSilencedErrors"/>
+ <rule ref="Generic.PHP.DisallowShortOpenTag"/>
+ <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
+ <rule ref="Generic.Formatting.SpaceAfterCast"/>
+ <rule ref="PEAR.WhiteSpace.ScopeClosingBrace"/>
+ <rule ref="MySource.Debug.DebugCode"/>
+
+ <!-- Lines can be 80 chars long, show errors at 120 chars -->
+ <rule ref="Generic.Files.LineLength">
+  <properties>
+   <property name="lineLimit" value="80"/>
+   <property name="absoluteLineLimit" value="120"/>
+  </properties>
+ </rule>
+
+ <!-- Use Unix newlines -->
+ <rule ref="Generic.Files.LineEndings">
+  <properties>
+   <property name="eolChar" value="\n"/>
+  </properties>
+ </rule>
+
+</ruleset>
