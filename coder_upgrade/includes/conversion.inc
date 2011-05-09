@@ -390,6 +390,7 @@ function coder_upgrade_parameters_save($upgrades, $extensions, $items) {
   // Create paths array.
   $paths = array(
     'files_base' => coder_upgrade_directory_path('', FALSE),
+    'libraries_base' => str_replace('/grammar_parser', '', libraries_get_path('grammar_parser')),
     'modules_base' => str_replace('/coder', '', drupal_get_path('module', 'coder')),
   );
   // Create variables array.

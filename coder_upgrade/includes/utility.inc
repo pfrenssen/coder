@@ -13,25 +13,46 @@
 
 if (!function_exists('drupal_get_path')) {
   function drupal_get_path($type, $name) {
-    global $_coder_upgrade_modules_base;
-    return $_coder_upgrade_modules_base . "/$name";
+    global $_coder_upgrade_libraries_base, $_coder_upgrade_modules_base;
+    return $type == 'library' ? $_coder_upgrade_libraries_base . "/$name" : $_coder_upgrade_modules_base . "/$name";
   }
 }
 
 if (!function_exists('module_load_include')) {
-  function module_load_include($type, $module, $name = NULL) {
+  // Create a function that could be in core.
+  // Rename parameters to more accurately reflect use. Add type parameter.
+  function drupal_load_include($ext, $project, $name = NULL, $type = 'module') {
     if (empty($name)) {
-      $name = $module;
+      $name = $project;
     }
 
     if (function_exists('drupal_get_path')) {
-      $file = DRUPAL_ROOT . '/' . drupal_get_path('module', $module) . "/$name.$type";
+      $file = DRUPAL_ROOT . '/' . drupal_get_path($type, $project) . "/$name.$ext";
       if (is_file($file)) {
         require_once $file;
         return $file;
       }
     }
     return FALSE;
+  }
+
+  function module_load_include($ext, $module, $name = NULL) {
+    return drupal_load_include($ext, $module, $name);
+  }
+}
+
+if (!function_exists('libraries_load')) {
+  function libraries_load($name, $variant = NULL) {
+    if (!isset($name) || $name != 'grammar_parser') {
+      return FALSE;
+    }
+
+    $library = $name;
+    $ext = 'inc';
+    foreach (array('parser', 'reader', 'writer', 'editor', 'list', 'object') as $name) {
+      drupal_load_include($ext, $library, "engine/$name", 'library');
+    }
+    return TRUE;
   }
 }
 

@@ -85,6 +85,7 @@ save_memory_usage('load runtime parameters', $usage);
 // Set global variables (whose names do not align with extracted parameters).
 $_coder_upgrade_variables = $variables;
 $_coder_upgrade_files_base = $paths['files_base'];
+$_coder_upgrade_libraries_base = $paths['libraries_base'];
 $_coder_upgrade_modules_base = $paths['modules_base'];
 
 // Load core theme cache.
