@@ -1147,7 +1147,7 @@ function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, 
   if (!$path || !is_file($path)) {
     return;
   }
-  $ini = parse_ini_file($path);
+  $ini = drupal_parse_info_file($path);
 
   // Check if the dependency has been declared.
   $dependency_declared = (isset($ini['dependencies']) && is_array($ini['dependencies'])) ? in_array('block', $ini['dependencies']) : FALSE;
