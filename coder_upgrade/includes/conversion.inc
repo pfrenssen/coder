@@ -15,6 +15,9 @@ module_load_include('inc', 'coder_upgrade', 'conversions/list');
  * to "customize" this form directly without resorting to hook_form_alter.
  */
 function coder_upgrade_conversions_form($form, &$form_state) {
+  // Confirm the necessary module and library are installed.
+  $checks_passed = coder_upgrade_library_checks();
+
   // Set default values.
   list($upgrades, $extensions, $directories, $modules) = coder_upgrade_conversions_form_defaults($form_state);
 
@@ -31,7 +34,7 @@ function coder_upgrade_conversions_form($form, &$form_state) {
   $form['convert'] = array(
     '#type' => 'submit',
     '#value' => t('Convert files'),
-//    '#disabled' => empty($form['tabs']['directories']['list']['#options']),
+    '#disabled' => !$checks_passed, // '#disabled' => empty($form['tabs']['directories']['list']['#options']),
   );
 
   return $form;
