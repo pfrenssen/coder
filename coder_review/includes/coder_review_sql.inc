@@ -79,7 +79,7 @@ function _coder_review_sql_db_query_range_warning() {
 
 function _coder_review_sql_select_count_warning() {
   return array(
-    '#warning' => t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actualy numer of rows.'),
+    '#warning' => t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actual number of rows.'),
     '#link' => 'http://drupal.org/node/224333#select_count',
   );
 }
