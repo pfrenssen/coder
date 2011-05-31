@@ -682,7 +682,7 @@ function example_schema() {
  * @see http://drupal.org/node/1354
  */
 function example_install() {
-  //   drupal_install_schema('example');
+//   drupal_install_schema('example');
   // TODO The drupal_(un)install_schema functions are called automatically in D7.
   if ($results = array()/*drupal_install_schema('example')*/) {
     // Do something.
@@ -1610,12 +1610,12 @@ function example_taxonomy_tables() {
   // TODO Please convert this statement to the D7 database API syntax.
   $total_entries = db_query(db_rewrite_sql('SELECT count(*) FROM {taxonomy_term_data} t INNER JOIN {taxonomy_term_hierarchy} h ON t.tid = h.tid WHERE t.vid = :vid'), array(':vid' => $vocabulary->vid));
   // TODO Please review the conversion of this statement to the D7 database API syntax.
-  /* db_query('UPDATE {taxonomy_term_data} SET weight = 0 WHERE vid = :vid', array(':vid' => $form_state['values']['vid'])) */
+  /* db_query('UPDATE {taxonomy_term_data} SET weight = 0 WHERE vid = %d', $form_state['values']['vid']) */
   db_update('taxonomy_term_data')
   ->fields(array(
     'weight' => 0,
   ))
-  ->condition('vid', : vid)
+  ->condition('vid', $form_state['values']['vid'])
   ->execute();
   db_insert('taxonomy_term_synonym');
 }
@@ -1791,7 +1791,7 @@ function example_drupal_add_css_inline() {
 function example_form_clean_id() {
   $class = drupal_clean_css_identifier('string');
   $id = drupal_clean_css_identifier($id);
-  $class = drupal_clean_css_identifier(impode('-', $form['element']['#parents']));
+  $class = drupal_clean_css_identifier(implode('-', $form['element']['#parents']));
 
   $form['element']['#attributes']['class'] = drupal_clean_css_identifier(implode('-', $form['element']['#parents']));
 }
@@ -2113,7 +2113,7 @@ function example_theme_username() {
  *
  * http://drupal.org/node/224333#node_form
  */
-function example_form_alter() {
+function example_form_alter(&$form, &$form_state, $form_id) {
   if (!empty($form['#node_edit_form'])) {
     // Alter node form.
   }

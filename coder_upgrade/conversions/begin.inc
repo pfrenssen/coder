@@ -1,16 +1,15 @@
 <?php
-
 /**
  * @file
- * End conversion routine file for the coder_upgrade module.
- * These routines upgrade the converted directory after upgrade routines are
- * applied to the files.
+ * Provides conversion routines applied to the directory before routines are applied to the files.
+ *
+ * These routines use the grammar parser.
  *
  * The functions in this conversion routine file correspond to topics in the
  * category roadmap at http://drupal.org/node/394070 that are marked with a
  * green check mark in the Upgrade column.
  *
- * Copyright 2009-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2009-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -186,7 +185,7 @@ function coder_upgrade_cache_info_hooks($item, $recursive = TRUE) {
 function coder_upgrade_callback_menu($node, &$array2, &$current2, $hook, $type, $key, $value) { // NOT DONE
   global $_coder_upgrade_menu_registry;
 
-  if (!is_a($current2, 'PGPNode')) {
+  if (!($current2 instanceof PGPNode)) {
     clp("ERROR: current2 is not a PGPNode object in hook_$hook");
     return;
   }

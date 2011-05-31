@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Invokes the Coder Upgrade conversion routines as a separate process.
@@ -49,7 +48,7 @@
  *  -- file=sites/[files_directory]/files/coder_upgrade/runtime.txt \
  *  > sites/[files_directory]/files/coder_upgrade/coder_upgrade.run.txt 2>&1
  *
- * Copyright 2009-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2009-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 // Save memory usage for printing later (when code is loaded).
@@ -86,6 +85,7 @@ save_memory_usage('load runtime parameters', $usage);
 // Set global variables (whose names do not align with extracted parameters).
 $_coder_upgrade_variables = $variables;
 $_coder_upgrade_files_base = $paths['files_base'];
+$_coder_upgrade_libraries_base = $paths['libraries_base'];
 $_coder_upgrade_modules_base = $paths['modules_base'];
 
 // Load core theme cache.
@@ -99,8 +99,8 @@ save_memory_usage('load core theme cache', $usage);
 $path = $_coder_upgrade_modules_base . '/coder/coder_upgrade';
 $files = array(
   'coder_upgrade.inc',
-  'conversions/coder_upgrade.list.inc',
-  'conversions/coder_upgrade.main.inc',
+  'includes/main.inc',
+  'includes/utility.inc',
 );
 foreach ($files as $file) {
   require_once DRUPAL_ROOT . '/' . $path . "/$file";

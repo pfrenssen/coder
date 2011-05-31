@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Miscellaneous conversion routine file for the coder_upgrade module.
@@ -9,7 +8,7 @@
  * category roadmap at http://drupal.org/node/394070 that are marked with a
  * green check mark in the Upgrade column.
  *
- * Copyright 2008-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2008-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -150,4 +149,32 @@ function coder_upgrade_upgrade_database_tables(&$from, &$to) {
   $to[] = "$1taxonomy_$2$3";
   $from[] = '@({|\'|")(vocabulary_node_type)s(}|\'|")@';
   $to[] = "$1taxonomy_$2$3";
+}
+
+/**
+ * Implements hook_upgrade_regex_info_alter().
+ *
+ * Alters the text of a code file using regular expressions.
+ *
+ * Module Info / Install
+ * http://drupal.org/node/224333#info_core_7 (this anchor does not exist on the chronological page)
+ *
+ * @param string $file
+ *   The text of the file to convert.
+ */
+function coder_upgrade_upgrade_regex_info_alter(&$file) {
+  cdp("inside " . __FUNCTION__);
+  $hook = 'info_file';
+  $cur = $file;
+  $new = $cur;
+
+  $from = array();
+  $to = array();
+
+  // Info file should specify core = 7.x.
+  $from[] = '@^core\s+=\s+.*?$@m';
+  $to[] = 'core = 7.x';
+
+  coder_upgrade_do_conversions($from, $to, $new);
+  coder_upgrade_save_changes($cur, $new, $file, $hook);
 }

@@ -1,14 +1,13 @@
 <?php
-
 /**
  * @file
- * Main conversion routine file for the coder_upgrade module.
+ * Manages application of conversion routines, logging, and patch file creation.
  *
  * The functions in these conversion routine files correspond to the topics in
  * the category roadmap at http://drupal.org/node/394070 that are marked with
  * a green check mark in the Upgrade column.
  *
- * Copyright 2008-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2008-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -22,12 +21,13 @@
  *   Array of directories containing the files to convert.
  * @param boolean $recursive
  *   Indicates whether to recurse the subdirectories of each $item.
+ *
  * @return boolean
  *   Indicates whether the conversion code was successfully applied.
  */
 function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) {
   // Declare global variables.
-  global $_coder_upgrade_log, $_coder_upgrade_debug, $_coder_upgrade_module_name, $_coder_upgrade_replace_files;
+  global $_coder_upgrade_log, $_coder_upgrade_debug, $_coder_upgrade_module_name, $_coder_upgrade_replace_files, $_coder_upgrade_class_files;
 //  global $_coder_upgrade_dirname; // Not used.
 
   // Check lists in case this function is called apart from form submit.
@@ -45,7 +45,7 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
   if ($_coder_upgrade_log) {
     // Clear the log file.
     coder_upgrade_path_clear('log');
-    if (!variable_get('coder_upgrade_use_separate_process', TRUE)) {
+    if (!variable_get('coder_upgrade_use_separate_process', FALSE)) {
       coder_upgrade_path_clear('memory');
     }
     coder_upgrade_memory_print('initial');
@@ -63,6 +63,8 @@ function coder_upgrade_start($upgrades, $extensions, $items, $recursive = TRUE) 
 
   // Set file replacement parameter.
   $_coder_upgrade_replace_files = variable_get('coder_upgrade_replace_files', FALSE);
+  // Initialize list of class files.
+  $_coder_upgrade_class_files = array();
 
   // Loop on items.
   foreach ($items as $item) {
@@ -100,23 +102,23 @@ function coder_upgrade_load_code(&$upgrades) {
   global $_coder_upgrade_upgrade_modules;
   $_coder_upgrade_upgrade_modules = array();
 
-  foreach ($upgrades as $module => $upgrade) {
-    $_coder_upgrade_upgrade_modules[] = $module;
+  foreach ($upgrades as $name => $upgrade) {
+    $_coder_upgrade_upgrade_modules[] = $upgrade['module'];
     if (isset($upgrade['path']) && !empty($upgrade['path'])) {
       // This is being run as a separate process outside of Drupal.
       $path = DRUPAL_ROOT . '/' . $upgrade['path'];
     }
     else {
-      $path = DRUPAL_ROOT . '/' . drupal_get_path('module', $module);
+      $path = DRUPAL_ROOT . '/' . drupal_get_path('module', $upgrade['module']);
     }
     if (isset($upgrade['files']) && !empty($upgrade['files'])) {
       foreach ($upgrade['files'] as $file) {
         require_once $path . '/' . $file;
       }
     }
-    elseif (file_exists($path . '/' . $module . '.upgrade')) {
+    elseif (file_exists($path . '/' . $upgrade['module'] . '.upgrade')) {
       // Default file name is module.upgrade in the module's root directory.
-      require_once $path . '/' . $module . '.upgrade';
+      require_once $path . '/' . $upgrade['module'] . '.upgrade';
     }
   }
   coder_upgrade_memory_print('load upgrade code');
@@ -130,12 +132,7 @@ function coder_upgrade_load_parser() {
   if (!$parser_loaded) {
     $parser_loaded = TRUE;
     // Include parser files.
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.parser');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.reader');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.writer');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.editor');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.list');
-    module_load_include('inc', 'grammar_parser', 'engine/grammar_parser.object');
+    libraries_load('grammar_parser');
     coder_upgrade_memory_print('load parser code');
   }
 }
@@ -190,7 +187,7 @@ function coder_upgrade_convert_end($dirname) {
  */
 function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = TRUE) {
 //  global $_coder_upgrade_filename; // TODO Only referenced in this function -- remove global
-  static $ignore = array('.', '..', 'CVS', '.svn');
+  static $ignore = array(/*'.', '..', '.bzr', '.git', '.svn',*/ 'CVS');
   global $_coder_upgrade_module_name, $_coder_upgrade_replace_files;
 
   $dirname = $item['old_dir'];
@@ -219,35 +216,46 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
   $filenames = scandir($dirname . '/');
   foreach ($filenames as $filename) {
 //    $_coder_upgrade_filename = $filename;
-    if (!in_array($filename, $ignore)) {
-      if (is_dir($dirname . '/' . $filename)) {
-        $new_filename = $filename;
-        // Handle D6 conversion item #79.
-        if ($filename == 'po') {
-          $new_filename = 'translations';
-        }
-        if ($recursive) {
-          // TODO Fix this!!!
-          $new_item = array(
-            'name' => $item['name'],
-            'old_dir' => $dirname . '/' . $filename,
-            'new_dir' => $new_dirname . '/' . $filename,
-          );
-          coder_upgrade_convert_dir($upgrades, $extensions, $new_item, $recursive);
-          // Reset the module name.
-          $_coder_upgrade_module_name = $item['module'];
-        }
+    if (substr(basename($filename), 0, 1) == '.' || in_array(basename($filename), $ignore)) {
+      // Ignore all hidden directories and CVS directory.
+      continue;
+    }
+    if (is_dir($dirname . '/' . $filename)) {
+      $new_filename = $filename;
+      // Handle D6 conversion item #79.
+      if ($filename == 'po') {
+        $new_filename = 'translations';
       }
-      elseif (in_array(pathinfo($filename, PATHINFO_EXTENSION), array_keys($extensions))) {
-        copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
-        coder_upgrade_log_print("\n*************************");
-        coder_upgrade_log_print('Converting the file => ' . $filename);
-        coder_upgrade_log_print("*************************");
-        coder_upgrade_convert_file($dirname . '/' . $filename, $new_dirname . '/' . $filename, $_coder_upgrade_replace_files);
+      if ($recursive) {
+        // TODO Fix this!!!
+        $new_item = array(
+          'name' => $item['name'],
+          'old_dir' => $dirname . '/' . $filename,
+          'new_dir' => $new_dirname . '/' . $filename,
+        );
+        coder_upgrade_convert_dir($upgrades, $extensions, $new_item, $recursive);
+        // Reset the module name.
+        $_coder_upgrade_module_name = $item['module'];
       }
-      else {
-        copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
+    }
+    elseif (in_array($extension = pathinfo($filename, PATHINFO_EXTENSION), array_keys($extensions))) {
+      copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
+      if ($extension == 'php' && substr($filename, -8) == '.tpl.php') {
+        // Exclude template files.
+        continue;
       }
+      coder_upgrade_log_print("\n*************************");
+      coder_upgrade_log_print('Converting the file => ' . $filename);
+      coder_upgrade_log_print("*************************");
+      coder_upgrade_convert_file($dirname . '/' . $filename, $new_dirname . '/' . $filename, $_coder_upgrade_replace_files);
+    }
+    elseif (in_array($extension, array('inc', 'install', 'module', 'php', 'profile', 'test', 'theme', 'upgrade'))) {
+      copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
+      // Check for a class declaration for use in the info file.
+      coder_upgrade_class_check($new_dirname . '/' . $filename);
+    }
+    else {
+      copy($dirname . '/' . $filename, $new_dirname . '/' . $filename);
     }
   }
 }
@@ -260,7 +268,7 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
  * @param string $filename
  *   The new name of the file to convert.
  * @param boolean $_coder_upgrade_replace_files
- *   Indicates wheter to replace the original files.
+ *   Indicates whether to replace the original files.
  */
 function coder_upgrade_convert_file($oldname, $filename, $_coder_upgrade_replace_files = FALSE) {
   if (!file_exists($filename)) {
@@ -327,6 +335,7 @@ function coder_upgrade_apply_regex($filename, &$new) {
  *   The contents of the file to convert.
  */
 function coder_upgrade_apply_parser($filename, &$new) {
+  global $_coder_upgrade_class_files;
   // Categorize certain files.
   $is_info_file = pathinfo($filename, PATHINFO_EXTENSION) == 'info';
   $is_install_file = pathinfo($filename, PATHINFO_EXTENSION) == 'install';
@@ -349,6 +358,11 @@ function coder_upgrade_apply_parser($filename, &$new) {
   // Parse code file.
   $reader->buildGrammar();
   coder_upgrade_memory_print('build grammar');
+
+  $nodes = &$reader->getClasses();
+  if (!empty($nodes)) {
+    $_coder_upgrade_class_files[] = $filename;
+  }
 
   // Apply parser conversion routines for function calls.
   coder_upgrade_log_print("Calling hook_upgrade_call_alter");
@@ -398,9 +412,9 @@ function coder_upgrade_convert_function_calls(&$reader) {
   $nodes = &$reader->getFunctionCalls();
   foreach ($nodes as &$node) {
     $item = &$node->data;
-    if (!isset($item) || !is_object($item) || !is_a($item, 'PGPFunctionCall') || $item->type != T_FUNCTION_CALL) {
+    if (!isset($item) || !is_object($item) || !($item instanceof PGPFunctionCall) || $item->type != T_FUNCTION_CALL) {
       // The reference could have been changed in another routine so that it
-      // no longer refers to an ojbect.
+      // no longer refers to an object.
       continue;
     }
     // If need to change other statements that we build as a function call,
@@ -414,11 +428,11 @@ function coder_upgrade_convert_function_calls(&$reader) {
       // We could do the same in this function.
     }
 
-    if (!isset($node) || !is_object($node) || !is_a($node, 'PGPNode')) {
+    if (!isset($node) || !is_object($node) || !($node instanceof PGPNode)) {
       continue;
     }
     $item = &$node->data;
-    if (!isset($item) || !is_object($item) || !is_a($item, 'PGPFunctionCall') || $item->type != T_FUNCTION_CALL) {
+    if (!isset($item) || !is_object($item) || !($item instanceof PGPFunctionCall) || $item->type != T_FUNCTION_CALL) {
       continue;
     }
     if (is_array($item->name) && in_array($item->name['type'], $types)) {
@@ -444,9 +458,9 @@ function coder_upgrade_convert_functions(&$reader) {
   $nodes = &$reader->getFunctions();
   foreach ($nodes as &$node) {
     $item = &$node->data;
-    if (!isset($item) ||!is_object($item) || !is_a($item, 'PGPClass') || $item->type != T_FUNCTION) {
+    if (!isset($item) || !is_object($item) || !($item instanceof PGPClass) || $item->type != T_FUNCTION) {
       // The reference could have been changed in another routine so that it
-      // no longer refers to an ojbect.
+      // no longer refers to an object.
       continue;
     }
 
@@ -492,7 +506,7 @@ function coder_upgrade_convert_functions(&$reader) {
     // We could do the same in this function.
     drupal_alter('upgrade_hook_' . $hook, $node, $reader);
 
-    if (!isset($item) ||!is_object($item) || !is_a($item, 'PGPClass') || $item->type != T_FUNCTION) {
+    if (!isset($item) || !is_object($item) || !($item instanceof PGPClass) || $item->type != T_FUNCTION) {
       continue;
     }
     if (strpos($name, $_coder_upgrade_module_name . '_') !== 0 && strpos($name, 'theme_') !== 0) {
@@ -546,7 +560,7 @@ function coder_upgrade_module_name($dirname, &$item) {
  * @param array $item
  *   Array of the directory containing the files to convert.
  * @param boolean $_coder_upgrade_replace_files
- *   Indicates wheter to replace the original files.
+ *   Indicates whether to replace the original files.
  */
 function coder_upgrade_make_patch_file($item, $_coder_upgrade_replace_files = FALSE) {
   // Patch directory.
@@ -585,6 +599,7 @@ function coder_upgrade_make_patch_file($item, $_coder_upgrade_replace_files = FA
  *   When TRUE, find all functions with $hook in the name.
  * @param boolean $hook_is_suffix
  *   The $hook is only the suffix of the function name.
+ *
  * @return string
  *   The function text.
  */
@@ -744,13 +759,13 @@ function coder_upgrade_path_clear($type = 'debug') {
  *   A string, array, or object to print.
  */
 function coder_upgrade_path_print($path, $text) {
-  if (is_a($text, 'PGPList')) {
+  if ($text instanceof PGPList) {
     $result = file_put_contents($path, $text->print_r(), FILE_APPEND);
   }
-  elseif (is_a($text, 'PGPBase')) {
+  elseif ($text instanceof PGPBase) {
     $result = file_put_contents($path, $text->print_r(), FILE_APPEND);
   }
-  elseif (is_a($text, 'stdClass')) {
+  elseif ($text instanceof stdClass) {
     $result = file_put_contents($path, print_r($text, 1), FILE_APPEND);
   }
   elseif (is_object($text)) {
@@ -767,7 +782,11 @@ function coder_upgrade_path_print($path, $text) {
   }
 }
 
-function clp($text) {
+function clp($text, $description = '') {
+  if ($description) {
+    $description .= ' ==>'; // Use two '=' so easier to find in file.
+    coder_upgrade_log_print($description);
+  }
   coder_upgrade_log_print($text);
 }
 
@@ -779,19 +798,18 @@ function cdp($text, $description = '') {
   coder_upgrade_debug_print($text);
 }
 
-/**
- * Returns path to file or files directory.
- *
- * @param string $type
- *   Type of file to return path to. If blank, return directory path.
- * @return string
- *   Path to file or directory.
- */
-function coder_upgrade_path($type = '') {
-  static $path = '';
+function coder_upgrade_class_check($filename) {
+  global $_coder_upgrade_class_files;
 
-  if (!$path) {
-    $path = coder_upgrade_directory_path('base', FALSE);
+  // Read the file and copy the contents.
+  $snippet = file_get_contents($filename);
+  $tokens = token_get_all($snippet);
+//   clp($tokens, '$tokens');
+
+  foreach ($tokens as $token) {
+    if (is_array($token) && ($token[0] == T_CLASS || $token[0] == T_INTERFACE)) {
+      $_coder_upgrade_class_files[] = $filename;
+      return;
+    }
   }
-  return $type ? $path . '/' . $type . '.txt' : $path;
 }

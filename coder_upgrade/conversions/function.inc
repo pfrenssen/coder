@@ -1,15 +1,15 @@
 <?php
-
 /**
  * @file
- * Function (or hook) conversion routine file for the coder_upgrade module.
- * These routines upgrade functions (or hooks) using the grammar parser.
+ * Provides conversion routines applied to functions (or hooks).
+ *
+ * These routines use the grammar parser.
  *
  * The functions in this conversion routine file correspond to topics in the
  * category roadmap at http://drupal.org/node/394070 that are marked with a
  * green check mark in the Upgrade column.
  *
- * Copyright 2009-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2009-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -90,7 +90,7 @@
 /**
  * Implements hook_upgrade_hook_alter().
  */
-function coder_upgrade_upgrade_hook_alter(&$node, &$reader) {
+function coder_upgrade_upgrade_hook_alter(&$node, &$reader, $hook) {
   cdp("inside " . __FUNCTION__);
   $item = &$node->data;
 
@@ -333,12 +333,12 @@ function coder_upgrade_upgrade_hook_form_alter_alter(&$node, &$reader) {
   $current = &$node->data->body->first();
   while ($current->next != NULL) {
     $statement = &$current->data;
-    if (is_a($statement, 'PGPConditional')) {
+    if ($statement instanceof PGPConditional) {
       // Get the list of conditons.
       $conditions = $statement->conditions;
 
       // Check if conditions match node form check.
-      if (is_a($conditions, 'PGPList')) {
+      if ($conditions instanceof PGPList) {
         $conditions = $conditions->toString();
         if (preg_match($node_form_conditional, $conditions)) {
           // Replace verbose node edit form condtional.
@@ -890,6 +890,7 @@ function coder_upgrade_new_filter_hook($node, $hook, $filters = array()) { // DO
  *
  * @param PGPNode $node
  *   A node object containing a PGPClass (or function) item.
+ *
  * @return array
  *   Array of tip callback functions indexed by $delta.
  */
@@ -1117,7 +1118,7 @@ function coder_upgrade_convert_link(&$node) { // NOT DONE
     if (is_object($statement)) {
       cdp($statement->print_r());
     }
-    if (is_a($statement, 'PGPConditional')) {
+    if ($statement instanceof PGPConditional) {
       //      cdp("inside PGPConditional check");
       //      cdp("statement->type = " . $statement->type);
       if ($statement->type == T_SWITCH) {
@@ -1348,7 +1349,7 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
   while ($current->next != NULL) {
     $found = FALSE;
     $statement = &$current->data;
-    if (is_a($statement, 'PGPConditional')) {
+    if ($statement instanceof PGPConditional) {
 //      cdp("inside PGPConditional check");
 //      cdp("statement->type = " . $statement->type);
       if ($statement->type == T_SWITCH) {
@@ -1414,6 +1415,7 @@ function coder_upgrade_convert_op(&$node, $callback, $op_index) {
  *   A list of conditions to an if block.
  * @param string $op
  *   A string of the hook operation.
+ *
  * @return array
  *   Array of operations referenced in the if block.
  */
@@ -1424,7 +1426,7 @@ function coder_upgrade_extract_operations(&$conditions, $op) {
   /*
    * A condition may consist of at most two operands separated by an operator.
    */
-  if (is_a($conditions, 'PGPList')) {
+  if ($conditions instanceof PGPList) {
     // Iterate over the conditions of the condition list.
     $current = $conditions->first();
     while ($current->next != NULL) {
@@ -1440,7 +1442,7 @@ function coder_upgrade_extract_operations(&$conditions, $op) {
             // Get the operand (object or array) of the current node.
             $element = &$current2->data;
             // Inspect the element looking for $op.
-            if (is_a($element, 'PGPOperand')) {
+            if ($element instanceof PGPOperand) {
               // Inspect the operand looking for $op.
               $text = $element->toString();
               if (strpos($text, $op) !== FALSE) {
@@ -1502,7 +1504,7 @@ function coder_upgrade_callback_block($node, $case_node, $operation = '') {
 
   if (!$operation) {
     $case = &$case_node->data;
-    if (!is_a($case, 'PGPCase')) {
+    if (!($case instanceof PGPCase)) {
       cdp("Houston, we've got an unexpected statement");
       return;
     }
@@ -1572,7 +1574,7 @@ function coder_upgrade_callback_comment($node, $case_node, $operation = '') {
 
   if (!$operation) {
     $case = &$case_node->data;
-    if (!is_a($case, 'PGPCase')) {
+    if (!($case instanceof PGPCase)) {
       cdp("Houston, we've got an unexpected statement");
       return;
     }
@@ -1625,7 +1627,7 @@ function coder_upgrade_callback_nodeapi($node, $case_node, $operation = '') {
 
   if (!$operation) {
     $case = &$case_node->data;
-    if (!is_a($case, 'PGPCase')) {
+    if (!($case instanceof PGPCase)) {
       cdp("Houston, we've got an unexpected statement");
       return;
     }
@@ -1712,7 +1714,7 @@ function coder_upgrade_callback_node_type($node, $case_node, $operation = '') {
 
   if (!$operation) {
     $case = &$case_node->data;
-    if (!is_a($case, 'PGPCase')) {
+    if (!($case instanceof PGPCase)) {
       cdp("Houston, we've got an unexpected statement");
       return;
     }
@@ -1758,7 +1760,7 @@ function coder_upgrade_callback_user($node, $case_node, $operation = '') {
 
   if (!$operation) {
     $case = &$case_node->data;
-    if (!is_a($case, 'PGPCase')) {
+    if (!($case instanceof PGPCase)) {
       cdp("Houston, we've got an unexpected statement");
       return;
     }
@@ -1994,7 +1996,7 @@ function coder_upgrade_convert_return(&$body, $hook, $callback = '', $start_dept
   $already_searched = array();
 
   while (!empty($nodes)) {
-    cdp('while(!empty($nodes)) ' . __FUNCTION__);
+    cdp('while (!empty($nodes)) ' . __FUNCTION__);
     $return_node = array_shift($nodes);
     $return = $return_node->data;
 
@@ -2085,6 +2087,7 @@ function coder_upgrade_convert_return(&$body, $hook, $callback = '', $start_dept
  *   The assignment variable (left of assignment operator).
  * @param PGPExpression $value
  *   The assignment value (right of assignment operator).
+ *
  * @return PGPExpression
  *   The new array expression.
  */
@@ -2298,7 +2301,7 @@ function coder_upgrade_callback_return_case1(&$array1, $hook, $callback = '') { 
   cdp("inside " . __FUNCTION__);
 
   // The keys of this array are the node types.
-  if (!is_a($array1, 'PGPArray')) {
+  if (!($array1 instanceof PGPArray)) {
     clp("ERROR: array1 is not a PGPArray object in hook_$hook");
     return;
   }
@@ -2340,7 +2343,7 @@ function coder_upgrade_callback_return_case3(&$array2, $hook, $callback = '') { 
   $callback = $callback == '' ? "coder_upgrade_callback_$hook" : $callback;
 
   // The keys of this array are the node type items.
-  if (!is_a($array2, 'PGPArray')) {
+  if (!($array2 instanceof PGPArray)) {
     clp("ERROR: array2 is not a PGPArray object in hook_$hook");
     cdp("ERROR: array2 is not a PGPArray object in hook_$hook");
     cdp($array2);
@@ -2421,7 +2424,7 @@ function coder_upgrade_callback_return_case5(/*&*/$assignment, $hook, $callback 
 function coder_upgrade_callback_action_info($node, &$array2, &$current2, $hook, $type, $key, $value) { // DONE (NEEDS WORK on other functions listed above)
   cdp("inside " . __FUNCTION__);
 
-  if (!is_a($current2, 'PGPNode')) {
+  if (!($current2 instanceof PGPNode)) {
     clp("ERROR: current2 is not a PGPNode object in hook_$hook");
     return;
   }
@@ -2537,7 +2540,7 @@ function coder_upgrade_callback_action_info($node, &$array2, &$current2, $hook, 
 function coder_upgrade_callback_hook_info($node, &$array2, &$current2, $hook, $type, $key, $value) { // DONE
   cdp("inside " . __FUNCTION__);
 
-  if (!is_a($current2, 'PGPNode')) {
+  if (!($current2 instanceof PGPNode)) {
     clp("ERROR: current2 is not a PGPNode object in hook_$hook");
     return;
   }
@@ -2681,7 +2684,7 @@ function coder_upgrade_callback_hook_info($node, &$array2, &$current2, $hook, $t
 function coder_upgrade_callback_node_info($node, &$array2, &$current2, $hook, $type, $key, $value) { // DONE
   cdp("inside " . __FUNCTION__);
 
-  if (!is_a($current2, 'PGPNode')) {
+  if (!($current2 instanceof PGPNode)) {
     clp("ERROR: current2 is not a PGPNode object in hook_$hook");
     return;
   }
@@ -2738,7 +2741,7 @@ function coder_upgrade_callback_node_info($node, &$array2, &$current2, $hook, $t
 function coder_upgrade_callback_perm($node, &$array2, &$current2, $hook, $type, $key, $value) { // DONE
   cdp("inside " . __FUNCTION__);
 
-  if (!is_a($current2, 'PGPNode')) {
+  if (!($current2 instanceof PGPNode)) {
     clp("ERROR: current2 is not a PGPNode object in hook_$hook");
     return;
   }
@@ -2796,7 +2799,7 @@ function coder_upgrade_callback_perm($node, &$array2, &$current2, $hook, $type, 
 function coder_upgrade_callback_theme($node, &$array2, &$current2, $hook, $type, $key, $value) { // DONE
   cdp("inside " . __FUNCTION__);
 
-  if (!is_a($current2, 'PGPNode')) {
+  if (!($current2 instanceof PGPNode)) {
     clp("ERROR: current2 is not a PGPNode object in hook_$hook");
     return;
   }

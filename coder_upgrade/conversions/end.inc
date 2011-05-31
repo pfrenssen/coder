@@ -1,16 +1,15 @@
 <?php
-
 /**
  * @file
- * End conversion routine file for the coder_upgrade module.
- * These routines upgrade the converted directory after upgrade routines are
- * applied to the files.
+ * Provides conversion routines applied to the directory after routines are applied to the files.
+ *
+ * These routines use the grammar parser.
  *
  * The functions in this conversion routine file correspond to topics in the
  * category roadmap at http://drupal.org/node/394070 that are marked with a
  * green check mark in the Upgrade column.
  *
- * Copyright 2009-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2009-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -22,7 +21,11 @@
  *   The name of the directory with the converted files.
  */
 function coder_upgrade_upgrade_end_alter($dirname) {
-  global $_coder_upgrade_dirname;
+  global $_coder_upgrade_dirname, $_coder_upgrade_class_files;
+
+  if (empty($_coder_upgrade_class_files)) {
+    return;
+  }
 
   $_coder_upgrade_dirname = $dirname;
   // Get list of files.
@@ -39,6 +42,7 @@ function coder_upgrade_upgrade_end_alter($dirname) {
  *
  * @param string $dirname
  *   Directory path to scan.
+ *
  * @return array
  *   Array of file and/or directory names.
  */
@@ -88,7 +92,7 @@ function coder_upgrade_add_file_entries($dirname = '', $files = array(), &$items
     return;
   }
 
-  global $_coder_upgrade_dirname;
+  global $_coder_upgrade_dirname, $_coder_upgrade_class_files;
 
   // Extensions that indicate a module is present.
   $extensions = array('info', 'module');
@@ -115,7 +119,7 @@ function coder_upgrade_add_file_entries($dirname = '', $files = array(), &$items
 
   // Create list of files for registry.
   // TODO Allow for custom extensions!!!
-  $extensions = array('inc', 'install', 'module', 'php', 'test', 'upgrade');
+  $extensions = array('inc', 'install', 'module', 'php', 'profile', 'test', 'theme', 'upgrade');
   $dirname .= $path != '' ? '/' . $path : '';
   $path = $path != '' ? $path . '/' : $path;
   foreach ($files as $file) {
@@ -127,7 +131,7 @@ function coder_upgrade_add_file_entries($dirname = '', $files = array(), &$items
       if ($extension == 'php' && substr($file, -8) == '.tpl.php') {
         // Exclude template files.
       }
-      elseif (in_array($extension, $extensions)) {
+      elseif (in_array($extension, $extensions) && in_array($_coder_upgrade_dirname . '/' . $path . $file, $_coder_upgrade_class_files)) {
         $items[] = $path . $file;
       }
       elseif ($extension == 'info') {

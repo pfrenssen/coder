@@ -6,7 +6,7 @@ description = "Module conversion suite -- generates code to assist with the upgr
 
 package = Development
 ;dependencies[] = coder ; Not a dependency
-dependencies[] = grammar_parser
+dependencies[] = gplib
 
 ; only list files with class declarations
 ;files[] = coder_upgrade.help.inc

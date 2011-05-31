@@ -1,10 +1,9 @@
 <?php
-
 /**
  * @file
- * Constants and utility functions for the coder_upgrade module.
+ * Provides constants and utility functions.
  *
- * Copyright 2008-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2008-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -44,6 +43,7 @@ function tp($string, $args = array()) {
  * TODO Replace this with a call to file_scan_directory in include/files.inc.
  *
  * @param string $path Directory path.
+ *
  * @return Array of directory names.
  */
 function coder_upgrade_scan_directory($path) {
@@ -100,6 +100,7 @@ function coder_upgrade_clean_directory($path, $remove_me = FALSE) {
  *   Indicates whether to add a trailing slash.
  * @param boolean $stream_format
  *   Indicates whether to use the actual path or a stream protocol.
+ *
  * @return string
  *   A string of the directory path.
  */
@@ -122,6 +123,24 @@ function coder_upgrade_directory_path($name, $add_slash = TRUE, $stream_format =
     default:
       return $prefix . $name . $slash;
   }
+}
+
+/**
+ * Returns path to file or files directory.
+ *
+ * @param string $type
+ *   Type of file to return path to. If blank, return directory path.
+ *
+ * @return string
+ *   Path to file or directory.
+ */
+function coder_upgrade_path($type = '') {
+  static $path = '';
+
+  if (!$path) {
+    $path = coder_upgrade_directory_path('base', FALSE);
+  }
+  return $type ? $path . '/' . $type . '.txt' : $path;
 }
 
 /**
@@ -151,65 +170,32 @@ if (!function_exists('file_directory_path')) {
   }
 }
 
-/*
- * The following functions are declared to allow the code to be executed as a
- * separate process outside of Drupal.
+/**
+ * Returns path to patch file.
+ *
+ * @todo Remove this once everyone gets used to the library concept.
+ *
+ * @return boolean
+ *   TRUE if required modules and library are installed; FALSE otherwise.
  */
-
-if (!function_exists('drupal_get_path')) {
-  function drupal_get_path($type, $name) {
-    global $_coder_upgrade_modules_base;
-    return $_coder_upgrade_modules_base . "/$name";
+function coder_upgrade_library_checks() {
+  $modules = system_list('module_enabled');
+sdp($modules, '$modules');
+  $messages = array();
+  if (isset($modules['grammar_parser'])) {
+    $messages[] = 'Grammar Parser should NOT be installed and enabled as a module.';
+    $messages[] = 'Grammar Parser should be installed as a library using the 2.x release of Libraries API module.';
   }
-}
-
-if (!function_exists('module_load_include')) {
-  function module_load_include($type, $module, $name = NULL) {
-    if (empty($name)) {
-      $name = $module;
-    }
-
-    if (function_exists('drupal_get_path')) {
-      $file = DRUPAL_ROOT . '/' . drupal_get_path('module', $module) . "/$name.$type";
-      if (is_file($file)) {
-        require_once $file;
-        return $file;
-      }
-    }
-    return FALSE;
-  }
-}
-
-if (!function_exists('drupal_alter')) {
-  function drupal_alter($type, &$data, &$context1 = NULL, &$context2 = NULL) {
-    global $_coder_upgrade_upgrade_modules;
-
-    $hook = $type . '_alter';
-    foreach ($_coder_upgrade_upgrade_modules as $module) {
-      $function = $module . '_' . $hook;
-      cdp($function, '$function');
-      if (function_exists($function)) {
-        $function($data, $context1, $context2);
-      }
+  if (isset($modules['libraries'])) {
+    if (!isset($modules['libraries']->info['version']) || substr($modules['libraries']->info['version'], 0, 7) != '7.x-2.x') {
+      $messages[] = 'Coder Upgrade requires the 7.x-2.x release of the Libraries API module.';
     }
   }
-}
-
-if (!function_exists('file_unmanaged_delete')) {
-  function file_unmanaged_delete($path) {
-    if (is_dir($path)) {
-      return FALSE;
-    }
-    if (is_file($path)) {
-      return unlink($path);
-    }
+  else {
+    $messages[] = 'Coder Upgrade requires the 7.x-2.x release of the Libraries API module.';
   }
-}
-
-if (!function_exists('variable_get')) {
-  function variable_get($name, $default = NULL) {
-    global $_coder_upgrade_variables;
-
-    return isset($_coder_upgrade_variables[$name]) ? $_coder_upgrade_variables[$name] : $default;
+  foreach ($messages as $message) {
+    drupal_set_message(t($message), 'error');
   }
+  return empty($messages);
 }

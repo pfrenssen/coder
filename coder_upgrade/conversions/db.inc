@@ -1,15 +1,15 @@
 <?php
-
 /**
  * @file
- * Database function call conversion routine file for the coder_upgrade module.
- * These routines upgrade functions (or hooks) using the grammar parser.
+ * Provides conversion routines applied to database API function calls and hooks.
+ *
+ * These routines use the grammar parser.
  *
  * The functions in this conversion routine file correspond to topics in the
  * category roadmap at http://drupal.org/node/394070 that are marked with a
  * green check mark in the Upgrade column.
  *
- * Copyright 2009-10 by Jim Berry ("solotandem", http://drupal.org/user/240748)
+ * Copyright 2009-11 by Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
 /**
@@ -122,6 +122,7 @@ function coder_upgrade_upgrade_call_db_rewrite_sql_alter(&$node, &$reader) {
  *   The node containing the function call object to be replaced.
  * @param PGPOperand $operand
  *   The query string to be parsed (first parameter to $item).
+ *
  * @return string
  *   The query string or FALSE.
  */

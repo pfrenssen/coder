@@ -1,8 +1,7 @@
 <?php
-
 /**
  * @file
- * Tests for the Coder Upgrade module.
+ * Provides tests.
  */
 
 module_load_include('inc', 'coder_upgrade', 'coder_upgrade');
@@ -85,9 +84,9 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
 
     // TODO Move the debug_print method to .inc file??? Then avoid this load at this time.
     $module_dirname = DRUPAL_ROOT . '/' . drupal_get_path('module', 'coder_upgrade');
-    require_once $module_dirname . '/conversions/coder_upgrade.main.inc';
-    require_once $module_dirname . '/conversions/coder_upgrade.begin.inc';
-    require_once $module_dirname . '/conversions/coder_upgrade.function.inc';
+    require_once $module_dirname . '/includes/main.inc';
+    require_once $module_dirname . '/conversions/begin.inc';
+    require_once $module_dirname . '/conversions/function.inc';
     coder_upgrade_debug_print("module = $module_dirname");
 
     coder_upgrade_path_clear('memory');
@@ -156,7 +155,7 @@ class CoderUpgradeUnitTestCase extends DrupalUnitTestCase {
     $_coder_upgrade_is_test = TRUE;
 
     // Apply upgrade routines.
-    module_load_include('inc', 'coder_upgrade', 'conversions/coder_upgrade.main');
+    module_load_include('inc', 'coder_upgrade', 'includes/main');
     if (coder_upgrade_start($upgrades, $extensions, $items)) {
     }
 
