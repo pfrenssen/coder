@@ -30,12 +30,18 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // N/A - in comment review - http://drupal.org/node/224333#afile
     // N/A - http://drupal.org/node/224333#module_file_during_install
     // N/A - http://drupal.org/node/224333#module_version_dependencies
+    // N/A - http://drupal.org/node/224333#update_dependencies --- New update dependency system, affecting the order in which module updates are run
+    // N/A - http://drupal.org/node/224333#configure_info --- Module .info files can have configure line
+    // N/A - http://drupal.org/node/224333#api_php --- Code documentation added to module.api.php
 
     // NO TESTS - http://drupal.org/node/224333#registry
     // Can't implement tests because it's reviewed by a review callback, which
     // needs physical files, and because it's a .info file.
 
-    // http://drupal.org/node/224333#api_php
+    // http://drupal.org/node/224333#update_sql and TEST MODULE
+    $this->assertCoderReviewFail('  $ret = update_sql("UPDATE {node} SET status = 1");');
+    
+
     // http://drupal.org/node/224333#update_php
   }
 
@@ -130,9 +136,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  function foo () {\n  drupal_set_time_limit(100);\n}");
 
     // http://drupal.org/node/224333#search-api
+    $this->assertCoderReviewFail("  function mymodule_search() {\n  ");
+    $this->assertCoderReviewPass("  function mymodule_search_info() {\n  ");
+
+
     // http://drupal.org/node/224333#drupal_alter
-
-
     // http://drupal.org/node/224333#new_hook_hook_info
     // http://drupal.org/node/224333#email-html
 
@@ -151,7 +159,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
   function testPermissions7x() {
-    // N/A - http://drupal.org/node/224333#moved_statistics_settings
+    // N/A - in system http://drupal.org/node/224333#moved_statistics_settings
+    // N/A - http://drupal.org/node/224333#user-roles-api
+    // N/A - http://drupal.org/node/224333#permissions_restrict_access
+    // N/A - http://drupal.org/node/224333#node_access_alter_hooks
+    // Rolled back - http://drupal.org/node/224333#system_admin_menu_block_access
 
     // UNCLEAR - http://drupal.org/node/224333#hook_node_access_records
     // UNCLEAR - http://drupal.org/node/224333#bypass_node_access
@@ -168,8 +180,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  db_query("SELECT * FROM {permission}");');
     $this->assertCoderReviewFail('  db_query("DELETE FROM {permission}");');
 
-    // http://drupal.org/node/224333#node_access_alter_hooks
-
     // http://drupal.org/node/224333#hook_permission
     $this->assertCoderReviewFail("  function mymodule_perm() {\n}");
     $this->assertCoderReviewPass("  function mymodule_permission() {\n}");
@@ -179,16 +189,17 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  $permission = "use PHP for block visibility";');
     $this->assertCoderReviewFail("  return array('use PHP for block visibility');");
 
-    // http://drupal.org/node/224333#system_admin_menu_block_access
-
     // http://drupal.org/node/224333#hook_node_access
     $this->assertCoderReviewFail("  function mymodule_access() {\n}");
     $this->assertCoderReviewPass("  function mymodule_node_access() {\n}");
 
-    // http://drupal.org/node/224333#user-roles-api
   }
 
   function testDatabase7x() {
+    // N/A - http://drupal.org/node/224333#schema_date_time --- Schema API now supports date and time types natively
+    // N/A - http://drupal.org/node/224333#foreign-keys-added
+    // in test module http://drupal.org/node/224333#install-schema --- Database schema (un)installed automatically
+
     // http://drupal.org/node/224333#dbtng
 
     // http://drupal.org/node/224333#schema_translation
@@ -214,7 +225,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#select_count
     $this->assertCoderReviewFail("  db_query( 'SELECT COUNT (*) FROM {users}')");
-    // http://drupal.org/node/224333#foreign-keys-added
   }
 
   function testMenu7x() {

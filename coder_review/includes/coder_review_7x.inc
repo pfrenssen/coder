@@ -36,9 +36,23 @@ function coder_review_7x_reviews() {
         // potential errors in the code.
         '#warning_callback' => '_coder_review_7x_info_file_review_callback_warning',
       ),
+      // http://drupal.org/node/224333#update_sql --- Update hooks now return strings or throw exceptions, and update_sql() is no more
+      array(
+        '#type' => 'regex',
+        '#source' => 'php',
+        '#value' => '[\s=\(]update_sql\s*\(',
+        '#warning_callback' => '_coder_review_7x_update_sql_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#source' => 'php',
+        '#value' => 'return\s+(array|\$ret)',
+        '#warning_callback' => '_coder_review_7x_update_hook_ret_warning',
+        '#function' => '_update_[0-9]+$',
+        '#filename' => array('install'),
+      ),
 
       // http://drupal.org/node/224333#update_php --- Update functions in .install files must include a Doxygen style comment
-      // http://drupal.org/node/224333#update_sql --- Update hooks now return strings or throw exceptions, and update_sql() is no more
 
 
     // System
@@ -154,9 +168,6 @@ function coder_review_7x_reviews() {
         '#function-not' => '^drupal_set_time_limit$',
         '#warning_callback' => '_coder_review_7x_time_limit_warning',
       ),
-      // http://drupal.org/node/224333#search-api --- API for modules providing search has changed
-      // http://drupal.org/node/224333#drupal_alter ---   drupal_alter() now takes at most 3 parameters by reference
-
       // http://drupal.org/node/224333#drupal_set_header_renamed --- drupal_set_header() and drupal_get_headers() renamed to drupal_add_http_header() and drupal_get_http_header()
       array(
         '#type' => 'regex',
@@ -176,7 +187,19 @@ function coder_review_7x_reviews() {
         '#value' => '[\s\(]drupal_urlencode\s*\(',
         '#warning_callback' => '_coder_review_7x_drupal_urlencode_warning',
       ),
+      // http://drupal.org/node/224333#search-api --- API for modules providing search has changed
+      array(
+        '#type' => 'regex',
+        '#value' => 'function\s+[a-z0-9_]+_search\s*\(',
+        '#warning_callback' => '_coder_review_7x_hook_search_warning',
+      ),
+      array(
+        '#type' => 'regex',
+        '#value' => '[\s\(]do_search\s*\(',
+        '#warning_callback' => '_coder_review_7x_do_search_warning',
+      ),
 
+      // http://drupal.org/node/224333#drupal_alter ---   drupal_alter() now takes at most 3 parameters by reference
       // http://drupal.org/node/224333#email-html --- All e-mails are considered to originate as HTML
       // http://drupal.org/node/224333#system_retrieve_file ---  system_retrieve_file() API cleanup
 
@@ -184,6 +207,9 @@ function coder_review_7x_reviews() {
     // Permissions and Access
       // N/A - http://drupal.org/node/224333#sorting_permissions --- Permissions are no longer sorted alphabetically
       // N/A - http://drupal.org/node/224333#node_access_alter_hooks --- Node access hooks now have drupal_alter() functions
+      // N/A - http://drupal.org/node/224333#user-roles-api --- Added API functions for creating, loading, updating, and deleting user roles and permissions
+      // N/A - http://drupal.org/node/224333#permissions_restrict_access --- New 'restrict access' parameter in hook_permission() for labeling unsafe permissions
+      // N/A - in system http://drupal.org/node/224333#moved_statistics_settings --- Moved statistics settings from admin/reports/settings to admin/config/system/statistics and added a new 'administer statistics' permission
 
       // UNCLEAR - http://drupal.org/node/224333#hook_node_access_records --- hook_node_access_records() now applies to unpublished nodes; 'view own unpublished content' permission added
       // UNCLEAR - http://drupal.org/node/224333#bypass_node_access --- "administer nodes" permission split into "administer nodes" and "bypass node access"
@@ -202,9 +228,6 @@ function coder_review_7x_reviews() {
         '#value' => '\s+array\s*\(\s*([\'"][a-zA-Z\s]+[\'"]\s*[,\)]\s*){1,}\s*;',
         '#warning_callback' => '_coder_review_7x_descriptions_permissions_warning',
       ),
-
-      // http://drupal.org/node/224333#moved_statistics_settings --- Moved statistics settings from admin/reports/settings to admin/config/system/statistics and added a new 'administer statistics' permission
-
       // http://drupal.org/node/224333#permission_tables
       array(
         '#type' => 'regex',
@@ -212,8 +235,6 @@ function coder_review_7x_reviews() {
         '#value' => '^(select\s+.*\s+from\s+{permission}|insert\s+into\s+{permission}|update\s+{permission}\s+set|delete\s+from\s+{permission})',
         '#warning_callback' => '_coder_review_7x_permission_tables_warning',
       ),
-
-
       // http://drupal.org/node/224333#php_permissions --- "use PHP for settings" permission should be used for all PHP settings rights (replaces "use PHP for block visibility")
       array(
         '#type' => 'regex',
@@ -221,7 +242,7 @@ function coder_review_7x_reviews() {
         '#value' => '^use PHP for block visibility$',
         '#warning_callback' => '_coder_review_7x_php_permissions_warning',
       ),
-      // http://drupal.org/node/224333#node_access
+      // http://drupal.org/node/224333#hook_node_access --- hook_access() removed in favor of hook_node_access()
       array(
         '#type' => 'regex',
         '#value' => 'function\s+[a-z0-9_]+_(access)\s*\(',
@@ -229,13 +250,10 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_hook_access_warning',
       ),
 
-      // http://drupal.org/node/224333#hook_node_access --- hook_access() removed in favor of hook_node_access()
-      // http://drupal.org/node/224333#user-roles-api --- Added API functions for creating, loading, updating, and deleting user roles and permissions
-      // http://drupal.org/node/224333#permissions_restrict_access --- New 'restrict access' parameter in hook_permission() for labeling unsafe permissions
-
 
     // Database
       // N/A - http://drupal.org/node/224333#schema_date_time --- Schema API now supports date and time types natively
+      // N/A - http://drupal.org/node/224333#foreign-keys-added --- Foreign keys added to core database table schema
 
       // http://drupal.org/node/224333#dbtng --- A completely new database API has been added
 
@@ -269,8 +287,15 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_select_count_warning',
         '#severity' => 'minor'
       ),
-      // http://drupal.org/node/224333#foreign-keys-added --- Foreign keys added to core database table schema
       // http://drupal.org/node/224333#install-schema --- Database schema (un)installed automatically
+      array(
+        '#type' => 'regex',
+        '#source' => 'php',
+        '#value' => '[\s\(]drupal_(un)*install_schema\s*\(',
+        '#warning_callback' => '_coder_review_7x_install_schema_warning',
+        '#function-not' => '^system_install$',
+        '#filename' => array('install'),
+      ),
       // http://drupal.org/node/224333#schema_ret --- The $ret parameter has been removed from all Schema operations
       // http://drupal.org/node/224333#block_tables_renamed --- Block tables renamed
       // http://drupal.org/node/224333#block_deltas_renamed --- Block deltas are now specified as strings
@@ -2218,6 +2243,59 @@ function _coder_review_7x_watchdog_emerg_warning() {
   return array(
     '#warning' => t('WATCHDOG_EMERG was renamed to WATCHDOG_EMERGENCY'),
     '#link' => 'http://drupal.org/node/224333#watchdog_emerg',
+  );
+}
+
+function _coder_review_7x_update_sql_warning() {
+  return array(
+    '#warning' => t('!update_sql() is now deprecated',
+      array(
+        '!update_sql()' => theme('drupalapi', array('function' => 'update_sql', 'version' => 6)),
+      )),
+    '#link' => 'http://drupal.org/node/224333#update_sql',
+  );
+}
+
+function _coder_review_7x_update_hook_ret_warning() {
+  return array(
+    '#warning' => t('Update hooks now return translated strings or throw exceptions'),
+    '#link' => 'http://drupal.org/node/224333#update_sql',
+  );
+}
+
+function _coder_review_7x_hook_search_warning() {
+  return array(
+    '#warning' => t('!hook_search() has been separated out into several other hooks: !hook_search_info(), !hook_search_admin(), !hook_search_execute(), !hook_search_reset(), !hook_search_status()',
+    array(
+      '!hook_search()' => theme('drupalapi', array('function' => 'hook_search', 'version' => 6)),
+      '!hook_search_info()' => theme('drupalapi', array('function' => 'hook_search_info', 'version' => 7)),
+      '!hook_search_admin()' => theme('drupalapi', array('function' => 'hook_search_admin', 'version' => 7)),
+      '!hook_search_execute()' => theme('drupalapi', array('function' => 'hook_search_execute', 'version' => 7)),
+      '!hook_search_reset()' => theme('drupalapi', array('function' => 'hook_search_reset', 'version' => 7)),
+      '!hook_search_status()' => theme('drupalapi', array('function' => 'hook_search_status', 'version' => 7)),
+    )),
+    '#link' => 'http://drupal.org/node/224333#search-api',
+  );
+}
+
+function _coder_review_7x_do_search_warning() {
+  return array(
+    '#warning' => t('!do_search() has been deprecated and instead modules should perform the search query using the "SearchQuery" extension.',
+    array(
+      '!do_search()' => theme('drupalapi', array('function' => 'do_search', 'version' => 6)),
+    )),
+    '#link' => 'http://drupal.org/node/224333#search-api',
+  );
+}
+
+function _coder_review_7x_install_schema_warning() {
+  return array(
+    '#warning' => t('A module no longer should explicitly install or uninstall its database schema in !hook_install() or !hook_uninstall().',
+    array(
+      '!hook_install()' => theme('drupalapi', array('function' => 'hook_install', 'version' => 7)),
+      '!hook_uninstall()' => theme('drupalapi', array('function' => 'hook_uninstall', 'version' => 7)),
+    )),
+    '#link' => 'http://drupal.org/node/224333#install-schema',
   );
 }
 
