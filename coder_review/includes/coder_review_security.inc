@@ -30,6 +30,7 @@ function coder_review_security_reviews() {
       '#source' => 'allphp',
       '#warning_callback' => '_coder_review_security_trigger_error_filter_t_warning',
     ),
+    /*
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]drupal_set_title\s*\(\s*[^\$)]+.+\$',
@@ -44,6 +45,7 @@ function coder_review_security_reviews() {
       '#source' => 'allphp',
       '#warning_callback' => '_coder_review_security_drupal_set_title_filter_t_warning',
     ),
+    */
     array(
       '#type' => 'regex',
       '#value' => '[\s\(]drupal_set_message\s*\(\s*[^\$)]+.+\$',
@@ -145,6 +147,7 @@ function coder_review_security_reviews() {
       '#warning' => "Use preg_replace_callback() instead of the 'e' modifier to preg_replace()",
       '#severity' => 'critical',
     ),
+    /*
     array(
       '#type' => 'regex',
       '#value' => '.*[\'"]SELECT\s+.*\s+(FROM|JOIN)\s+\{node\}',
@@ -161,6 +164,7 @@ function coder_review_security_reviews() {
       '#warning_callback' => '_coder_review_security_db_rewrite_sql_warning',
       '#function-not' => '_cron$',
     ),
+    */
     array(
       '#type' => 'regex',
       '#value' => '[\'"]access callback.*=.*\(',
@@ -256,6 +260,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       // If we've just exited a function, run forward match checks.
       if ($function_paren <= 0) {
         // db_rewrite_sql()
+        /*
         if (isset($forward_matches['db_rewrite_sql'])) {
           $after_never_regex = '/[\s\(]db_rewrite_sql\s*\(\s*\$' . $forward_matches['db_rewrite_sql'] . '[\s,\)]/';
           if (!preg_match($after_never_regex, $this_function, $sanitized_matches)) {
@@ -263,6 +268,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
             _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
           }
         }
+        */
         // FAPI #value
         if (isset($forward_matches['fapi_markup_value'])) {
           $find_match = '/[\s=]array\s*\(\s*([^\)]*?([\'"]#value[\'"]\s*=>\s*.*?\$' . $forward_matches['fapi_markup_value'] . '.*?))\);/';
@@ -296,6 +302,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       }
     }
     // drupal_set_title()
+    /*
     $regex = '/[\s\(]drupal_set_title\s*\(\s*\$(\w+)\s*[,\)]/';
     $never_regex = '/(^function\s|drupal_set_title\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)/';
     if (preg_match($regex, $line, $matches)) {
@@ -307,6 +314,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
         }
       }
     }
+    */
     // drupal_set_message()
     $regex = '/[\s\(]drupal_set_message\s*\(\s*\$(\w+)\s*[,\)]/';
     $never_regex = '/(^function\s|drupal_set_message\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)/';
@@ -417,6 +425,7 @@ function _coder_review_security_trigger_error_filter_t_warning() {
   );
 }
 
+/*
 function _coder_review_security_drupal_set_title_filter_warning() {
   return array(
     '#warning' => t('Potential problem: !drupal_set_title() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
@@ -443,6 +452,7 @@ function _coder_review_security_drupal_set_title_filter_t_warning() {
     '#link' => 'http://drupal.org/node/28984',
   );
 }
+*/
 
 function _coder_review_security_drupal_set_message_filter_warning() {
   return array(
@@ -560,6 +570,7 @@ function _coder_review_security_sql_var_warning() {
   );
 }
 
+/*
 function _coder_review_security_db_rewrite_sql_warning() {
   return array(
     '#warning' => t('Potential problem: "SELECT FROM {node}" statements should probably be wrapped in !db_rewrite_sql and with the alias for {node} table defined (e.g. {node} n)',
@@ -569,6 +580,7 @@ function _coder_review_security_db_rewrite_sql_warning() {
     ),
   );
 }
+*/
 
 function _coder_review_security_menu_access_callback_warning() {
   return array(
