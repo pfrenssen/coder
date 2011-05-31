@@ -44,16 +44,9 @@ function coder_review_comment_reviews() {
     array(
       '#type' => 'regex',
       '#source' => 'comment',
-      '#value' => '\/\/\s*\@see\s*',
-      '#warning_callback' => '_coder_review_comment_see_comment_style_warning',
-      '#severity' => 'minor',
-    ),
-    array(
-      '#type' => 'regex',
-      '#source' => 'comment',
       '#value' => '\@see\s*.*',
       '#not' => '^\@see\s+((\w+\(\)|[\w\.\-\?\/:\&=]+\.[\w\.\->\?\/:\&=]+)[,\s]+)*(\w+\(\)|[\w\.\->\?\/:\&=]+\.[\w\.\->\?\/:\&=]+)\W*$',
-      '#warning' => '@see should always be followed by a filename, a url or a function name with ()',
+      '#warning' => '@see should always be followed by a filename, a URL, class/interface name (optionally including method), or a function name including ().',
       '#severity' => 'minor',
     ),
     array(
@@ -197,13 +190,6 @@ function _coder_review_comment_invalid_file_block_warning() {
   return array(
     '#warning' => t('@' . 'file description should be on the following line'),
     '#link' => 'http://drupal.org/node/1354#files',
-  );
-}
-
-function _coder_review_comment_see_comment_style_warning() {
-  return array(
-    '#warning' => t('@' . 'see should always be in a comment block rather than as an inline comment.'),
-    '#link' => 'http://drupal.org/node/1354',
   );
 }
 

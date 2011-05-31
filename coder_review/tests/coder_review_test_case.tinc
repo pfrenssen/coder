@@ -63,13 +63,10 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
     $results = $this->runTest($code);
 
     // Display the test results.
-    $message = 'Pass:'. str_replace(array('%s', '%d'), array('%%s', '%%d'), $code);
-    if (count($results) == 0) {
-      $this->assertTrue(TRUE, check_plain($message));
-    }
-    else {
-      $this->assertTrue(FALSE, check_plain($message) .': '. $this->getWarnings($results));
-    }
+    $message = 'Pass: ';
+    $message .= $this->getWarnings($results);
+    $message .= '<pre>' . check_plain(str_replace(array('%s', '%d'), array('%%s', '%%d'), $code)) . '</pre>';
+    $this->assertTrue(count($results) == 0, $message);
   }
 
   protected function assertCoderReviewFail($code) {
@@ -77,13 +74,10 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
     $results = $this->runTest($code);
 
     // Display the test results.
-    $message = 'Fail:'. str_replace(array('%s', '%d'), array('%%s', '%%d'), $code);
-    if (count($results) <= 1) {
-      $this->assertTrue(count($results) == 1, check_plain($message));
-    }
-    else {
-      $this->assertTrue(FALSE, check_plain($message) .': '. $this->getWarnings($results));
-    }
+    $message = 'Fail: ';
+    $message .= $this->getWarnings($results);
+    $message .= '<pre>' . check_plain(str_replace(array('%s', '%d'), array('%%s', '%%d'), $code)) . '</pre>';
+    $this->assertTrue(count($results), $message);
   }
   
   private function getWarnings($results) {

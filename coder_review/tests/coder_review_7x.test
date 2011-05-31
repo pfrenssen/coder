@@ -155,7 +155,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#system_retrieve_file
 
-
   }
 
   function testPermissions7x() {
