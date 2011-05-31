@@ -130,7 +130,6 @@ function coder_review_security_reviews() {
       '#type' => 'regex',
       '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s+' . $table . ')\s+.*\$[a-z0-9_]+',
       '#not' => '\$placeholder',
-      '#never' => '[\s\(]update_sql\(',
       '#source' => 'quote',
       '#warning_callback' => '_coder_review_security_sql_var_warning',
     ),

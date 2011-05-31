@@ -48,14 +48,6 @@ function coder_review_sql_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#filename' => array('install'),
-      '#function' => '_update_[0-9]+$',
-      '#source' => 'allphp',
-      '#value' => 'db_query\s*\(\s*[\'"](UPDATE|INSERT|DELETE)\s+',
-      '#warning_callback' => '_coder_review_sql_db_query_in_install_function',
-    ),
-    array(
-      '#type' => 'regex',
       '#source' => 'allphp',
       '#value' => 'db_query\s*\(\s*[\'"]select\s+count\s*\(\s*\*\s*\)\s+from\s+',
       '#warning_callback' => '_coder_review_sql_select_count_warning',
@@ -85,21 +77,10 @@ function _coder_review_sql_db_query_range_warning() {
   );
 }
 
-function _coder_review_sql_db_query_in_install_function() {
-  return array(
-    '#warning' => t('Use !update_sql() instead of !db_query() in !hook_update_N()',
-      array(
-        '!update_sql' => theme('drupalapi', array('function' => 'update_sql')),
-        '!db_query' => theme('drupalapi', array('function' => 'db_query')),
-        '!hook_update_N' => theme('drupalapi', array('function' => 'hook_update_N')),
-      )
-    ),
-  );
-}
-
 function _coder_review_sql_select_count_warning() {
   return array(
     '#warning' => t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actualy numer of rows.'),
     '#link' => 'http://drupal.org/node/224333#select_count',
   );
 }
+
