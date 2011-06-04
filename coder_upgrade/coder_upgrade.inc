@@ -180,7 +180,6 @@ if (!function_exists('file_directory_path')) {
  */
 function coder_upgrade_library_checks() {
   $modules = system_list('module_enabled');
-sdp($modules, '$modules');
   $messages = array();
   if (isset($modules['grammar_parser'])) {
     $messages[] = 'Grammar Parser should NOT be installed and enabled as a module.';
