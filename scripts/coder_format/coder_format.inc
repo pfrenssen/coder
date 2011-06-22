@@ -658,7 +658,6 @@ function coder_format_string($code = '') {
         case T_SWITCH:
           ++$switches;
           // Purposely fall through.
-        case T_IF:
         case T_FOR:
         case T_FOREACH:
         case T_GLOBAL:
@@ -691,9 +690,19 @@ function coder_format_string($code = '') {
           $result .= trim($text) . ' ';
           break;
 
+        case T_IF:
+          // Use "elseif" instead of "else if".
+          if (substr(rtrim($result), -4) == 'else') {
+            $result = rtrim($result);
+          }
+          coder_add_space($result);
+          // Append a space.
+          $result .= trim($text) . ' ';
+          break;
+
         case T_ELSE:
         case T_ELSEIF:
-          // Write else and else if to a new line.
+          // Write else and elseif to a new line.
           $result = rtrim($result);
           coder_br($result);
           $result .= trim($text) . ' ';
