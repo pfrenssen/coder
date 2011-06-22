@@ -37,7 +37,7 @@
 // We are on the command line, so output only real errors.
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
-require_once realpath(dirname($_SERVER['PHP_SELF'])) .'/coder_format.inc';
+require_once realpath(dirname($_SERVER['PHP_SELF'])) . '/coder_format.inc';
 
 if (!empty($_SERVER['argv'])) {
   // Remove self-reference.
@@ -185,7 +185,7 @@ function file_copy(&$source, $dest = 0, $replace = FILE_EXISTS_RENAME) {
 
   // If the destination file is not specified then use the filename of the source file.
   $basename = $basename ? $basename : basename($source);
-  $dest = $directory .'/'. $basename;
+  $dest = $directory . '/' . $basename;
 
   // Make sure source and destination filenames are not the same, makes no sense
   // to copy it if they are. In fact copying the file will most likely result in
@@ -285,7 +285,7 @@ function file_move(&$source, $dest = 0, $replace = FILE_EXISTS_RENAME) {
  * @return
  */
 function file_create_filename($basename, $directory) {
-  $dest = $directory .'/'. $basename;
+  $dest = $directory . '/' . $basename;
 
   if (file_exists($dest)) {
     // Destination file already exists, generate an alternative.
@@ -294,7 +294,7 @@ function file_create_filename($basename, $directory) {
 
     $counter = 0;
     do {
-      $dest = $directory .'/'. $name . str_repeat('.coder.orig', $counter++);
+      $dest = $directory . '/' . $name . str_repeat('.coder.orig', $counter++);
     } while (file_exists($dest));
   }
 

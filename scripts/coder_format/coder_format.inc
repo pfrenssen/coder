@@ -48,7 +48,7 @@ function coder_format_file($filename, $undo = FALSE) {
   // Restore a processed file.
   if ($undo) {
     // Do nothing if no backup file exists at all.
-    if (!file_exists($filename .'.coder.orig')) {
+    if (!file_exists($filename . '.coder.orig')) {
       return;
     }
     // Save original filename.
@@ -56,7 +56,7 @@ function coder_format_file($filename, $undo = FALSE) {
     // Retrieve the file's directory.
     $basename = file_check_path($filename);
     // Find all backups.
-    $mask  = '^'. preg_quote($basename) .'(\.coder\.orig)+$';
+    $mask  = '^' . preg_quote($basename) . '(\.coder\.orig)+$';
     $nomask = array('.', '..', 'CVS', '.svn', '.git');
     $backups = file_scan_directory($filename, $mask, $nomask, 0, FALSE);
     // Find the latest backup to restore.
@@ -76,7 +76,7 @@ function coder_format_file($filename, $undo = FALSE) {
   // Backup original file.
   // file_copy() replaces source filepath with target filepath.
   $sourcefile = $filename;
-  if (!file_copy($filename, $filename .'.coder.orig', FILE_EXISTS_RENAME)) {
+  if (!file_copy($filename, $filename . '.coder.orig', FILE_EXISTS_RENAME)) {
     drupal_set_message(t('%file could not be backup.', array('%file' => $filename)), 'error');
     return FALSE;
   }
@@ -315,7 +315,7 @@ function coder_format_string($code = '') {
               $_coder_indent += $switches - 1;
             }
             ++$_coder_indent;
-            $result = rtrim($result) .' '. $text;
+            $result = rtrim($result) . ' ' . $text;
             coder_br($result);
           }
           else {
@@ -390,12 +390,12 @@ function coder_format_string($code = '') {
 
         case '?':
           $inline_if = TRUE;
-          $result .= ' '. $text .' ';
+          $result .= ' ' . $text . ' ';
           break;
 
         case ':':
           if ($inline_if) {
-            $result .= ' '. $text .' ';
+            $result .= ' ' . $text . ' ';
           }
           elseif ($after_php) {
             $result .= $text;
@@ -431,7 +431,7 @@ function coder_format_string($code = '') {
             $c = $position_last_significant_token;
             if ($result[$c] !== ',') {
               // We need to add a comma at $c:
-              $result = substr($result, 0, $c + 1) .','. substr($result, $c + 1);
+              $result = substr($result, 0, $c + 1) . ',' . substr($result, $c + 1);
             }
           }
           if (!$in_quote && !$in_heredoc && (substr(rtrim($result), -1) == ',' || $in_multiline[$parenthesis])) {
@@ -457,17 +457,12 @@ function coder_format_string($code = '') {
           break;
 
         case ',':
-          $result .= $text .' ';
+          $result .= $text . ' ';
           break;
 
         case '.':
-          if (substr(rtrim($result), -1) == "'" || substr(rtrim($result), -1) == '"') {
-            // Write string concatenation character directly after strings.
-            $result = rtrim($result) . $text .' ';
-          }
-          else {
-            $result = rtrim($result) .' '. $text .' ';
-          }
+          // Starting from 7.x, string concatenations follow PEAR's standard.
+          $result = rtrim($result) . ' ' . $text . ' ';
           break;
 
         case '=':
@@ -479,7 +474,7 @@ function coder_format_string($code = '') {
         case '|':
         case '^':
         case '%':
-          $result = rtrim($result) .' '. $text .' ';
+          $result = rtrim($result) . ' ' . $text . ' ';
           break;
 
         case '&':
@@ -487,7 +482,7 @@ function coder_format_string($code = '') {
             $result .= $text;
           }
           else {
-            $result = rtrim($result) .' '. $text;
+            $result = rtrim($result) . ' ' . $text;
             // Ampersands used to declare reference return value for
             // functions should not have trailing space.
             if (!$in_function_declaration) {
@@ -506,11 +501,11 @@ function coder_format_string($code = '') {
           }
           // Add a space in front of the following chars, but not after them.
           elseif ($c == '>' || $c == '=' || $c == ',' || $c == ':' || $c == '?') {
-            $result .= ' '. $text;
+            $result .= ' ' . $text;
           }
           // Default arithmetic operator behavior.
           else {
-            $result .= ' '. $text .' ';
+            $result .= ' ' . $text . ' ';
           }
           break;
 
@@ -518,10 +513,6 @@ function coder_format_string($code = '') {
           // Toggle quote if the char is not escaped.
           if (rtrim($result) != "\\") {
             $in_quote = $in_quote ? FALSE : TRUE;
-          }
-          if (substr($result, -3) == ' . ') {
-            // Write string concatenation character directly before strings.
-            $result = rtrim($result);
           }
           $result .= $text;
           break;
@@ -592,7 +583,7 @@ function coder_format_string($code = '') {
         case T_CLOSE_TAG:
           $in_php = FALSE;
           if ($after_php) {
-            $result = rtrim($result, ' ') .' ';
+            $result = rtrim($result, ' ') . ' ';
             $text = ltrim($text, ' ');
           }
           // Do not alter a closing PHP tag ($text includes trailing white-space)
@@ -606,22 +597,17 @@ function coder_format_string($code = '') {
           break;
 
         case T_CONSTANT_ENCAPSED_STRING:
-          // Handle special string concatenation case: 'bar' . 'baz'
-          $c = substr($result, -3);
-          if ($c == '". ' || $c == '\'. ') {
-            $result = rtrim($result, ' .');
-            $result .= ' . ';
-          }
-          // Handle special string concatenation case: 'bar'. $foo
-          elseif (substr($result, -2) == '. ') {
-            $result = rtrim($result);
-          }
-          // Move on to T_STRING / T_VARIABLE.
         case T_STRING:
         case T_VARIABLE:
+          // Boolean constants (TRUE, FALSE, NULL) are T_STRINGs, but must be
+          // written uppercase.
+          $text = trim($text);
+          if ($text == 'true' || $text == 'false' || $text == 'null') {
+            $text = strtoupper($text);
+          }
           // No space after object operator ($foo->bar) and error suppression (@function()).
           if ($in_object || $in_at) {
-            $result    = rtrim($result) . trim($text);
+            $result    = rtrim($result) . $text;
             $in_object = FALSE;
             $in_at     = FALSE;
           }
@@ -630,9 +616,14 @@ function coder_format_string($code = '') {
             if (!in_array($lasttoken[0], array(T_ARRAY_CAST, T_BOOL_CAST, T_DOUBLE_CAST, T_INT_CAST, T_OBJECT_CAST, T_STRING_CAST, T_UNSET_CAST))) {
               coder_add_space($result);
             }
-            $result .= trim($text);
+            $result .= $text;
           }
           $in_variable = TRUE;
+          break;
+
+        case T_CONST:
+          // Constants are written uppercase.
+          $result = rtrim($result) . strtoupper(trim($text));
           break;
 
         case T_ENCAPSED_AND_WHITESPACE:
@@ -682,7 +673,7 @@ function coder_format_string($code = '') {
         case T_VAR:
           coder_add_space($result);
           // Append a space.
-          $result .= trim($text) .' ';
+          $result .= trim($text) . ' ';
           break;
 
         case T_DO:
@@ -693,11 +684,11 @@ function coder_format_string($code = '') {
         case T_WHILE:
           if ($in_do_while && substr(rtrim($result), -1) === '}') {
             // Write while after right parenthesis for do {...} while().
-            $result = rtrim($result) .' ';
+            $result = rtrim($result) . ' ';
             $in_do_while = FALSE;
           }
           // Append a space.
-          $result .= trim($text) .' ';
+          $result .= trim($text) . ' ';
           break;
 
         case T_ELSE:
@@ -705,7 +696,7 @@ function coder_format_string($code = '') {
           // Write else and else if to a new line.
           $result = rtrim($result);
           coder_br($result);
-          $result .= trim($text) .' ';
+          $result .= trim($text) . ' ';
           break;
 
         case T_CASE:
@@ -725,14 +716,15 @@ function coder_format_string($code = '') {
             --$_coder_indent;
           }
           coder_br($result);
-          $result .= trim($text) .' ';
+          $result .= trim($text) . ' ';
           break;
 
         case T_BREAK:
           // Write break to a new line.
           $result = rtrim($result);
           coder_br($result);
-          $result .= trim($text);
+          // Trailing space needed for 'break 3;'.
+          $result .= trim($text) . ' ';
           if ($in_case && !$braces_in_case[$switches]) {
             --$_coder_indent;
             $in_case = FALSE;
@@ -747,7 +739,7 @@ function coder_format_string($code = '') {
           }
         case T_CONTINUE:
           coder_add_space($result);
-          $result .= trim($text) .' ';
+          $result .= trim($text) . ' ';
           // Decrease indent only if we're not in a control structure inside a case.
           if ($in_case && !$braces_in_case[$switches]) {
             --$_coder_indent;
@@ -763,7 +755,7 @@ function coder_format_string($code = '') {
           // T_FUNCTION, but without line-break after the token. Because more
           // than one of these tokens can appear in front of a function token,
           // we need another white-space control variable.
-          $result .= trim($text) .' ';
+          $result .= trim($text) . ' ';
           $after_visibility_modifier = TRUE;
           break;
 
@@ -785,14 +777,14 @@ function coder_format_string($code = '') {
             $after_visibility_modifier = FALSE;
             $result .= ' ';
           }
-          $result .= trim($text) .' ';
+          $result .= trim($text) . ' ';
           break;
 
         case T_EXTENDS:
         case T_INSTANCEOF:
           // Add space before and after 'extends' and 'instanceof'.
           $result = rtrim($result);
-          $result .= ' '. trim($text) .' ';
+          $result .= ' ' . trim($text) . ' ';
           break;
 
         case T_AND_EQUAL:
@@ -826,7 +818,7 @@ function coder_format_string($code = '') {
             // $result must not be trimmed to allow multi-line if-clauses.
             $result .= ' ';
           }
-          $result .= trim($text) .' ';
+          $result .= trim($text) . ' ';
           break;
 
         case T_COMMENT:
@@ -1269,7 +1261,7 @@ function coder_replace_multiple_vars($matches) {
       $extra_spaces = $maxlength - strlen($vars[$c][2] . $vars[$c][3]);
     }
     $return .= $vars[$c][1] . $vars[$c][2];
-    $return .= str_repeat(' ', $extra_spaces) .' '. $vars[$c][3] .'= ';
+    $return .= str_repeat(' ', $extra_spaces) . ' ' . $vars[$c][3] . '= ';
     $return .= $vars[$c][4];
     if ($c < $cc - 1) {
       // Append a line break, but not to the last variable assignment.
@@ -1366,15 +1358,15 @@ function coder_replace_array_rearrange($matches) {
   preg_match_all('/(.+? => .+?,) /', $matches[3], $items);
 
   // The original line including array(.
-  $return = $matches[1] . $matches[2] ."\n";
+  $return = $matches[1] . $matches[2] . "\n";
   foreach ($items[1] as $item) {
     // All array items, except the last one, with extra indent.
-    $return .= $matches[1] .'  '. $item ."\n";
+    $return .= $matches[1] . '  ' . $item . "\n";
   }
   // Last array item, with extra indent and comma.
-  $return .= $matches[1] .'  '. $matches[5] .",\n";
+  $return .= $matches[1] . '  ' . $matches[5] . ",\n";
   // Closing parenthesis (on a new line).
-  $return .= $matches[1] .')';
+  $return .= $matches[1] . ')';
 
   return $return;
 }
