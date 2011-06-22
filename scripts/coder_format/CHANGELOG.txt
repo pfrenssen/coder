@@ -5,6 +5,7 @@ Coder_format x.x-x.x, xxxx-xx-xx
 
 Coder_format 7.x-1.x, xxxx-xx-xx
 --------------------------------
+#853582 by sun: Fixed 'else if' is not changed into 'elseif'.
 by sun: Fixed boolean constants must be written uppercase.
 #360766 by sun: Fixed missing space for parameter to break statement.
 #246568 by sun: Updated for new string concatenation standard.
