@@ -41,16 +41,16 @@ function _coder_upgrade_help($path, $arg) {
                 ' In those cases, and when a conversion routine has not been provided, manual intervention by the module maintainer is required.' .
                 ' As a convenience, this module wiil place TODO comments in the code where manual intervention is likely required.') .
              tp('<b>Conversion Process</b>') .
-             tp('Begin the conversion process by uploading your module\'s files to a directory beneath the <b>module input directory</b> (currently set to <b>!input</b>).' .
-                ' A directory (with the same name) for the converted files will automatically be created for you beneath the <b>module output directory</b> (currently set to <b>!output</b>).' .
+             tp('Begin the conversion process by uploading your module\'s files to a directory beneath the <b>module input directory</b> (currently set to <b>@input</b>).' .
+                ' A directory (with the same name) for the converted files will automatically be created for you beneath the <b>module output directory</b> (currently set to <b>@output</b>).' .
                 ' You may define the name of the module input and output directories !link.' .
                 ' You may also upload your module to a modules directory beneath the sites directory (e.g. sites/all/modules).',
-                  array('!input' => $input,
-                       '!output' => $output,
+                  array('@input' => $input,
+                       '@output' => $output,
                        '!link' => l(t('here'), 'admin/config/development/coder/upgrade/settings'))) .
              tp('To apply the conversions, go to the !link page, select the appropriate runtime parameters based on the instructions below, and click the Convert files button.' .
                 ' In the instructions below, references to checkboxes and other interface items apply to the development page.',
-                 array('!input' => $input,
+                 array('@input' => $input,
                        '!link' => l(t('Conversions Development'), 'admin/config/development/coder/upgrade'))) .
              tp('To convert 6.x files to 7.x files do the following:') .
               t('<ol>
@@ -62,7 +62,7 @@ function _coder_upgrade_help($path, $arg) {
                  </ol>
                  The conversions will be done as follows for each of the directories and modules selected in steps 3 and 4 above:
                  <ol>
-                 <li>The selected directory or module will be copied to the module output directory (!output).</li>
+                 <li>The selected directory or module will be copied to the module output directory (@output).</li>
                  <li>Files in the output directory will be reviewed one at a time and the selected conversions applied.</li>
                  </ol>
                  After the automated conversions are applied:
@@ -74,8 +74,8 @@ function _coder_upgrade_help($path, $arg) {
                  <li>Run !coder to highlight the areas in your module\'s code needing manual review and make the necessary changes to your code.</li>
                  <li>Install the module through the !install and test it.</li>
                  </ol>',
-                 array('!input' => $input,
-                       '!output' => $output,
+                 array('@input' => $input,
+                       '@output' => $output,
                        '!coder' => l(t('Coder Review'), 'admin/config/development/coder/review'),
                        '!install' => l(t('Drupal interface'), 'admin/modules'))) .
 //              tp('<b>Manual Changes</b>') .

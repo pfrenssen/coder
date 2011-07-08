@@ -19,7 +19,7 @@ function coder_upgrade_settings_form($form, &$form_state) {
     '#type' => 'textfield',
     '#required' => TRUE,
     '#default_value' => variable_get('coder_upgrade_dir', DEADWOOD_DIR),
-    '#description' => t('Directory beneath the file system path (!path) in which are housed the old, new and patch directories. Default is !default. In the old directory, place the 6.x module code to be upgraded. The upgraded code is saved to the new directory and patch files are written to the patch directory.', array('!path' => $path, '!default' => DEADWOOD_DIR)),
+    '#description' => t('Directory beneath the file system path (@path) in which are housed the old, new and patch directories. Default is @default. In the old directory, place the 6.x module code to be upgraded. The upgraded code is saved to the new directory and patch files are written to the patch directory.', array('@path' => $path, '@default' => DEADWOOD_DIR)),
     '#size' => 30,
     '#maxlength' => 255,
     '#validate' => array('coder_upgrade_validate_dir'),
@@ -50,21 +50,21 @@ function coder_upgrade_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Enable debug output from coder upgrade'),
     '#default_value' => variable_get('coder_upgrade_enable_debug_output', FALSE),
-    '#description' => t('If checked, then coder upgrade debug output will be written to the file !file. WARNING: This option should NOT be enabled except for testing and development purposes, and then only on smaller files containing the code to be debugged.', array('!file' => coder_upgrade_path('debug'))),
+    '#description' => t('If checked, then coder upgrade debug output will be written to the file @file. WARNING: This option should NOT be enabled except for testing and development purposes, and then only on smaller files containing the code to be debugged.', array('@file' => coder_upgrade_path('debug'))),
   );
 
   $form['coder_upgrade_enable_parser_debug_output'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enable debug output from grammar parser'),
     '#default_value' => variable_get('coder_upgrade_enable_parser_debug_output', FALSE),
-    '#description' => t('If checked, then grammar parser debug output will be written to the file !file. WARNING: This option should NOT be enabled except for testing and development purposes, and then only on smaller files containing the code to be debugged.', array('!file' => $parser->debugPath())),
+    '#description' => t('If checked, then grammar parser debug output will be written to the file @file. WARNING: This option should NOT be enabled except for testing and development purposes, and then only on smaller files containing the code to be debugged.', array('@file' => $parser->debugPath())),
   );
 
   $path = coder_upgrade_path('theme_cache');
   $form['performance'] = array(
     '#type' => 'fieldset',
     '#title' => t('Performance'),
-    '#description' => t('To minimize the chance of hitting PHP memory and processing time limits, it is recommended to run coder upgrade in a separate process without a Drupal bootstrap. These options were set when this module was enabled. If Drupal core has been updated on this site, then click the button below to refresh the core theme information cache file at !file.', array('!file' => $path)),
+    '#description' => t('To minimize the chance of hitting PHP memory and processing time limits, it is recommended to run coder upgrade in a separate process without a Drupal bootstrap. These options were set when this module was enabled. If Drupal core has been updated on this site, then click the button below to refresh the core theme information cache file at @file.', array('@file' => $path)),
     '#tree' => FALSE,
   );
 
@@ -130,5 +130,5 @@ function coder_upgrade_create_theme_cache_submit($form, &$form_state) {
     drupal_set_message(t('Could not write to core theme information cache file.'), 'error');
     return;
   }
-  drupal_set_message(t('Core theme information cache created at !file.', array('!file' => $path)));
+  drupal_set_message(t('Core theme information cache created at @file.', array('@file' => $path)));
 }
