@@ -163,11 +163,7 @@ function coder_upgrade_extensions_build(&$extensions) {
 function coder_upgrade_directories_build(&$directories) {
   // Build the directory list.
   $deadwood_dir = variable_get('coder_upgrade_dir_old', DEADWOOD_OLD);
-  $path = realpath(coder_upgrade_directory_path('old', FALSE));
-  $dirs = coder_upgrade_scan_directory($path);
-  if (!$dirs) {
-    drupal_set_message(t('Please place modules to be converted in @path.', array('@path' => $path)), 'error');
-  }
+  $dirs = coder_upgrade_directory_list();
 
   $header = array(
     'name' => array('data' => t('Name'), 'field' => 'name'),
@@ -514,6 +510,39 @@ function coder_upgrade_selection_types($form_state) {
     return $form_state['defaults'];
   }
   return array('upgrades', 'extensions', 'directories', 'modules');
+}
+
+/**
+ * Returns list of directories in module input directory.
+ *
+ * @return array
+ *   Array of directories in module input directory.
+ */
+function coder_upgrade_directory_list() {
+  $dirs = array();
+  $path = coder_upgrade_directory_path('old', FALSE);
+  if (!is_dir($path)) {
+    // @todo This can happen if the public file system path is changed at
+    // 'admin/config/media/file-system'. Add a submit handler on that form,
+    // system_file_system_settings, to create directories or move existing ones.
+    // Is there an action for this? No hook_path_changed?
+    drupal_set_message(t('Module input directory does not exist at @path.', array('@path' => $path)), 'error');
+    return $dirs;
+  }
+
+  $path = realpath($path);
+  if (!$path) {
+    // @todo Is this check redundant to above check?
+    drupal_set_message(t('Module input directory does not exist at @path.', array('@path' => $path)), 'error');
+    return $dirs;
+  }
+
+  $dirs = coder_upgrade_scan_directory($path);
+  if (!$dirs) {
+    drupal_set_message(t('Please place modules to be converted in @path.', array('@path' => $path)), 'error');
+  }
+
+  return $dirs;
 }
 
 /**
