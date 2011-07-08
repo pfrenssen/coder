@@ -37,6 +37,7 @@
  *   associative array with the following elements:
  *   - 'title': A description of the upgrade routines provided by the upgrade set.
  *   - 'link': An optional link to an issue describing the upgrade routines.
+ *   - 'module': The name of the module providing the upgrade routines.
  *   - 'files': An optional array of file names containing the upgrade routines.
  *     The name includes any relative path inside the module directory. Defaults
  *     to 'your_module_name.upgrade'.

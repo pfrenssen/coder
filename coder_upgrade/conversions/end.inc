@@ -153,7 +153,7 @@ function coder_upgrade_add_file_entries($dirname = '', $files = array(), &$items
       $new .= "files[] = $item\n";
     }
     if (file_put_contents($info_file, $new) === FALSE) {
-      clp('File could not be written: !file', array('!file' => $info_file));
+      clp(t('File could not be written: @file', array('@file' => $info_file)));
     }
   }
 }
