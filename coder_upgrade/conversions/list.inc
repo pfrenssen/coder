@@ -44,6 +44,7 @@ function coder_upgrade_upgrade_info() {
       'conversions/function.inc',
       'conversions/install.inc',
       'conversions/regex.inc',
+      'conversions/tool.inc',
     ),
   );
   return array(
