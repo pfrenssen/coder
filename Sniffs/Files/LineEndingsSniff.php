@@ -40,7 +40,7 @@ class Drupal_Sniffs_Files_LineEndingsSniff extends Generic_Sniffs_Files_LineEndi
      *
      * @var string
      */
-    public $eolChar = "\n";
+    public $eolChar = '\n';
 
 }//end class
 
