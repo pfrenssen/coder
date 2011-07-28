@@ -36,7 +36,7 @@ if (class_exists('Generic_Sniffs_WhiteSpace_ScopeIndentSniff', true) === false) 
  */
 class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff extends Generic_Sniffs_WhiteSpace_ScopeIndentSniff
 {
-
+  
     /**
      * The number of spaces code should be indented.
      *

@@ -24,6 +24,8 @@ if (class_exists('PEAR_Sniffs_Commenting_FileCommentSniff', true) === false) {
     throw new PHP_CodeSniffer_Exception($error);
 }
 
+include_once('FileCommentSniff.php');
+
 /**
  * Parses and verifies the doc comments for classes.
  *

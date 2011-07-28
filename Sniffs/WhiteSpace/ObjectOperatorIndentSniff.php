@@ -126,7 +126,7 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSnif
                         $foundIndent = 0;
                     }
 
-                    if ($foundIndent != $requiredIndent) {
+                    if ($foundIndent !== ($requiredIndent-2)) {
                         $error = "Object operator not indented correctly; expected $requiredIndent spaces but found $foundIndent";
                         $phpcsFile->addError($error, $next);
                     }

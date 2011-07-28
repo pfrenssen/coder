@@ -41,7 +41,7 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
      *
      * @var int
      */
-     public $lineLimit = 80;
+    public $lineLimit = 80;
 
     /**
      * The limit that the length of a line must not exceed.
