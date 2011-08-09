@@ -10,13 +10,41 @@
  * Form builder for the settings form.
  */
 function coder_upgrade_settings_form($form, &$form_state) {
+  // Build the form.
+  $form['tabs'] = array(
+    '#type' => 'vertical_tabs',
+    '#default_tab' => 'edit-upgrade',
+  );
+  // Set weight on fieldsets so other modules can easily insert a tab at a specific position.
+  $form['tabs']['general'] = coder_upgrade_general_build();
+  $form['tabs']['performance'] = coder_upgrade_performance_build();
+
+  $form['#submit'][] = 'coder_upgrade_settings_form_submit';
+
+  return system_settings_form($form);
+}
+
+/**
+ * Returns form content for general settings tab.
+ *
+ * @return array
+ *   Form item.
+ */
+function coder_upgrade_general_build() {
   require_once DRUPAL_ROOT . '/' . libraries_get_path('grammar_parser') . '/engine/parser.inc';
   $parser = new PGPParser();
 
+  $form = array(
+    '#type' => 'fieldset',
+    '#title' => t('General'),
+    '#description' => t('These settings apply to all modules utilizing the Coder Upgrade conversion routine API.'),
+    '#weight' => 0,
+  );
+
   $path = coder_upgrade_directory_path('', FALSE);
   $form['coder_upgrade_dir'] = array(
-    '#title' => t('Module base directory'),
     '#type' => 'textfield',
+    '#title' => t('Module base directory'),
     '#required' => TRUE,
     '#default_value' => variable_get('coder_upgrade_dir', DEADWOOD_DIR),
     '#description' => t('Directory beneath the file system path (@path) in which are housed the old, new and patch directories. Default is @default. In the old directory, place the 6.x module code to be upgraded. The upgraded code is saved to the new directory and patch files are written to the patch directory.', array('@path' => $path, '@default' => DEADWOOD_DIR)),
@@ -60,30 +88,39 @@ function coder_upgrade_settings_form($form, &$form_state) {
     '#description' => t('If checked, then grammar parser debug output will be written to the file @file. WARNING: This option should NOT be enabled except for testing and development purposes, and then only on smaller files containing the code to be debugged.', array('@file' => $parser->debugPath())),
   );
 
+  return $form;
+}
+
+/**
+ * Returns form content for performance settings tab.
+ *
+ * @return array
+ *   Form item.
+ */
+function coder_upgrade_performance_build() {
   $path = coder_upgrade_path('theme_cache');
-  $form['performance'] = array(
+  $form = array(
     '#type' => 'fieldset',
     '#title' => t('Performance'),
-    '#description' => t('To minimize the chance of hitting PHP memory and processing time limits, it is recommended to run coder upgrade in a separate process without a Drupal bootstrap. These options were set when this module was enabled. If Drupal core has been updated on this site, then click the button below to refresh the core theme information cache file at @file.', array('@file' => $path)),
+    '#description' => t('To minimize the chance of hitting PHP memory and processing time limits, it is recommended to run Coder Upgrade in a separate process without a Drupal bootstrap. However, because this has been reported to fail on certain combinations of operating system, PHP version, and runtime environment, this option was not set when this module was enabled.'),
     '#tree' => FALSE,
+    '#weight' => 1,
   );
 
-  $form['performance']['coder_upgrade_use_separate_process'] = array(
+  $form['coder_upgrade_use_separate_process'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use separate process'),
     '#default_value' => variable_get('coder_upgrade_use_separate_process', FALSE),
-    '#description' => t('If checked, then coder upgrade will be run in a separate process without a Drupal bootstrap. This helps to minimize the chance of hitting PHP memory and processing time limits.'),
+    '#description' => t('If checked, then Coder Upgrade will be run in a separate process without a Drupal bootstrap.'),
   );
 
-  $form['performance']['theme_cache'] = array(
+  $form['theme_cache'] = array(
     '#type' => 'submit',
     '#value' => t('Cache core theme information'),
-    '#submit' => array('coder_upgrade_create_theme_cache_submit'),
+    '#prefix' => '<div class="label">' . t('If Drupal core has been updated on this site, then click the button below to refresh the core theme information cache file at @file.', array('@file' => $path)) . '</div>',
   );
 
-  $form['#submit'][] = 'coder_upgrade_settings_form_submit';
-
-  return system_settings_form($form);
+  return $form;
 }
 
 /**
