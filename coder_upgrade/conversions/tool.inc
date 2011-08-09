@@ -388,7 +388,7 @@ function coder_upgrade_convert_return(&$body, $hook, $callback = '', $start_dept
         }
         elseif (get_class($operand) == 'PGPOperand') {
           // Avoid redundant searching.
-          if (in_array($operand->toString(), $already_searched)) {
+          if (in_array($operand->stripComments()->toString(), $already_searched)) {
             $occurrence++;
             continue;
           }
@@ -399,11 +399,12 @@ function coder_upgrade_convert_return(&$body, $hook, $callback = '', $start_dept
            * Or directly to the variable like $info = array('node_type_name' => array(...)).
            */
 
-          $already_searched[] = $return_variable = $operand->toString();
+          $already_searched[] = $return_variable = $operand->stripComments()->toString();
           // @todo Limit search to nodes preceding the statement.
           $nodes = array_merge($nodes, $body->searchAll('PGPAssignment', 'values', 0, $return_variable, TRUE/*, 'backward', $parent*/));
         }
         else {
+          // @todo This message is not accurate -- this error hits on the array value being a string or function call.
           clp("ERROR: operand of return statement is not an array or variable in hook_$hook");
           cdp("ERROR: operand of return statement is not an array or variable in hook_$hook");
           cdp($operand, '$operand');
