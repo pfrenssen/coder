@@ -186,7 +186,7 @@ function coder_upgrade_convert_end($dirname) {
  *   Indicates whether to recurse the subdirectories of $item.
  */
 function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = TRUE) {
-//  global $_coder_upgrade_filename; // TODO Only referenced in this function -- remove global
+  global $_coder_upgrade_filename; // Not used by this module, but other modules may find it useful.
   static $ignore = array(/*'.', '..', '.bzr', '.git', '.svn',*/ 'CVS');
   global $_coder_upgrade_module_name, $_coder_upgrade_replace_files;
 
@@ -215,7 +215,7 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
   // Loop on files.
   $filenames = scandir($dirname . '/');
   foreach ($filenames as $filename) {
-//    $_coder_upgrade_filename = $filename;
+    $_coder_upgrade_filename = $dirname . '/' . $filename;
     if (substr(basename($filename), 0, 1) == '.' || in_array(basename($filename), $ignore)) {
       // Ignore all hidden directories and CVS directory.
       continue;
