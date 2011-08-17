@@ -261,7 +261,7 @@ function _coder_review_drush_is_option($option) {
 
 function _coder_review_drush_xml_output_header() {
   // Put in an extra concatenation so syntax highlighting in vim doesn't break.
-  drush_print('<?xml version="1.0" encoding="UTF-8"?' .'>' . '<coderreview version="1.0">');
+  drush_print('<?xml version="1.0" encoding="UTF-8"?' .'>');
   drush_print('<coderreview version="1.0">');
 
 }
