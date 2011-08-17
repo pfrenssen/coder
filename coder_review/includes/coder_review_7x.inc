@@ -389,7 +389,7 @@ function coder_review_7x_reviews() {
         '#warning_callback' => '_coder_review_7x_comment_node_url_warning',
       ),
       // http://drupal.org/node/224333#comment_created_changed ---  Comment.timestamp split into 'created' and 'changed'
-      // http://drupal.org/node/224333 (no link) --- hook_comment removed and replaced with family of related functions 
+      // http://drupal.org/node/224333 (no link) --- hook_comment removed and replaced with family of related functions
       // http://drupal.org/node/224333#comment_render --- Comment rendering overhaul
 
 
