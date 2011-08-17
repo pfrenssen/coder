@@ -226,7 +226,7 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
 
   $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
   $ignores = $coder_args['#ignore_lines'];
-  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
+  $ignores = (empty($ignores) || !isset($ignores[$review['#review_name']])) ? array() : $ignores[$review['#review_name']];
   /*
   if (!isset($coder_args['#tokens'])) {
     $source = implode('', $lines);
