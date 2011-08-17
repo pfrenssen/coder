@@ -1109,8 +1109,13 @@ function do_coder_reviews($coder_args) {
   // Load the cached results if they exist, but not for patches.
   if (empty($coder_args['#patch']) && empty($coder_args['#test']) && $coder_args['#cache']) {
     $cache_key = 'coder:' . md5(implode(':', array_keys($coder_args['#reviews']))) . $coder_args['#severity'] . ':' . $coder_args['#filename'];
-    if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush') && _coder_review_drush_is_option('xml')) {
-      $cache_key .= ':drushxml';
+    if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+      if (_coder_review_drush_is_option('checkstyle')) {
+        $cache_key .= ':drushcheckstyle';
+      }
+      elseif (_coder_review_drush_is_option('xml')) {
+        $cache_key .= ':drushxml';
+      }
     }
     if (file_exists($filepath = realpath($coder_args['#filename']))) {
       $cache_mtime = filemtime($filepath);
