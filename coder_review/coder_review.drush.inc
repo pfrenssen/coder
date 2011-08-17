@@ -61,10 +61,13 @@ function _coder_review_set_form_modules(&$settings) {
   }
 }
 
+/**
+ * Do the actual review.
+ */
 function coder_review_drush_review() {
   _coder_review_drush_set_option('drush');
 
-  // process command line arguments
+  // Process command line arguments.
   $args = func_get_args();
   $reviews = array();
   $modules = array();
@@ -183,6 +186,9 @@ function coder_review_drush_review() {
   }
 }
 
+/**
+ * Handle patch reviews.
+ */
 function _coder_review_drush_is_patch_arg(&$arg) {
   if (drupal_substr($arg, 0, 7) == 'http://' || is_file(realpath($arg))) {
     return TRUE;
@@ -197,6 +203,9 @@ function _coder_review_drush_is_patch_arg(&$arg) {
   }
 }
 
+/**
+ * Theme printing of results and filenames.
+ */
 function theme_drush_coder_review($variables) {
   $name = $variables['name'];
   $filename = $variables['filename'];
@@ -211,6 +220,9 @@ function theme_drush_coder_review($variables) {
   }
 }
 
+/**
+ * Theme warning message, including source snippet.
+ */
 function theme_drush_coder_review_warning($variables) {
   $warning = $variables['warning'];
   $severity_name = $variables['severity_name'];
@@ -243,6 +255,9 @@ function theme_drush_coder_review_warning($variables) {
   }
 }
 
+/**
+ * Handle printing of drupal_set_message() messages.
+ */
 function coder_review_print_drush_messages() {
   foreach (drupal_get_messages() as $type => $messages) {
     $output = _coder_review_drush_output(implode("\n ", $messages));
@@ -255,10 +270,16 @@ function coder_review_print_drush_messages() {
   }
 }
 
+/**
+ * Strip HTML tags from drush output.
+ */
 function _coder_review_drush_output($output) {
   return html_entity_decode(strip_tags($output));
 }
 
+/**
+ * Helper function to set a command line option.
+ */
 function _coder_review_drush_set_option($option) {
   global $_coder_drush_options;
   if (!isset($_coder_drush_options)) {
@@ -267,15 +288,36 @@ function _coder_review_drush_set_option($option) {
   $_coder_drush_options[$option] = TRUE;
 }
 
+/**
+ * Helper function to determine if an option is set.
+ */
 function _coder_review_drush_is_option($option) {
   global $_coder_drush_options;
   return isset($_coder_drush_options[$option]);
 }
 
 /**
+ * Switch between print and pipe print output.
+ */
+function _coder_review_drush_print($message) {
+  if (drush_get_context('DRUSH_PIPE')) {
+    drush_print_pipe($message);
+  }
+  else {
+    drush_print($message);
+  }
+}
+
+
+
+
+/**
  * XML output functions.
  */
 
+/**
+ * XML: output appropriate header tag.
+ */
 function _coder_review_drush_xml_output_header($type = 'xml') {
   // Put in an extra concatenation so syntax highlighting in vim doesn't break.
   _coder_review_drush_print('<?xml version="1.0" encoding="UTF-8"?' . '>');
@@ -290,6 +332,9 @@ function _coder_review_drush_xml_output_header($type = 'xml') {
   }
 }
 
+/**
+ * XML: output appropriate footer tag.
+ */
 function _coder_review_drush_xml_output_footer($type = 'xml') {
   switch ($type) {
     case 'checkstyle':
@@ -302,10 +347,16 @@ function _coder_review_drush_xml_output_footer($type = 'xml') {
   }
 }
 
+/**
+ * XML: output severity level if provided.
+ */
 function _coder_review_drush_xml_output_severity($severity_name) {
   _coder_review_drush_print('<severity>' . $severity_name . '</severity>');
 }
 
+/**
+ * XML: output list of chosen reviews.
+ */
 function _coder_review_drush_xml_output_reviews($reviews, $avail_reviews) {
   _coder_review_drush_print('<reviews>');
   foreach ($reviews as $review) {
@@ -314,24 +365,15 @@ function _coder_review_drush_xml_output_reviews($reviews, $avail_reviews) {
   _coder_review_drush_print('</reviews>');
 }
 
+/**
+ * XML: output filename and its results (if any).
+ */
 function _coder_review_drush_xml_output_results($filename, $results) {
   if (empty($results) || (count($results) == 1 && isset($results[0]))) {
     _coder_review_drush_print('<file name = "' . $filename . '" />');
   }
   else {
     _coder_review_drush_print('<file name = "' . $filename . '">' . "\n" . implode("\n ", $results) . "\n" . '</file>');
-  }
-}
-
-/**
- * Switch between print and pipe print output.
- */
-function _coder_review_drush_print($message) {
-  if (drush_get_context('DRUSH_PIPE')) {
-    drush_print_pipe($message);
-  }
-  else {
-    drush_print($message);
   }
 }
 
