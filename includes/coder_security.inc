@@ -151,7 +151,7 @@ function coder_security_reviews() {
       '#never' => '([\s\(]db_rewrite_sql\s*\(|\s\$\w+\s*=\s*[\'"]SELECT|[\'"]SELECT\s+COUNT\(|[\s\.]nid\s*=\s*%d)',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_security_db_rewrite_sql_warning',
-      '#function-not' => '_cron$', 
+      '#function-not' => '_cron$',
     ),
     array(
       '#type' => 'regex',
@@ -159,7 +159,7 @@ function coder_security_reviews() {
       '#never' => '[\s\(]db_rewrite_sql\(\s*[\'"]SELECT\s+(COUNT\([^\)]+\))*.*\s+(FROM|JOIN)\s+\{node\}([,\'"]+|\s+(ON|WHERE|HAVING|LIMIT|ORDER|GROUP)\s+).*?,\s*[\'"]\{node\}[\'"]',
       '#source' => 'allphp',
       '#warning_callback' => '_coder_security_db_rewrite_sql_warning',
-      '#function-not' => '_cron$', 
+      '#function-not' => '_cron$',
     ),
     array(
       '#type' => 'regex',
