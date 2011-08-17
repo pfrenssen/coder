@@ -36,6 +36,7 @@ function coder_drush_command() {
       'summary' => 'Display summary statistics instead of default detailed messages.',
       'no-empty' => 'Only display files with warning or error messages.',
       'xml' => 'output results as xml',
+      'checkstyle' => 'output results in Checkstyle xml format',
       'active' => 'Review all active projects.',
       'core' => 'Review all core modules and themes.',
       'contrib' => 'Review all contributed projects.',
@@ -84,6 +85,7 @@ function coder_drush_review() {
         case 'summary':
         case 'no-empty':
         case 'xml':
+        case 'checkstyle':
           _coder_drush_set_option($arg);
           break;
         case 'active':
@@ -124,8 +126,11 @@ function coder_drush_review() {
           break;
       }
     }
-    if (_coder_drush_is_option('xml')) {
-      _coder_drush_xml_output_header();
+    if (_coder_drush_is_option('checkstyle')) {
+      _coder_drush_xml_output_header('checkstyle');
+    }
+    elseif (_coder_drush_is_option('xml')) {
+      _coder_drush_xml_output_header('xml');
     }
     if (isset($severity_name)) {
       if (_coder_drush_is_option('xml')) {
@@ -135,7 +140,7 @@ function coder_drush_review() {
       $settings['coder_severity'] = _coder_severity($severity_name);
     }
     if (count($reviews)) {
-      if (_coder_drush_is_option('xml')) {
+      if (_coder_drush_is_option('xml') && !_coder_drush_is_option('checkstyle')) {
         _coder_drush_xml_output_reviews($reviews, $avail_reviews);
       }
       else {
@@ -145,7 +150,7 @@ function coder_drush_review() {
       }
       $settings['coder_reviews'] = $reviews;
     }
-    if (count($output) && !_coder_drush_is_option('summary') && !_coder_drush_is_option('xml')) {
+    if (count($output) && !_coder_drush_is_option('summary') && !_coder_drush_is_option('xml')  && !_coder_drush_is_option('checkstyle')) {
       drush_print(implode(', ', $output) ."\n");
     }
   }
@@ -155,8 +160,11 @@ function coder_drush_review() {
   $form_state['storage'] = $settings;
   coder_page_form($form_state);
 
-  if (_coder_drush_is_option('xml')) {
-    _coder_drush_xml_output_footer();
+  if (_coder_drush_is_option('checkstyle')) {
+    _coder_drush_xml_output_footer('checkstyle');
+  }
+  elseif (_coder_drush_is_option('xml')) {
+    _coder_drush_xml_output_footer('xml');
   }
 }
 
@@ -176,7 +184,7 @@ function _coder_drush_is_patch_arg(&$arg) {
 
 function theme_drush_coder($name, $filename, $results) {
   if (!_coder_drush_is_option('summary') && !empty($results) && ((count($results) && !isset($results[0])) || !_coder_drush_is_option('no-empty'))) {
-    if (_coder_drush_is_option('xml')) {
+    if (_coder_drush_is_option('xml') || _coder_drush_is_option('checkstyle')) {
       _coder_drush_xml_output_results($filename, $results);
     }
     else {
@@ -186,14 +194,21 @@ function theme_drush_coder($name, $filename, $results) {
 }
 
 function theme_drush_coder_warning($warning, $severity_name, $lineno = 0, $line = '') {
-  if (_coder_drush_is_option('xml')) {
+  $checkstyle_levels = array(
+    'minor' => 'info',
+    'normal' => 'warning',
+    'critical' => 'error',
+  );
+  if (_coder_drush_is_option('xml') || _coder_drush_is_option('checkstyle')) {
     $attr = array(
       'line' => $lineno,
+      'column' => 0,
       'severity' => $severity_name,
       'message' => $warning,
       'source' => $line,
     );
-    $output = '<error '. drupal_attributes($attr) .'/>';
+    if (_coder_drush_is_option('checkstyle')) $attr['severity'] = $checkstyle_levels[$severity_name];
+    $output = '<error '. drupal_attributes($attr) . ' />';
     return $output;
   }
   else {
@@ -207,10 +222,10 @@ function theme_drush_coder_warning($warning, $severity_name, $lineno = 0, $line 
 function coder_print_drush_messages() {
   foreach (drupal_get_messages() as $type => $messages) {
     $output = _coder_drush_output(implode("\n ", $messages));
-    if (_coder_drush_is_option('xml')) {
+    if (_coder_drush_is_option('xml') && !_coder_drush_is_option('checkstyle')) {
       drush_print('<status type="' . $type . '">' . $output . '</status>');
     }
-    else {
+    elseif (!_coder_drush_is_option('checkstyle')) {
       drush_print(dt(drupal_ucfirst($type) . ' Messages') . ":\n " . $output . "\n");
     }
   }
@@ -237,16 +252,30 @@ function _coder_drush_is_option($option) {
 /**
  * XML output functions.
  */
-
-function _coder_drush_xml_output_header() {
+function _coder_drush_xml_output_header($type = 'xml') {
   // Put in an extra concatenation so syntax highlighting in vim doesn't break.
-  drush_print('<?xml version="1.0" encoding="UTF-8"?' .'>' . '<coderreview version="1.0">');
-  drush_print('<coderreview version="1.0">');
-
+  drush_print('<?xml version="1.0" encoding="UTF-8"?' .'>');
+  switch ($type) {
+    case 'checkstyle':
+      drush_print('<checkstyle version="1.3.0RC1">');
+      break;
+    case 'xml':
+    default:
+      drush_print('<coderreview version="1.1">');
+      break;
+  }
 }
 
-function _coder_drush_xml_output_footer() {
-  drush_print('</coderreview>');
+function _coder_drush_xml_output_footer($type = 'xml') {
+  switch ($type) {
+    case 'checkstyle':
+      drush_print('</checkstyle>');
+      break;
+    case 'xml':
+    default:
+      drush_print('</coderreview>');
+      break;
+  }
 }
 
 function _coder_drush_xml_output_severity($severity_name) {
@@ -262,6 +291,11 @@ function _coder_drush_xml_output_reviews($reviews, $avail_reviews) {
 }
 
 function _coder_drush_xml_output_results($filename, $results) {
-  drush_print('<file name = "' . $filename . '">' . "\n" . implode("\n ", $results) . "\n" . '</file>');
+  if (empty($results) || (count($results) == 1 && isset($results[0]))) {
+    drush_print('<file name = "' . $filename . '" />');
+  }
+  else {
+    drush_print('<file name = "' . $filename . '">' . "\n" . implode("\n ", $results) . "\n" . '</file>');
+  }
 }
 
