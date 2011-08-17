@@ -30,7 +30,7 @@ function coder_review_sql_reviews() {
     ),
     array(
       '#type' => 'regex',
-      '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s' . $table . ')\s+.*[Ll][Ii][Mm][Ii][Tt]\s[0-9]+',
+      '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . ')\s+.*[Ll][Ii][Mm][Ii][Tt]\s[0-9]+',
       '#source' => 'quote',
       '#warning_callback' => '_coder_review_sql_db_query_range_warning',
     ),
