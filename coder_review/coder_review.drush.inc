@@ -232,7 +232,7 @@ function theme_drush_coder_review_warning($variables) {
     if (_coder_review_drush_is_option('checkstyle')) {
       $attr['severity'] = $checkstyle_levels[$severity_name];
     }
-    $output = '<error '. drupal_attributes($attr) .' />';
+    $output = '<error '. drupal_attributes($attr) . ' />';
     return $output;
   }
   else {
