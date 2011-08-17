@@ -108,7 +108,7 @@ function coder_review_drush_review() {
               $match = TRUE;
             }
             if (!isset($match)) {
-              drush_print(dt('no matches found for @name', array('@name' => $arg)));
+              _coder_review_drush_print(dt('no matches found for @name', array('@name' => $arg)));
               return;
             }
             unset($settings['coder_active_modules']);
@@ -166,7 +166,7 @@ function coder_review_drush_review() {
       $settings['coder_reviews'] = $reviews;
     }
     if (count($output) && !_coder_review_drush_is_option('summary') && !_coder_review_drush_is_option('xml') && !_coder_review_drush_is_option('checkstyle')) {
-      drush_print(implode(', ', $output) . "\n");
+      _coder_review_drush_print(implode(', ', $output) . "\n");
     }
   }
   _coder_review_set_form_modules($settings);
@@ -206,7 +206,7 @@ function theme_drush_coder_review($variables) {
       _coder_review_drush_xml_output_results($filename, $results);
     }
     else {
-      drush_print($filename . ":\n " . implode("\n ", $results) . "\n");
+      _coder_review_drush_print($filename . ":\n " . implode("\n ", $results) . "\n");
     }
   }
 }
@@ -247,10 +247,10 @@ function coder_review_print_drush_messages() {
   foreach (drupal_get_messages() as $type => $messages) {
     $output = _coder_review_drush_output(implode("\n ", $messages));
     if (_coder_review_drush_is_option('xml') && !_coder_review_drush_is_option('checkstyle')) {
-      drush_print('<status type="' . $type . '">' . $output . '</status>');
+      _coder_review_drush_print('<status type="' . $type . '">' . $output . '</status>');
     }
     elseif (!_coder_review_drush_is_option('checkstyle')) {
-      drush_print(dt(drupal_ucfirst($type) . ' Messages') . ":\n " . $output . "\n");
+      _coder_review_drush_print(dt(drupal_ucfirst($type) . ' Messages') . ":\n " . $output . "\n");
     }
   }
 }
@@ -278,14 +278,14 @@ function _coder_review_drush_is_option($option) {
 
 function _coder_review_drush_xml_output_header($type = 'xml') {
   // Put in an extra concatenation so syntax highlighting in vim doesn't break.
-  drush_print('<?xml version="1.0" encoding="UTF-8"?' . '>');
+  _coder_review_drush_print('<?xml version="1.0" encoding="UTF-8"?' . '>');
   switch ($type) {
     case 'checkstyle':
-      drush_print('<checkstyle version="1.3.0RC1">');
+      _coder_review_drush_print('<checkstyle version="1.3.0RC1">');
       break;
     case 'xml':
     default:
-      drush_print('<coderreview version="1.1">');
+      _coder_review_drush_print('<coderreview version="1.1">');
       break;
   }
 }
@@ -293,33 +293,45 @@ function _coder_review_drush_xml_output_header($type = 'xml') {
 function _coder_review_drush_xml_output_footer($type = 'xml') {
   switch ($type) {
     case 'checkstyle':
-      drush_print('</checkstyle>');
+      _coder_review_drush_print('</checkstyle>');
       break;
     case 'xml':
     default:
-      drush_print('</coderreview>');
+      _coder_review_drush_print('</coderreview>');
       break;
   }
 }
 
 function _coder_review_drush_xml_output_severity($severity_name) {
-  drush_print('<severity>' . $severity_name . '</severity>');
+  _coder_review_drush_print('<severity>' . $severity_name . '</severity>');
 }
 
 function _coder_review_drush_xml_output_reviews($reviews, $avail_reviews) {
-  drush_print('<reviews>');
+  _coder_review_drush_print('<reviews>');
   foreach ($reviews as $review) {
-    drush_print('<review>' . $avail_reviews[$review]['#title'] . '</review>');
+    _coder_review_drush_print('<review>' . $avail_reviews[$review]['#title'] . '</review>');
   }
-  drush_print('</reviews>');
+  _coder_review_drush_print('</reviews>');
 }
 
 function _coder_review_drush_xml_output_results($filename, $results) {
   if (empty($results) || (count($results) == 1 && isset($results[0]))) {
-    drush_print('<file name = "' . $filename . '" />');
+    _coder_review_drush_print('<file name = "' . $filename . '" />');
   }
   else {
-    drush_print('<file name = "' . $filename . '">' . "\n" . implode("\n ", $results) . "\n" . '</file>');
+    _coder_review_drush_print('<file name = "' . $filename . '">' . "\n" . implode("\n ", $results) . "\n" . '</file>');
+  }
+}
+
+/**
+ * Switch between print and pipe print output.
+ */
+function _coder_review_drush_print($message) {
+  if (drush_get_context('DRUSH_PIPE')) {
+    drush_print_pipe($message);
+  }
+  else {
+    drush_print($message);
   }
 }
 
