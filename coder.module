@@ -790,7 +790,7 @@ function coder_page_form($form_state) {
             '#patch' => $patch,
             '#php_extensions' => $php_extensions,
             '#include_extensions' => $include_extensions,
-            '#ignore_lines' => is_array($ignores[$filename]) ? $ignores[$filename] : array(),
+            '#ignore_lines' => isset($ignores[$filename]) && is_array($ignores[$filename]) ? $ignores[$filename] : array(),
             '#cache' => TRUE,
           );
           drupal_alter('coder_review_args', $coder_args);
@@ -935,7 +935,7 @@ function _coder_page_form_includes(&$form, $coder_args, $name, $files, $offset, 
     $coder_args['#filename'] = $filename;
     $coder_args['#php_extensions'] = $php_extensions;
     $coder_args['#include_extensions'] = _coder_get_reviews_extensions($php_extensions, $coder_args['#reviews']);
-    $coder_args['#ignore_lines'] = is_array($ignores[$filename]) ? $ignores[$filename] : array();
+    $coder_args['#ignore_lines'] = isset($ignores[$filename]) && is_array($ignores[$filename]) ? $ignores[$filename] : array();
     $results = do_coder_reviews($coder_args);
     $stats[$filename] = $results['#stats'];
     unset($results['#stats']);
