@@ -11,11 +11,11 @@ Installation:
 - Install PTI Plugin
 - Configure PTI:
   - Open Eclipse preferences -> PHP Tools -> PHP Codesniffer:
-    - Add a new "CodeSniffer Standard" - choose this library
+    - Add a new "CodeSniffer Standard" - choose the folder DrupalCodingStandard in this module.
     - Activate the library by checking the checkbox next to its name.
     - Make sure the Standard Tab Widht configuration is set to 0. Otherwise you won't get notified about evil tabs in the code.
-    
-Now you'll have a PHP Tools entry in the right click menu in the navigator. 
+
+Now you'll have a PHP Tools entry in the right click menu in the navigator.
 Or you can just hit "Validate" within the right click menu of a file.
 
 Recommendation:
