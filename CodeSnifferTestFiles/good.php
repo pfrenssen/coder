@@ -19,6 +19,9 @@ TRUE;
 FALSE;
 NULL;
 
+// Has whitespace at the end of the line.
+$whitespaces = 'Yes, Please';
+
 // Operators - have a space before and after
 $i = 0;
 $i += 0;
