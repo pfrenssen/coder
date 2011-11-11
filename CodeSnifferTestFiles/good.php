@@ -218,6 +218,11 @@ class MyExampleLog {
   const WARNING   = 1;
   const ERROR     = 2;
   const EMERGENCY = 3;
+
+  /**
+   * Empty method implementation is allowed.
+   */
+  public function empty_method() {}
 }
 
 /**
