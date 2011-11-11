@@ -175,13 +175,6 @@ class Bar {
   protected function barMethod() {
 
   }
-
-  /**
-   * Enter description here ...
-   */
-  private function _foobar() {
-
-  }
 }
 
 /**
@@ -223,6 +216,13 @@ class MyExampleLog {
    * Empty method implementation is allowed.
    */
   public function empty_method() {}
+
+  /**
+   * Protected functions are allowed.
+   */
+  protected function protectedTest() {
+
+  }
 }
 
 /**

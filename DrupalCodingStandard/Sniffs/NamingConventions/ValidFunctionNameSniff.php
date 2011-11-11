@@ -114,20 +114,19 @@ class DrupalCodingStandard_Sniffs_NamingConventions_ValidFunctionNameSniff exten
         }
 
         $methodProps    = $phpcsFile->getMethodProperties($stackPtr);
-        $isPublic       = ($methodProps['scope'] === 'private') ? false : true;
         $scope          = $methodProps['scope'];
         $scopeSpecified = $methodProps['scope_specified'];
 
-        // If it's a private method, it must have an underscore on the front.
-        if ($isPublic === false && $methodName{0} !== '_') {
-            $error = "Private method name \"$className::$methodName\" must be prefixed with an underscore";
-            $phpcsFile->addError($error, $stackPtr);
+        // Private methods are bad for extensibility.
+        if ($methodProps['scope'] === 'private') {
+            $warn = "Private methods are discouraged, use protected methods instead";
+            $phpcsFile->addWarning($warn, $stackPtr);
             return;
         }
 
-        // If it's not a private method, it must not have an underscore on the front.
-        if ($isPublic === true && $scopeSpecified === true && $methodName{0} === '_') {
-            $error = ucfirst($scope)." method name \"$className::$methodName\" must not be prefixed with an underscore";
+        // Methods should not start with '_'.
+        if ($scopeSpecified === true && $methodName{0} === '_') {
+            $error = ucfirst($scope)." method name \"$className::$methodName\" should not be prefixed with an underscore";
             $phpcsFile->addError($error, $stackPtr);
             return;
         }
