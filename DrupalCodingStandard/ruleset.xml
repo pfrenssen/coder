@@ -3,7 +3,11 @@
 <ruleset name="DrupalCodingStandard">
  <description>Drupal coding standard</description>
 
- <rule ref="Generic.ControlStructures.InlineControlStructure"/>
+ <rule ref="Generic.ControlStructures.InlineControlStructure">
+  <properties>
+   <property name="error" value="false"/>
+  </properties>
+ </rule>
  <rule ref="Generic.Formatting.SpaceAfterCast" />
  <rule ref="Generic.Functions.FunctionCallArgumentSpacing" />
  <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie" />
