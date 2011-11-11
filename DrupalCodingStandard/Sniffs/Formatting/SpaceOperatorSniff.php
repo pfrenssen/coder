@@ -37,7 +37,7 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
              PHP_CodeSniffer_Tokens::$equalityTokens,
              PHP_CodeSniffer_Tokens::$comparisonTokens
          );
-         
+
          return $tokens;
 
     }//end register()
@@ -55,14 +55,14 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        
+
         if ($tokens[($stackPtr + 1)]['code'] !== T_WHITESPACE
             || $tokens[($stackPtr + 1)]['content'] != ' '
         ) {
-            $error = 'A opeator statement must be followed by a single space';
+            $error = 'A operator statement must be followed by a single space';
             $phpcsFile->addError($error, $stackPtr);
         }
-        if ($tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE 
+        if ($tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE
             || $tokens[($stackPtr - 1)]['content'] != ' '
         ) {
             $error = 'There must be a single space befora a opeator statement';

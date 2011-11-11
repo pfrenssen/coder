@@ -156,8 +156,8 @@ class Bar {
   // Public properties also don't a prefix
   protected $foo = 1;
 
-  // Public properties don't have a prefix
-  public $bar = 1;
+  // Longer properties use camelCase naming.
+  public $barProperty = 1;
 
   // Public static variables use camelCase, too.
   public static $basePath = NULL;
