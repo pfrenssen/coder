@@ -63,9 +63,10 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
             $phpcsFile->addError($error, $stackPtr);
         }
         if ($tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE
-            || $tokens[($stackPtr - 1)]['content'] != ' '
+            || ($tokens[($stackPtr - 1)]['content'] != ' '
+                && $tokens[$stackPtr]['code'] !== T_EQUAL)
         ) {
-            $error = 'There must be a single space befora a opeator statement';
+            $error = 'There must be a single space before an operator statement';
             $phpcsFile->addError($error, $stackPtr);
         }
 

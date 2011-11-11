@@ -211,3 +211,20 @@ $i . NULL;
 
 // It is allowed to have the closing "}" on the same line if the class is empty.
 class MyException extends Exception {}
+
+// Nice alignment is allowed for assignments.
+class MyExampleLog {
+  const INFO      = 0;
+  const WARNING   = 1;
+  const ERROR     = 2;
+  const EMERGENCY = 3;
+}
+
+/**
+ * Nice allignment in functions.
+ */
+function test_test2() {
+  $a   = 5;
+  $aa  = 6;
+  $aaa = 7;
+}
