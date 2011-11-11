@@ -32,5 +32,6 @@
  </rule>
  
  <rule ref="MySource.Debug.DebugCode" />
+ <rule ref="PEAR.Files.IncludingFile" />
  <rule ref="PEAR.Functions.ValidDefaultValue" />
 </ruleset>
