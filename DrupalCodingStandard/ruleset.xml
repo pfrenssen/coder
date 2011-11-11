@@ -23,7 +23,6 @@
    <property name="indent" value="2"/>
   </properties>
  </rule>
- <rule ref="MySource.Debug.DebugCode" />
  
  <!-- Use Unix newlines -->
  <rule ref="Generic.Files.LineEndings">
@@ -31,4 +30,7 @@
    <property name="eolChar" value="\n"/>
   </properties>
  </rule>
+ 
+ <rule ref="MySource.Debug.DebugCode" />
+ <rule ref="PEAR.Functions.ValidDefaultValueSniff" />
 </ruleset>
