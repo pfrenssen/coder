@@ -159,10 +159,13 @@ class DrupalCodingStandard_Sniffs_Functions_FunctionCallSignatureSniff implement
      *                                          the file.
      *
      * @return void
+     *
+     * @todo We have no coding standard for multi-line function/method calls
+     * right now. Re-visit if we have documented one.
      */
     public function processMultiLineCall(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $openBracket, $tokens)
     {
-        // We need to work out how far indented the function
+        /*// We need to work out how far indented the function
         // call itself is, so we can work out how far to
         // indent the arguments.
         $functionIndent = 0;
@@ -236,7 +239,7 @@ class DrupalCodingStandard_Sniffs_Functions_FunctionCallSignatureSniff implement
         if ($tokens[$prev]['line'] === $tokens[$closeBracket]['line']) {
             $error = 'Closing parenthesis of a multi-line function call and/or array must be on a line by themself';
             $phpcsFile->addError($error, $closeBracket);
-        }
+        }*/
 
     }//end processMultiLineCall()
 

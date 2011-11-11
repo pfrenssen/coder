@@ -126,10 +126,12 @@ class DrupalCodingStandard_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implement
                         $foundIndent = 0;
                     }
 
-                    if ($foundIndent !== ($requiredIndent-2)) {
+                    // @todo we have not established a coding standard for this,
+                    // disabled for now.
+                    /*if ($foundIndent !== ($requiredIndent-2)) {
                         $error = "Object operator not indented correctly; expected $requiredIndent spaces but found $foundIndent";
                         $phpcsFile->addError($error, $next);
-                    }
+                    }*/
                 }
 
                 // It cant be the last thing on the line either.

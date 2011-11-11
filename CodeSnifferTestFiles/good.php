@@ -233,3 +233,17 @@ function test_test2() {
   $aa  = 6;
   $aaa = 7;
 }
+
+// Uses the Rules API as example.
+$rule = rule();
+$rule->condition('rules_test_condition_true')
+     ->condition('rules_test_condition_true')
+     ->condition(rules_or()
+       ->condition(rules_condition('rules_test_condition_true')->negate())
+       ->condition('rules_test_condition_false')
+       ->condition(rules_and()
+         ->condition('rules_test_condition_false')
+         ->condition('rules_test_condition_true')
+         ->negate()
+       )
+     );
