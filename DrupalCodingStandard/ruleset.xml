@@ -1,15 +1,30 @@
 <?xml version="1.0"?>
 <!-- See http://pear.php.net/manual/en/package.php.php-codesniffer.annotated-ruleset.php -->
 <ruleset name="DrupalCodingStandard">
+ <description>Drupal coding standard</description>
 
-   <description>Drupal coding standard</description>
-
-   <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
-   <rule ref="Generic.PHP.UpperCaseConstant" />
-   <rule ref="Generic.PHP.DisallowShortOpenTag" />
-   <rule ref="Generic.WhiteSpace.DisallowTabIndent" />
-   <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie" />
-   <rule ref="Generic.Formatting.SpaceAfterCast" />
-   <rule ref="Generic.PHP.NoSilencedErrors" />
-   <rule ref="MySource.Debug.DebugCode" />
+ <rule ref="Generic.ControlStructures.InlineControlStructure"/>
+ <rule ref="Generic.Formatting.SpaceAfterCast" />
+ <rule ref="Generic.Functions.FunctionCallArgumentSpacing" />
+ <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie" />
+ <rule ref="Generic.NamingConventions.ConstructorName" />
+ <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
+ <rule ref="Generic.PHP.DisallowShortOpenTag" />
+ <rule ref="Generic.PHP.NoSilencedErrors" />
+ <rule ref="Generic.PHP.UpperCaseConstant" />
+ <rule ref="Generic.Strings.UnnecessaryStringConcat"/>
+ <rule ref="Generic.WhiteSpace.DisallowTabIndent" />
+ <rule ref="Generic.WhiteSpace.ScopeIndent">
+  <properties>
+   <property name="indent" value="2"/>
+  </properties>
+ </rule>
+ <rule ref="MySource.Debug.DebugCode" />
+ 
+ <!-- Use Unix newlines -->
+ <rule ref="Generic.Files.LineEndings">
+  <properties>
+   <property name="eolChar" value="\n"/>
+  </properties>
+ </rule>
 </ruleset>
