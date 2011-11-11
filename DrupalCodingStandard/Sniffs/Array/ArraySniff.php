@@ -77,7 +77,7 @@ class DrupalCodingStandard_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sn
       $isInlineArray = $tokens[$tokens[$stackPtr]['parenthesis_opener']]['line'] == $tokens[$tokens[$stackPtr]['parenthesis_closer']]['line'];
 
       //Check if the last item in a multiline array has a "closing" comma.
-      if ($tokens[$lastItem]['code'] !== T_COMMA && !$isInlineArray) {
+      if ($tokens[$lastItem]['code'] !== T_COMMA && !$isInlineArray && $tokens[$lastItem]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
           $phpcsFile->addWarning('A comma should follow the last multiline array item. Found: ' . $tokens[$lastItem]['content'], $lastItem);
           return;
       }

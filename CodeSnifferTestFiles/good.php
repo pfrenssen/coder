@@ -150,14 +150,17 @@ $var = foo(array(
  * Classes always have a multiline comment
  */
 class Bar {
-  // Private properties have a prefix
-  private $_secret = 1;
+  // Private properties have no prefix
+  private $secret = 1;
 
-  // Public properties don't have a prefix
+  // Public properties also don't a prefix
   protected $foo = 1;
 
   // Public properties don't have a prefix
   public $bar = 1;
+
+  // Public static variables use camelCase, too.
+  public static $basePath = NULL;
 
   /**
    * Enter description here ...
@@ -169,7 +172,7 @@ class Bar {
   /**
    * Enter description here ...
    */
-  protected function bar() {
+  protected function barMethod() {
 
   }
 
@@ -196,6 +199,9 @@ $bar = new Bar($arg1, $arg2);
 $bar = 'Bar';
 $foo = new $bar();
 $foo = new $bar($i, $i);
+
+// Static class variables use camelCase.
+Bar::$basePath = '/foo';
 
 // Concatenation - there has to be a space
 $i . "test";

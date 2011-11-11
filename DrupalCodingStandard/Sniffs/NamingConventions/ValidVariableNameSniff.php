@@ -121,6 +121,11 @@ class DrupalCodingStandard_Sniffs_NamingConventions_ValidVariableNameSniff
         return;
       }
 
+      // If it is a static public variable of a class, then its ok.
+      if ($tokens[($stackPtr - 1)]['code'] === T_DOUBLE_COLON) {
+        return;
+      }
+
       if (preg_match('/[A-Z]/', $varName) && PHP_CodeSniffer::isCamelCaps($varName, false, true, false) == true) {
         $error = "Variable \"$varName\" is camel caps format. do not use mixed case (camelCase), use lower case and _";
         $phpcsFile->addError($error, $stackPtr);

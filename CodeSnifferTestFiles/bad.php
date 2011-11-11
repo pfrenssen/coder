@@ -256,14 +256,17 @@ $var = foo(
 // Curly brace has to be on the same line
 class Bar
 {
-  // Private properties must have a prefix
-  private $secret = 1;
+  // Private properties must not have a prefix
+  private $_secret = 1;
 
   // Public properties must not have a prefix
   protected $_foo = 1;
 
   // Public properties must not have a prefix
   public $_bar = 1;
+
+  // Public static variables use camelCase.
+  public static $base_path = NULL;
 }
 
 // Comments must have content ;) and there must be a space after the class name
