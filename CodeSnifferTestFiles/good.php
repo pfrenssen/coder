@@ -208,3 +208,6 @@ $i . "test";
 $i . 'test';
 $i . $i;
 $i . NULL;
+
+// It is allowed to have the closing "}" on the same line if the class is empty.
+class MyException extends Exception {}

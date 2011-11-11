@@ -90,7 +90,7 @@ class DrupalCodingStandard_Sniffs_Classes_ClassDeclarationSniff implements PHP_C
             return;
         } */
 
-        if ($tokens[($curlyBrace + 1)]['content'] !== $phpcsFile->eolChar) {
+        if ($tokens[($curlyBrace + 1)]['content'] !== $phpcsFile->eolChar && $tokens[($curlyBrace + 1)]['code'] !== T_CLOSE_CURLY_BRACKET) {
             $type  = strtolower($tokens[$stackPtr]['content']);
             $error = "Opening $type brace must be on a line by itself";
             $phpcsFile->addError($error, $curlyBrace);
