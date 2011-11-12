@@ -80,6 +80,11 @@ $i >  0;
 $i <  0;
 $i >=  0;
 $i <=  0;
+// Arihtmetic operators, too.
+$i = 1+1;
+$i = 1- 1;
+$i = 1 /2;
+$i = 1  * 1;
 
 
 // Unary operators must not have a space

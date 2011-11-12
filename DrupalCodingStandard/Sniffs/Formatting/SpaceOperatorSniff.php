@@ -35,7 +35,8 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
          $tokens = array_merge(
              PHP_CodeSniffer_Tokens::$assignmentTokens,
              PHP_CodeSniffer_Tokens::$equalityTokens,
-             PHP_CodeSniffer_Tokens::$comparisonTokens
+             PHP_CodeSniffer_Tokens::$comparisonTokens,
+             PHP_CodeSniffer_Tokens::$arithmeticTokens
          );
 
          return $tokens;
