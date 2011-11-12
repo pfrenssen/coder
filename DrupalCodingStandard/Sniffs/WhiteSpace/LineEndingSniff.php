@@ -20,6 +20,7 @@ class DrupalCodingStandard_Sniffs_WhiteSpace_LineEndingSniff implements PHP_Code
                 T_CLOSE_TAG,
                 T_WHITESPACE,
                 T_COMMENT,
+                T_DOC_COMMENT,
                );
     }
 
@@ -36,9 +37,7 @@ class DrupalCodingStandard_Sniffs_WhiteSpace_LineEndingSniff implements PHP_Code
   public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
     $tokens = $phpcsFile->getTokens();
 
-    /*
-     * Check for end of line whitespace.
-     */
+    // Check for end of line whitespace.
     if (strpos($tokens[$stackPtr]['content'], $phpcsFile->eolChar) === FALSE) {
       return;
     }
