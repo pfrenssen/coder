@@ -56,6 +56,13 @@ $a = array('1', '2', array(
   '3'),
 );
 
+// Pretty array layout.
+$a = array(
+  'title'    => 1,
+  'weight'   => 2,
+  'callback' => 3,
+);
+
 // Item assignment operators must be prefixed and followed by a space
 $a = array('one' => '1', 'two' => '2');
 foreach ( $a as $key => $value) {
