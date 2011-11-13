@@ -62,8 +62,9 @@ class DrupalCodingStandard_Sniffs_Commenting_InlineCommentSniff implements PHP_C
             $phpcsFile->addError($error, $stackPtr);
         }
 
-        if (substr($tokens[$stackPtr]['content'], 0 ,3) != '// ') {
-            $error  = 'Missing space after the // ';
+        if (substr($tokens[$stackPtr]['content'], 0, 2) === '//'
+          && substr($tokens[$stackPtr]['content'], 0 ,3) != '// ') {
+            $error = 'Missing space after the // ';
             $phpcsFile->addError($error, $stackPtr);
         }
 
