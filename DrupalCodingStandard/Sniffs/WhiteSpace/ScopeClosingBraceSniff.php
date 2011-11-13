@@ -10,7 +10,6 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: ScopeClosingBraceSniff.php 287526 2009-08-21 05:42:05Z squiz $
  * @link      http://Drupal.php.net/package/PHP_CodeSniffer
  */
 

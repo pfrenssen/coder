@@ -10,7 +10,6 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: ElseIfSniff.php,v 1.7 2007/10/23 06:05:14 squiz Exp $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -56,23 +55,23 @@ class DrupalCodingStandard_Sniffs_ControlStructures_ElseIfSniff implements PHP_C
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        
+
       $tokens = $phpcsFile->getTokens();
-      
+
       $nextNonWhiteSpace = $phpcsFile->findNext(
-        T_WHITESPACE, 
+        T_WHITESPACE,
         $stackPtr + 1,
         null,
         true,
         null,
         true
       );
-      
+
       if($tokens[$nextNonWhiteSpace]['code'] == T_IF){
         $phpcsFile->addError('Use "elseif" in place of "else if"', $nextNonWhiteSpace);
       }
-      
-      
+
+
     }//end process()
 
 }//end class

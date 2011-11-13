@@ -1,11 +1,10 @@
 <?php
-//  $Id: token.inc,v 1.9 2010/03/12 14:33:02 dries Exp $
 
 /**
  * @file
- *   This file contains all the valid notations for the drupal coding standard
- *   Target is to create a style checker that validates all of this constructs
- *   The // $Id: above is a valid CVS tag.
+ *   This file contains all the valid notations for the drupal coding standard.
+ *   The goal is to create a style checker that validates all of this
+ *   constructs.
  */
 
 // Singleline comment

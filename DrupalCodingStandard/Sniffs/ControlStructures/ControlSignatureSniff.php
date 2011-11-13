@@ -10,7 +10,6 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: ControlSignatureSniff.php,v 1.7 2007/10/23 06:05:14 squiz Exp $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 

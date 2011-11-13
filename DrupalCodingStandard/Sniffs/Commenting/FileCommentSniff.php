@@ -10,7 +10,6 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: FileCommentSniff.php,v 1.32 2009/02/10 06:01:46 squiz Exp $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -176,18 +175,6 @@ class DrupalCodingStandard_Sniffs_Commenting_FileCommentSniff implements PHP_Cod
         // Ignore vim header.
         if ($tokens[$commentStart]['code'] === T_COMMENT) {
             if (strstr($tokens[$commentStart]['content'], 'vim:') !== false) {
-                $commentStart = $phpcsFile->findNext(
-                    T_WHITESPACE,
-                    ($commentStart + 1),
-                    null,
-                    true
-                );
-            }
-        }
-
-        // Ignore CVS header.
-        if ($tokens[$commentStart]['code'] === T_COMMENT) {
-            if (strstr($tokens[$commentStart]['content'], '// $Id: ') !== false) {
                 $commentStart = $phpcsFile->findNext(
                     T_WHITESPACE,
                     ($commentStart + 1),
