@@ -195,7 +195,7 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
         $this->processThrows($commentStart);
 
         // Check if hook_ implementation is formated correctly
-        if(preg_match('/(Implement[^\n]+?hook_[^\n]+)/', $comment->getShortComment(), $matches)){
+        if(preg_match('/((I|i)mplement[^\n]+?hook_[^\n]+)/', $comment->getShortComment(), $matches)){
           $formattingIssue = 0;
           if(!strstr($matches[0], 'Implements ')){
             $formattingIssue++;
