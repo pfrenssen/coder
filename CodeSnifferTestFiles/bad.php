@@ -100,6 +100,10 @@ array('i' => - 1);
 array('i' => + 1);
 array('i' =>  -1);
 array('i' =>  +1);
+$i = (1 == - 1);
+$i = (1 === - 1);
+$i = (1 == + 1);
+$i = (1 === + 1);
 
 
 // Casting must have one space

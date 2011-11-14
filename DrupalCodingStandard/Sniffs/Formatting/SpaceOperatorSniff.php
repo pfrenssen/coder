@@ -57,8 +57,11 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
     {
         $tokens = $phpcsFile->getTokens();
 
+        $has_equality_token = in_array($tokens[$stackPtr - 2]['code'], PHP_CodeSniffer_Tokens::$equalityTokens);
+
         if ($tokens[$stackPtr - 2]['code'] !== T_EQUAL
             && $tokens[$stackPtr - 2]['code'] !== T_DOUBLE_ARROW
+            && !$has_equality_token
             && ($tokens[($stackPtr + 1)]['code'] !== T_WHITESPACE
             || $tokens[($stackPtr + 1)]['content'] != ' ')
         ) {

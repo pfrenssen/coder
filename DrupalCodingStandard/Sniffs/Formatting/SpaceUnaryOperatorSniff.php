@@ -66,11 +66,13 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceUnaryOperatorSniff implements 
           }
         }
 
-        // Check plus / minus value assignments.
+        $has_equality_token = in_array($tokens[$stackPtr - 2]['code'], PHP_CodeSniffer_Tokens::$equalityTokens);
+        // Check plus / minus value assignments or comparisons.
         if ($tokens[$stackPtr]['code'] == T_MINUS || $tokens[$stackPtr]['code'] == T_PLUS) {
           if ($tokens[($stackPtr - 1)]['code'] === T_WHITESPACE
             && ($tokens[($stackPtr - 2)]['code'] === T_EQUAL
-                || $tokens[($stackPtr - 2)]['code'] === T_DOUBLE_ARROW)
+                || $tokens[($stackPtr - 2)]['code'] === T_DOUBLE_ARROW
+                || $has_equality_token)
             && $tokens[($stackPtr + 1)]['code'] === T_WHITESPACE
           ) {
             $error = 'An unary opeator statement must not followed by a single space';
