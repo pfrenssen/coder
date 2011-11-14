@@ -105,9 +105,8 @@ class DrupalCodingStandard_Sniffs_Commenting_FileCommentSniff implements PHP_Cod
             }
             $line = $fileLine + 1;
             while ($line = $phpcsFile->findNext(T_DOC_COMMENT, $line, $commentEnd)) {
-                $found = preg_match('/^ \* [^ ]/', $tokens[$line]['content']);
-                if (!$found && $tokens[$line]['content'] !== (' *' . $phpcsFile->eolChar)) {
-                    $phpcsFile->addError('File doc description lines must start with " * " and no additional indentation', $line);
+                if (substr($tokens[$line]['content'], 0, 2) !== ' *') {
+                    $phpcsFile->addError('File doc description lines must start with " *"', $line);
                 }
                 $line++;
             }

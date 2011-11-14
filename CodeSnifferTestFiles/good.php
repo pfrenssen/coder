@@ -6,6 +6,13 @@
  *
  * The goal is to create a style checker that validates all of this
  * constructs.
+ *
+ * Theme files often have lists in their file block:
+ * - item 1
+ * - item 2
+ * - sublist:
+ *   - sub item 1
+ *   - sub item2
  */
 
 // Singleline comment
