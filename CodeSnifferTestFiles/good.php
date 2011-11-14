@@ -2,9 +2,10 @@
 
 /**
  * @file
- *   This file contains all the valid notations for the drupal coding standard.
- *   The goal is to create a style checker that validates all of this
- *   constructs.
+ * This file contains all the valid notations for the drupal coding standard.
+ *
+ * The goal is to create a style checker that validates all of this
+ * constructs.
  */
 
 // Singleline comment
