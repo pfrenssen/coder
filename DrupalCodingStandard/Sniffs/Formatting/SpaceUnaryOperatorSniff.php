@@ -32,7 +32,7 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceUnaryOperatorSniff implements 
      */
     public function register()
     {
-         return array(T_DEC, T_INC);
+         return array(T_DEC, T_INC, T_MINUS, T_PLUS);
 
     }//end register()
 
@@ -49,18 +49,33 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceUnaryOperatorSniff implements 
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        
-        $modifyLeft = substr($tokens[($stackPtr - 1)]['content'], 0, 1) == '$' ||
-                      $tokens[($stackPtr + 1)]['content'] == ';';
-                       
-        if ($modifyLeft && $tokens[($stackPtr - 1)]['code'] === T_WHITESPACE) {
+
+        // Check decrement / increment.
+        if ($tokens[$stackPtr]['code'] == T_DEC || $tokens[$stackPtr]['code'] == T_INC) {
+          $modifyLeft = substr($tokens[($stackPtr - 1)]['content'], 0, 1) == '$' ||
+                        $tokens[($stackPtr + 1)]['content'] == ';';
+
+          if ($modifyLeft && $tokens[($stackPtr - 1)]['code'] === T_WHITESPACE) {
             $error = 'There must not be a single space befora a unary opeator statement';
             $phpcsFile->addError($error, $stackPtr);
-        }
-        
-        if (!$modifyLeft && substr($tokens[($stackPtr + 1)]['content'], 0, 1) != '$') {
-            $error = 'A unary opeator statement must not followed by a single space';
+          }
+
+          if (!$modifyLeft && substr($tokens[($stackPtr + 1)]['content'], 0, 1) != '$') {
+            $error = 'An unary opeator statement must not followed by a single space';
             $phpcsFile->addError($error, $stackPtr);
+          }
+        }
+
+        // Check plus / minus value assignments.
+        if ($tokens[$stackPtr]['code'] == T_MINUS || $tokens[$stackPtr]['code'] == T_PLUS) {
+          if ($tokens[($stackPtr - 1)]['code'] === T_WHITESPACE
+            && ($tokens[($stackPtr - 2)]['code'] === T_EQUAL
+                || $tokens[($stackPtr - 2)]['code'] === T_DOUBLE_ARROW)
+            && $tokens[($stackPtr + 1)]['code'] === T_WHITESPACE
+          ) {
+            $error = 'An unary opeator statement must not followed by a single space';
+            $phpcsFile->addError($error, $stackPtr);
+          }
         }
 
     }//end process()

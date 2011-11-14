@@ -37,6 +37,10 @@ $i--;
 --$i;
 $i++;
 ++$i;
+$i = -1;
+$i = +1;
+array('i' => -1);
+array('i' => +1);
 
 // Casting has a space
 (int) $i;

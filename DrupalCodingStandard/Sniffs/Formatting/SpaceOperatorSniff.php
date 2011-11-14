@@ -57,10 +57,12 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
     {
         $tokens = $phpcsFile->getTokens();
 
-        if ($tokens[($stackPtr + 1)]['code'] !== T_WHITESPACE
-            || $tokens[($stackPtr + 1)]['content'] != ' '
+        if ($tokens[$stackPtr - 2]['code'] !== T_EQUAL
+            && $tokens[$stackPtr - 2]['code'] !== T_DOUBLE_ARROW
+            && ($tokens[($stackPtr + 1)]['code'] !== T_WHITESPACE
+            || $tokens[($stackPtr + 1)]['content'] != ' ')
         ) {
-            $error = 'A operator statement must be followed by a single space';
+            $error = 'An operator statement must be followed by a single space';
             $phpcsFile->addError($error, $stackPtr);
         }
         if ($tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE
