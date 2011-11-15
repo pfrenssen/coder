@@ -47,6 +47,16 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
     /**
      * Processes this test, when one of its tokens is encountered.
      *
+     * Operations to check for:
+     * $i = 1 + 1;
+     * $i = $i + 1;
+     * $i = (1 + 1) - 1;
+     *
+     * Operations to ignore:
+     * array($i => -1);
+     * $i = -1;
+     * range(-10, -1);
+     *
      * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                  $stackPtr  The position of the current token in
      *                                        the stack passed in $tokens.
@@ -59,19 +69,40 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
 
         $has_equality_token = in_array($tokens[$stackPtr - 2]['code'], PHP_CodeSniffer_Tokens::$equalityTokens);
 
-        if ($tokens[$stackPtr - 2]['code'] !== T_EQUAL
+        // Ensure this is a construct to check.
+        $lastSyntaxItem = $phpcsFile->findPrevious(
+          array(T_WHITESPACE),
+          $stackPtr - 1,
+          ($tokens[$stackPtr]['column']) * -1,
+          true,
+          NULL,
+          true
+        );
+        $needs_operator_suffix = in_array($tokens[$lastSyntaxItem]['code'], array(
+          T_LNUMBER,
+          T_DNUMBER,
+          T_CLOSE_PARENTHESIS,
+          T_VARIABLE,
+        ));
+        $needs_operator_prefix = !in_array($tokens[$lastSyntaxItem]['code'], array(
+          T_OPEN_PARENTHESIS,
+          T_DOUBLE_ARROW,
+          T_EQUAL,
+        ));
+
+        if ($needs_operator_suffix && ($tokens[$stackPtr - 2]['code'] !== T_EQUAL
             && $tokens[$stackPtr - 2]['code'] !== T_DOUBLE_ARROW
             && !$has_equality_token
             && ($tokens[($stackPtr + 1)]['code'] !== T_WHITESPACE
-            || $tokens[($stackPtr + 1)]['content'] != ' ')
+            || $tokens[($stackPtr + 1)]['content'] != ' '))
         ) {
             $error = 'An operator statement must be followed by a single space';
             $phpcsFile->addError($error, $stackPtr);
         }
-        if ($tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE
+        if ($needs_operator_prefix && ($tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE
             || ($tokens[($stackPtr - 1)]['content'] != ' '
                 && $tokens[$stackPtr]['code'] !== T_EQUAL
-                && $tokens[$stackPtr]['code'] !== T_DOUBLE_ARROW)
+                && $tokens[$stackPtr]['code'] !== T_DOUBLE_ARROW))
         ) {
             $error = 'There must be a single space before an operator statement';
             $phpcsFile->addError($error, $stackPtr);
