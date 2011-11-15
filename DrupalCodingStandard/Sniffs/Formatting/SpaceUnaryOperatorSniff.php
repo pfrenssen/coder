@@ -50,6 +50,24 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceUnaryOperatorSniff implements 
     {
         $tokens = $phpcsFile->getTokens();
 
+        // Find the last syntax item to determine if this is an unary operator.
+        $lastSyntaxItem = $phpcsFile->findPrevious(
+          array(T_WHITESPACE),
+          $stackPtr - 1,
+          ($tokens[$stackPtr]['column']) * -1,
+          true,
+          NULL,
+          true
+        );
+        $operator_suffix_allowed = in_array($tokens[$lastSyntaxItem]['code'], array(
+          T_LNUMBER,
+          T_DNUMBER,
+          T_CLOSE_PARENTHESIS,
+          T_CLOSE_CURLY_BRACKET,
+          T_CLOSE_SQUARE_BRACKET,
+          T_VARIABLE,
+        ));
+
         // Check decrement / increment.
         if ($tokens[$stackPtr]['code'] == T_DEC || $tokens[$stackPtr]['code'] == T_INC) {
           $modifyLeft = substr($tokens[($stackPtr - 1)]['content'], 0, 1) == '$' ||
@@ -66,16 +84,12 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceUnaryOperatorSniff implements 
           }
         }
 
-        $has_equality_token = in_array($tokens[$stackPtr - 2]['code'], PHP_CodeSniffer_Tokens::$equalityTokens);
         // Check plus / minus value assignments or comparisons.
         if ($tokens[$stackPtr]['code'] == T_MINUS || $tokens[$stackPtr]['code'] == T_PLUS) {
-          if ($tokens[($stackPtr - 1)]['code'] === T_WHITESPACE
-            && ($tokens[($stackPtr - 2)]['code'] === T_EQUAL
-                || $tokens[($stackPtr - 2)]['code'] === T_DOUBLE_ARROW
-                || $has_equality_token)
+          if (!$operator_suffix_allowed
             && $tokens[($stackPtr + 1)]['code'] === T_WHITESPACE
           ) {
-            $error = 'An unary opeator statement must not followed by a single space';
+            $error = 'An unary opeator statement must not followed by a space';
             $phpcsFile->addError($error, $stackPtr);
           }
         }
