@@ -276,6 +276,9 @@ $rule->condition('rules_test_condition_true')
        )
      );
 
+// Test usages of t().
+t('special character: \"');
+t("special character: \'");
 
 // Template test. Alternative control structure style is allowed.
 ?>

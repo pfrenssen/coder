@@ -336,3 +336,7 @@ class FunctionTest {
 function _refix() {
 
 }
+
+// Usage of t() - there should be no escaping.
+t('She\'s a good person.');
+t("This is a \"fancy\" string.");
