@@ -9,7 +9,7 @@
 //
 
 // PHP Constants should be written in CAPITAL lettres
-true;
+true; // Comments should be on a separate line.
 false;
 null;
 
