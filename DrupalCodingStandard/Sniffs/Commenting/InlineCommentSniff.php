@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP_CodeSniffer_Sniffs_PEAR_Commenting_InlineCommentSniff.
+ * PHP_CodeSniffer_Sniffs_DrupalCodingStandard_Commenting_InlineCommentSniff.
  *
  * PHP version 5
  *
@@ -14,9 +14,11 @@
  */
 
 /**
- * PHP_CodeSniffer_Sniffs_PEAR_Commenting_InlineCommentSniff.
+ * PHP_CodeSniffer_Sniffs_DrupalCodingStandard_Commenting_InlineCommentSniff.
  *
- * Checks that no perl-style comments are used.
+ * Checks that no perl-style comments are used. Checks that inline comments ("//")
+ * have a space after //, start capitalized and end with proper punctuation.
+ * Largely copied from Squiz_Sniffs_Commenting_InlineCommentSniff.
  *
  * @category  PHP
  * @package   PHP_CodeSniffer
@@ -38,7 +40,10 @@ class DrupalCodingStandard_Sniffs_Commenting_InlineCommentSniff implements PHP_C
      */
     public function register()
     {
-        return array(T_COMMENT);
+        return array(
+                T_COMMENT,
+                T_DOC_COMMENT,
+               );
 
     }//end register()
 
@@ -56,17 +61,180 @@ class DrupalCodingStandard_Sniffs_Commenting_InlineCommentSniff implements PHP_C
     {
         $tokens = $phpcsFile->getTokens();
 
+        // If this is a function/class/interface doc block comment, skip it.
+        // We are only interested in inline doc block comments, which are
+        // not allowed.
+        if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT) {
+            $nextToken = $phpcsFile->findNext(
+                PHP_CodeSniffer_Tokens::$emptyTokens,
+                ($stackPtr + 1),
+                null,
+                true
+            );
+
+            $ignore = array(
+                       T_CLASS,
+                       T_INTERFACE,
+                       T_FUNCTION,
+                       T_PUBLIC,
+                       T_PRIVATE,
+                       T_PROTECTED,
+                       T_FINAL,
+                       T_STATIC,
+                       T_ABSTRACT,
+                       T_CONST,
+                       T_OBJECT,
+                       T_PROPERTY,
+                      );
+
+            if (in_array($tokens[$nextToken]['code'], $ignore) === true) {
+                return;
+            } else {
+                $prevToken = $phpcsFile->findPrevious(
+                    PHP_CodeSniffer_Tokens::$emptyTokens,
+                    ($stackPtr - 1),
+                    null,
+                    true
+                );
+
+                if ($tokens[$prevToken]['code'] === T_OPEN_TAG) {
+                    return;
+                }
+
+                // Only error once per comment.
+                if (substr($tokens[$stackPtr]['content'], 0, 3) === '/**') {
+                    $error = 'Inline doc block comments are not allowed; use "// Comment" instead';
+                    $phpcsFile->addError($error, $stackPtr, 'DocBlock');
+                }
+            }//end if
+        }//end if
+
         if ($tokens[$stackPtr]['content']{0} === '#') {
-            $error  = 'Perl-style comments are not allowed. Use "// Comment."';
-            $error .= ' or "/* comment */" instead.';
-            $phpcsFile->addError($error, $stackPtr);
+            $error = 'Perl-style comments are not allowed; use "// Comment" instead';
+            $phpcsFile->addError($error, $stackPtr, 'WrongStyle');
         }
 
-        if (substr($tokens[$stackPtr]['content'], 0, 2) === '//'
-          && substr($tokens[$stackPtr]['content'], 0 ,3) != '// ') {
-            $error = 'Missing space after the // ';
-            $phpcsFile->addError($error, $stackPtr);
+        $comment = rtrim($tokens[$stackPtr]['content']);
+
+        // Only want inline comments.
+        if (substr($comment, 0, 2) !== '//') {
+            return;
         }
+
+        $spaceCount = 0;
+        for ($i = 2; $i < strlen($comment); $i++) {
+            if ($comment[$i] !== ' ') {
+                break;
+            }
+
+            $spaceCount++;
+        }
+
+        if ($spaceCount === 0) {
+            $error = 'No space before comment text; expected "// %s" but found "%s"';
+            $data  = array(
+                      substr($comment, 2),
+                      $comment,
+                     );
+            $phpcsFile->addError($error, $stackPtr, 'NoSpaceBefore', $data);
+        }
+
+        if ($spaceCount > 1) {
+            $error = '%s spaces found before inline comment; expected "// %s" but found "%s"';
+            $data  = array(
+                      $spaceCount,
+                      substr($comment, (2 + $spaceCount)),
+                      $comment,
+                     );
+            $phpcsFile->addError($error, $stackPtr, 'SpacingBefore', $data);
+        }
+
+        // The below section determines if a comment block is correctly capitalised,
+        // and ends in a full-stop. It will find the last comment in a block, and
+        // work its way up.
+        $nextComment = $phpcsFile->findNext(array(T_COMMENT), ($stackPtr + 1), null, false);
+
+        if (($nextComment !== false) && (($tokens[$nextComment]['line']) === ($tokens[$stackPtr]['line'] + 1))) {
+            return;
+        }
+
+        $topComment  = $stackPtr;
+        $lastComment = $stackPtr;
+        while (($topComment = $phpcsFile->findPrevious(array(T_COMMENT), ($lastComment - 1), null, false)) !== false) {
+            if ($tokens[$topComment]['line'] !== ($tokens[$lastComment]['line'] - 1)) {
+                break;
+            }
+
+            $lastComment = $topComment;
+        }
+
+        $topComment  = $lastComment;
+        $commentText = '';
+
+        for ($i = $topComment; $i <= $stackPtr; $i++) {
+            if ($tokens[$i]['code'] === T_COMMENT) {
+                $commentText .= trim(substr($tokens[$i]['content'], 2));
+            }
+        }
+
+        if ($commentText === '') {
+            $error = 'Blank comments are not allowed';
+            $phpcsFile->addError($error, $stackPtr, 'Empty');
+            return;
+        }
+
+        $words = preg_split('/\s+/', $commentText);
+        if ($commentText[0] !== strtoupper($commentText[0])) {
+            // Allow special lower cased words that contain non-alpha characters
+            // (function references, machine names with underscores etc.).
+            $matches = array();
+            preg_match('/[a-z]+/', $words[0], $matches);
+            if ($matches[0] === $words[0]) {
+                $error = 'Inline comments must start with a capital letter';
+                $phpcsFile->addError($error, $topComment, 'NotCapital');
+            }
+        }
+
+        $commentCloser   = $commentText[(strlen($commentText) - 1)];
+        $acceptedClosers = array(
+                            'full-stops'        => '.',
+                            'exclamation marks' => '!',
+                            'or question marks' => '?',
+                           );
+
+        if (in_array($commentCloser, $acceptedClosers) === false) {
+            // Allow special last words like URLs or function references without
+            // punctuation.
+            $lastWord = $words[count($words) - 1];
+            $matches = array();
+            preg_match('/[a-zA-Z]+/', $lastWord, $matches);
+            if ($matches[0] === $lastWord) {
+                $error = 'Inline comments must end in %s';
+                $ender = '';
+                foreach ($acceptedClosers as $closerName => $symbol) {
+                    $ender .= ' '.$closerName.',';
+                }
+
+                $ender = rtrim($ender, ',');
+                $data  = array($ender);
+                $phpcsFile->addError($error, $stackPtr, 'InvalidEndChar', $data);
+            }
+        }
+
+        // Finally, the line below the last comment cannot be empty.
+        $start = false;
+        for ($i = ($stackPtr + 1); $i < $phpcsFile->numTokens; $i++) {
+            if ($tokens[$i]['line'] === ($tokens[$stackPtr]['line'] + 1)) {
+                if ($tokens[$i]['code'] !== T_WHITESPACE) {
+                    return;
+                }
+            } else if ($tokens[$i]['line'] > ($tokens[$stackPtr]['line'] + 1)) {
+                break;
+            }
+        }
+
+        $error = 'There must be no blank line following an inline comment';
+        $phpcsFile->addError($error, $stackPtr, 'SpacingAfter');
 
     }//end process()
 

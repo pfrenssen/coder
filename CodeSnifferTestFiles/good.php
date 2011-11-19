@@ -15,13 +15,16 @@
  *   - sub item2
  */
 
-// Singleline comment
+// Singleline comment before a code line.
+$foo = 'bar';
 
-/**
+/*
  * Multiline comment
+ *
+ * @see my_function()
  */
 
-// PHP Constants must be written in CAPITAL lettres
+// PHP Constants must be written in CAPITAL letters.
 TRUE;
 FALSE;
 NULL;
@@ -29,7 +32,7 @@ NULL;
 // Has whitespace at the end of the line.
 $whitespaces = 'Yes, Please';
 
-// Operators - have a space before and after
+// Operators - have a space before and after.
 $i = 0;
 $i += 0;
 $i -= 0;
@@ -40,7 +43,7 @@ $i < 0;
 $i >= 0;
 $i <= 0;
 
-// Unary operators must not have a space
+// Unary operators must not have a space.
 $i--;
 --$i;
 $i++;
@@ -57,11 +60,11 @@ range(-50, -45);
 $i[0] + 1;
 $x->{$i} + 1;
 
-// Casting has a space
+// Casting has a space.
 (int) $i;
 
-// The last item in an multiline array should be followed by a comma
-// But not in a inline array
+// The last item in an multiline array should be followed by a comma.
+// But not in a inline array.
 $a = array();
 $a = array('1', '2', '3');
 $a = array(
@@ -81,12 +84,12 @@ $a = array(
   'callback' => 3,
 );
 
-// Item assignment operators must be prefixed and followed by a space
+// Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1', 'two' => '2');
 foreach ( $a as $key => $value) {
 }
 
-// If conditions have a space before and after the condition parenthesis
+// If conditions have a space before and after the condition parenthesis.
 if (TRUE || TRUE) {
   $i;
 }
@@ -145,17 +148,17 @@ function foo_bar($field1, $field2, $field3 = NULL) {
   return $system[$field];
 }
 
-// Function call
+// Function call.
 $var = foo($i, $i, $i);
 
-// Multiline function call
+// Multiline function call.
 $var = foo(
   $i,
   $i,
   $i
 );
 
-// Multiline function call with array
+// Multiline function call with array.
 $var = foo(array(
     $i,
     $i,
@@ -165,7 +168,7 @@ $var = foo(array(
   $i
 );
 
-// Multiline function call with only one array
+// Multiline function call with only one array.
 $var = foo(array(
     $i,
     $i,
@@ -178,10 +181,10 @@ $var = foo(array(
  * Classes always have a multiline comment
  */
 class Bar {
-  // Private properties have no prefix
+  // Private properties have no prefix.
   private $secret = 1;
 
-  // Public properties also don't a prefix
+  // Public properties also don't a prefix.
   protected $foo = 1;
 
   // Longer properties use camelCase naming.
@@ -212,7 +215,8 @@ function _private_foo() {
 
 }
 
-// When calling class constructors with no arguments, always include parentheses
+// When calling class constructors with no arguments, always include
+// parentheses.
 $bar = new Bar();
 
 $bar = new Bar($arg1, $arg2);
@@ -224,7 +228,7 @@ $foo = new $bar($i, $i);
 // Static class variables use camelCase.
 Bar::$basePath = '/foo';
 
-// Concatenation - there has to be a space
+// Concatenation - there has to be a space.
 $i . "test";
 $i . 'test';
 $i . $i;
@@ -267,6 +271,8 @@ $rule = rule();
 $rule->condition('rules_test_condition_true')
      ->condition('rules_test_condition_true')
      ->condition(rules_or()
+       // Inline test comment that continues on a
+       // second line.
        ->condition(rules_condition('rules_test_condition_true')->negate())
        ->condition('rules_test_condition_false')
        ->condition(rules_and()
@@ -279,6 +285,31 @@ $rule->condition('rules_test_condition_true')
 // Test usages of t().
 t('special character: \"');
 t("special character: \'");
+
+// Test inline comment style.
+// Comment one.
+t('x');
+// Comment two
+// @todo this is valid!
+t('x');
+// Goes on?
+t('x');
+/* Longer comment
+ * bla bla
+ * end!
+ */
+t('x');
+// @see http://example.com
+t('x');
+// @see my_function()
+t('x');
+// t() refers to a function name and should not be capitalized.
+t('x');
+// rules_admin is a fancy machine name word with underscores and should not be
+// capitalized and ignored.
+t('x');
+// {} this comment start should not be flagged.
+t('x');
 
 // Template test. Alternative control structure style is allowed.
 ?>

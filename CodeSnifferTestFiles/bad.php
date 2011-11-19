@@ -2,7 +2,11 @@
 
 #Discouraged comment style
 
-//Inline commands ned to be prefixed by a space after the //
+//Inline commands ned to be prefixed by a space after the //.
+//  But there should be only one space.
+// Blank comments are not allowed outside of a comment block.
+
+//
 
 // PHP Constants should be written in CAPITAL lettres
 true;
@@ -237,6 +241,9 @@ do {
  */
 function foo($field1, $field2, $field3 = NULL) {
   $system["description"] = t("This module inserts funny text into posts randomly.");
+  /**
+   * Inline doc blocks are not allowed.
+   */
   return $system[$field];
 }
 
