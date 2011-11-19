@@ -208,7 +208,7 @@ class DrupalCodingStandard_Sniffs_Commenting_InlineCommentSniff implements PHP_C
             $lastWord = $words[count($words) - 1];
             $matches = array();
             preg_match('/[a-zA-Z]+/', $lastWord, $matches);
-            if ($matches[0] === $lastWord) {
+            if (isset($matches[0]) === true && $matches[0] === $lastWord) {
                 $error = 'Inline comments must end in %s';
                 $ender = '';
                 foreach ($acceptedClosers as $closerName => $symbol) {
