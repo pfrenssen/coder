@@ -74,8 +74,21 @@ $a = array(
 );
 $a = array('1', '2', array('3'));
 $a = array('1', '2', array(
-  '3'),
-);
+  'one',
+  'two',
+  'three',
+  array(
+    'key' => $value,
+    'title' => 'test',
+  ),
+),);
+
+// Arrays in function calls.
+foo(array(
+  'value' => 0,
+  'description' => t('xyz @url', array(
+    '@url' => 'http://example.com')),
+));
 
 // Pretty array layout.
 $a = array(

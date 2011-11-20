@@ -119,7 +119,6 @@ $x->{$i}+ 1;
 // Last item of a multiline array has to be followed by a
 // comma. On inline arrays not!
 $a = array('1', '2', '3',);
-$a = array('1', '2', '3');
 $a = array(
   '1',
   '2',
@@ -137,6 +136,16 @@ $a = array(
   '2',
   array('3',)
 );
+
+// Array white space style.
+$a = array ('1');
+$a = array( '1');
+$a = array('1' );
+$a = array( '1','2' );
+
+// Wrong usage of array keyword.
+$a = Array('1');
+$a = ARRAY('x');
 
 // Item assignment operators must be prefixed and followed by a space
 $a = array('one'=>'1');
