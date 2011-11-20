@@ -48,25 +48,12 @@ class DrupalCodingStandard_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sn
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-
       $tokens = $phpcsFile->getTokens();
-      $this->sniffItemClosings($phpcsFile, $stackPtr, $tokens);
-
-    }//end process()
-
-    /**
-     * Checks if the last item in the array is closed with a comma
-     * If the array is written on one line there must also be a space
-     * after the comma
-     *
-     * @param $tokens
-     */
-    function sniffItemClosings(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $tokens){
       $lastItem = $phpcsFile->findPrevious(
-        array(T_WHITESPACE),
-        $tokens[$stackPtr]['parenthesis_closer']-1,
-        $stackPtr,
-        true
+          PHP_CodeSniffer_Tokens::$emptyTokens,
+          $tokens[$stackPtr]['parenthesis_closer']-1,
+          $stackPtr,
+          true
       );
 
       // Empty array.
@@ -82,12 +69,21 @@ class DrupalCodingStandard_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sn
           return;
       }
 
-      if ($tokens[$lastItem]['code'] == T_COMMA && $isInlineArray){
-          $phpcsFile->addWarning('Last item of an inline array must not followed by a comma', $lastItem);
-          return;
+      if ($tokens[$lastItem]['code'] === T_COMMA && $isInlineArray){
+          $phpcsFile->addWarning('Last item of an inline array must not be followed by a comma', $lastItem);
       }
-    }
 
+      $firstToken = $tokens[$stackPtr]['parenthesis_opener'] + 1;
+      if ($isInlineArray && $tokens[$firstToken]['code'] === T_WHITESPACE) {
+          $phpcsFile->addWarning('The opening paranthesis of an array should not be followed by a white space', $firstToken);
+      }
+
+      $lastToken = $tokens[$stackPtr]['parenthesis_closer'] - 1;
+      if ($isInlineArray && $tokens[$lastToken]['code'] === T_WHITESPACE) {
+          $phpcsFile->addWarning('The closing paranthesis of an array should not be preceded by a white space', $lastToken);
+      }
+
+    }//end process()
 
 }//end class
 
