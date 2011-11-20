@@ -86,7 +86,7 @@ $a = array(
 
 // Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1', 'two' => '2');
-foreach ( $a as $key => $value) {
+foreach ($a as $key => $value) {
 }
 
 // If conditions have a space before and after the condition parenthesis.

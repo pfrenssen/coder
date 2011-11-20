@@ -184,6 +184,15 @@ if (TRUE) {
 }else if (TRUE) {
   $i;
 }
+
+// White spaces before and after the condition are not allowed.
+if ( TRUE) {
+  $i;
+}
+elseif (TRUE ) {
+  $i;
+}
+
 // Break has to be intended 2 spaces
 switch ($condition) {
   case 1:
