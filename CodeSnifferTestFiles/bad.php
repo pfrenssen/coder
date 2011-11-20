@@ -107,6 +107,8 @@ $i = (1 == + 1);
 $i = (1 === + 1);
 range(-50, - 45);
 range(- 50, -45);
+$i[0]+ 1;
+$x->{$i}+ 1;
 
 
 // Casting must have one space

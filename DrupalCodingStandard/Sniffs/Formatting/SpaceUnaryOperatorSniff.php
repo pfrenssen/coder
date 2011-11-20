@@ -74,12 +74,12 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceUnaryOperatorSniff implements 
                         $tokens[($stackPtr + 1)]['content'] == ';';
 
           if ($modifyLeft && $tokens[($stackPtr - 1)]['code'] === T_WHITESPACE) {
-            $error = 'There must not be a single space befora a unary opeator statement';
+            $error = 'There must not be a single space before a unary operator statement';
             $phpcsFile->addError($error, $stackPtr);
           }
 
           if (!$modifyLeft && substr($tokens[($stackPtr + 1)]['content'], 0, 1) != '$') {
-            $error = 'An unary opeator statement must not followed by a single space';
+            $error = 'A unary operator statement must not be followed by a single space';
             $phpcsFile->addError($error, $stackPtr);
           }
         }
@@ -89,7 +89,7 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceUnaryOperatorSniff implements 
           if (!$operator_suffix_allowed
             && $tokens[($stackPtr + 1)]['code'] === T_WHITESPACE
           ) {
-            $error = 'An unary opeator statement must not followed by a space';
+            $error = 'A unary operator statement must not be followed by a space';
             $phpcsFile->addError($error, $stackPtr);
           }
         }

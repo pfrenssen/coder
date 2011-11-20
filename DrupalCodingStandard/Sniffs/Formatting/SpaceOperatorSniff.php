@@ -78,10 +78,13 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
           NULL,
           true
         );
+
         $needs_operator_suffix = in_array($tokens[$lastSyntaxItem]['code'], array(
           T_LNUMBER,
           T_DNUMBER,
           T_CLOSE_PARENTHESIS,
+          T_CLOSE_SQUARE_BRACKET,
+          T_CLOSE_CURLY_BRACKET,
           T_VARIABLE,
         ));
         $needs_operator_prefix = !in_array($tokens[$lastSyntaxItem]['code'], array(
