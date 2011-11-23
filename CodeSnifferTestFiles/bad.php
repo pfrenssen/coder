@@ -346,7 +346,7 @@ $i. C_TEST;
 /**
  *
  */
-class FunctionTest {
+Class FunctionTest {
   public function _foo() {
 
   }
