@@ -260,7 +260,7 @@ class MyExampleLog {
   /**
    * Empty method implementation is allowed.
    */
-  public function empty_method() {}
+  public function emptyMethod() {}
 
   /**
    * Protected functions are allowed.
