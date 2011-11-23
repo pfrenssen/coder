@@ -61,7 +61,7 @@ class DrupalCodingStandard_Sniffs_Functions_FunctionTQuotesSniff implements PHP_
                 return;
             }
 
-            // Find the next non-empty token, the first argumnet to t().
+            // Find the next non-empty token, the first argument to t().
             $stringArg = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($openBracket + 1), null, true);
             if ($tokens[$stringArg]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
                 // Not a translatable string literal.

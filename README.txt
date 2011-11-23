@@ -1,22 +1,33 @@
-Drupal Coding Standards Sniffer for PTI
+-------------------------------------------------------------------------------
+                            Drupal Code Sniffer
+-------------------------------------------------------------------------------
 
-More infos about this "Project": http://drupal.org/node/897116
+Drupal Code Sniffer (drupalcs) is a coding standard validation tool for Drupal
+and contributed modules/themes.
 
-Intallation:
+Intallation
+-----------
 
 Requirements:
   - PEAR
   - PHPCS
 
 - Install PEAR  ( http://pear.php.net/manual/en/installation.php )
-- Install PHPCS ( http://pear.php.net/package/PHP_CodeSniffer/redirected )
-  - find the install location of PHPCS standards (in Ubuntu it is /usr/share/php/PHP/CodeSniffer/Standards )
-  - put this code in a new folder called Drupal in the Standards folder ( /usr/share/php/PHP/CodeSniffer/Standards/Drupal )
+- Install PHPCS ( http://pear.php.net/package/PHP_CodeSniffer )
+- Sym-link the drupalcs directory into the standards folder for PHP_CodeSniffer.
+  The code for that looks like this:
 
-Running (from shell) :
-  $> phpcs --standard=Drupal --extensions=php,phtml,inc,module,engine sites/all/modules/my_module
+$> sudo ln -sv /path/to/drupalcs/DrupalCodingStandard $(pear config-get php_dir)/PHP/CodeSniffer/Standards 
 
-Installation (eclipse):
+
+Usage (running in a shell)
+--------------------------
+
+$> phpcs --standard=DrupalCodingStandard --extensions=php,module,inc,install,test,profile,theme /path/to/drupal_module
+
+
+Installation in Eclipse
+-----------------------
 
 Requirements:
 Eclipse : http://www.eclipse.org
