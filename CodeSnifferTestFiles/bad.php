@@ -360,6 +360,10 @@ Class FunctionTest {
   }
 }
 
+interface startsLowerInterface {}
+
+class Uses_UnderScores {}
+
 function _refix() {
 
 }

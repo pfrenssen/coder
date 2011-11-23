@@ -17,7 +17,7 @@
  * DrupalCodingStandard_Sniffs_NamingConventions_ValidClassNameSniff.
  *
  * Ensures class and interface names start with a capital letter
- * and use _ separators.
+ * and do not use _ separators.
  *
  * @category  PHP
  * @package   PHP_CodeSniffer
@@ -62,46 +62,19 @@ class DrupalCodingStandard_Sniffs_NamingConventions_ValidClassNameSniff implemen
 
         $className = $phpcsFile->findNext(T_STRING, $stackPtr);
         $name      = trim($tokens[$className]['content']);
+        $errorData = array(ucfirst($tokens[$stackPtr]['content']));
 
         // Make sure the first letter is a capital.
         if (preg_match('|^[A-Z]|', $name) === 0) {
-            $error = ucfirst($tokens[$stackPtr]['content']).' name must begin with a capital letter';
-            $phpcsFile->addError($error, $stackPtr);
+            $error = '%s name must begin with a capital letter';
+            $phpcsFile->addError($error, $stackPtr, 'StartWithCaptial', $errorData);
         }
 
-        // Check that each new word starts with a capital as well, but don't
-        // check the first word, as it is checked above.
-        $validName = true;
-        $nameBits  = explode('_', $name);
-        $firstBit  = array_shift($nameBits);
-        foreach ($nameBits as $bit) {
-            if ($bit === '' || $bit{0} !== strtoupper($bit{0})) {
-                $validName = false;
-                break;
-            }
+        // Search for underscores.
+        if (strpos($name, '_') !== false) {
+            $error = '%s name must use UpperCamel naming without underscores';
+            $phpcsFile->addError($error, $stackPtr, 'NoUnderscores', $errorData);
         }
-
-        if ($validName !== true) {
-            // Strip underscores because they cause the suggested name
-            // to be incorrect.
-            $nameBits = explode('_', trim($name, '_'));
-            $firstBit = array_shift($nameBits);
-            if ($firstBit === '') {
-                $error = ucfirst($tokens[$stackPtr]['content']).' name is not valid';
-            } else {
-                $newName = strtoupper($firstBit{0}).substr($firstBit, 1).'_';
-                foreach ($nameBits as $bit) {
-                    if ($bit !== '') {
-                        $newName .= strtoupper($bit{0}).substr($bit, 1).'_';
-                    }
-                }
-
-                $newName = rtrim($newName, '_');
-                $error   = ucfirst($tokens[$stackPtr]['content'])." name is not valid; consider $newName instead";
-            }
-
-            $phpcsFile->addError($error, $stackPtr);
-        }//end if
 
     }//end process()
 
