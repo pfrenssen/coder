@@ -83,14 +83,14 @@ class DrupalCodingStandard_Sniffs_NamingConventions_ValidFunctionNameSniff exten
         // Methods should not contain underscores.
         if (strpos($methodName, '_') !== false) {
           if ($scopeSpecified === true) {
-              $error = '%s method name "%s" is not in lowerCamel format, it must not contain unserscores';
+              $error = '%s method name "%s" is not in lowerCamel format, it must not contain underscores';
               $data  = array(
               ucfirst($scope),
               $errorData[0],
               );
               $phpcsFile->addError($error, $stackPtr, 'ScopeNotLowerCamel', $data);
           } else {
-              $error = 'Method name "%s" is not in lowerCamel format, it must not contain unserscores';
+              $error = 'Method name "%s" is not in lowerCamel format, it must not contain underscores';
               $phpcsFile->addError($error, $stackPtr, 'NotLowerCamel', $errorData);
           }
         }
