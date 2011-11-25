@@ -3,6 +3,14 @@
 <ruleset name="DrupalCodingStandard">
  <description>Drupal coding standard</description>
 
+ <rule ref="DrupalCodingStandard.ControlStructures.ControlSignature">
+  <!-- Do not run this sniff on template files. -->
+  <exclude-pattern>*.tpl.php</exclude-pattern>
+ </rule>
+ <rule ref="DrupalCodingStandard.WhiteSpace.ScopeClosingBrace">
+  <!-- Do not run this sniff on template files. -->
+  <exclude-pattern>*.tpl.php</exclude-pattern>
+ </rule>
  <rule ref="Generic.Formatting.SpaceAfterCast" />
  <rule ref="Generic.Functions.FunctionCallArgumentSpacing" />
  <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie" />
@@ -17,6 +25,9 @@
   <properties>
    <property name="indent" value="2"/>
   </properties>
+  <!-- Do not run this sniff on template files, as the indentation might follow
+  the HTML -->
+  <exclude-pattern>*.tpl.php</exclude-pattern>
  </rule>
  
  <!-- Use Unix newlines -->
