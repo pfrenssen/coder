@@ -59,6 +59,7 @@ $i = (1 === +1);
 range(-50, -45);
 $i[0] + 1;
 $x->{$i} + 1;
+REQUEST_TIME + 42;
 
 // Casting has a space.
 (int) $i;

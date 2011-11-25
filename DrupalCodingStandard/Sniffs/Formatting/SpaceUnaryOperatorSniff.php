@@ -66,6 +66,7 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceUnaryOperatorSniff implements 
           T_CLOSE_CURLY_BRACKET,
           T_CLOSE_SQUARE_BRACKET,
           T_VARIABLE,
+          T_STRING,
         ));
 
         // Check decrement / increment.
