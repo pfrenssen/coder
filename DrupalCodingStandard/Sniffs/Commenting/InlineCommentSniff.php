@@ -87,7 +87,10 @@ class DrupalCodingStandard_Sniffs_Commenting_InlineCommentSniff implements PHP_C
                        T_PROPERTY,
                       );
 
-            if (in_array($tokens[$nextToken]['code'], $ignore) === true) {
+            // Also ignore define() statements for constants.
+            if (in_array($tokens[$nextToken]['code'], $ignore) === true
+                || ($tokens[$nextToken]['code'] === T_STRING && $tokens[$nextToken]['content'] === 'define')
+            ) {
                 return;
             } else {
                 $prevToken = $phpcsFile->findPrevious(

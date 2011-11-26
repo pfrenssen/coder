@@ -18,6 +18,11 @@
 // Singleline comment before a code line.
 $foo = 'bar';
 
+/**
+ * Doxygen comment style is allowed before define() statements.
+ */
+define('FOO_BAR', 5);
+
 /*
  * Multiline comment
  *
