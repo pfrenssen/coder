@@ -329,6 +329,29 @@ t('x');
 t('x');
 // {} this comment start should not be flagged.
 t('x');
+// Some code examples in inline comments:
+// @code
+//   function mymodule_menu() {
+//     $items['abc/def'] = array(
+//       'page callback' => 'mymodule_abc_view',
+//     );
+//     return $items;
+//   }
+// @endcode
+// @todo A long description what is left to be done. Exceeds the first line and
+//   is indented on the second line.
+// Now follows a list:
+// - item 1
+//   additional description line.
+// - item 2
+// - item 3 comes with a sub list:
+//   - sub item 1
+//   - sub item 2
+//     description of sub item 2.
+// List is closed, normal indentation here. Now comes a paragraph empty line.
+//
+// And here continues the long comment.
+t('x');
 
 // Template test. Alternative control structure style is allowed.
 ?>

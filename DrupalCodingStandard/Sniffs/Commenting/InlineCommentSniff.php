@@ -87,9 +87,10 @@ class DrupalCodingStandard_Sniffs_Commenting_InlineCommentSniff implements PHP_C
                        T_PROPERTY,
                       );
 
-            // Also ignore define() statements for constants.
+            // Also ignore all doc blocks defined in the outer scope (no scope
+            // conditions are set).
             if (in_array($tokens[$nextToken]['code'], $ignore) === true
-                || ($tokens[$nextToken]['code'] === T_STRING && $tokens[$nextToken]['content'] === 'define')
+                || empty($tokens[$stackPtr]['conditions']) === true
             ) {
                 return;
             } else {
@@ -124,33 +125,13 @@ class DrupalCodingStandard_Sniffs_Commenting_InlineCommentSniff implements PHP_C
             return;
         }
 
-        $spaceCount = 0;
-        for ($i = 2; $i < strlen($comment); $i++) {
-            if ($comment[$i] !== ' ') {
-                break;
-            }
-
-            $spaceCount++;
+        // Ignore code example lines.
+        if ($this->isInCodeExample($phpcsFile, $stackPtr) === true) {
+            return;
         }
 
-        if ($spaceCount === 0) {
-            $error = 'No space before comment text; expected "// %s" but found "%s"';
-            $data  = array(
-                      substr($comment, 2),
-                      $comment,
-                     );
-            $phpcsFile->addError($error, $stackPtr, 'NoSpaceBefore', $data);
-        }
-
-        if ($spaceCount > 1) {
-            $error = '%s spaces found before inline comment; expected "// %s" but found "%s"';
-            $data  = array(
-                      $spaceCount,
-                      substr($comment, (2 + $spaceCount)),
-                      $comment,
-                     );
-            $phpcsFile->addError($error, $stackPtr, 'SpacingBefore', $data);
-        }
+        // Verify the indentation of this comment line.
+        $this->processIndentation($phpcsFile, $stackPtr);
 
         // The below section determines if a comment block is correctly capitalised,
         // and ends in a full-stop. It will find the last comment in a block, and
@@ -209,7 +190,7 @@ class DrupalCodingStandard_Sniffs_Commenting_InlineCommentSniff implements PHP_C
             // Allow special last words like URLs or function references without
             // punctuation.
             $lastWord = $words[count($words) - 1];
-            $matches = array();
+            $matches  = array();
             preg_match('/[a-zA-Z]+/', $lastWord, $matches);
             if (isset($matches[0]) === true && $matches[0] === $lastWord) {
                 $error = 'Inline comments must end in %s';
@@ -240,6 +221,116 @@ class DrupalCodingStandard_Sniffs_Commenting_InlineCommentSniff implements PHP_C
         $phpcsFile->addError($error, $stackPtr, 'SpacingAfter');
 
     }//end process()
+
+
+    /**
+     * Determines if a comment line is part of an @code/@endcode example.
+     *
+     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                  $stackPtr  The position of the current token
+     *                                        in the stack passed in $tokens.
+     *
+     * @return boolean Returns true if the comment line is within a @code block,
+     *                 false otherwise.
+     */
+    protected function isInCodeExample(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    {
+        $tokens      = $phpcsFile->getTokens();
+        $prevComment = $stackPtr;
+        $lastComment = $stackPtr;
+        while (($prevComment = $phpcsFile->findPrevious(array(T_COMMENT), ($lastComment - 1), null, false)) !== false) {
+            if ($tokens[$prevComment]['line'] !== ($tokens[$lastComment]['line'] - 1)) {
+                return false;
+            }
+
+            if ($tokens[$prevComment]['content'] === '// @code'.$phpcsFile->eolChar) {
+                return true;
+            }
+
+            if ($tokens[$prevComment]['content'] === '// @endcode'.$phpcsFile->eolChar) {
+                return false;
+            }
+
+            $lastComment = $prevComment;
+        }
+
+        return false;
+
+    }//end isInCodeExample()
+
+
+    /**
+     * Checks the indentation level of the comment contents.
+     *
+     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                  $stackPtr  The position of the current token
+     *                                        in the stack passed in $tokens.
+     *
+     * @return void
+     */
+    protected function processIndentation(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    {
+        $tokens     = $phpcsFile->getTokens();
+        $comment    = rtrim($tokens[$stackPtr]['content']);
+        $spaceCount = 0;
+        for ($i = 2; $i < strlen($comment); $i++) {
+            if ($comment[$i] !== ' ') {
+                break;
+            }
+
+            $spaceCount++;
+        }
+
+        if ($spaceCount === 0 && strlen($comment) > 2) {
+            $error = 'No space before comment text; expected "// %s" but found "%s"';
+            $data  = array(
+                      substr($comment, 2),
+                      $comment,
+                     );
+            $phpcsFile->addError($error, $stackPtr, 'NoSpaceBefore', $data);
+        }
+
+        if ($spaceCount > 1) {
+            // Check if there is a comment on the previous line that justifies the
+            // indentation.
+            $prevComment = $phpcsFile->findPrevious(array(T_COMMENT), ($stackPtr - 1), null, false);
+            if (($prevComment !== false) && (($tokens[$prevComment]['line']) === ($tokens[$stackPtr]['line'] - 1))) {
+                $prevCommentText = rtrim($tokens[$prevComment]['content']);
+                $prevSpaceCount  = 0;
+                for ($i = 2; $i < strlen($prevCommentText); $i++) {
+                    if ($prevCommentText[$i] !== ' ') {
+                        break;
+                    }
+
+                    $prevSpaceCount++;
+                }
+
+                if ($spaceCount > $prevSpaceCount && $prevSpaceCount > 0) {
+                    // A previous comment could be a list item or @todo.
+                    $indentationStarters = array('-', '@todo');
+                    $words = preg_split('/\s+/', $prevCommentText);
+                    if (in_array($words[1], $indentationStarters) === true) {
+                        if ($spaceCount !== ($prevSpaceCount + 2)) {
+                            $error = 'Comment indentation error after %s element, expected %s spaces';
+                            $phpcsFile->addError($error, $stackPtr, 'SpacingBefore', array($words[1], $prevSpaceCount + 2));
+                        }
+                    } else {
+                        $error = 'Comment indentation error, expected only %s spaces';
+                        $phpcsFile->addError($error, $stackPtr, 'SpacingBefore', array($prevSpaceCount));
+                    }
+                }
+            } else {
+                $error = '%s spaces found before inline comment; expected "// %s" but found "%s"';
+                $data  = array(
+                          $spaceCount,
+                          substr($comment, (2 + $spaceCount)),
+                          $comment,
+                         );
+                $phpcsFile->addError($error, $stackPtr, 'SpacingBefore', $data);
+            }//end if
+        }//end if
+
+    }//end processIndentation()
 
 
 }//end class

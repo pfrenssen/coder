@@ -2,15 +2,23 @@
 
 #Discouraged comment style
 
-//Inline commands ned to be prefixed by a space after the //.
-//  But there should be only one space.
+//Inline comments need to be prefixed by a space after the //.
+// But there should be only one space.
+//  Not more.
+// Now follows a list:
+// - item 1
+//    wrong indentation level here.
+// - now follows a sub-list:
+//    - should be only 2 additional spaces.
+//   - this one is correct.
 // Blank comments are not allowed outside of a comment block.
 
 //
 
-// PHP Constants should be written in CAPITAL lettres
+// PHP Constants should be written in CAPITAL letters
 true; // Comments should be on a separate line.
 false;
+//   Comment indented too far.
 null;
 
 // Missing spaces
