@@ -17,7 +17,6 @@
  <rule ref="Generic.NamingConventions.ConstructorName" />
  <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
  <rule ref="Generic.PHP.DisallowShortOpenTag" />
- <rule ref="Generic.PHP.NoSilencedErrors" />
  <rule ref="Generic.PHP.UpperCaseConstant" />
  <rule ref="Generic.Strings.UnnecessaryStringConcat"/>
  <rule ref="Generic.WhiteSpace.DisallowTabIndent" />
