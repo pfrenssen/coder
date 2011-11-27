@@ -38,7 +38,6 @@
  </rule>
  
  <rule ref="MySource.Debug.DebugCode" />
- <rule ref="PEAR.Files.IncludingFile" />
  <rule ref="PEAR.Functions.ValidDefaultValue" />
  <rule ref="Squiz.Commenting.PostStatementComment" />
  <rule ref="Squiz.Classes.LowercaseClassKeywords" />
