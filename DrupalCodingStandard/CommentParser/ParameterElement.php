@@ -50,6 +50,11 @@ class DrupalCodingStandard_CommentParser_ParameterElement extends PHP_CodeSniffe
             parent::__construct($previousElement, $tokens, $phpcsFile);
             // Now empty the type so it will be flagged as invalid.
             $this->processSubElement('type', '', ' ');
+        } else if ($tokens[1] === '...') {
+            // Insert two fake tokens for the parameter type.
+            array_unshift($tokens, 'unknown');
+            array_unshift($tokens, ' ');
+            parent::__construct($previousElement, $tokens, $phpcsFile);
         } else {
             parent::__construct($previousElement, $tokens, $phpcsFile);
         }

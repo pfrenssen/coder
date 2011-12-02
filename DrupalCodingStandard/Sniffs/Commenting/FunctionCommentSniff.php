@@ -368,7 +368,7 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
 
                         $this->currentFile->addError($error, $errorPos, $code, $data);
                     }
-                } else if ($param->getType() !== '...') {
+                } else if ($paramName !== '...') {
                     // We must have an extra parameter comment.
                     $error = 'Superfluous doc comment at position '.$pos;
                     $this->currentFile->addError($error, $errorPos, 'ExtraParamComment');
@@ -391,6 +391,9 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
                               $pos,
                              );
                     $this->currentFile->addError($error, $errorPos, 'MissingParamComment', $data);
+                } else if (substr_count($param->getWhitespaceBeforeComment(), $this->currentFile->eolChar) !== 1) {
+                    $error = 'Parameter comment must be on the next line at position '.$pos;
+                    $this->currentFile->addError($error, $errorPos, 'ParamCommentNewLine');
                 }
 
                 $previousParam = $param;

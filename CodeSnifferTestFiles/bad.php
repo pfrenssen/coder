@@ -494,9 +494,10 @@ function test10($x) {
  * @param $z
  *   Missing type.
  * @param int
+ * @param string $a Comment should be on a new line.
  * @param string $non_existent
  *   Parameter does not exist.
  */
-function test11($x, $y, $z, $a) {
+function test11($x, $y, $z, $a, $b) {
 
 }
