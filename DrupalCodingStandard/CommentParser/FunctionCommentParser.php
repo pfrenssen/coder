@@ -28,6 +28,13 @@ class DrupalCodingStandard_CommentParser_FunctionCommentParser extends PHP_CodeS
      */
     protected $params = array();
 
+    /**
+     * The return element in this function comment.
+     *
+     * @var DrupalCodingStandard_CommentParser_ReturnElement
+     */
+    protected $return = null;
+
 
     /**
      * Parses parameter elements.
@@ -51,6 +58,28 @@ class DrupalCodingStandard_CommentParser_FunctionCommentParser extends PHP_CodeS
 
 
     /**
+     * Parses return elements.
+     *
+     * @param array(string) $tokens The tokens that comprise this sub element.
+     *
+     * @return DrupalCodingStandard_CommentParser_ReturnElement
+     */
+    protected function parseReturn($tokens)
+    {
+        $return = new DrupalCodingStandard_CommentParser_ReturnElement(
+            $this->previousElement,
+            $tokens,
+            'return',
+            $this->phpcsFile
+        );
+
+        $this->return = $return;
+        return $return;
+
+    }//end parseReturn()
+
+
+    /**
      * Returns the parameter elements that this function comment contains.
      *
      * Returns an empty array if no parameter elements are contained within
@@ -63,6 +92,20 @@ class DrupalCodingStandard_CommentParser_FunctionCommentParser extends PHP_CodeS
         return $this->params;
 
     }//end getParams()
+
+
+    /**
+     * Returns the return element in this fucntion comment.
+     *
+     * Returns null if no return element exists in the comment.
+     *
+     * @return DrupalCodingStandard_CommentParser_ReturnElement
+     */
+    public function getReturn()
+    {
+        return $this->return;
+
+    }//end getReturn()
 
 
 }//end class

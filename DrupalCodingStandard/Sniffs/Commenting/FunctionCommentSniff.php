@@ -260,12 +260,38 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
         $isSpecialMethod = ($this->_methodName === '__construct' || $this->_methodName === '__destruct');
 
         if ($isSpecialMethod === false && $methodName !== $className) {
-            if ($this->commentParser->getReturn() !== null
-                && trim($this->commentParser->getReturn()->getRawContent()) === ''
-            ) {
-                $error    = '@return tag is empty in function comment';
+            $return = $this->commentParser->getReturn();
+            if ($return !== null) {
                 $errorPos = ($commentStart + $this->commentParser->getReturn()->getLine());
-                $this->currentFile->addError($error, $errorPos, 'EmptyReturn');
+                if (trim($return->getRawContent()) === '') {
+                    $error = '@return tag is empty in function comment';
+                    $this->currentFile->addError($error, $errorPos, 'EmptyReturn');
+                    return;
+                }
+
+                $comment = $return->getComment();
+                $commentWhitespace = $return->getWhitespaceBeforeComment();
+                if (substr_count($return->getWhitespaceBeforeValue(), $this->currentFile->eolChar) > 0) {
+                    $error = 'Data type of return value is missing';
+                    $this->currentFile->addError($error, $errorPos, 'MissingReturnType');
+                    // Treat the value as part of the comment.
+                    $comment = $return->getValue().' '.$comment;
+                    $commentWhitespace = $return->getWhitespaceBeforeValue();
+                } else if ($return->getWhitespaceBeforeValue() !== ' ') {
+                    $error = 'Expected 1 space before return type';
+                    $this->currentFile->addError($error, $errorPos, 'SpacingBeforeReturnType');
+                }
+
+                if (trim($comment) === '') {
+                    $error = 'Missing comment for @return statement';
+                    $this->currentFile->addError($error, $errorPos, 'MissingReturnComment');
+                } else if (substr_count($commentWhitespace, $this->currentFile->eolChar) !== 1) {
+                    $error = 'Return comment must be on the next line';
+                    $this->currentFile->addError($error, $errorPos, 'ReturnCommentNewLine');
+                } else if (substr_count($commentWhitespace, ' ') !== 3) {
+                    $error = 'Return comment indentation must be 2 additional spaces';
+                    $this->currentFile->addError($error, $errorPos + 1, 'ParamCommentIndentation');
+                }
             }
         }
 

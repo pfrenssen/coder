@@ -475,10 +475,13 @@ function test9($x, $y) {
 }
 
 /**
- * Only one space before param type.
+ * Only one space before param type and return type.
  *
  * @param  array $x
  *   Shiny array.
+ *
+ * @return   int
+ *   Some number.
  */
 function test10($x) {
 
@@ -497,6 +500,8 @@ function test10($x) {
  * @param string $a Comment should be on a new line.
  * @param string $non_existent
  *   Parameter does not exist.
+ *
+ * @return bool This description should be on the next line.
  */
 function test11($x, $y, $z, $a, $b) {
 
