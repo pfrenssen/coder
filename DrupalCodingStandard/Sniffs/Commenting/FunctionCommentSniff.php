@@ -394,6 +394,9 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
                 } else if (substr_count($param->getWhitespaceBeforeComment(), $this->currentFile->eolChar) !== 1) {
                     $error = 'Parameter comment must be on the next line at position '.$pos;
                     $this->currentFile->addError($error, $errorPos, 'ParamCommentNewLine');
+                } else if (substr_count($param->getWhitespaceBeforeComment(), ' ') !== 3) {
+                    $error = 'Parameter comment indentation must be 2 additional spaces at position '.$pos;
+                    $this->currentFile->addError($error, $errorPos + 1, 'ParamCommentIndentation');
                 }
 
                 $previousParam = $param;
