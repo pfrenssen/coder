@@ -382,3 +382,121 @@ t("This is a \"fancy\" string.");
 
 // require_once should be a statement.
 require_once('somefile.php');
+
+/*
+ * Wrong comment style
+ */
+function test1() {
+
+}
+
+/**
+ *
+ */
+function test2() {
+
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function mymodule_menu() {
+  return array();
+}
+
+/**
+ *
+ * Extra newline above is not allowed.
+ */
+function test3() {
+
+}
+
+/**
+ * Extra newlines between function descriptions are not allowed.
+ *
+ *
+ * More description here ...
+ */
+function test4() {
+
+}
+
+/**
+ * There must be a new line before tags.
+ * @param int $x
+ *   A number.
+ */
+function test5($x) {
+
+}
+
+/**
+ * Throws tag must have an Exception name.
+ *
+ * @throws
+ */
+function test6() {
+
+}
+
+/**
+ * Return tag must not be empty.
+ *
+ * @return
+ */
+function test7() {
+
+}
+
+/**
+ * Param tags must come first.
+ *
+ * @return array()
+ *
+ * @param int $x
+ *   A number.
+ */
+function test8($x) {
+
+}
+
+/**
+ * Last Param tag must be followed by a new line.
+ *
+ * @param int $x
+ *   A number.
+ * @param int $y
+ *   Another number.
+ * @return bool
+ */
+function test9($x, $y) {
+
+}
+
+/**
+ * Only one space before param type.
+ *
+ * @param  array $x
+ *   Shiny array.
+ */
+function test10($x) {
+
+}
+
+/**
+ * Documented params do not match.
+ *
+ * @param bool $foobar
+ *   Wrong name.
+ * @param bool $Y
+ *   Wrong case.
+ * @param $z
+ *   Missing type.
+ * @param int
+ * @param string $non_existent
+ *   Parameter does not exist.
+ */
+function test11($x, $y, $z, $a) {
+
+}

@@ -146,21 +146,22 @@ do {
 } while ($condition);
 
 /**
- * Short description
+ * Short description.
  *
  * We use doxygen style comments.
  * What's sad because eclipse PDT and
  * PEAR CodeSniffer base on phpDoc comment style.
  * Makes working with drupal not easier :|
  *
- * @param $field1
- *  Doxygen style comments
- * @param $field2
- *  Doxygen style comments
- * @param $field3
- *  Doxygen style comments
- * @return
- *  Doxygen style comments
+ * @param string $field1
+ *   Doxygen style comments.
+ * @param int $field2
+ *   Doxygen style comments.
+ * @param bool $field3
+ *   Doxygen style comments.
+ *
+ * @return array
+ *   Doxygen style comments.
  */
 function foo_bar($field1, $field2, $field3 = NULL) {
   $system["description"] = t("This module inserts funny text into posts randomly.");
@@ -352,6 +353,42 @@ t('x');
 //
 // And here continues the long comment.
 t('x');
+
+/**
+ * Doc block with some code tags.
+ *
+ * Some description and here comes the code:
+ * @code
+ *   $options = drupal_parse_url($_GET['destination']);
+ *   $my_url = url($options['path'], $options);
+ *   $my_link = l('Example link', $options['path'], $options);
+ * @endcode
+ *
+ * Some more description here. And now the parameters.
+ *
+ * @param int $x
+ *   Parameter comment here.
+ */
+function test1($x) {
+
+}
+
+/**
+ * Variable amount of parameters is allowed with the "..." notation.
+ *
+ * Example:
+ * @code
+ *   test_invoke_all('node_view', $node, $view_mode);
+ * @endcode
+ *
+ * @param string $hook
+ *   The name of the hook to invoke.
+ * @param ...
+ *   Arguments to pass to the hook.
+ */
+function test_invoke_all($hook) {
+
+}
 
 // Template test. Alternative control structure style is allowed.
 ?>

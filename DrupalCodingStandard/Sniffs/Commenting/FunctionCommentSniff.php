@@ -6,42 +6,17 @@
  *
  * @category  PHP
  * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @author    Klaus Purer
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
-if (class_exists('PHP_CodeSniffer_CommentParser_FunctionCommentParser', true) === false) {
-    throw new PHP_CodeSniffer_Exception('Class PHP_CodeSniffer_CommentParser_FunctionCommentParser not found');
-}
-
 /**
- * Parses and verifies the doc comments for functions.
- *
- * Verifies that :
- * <ul>
- *  <li>A comment exists</li>
- *  <li>There is a blank newline after the short description.</li>
- *  <li>There is a blank newline between the long and short description.</li>
- *  <li>There is a blank newline between the long description and tags.</li>
- *  <li>Parameter names represent those in the method.</li>
- *  <li>Parameter comments are in the correct order</li>
- *  <li>Parameter comments are complete</li>
- *  <li>A space is present before the first and after the last parameter</li>
- *  <li>A return type exists</li>
- *  <li>There must be one blank line between body and headline comments.</li>
- *  <li>Any throw tag must have an exception class.</li>
- * </ul>
+ * Parses and verifies the doc comments for functions. Largely copied from
+ * PEAR_Sniffs_Commenting_FunctionCommentSniff.
  *
  * @category  PHP
  * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.2.0RC3
+ * @author    Klaus Purer
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_Sniff
@@ -129,10 +104,10 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
 
         if ($code === T_COMMENT) {
             $error = 'You must use "/**" style comments for a function comment';
-            $phpcsFile->addError($error, $stackPtr);
+            $phpcsFile->addError($error, $stackPtr, 'WrongStyle');
             return;
         } else if ($code !== T_DOC_COMMENT) {
-            $phpcsFile->addError('Missing function doc comment', $stackPtr);
+            $phpcsFile->addError('Missing function doc comment', $stackPtr, 'Missing');
             return;
         }
 
@@ -145,7 +120,7 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
         $ignore[]  = T_FINAL;
         $prevToken = $phpcsFile->findPrevious($ignore, ($stackPtr - 1), null, true);
         if ($prevToken !== $commentEnd) {
-            $phpcsFile->addError('Missing function doc comment', $stackPtr);
+            $phpcsFile->addError('Missing function doc comment', $stackPtr, 'Missing');
             return;
         }
 
@@ -166,7 +141,7 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
         if ($tokens[$prevToken]['code'] === T_OPEN_TAG) {
             // Is this the first open tag?
             if ($stackPtr === 0 || $phpcsFile->findPrevious(T_OPEN_TAG, ($prevToken - 1)) === false) {
-                $phpcsFile->addError('Missing function doc comment', $stackPtr);
+                $phpcsFile->addError('Missing function doc comment', $stackPtr, 'Missing');
                 return;
             }
         }
@@ -175,18 +150,18 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
         $this->_methodName = $phpcsFile->getDeclarationName($stackPtr);
 
         try {
-            $this->commentParser = new PHP_CodeSniffer_CommentParser_FunctionCommentParser($comment, $phpcsFile);
+            $this->commentParser = new DrupalCodingStandard_CommentParser_FunctionCommentParser($comment, $phpcsFile);
             $this->commentParser->parse();
         } catch (PHP_CodeSniffer_CommentParser_ParserException $e) {
             $line = ($e->getLineWithinComment() + $commentStart);
-            $phpcsFile->addError($e->getMessage(), $line);
+            $phpcsFile->addError($e->getMessage(), $line, 'FailedParse');
             return;
         }
 
         $comment = $this->commentParser->getComment();
         if (is_null($comment) === true) {
             $error = 'Function doc comment is empty';
-            $phpcsFile->addError($error, $commentStart);
+            $phpcsFile->addError($error, $commentStart, 'Empty');
             return;
         }
 
@@ -194,20 +169,19 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
         $this->processReturn($commentStart, $commentEnd);
         $this->processThrows($commentStart);
 
-        // Check if hook_ implementation is formated correctly
-        if(preg_match('/((I|i)mplement[^\n]+?hook_[^\n]+)/', $comment->getShortComment(), $matches)){
-          $formattingIssue = 0;
-          if(!strstr($matches[0], 'Implements ')){
-            $formattingIssue++;
-          }
-          if(!preg_match('/ hook_[\S\(\)]+\.$/', $matches[0])){
-            $formattingIssue++;
-          }
-          if($formattingIssue){
-            $phpcsFile->addWarning('Format should be * Implements hook_foo().', $commentStart + 1);
-          }
+        // Check if hook implementation doc is formated correctly.
+        if (preg_match('/((I|i)mplement[^\n]+?hook_[^\n]+)/', $comment->getShortComment(), $matches)) {
+            $formattingIssue = 0;
+            if(!strstr($matches[0], 'Implements ')){
+                $formattingIssue++;
+            }
+            if(!preg_match('/ hook_[\S\(\)]+\.$/', $matches[0])){
+                $formattingIssue++;
+            }
+            if($formattingIssue){
+                $phpcsFile->addWarning('Format should be * Implements hook_foo().', $commentStart + 1);
+            }
         }
-        //getLongComment
 
         // No extra newline before short description.
         $short        = $comment->getShortComment();
@@ -228,26 +202,10 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
             $newlineBetween = substr_count($between, $phpcsFile->eolChar);
             if ($newlineBetween !== 2) {
                 $error = 'There must be exactly one blank line between descriptions in function comment';
-                $phpcsFile->addError($error, ($commentStart + $newlineCount + 1));
+                $phpcsFile->addError($error, ($commentStart + $newlineCount + 1), 'SpacingAfterShort');
             }
 
             $newlineCount += $newlineBetween;
-        }
-
-        // Exactly one blank line before tags.
-        $params = $this->commentParser->getTagOrders();
-        if (count($params) > 1) {
-          //@TODO implement Drupal/Doxygen specific sniffs
-            /*$newlineSpan = $comment->getNewlineAfter();
-            if ($newlineSpan !== 2) {
-                $error = 'There must be exactly one blank line before the tags in function comment';
-                if ($long !== '') {
-                    $newlineCount += (substr_count($long, $phpcsFile->eolChar) - $newlineSpan + 1);
-                }
-
-                $phpcsFile->addError($error, ($commentStart + $newlineCount));
-                $short = rtrim($short, $phpcsFile->eolChar.' ');
-            }*/
         }
 
     }//end process()
@@ -263,10 +221,6 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
      */
     protected function processThrows($commentStart)
     {
-
-        //@TODO implement Drupal/Doxygen specific sniffs
-        return;
-
         if (count($this->commentParser->getThrows()) === 0) {
             return;
         }
@@ -278,7 +232,7 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
 
             if ($exception === '') {
                 $error = '@throws tag must contain the exception class name';
-                $this->currentFile->addError($error, $errorPos);
+                $this->currentFile->addError($error, $errorPos, 'EmptyThrows');
             }
         }
 
@@ -295,10 +249,6 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
      */
     protected function processReturn($commentStart, $commentEnd)
     {
-
-        //@TODO implement Drupal / Doxygen stlye
-        return;
-
         // Skip constructor and destructor.
         $className = '';
         if ($this->_classToken !== null) {
@@ -310,14 +260,12 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
         $isSpecialMethod = ($this->_methodName === '__construct' || $this->_methodName === '__destruct');
 
         if ($isSpecialMethod === false && $methodName !== $className) {
-            // Report missing return tag.
-            if ($this->commentParser->getReturn() === null) {
-                $error = 'Missing @return tag in function comment';
-                $this->currentFile->addError($error, $commentEnd);
-            } else if (trim($this->commentParser->getReturn()->getRawContent()) === '') {
+            if ($this->commentParser->getReturn() !== null
+                && trim($this->commentParser->getReturn()->getRawContent()) === ''
+            ) {
                 $error    = '@return tag is empty in function comment';
                 $errorPos = ($commentStart + $this->commentParser->getReturn()->getLine());
-                $this->currentFile->addError($error, $errorPos);
+                $this->currentFile->addError($error, $errorPos, 'EmptyReturn');
             }
         }
 
@@ -334,10 +282,6 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
      */
     protected function processParams($commentStart)
     {
-
-        //@TODO implement Drupal / Doxygen stlye
-        return;
-
         $realParams = $this->currentFile->getMethodParameters($this->_functionToken);
 
         $params      = $this->commentParser->getParams();
@@ -345,18 +289,18 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
 
         if (empty($params) === false) {
 
+            // There must be an empty line before the parameter block.
+            if (substr_count($params[0]->getWhitespaceBefore(), $this->currentFile->eolChar) < 2) {
+                $error    = 'There must be an empty line before the parameter block';
+                $errorPos = ($params[0]->getLine() + $commentStart);
+                $this->currentFile->addError($error, $errorPos, 'SpacingBeforeParams');
+            }
+
             $lastParm = (count($params) - 1);
             if (substr_count($params[$lastParm]->getWhitespaceAfter(), $this->currentFile->eolChar) !== 2) {
                 $error    = 'Last parameter comment requires a blank newline after it';
                 $errorPos = ($params[$lastParm]->getLine() + $commentStart);
-                $this->currentFile->addError($error, $errorPos);
-            }
-
-            // Parameters must appear immediately after the comment.
-            if ($params[0]->getOrder() !== 2) {
-                $error    = 'Parameters must appear immediately after the comment';
-                $errorPos = ($params[0]->getLine() + $commentStart);
-                $this->currentFile->addError($error, $errorPos);
+                $this->currentFile->addError($error, $errorPos, 'SpacingAfterParams');
             }
 
             $previousParam      = null;
@@ -373,7 +317,7 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
                 // Make sure that there is only one space before the var type.
                 if ($param->getWhitespaceBeforeType() !== ' ') {
                     $error = 'Expected 1 space before variable type';
-                    $this->currentFile->addError($error, $errorPos);
+                    $this->currentFile->addError($error, $errorPos, 'SpacingBeforeParamType');
                 }
 
                 $spaceCount = substr_count($param->getWhitespaceBeforeVarName(), ' ');
@@ -395,91 +339,69 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
 
                 $paramName = ($param->getVarName() !== '') ? $param->getVarName() : '[ UNKNOWN ]';
 
-                if ($previousParam !== null) {
-                    $previousName = ($previousParam->getVarName() !== '') ? $previousParam->getVarName() : 'UNKNOWN';
-
-                    // Check to see if the parameters align properly.
-                    if ($param->alignsVariableWith($previousParam) === false) {
-                        $error = 'The variable names for parameters '.$previousName.' ('.($pos - 1).') and '.$paramName.' ('.$pos.') do not align';
-                        $this->currentFile->addError($error, $errorPos);
-                    }
-
-                    if ($param->alignsCommentWith($previousParam) === false) {
-                        $error = 'The comments for parameters '.$previousName.' ('.($pos - 1).') and '.$paramName.' ('.$pos.') do not align';
-                        $this->currentFile->addError($error, $errorPos);
-                    }
-                }//end if
-
                 // Make sure the names of the parameter comment matches the
                 // actual parameter.
                 if (isset($realParams[($pos - 1)]) === true) {
                     $realName      = $realParams[($pos - 1)]['name'];
                     $foundParams[] = $realName;
+
                     // Append ampersand to name if passing by reference.
                     if ($realParams[($pos - 1)]['pass_by_reference'] === true) {
                         $realName = '&'.$realName;
                     }
 
-                    if ($realName !== $param->getVarName()) {
-                        $error  = 'Doc comment var "'.$paramName;
-                        $error .= '" does not match actual variable name "'.$realName;
-                        $error .= '" at position '.$pos;
+                    if ($realName !== $paramName) {
+                        $code = 'ParamNameNoMatch';
+                        $data = array(
+                                    $paramName,
+                                    $realName,
+                                    $pos,
+                                );
 
-                        $this->currentFile->addError($error, $errorPos);
+                        $error  = 'Doc comment for var %s does not match ';
+                        if (strtolower($paramName) === strtolower($realName)) {
+                            $error .= 'case of ';
+                            $code   = 'ParamNameNoCaseMatch';
+                        }
+
+                        $error .= 'actual variable name %s at position %s';
+
+                        $this->currentFile->addError($error, $errorPos, $code, $data);
                     }
-                } else {
+                } else if ($param->getType() !== '...') {
                     // We must have an extra parameter comment.
                     $error = 'Superfluous doc comment at position '.$pos;
-                    $this->currentFile->addError($error, $errorPos);
+                    $this->currentFile->addError($error, $errorPos, 'ExtraParamComment');
                 }
 
                 if ($param->getVarName() === '') {
                     $error = 'Missing parameter name at position '.$pos;
-                     $this->currentFile->addError($error, $errorPos);
+                     $this->currentFile->addError($error, $errorPos, 'MissingParamName');
                 }
 
                 if ($param->getType() === '') {
-                    $error = 'Missing type at position '.$pos;
-                    $this->currentFile->addError($error, $errorPos);
+                    $error = 'Missing parameter type at position '.$pos;
+                    $this->currentFile->addError($error, $errorPos, 'MissingParamType');
                 }
 
                 if ($paramComment === '') {
-                    $error = 'Missing comment for param "'.$paramName.'" at position '.$pos;
-                    $this->currentFile->addError($error, $errorPos);
+                    $error = 'Missing comment for param "%s" at position %s';
+                    $data  = array(
+                              $paramName,
+                              $pos,
+                             );
+                    $this->currentFile->addError($error, $errorPos, 'MissingParamComment', $data);
                 }
 
                 $previousParam = $param;
 
             }//end foreach
 
-            if ($spaceBeforeVar !== 1 && $spaceBeforeVar !== 10000 && $spaceBeforeComment !== 10000) {
-                $error = 'Expected 1 space after the longest type';
-                $this->currentFile->addError($error, $longestType);
-            }
-
-            if ($spaceBeforeComment !== 1 && $spaceBeforeComment !== 10000) {
-                $error = 'Expected 1 space after the longest variable name';
-                $this->currentFile->addError($error, $longestVar);
-            }
-
         }//end if
 
         $realNames = array();
         foreach ($realParams as $realParam) {
             $realNames[] = $realParam['name'];
-        }
-
-        // Report and missing comments.
-        $diff = array_diff($realNames, $foundParams);
-        foreach ($diff as $neededParam) {
-            if (count($params) !== 0) {
-                $errorPos = ($params[(count($params) - 1)]->getLine() + $commentStart);
-            } else {
-                $errorPos = $commentStart;
-            }
-
-            $error = 'Doc comment for "'.$neededParam.'" missing';
-            $this->currentFile->addError($error, $errorPos);
         }
 
     }//end processParams()
