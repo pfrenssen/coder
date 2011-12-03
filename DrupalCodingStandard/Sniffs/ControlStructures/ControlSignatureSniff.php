@@ -57,7 +57,10 @@ class DrupalCodingStandard_Sniffs_ControlStructures_ControlSignatureSniff extend
                 'for (...) {EOL',
                 'if (...) {EOL',
                 'foreach (...) {EOL',
-                //'} else if (...) {EOL',
+                // The EOL preceding the else/elseif keywords is not detected
+                // correctly, so we have
+                // DrupalCodingStandard_Sniffs_ControlStructures_ElseNewlineSniff to
+                // cover that.
                 '}EOLelseif (...) {EOL',
                 '}EOLelse {EOL',
                 'do {EOL',

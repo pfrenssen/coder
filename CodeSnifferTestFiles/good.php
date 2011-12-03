@@ -389,15 +389,3 @@ function test1($x) {
 function test_invoke_all($hook) {
 
 }
-
-// Template test. Alternative control structure style is allowed.
-?>
-<div>
-<?php if (TRUE): ?>
-  <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" id="logo">
-    <img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" />
-  </a>
-<?php else: ?>
-  <i>some text</i>
-<?php endif; ?>
-</div>

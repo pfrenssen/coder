@@ -7,6 +7,10 @@
   <!-- Do not run this sniff on template files. -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
  </rule>
+ <rule ref="DrupalCodingStandard.ControlStructures.ElseNewline">
+  <!-- Do not run this sniff on template files. -->
+  <exclude-pattern>*.tpl.php</exclude-pattern>
+ </rule>
  <rule ref="DrupalCodingStandard.WhiteSpace.ScopeClosingBrace">
   <!-- Do not run this sniff on template files. -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
