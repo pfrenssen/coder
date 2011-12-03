@@ -144,6 +144,11 @@ $a = array(
   '2',
   array('3',)
 );
+// Missing comma on the last item.
+$field = array(
+  'field_name' => 'test_text',
+  'type' => 'text'
+);
 
 // Array white space style.
 $a = array ('1');
