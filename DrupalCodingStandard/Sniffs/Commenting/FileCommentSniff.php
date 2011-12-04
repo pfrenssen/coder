@@ -103,13 +103,6 @@ class DrupalCodingStandard_Sniffs_Commenting_FileCommentSniff implements PHP_Cod
                 $phpcsFile->addError('The second line in the file doc comment must be " * @file"', $fileLine);
                 return;
             }
-            $line = $fileLine + 1;
-            while ($line = $phpcsFile->findNext(T_DOC_COMMENT, $line, $commentEnd)) {
-                if (substr($tokens[$line]['content'], 0, 2) !== ' *') {
-                    $phpcsFile->addError('File doc description lines must start with " *"', $line);
-                }
-                $line++;
-            }
             if ($tokens[$commentEnd]['content'] !== (' */')) {
               $phpcsFile->addError('The last line in the file doc comment must be " */"', $commentEnd);
             }

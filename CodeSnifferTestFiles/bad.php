@@ -368,6 +368,10 @@ Class FunctionTest {
 
   }
 
+  /**
+   * Asterisks of this comment are wrong.
+  *
+    */
   private function foobar() {
 
   }
@@ -509,5 +513,13 @@ function test10($x) {
  * @return bool This description should be on the next line.
  */
 function test11($x, $y, $z, $a, $b) {
+
+}
+
+/**
+* Malformed doxygen asterisks.
+*@return array
+*/
+function test12() {
 
 }
