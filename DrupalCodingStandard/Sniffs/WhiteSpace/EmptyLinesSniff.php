@@ -65,7 +65,6 @@ class DrupalCodingStandard_Sniffs_WhiteSpace_EmptyLinesSniff implements PHP_Code
     {
         $tokens = $phpcsFile->getTokens();
 
-        //print_r('x' . $tokens[$stackPtr]['content'] . 'y');
         if ($tokens[$stackPtr]['content'] === $phpcsFile->eolChar
             && isset($tokens[$stackPtr + 1])
             && $tokens[$stackPtr + 1]['content'] === $phpcsFile->eolChar
