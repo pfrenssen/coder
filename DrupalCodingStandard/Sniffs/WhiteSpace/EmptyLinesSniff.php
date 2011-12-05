@@ -1,31 +1,25 @@
 <?php
 /**
- * DrupalCodingStandard_Sniffs_WhiteSpace_ControlStructureSpacingSniff.
+ * DrupalCodingStandard_Sniffs_WhiteSpace_EmptyLinesSniff.
  *
  * PHP version 5
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @author   Klaus Purer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
 /**
- * DrupalCodingStandard_Sniffs_WhiteSpace_ControlStructureSpacingSniff.
+ * DrupalCodingStandard_Sniffs_WhiteSpace_EmptyLinesSniff.
  *
- * Checks that control structures have the correct spacing around brackets. Largely
- * copied from Squiz_Sniffs_WhiteSpace_ControlStructureSpacingSniff
+ * Checks that there are not more than 2 empty lines following each other. Checks
+ * that a file ends in exactly one single new line character.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @author   Klaus Purer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class DrupalCodingStandard_Sniffs_WhiteSpace_EmptyLinesSniff implements PHP_CodeSniffer_Sniff
 {
@@ -49,6 +43,7 @@ class DrupalCodingStandard_Sniffs_WhiteSpace_EmptyLinesSniff implements PHP_Code
     public function register()
     {
         return array(T_WHITESPACE);
+
     }//end register()
 
 
@@ -66,15 +61,27 @@ class DrupalCodingStandard_Sniffs_WhiteSpace_EmptyLinesSniff implements PHP_Code
         $tokens = $phpcsFile->getTokens();
 
         if ($tokens[$stackPtr]['content'] === $phpcsFile->eolChar
-            && isset($tokens[$stackPtr + 1])
+            && isset($tokens[$stackPtr + 1]) === true
             && $tokens[$stackPtr + 1]['content'] === $phpcsFile->eolChar
-            && isset($tokens[$stackPtr + 2])
+            && isset($tokens[$stackPtr + 2]) === true
             && $tokens[$stackPtr + 2]['content'] === $phpcsFile->eolChar
-            && isset($tokens[$stackPtr + 3])
+            && isset($tokens[$stackPtr + 3]) === true
             && $tokens[$stackPtr + 3]['content'] === $phpcsFile->eolChar
         ) {
             $error = 'More than 2 empty lines are not allowed';
             $phpcsFile->addError($error, $stackPtr + 3, 'EmptyLines');
+        }
+
+        $nextWhiteSpace = $phpcsFile->findNext(T_WHITESPACE, $stackPtr + 1);
+        // Check if this is the last white space in the file.
+        if ($nextWhiteSpace === false) {
+            $notLastToken = count($tokens) !== $stackPtr + 1;
+            $notEOLChar   = $tokens[$stackPtr]['content'] !== $phpcsFile->eolChar;
+            $moreEOL      = isset($tokens[$stackPtr - 1]) && $tokens[$stackPtr - 1]['content'] === $phpcsFile->eolChar;
+            if ($notLastToken === true || $notEOLChar === true || $moreEOL === true) {
+                $error = 'Files must end in a single new line character';
+                $phpcsFile->addError($error, $stackPtr, 'EmptyLinesFileEnd');
+            }
         }
 
     }//end process()
