@@ -121,16 +121,16 @@ function coder_review_drush_review() {
             $settings['coder_includes'] = TRUE;
           }
           else {
-            if (file_exists($arg)) {
+            if (_coder_review_drush_is_patch_arg($arg)) {
+              $settings['coder_patches'] = 1;
+              $settings['coder_patch_link'] = $arg;
+            }
+            elseif (file_exists($arg)) {
               $settings['coder_files'] = 1;
               if (empty($settings['coder_file_list'])) {
                 $settings['coder_file_list'] = '';
               }
               $settings['coder_file_list'] .= $arg . "\n";
-            }
-            elseif (_coder_review_drush_is_patch_arg($arg)) {
-              $settings['coder_patches'] = 1;
-              $settings['coder_patch_link'] = $arg;
             }
             else {
               $settings['coder_modules-' . $arg] = 1;
@@ -190,7 +190,7 @@ function coder_review_drush_review() {
  * Handle patch reviews.
  */
 function _coder_review_drush_is_patch_arg(&$arg) {
-  if (drupal_substr($arg, 0, 7) == 'http://' || is_file(realpath($arg))) {
+  if (drupal_substr($arg, 0, 7) == 'http://' || (is_file(realpath($arg)) && preg_match('/\.(patch|diff|tmp)$/', $arg))) {
     return TRUE;
   }
   // @NOTE: relies on http://drupal.org/node/297611
