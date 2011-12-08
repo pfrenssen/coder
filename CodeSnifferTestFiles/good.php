@@ -162,6 +162,10 @@ do {
  *
  * @return array
  *   Doxygen style comments.
+ *
+ * @see example_reference()
+ * @see Example::exampleMethod()
+ * @see http://drupal.org
  */
 function foo_bar($field1, $field2, $field3 = NULL) {
   $system["description"] = t("This module inserts funny text into posts randomly.");

@@ -168,6 +168,7 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
         $this->processParams($commentStart);
         $this->processReturn($commentStart, $commentEnd);
         $this->processThrows($commentStart);
+        $this->processSees();
 
         // Check if hook implementation doc is formated correctly.
         if (preg_match('/((I|i)mplement[^\n]+?hook_[^\n]+)/', $comment->getShortComment(), $matches)) {
@@ -437,6 +438,31 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
         }
 
     }//end processParams()
+
+
+    /**
+     * Process the function "see" comments.
+     *
+     * @return void
+     */
+    protected function processSees()
+    {
+        $sees = $this->commentParser->getSees();
+        foreach ($sees as $see) {
+            $errorPos = $see->getLine();
+            if ($see->getWhitespaceBeforeContent() !== ' ') {
+                $error = 'Expected 1 space before see reference';
+                $this->currentFile->addError($error, $errorPos, 'SpacingBeforeSee');
+            }
+
+            $comment = trim($see->getContent());
+            if (preg_match('/[\.!\?]$/', $comment) === 1) {
+                $error = 'Trailing punctuation for @see references is not allowed.';
+                $this->currentFile->addError($error, $errorPos, 'SeePunctuation');
+            }
+        }
+
+    }//end processSees()
 
 
 }//end class

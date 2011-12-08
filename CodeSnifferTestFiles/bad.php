@@ -511,6 +511,9 @@ function test10($x) {
  *   Parameter does not exist.
  *
  * @return bool This description should be on the next line.
+ *
+ * @see  Too much space here
+ * @see my_function().
  */
 function test11($x, $y, $z, $a, $b) {
 
