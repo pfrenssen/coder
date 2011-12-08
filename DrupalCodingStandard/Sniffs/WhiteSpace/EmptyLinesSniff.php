@@ -82,23 +82,25 @@ class DrupalCodingStandard_Sniffs_WhiteSpace_EmptyLinesSniff implements PHP_Code
         switch ($token['code']) {
             case T_WHITESPACE:
                 $nextWhiteSpace = $phpcsFile->findNext(T_WHITESPACE, $stackPtr + 1);
-                $nextCloseTag   = $phpcsFile->findNext(T_CLOSE_TAG, $stackPtr + 1);
                 // Check if this is the last white space in the file.
-                if ($nextWhiteSpace === false && $nextCloseTag === false) {
-                    // There has to be a white space at the end.
-                    if ($lastToken === false) {
-                        $error = true;
-                        break;
-                    }
-                    // The only white space allowed is the \n character.
-                    if ($token['content'] !== $phpcsFile->eolChar) {
-                        $error = true;
-                        break;
-                    }
-                    // Only one new line character is allowed a t the end.
-                    if (isset($tokens[$stackPtr - 1]) === true && $tokens[$stackPtr - 1]['content'] === $phpcsFile->eolChar) {
-                        $error = true;
-                        break;
+                if ($nextWhiteSpace === false) {
+                    $nextCloseTag = $phpcsFile->findNext(T_CLOSE_TAG, $stackPtr + 1);
+                    if ($nextCloseTag === false) {
+                        // There has to be a white space at the end.
+                        if ($lastToken === false) {
+                            $error = true;
+                            break;
+                        }
+                        // The only white space allowed is the \n character.
+                        if ($token['content'] !== $phpcsFile->eolChar) {
+                            $error = true;
+                            break;
+                        }
+                        // Only one new line character is allowed a t the end.
+                        if (isset($tokens[$stackPtr - 1]) === true && $tokens[$stackPtr - 1]['content'] === $phpcsFile->eolChar) {
+                            $error = true;
+                            break;
+                        }
                     }
                 }
                 break;
