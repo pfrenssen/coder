@@ -66,6 +66,10 @@ $i[0] + 1;
 $x->{$i} + 1;
 REQUEST_TIME + 42;
 
+// Operator line break for long lines.
+$x = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+  + 1 + 1;
+
 // Casting has a space.
 (int) $i;
 

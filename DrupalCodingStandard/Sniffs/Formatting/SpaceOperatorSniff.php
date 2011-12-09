@@ -102,14 +102,28 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
             $error = 'An operator statement must be followed by a single space';
             $phpcsFile->addError($error, $stackPtr);
         }
-        if ($needs_operator_prefix && ($tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE
-            || ($tokens[($stackPtr - 1)]['content'] != ' '
+
+        if ($needs_operator_prefix) {
+            $error = false;
+            if ($tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE) {
+                $error = true;
+            } else if ($tokens[($stackPtr - 1)]['content'] !== ' '
                 && $tokens[$stackPtr]['code'] !== T_EQUAL
-                && $tokens[$stackPtr]['code'] !== T_DOUBLE_ARROW))
-        ) {
-            $error = 'There must be a single space before an operator statement';
-            $phpcsFile->addError($error, $stackPtr);
-        }
+                && $tokens[$stackPtr]['code'] !== T_DOUBLE_ARROW
+            ) {
+                $nonWhiteSpace = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, $stackPtr - 1, null, true);
+                // Make sure that the previous operand is on the same line before
+                // throwing an error.
+                if ($tokens[$nonWhiteSpace]['line'] === $tokens[$stackPtr]['line']) {
+                    $error = true;
+                }
+            }
+
+            if ($error === true) {
+                $error = 'There must be a single space before an operator statement';
+                $phpcsFile->addError($error, $stackPtr);
+            }
+        }//end if
 
     }//end process()
 
