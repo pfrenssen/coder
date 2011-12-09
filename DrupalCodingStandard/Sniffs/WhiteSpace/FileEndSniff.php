@@ -30,8 +30,7 @@ class DrupalCodingStandard_Sniffs_WhiteSpace_FileEndSniff implements PHP_CodeSni
      */
     public $supportedTokenizers = array(
                                    'PHP',
-                                   // We cannot use JS files right now because the tokenizer is strange.
-                                   //'JS',
+                                   'JS',
                                    'CSS',
                                   );
 
@@ -67,30 +66,24 @@ class DrupalCodingStandard_Sniffs_WhiteSpace_FileEndSniff implements PHP_CodeSni
         static $called = array();
         if (isset($called[$phpcsFile->getFilename()]) === false) {
             $called[$phpcsFile->getFilename()] = true;
-            $tokens = $phpcsFile->getTokens();
-            // Temporary fix for CSS files, that have artificial tokens at the end.
-            $fileExtension = $fileExtension = strtolower(substr($phpcsFile->getFilename(), -3));
-            if ($fileExtension === 'css') {
-                array_pop($tokens);
-                array_pop($tokens);
-            }
-            $lastToken = $tokens[count($tokens) - 1];
+            // Retrieve the raw file content, as the tokens do not work consistently
+            // for different file types (CSS and javascript files have additional
+            // artifical tokens at the end for example).
+            $content = file_get_contents($phpcsFile->getFilename());
             $error = false;
+            $lastChar = substr($content, -1);
             // There must be a \n character at the end of the last token.
-            if (substr($lastToken['content'], -1) !== $phpcsFile->eolChar) {
+            if ($lastChar !== $phpcsFile->eolChar) {
                 $error = true;
             }
             // There must be only one \n character at the end of the file.
-            else if ($lastToken['content'] === $phpcsFile->eolChar
-                && isset($tokens[count($tokens) - 2]) === true
-                && substr($tokens[count($tokens) - 2]['content'], -1) === $phpcsFile->eolChar
-            ) {
+            else if (substr($content, -2, 1) === $phpcsFile->eolChar) {
                 $error = true;
             }
 
             if ($error === true) {
                 $error = 'Files must end in a single new line character';
-                $phpcsFile->addError($error, count($tokens) - 1, 'FileEnd');
+                $phpcsFile->addError($error, $phpcsFile->numTokens - 1, 'FileEnd');
             }
         }//end if
 
