@@ -30,7 +30,8 @@ class DrupalCodingStandard_Sniffs_WhiteSpace_FileEndSniff implements PHP_CodeSni
      */
     public $supportedTokenizers = array(
                                    'PHP',
-                                   'JS',
+                                   // We cannot use JS files right now because the tokenizer is strange.
+                                   //'JS',
                                    'CSS',
                                   );
 
@@ -67,6 +68,12 @@ class DrupalCodingStandard_Sniffs_WhiteSpace_FileEndSniff implements PHP_CodeSni
         if (isset($called[$phpcsFile->getFilename()]) === false) {
             $called[$phpcsFile->getFilename()] = true;
             $tokens = $phpcsFile->getTokens();
+            // Temporary fix for CSS files, that have artificial tokens at the end.
+            $fileExtension = $fileExtension = strtolower(substr($phpcsFile->getFilename(), -3));
+            if ($fileExtension === 'css') {
+                array_pop($tokens);
+                array_pop($tokens);
+            }
             $lastToken = $tokens[count($tokens) - 1];
             $error = false;
             // There must be a \n character at the end of the last token.
