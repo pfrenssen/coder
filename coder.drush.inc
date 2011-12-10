@@ -47,9 +47,18 @@ function drush_coder_format() {
 
   $undo = drush_get_option('undo', FALSE);
   $files = func_get_args();
+  $cwd = drush_get_context('DRUSH_OLDCWD');
   foreach ($files as $file) {
+    // Additionally support relative paths.
+    // Do this first to prevent typo disasters (e.g., $file == '/').
+    if (is_dir($cwd . '/' . $file)) {
+      coder_format_recursive($cwd . '/' . $file, $undo);
+    }
+    elseif (file_exists($cwd . '/' . $file)) {
+      coder_format_file($cwd . '/' . $file, $undo);
+    }
     // If argument is a directory, process it recursively.
-    if (is_dir($file)) {
+    elseif (is_dir($file)) {
       coder_format_recursive($file, $undo);
     }
     else {
