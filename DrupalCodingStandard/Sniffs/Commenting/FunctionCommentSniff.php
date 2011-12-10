@@ -383,7 +383,10 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
 
                     $code = 'ParamNameNoMatch';
                     if ($isReference === true && substr($paramName, 0, 1) === '&') {
-                        $warning = 'Doc comment for var %s at position %s should not contain the & for referenced variables.';
+                        // This warning is disabled until a decision has been reached
+                        // whether this is an error or not.
+                        // @see http://drupal.org/node/1366842
+                        /*$warning = 'Doc comment for var %s at position %s should not contain the & for referenced variables.';
                         $this->currentFile->addWarning(
                             $warning,
                             $errorPos,
@@ -392,7 +395,7 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
                              $paramName,
                              $pos,
                             )
-                        );
+                        );*/
                     } else {
                         if ($expectedParamName !== $paramName) {
                             $data  = array(
