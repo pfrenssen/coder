@@ -18,7 +18,7 @@ function coder_format_recursive($directory, $undo = FALSE) {
   $directory = str_replace('\\', '/', $directory);
 
   // Check if directory exists.
-  if (!file_check_directory($directory)) {
+  if (!is_dir($directory)) {
     drupal_set_message(t('%directory not found.', array('%directory' => $directory)), 'error');
     return FALSE;
   }
@@ -26,7 +26,12 @@ function coder_format_recursive($directory, $undo = FALSE) {
   // Fetch files to process.
   $mask   = '\.php$|\.module$|\.inc$|\.install|\.profile$';
   $nomask = array('.', '..', 'CVS', '.svn', '.git');
-  $files  = file_scan_directory($directory, $mask, $nomask, 0, TRUE);
+  if (function_exists('drush_scan_directory')) {
+    $files = drush_scan_directory($directory, '/' . $mask . '/', $nomask, 0, TRUE);
+  }
+  else {
+    $files = file_scan_directory($directory, $mask, $nomask, 0, TRUE);
+  }
   foreach ($files as $file) {
     coder_format_file($file->filename, $undo);
   }
@@ -53,17 +58,23 @@ function coder_format_file($filename, $undo = FALSE) {
     }
     // Save original filename.
     $original = $filename;
-    // Retrieve the file's directory.
-    $basename = file_check_path($filename);
+    // Retrieve the file's basename.
+    $basename = basename($filename);
     // Find all backups.
-    $mask  = '^' . preg_quote($basename) . '(\.coder\.orig)+$';
+    $dirname = dirname($filename);
+    $mask  = '^' . preg_quote($basename, '/') . '(\.coder\.orig)+$';
     $nomask = array('.', '..', 'CVS', '.svn', '.git');
-    $backups = file_scan_directory($filename, $mask, $nomask, 0, FALSE);
+    if (function_exists('drush_scan_directory')) {
+      $backups = drush_scan_directory($dirname, '/' . $mask . '/', $nomask, 0, FALSE);
+    }
+    else {
+      $backups = file_scan_directory($dirname, $mask, $nomask, 0, FALSE);
+    }
     // Find the latest backup to restore.
     ksort($backups);
     $latest = array_pop($backups);
     // Restore latest backup.
-    if (file_move($latest->filename, $original, FILE_EXISTS_REPLACE)) {
+    if (unlink($original) && rename($latest->filename, $original)) {
       drupal_set_message(t('%file restored.', array('%file' => $original)));
       return TRUE;
     }
@@ -76,7 +87,11 @@ function coder_format_file($filename, $undo = FALSE) {
   // Backup original file.
   // file_copy() replaces source filepath with target filepath.
   $sourcefile = $filename;
-  if (!file_copy($filename, $filename . '.coder.orig', FILE_EXISTS_RENAME)) {
+  $targetfile = $filename . '.coder.orig';
+  $status = file_exists($filename);
+  $status = $status && copy($filename, $targetfile);
+  $status = $status && file_exists($targetfile);
+  if (!$status) {
     drupal_set_message(t('%file could not be backup.', array('%file' => $filename)), 'error');
     return FALSE;
   }
