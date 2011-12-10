@@ -1057,12 +1057,6 @@ function coder_trim_php($code) {
   // Remove surrounding whitespace.
   $code = trim($code);
 
-  // Insert CVS keyword Id.
-  // Search in the very first 1000 chars, insert only one instance.
-  if (strpos(substr($code, 0, 1000), '$Id') === FALSE) {
-    $code = preg_replace('/<\?php\n/', "<?php\n// \$Id\$\n\n", $code, 1);
-  }
-
   // Remove closing PHP tag.
   if (substr($code, -2) == '?>') {
     $code = rtrim($code, '?>');
