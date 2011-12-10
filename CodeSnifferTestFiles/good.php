@@ -163,6 +163,8 @@ do {
  *   Doxygen style comments.
  * @param bool $field3
  *   Doxygen style comments.
+ * @param bool $field4
+ *   Don't check for & in docblock of referenced variable.
  *
  * @return array
  *   Doxygen style comments.
@@ -171,7 +173,7 @@ do {
  * @see Example::exampleMethod()
  * @see http://drupal.org
  */
-function foo_bar($field1, $field2, $field3 = NULL) {
+function foo_bar($field1, $field2, $field3 = NULL, &$field4 = NULL) {
   $system["description"] = t("This module inserts funny text into posts randomly.");
   return $system[$field];
 }

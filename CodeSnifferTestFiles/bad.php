@@ -520,6 +520,16 @@ function test11($x, $y, $z, $a, $b) {
 }
 
 /**
+ * Referenced variables should not contain the & in the docblock.
+ *
+ * @param int &$x
+ *   Refrenced variable.
+ */
+function test12(&$x, &$y) {
+
+}
+
+/**
 * Malformed doxygen asterisks.
 *@return array
 */
