@@ -22,7 +22,6 @@
  <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
  <rule ref="Generic.PHP.DisallowShortOpenTag" />
  <rule ref="Generic.PHP.UpperCaseConstant" />
- <rule ref="Generic.Strings.UnnecessaryStringConcat"/>
  <rule ref="Generic.WhiteSpace.DisallowTabIndent" />
  <rule ref="Generic.WhiteSpace.ScopeIndent">
   <properties>
@@ -32,14 +31,14 @@
   the HTML -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
  </rule>
- 
+
  <!-- Use Unix newlines -->
  <rule ref="Generic.Files.LineEndings">
   <properties>
    <property name="eolChar" value="\n"/>
   </properties>
  </rule>
- 
+
  <rule ref="MySource.Debug.DebugCode" />
  <rule ref="PEAR.Functions.ValidDefaultValue" />
  <rule ref="Squiz.Classes.LowercaseClassKeywords" />

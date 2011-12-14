@@ -399,3 +399,12 @@ function test1($x) {
 function test_invoke_all($hook) {
 
 }
+
+// Test string concatenation.
+$x = 'This string is very long and thus it can and should be concatenated.' .
+     'Othverwise the string will be very hard to maintain and or read';
+$x = 'This string should be concatenated. Even if it is just a little bit ' .
+     'longer';
+$x = (1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 ) . 'This is initially ' .
+     'short but since it has a lot of code before the real text it can be ' .
+     'concatenated';

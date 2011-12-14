@@ -69,6 +69,27 @@ class DrupalCodingStandard_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_F
       }
     }//end checkLineLength()
 
+    /**
+     * Returns the length of a defined line.
+     *
+     * @return integer
+     */
+    public function getLineLength(PHP_CodeSniffer_File $phpcsFile, $currentLine) {
+        $tokens = $phpcsFile->getTokens();
+
+        $tokenCount         = 0;
+        $currentLineContent = '';
+
+        $trim = (strlen($phpcsFile->eolChar) * -1);
+        for (; $tokenCount < $phpcsFile->numTokens; $tokenCount++) {
+          if ($tokens[$tokenCount]['line'] === $currentLine) {
+            $currentLineContent .= $tokens[$tokenCount]['content'];
+          }
+        }
+
+        return strlen($currentLineContent);
+    }
+
 }//end class
 
 ?>

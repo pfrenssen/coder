@@ -537,3 +537,5 @@ function test12() {
 
 }
 
+// Test string concatenation.
+$x = 'This string is to short to be' . 'concatenated';
