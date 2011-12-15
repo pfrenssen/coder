@@ -258,6 +258,17 @@ do {
   $i;
 } while($condition);
 
+// Control structure keywords must be lower case.
+IF (TRUE) {
+  FoReACH ($a as $key => $value) {
+    tRY {
+      $value++;
+    }
+    CATCH (Exception $e) {
+    }
+  }
+}
+
 /**
  * Short description
  *
