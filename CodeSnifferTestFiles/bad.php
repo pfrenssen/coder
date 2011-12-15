@@ -258,6 +258,19 @@ do {
   $i;
 } while($condition);
 
+// For loop formatting.
+// For loop formatting.
+for ( $i = 0; $i < 5; $i++) {
+}
+for ($i = 0 ; $i < 5; $i++) {
+}
+for ($i = 0;$i < 5; $i++) {
+}
+for ($i = 0; $i < 5 ; $i++) {
+}
+for ($i = 0; $i < 5;$i++) {
+}
+
 // Control structure keywords must be lower case.
 IF (TRUE) {
   FoReACH ($a as $key => $value) {
