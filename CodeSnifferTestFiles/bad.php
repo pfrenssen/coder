@@ -170,6 +170,9 @@ foreach ( $a as $key =>$value) {
 }
 foreach ( $a as $key=> $value) {
 }
+// "as" keyword must be lower case.
+foreach ($a AS  $key => $value) {
+}
 
 
 
