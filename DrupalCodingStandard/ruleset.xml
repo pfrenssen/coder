@@ -63,5 +63,13 @@
  <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration.SpacingAfterArrow">
   <severity>0</severity>
  </rule>
+ <rule ref="Squiz.ControlStructures.ForLoopDeclaration" />
+ <!-- Disable some error messages that are handled by other sniffs. -->
+ <rule ref="Squiz.ControlStructures.ForLoopDeclaration.SpacingAfterOpen">
+  <severity>0</severity>
+ </rule>
+ <rule ref="Squiz.ControlStructures.ForLoopDeclaration.SpacingBeforeClose">
+  <severity>0</severity>
+ </rule>
  <rule ref="Squiz.ControlStructures.LowercaseDeclaration" />
 </ruleset>
