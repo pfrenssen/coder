@@ -51,8 +51,6 @@ class DrupalCodingStandard_Sniffs_WhiteSpace_ControlStructureSpacingSniff implem
         return array(
                 T_IF,
                 T_WHILE,
-                T_FOREACH,
-                T_FOR,
                 T_SWITCH,
                 T_DO,
                 T_ELSE,
