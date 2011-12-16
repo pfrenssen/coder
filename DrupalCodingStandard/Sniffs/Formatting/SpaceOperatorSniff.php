@@ -32,8 +32,10 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
      */
     public function register()
     {
-         $tokens = array_merge(
-             PHP_CodeSniffer_Tokens::$assignmentTokens,
+        // Do not examine "=>" assignment, this is handled by other sniffs.
+        $assignments = array_diff(PHP_CodeSniffer_Tokens::$assignmentTokens, array(T_DOUBLE_ARROW));
+        $tokens = array_merge(
+             $assignments,
              PHP_CodeSniffer_Tokens::$equalityTokens,
              PHP_CodeSniffer_Tokens::$comparisonTokens,
              PHP_CodeSniffer_Tokens::$arithmeticTokens
@@ -89,7 +91,6 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
         ));
         $needs_operator_prefix = !in_array($tokens[$lastSyntaxItem]['code'], array(
           T_OPEN_PARENTHESIS,
-          T_DOUBLE_ARROW,
           T_EQUAL,
         ));
 
@@ -109,7 +110,6 @@ class DrupalCodingStandard_Sniffs_Formatting_SpaceOperatorSniff implements PHP_C
                 $error = true;
             } else if ($tokens[($stackPtr - 1)]['content'] !== ' '
                 && $tokens[$stackPtr]['code'] !== T_EQUAL
-                && $tokens[$stackPtr]['code'] !== T_DOUBLE_ARROW
             ) {
                 $nonWhiteSpace = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, $stackPtr - 1, null, true);
                 // Make sure that the previous operand is on the same line before
