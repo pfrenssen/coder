@@ -65,6 +65,9 @@
  <rule ref="Squiz.Arrays.ArrayDeclaration.NoComma">
   <severity>0</severity>
  </rule>
+ <rule ref="Squiz.Arrays.ArrayDeclaration.NoCommaAfterLast">
+  <severity>0</severity>
+ </rule>
  <rule ref="Squiz.Arrays.ArrayDeclaration.SingleLineNotAllowed">
   <severity>0</severity>
  </rule>
@@ -74,7 +77,6 @@
  
  <rule ref="Squiz.Classes.LowercaseClassKeywords" />
  <rule ref="Squiz.Commenting.PostStatementComment" />
- 
  <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration" />
  <rule ref="Squiz.ControlStructures.ForLoopDeclaration" /> 
  <rule ref="Squiz.ControlStructures.LowercaseDeclaration" />
