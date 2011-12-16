@@ -408,3 +408,8 @@ $x = 'This string should be concatenated. Even if it is just a little bit ' .
 $x = (1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 ) . 'This is initially ' .
      'short but since it has a lot of code before the real text it can be ' .
      'concatenated';
+
+// Requiring files conditionally is allowed.
+if ($a == TRUE) {
+  require_once 'good.tpl.php';
+}
