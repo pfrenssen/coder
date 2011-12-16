@@ -560,7 +560,15 @@ function test12(&$x, &$y) {
 * Malformed doxygen asterisks.
 *@return array
 */
-function test12() {
+function test13() {
+
+}
+
+/**
+ * There should be no empty line between doc block and function.
+ */
+
+function test14() {
 
 }
 

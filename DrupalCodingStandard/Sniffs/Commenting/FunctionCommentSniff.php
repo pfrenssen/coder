@@ -165,6 +165,12 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
             return;
         }
 
+        // Check that the comment is imidiately before the function definition.
+        if (($tokens[$commentEnd]['line'] + 1) !== $tokens[$stackPtr]['line']) {
+            $error = 'Function doc comment must end on the line before the function definition';
+            $phpcsFile->addError($error, $commentEnd, 'EmptyLinesAfterDoc');
+        }
+
         $this->processParams($commentStart);
         $this->processReturn($commentStart, $commentEnd);
         $this->processThrows($commentStart);
