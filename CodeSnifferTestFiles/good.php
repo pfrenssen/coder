@@ -413,3 +413,10 @@ $x = (1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 ) . 'This is initially ' .
 if ($a == TRUE) {
   require_once 'good.tpl.php';
 }
+
+/**
+ * This is not an implementation of hook_foobar().
+ */
+function hook_foobar() {
+
+}
