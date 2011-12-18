@@ -289,6 +289,11 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
                     $this->currentFile->addError($error, $errorPos, 'SpacingBeforeReturnType');
                 }
 
+                if (strpos($return->getValue(), '$') !== false) {
+                    $error = '@return data type must not contain "$"';
+                    $this->currentFile->addError($error, $errorPos, '$InReturnType');
+                }
+
                 if (trim($comment) === '') {
                     $error = 'Missing comment for @return statement';
                     $this->currentFile->addError($error, $errorPos, 'MissingReturnComment');

@@ -572,5 +572,16 @@ function test14() {
 
 }
 
+/**
+ * Return data type documentation must not be the variable name.
+ *
+ * @return $foo
+ *   Description bla.
+ */
+function test15() {
+  $foo = TRUE;
+  return $foo;
+}
+
 // Test string concatenation.
 $x = 'This string is to short to be' . 'concatenated';
