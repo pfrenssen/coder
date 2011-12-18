@@ -3,6 +3,10 @@
 <ruleset name="DrupalCodingStandard">
  <description>Drupal coding standard</description>
 
+ <rule ref="DrupalCodingStandard.Commenting.FileComment">
+  <!-- Do not run this sniff on txt files. -->
+  <exclude-pattern>*.txt</exclude-pattern>
+ </rule>
  <rule ref="DrupalCodingStandard.ControlStructures.ControlSignature">
   <!-- Do not run this sniff on template files. -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
@@ -15,6 +19,7 @@
   <!-- Do not run this sniff on template files. -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
  </rule>
+ 
  <rule ref="Generic.Formatting.SpaceAfterCast" />
  <rule ref="Generic.Functions.FunctionCallArgumentSpacing" />
  <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie" />
