@@ -4,33 +4,19 @@
  *
  * PHP version 5
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Serge Shirokov <bolter.fire@gmail.com>
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-
-if (class_exists('PHP_CodeSniffer_Standards_AbstractVariableSniff', true) === false) {
-    $error = 'Class PHP_CodeSniffer_Standards_AbstractVariableSniff not found';
-    throw new PHP_CodeSniffer_Exception($error);
-}
 
 /**
  * DrupalCodingStandard_Sniffs_NamingConventions_ValidVariableNameSniff.
  *
  * Checks the naming of member variables.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Serge Shirokov <bolter.fire@gmail.com>
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.2.0RC3
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class DrupalCodingStandard_Sniffs_NamingConventions_ValidVariableNameSniff
 
@@ -61,20 +47,12 @@ class DrupalCodingStandard_Sniffs_NamingConventions_ValidVariableNameSniff
         $scope          = $memberProps['scope'];
         $scopeSpecified = $memberProps['scope_specified'];
 
-        // If it's a private member, it must have an underscore on the front.
-        /*if ($isPublic === false && $memberName{0} !== '_') {
-            $error = "Private member variable \"$memberName\" must be
-                prefixed with an underscore";
-            $phpcsFile->addError($error, $stackPtr);
-            return;
-        }*/
-
         // Even if it's a private member, it must have an underscore on the front.
         if ($isPublic === false && $memberName{0} === '_') {
-          $error = "Private member variable \"$memberName\" must not be
-          	prefixed with an underscore - it is discouraged in PHP 5-specific code";
-          $phpcsFile->addError($error, $stackPtr);
-          return;
+            $error = "Private member variable \"$memberName\" must not be
+            	prefixed with an underscore - it is discouraged in PHP 5-specific code";
+            $phpcsFile->addError($error, $stackPtr);
+            return;
         }
 
         // If it's not a private member, it must not have an underscore on the front.
@@ -83,6 +61,12 @@ class DrupalCodingStandard_Sniffs_NamingConventions_ValidVariableNameSniff
                 prefixed with an underscore";
             $phpcsFile->addError($error, $stackPtr);
             return;
+        }
+
+        if (strpos($memberName, '_') !== false) {
+            $error = 'Class property %s should use lowerCamel naming without underscores';
+            $data  = array($tokens[$stackPtr]['content']);
+            $phpcsFile->addError($error, $stackPtr, 'LowerCamelName', $data);
         }
 
     }//end processMemberVar()
@@ -98,37 +82,36 @@ class DrupalCodingStandard_Sniffs_NamingConventions_ValidVariableNameSniff
      */
     protected function processVariable(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
+        $tokens = $phpcsFile->getTokens();
 
-      $tokens = $phpcsFile->getTokens();
+        $varName = ltrim($tokens[$stackPtr]['content'], '$');
 
-      $varName     = ltrim($tokens[$stackPtr]['content'], '$');
+        $phpReservedVars = array(
+                            '_SERVER',
+                            '_GET',
+                            '_POST',
+                            '_REQUEST',
+                            '_SESSION',
+                            '_ENV',
+                            '_COOKIE',
+                            '_FILES',
+                            'GLOBALS',
+                           );
 
-      $phpReservedVars = array(
-                                  '_SERVER',
-                                  '_GET',
-                                  '_POST',
-                                  '_REQUEST',
-                                  '_SESSION',
-                                  '_ENV',
-                                  '_COOKIE',
-                                  '_FILES',
-                                  'GLOBALS',
-      );
+        // If it's a php reserved var, then its ok.
+        if (in_array($varName, $phpReservedVars) === true) {
+            return;
+        }
 
-      // If it's a php reserved var, then its ok.
-      if (in_array($varName, $phpReservedVars) === true) {
-        return;
-      }
+        // If it is a static public variable of a class, then its ok.
+        if ($tokens[($stackPtr - 1)]['code'] === T_DOUBLE_COLON) {
+            return;
+        }
 
-      // If it is a static public variable of a class, then its ok.
-      if ($tokens[($stackPtr - 1)]['code'] === T_DOUBLE_COLON) {
-        return;
-      }
-
-      if (preg_match('/[A-Z]/', $varName) && PHP_CodeSniffer::isCamelCaps($varName, false, true, false) == true) {
-        $error = "Variable \"$varName\" is camel caps format. do not use mixed case (camelCase), use lower case and _";
-        $phpcsFile->addError($error, $stackPtr);
-      }
+        if (preg_match('/[A-Z]/', $varName) && PHP_CodeSniffer::isCamelCaps($varName, false, true, false) === true) {
+            $error = "Variable \"$varName\" is camel caps format. do not use mixed case (camelCase), use lower case and _";
+            $phpcsFile->addError($error, $stackPtr);
+        }
 
         // Strange error with $stackPtr prevents us from using this code.
         /* $tokens = $phpcsFile->getTokens();
@@ -149,8 +132,6 @@ class DrupalCodingStandard_Sniffs_NamingConventions_ValidVariableNameSniff
             $phpcsFile->addError($error, $stackPtr);
             return;
         }  */
-        // We don't care about normal variables.
-        return;
 
     }//end processVariable()
 
@@ -165,8 +146,7 @@ class DrupalCodingStandard_Sniffs_NamingConventions_ValidVariableNameSniff
      */
     protected function processVariableInString(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        // We don't care about normal variables.
-        return;
+        // We don't care about variables in strings.
 
     }//end processVariableInString()
 
