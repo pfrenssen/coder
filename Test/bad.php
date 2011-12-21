@@ -441,6 +441,15 @@ function mymodule_menu() {
 }
 
 /**
+ * Implementation hook_foo_BAR_ID_bar() for some_type_bar().
+ *
+ * Extended "Implements" syntax for hooks.
+ */
+function mymodule_foo_some_type_bar() {
+
+}
+
+/**
  *
  * Extra newline above is not allowed.
  */

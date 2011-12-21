@@ -420,3 +420,18 @@ if ($a == TRUE) {
 function hook_foobar() {
 
 }
+
+
+/**
+ * Implements hook_foo().
+ */
+function mymodule_foo() {
+
+}
+
+/**
+ * Implements hook_foo_BAR_ID_bar() for some_type_bar().
+ */
+function mymodule_foo_some_type_bar() {
+
+}

@@ -182,11 +182,11 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
             if(!strstr($matches[0], 'Implements ')){
                 $formattingIssue++;
             }
-            if(!preg_match('/ hook_[\S\(\)]+\.$/', $matches[0])){
+            if(!preg_match('/ hook_[a-zA-Z0-9_]+\(\)( for [a-z0-9_]+\(\))?\.$/', $matches[0])){
                 $formattingIssue++;
             }
             if($formattingIssue){
-                $phpcsFile->addWarning('Format should be * Implements hook_foo().', $commentStart + 1);
+                $phpcsFile->addWarning('Format should be "* Implements hook_foo()." or "Implements hook_foo_BAR_ID_bar() for xyz_bar."', $commentStart + 1);
             }
         }
 
