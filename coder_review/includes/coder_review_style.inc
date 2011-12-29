@@ -31,7 +31,7 @@ function coder_review_style_reviews() {
     array(
       '#type' => 'regex',
       '#value' => '[\s\(](\w+)\s\(',
-      '#not' => '^(if|elseif|while|foreach|switch|case|return|for|list|catch)$',
+      '#not' => '^(if|elseif|while|foreach|switch|case|return|for|list|catch|function)$',
       '#warning' => 'Functions should be called with no spaces between the function name and opening parentheses',
     ),
     array(
