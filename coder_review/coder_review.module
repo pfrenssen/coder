@@ -971,7 +971,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
       '#weight' => -1,
     );
     if ($form['settings']['#collapsed']) {
-      $form['settings']['#prefix'] = t('<div class="coder-settings">Use the Selection form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/config/development/coder/configure/review'), '@default' => url('admin/config/development/coder/review/default')));
+      $form['settings']['#prefix'] = t('<div class="coder-settings">Use the Selection form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/config/development/coder/review/settings'), '@default' => url('admin/config/development/coder/review/default')));
     }
     $form['settings'][] = $coder_form;
     $form['settings']['submit'] = array(
