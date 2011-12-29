@@ -592,10 +592,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  module_invoke_all("node_" . $hook, $node);');
     $this->assertCoderReviewFail('  node_invoke_nodeapi($node, $hook);');
 
-    // http://drupal.org/node/224333#node_view
-    $this->assertCoderReviewFail('  node_view($nid, TRUE);');
-    $this->assertCoderReviewFail('  if (node_view($nid, TRUE))');
-
     // N/A - http://drupal.org/node/224333#node_build_rss : covered by
     // hook_nodeapi() removal.
 
