@@ -209,7 +209,7 @@ function coder_review_security_reviews() {
     '#link' => 'http://drupal.org/node/28984',
     '#rules' => $rules,
     '#severity' => 'critical',
-    '#description' => t('very basic, needs work, errs on the side of caution so may give false positives'),
+    '#description' => t('very basic, errs on the side of caution so may give false positives.'),
   );
   return array('security' => $review);
 }

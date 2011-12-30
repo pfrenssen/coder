@@ -57,7 +57,7 @@ function coder_review_sql_reviews() {
   $review = array(
     '#title' => t('Drupal SQL Standards'),
     '#rules' => $rules,
-    '#description' => t('new review, so use with caution'),
+    '#description' => t('Somewhat obsolete review, needs updating to DBTNG.'),
   );
   return array('sql' => $review);
 }
