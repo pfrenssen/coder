@@ -46,6 +46,7 @@ function coder_review_drush_command() {
     'callback' => 'coder_review_drush_review',
     'description' => dt('Run code reviews'),
     'drupal dependencies' => array('coder_review'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
   return $items;
 }
