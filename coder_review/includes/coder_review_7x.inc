@@ -1367,7 +1367,7 @@ function _coder_review_7x_hook_block_op_warning() {
   return array(
     '#warning' => t('!hook_block() has been split into a number of smaller hooks.',
       array(
-        '!hook_block()' => theme('drupalapi', array('function' => 'hook_block', 'version' => '7')),
+        '!hook_block()' => theme('drupalapi', array('function' => 'hook_block', 'version' => '6')),
       )
     ),
     '#link' => 'http://drupal.org/node/224333#remove_op',
