@@ -146,7 +146,7 @@ function coder_review_drush_review() {
               $settings['coder_patches'] = 1;
               $settings['coder_patch_link'] = $arg;
             }
-            elseif (file_exists($arg)) {
+            else {
               $settings['coder_files'] = 1;
               if (empty($settings['coder_file_list'])) {
                 $settings['coder_file_list'] = '';
@@ -170,10 +170,6 @@ function coder_review_drush_review() {
                 $settings['coder_modules-' . $arg] = 1;
                 $settings['coder_includes'] = TRUE;
               }
-            }
-            else {
-              $settings['coder_modules-' . $arg] = 1;
-              $settings['coder_includes'] = TRUE;
             }
             unset($settings['coder_active_modules']);
             unset($settings['coder_core']);
