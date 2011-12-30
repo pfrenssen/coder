@@ -1320,10 +1320,10 @@ function _coder_review_7x_user_delete_warning() {
 
 function _coder_review_7x_hook_user_op_warning() {
   return array(
-    '#warning' => t('!hook_user() has been removed in favour of hook_user_$op functions, for example !hook_user_validate().',
+    '#warning' => t('!hook_user() has been removed in favour of hook_user_$op functions, for example !hook_user_presave().',
       array(
         '!hook_user()' => theme('drupalapi', array('function' => 'hook_user', 'version' => '6')),
-        '!hook_user_validate()' => theme('drupalapi', array('function' => 'hook_user_validate', 'version' => '7')),
+        '!hook_user_presave()' => theme('drupalapi', array('function' => 'hook_user_presave', 'version' => '7')),
       )
     ),
     '#link' => 'http://drupal.org/node/224333#remove_op',
