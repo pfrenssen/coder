@@ -151,12 +151,24 @@ function coder_review_drush_review() {
               if (empty($settings['coder_file_list'])) {
                 $settings['coder_file_list'] = '';
               }
-              if (is_dir($arg)) {
-                $ext = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
-                $settings['coder_file_list'] .= implode("\n", array_keys(drupal_system_listing('/\.(' . implode('|', $ext). ')$/', $arg, 'filepath', 0)));
+              $root = drupal_realpath('.');
+              $path = preg_replace(",^$root/,", '', $_SERVER['OLDPWD'] . '/' . $arg);
+              if (file_exists($path)) {
+                $settings['coder_files'] = 1;
+                if (empty($settings['coder_file_list'])) {
+                  $settings['coder_file_list'] = '';
+                }
+                if (is_dir($path)) {
+                  $ext = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
+                  $settings['coder_file_list'] .= implode("\n", array_keys(drupal_system_listing('/\.(' . implode('|', $ext). ')$/', $path, 'filepath', 0)));
+                }
+                else {
+                  $settings['coder_file_list'] .= $path . "\n";
+                }
               }
               else {
-                $settings['coder_file_list'] .= $arg . "\n";
+                $settings['coder_modules-' . $arg] = 1;
+                $settings['coder_includes'] = TRUE;
               }
             }
             else {
