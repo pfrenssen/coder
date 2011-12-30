@@ -47,6 +47,7 @@ function coder_review_drush_command() {
     'description' => dt('Run code reviews'),
     'drupal dependencies' => array('coder_review'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'aliases' => array('coder', 'review', 'lint'),
   );
   return $items;
 }
@@ -67,6 +68,25 @@ function _coder_review_set_form_modules(&$settings) {
  */
 function coder_review_drush_review() {
   _coder_review_drush_set_option('drush');
+
+  // Check for drush style options.
+  foreach (array('summary', 'no-empty', 'xml', 'checkstyle') as $option) {
+    if (drush_get_option($option)) {
+      _coder_review_drush_set_option($arg);
+    }
+  }
+  $severity = drush_get_option('severity', '');
+  foreach (array('major', 'minor', 'critical') as $option) {
+    if (drush_get_option($option)) {
+      $severity_name = $option;
+    }
+  }
+  foreach (array('active', 'core', 'contrib', 'all', 'default') as $option) {
+    if (drush_get_option($option)) {
+      $settings = _coder_review_get_default_settings($option);
+      $settings['coder_includes'] = TRUE;
+    }
+  }
 
   // Process command line arguments.
   $args = func_get_args();
@@ -131,7 +151,13 @@ function coder_review_drush_review() {
               if (empty($settings['coder_file_list'])) {
                 $settings['coder_file_list'] = '';
               }
-              $settings['coder_file_list'] .= $arg . "\n";
+              if (is_dir($arg)) {
+                $ext = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
+                $settings['coder_file_list'] .= implode("\n", array_keys(drupal_system_listing('/\.(' . implode('|', $ext). ')$/', $arg, 'filepath', 0)));
+              }
+              else {
+                $settings['coder_file_list'] .= $arg . "\n";
+              }
             }
             else {
               $settings['coder_modules-' . $arg] = 1;
@@ -151,7 +177,7 @@ function coder_review_drush_review() {
     elseif (_coder_review_drush_is_option('xml')) {
       _coder_review_drush_xml_output_header('xml');
     }
-    if (isset($severity_name)) {
+    if (!empty($severity_name)) {
       if (_coder_review_drush_is_option('xml')) {
         _coder_review_drush_xml_output_severity($severity_name);
       }
