@@ -142,12 +142,12 @@ function coder_review_drush_review() {
             $settings['coder_includes'] = TRUE;
           }
           else {
-            if (_coder_review_drush_is_patch_arg($arg)) {
+            $root = drupal_realpath('.');
+            if (_coder_review_drush_is_patch_arg($arg, $root)) {
               $settings['coder_patches'] = 1;
               $settings['coder_patch_link'] = $arg;
             }
             else {
-              $root = drupal_realpath('.');
               $path = preg_replace(",^$root/,", '', $_SERVER['OLDPWD'] . '/' . $arg);
               if (file_exists($path)) {
                 $settings['coder_files'] = 1;
@@ -220,16 +220,17 @@ function coder_review_drush_review() {
 /**
  * Handle patch reviews.
  */
-function _coder_review_drush_is_patch_arg(&$arg) {
-  if (drupal_substr($arg, 0, 7) == 'http://' || (is_file(realpath($arg)) && preg_match('/\.(patch|diff|tmp)$/', $arg))) {
+function _coder_review_drush_is_patch_arg(&$arg, $root) {
+  if (drupal_substr($arg, 0, 7) == 'http://') {
     return TRUE;
   }
-  // @NOTE: relies on http://drupal.org/node/297611
-  if (isset($_SERVER['OLDPWD'])) {
-    $path = $_SERVER['OLDPWD'] . '/' . $arg;
-    if (is_file($path)) {
-      $arg = $path;
-      return TRUE;
+  if (preg_match('/\.(patch|diff|tmp)$/', $arg)) {
+    if (isset($_SERVER['OLDPWD'])) {
+      $path = preg_replace(",^$root/,", '', $_SERVER['OLDPWD'] . '/' . $arg);
+      if (is_file($path)) {
+        $arg = $path;
+        return TRUE;
+      }
     }
   }
 }
