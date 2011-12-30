@@ -204,7 +204,7 @@ function coder_review_form_alter(&$form, &$form_state, $form_id) {
           foreach ($modules as $name => $data) {
             if (!preg_match('/^#/', $name)) {
               $description = $data['description']['#markup'];
-              $form['modules'][$package][$name]['description']['#markup'] = $description . ' (' . l(t('Code Review'), "admin/config/development/coder/review/$name") . ')';
+              $form['modules'][$package][$name]['description']['#markup'] = $description . ' (' . l(t('Code review'), "admin/config/development/coder/review/$name") . ')';
             }
           }
         }
@@ -861,7 +861,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
           // Process this one file.
           $filename = isset($files[$name]) ? $files[$name] : FALSE;
           if (!$filename) {
-            drupal_set_message(t('Code Review file for %module not found', array('%module' => $name)), 'error');
+            drupal_set_message(t('Code review file for %module not found', array('%module' => $name)), 'error');
             continue;
           }
           if (!empty($settings['coder_patches'])) {
