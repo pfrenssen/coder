@@ -315,6 +315,8 @@ $rule->condition('rules_test_condition_true')
 // Test usages of t().
 t('special character: \"');
 t("special character: \'");
+// Escaping is allowed here because we make use of the other quote type, too.
+t('Link to Drupal\'s <a href="@url">admin pages</a>.', array('@url' => url('admin')));
 
 // Test inline comment style.
 // Comment one.

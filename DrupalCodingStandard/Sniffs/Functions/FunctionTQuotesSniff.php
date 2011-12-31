@@ -68,15 +68,22 @@ class DrupalCodingStandard_Sniffs_Functions_FunctionTQuotesSniff implements PHP_
                 return;
             }
 
-            if ($tokens[$stringArg]['content']{0} === "'" && strpos($tokens[$stringArg]['content'], "\'") !== false) {
+            $string = $tokens[$stringArg]['content'];
+            // Check if there is a backslash escaped single quote in the string and
+            // if the string makes use of double quotes.
+            if ($string{0} === "'" && strpos($string, "\'") !== false
+                && strpos($string, '"') === false)
+            {
                 $warn = 'Avoid backslash escaping in translatable strings when possible, use "" quotes instead';
-                $phpcsFile->addWarning($warn, $stringArg);
+                $phpcsFile->addWarning($warn, $stringArg, 'BackslashSingleQuote');
                 return;
             }
 
-            if ($tokens[$stringArg]['content']{0} === '"' && strpos($tokens[$stringArg]['content'], '\"') !== false) {
+            if ($string{0} === '"' && strpos($string, '\"') !== false
+                && strpos($string, "'") === false)
+            {
                 $warn = "Avoid backslash escaping in translatable strings when possible, use '' quotes instead";
-                $phpcsFile->addWarning($warn, $stringArg);
+                $phpcsFile->addWarning($warn, $stringArg, 'BackslashDoubleQuote');
             }
         }//end if
 
