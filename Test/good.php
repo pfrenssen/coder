@@ -83,22 +83,43 @@ $a = array(
   '3',
 );
 $a = array('1', '2', array('3'));
-$a = array('1', '2', array(
-  'one',
-  'two',
-  'three',
+$a = array('1', '2',
   array(
-    'key' => $value,
-    'title' => 'test',
+    'one',
+    'two',
+    'three',
+    array(
+      'key' => $value,
+      'title' => 'test',
+    ),
   ),
-),);
+);
+
+// Array indentation.
+$x = array(
+  'foo' => 'bar',
+  'fi' => long_function_call('hsdfsdmfsldkfnmdflkngdfngfg',
+    'fghfghfghfghfgh', $z),
+  'a' => 'b',
+  'foo' => array(
+    'blu' => 1,
+    'f' => x(1) + array(
+      'h' => 'x',
+    ),
+  ),
+);
 
 // Arrays in function calls.
-foo(array(
-  'value' => 0,
-  'description' => t('xyz @url', array(
-    '@url' => 'http://example.com')),
-));
+foo(
+  array(
+    'value' => 0,
+    'description' => t('xyz @url',
+      array(
+        '@url' => 'http://example.com',
+      )
+    ),
+  )
+);
 
 // Pretty array layout.
 $a = array(
@@ -189,7 +210,8 @@ $var = foo(
 );
 
 // Multiline function call with array.
-$var = foo(array(
+$var = foo(
+  array(
     $i,
     $i,
     $i,
@@ -199,11 +221,13 @@ $var = foo(array(
 );
 
 // Multiline function call with only one array.
-$var = foo(array(
+$var = foo(
+  array(
     $i,
     $i,
     $i,
-));
+  )
+);
 
 /**
  * Class declaration

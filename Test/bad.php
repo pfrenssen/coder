@@ -160,6 +160,11 @@ $a = array( '1','2' );
 $a = Array('1');
 $a = ARRAY('x');
 
+// Array indentation error.
+$a = array(
+'x' => 'y',
+);
+
 // Item assignment operators must be prefixed and followed by a space
 $a = array('one'=>'1');
 $a = array('one'=> '1');
