@@ -35,7 +35,8 @@ class DrupalCodingStandard_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeS
             // Execute only on *.info files.
             $fileExtension = strtolower(substr($phpcsFile->getFilename(), -4));
             if ($fileExtension === 'info') {
-                $info = parse_ini_file($phpcsFile->getFilename());
+                $contents = file_get_contents($phpcsFile->getFilename());
+                $info     = $this->drupalParseInfoFormat($contents);
                 if (isset($info['files']) === true && is_array($info['files']) === true) {
                     foreach ($info['files'] as $file) {
                         $fileName = dirname($phpcsFile->getFilename()).'/'.$file;
@@ -88,6 +89,73 @@ class DrupalCodingStandard_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeS
         return false;
 
     }//end getPtr()
+
+
+    /**
+     * Parses a Drupal info file. Copied from Drupal core drupal_parse_info_format().
+     *
+     * @param string $data The contents of the info file to parse
+     *
+     * @return array The info array.
+     */
+    protected function drupalParseInfoFormat($data)
+    {
+        $info = array();
+        $constants = get_defined_constants();
+
+        if (preg_match_all('
+          @^\s*                           # Start at the beginning of a line, ignoring leading whitespace
+          ((?:
+            [^=;\[\]]|                    # Key names cannot contain equal signs, semi-colons or square brackets,
+            \[[^\[\]]*\]                  # unless they are balanced and not nested
+          )+?)
+          \s*=\s*                         # Key/value pairs are separated by equal signs (ignoring white-space)
+          (?:
+            ("(?:[^"]|(?<=\\\\)")*")|     # Double-quoted string, which may contain slash-escaped quotes/slashes
+            (\'(?:[^\']|(?<=\\\\)\')*\')| # Single-quoted string, which may contain slash-escaped quotes/slashes
+            ([^\r\n]*?)                   # Non-quoted string
+          )\s*$                           # Stop at the next end of a line, ignoring trailing whitespace
+          @msx', $data, $matches, PREG_SET_ORDER)) {
+          foreach ($matches as $match) {
+            // Fetch the key and value string.
+            $i = 0;
+            foreach (array('key', 'value1', 'value2', 'value3') as $var) {
+              $$var = isset($match[++$i]) ? $match[$i] : '';
+            }
+            $value = stripslashes(substr($value1, 1, -1)) . stripslashes(substr($value2, 1, -1)) . $value3;
+
+            // Parse array syntax.
+            $keys = preg_split('/\]?\[/', rtrim($key, ']'));
+            $last = array_pop($keys);
+            $parent = &$info;
+
+            // Create nested arrays.
+            foreach ($keys as $key) {
+              if ($key == '') {
+                $key = count($parent);
+              }
+              if (!isset($parent[$key]) || !is_array($parent[$key])) {
+                $parent[$key] = array();
+              }
+              $parent = &$parent[$key];
+            }
+
+            // Handle PHP constants.
+            if (isset($constants[$value])) {
+              $value = $constants[$value];
+            }
+
+            // Insert actual value.
+            if ($last == '') {
+              $last = count($parent);
+            }
+            $parent[$last] = $value;
+          }
+        }
+
+        return $info;
+
+    }//end drupalParseInfoFormat()
 
 
 }//end class
