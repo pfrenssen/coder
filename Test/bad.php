@@ -358,6 +358,9 @@ class Bar
 
   // Public static variables use camelCase.
   public static $base_path = NULL;
+
+  // "var" keyword must no be used.
+  var $x = 5;
 }
 
 // Comments must have content ;) and there must be a space after the class name
