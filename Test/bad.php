@@ -607,3 +607,5 @@ $x = 'This string is to short to be' . 'concatenated';
 $z = $foo-> x;
 $z = $foo -> x;
 $z = $foo ->x;
+
+?>

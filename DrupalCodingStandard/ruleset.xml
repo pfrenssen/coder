@@ -15,6 +15,10 @@
   <!-- Do not run this sniff on template files. -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
  </rule>
+ <rule ref="DrupalCodingStandard.Formatting.DisallowCloseTag">
+  <!-- Do not run this sniff on template files. -->
+  <exclude-pattern>*.tpl.php</exclude-pattern>
+ </rule>
  <rule ref="DrupalCodingStandard.WhiteSpace.ScopeClosingBrace">
   <!-- Do not run this sniff on template files. -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
