@@ -17,20 +17,20 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalCodingStandard_Sniffs_Semantics_FunctionTQuotesSniff implements PHP_CodeSniffer_Sniff
+class DrupalCodingStandard_Sniffs_Semantics_FunctionTQuotesSniff extends DrupalCodingStandard_Sniffs_Semantics_FunctionCall
 {
 
 
     /**
-     * Returns an array of tokens this test wants to listen for.
+     * Returns an array of function names this test wants to listen for.
      *
      * @return array
      */
-    public function register()
+    public function registerFunctionNames()
     {
-        return array(T_STRING);
+        return array('t');
 
-    }//end register()
+    }//end registerFunctionNames()
 
 
     /**
@@ -42,45 +42,35 @@ class DrupalCodingStandard_Sniffs_Semantics_FunctionTQuotesSniff implements PHP_
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function processFunctionCall(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['content'] === 't') {
-            // Find the next non-empty token.
-            $openBracket = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $tokens   = $phpcsFile->getTokens();
+        $argument = $this->getArgument(1);
 
-            if ($tokens[$openBracket]['code'] !== T_OPEN_PARENTHESIS) {
-                // Not a function call.
-                return;
-            }
+        if ($tokens[$argument['start']]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
+            // Not a translatable string literal.
+            return;
+        }
 
-            // Find the next non-empty token, the first argument to t().
-            $stringArg = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($openBracket + 1), null, true);
-            if ($tokens[$stringArg]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
-                // Not a translatable string literal.
-                return;
-            }
+        $string = $tokens[$argument['start']]['content'];
+        // Check if there is a backslash escaped single quote in the string and
+        // if the string makes use of double quotes.
+        if ($string{0} === "'" && strpos($string, "\'") !== false
+            && strpos($string, '"') === false
+        ) {
+            $warn = 'Avoid backslash escaping in translatable strings when possible, use "" quotes instead';
+            $phpcsFile->addWarning($warn, $argument['start'], 'BackslashSingleQuote');
+            return;
+        }
 
-            $string = $tokens[$stringArg]['content'];
-            // Check if there is a backslash escaped single quote in the string and
-            // if the string makes use of double quotes.
-            if ($string{0} === "'" && strpos($string, "\'") !== false
-                && strpos($string, '"') === false)
-            {
-                $warn = 'Avoid backslash escaping in translatable strings when possible, use "" quotes instead';
-                $phpcsFile->addWarning($warn, $stringArg, 'BackslashSingleQuote');
-                return;
-            }
+        if ($string{0} === '"' && strpos($string, '\"') !== false
+            && strpos($string, "'") === false
+        ) {
+            $warn = "Avoid backslash escaping in translatable strings when possible, use '' quotes instead";
+            $phpcsFile->addWarning($warn, $argument['start'], 'BackslashDoubleQuote');
+        }
 
-            if ($string{0} === '"' && strpos($string, '\"') !== false
-                && strpos($string, "'") === false)
-            {
-                $warn = "Avoid backslash escaping in translatable strings when possible, use '' quotes instead";
-                $phpcsFile->addWarning($warn, $stringArg, 'BackslashDoubleQuote');
-            }
-        }//end if
-
-    }//end process()
+    }//end processFunctionCall()
 
 
 }//end class
