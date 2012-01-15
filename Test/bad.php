@@ -608,4 +608,7 @@ $z = $foo-> x;
 $z = $foo -> x;
 $z = $foo ->x;
 
+// strings in l() should be translated.
+$x = l('Link text', '<front>');
+
 ?>

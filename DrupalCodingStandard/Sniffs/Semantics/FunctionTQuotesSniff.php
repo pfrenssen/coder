@@ -1,30 +1,23 @@
 <?php
 /**
- * DrupalCodingStandard_Sniffs_Functions_FunctionTQuotesSniff.
+ * DrupalCodingStandard_Sniffs_Semantics_FunctionTQuotesSniff.
  *
  * PHP version 5
  *
  * @category PHP
  * @package  PHP_CodeSniffer
- * @author   Klaus Purer <klaus.purer@example.com>
- * @license  http://www.gnu.org/licenses/gpl-2.0.html GPLv2
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
 /**
- * DrupalCodingStandard_Sniffs_Functions_FunctionTQuotesSniff.
- *
  * Check the usage of the t() function to not escape translateable string with back
  * slashes.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
- * @author   Klaus Purer <klaus.purer@example.com>
- * @license  http://www.gnu.org/licenses/gpl-2.0.html GPLv2
- * @version  Release: 1.2.0RC3
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalCodingStandard_Sniffs_Functions_FunctionTQuotesSniff implements PHP_CodeSniffer_Sniff
+class DrupalCodingStandard_Sniffs_Semantics_FunctionTQuotesSniff implements PHP_CodeSniffer_Sniff
 {
 
 
