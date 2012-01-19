@@ -100,11 +100,19 @@ class DrupalCodingStandard_Sniffs_Commenting_FileCommentSniff implements PHP_Cod
             }
             $fileLine = $phpcsFile->findNext(T_DOC_COMMENT, $commentStart + 1);
             if ($tokens[$fileLine]['content'] !== (' * @file' . $phpcsFile->eolChar)) {
-                $phpcsFile->addError('The second line in the file doc comment must be " * @file"', $fileLine);
-                return;
+                // If the comment is not followed by whitespace, it is probably not a file doc comment
+                if (($tokens[$commentEnd]['line'] + 1) === $tokens[$phpcsFile->findNext(T_WHITESPACE, ($commentEnd + 1), null, true)]['line']) {
+                    $phpcsFile->addError('Missing file doc comment', $errorToken, 'Missing');
+                    return;
+                } else {
+                    $phpcsFile->addError('The second line in the file doc comment must be " * @file"', $fileLine);
+                }
             }
             if ($tokens[$commentEnd]['content'] !== (' */')) {
-              $phpcsFile->addError('The last line in the file doc comment must be " */"', $commentEnd);
+                $phpcsFile->addError('The last line in the file doc comment must be " */"', $commentEnd);
+            }
+            if (($tokens[$commentEnd]['line'] + 1) === $tokens[$phpcsFile->findNext(T_WHITESPACE, ($commentEnd + 1), null, true)]['line']) {
+                $phpcsFile->addError('File doc comments must be followed by a blank line.', ($commentEnd + 1), 'SpacingAfter');
             }
         }
     }//end process()

@@ -134,13 +134,14 @@ class DrupalCodingStandard_Sniffs_Commenting_FunctionCommentSniff implements PHP
             }
         }
 
-        // If the first T_OPEN_TAG is right before the comment, it is probably
-        // a file comment.
+        // If the first T_OPEN_TAG is right before the comment and does not immediately precede the function
+        // probably a file comment.
         $commentStart = ($phpcsFile->findPrevious(T_DOC_COMMENT, ($commentEnd - 1), null, true) + 1);
         $prevToken    = $phpcsFile->findPrevious(T_WHITESPACE, ($commentStart - 1), null, true);
         if ($tokens[$prevToken]['code'] === T_OPEN_TAG) {
-            // Is this the first open tag?
-            if ($stackPtr === 0 || $phpcsFile->findPrevious(T_OPEN_TAG, ($prevToken - 1)) === false) {
+            // Is this the first open tag
+            if (($stackPtr === 0 || $phpcsFile->findPrevious(T_OPEN_TAG, ($prevToken - 1)) === false)
+                && (($tokens[$commentEnd]['line'] + 1) !== $tokens[$stackPtr]['line'])) {
                 $phpcsFile->addError('Missing function doc comment', $stackPtr, 'Missing');
                 return;
             }
