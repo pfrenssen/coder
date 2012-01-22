@@ -36,7 +36,7 @@ class DrupalCodingStandard_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeS
             $fileExtension = strtolower(substr($phpcsFile->getFilename(), -4));
             if ($fileExtension === 'info') {
                 $contents = file_get_contents($phpcsFile->getFilename());
-                $info     = $this->drupalParseInfoFormat($contents);
+                $info     = self::drupalParseInfoFormat($contents);
                 if (isset($info['files']) === true && is_array($info['files']) === true) {
                     foreach ($info['files'] as $file) {
                         $fileName = dirname($phpcsFile->getFilename()).'/'.$file;
@@ -98,7 +98,7 @@ class DrupalCodingStandard_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeS
      *
      * @return array The info array.
      */
-    protected function drupalParseInfoFormat($data)
+    public static function drupalParseInfoFormat($data)
     {
         $info = array();
         $constants = get_defined_constants();
