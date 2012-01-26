@@ -104,4 +104,5 @@
  <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration" />
  <rule ref="Squiz.ControlStructures.ForLoopDeclaration" /> 
  <rule ref="Squiz.ControlStructures.LowercaseDeclaration" />
+ <rule ref="Squiz.CSS.ColonSpacing" />
 </ruleset>
