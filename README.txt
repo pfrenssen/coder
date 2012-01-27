@@ -17,13 +17,13 @@ Requirements:
 - Sym-link the drupalcs directory into the standards folder for PHP_CodeSniffer.
   The code for that looks like this:
 
-$> sudo ln -sv /path/to/drupalcs/DrupalCodingStandard $(pear config-get php_dir)/PHP/CodeSniffer/Standards 
+$> sudo ln -sv /path/to/drupalcs/Drupal $(pear config-get php_dir)/PHP/CodeSniffer/Standards 
 
 
 Usage (running in a shell)
 --------------------------
 
-$> phpcs --standard=DrupalCodingStandard --extensions=php,module,inc,install,test,profile,theme /path/to/drupal_module
+$> phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme /path/to/drupal_module
 
 
 Installation in Eclipse
@@ -37,7 +37,7 @@ Eclipse PTI (Php Tools Integration) : http://www.phpsrc.org
 - Install PTI Plugin
 - Configure PTI:
   - Open Eclipse preferences -> PHP Tools -> PHP Codesniffer:
-    - Add a new "CodeSniffer Standard" - choose the folder DrupalCodingStandard in this module.
+    - Add a new "CodeSniffer Standard" - choose the folder Drupal in this module.
     - Activate the library by checking the checkbox next to its name.
     - Make sure the Standard Tab Widht configuration is set to 0. Otherwise you won't get notified about evil tabs in the code.
 
