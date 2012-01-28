@@ -560,6 +560,7 @@ function test10($x) {
  *
  * @see  Too much space here
  * @see my_function().
+ * @see foo_bar() and here some not allowed text.
  */
 function test11($x, $y, $z, $a, $b) {
 

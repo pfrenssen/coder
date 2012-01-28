@@ -46,7 +46,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
     /**
      * The function comment parser for the current method.
      *
-     * @var PHP_CodeSniffer_Comment_Parser_FunctionCommentParser
+     * @var Drupal_CommentParser_FunctionCommentParser
      */
     protected $commentParser = null;
 
@@ -183,7 +183,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         $this->processParams($commentStart);
         $this->processReturn($commentStart, $commentEnd);
         $this->processThrows($commentStart);
-        $this->processSees();
+        $this->processSees($commentStart);
 
         // Check if hook implementation doc is formated correctly.
         if (preg_match('/^[\s]*Implement[^\n]+?hook_[^\n]+/i', $comment->getShortComment(), $matches)) {
@@ -482,21 +482,27 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
      *
      * @return void
      */
-    protected function processSees()
+    protected function processSees($commentStart)
     {
         $sees = $this->commentParser->getSees();
         foreach ($sees as $see) {
-            $errorPos = $see->getLine();
+            $errorPos = $see->getLine() + $commentStart;
             if ($see->getWhitespaceBeforeContent() !== ' ') {
                 $error = 'Expected 1 space before see reference';
                 $this->currentFile->addError($error, $errorPos, 'SpacingBeforeSee');
             }
 
             $comment = trim($see->getContent());
+            if (strpos($comment, ' ') !== false) {
+                $error = 'The @see reference should not contain any additional text';
+                $this->currentFile->addError($error, $errorPos, 'SeeAdditionalText');
+                continue;
+            }
             if (preg_match('/[\.!\?]$/', $comment) === 1) {
                 $error = 'Trailing punctuation for @see references is not allowed.';
                 $this->currentFile->addError($error, $errorPos, 'SeePunctuation');
             }
+
         }
 
     }//end processSees()
