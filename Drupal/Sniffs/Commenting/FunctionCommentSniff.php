@@ -195,7 +195,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 $formattingIssue++;
             }
             if($formattingIssue){
-                $phpcsFile->addWarning('Format should be "* Implements hook_foo()." or "Implements hook_foo_BAR_ID_bar() for xyz_bar."', $commentStart + 1);
+                $phpcsFile->addWarning('Format should be "* Implements hook_foo()." or "Implements hook_foo_BAR_ID_bar() for xyz_bar()."', $commentStart + 1);
             }
         }
 
