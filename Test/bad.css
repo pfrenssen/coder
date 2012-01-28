@@ -4,3 +4,5 @@
   font-size:0.9em; /* There should be a space after the colon. */
     margin: 0.5em; /* Indentation error. */
 }
+
+.testselector {display: table; border: none;}

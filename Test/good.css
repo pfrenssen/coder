@@ -3,3 +3,7 @@
   font-size: 0.9em;
   margin: 0.5em;
 }
+.testselector {
+  display: table;
+  border: none;
+}
