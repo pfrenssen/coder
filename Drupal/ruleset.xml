@@ -7,6 +7,10 @@
   <!-- Do not run this sniff on txt files. -->
   <exclude-pattern>*.txt</exclude-pattern>
  </rule>
+ <rule ref="Drupal.Commenting.FileComment.SpacingAfter">
+  <!-- Do not run this sniff on template files. -->
+  <exclude-pattern>*.tpl.php</exclude-pattern>
+ </rule>
  <rule ref="Drupal.ControlStructures.ControlSignature">
   <!-- Do not run this sniff on template files. -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
