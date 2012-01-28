@@ -600,6 +600,13 @@ function test15() {
   return $foo;
 }
 
+/** This line should not be used.
+ *
+ */
+function test16() {
+
+}
+
 // Test string concatenation.
 $x = 'This string is to short to be' . 'concatenated';
 
