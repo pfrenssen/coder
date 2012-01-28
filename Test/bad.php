@@ -117,6 +117,8 @@ range(-50, - 45);
 range(- 50, -45);
 $i[0]+ 1;
 $x->{$i}+ 1;
+! $x;
+! ($x + $y);
 
 
 // Casting must have one space

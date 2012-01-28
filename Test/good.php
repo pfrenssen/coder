@@ -65,6 +65,8 @@ range(-50, -45);
 $i[0] + 1;
 $x->{$i} + 1;
 REQUEST_TIME + 42;
+!$x;
+!($x + $y);
 
 // Operator line break for long lines.
 $x = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
