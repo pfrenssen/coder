@@ -62,7 +62,7 @@ class Drupal_Sniffs_CSS_ColourDefinitionSniff implements PHP_CodeSniffer_Sniff
                       $expected,
                       $colour,
                      );
-            $phpcsFile->addError($error, $stackPtr, 'NotUpper', $data);
+            $phpcsFile->addError($error, $stackPtr, 'NotLower', $data);
         }
 
     }//end process()
