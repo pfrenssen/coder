@@ -14,3 +14,7 @@
   /* Colors must be lower case. */
   color: #EFEFEF;
 }
+
+/* Empty definitions are not allowed. */
+.book-navigation .page-previous {
+}
