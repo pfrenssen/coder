@@ -3,6 +3,7 @@
   
   font-size:0.9em; /* There should be a space after the colon. */
     margin: 0.5em; /* Indentation error. */
+  background: ; /* Empty style definitions are not allowed. */
 }
 
 .testselector {display: table; border: none;}
@@ -11,8 +12,6 @@
 #forum td.posts,
 
 #forum td.pager {
-  /* Colors must be lower case. */
-  color: #EFEFEF;
 }
 
 /* Empty definitions are not allowed. */
