@@ -10,14 +10,14 @@
  */
 
 /**
- * Check the usage of the t() function to not escape translateable string with back
- * slashes.
+ * Check the usage of the t() function to not escape translateable strings with back
+ * slashes. Also checks that the first argument does not use string concatenation.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Semantics_FunctionTQuotesSniff extends Drupal_Sniffs_Semantics_FunctionCall
+class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_FunctionCall
 {
 
 
@@ -50,6 +50,12 @@ class Drupal_Sniffs_Semantics_FunctionTQuotesSniff extends Drupal_Sniffs_Semanti
         if ($tokens[$argument['start']]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
             // Not a translatable string literal.
             return;
+        }
+
+        $concatFound = $phpcsFile->findNext(T_STRING_CONCAT, $argument['start'], $argument['end']);
+        if ($concatFound !== false) {
+            $error = 'Concatenating translatable strings is not allowed, use placeholders instead and only one string literal';
+            $phpcsFile->addError($error, $concatFound, 'Concat');
         }
 
         $string = $tokens[$argument['start']]['content'];
