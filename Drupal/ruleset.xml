@@ -125,4 +125,5 @@
  <rule ref="Squiz.CSS.EmptyClassDefinition" />
  <rule ref="Squiz.CSS.EmptyStyleDefinition" />
  <rule ref="Squiz.CSS.MissingColon" />
+ <rule ref="Squiz.CSS.SemicolonSpacing" />
 </ruleset>

@@ -5,6 +5,8 @@
     margin: 0.5em; /* Indentation error. */
   background: ; /* Empty style definitions are not allowed. */
   font-weight normal; /* Missing colon. */
+  font-family: helvetica, sans-serif /* Mising semicolon. */
+  padding-left: 2em ; /* Space before semicolon. */
 }
 
 .testselector {display: table; border: none;}
