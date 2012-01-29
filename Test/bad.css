@@ -6,3 +6,9 @@
 }
 
 .testselector {display: table; border: none;}
+
+/* Blank lines between selectors are not allowed. */
+#forum td.posts,
+
+#forum td.pager {
+}
