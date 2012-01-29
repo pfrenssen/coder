@@ -13,4 +13,7 @@
 #forum td.pager {
   /* Colors must be lower case. */
   color: #EFEFEF;
+  margin: 0.5em;
+  /* Duplicate style definition. */
+  color: #abcdef;
 }

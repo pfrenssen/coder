@@ -122,4 +122,5 @@
  </rule>
  <rule ref="Squiz.CSS.ColonSpacing" />
  <rule ref="Squiz.CSS.DisallowMultipleStyleDefinitions" />
+ <rule ref="Squiz.CSS.DuplicateStyleDefinition" />
 </ruleset>
