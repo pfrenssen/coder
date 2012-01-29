@@ -115,7 +115,6 @@
  <rule ref="Squiz.CSS.ClassDefinitionClosingBraceSpace.SpacingAfterClose">
   <severity>0</severity>
  </rule>
- <rule ref="Squiz.CSS.ClassDefinitionNameSpacing" />
  <rule ref="Squiz.CSS.ClassDefinitionOpeningBraceSpace" />
  <rule ref="Squiz.CSS.ClassDefinitionOpeningBraceSpace.After">
   <message>Expected exactly one new line after opening brace of class definition</message>
