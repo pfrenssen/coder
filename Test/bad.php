@@ -1,4 +1,4 @@
-<?php
+<?
 
 #Discouraged comment style
 
@@ -33,6 +33,9 @@ if(TRUE) {
 }
 
 define('C_TEST',1);
+
+// Custom global variables must be prefixed with an underscore.
+global $myvar, $user;
 
 // Has whitespace at the end of the line.
 $whitespaces = 'Yes, Please';  
