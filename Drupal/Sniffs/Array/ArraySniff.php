@@ -100,11 +100,17 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
         }
 
         // Find the first token on this line.
-        $firstLineToken = $stackPtr;
+        $firstLineColumn = $tokens[$stackPtr]['column'];
         for ($i = $stackPtr; $i >= 0; $i--) {
             // Record the first code token on the line.
-            if (in_array($tokens[$i]['code'], PHP_CodeSniffer_Tokens::$emptyTokens) === false) {
-                $firstLineToken = $i;
+            if ($tokens[$i]['code'] !== T_WHITESPACE) {
+                $firstLineColumn = $tokens[$i]['column'];
+                // This could be a multi line string or comment beginning with white
+                // spaces.
+                $trimmed = ltrim($tokens[$i]['content']);
+                if ($trimmed !== $tokens[$i]['content']) {
+                    $firstLineColumn = $firstLineColumn + strpos($tokens[$i]['content'], $trimmed);
+                }
             }
 
             // It's the start of the line, so we've found our first php token.
@@ -132,10 +138,10 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
 
             if ($newLineStart === $tokens[$stackPtr]['parenthesis_closer']) {
                 // End of the array reached.
-                if ($tokens[$newLineStart]['column'] !== $tokens[$firstLineToken]['column']) {
+                if ($tokens[$newLineStart]['column'] !== $firstLineColumn) {
                     $error = 'Array closing indentation error, expected %s spaces but found %s';
                     $data  = array(
-                              $tokens[$firstLineToken]['column'] - 1,
+                              $firstLineColumn - 1,
                               $tokens[$newLineStart]['column'] - 1,
                              );
                     $phpcsFile->addError($error, $newLineStart, 'ArrayClosingIndentation', $data);
@@ -147,11 +153,11 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
             // Skip lines in nested structures.
             $innerNesting = end($tokens[$newLineStart]['nested_parenthesis']);
             if ($innerNesting === $tokens[$stackPtr]['parenthesis_closer']
-                && $tokens[$newLineStart]['column'] !== ($tokens[$firstLineToken]['column'] + 2)
+                && $tokens[$newLineStart]['column'] !== ($firstLineColumn + 2)
             ) {
                 $error = 'Array indentation error, expected %s spaces but found %s';
                 $data  = array(
-                          $tokens[$firstLineToken]['column'] + 1,
+                          $firstLineColumn + 1,
                           $tokens[$newLineStart]['column'] - 1,
                          );
                 $phpcsFile->addError($error, $newLineStart, 'ArrayIndentation', $data);

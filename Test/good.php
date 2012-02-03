@@ -130,6 +130,26 @@ $a = array(
   'callback' => 3,
 );
 
+// Arrays with multi line strings.
+$query = db_query("
+  SELECT * FROM {foobar} WHERE nid IN (1, 2, 3)
+  AND date BETWEEN '%s' AND '%s'
+  ", array(
+    ':from_date' => $from_date,
+    ':to_date' => $to_date,
+  )
+);
+
+// Array with multi line comments.
+$query = db_query("
+  SELECT * FROM {foobar} WHERE nid IN (1, 2, 3)
+  AND date BETWEEN '%s' AND '%s'", /* comment
+  in here */ array(
+    ':from_date' => $from_date,
+    ':to_date' => $to_date,
+  )
+);
+
 // Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1', 'two' => '2');
 foreach ($a as $key => $value) {
