@@ -58,6 +58,7 @@ class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniff
         // to another style definition, comment or the start of the file.
         $endTokens = array(
                       T_CLOSE_CURLY_BRACKET,
+                      T_OPEN_CURLY_BRACKET,
                       T_COMMENT,
                       T_DOC_COMMENT,
                       T_OPEN_TAG,

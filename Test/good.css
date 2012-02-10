@@ -18,3 +18,16 @@
 #forum td.pager {
   color: #efefef;
 }
+
+@media screen and (max-device-width: 769px) {
+
+  header #logo img {
+    max-width: 100%;
+  }
+
+  .inner {
+    min-width: 1281px;
+    max-width: 1500px;
+  }
+
+}

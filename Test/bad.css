@@ -20,3 +20,9 @@
 /* Empty definitions are not allowed. */
 .book-navigation .page-previous {
 }
+
+/* Missing colon in style definition */
+.selector {
+
+  foobar;
+}
