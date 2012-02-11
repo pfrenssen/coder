@@ -628,4 +628,6 @@ $x = l('Link text', '<front>');
 
 $x = 'Some markup text<br>';
 
+$ip = $_SERVER['REMOTE_ADDR'];
+
 ?>
