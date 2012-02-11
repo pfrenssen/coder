@@ -16,4 +16,5 @@
   <i>some text</i>
 <?php endif; ?>
 </div>
+<br />
 <?php print $foo; ?>

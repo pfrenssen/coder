@@ -486,3 +486,5 @@ function mymodule_foo() {
 function mymodule_foo_some_type_bar() {
 
 }
+
+$x = 'Some markup text<br />';
