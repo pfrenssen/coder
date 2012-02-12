@@ -72,16 +72,6 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
             $phpcsFile->addWarning('Last item of an inline array must not be followed by a comma', $lastItem);
         }
 
-        $firstToken = $tokens[$stackPtr]['parenthesis_opener'] + 1;
-        if ($isInlineArray && $tokens[$firstToken]['code'] === T_WHITESPACE) {
-            $phpcsFile->addWarning('The opening paranthesis of an array should not be followed by a white space', $firstToken);
-        }
-
-        $lastToken = $tokens[$stackPtr]['parenthesis_closer'] - 1;
-        if ($isInlineArray && $tokens[$lastToken]['code'] === T_WHITESPACE) {
-            $phpcsFile->addWarning('The closing paranthesis of an array should not be preceded by a white space', $lastToken);
-        }
-
         // Only continue for multi line arrays.
         if ($isInlineArray === true) {
             return;
