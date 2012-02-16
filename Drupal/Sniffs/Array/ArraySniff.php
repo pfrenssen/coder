@@ -115,7 +115,7 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                 // spaces.
                 $trimmed = ltrim($tokens[$i]['content']);
                 if ($trimmed !== $tokens[$i]['content']) {
-                    $firstLineColumn = ($firstLineColumn + strpos($tokens[$i]['content']), $trimmed);
+                    $firstLineColumn = ($firstLineColumn + strpos($tokens[$i]['content'], $trimmed));
                 }
             }
 
