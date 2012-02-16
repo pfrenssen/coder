@@ -40,40 +40,56 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
      * Processes this test, when one of its tokens is encountered.
      *
      * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param int                  $stackPtr  The position of the current token in
+     *                                        the stack passed in $tokens.
      *
      * @return void
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
+        $tokens   = $phpcsFile->getTokens();
         $lastItem = $phpcsFile->findPrevious(
             PHP_CodeSniffer_Tokens::$emptyTokens,
-            $tokens[$stackPtr]['parenthesis_closer']-1,
+            ($tokens[$stackPtr]['parenthesis_closer'] - 1),
             $stackPtr,
             true
         );
 
         // Empty array.
-        if ($lastItem == $tokens[$stackPtr]['parenthesis_opener'] ) {
+        if ($lastItem === $tokens[$stackPtr]['parenthesis_opener']) {
             return;
         }
+
         // Inline array.
         $isInlineArray = $tokens[$tokens[$stackPtr]['parenthesis_opener']]['line'] == $tokens[$tokens[$stackPtr]['parenthesis_closer']]['line'];
 
         // Check if the last item in a multiline array has a "closing" comma.
-        if ($tokens[$lastItem]['code'] !== T_COMMA && !$isInlineArray && $tokens[$lastItem + 1]['code'] !== T_CLOSE_PARENTHESIS) {
+        if ($tokens[$lastItem]['code'] !== T_COMMA && $isInlineArray === false
+            && $tokens[($lastItem + 1)]['code'] !== T_CLOSE_PARENTHESIS
+        ) {
             $phpcsFile->addWarning('A comma should follow the last multiline array item. Found: '.$tokens[$lastItem]['content'], $lastItem);
             return;
         }
 
-        if ($tokens[$lastItem]['code'] === T_COMMA && $isInlineArray) {
+        if ($tokens[$lastItem]['code'] === T_COMMA && $isInlineArray === true) {
             $phpcsFile->addWarning('Last item of an inline array must not be followed by a comma', $lastItem);
         }
 
-        // Only continue for multi line arrays.
         if ($isInlineArray === true) {
+            // Check if this array contains at least 3 elements and exceeds the 80
+            // character line length.
+            if ($tokens[$tokens[$stackPtr]['parenthesis_closer']]['column'] > 80) {
+                $comma1 = $phpcsFile->findNext(T_COMMA, ($stackPtr + 1), $tokens[$stackPtr]['parenthesis_closer']);
+                if ($comma1 !== false) {
+                    $comma2 = $phpcsFile->findNext(T_COMMA, ($comma1 + 1), $tokens[$stackPtr]['parenthesis_closer']);
+                    if ($comma2 !== false) {
+                        $error = 'If the line declaring an array spans longer than 80 characters, each element should be broken into its own line';
+                        $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration');
+                    }
+                }
+            }
+
+            // Only continue for multi line arrays.
             return;
         }
 
@@ -99,7 +115,7 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                 // spaces.
                 $trimmed = ltrim($tokens[$i]['content']);
                 if ($trimmed !== $tokens[$i]['content']) {
-                    $firstLineColumn = $firstLineColumn + strpos($tokens[$i]['content'], $trimmed);
+                    $firstLineColumn = ($firstLineColumn + strpos($tokens[$i]['content']), $trimmed);
                 }
             }
 
@@ -117,8 +133,8 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
             while ($tokens[$newLineStart]['line'] == $tokens[$lineStart]['line']) {
                 $newLineStart = $phpcsFile->findNext(
                     PHP_CodeSniffer_Tokens::$emptyTokens,
-                    $newLineStart + 1,
-                    $tokens[$stackPtr]['parenthesis_closer'] + 1,
+                    ($newLineStart + 1),
+                    ($tokens[$stackPtr]['parenthesis_closer'] + 1),
                     true
                 );
                 if ($newLineStart === false) {
