@@ -113,7 +113,7 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 
             $descriptionLine = $phpcsFile->findNext(T_DOC_COMMENT, ($fileLine + 1), ($commentEnd + 1));
             if ($descriptionLine !== false && preg_match('/^ \* [^\s]+/', $tokens[$descriptionLine]['content']) === 0) {
-                $error = 'The third line in the file doc comment must contain a description';
+                $error = 'The third line in the file doc comment must contain a description and must not be indented';
                 $phpcsFile->addError($error, $descriptionLine, 'DescriptionMissing');
             }
 
