@@ -71,6 +71,14 @@ class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniff
                 break;
             }
 
+            // A comma must be followed by a new line character.
+            if ($tokens[$i]['code'] === T_COMMA
+                && strpos($tokens[($i + 1)]['content'], $phpcsFile->eolChar) === false
+            ) {
+                $error = 'Multiple selectors should each be on a single line';
+                $phpcsFile->addError($error, ($i + 1), 'MultipleSelectors');
+            }
+
             if ($tokens[$i]['line'] === $currentLine) {
                 if ($tokens[$i]['code'] !== T_WHITESPACE) {
                     $foundContent = true;

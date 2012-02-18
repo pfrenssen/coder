@@ -26,3 +26,8 @@
 
   foobar;
 }
+
+/* Multiple selectors should be on separate lines. */
+#forum td.posts, #forum td.pager {
+  font-size: 0.9em;
+}
