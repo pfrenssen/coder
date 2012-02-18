@@ -61,8 +61,8 @@ class Drupal_Sniffs_ControlStructures_ControlSignatureSniff extends PHP_CodeSnif
                 // correctly, so we have
                 // Drupal_Sniffs_ControlStructures_ElseNewlineSniff to
                 // cover that.
-                '}EOLelseif (...) {EOL',
-                '}EOLelse {EOL',
+                'elseif (...) {EOL',
+                'else {EOL',
                 'do {EOL',
                );
 

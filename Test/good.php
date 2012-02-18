@@ -165,6 +165,7 @@ if (TRUE || TRUE) {
 elseif (TRUE && TRUE) {
   $i;
 }
+// Commenting is allowed here.
 else {
   $i;
 }
