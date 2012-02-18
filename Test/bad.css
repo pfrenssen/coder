@@ -31,3 +31,9 @@
 #forum td.posts, #forum td.pager {
   font-size: 0.9em;
 }
+
+/* Selectors must be on a single line. */
+.book-navigation
+.page-previous {
+  font-size: 0.9em;
+}

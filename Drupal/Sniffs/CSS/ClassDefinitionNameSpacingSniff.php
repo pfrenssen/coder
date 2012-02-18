@@ -79,6 +79,17 @@ class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniff
                 $phpcsFile->addError($error, ($i + 1), 'MultipleSelectors');
             }
 
+            // Selectors must be on the same line.
+            if ($tokens[$i]['code'] === T_WHITESPACE
+                && strpos($tokens[$i]['content'], $phpcsFile->eolChar) !== false
+                && in_array($tokens[($i - 1)]['code'], $endTokens) === false
+                && in_array($tokens[($i - 1)]['code'], array(T_WHITESPACE, T_COMMA)) == false
+            ) {
+                $error = 'Selectors must be on a single line';
+                $phpcsFile->addError($error, $i, 'SeletorSingleLine');
+            }
+
+
             if ($tokens[$i]['line'] === $currentLine) {
                 if ($tokens[$i]['code'] !== T_WHITESPACE) {
                     $foundContent = true;
