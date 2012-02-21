@@ -71,14 +71,8 @@ class Drupal_Sniffs_NamingConventions_ValidFunctionNameSniff extends PEAR_Sniffs
         }
 
         $methodProps    = $phpcsFile->getMethodProperties($stackPtr);
-        $isPrivate      = ($methodProps['scope'] === 'private') ? true : false;
         $scope          = $methodProps['scope'];
         $scopeSpecified = $methodProps['scope_specified'];
-
-        if ($isPrivate) {
-            $warn = 'Private methods are discouraged, use protected methods instead';
-            $phpcsFile->addWarning($warn, $stackPtr, 'PrivateDiscouraged', $errorData);
-        }
 
         // Methods should not contain underscores.
         if (strpos($methodName, '_') !== false) {

@@ -261,10 +261,8 @@ $var = foo(
  * Classes always have a multiline comment
  */
 class Bar {
-  // Private properties have no prefix.
-  private $secret = 1;
 
-  // Public properties also don't a prefix.
+  // Public properties don't have a prefix.
   protected $foo = 1;
 
   // Longer properties use camelCase naming.

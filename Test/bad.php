@@ -412,7 +412,7 @@ Class FunctionTest {
   }
 
   /**
-   * Asterisks of this comment are wrong.
+   * Asterisks of this comment are wrong. And "private" should no be used.
   *
     */
   private function foobar() {
