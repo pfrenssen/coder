@@ -490,3 +490,6 @@ $x = 'Some markup text<br />';
 
 // Inline if statements with ?: are allowed.
 $x = $y == $z ? 23 : 42;
+
+// Standard watchdog message.
+watchdog('mymodule', 'Log message here.');
