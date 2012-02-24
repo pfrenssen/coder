@@ -639,4 +639,10 @@ $x = $y == $z ?23 : 42;
 $x = $y == $z ?  23 : 42;
 $x = $y == $z  ?  23 : 42;
 
+// Inline if statements with : and wrong spacing.
+$x = $y == $z ? 23: 42;
+$x = $y == $z ? 23 :42;
+$x = $y == $z ? 23  : 42;
+$x = $y == $z ? 23  :  42;
+
 ?>
