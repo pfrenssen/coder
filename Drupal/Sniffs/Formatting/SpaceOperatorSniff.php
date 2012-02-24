@@ -38,7 +38,8 @@ class Drupal_Sniffs_Formatting_SpaceOperatorSniff implements PHP_CodeSniffer_Sni
              $assignments,
              PHP_CodeSniffer_Tokens::$equalityTokens,
              PHP_CodeSniffer_Tokens::$comparisonTokens,
-             PHP_CodeSniffer_Tokens::$arithmeticTokens
+             PHP_CodeSniffer_Tokens::$arithmeticTokens,
+             array(T_INLINE_THEN)
          );
 
          return $tokens;
@@ -88,6 +89,7 @@ class Drupal_Sniffs_Formatting_SpaceOperatorSniff implements PHP_CodeSniffer_Sni
           T_CLOSE_SQUARE_BRACKET,
           T_CLOSE_CURLY_BRACKET,
           T_VARIABLE,
+          T_STRING,
         ));
         $needs_operator_prefix = !in_array($tokens[$lastSyntaxItem]['code'], array(
           T_OPEN_PARENTHESIS,

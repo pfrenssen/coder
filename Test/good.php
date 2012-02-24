@@ -487,3 +487,6 @@ function mymodule_foo_some_type_bar() {
 }
 
 $x = 'Some markup text<br />';
+
+// Inline if statements with ?: are allowed.
+$x = $y == $z ? 23 : 42;
