@@ -303,6 +303,12 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $this->currentFile->addError($error, $errorPos, '$InReturnType');
                 }
 
+                if (in_array($return->getValue(), array('unknown_type', '<type>', 'type')) === true) {
+                    $error = 'Expected a valid @return data type, but found %s';
+                    $data = array($return->getValue());
+                    $this->currentFile->addError($error, $errorPos, 'InvalidReturnType', $data);
+                }
+
                 if (trim($comment) === '') {
                     $error = 'Missing comment for @return statement';
                     $this->currentFile->addError($error, $errorPos, 'MissingReturnComment');
@@ -448,6 +454,12 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 if ($param->getType() === '') {
                     $error = 'Missing parameter type at position '.$pos;
                     $this->currentFile->addError($error, $errorPos, 'MissingParamType');
+                }
+
+                if (in_array($param->getType(), array('unknown_type', '<type>', 'type')) === true) {
+                    $error = 'Expected a valid @param data type, but found %s';
+                    $data = array($param->getType());
+                    $this->currentFile->addError($error, $errorPos, 'InvalidParamType', $data);
                 }
 
                 if ($paramComment === '') {

@@ -618,6 +618,19 @@ function test16() {
 
 }
 
+/**
+ * Invalid data types.
+ *
+ * @param type $x
+ *   Description here.
+ *
+ * @return unknown_type
+ *   Description here.
+ */
+function test17($x) {
+
+}
+
 // Test string concatenation.
 $x = 'This string is to short to be' . 'concatenated';
 
