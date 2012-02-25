@@ -649,4 +649,7 @@ $x = $y == $z ? 23 :'foo';
 // Watchdog messages should not use t().
 watchdog('mymodule', t('Log message here.'));
 
+// Inline control structures are bad.
+if ($x == $y) $x = 42;
+
 ?>
