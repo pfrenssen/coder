@@ -44,17 +44,8 @@ class Drupal_Sniffs_Semantics_RemoteAddressSniff implements PHP_CodeSniffer_Snif
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
-
-        if ($tokens[$stackPtr]['content'] === '$_SERVER'
-            && isset($tokens[($stackPtr + 1)]) === true
-            && $tokens[($stackPtr + 1)]['code'] === T_OPEN_SQUARE_BRACKET
-            && isset($tokens[($stackPtr + 2)]) === true
-            && ($tokens[($stackPtr + 2)]['content'] === '\'REMOTE_ADDR\''
-            || $tokens[($stackPtr + 2)]['content'] === '"REMOTE_ADDR"')
-            && isset($tokens[($stackPtr + 3)]) === true
-            && $tokens[($stackPtr + 3)]['code'] === T_CLOSE_SQUARE_BRACKET
-        ) {
+        $string = $phpcsFile->getTokensAsString($stackPtr, 4);
+        if ($string === '$_SERVER["REMOTE_ADDR"]' || $string === '$_SERVER[\'REMOTE_ADDR\']') {
             $error = 'Use the function ip_address() instead of $_SERVER[\'REMOTE_ADDR\']';
             $phpcsFile->addError($error, $stackPtr, 'RemoteAddress');
         }
