@@ -41,7 +41,6 @@ class Drupal_Sniffs_WhiteSpace_OpenBracketSpacingSniff implements PHP_CodeSniffe
         return array(
                 T_OPEN_CURLY_BRACKET,
                 T_OPEN_PARENTHESIS,
-                T_OPEN_SQUARE_BRACKET,
                );
 
     }//end register()

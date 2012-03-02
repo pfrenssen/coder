@@ -41,7 +41,6 @@ class Drupal_Sniffs_WhiteSpace_CloseBracketSpacingSniff implements PHP_CodeSniff
         return array(
                 T_CLOSE_CURLY_BRACKET,
                 T_CLOSE_PARENTHESIS,
-                T_CLOSE_SQUARE_BRACKET,
                );
 
     }//end register()
