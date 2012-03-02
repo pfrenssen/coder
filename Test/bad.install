@@ -44,3 +44,11 @@ function bad_schema() {
   );
   return $schema;
 }
+
+/**
+ * Implements hook_requirements().
+ */
+function bad_requirements() {
+  // t() should not be used directly.
+  $message = t('Message');
+}
