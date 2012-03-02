@@ -10,8 +10,8 @@
  */
 
 /**
- * Checks that there is no white space before a closing bracket, for ")", "]" and
- * "}".
+ * Checks that there is no white space before a closing bracket, for ")" and "}".
+ * Square Brackets are handled by Squiz_Sniffs_Arrays_ArrayBracketSpacingSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
