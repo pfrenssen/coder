@@ -184,6 +184,7 @@
  <rule ref="Squiz.CSS.EmptyClassDefinition" />
  <rule ref="Squiz.CSS.EmptyStyleDefinition" />
  <rule ref="Squiz.CSS.SemicolonSpacing" />
+ <rule ref="Squiz.WhiteSpace.SemicolonSpacing" />
  
  <!-- Ignore various version control directories. -->
  <exclude-pattern>*/.git/*</exclude-pattern>
