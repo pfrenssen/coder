@@ -6,7 +6,6 @@
  *
  * @category PHP
  * @package  PHP_CodeSniffer
- * @author   Klaus Purer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -18,7 +17,6 @@
  *
  * @category PHP
  * @package  PHP_CodeSniffer
- * @author   Klaus Purer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class Drupal_Sniffs_Commenting_DocCommentAlignmentSniff implements
@@ -109,6 +107,11 @@ PHP_CodeSniffer_Sniff
                      );
             $phpcsFile->addError($error, $commentPointer, 'SpaceBeforeAsterisk', $data);
         }//end foreach
+
+        if (trim($tokens[($lastComment - 1)]['content']) === '*') {
+            $error = 'Additional blank line found at the end of doc comment';
+            $phpcsFile->addError($error, ($lastComment - 1), 'BlankLine');
+        }
 
     }//end process()
 
