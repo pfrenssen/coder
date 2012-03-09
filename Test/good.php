@@ -192,6 +192,22 @@ switch ($condition) {
     $i;
 }
 
+// Empty case statements are allowed.
+switch ($code) {
+  case 200:
+  case 304:
+    break;
+
+  case 301:
+  case 302:
+  case 307:
+    call_function();
+    break;
+
+  default:
+    $result->error = $status_message;
+}
+
 do {
   $i;
 } while ($condition);

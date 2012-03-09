@@ -166,6 +166,9 @@
  <rule ref="Squiz.ControlStructures.SwitchDeclaration.DefaultNoBreak">
   <severity>0</severity>
  </rule>
+ <rule ref="Squiz.ControlStructures.SwitchDeclaration.EmptyCase">
+  <severity>0</severity>
+ </rule>
  <rule ref="Squiz.ControlStructures.SwitchDeclaration.EmptyDefault">
   <severity>0</severity>
  </rule>
