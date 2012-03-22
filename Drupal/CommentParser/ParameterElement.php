@@ -6,7 +6,6 @@
  *
  * @category PHP
  * @package  PHP_CodeSniffer
- * @author   Klaus Purer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -15,10 +14,10 @@
  *
  * @category PHP
  * @package  PHP_CodeSniffer
- * @author   Klaus Purer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_CommentParser_ParameterElement extends PHP_CodeSniffer_CommentParser_ParameterElement
+class Drupal_CommentParser_ParameterElement
+    extends PHP_CodeSniffer_CommentParser_ParameterElement
 {
 
 

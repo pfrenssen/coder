@@ -1,26 +1,29 @@
 <?php
 /**
- * A class to represent return elements.
+ * A class to represent return elements. We need this class because
+ * PHP_CodeSniffer_CommentParser_PairElement lacks the
+ * getWhitespaceBeforeComment()
+ * method.
  *
  * PHP version 5
  *
  * @category PHP
  * @package  PHP_CodeSniffer
- * @author   Klaus Purer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
 /**
  * A class to represent return elements. We need this class because
- * PHP_CodeSniffer_CommentParser_PairElement lacks the getWhitespaceBeforeComment()
+ * PHP_CodeSniffer_CommentParser_PairElement lacks the
+ * getWhitespaceBeforeComment()
  * method.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
- * @author   Klaus Purer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_CommentParser_ReturnElement extends PHP_CodeSniffer_CommentParser_PairElement
+class Drupal_CommentParser_ReturnElement
+  extends PHP_CodeSniffer_CommentParser_PairElement
 {
 
     /**
@@ -28,28 +31,28 @@ class Drupal_CommentParser_ReturnElement extends PHP_CodeSniffer_CommentParser_P
      *
      * @var string
      */
-    protected $_value = '';
+    protected $value = '';
 
     /**
      * The comment of the tag.
      *
      * @var string
      */
-    protected $_comment = '';
+    protected $comment = '';
 
     /**
      * The whitespace that exists before the value elem.
      *
      * @var string
      */
-    protected $_valueWhitespace = '';
+    protected $valueWhitespace = '';
 
     /**
      * The whitespace that exists before the comment elem.
      *
      * @var string
      */
-    protected $_commentWhitespace = '';
+    protected $commentWhitespace = '';
 
 
     /**
@@ -65,7 +68,7 @@ class Drupal_CommentParser_ReturnElement extends PHP_CodeSniffer_CommentParser_P
      */
     protected function processSubElement($name, $content, $whitespaceBefore)
     {
-        $element           = '_'.$name;
+        $element           = $name;
         $whitespace        = $element.'Whitespace';
         $this->$element    = $content;
         $this->$whitespace = $whitespaceBefore;
@@ -80,7 +83,7 @@ class Drupal_CommentParser_ReturnElement extends PHP_CodeSniffer_CommentParser_P
      */
     public function getValue()
     {
-        return $this->_value;
+        return $this->value;
 
     }//end getValue()
 
@@ -92,7 +95,7 @@ class Drupal_CommentParser_ReturnElement extends PHP_CodeSniffer_CommentParser_P
      */
     public function getComment()
     {
-        return $this->_comment;
+        return $this->comment;
 
     }//end getComment()
 
@@ -104,7 +107,7 @@ class Drupal_CommentParser_ReturnElement extends PHP_CodeSniffer_CommentParser_P
      */
     public function getWhitespaceBeforeValue()
     {
-        return $this->_valueWhitespace;
+        return $this->valueWhitespace;
 
     }//end getWhitespaceBeforeValue()
 
@@ -116,7 +119,7 @@ class Drupal_CommentParser_ReturnElement extends PHP_CodeSniffer_CommentParser_P
      */
     public function getWhitespaceBeforeComment()
     {
-        return $this->_commentWhitespace;
+        return $this->commentWhitespace;
 
     }//end getWhitespaceBeforeComment()
 

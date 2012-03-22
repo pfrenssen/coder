@@ -187,21 +187,27 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                            );
 
         if (in_array($commentCloser, $acceptedClosers) === false) {
-            // Allow special last words like URLs or function references without
-            // punctuation.
-            $lastWord = $words[count($words) - 1];
-            $matches  = array();
-            preg_match('/[a-zA-Z]+/', $lastWord, $matches);
-            if (isset($matches[0]) === true && $matches[0] === $lastWord) {
-                $error = 'Inline comments must end in %s';
-                $ender = '';
-                foreach ($acceptedClosers as $closerName => $symbol) {
-                    $ender .= ' '.$closerName.',';
-                }
+            // Allow @tag style comments without punctuation
+            $firstWord = $words[0];
+            if (strpos($firstWord, '@') !== 0) {
+                // Allow special last words like URLs or function references
+                // without punctuation.
+                $lastWord = $words[count($words) - 1];
+                $matches  = array();
+                preg_match('/((\()?[$a-zA-Z]+\)|([$a-zA-Z]+))/', $lastWord,
+                    $matches);
+                if (isset($matches[0]) === true && $matches[0] === $lastWord) {
+                    $error = 'Inline comments must end in %s';
+                    $ender = '';
+                    foreach ($acceptedClosers as $closerName => $symbol) {
+                        $ender .= $closerName.', ';
+                    }
 
-                $ender = rtrim($ender, ',');
-                $data  = array($ender);
-                $phpcsFile->addError($error, $stackPtr, 'InvalidEndChar', $data);
+                    $ender = rtrim($ender, ', ');
+                    $data  = array($ender);
+                    $phpcsFile->addError($error, $stackPtr, 'InvalidEndChar',
+                        $data);
+                }
             }
         }
 
