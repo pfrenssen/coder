@@ -355,12 +355,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 $this->currentFile->addError($error, $errorPos, 'SpacingAfterParams');
             }
 
-            $previousParam      = null;
-            $spaceBeforeVar     = 10000;
-            $spaceBeforeComment = 10000;
-            $longestType        = 0;
-            $longestVar         = 0;
-
+            $checkPos = 0;
             foreach ($params as $param) {
                 $paramComment = trim($param->getComment());
                 $errorPos     = ($param->getLine() + $commentStart);
@@ -369,19 +364,6 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 if ($param->getWhitespaceBeforeType() !== ' ') {
                     $error = 'Expected 1 space before variable type';
                     $this->currentFile->addError($error, $errorPos, 'SpacingBeforeParamType');
-                }
-
-                $spaceCount = substr_count($param->getWhitespaceBeforeVarName(), ' ');
-                if ($spaceCount < $spaceBeforeVar) {
-                    $spaceBeforeVar = $spaceCount;
-                    $longestType    = $errorPos;
-                }
-
-                $spaceCount = substr_count($param->getWhitespaceBeforeComment(), ' ');
-
-                if ($spaceCount < $spaceBeforeComment && $paramComment !== '') {
-                    $spaceBeforeComment = $spaceCount;
-                    $longestVar         = $errorPos;
                 }
 
                 // Make sure they are in the correct order,
@@ -395,60 +377,58 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 
                 // Make sure the names of the parameter comment matches the
                 // actual parameter.
-                if (isset($realParams[($pos - 1)]) === true) {
-                    $realName          = $realParams[($pos - 1)]['name'];
+                $matched = false;
+                // Parameter documentation can be ommitted for some parameters, so
+                // we have to search the rest for a match.
+                while (isset($realParams[($checkPos)]) === true) {
+                    $realName          = $realParams[($checkPos)]['name'];
                     $expectedParamName = $realName;
-                    $foundParams[]     = $realName;
-                    $isReference       = $realParams[($pos - 1)]['pass_by_reference'];
-                    $code              = 'ParamNameNoMatch';
+                    $isReference       = $realParams[($checkPos)]['pass_by_reference'];
 
                     // Append ampersand to name if passing by reference.
-                    if ($isReference === true) {
-                        $realName = '&'.$realName;
+                    if ($isReference === true && substr($paramName, 0, 1) === '&') {
+                        $expectedParamName = '&'.$realName;
                     }
 
-                    $code = 'ParamNameNoMatch';
-                    if ($isReference === true && substr($paramName, 0, 1) === '&') {
-                        // This warning is disabled until a decision has been reached
-                        // whether this is an error or not.
-                        // @see http://drupal.org/node/1366842
-                        /*$warning = 'Doc comment for var %s at position %s should not contain the & for referenced variables.';
-                        $this->currentFile->addWarning(
-                            $warning,
-                            $errorPos,
-                            $code,
-                            array(
-                             $paramName,
-                             $pos,
-                            )
-                        );*/
+                    if ($expectedParamName === $paramName) {
+                        $matched = true;
+                        break;
+                    }
+
+                    $checkPos++;
+                }
+
+                if ($matched === false && $paramName !== '...') {
+                    if ($checkPos >= $pos) {
+                        $code  = 'ParamNameNoMatch';
+                        $data  = array(
+                                  $paramName,
+                                  $realParams[($pos - 1)]['name'],
+                                  $pos,
+                                 );
+                        $error = 'Doc comment for var %s does not match ';
+                        if (strtolower($paramName) === strtolower($realParams[($pos - 1)]['name'])) {
+                            $error .= 'case of ';
+                            $code   = 'ParamNameNoCaseMatch';
+                        }
+
+                        $error .= 'actual variable name %s at position %s';
+                        $this->currentFile->addError($error, $errorPos, $code, $data);
+                        // Reset the parameter position to check for following
+                        // parameters.
+                        $checkPos = ($pos - 1);
                     } else {
-                        if ($expectedParamName !== $paramName) {
-                            $data  = array(
-                                      $paramName,
-                                      $realName,
-                                      $pos,
-                                     );
-                            $error = 'Doc comment for var %s does not match ';
-                            if (strtolower($paramName) === strtolower($expectedParamName)) {
-                                $error .= 'case of ';
-                                $code   = 'ParamNameNoCaseMatch';
-                            }
-
-                            $error .= 'actual variable name %s at position %s';
-
-                            $this->currentFile->addError($error, $errorPos, $code, $data);
-                        }//end if
+                        // We must have an extra parameter comment.
+                        $error = 'Superfluous doc comment at position '.$pos;
+                        $this->currentFile->addError($error, $errorPos, 'ExtraParamComment');
                     }//end if
-                } else if ($paramName !== '...') {
-                    // We must have an extra parameter comment.
-                    $error = 'Superfluous doc comment at position '.$pos;
-                    $this->currentFile->addError($error, $errorPos, 'ExtraParamComment');
                 }//end if
+
+                $checkPos++;
 
                 if ($param->getVarName() === '') {
                     $error = 'Missing parameter name at position '.$pos;
-                     $this->currentFile->addError($error, $errorPos, 'MissingParamName');
+                    $this->currentFile->addError($error, $errorPos, 'MissingParamName');
                 }
 
                 if ($param->getType() === '') {
@@ -476,8 +456,6 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $error = 'Parameter comment indentation must be 2 additional spaces at position '.$pos;
                     $this->currentFile->addError($error, ($errorPos + 1), 'ParamCommentIndentation');
                 }
-
-                $previousParam = $param;
             }//end foreach
         }//end if
 

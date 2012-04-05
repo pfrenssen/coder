@@ -502,6 +502,16 @@ function mymodule_foo_some_type_bar() {
 
 }
 
+/**
+ * Not documenting all parameters is allowed.
+ *
+ * @param Node $node
+ *   The loaded node entity that we will use to do whatever.
+ */
+function mymodule_form_callback($form, &$form_state, Node $node) {
+
+}
+
 $x = 'Some markup text<br />';
 
 // Inline if statements with ?: are allowed.
