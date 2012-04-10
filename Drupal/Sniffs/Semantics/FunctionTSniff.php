@@ -47,6 +47,12 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
         $tokens   = $phpcsFile->getTokens();
         $argument = $this->getArgument(1);
 
+        if ($argument === false) {
+            $error = 'Empty calls to t() are not allowed';
+            $phpcsFile->addError($error, $stackPtr, 'EmptyT');
+            return;
+        }
+
         if ($tokens[$argument['start']]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
             // Not a translatable string literal.
             return;

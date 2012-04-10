@@ -433,6 +433,8 @@ t('She\'s a good person.');
 t("This is a \"fancy\" string.");
 // Concatenation of strings is bad in t().
 t('Your user name: ' . $user_name);
+// Empty t() calls are not allowed.
+t();
 
 // require_once should be a statement.
 require_once('somefile.php');
