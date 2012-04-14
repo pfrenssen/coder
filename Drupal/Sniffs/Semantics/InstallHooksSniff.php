@@ -10,8 +10,8 @@
  */
 
 /**
- * Checks that hook_install(), hook_install(), hook_requirements() and hook_schema()
- * are not defined in the module file.
+ * Checks that hook_disable(), hook_enable(), hook_install(), hook_uninstall(),
+ * hook_requirements() and hook_schema() are not defined in the module file.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -67,6 +67,8 @@ class Drupal_Sniffs_Semantics_InstallHooksSniff implements PHP_CodeSniffer_Sniff
             || $tokens[$stackPtr]['content'] === ($fileName.'_uninstall')
             || $tokens[$stackPtr]['content'] === ($fileName.'_requirements')
             || $tokens[$stackPtr]['content'] === ($fileName.'_schema')
+            || $tokens[$stackPtr]['content'] === ($fileName.'_enable')
+            || $tokens[$stackPtr]['content'] === ($fileName.'_disable')
         ) {
             $error = '%s() is an installation hook and must be declared in an install file';
             $data  = array($tokens[$stackPtr]['content']);
