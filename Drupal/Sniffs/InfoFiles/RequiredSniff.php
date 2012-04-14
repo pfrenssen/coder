@@ -10,7 +10,8 @@
  */
 
 /**
- * "name", "description" and "core are required fields in Drupal info files.
+ * "name", "description" and "core are required fields in Drupal info files. Also
+ * checks the "php" minimum requirement for Drupal 7.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -50,23 +51,31 @@ class Drupal_Sniffs_InfoFiles_RequiredSniff implements PHP_CodeSniffer_Sniff
 
         $tokens = $phpcsFile->getTokens();
         // Only run this sniff once per info file.
-        if ($tokens[$stackPtr]['line'] === 1) {
-            $contents = file_get_contents($phpcsFile->getFilename());
-            $info     = Drupal_Sniffs_InfoFiles_ClassFilesSniff::drupalParseInfoFormat($contents);
-            if (isset($info['name']) === false) {
-                $error = '"name" property is missing in the info file';
-                $phpcsFile->addError($error, $stackPtr, 'Name');
-            }
+        if ($tokens[$stackPtr]['line'] !== 1) {
+            return;
+        }
 
-            if (isset($info['description']) === false) {
-                $error = '"description" property is missing in the info file';
-                $phpcsFile->addError($error, $stackPtr, 'Description');
-            }
+        $contents = file_get_contents($phpcsFile->getFilename());
+        $info     = Drupal_Sniffs_InfoFiles_ClassFilesSniff::drupalParseInfoFormat($contents);
+        if (isset($info['name']) === false) {
+            $error = '"name" property is missing in the info file';
+            $phpcsFile->addError($error, $stackPtr, 'Name');
+        }
 
-            if (isset($info['core']) === false) {
-                $error = '"core" property is missing in the info file';
-                $phpcsFile->addError($error, $stackPtr, 'Core');
-            }
+        if (isset($info['description']) === false) {
+            $error = '"description" property is missing in the info file';
+            $phpcsFile->addError($error, $stackPtr, 'Description');
+        }
+
+        if (isset($info['core']) === false) {
+            $error = '"core" property is missing in the info file';
+            $phpcsFile->addError($error, $stackPtr, 'Core');
+        } else if ($info['core'] === '7.x' && isset($info['php']) === true
+            && $info['php'] <= '5.2'
+        ) {
+            $error = 'Drupal 7 core already requires PHP 5.2';
+            $ptr   = Drupal_Sniffs_InfoFiles_ClassFilesSniff::getPtr('php', $info['php'], $phpcsFile);
+            $phpcsFile->addError($error, $ptr, 'D7PHPVersion');
         }
 
     }//end process()

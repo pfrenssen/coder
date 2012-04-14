@@ -43,7 +43,7 @@ class Drupal_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeSniffer_MultiFi
                         if (file_exists($fileName) === false) {
                             // We need to find the position of the offending line in the
                             // info file.
-                            $ptr   = $this->getPtr($file, $phpcsFile);
+                            $ptr   = self::getPtr('files[]', $file, $phpcsFile);
                             $error = 'Declared file was not found';
                             $phpcsFile->addError($error, $ptr, 'DeclaredFileNotFound');
                             continue;
@@ -53,7 +53,7 @@ class Drupal_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeSniffer_MultiFi
                             if ($searchFile->getFilename() === $fileName) {
                                 $stackPtr = $searchFile->findNext(array(T_CLASS, T_INTERFACE), 0);
                                 if ($stackPtr === false) {
-                                    $ptr   = $this->getPtr($file, $phpcsFile);
+                                    $ptr   = self::getPtr('files[]', $file, $phpcsFile);
                                     $error = "It's only necessary to declare files[] if they declare a class or interface.";
                                     $phpcsFile->addError($error, $ptr, 'UnecessaryFileDeclaration');
                                 }
@@ -70,18 +70,19 @@ class Drupal_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeSniffer_MultiFi
 
 
     /**
-     * Helper function that returns the position of the file name in the info file.
+     * Helper function that returns the position of the key in the info file.
      *
-     * @param string               $fileName File name to search for.
+     * @param string               $key      Key name to search for.
+     * @param string               $value    Corresponding value to search for.
      * @param PHP_CodeSniffer_File $infoFile Info file to search in.
      *
      * @return int|false Returns the stack position if the file name is found, false
      * 									 otherwise.
      */
-    protected function getPtr($fileName, PHP_CodeSniffer_File $infoFile)
+    public static function getPtr($key, $value, PHP_CodeSniffer_File $infoFile)
     {
         foreach ($infoFile->getTokens() as $ptr => $tokenInfo) {
-            if (strpos($tokenInfo['content'], $fileName) !== false) {
+            if (preg_match('/^[\s]*'.$key.'[\s]*=[\s]*["\']?'.$value.'["\']?/', $tokenInfo['content']) === 1) {
                 return $ptr;
             }
         }
