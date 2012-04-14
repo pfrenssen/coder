@@ -633,6 +633,13 @@ function test17($x) {
 
 }
 
+/**
+ * Too much space after the function keyword.
+ */
+function  test18() {
+
+}
+
 // Test string concatenation.
 $x = 'This string is to short to be' . 'concatenated';
 
