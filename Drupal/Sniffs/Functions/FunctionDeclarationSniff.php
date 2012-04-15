@@ -10,7 +10,8 @@
  */
 
 /**
- * Ensure that there is only one space after the function keyword.
+ * Ensure that there is only one space after the function keyword and no space
+ * before the opening parenthesis.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -48,6 +49,13 @@ class Drupal_Sniffs_Functions_FunctionDeclarationSniff implements PHP_CodeSniffe
         if ($tokens[($stackPtr + 1)]['content'] !== ' ') {
             $error = 'Expected exactly one space after the function keyword';
             $phpcsFile->addError($error, ($stackPtr + 1), 'SpaceAfter');
+        }
+
+        if (isset($tokens[($stackPtr + 3)]) === true
+            && $tokens[($stackPtr + 3)]['code'] === T_WHITESPACE
+        ) {
+            $error = 'Space before opening parenthesis of function definition prohibited';
+            $phpcsFile->addError($error, ($stackPtr + 3), 'SpaceBeforeParenthesis');
         }
 
     }//end process()

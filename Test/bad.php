@@ -640,6 +640,13 @@ function  test18() {
 
 }
 
+/**
+ * Space before opening parenthesis is not allowed.
+ */
+function test19 () {
+
+}
+
 // Test string concatenation.
 $x = 'This string is to short to be' . 'concatenated';
 
