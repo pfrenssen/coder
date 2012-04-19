@@ -31,6 +31,7 @@ class Drupal_Sniffs_NamingConventions_ValidGlobalSniff implements PHP_CodeSniffe
                            '$cookie_domain',
                            '$databases',
                            '$db_prefix',
+                           '$db_type',
                            '$db_url',
                            '$drupal_hash_salt',
                            '$drupal_test_info',
