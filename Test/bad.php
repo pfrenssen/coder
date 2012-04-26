@@ -647,6 +647,13 @@ function test19 () {
 
 }
 
+/**
+ * There should be a space after the comma.
+ */
+function test20($a,$b) {
+
+}
+
 // Test string concatenation.
 $x = 'This string is to short to be' . 'concatenated';
 
