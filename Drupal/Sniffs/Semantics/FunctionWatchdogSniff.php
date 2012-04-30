@@ -46,6 +46,12 @@ class Drupal_Sniffs_Semantics_FunctionWatchdogSniff extends Drupal_Sniffs_Semant
         $tokens = $phpcsFile->getTokens();
         // Get the second argument passed to watchdog().
         $argument = $this->getArgument(2);
+        if ($argument === false) {
+            $error = 'The second argument to watchdog() is missing';
+            $phpcsFile->addError($error, $stackPtr, 'WatchdogArgument');
+            return;
+        }
+
         if ($tokens[$argument['start']]['code'] === T_STRING
             && $tokens[$argument['start']]['content'] === 't'
         ) {
