@@ -31,6 +31,11 @@
   <!-- Do not run this sniff on template files. -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
  </rule>
+ <rule ref="Drupal.WhiteSpace.ScopeIndent">
+  <!-- Do not run this sniff on template files, as the indentation might follow
+  the HTML -->
+  <exclude-pattern>*.tpl.php</exclude-pattern>
+ </rule>
  
  <rule ref="Generic.Formatting.SpaceAfterCast" />
  <rule ref="Generic.Functions.FunctionCallArgumentSpacing" />
@@ -40,14 +45,6 @@
  <rule ref="Generic.PHP.DisallowShortOpenTag" />
  <rule ref="Generic.PHP.UpperCaseConstant" />
  <rule ref="Generic.WhiteSpace.DisallowTabIndent" />
- <rule ref="Generic.WhiteSpace.ScopeIndent">
-  <properties>
-   <property name="indent" value="2"/>
-  </properties>
-  <!-- Do not run this sniff on template files, as the indentation might follow
-  the HTML -->
-  <exclude-pattern>*.tpl.php</exclude-pattern>
- </rule>
 
  <!-- Use Unix newlines -->
  <rule ref="Generic.Files.LineEndings">
