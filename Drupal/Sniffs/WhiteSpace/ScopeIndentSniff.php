@@ -270,7 +270,10 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                     // Ignore code between paranthesis (multi line function calls or
                     // arrays) and multi line statements.
                     $before = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($firstToken - 1), $scopeOpener, true);
-                    if ($before !== $scopeOpener && $tokens[$before]['code'] !== T_SEMICOLON) {
+                    if ($before !== $scopeOpener
+                        && $tokens[$before]['code'] !== T_SEMICOLON
+                        && $tokens[$before]['code'] !== T_CLOSE_CURLY_BRACKET
+                    ) {
                         continue;
                     }
                 }

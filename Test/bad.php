@@ -654,6 +654,18 @@ function test20($a,$b) {
 
 }
 
+/**
+ * Some indentation errors.
+ */
+function test21() {
+   foo();
+  if (TRUE) {
+    bar();
+  }
+    // Too far left.
+   $x = 1 + 1;
+}
+
 // Test string concatenation.
 $x = 'This string is to short to be' . 'concatenated';
 
