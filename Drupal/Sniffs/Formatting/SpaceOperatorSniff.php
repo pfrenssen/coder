@@ -100,6 +100,8 @@ class Drupal_Sniffs_Formatting_SpaceOperatorSniff implements PHP_CodeSniffer_Sni
         if ($needs_operator_suffix && ($tokens[$stackPtr - 2]['code'] !== T_EQUAL
             && $tokens[$stackPtr - 2]['code'] !== T_DOUBLE_ARROW
             && !$has_equality_token
+            // Allow "=&" without a space in between.
+            && !($tokens[$stackPtr]['code'] === T_EQUAL && $tokens[($stackPtr + 1)]['code'] === T_BITWISE_AND)
             && ($tokens[($stackPtr + 1)]['code'] !== T_WHITESPACE
             || $tokens[($stackPtr + 1)]['content'] != ' '))
         ) {

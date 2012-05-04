@@ -524,3 +524,7 @@ $x = $y == $z ? 23 : 42;
 
 // Standard watchdog message.
 watchdog('mymodule', 'Log message here.');
+
+// For assigning by reference it is allowed that there is no space after the
+// "=" oeprator.
+$batch =& batch_get();
