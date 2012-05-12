@@ -666,6 +666,13 @@ function test21() {
    $x = 1 + 1;
 }
 
+/**
+ * Function parameters must be all lower case.
+ */
+function test22function($Fullname) {
+
+}
+
 // Test string concatenation.
 $x = 'This string is to short to be' . 'concatenated';
 

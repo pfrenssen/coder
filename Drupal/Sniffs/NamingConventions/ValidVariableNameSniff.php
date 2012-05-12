@@ -47,7 +47,8 @@ class Drupal_Sniffs_NamingConventions_ValidVariableNameSniff
         $scope          = $memberProps['scope'];
         $scopeSpecified = $memberProps['scope_specified'];
 
-        // Even if it's a private member, it must have an underscore on the front.
+        // Even if it's a private member, it must not have an underscore on the
+        // front.
         if ($isPublic === false && $memberName{0} === '_') {
             $error = "Private member variable \"$memberName\" must not be
             	prefixed with an underscore - it is discouraged in PHP 5-specific code";
@@ -108,30 +109,10 @@ class Drupal_Sniffs_NamingConventions_ValidVariableNameSniff
             return;
         }
 
-        if (preg_match('/[A-Z]/', $varName) && PHP_CodeSniffer::isCamelCaps($varName, false, true, false) === true) {
+        if (preg_match('/[A-Z]/', $varName)) {
             $error = "Variable \"$varName\" is camel caps format. do not use mixed case (camelCase), use lower case and _";
             $phpcsFile->addError($error, $stackPtr);
         }
-
-        // Strange error with $stackPtr prevents us from using this code.
-        /* $tokens = $phpcsFile->getTokens();
-
-        $stst = $stackPtr;
-
-        $memberProps = $phpcsFile->getMemberProperties($stst);
-        if (empty($memberProps) === true) {
-            return;
-        }
-
-        $memberName     = ltrim($tokens[$stackPtr]['content'], '$');
-        $isGlobal       = ($memberProps['scope'] === 'global') ? false : true;
-
-        if ($isGlobal && $memberName{0} != '_') {
-            $error = "Global variable \"$memberName\" must be prefixed
-                with an underscore before module name";
-            $phpcsFile->addError($error, $stackPtr);
-            return;
-        }  */
 
     }//end processVariable()
 
