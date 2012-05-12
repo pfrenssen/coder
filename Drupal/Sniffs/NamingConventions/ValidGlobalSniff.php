@@ -46,6 +46,7 @@ class Drupal_Sniffs_NamingConventions_ValidGlobalSniff implements PHP_CodeSniffe
                            '$items',
                            '$language',
                            '$language_content',
+                           '$language_interface',
                            '$language_url',
                            '$locks',
                            '$menu_admin',
