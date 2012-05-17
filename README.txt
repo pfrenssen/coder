@@ -5,6 +5,9 @@
 Drupal Code Sniffer (drupalcs) is a coding standard validation tool for Drupal
 and contributed modules/themes.
 
+Online documentation: http://drupal.org/node/1419980
+
+
 Installation
 ------------
 
@@ -18,6 +21,10 @@ Requirements:
   The code for that looks like this:
 
 $> sudo ln -sv /path/to/drupalcs/Drupal $(pear config-get php_dir)/PHP/CodeSniffer/Standards 
+
+Please see the online documentation for more detailed instructions:
+
+  http://drupal.org/node/1419988
 
 
 Usage (running in a shell)
