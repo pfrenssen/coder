@@ -4,20 +4,18 @@
  *
  * PHP version 5
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Klaus Purer
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
 /**
  * Parses and verifies the doc comments for functions. Largely copied from
- * PEAR_Sniffs_Commenting_FunctionCommentSniff.
+ * Squiz_Sniffs_Commenting_FunctionCommentSniff.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Klaus Purer
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_Sniff
 {
@@ -199,8 +197,15 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             }
         }
 
+        // Check for a comment description.
+        $short = $comment->getShortComment();
+        if (trim($short) === '') {
+            $error = 'Missing short description in function doc comment';
+            $phpcsFile->addError($error, $commentStart, 'MissingShort');
+            return;
+        }
+
         // No extra newline before short description.
-        $short        = $comment->getShortComment();
         $newlineCount = 0;
         $newlineSpan  = strspn($short, $phpcsFile->eolChar);
         if ($short !== '' && $newlineSpan > 0) {
