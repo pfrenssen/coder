@@ -78,7 +78,7 @@ class Drupal_Sniffs_CSS_ClassDefinitionOpeningBraceSpaceSniff implements PHP_Cod
             return;
         }
 
-        $next = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
         if ($next !== false && $tokens[$next]['line'] !== ($tokens[$stackPtr]['line'] + 1)) {
             $error = 'Expected exactly one new line after opening brace of class definition';
             $phpcsFile->addError($error, $stackPtr, 'After');

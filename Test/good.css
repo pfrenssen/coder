@@ -53,3 +53,15 @@
   -webkit-box-shadow: 0 3px 20px #000;
   box-shadow: 0 3px 20px #000;
 }
+
+#node-admin-buttons {
+  clear: right; /* LTR */
+  float: left; /* LTR */
+  margin-left: 0.5em; /* LTR */
+}
+
+.gigantic {
+  /* 110px / 120px */
+  font-size: 6.875em;
+  line-height: 1.0909090909090908em;
+}
