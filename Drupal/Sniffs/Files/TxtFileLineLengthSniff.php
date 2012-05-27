@@ -53,7 +53,7 @@ class Drupal_Sniffs_Files_TxtFileLineLengthSniff implements PHP_CodeSniffer_Snif
             $tokens = $phpcsFile->getTokens();
 
             $content = rtrim($tokens[$stackPtr]['content']);
-            $lineLength = strlen($content);
+            $lineLength = mb_strlen($content, 'UTF-8');
             if ($lineLength > 80) {
                 $data = array(
                          80,
