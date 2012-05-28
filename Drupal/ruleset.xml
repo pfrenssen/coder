@@ -194,6 +194,7 @@
   <severity>0</severity>
  </rule>
  
+ <rule ref="Squiz.Scope.MethodScope" />
  <rule ref="Squiz.WhiteSpace.SemicolonSpacing" />
  
  <!-- Ignore various version control directories. -->
