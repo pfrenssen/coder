@@ -26,12 +26,27 @@ Please see the online documentation for more detailed instructions:
 
   http://drupal.org/node/1419988
 
+Installation: Drush
+-------------------
+
+While drupalcs can be used as a standalone set of rules for PHP_CodeSniffer,
+drush command support is included to facilitate ease of use, installation,
+and leveraging of drush features such as site aliasing.
+
+Extract the contents of the drupalcs project into one of the locations specified
+in the drush README.txt COMMANDS section, such as the subdirectory of the
+.drush folder in your home directory.  For other alternatives, please see
+http://drupal.org/node/1419988
 
 Usage (running in a shell)
 --------------------------
 
 $> phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme /path/to/drupal_module
 
+Usage (drush)
+-------------
+
+$> drush drupalcs sites/all/modules/custom
 
 Working with Editors
 --------------------
