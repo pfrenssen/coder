@@ -82,7 +82,7 @@ class Drupal_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeSniffer_MultiFi
     public static function getPtr($key, $value, PHP_CodeSniffer_File $infoFile)
     {
         foreach ($infoFile->getTokens() as $ptr => $tokenInfo) {
-            if (preg_match('/^[\s]*'.$key.'[\s]*=[\s]*["\']?'.$value.'["\']?/', $tokenInfo['content']) === 1) {
+            if (preg_match('@^[\s]*'.preg_quote($key).'[\s]*=[\s]*["\']?'.preg_quote($value).'["\']?@', $tokenInfo['content']) === 1) {
                 return $ptr;
             }
         }
