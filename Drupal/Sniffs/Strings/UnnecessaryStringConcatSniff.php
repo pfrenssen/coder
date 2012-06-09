@@ -77,7 +77,7 @@ class Drupal_Sniffs_Strings_UnnecessaryStringConcatSniff extends Generic_Sniffs_
                     }
                 }
 
-                // Before we throw an error check if the string is longe than
+                // Before we throw an error check if the string is longer than
                 // the line length limit.
                 $lineLengthLimitSniff = new Drupal_Sniffs_Files_LineLengthSniff;
 

@@ -495,6 +495,8 @@ function hook_foobar() {
 
 /**
  * Implements hook_foo().
+ *
+ * @link http://example.com/long-link-here-whatever Some long documentation link @endlink
  */
 function mymodule_foo() {
 
