@@ -34,8 +34,9 @@ if(TRUE) {
 
 define('C_TEST',1);
 
+// The global keyword must be all lower case.
 // Custom global variables must be prefixed with an underscore.
-global $myvar, $user;
+GLOBAL $myvar, $user;
 
 // Has whitespace at the end of the line.
 $whitespaces = 'Yes, Please';  
