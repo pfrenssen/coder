@@ -1097,20 +1097,20 @@ function coder_trim_php($code) {
  * @return
  *      The processed source code.
  */
-function coder_exec_processors($code, $prefix = '') {
+function coder_exec_processors($code, $prefix) {
   if (empty($prefix)) {
     return;
   }
   $tasks = get_defined_functions();
   $tasks = $tasks['user'];
   for ($c = 0, $cc = count($tasks); $c < $cc; ++$c) {
-    if (strpos($tasks[$c], $prefix) === FALSE) {
-      unset($tasks[$c]);
-    }
-    else {
+    // If the defined function starts with the specified prefix, invoke it.
+    if (strpos($tasks[$c], $prefix) === 0) {
+      // Store the results using the function name as key in $tasks.
       $tasks[$tasks[$c]] = call_user_func($tasks[$c]);
-      unset($tasks[$c]);
     }
+    // Remove the (indexed) key for every checked function.
+    unset($tasks[$c]);
   }
   uasort($tasks, 'coder_order_processors');
   foreach ($tasks as $func => $task) {
