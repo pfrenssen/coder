@@ -1397,9 +1397,9 @@ function coder_postprocessor_if_curly_braces() {
   return array(
     '#title' => 'Use curly braces even in situations where they are technically optional.',
     '#search' => '@
-      (\s*)           # match leading white-space, including newline
-      (if\ \(.+\)\ )  # match if statement
-      ([^\{].+;)      # match conditional executed code not starting with a curly brace, delimited by a semicolon.
+      (\s*)                    # match leading white-space, including newline
+      ((?:else)?if\ \(.+\)\ )  # match if/elseif statement
+      ([^\{].+;)               # match conditional executed code not starting with a curly brace, delimited by a semicolon.
       @x',
     '#replace' => '$1$2{$1  $3$1}',
   );
