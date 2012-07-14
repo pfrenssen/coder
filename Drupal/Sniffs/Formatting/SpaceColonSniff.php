@@ -54,7 +54,7 @@ class Drupal_Sniffs_Formatting_SpaceColonSniff implements PHP_CodeSniffer_Sniff
         }
 
         // Reuse the standard operator sniff now.
-        $sniff = new Drupal_Sniffs_Formatting_SpaceOperatorSniff();
+        $sniff = new Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff();
         $sniff->process($phpcsFile, $stackPtr);
 
     }//end process()
