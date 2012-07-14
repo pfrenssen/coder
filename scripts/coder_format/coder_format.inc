@@ -1237,7 +1237,8 @@ function coder_postprocessor_cvs_id() {
   );
 }
 
-function coder_postprocessor_multiple_vars() {
+// @todo Disabled, since actually unwanted. Remove entirely?
+function _coder_postprocessor_multiple_vars() {
   return array(
     '#title' => 'Align equal signs of multiple variable assignments in the same column.',
     '#search' => '@
@@ -1252,7 +1253,7 @@ function coder_postprocessor_multiple_vars() {
   );
 }
 
-function coder_replace_multiple_vars($matches) {
+function _coder_replace_multiple_vars($matches) {
   // Retrieve all variable name = variable value pairs.
   $regex = '@
     ^           # match start of a line
@@ -1290,7 +1291,8 @@ function coder_replace_multiple_vars($matches) {
   return $return;
 }
 
-function coder_postprocessor_indent_multiline_array() {
+// @todo Disabled, since buggy.
+function _coder_postprocessor_indent_multiline_array() {
   // Still buggy, disabled for now.
   return array(
     '#title' => 'Align equal signs of multiline array assignments in the same column.',
@@ -1312,7 +1314,7 @@ function coder_postprocessor_indent_multiline_array() {
   );
 }
 
-function coder_replace_indent_multiline_array($matches) {
+function _coder_replace_indent_multiline_array($matches) {
   // Separate out important components of the multiline array:
   // (\s*) matches existing indent as \1
   // (([\'"]).+?\2|\$.+?|[+\-]?(?:0x)?[0-9A-F]+) matches key as \2
@@ -1356,9 +1358,9 @@ function coder_replace_indent_multiline_array($matches) {
   return $return;
 }
 
-function coder_postprocessor_array_rearrange() {
-  // @bug common.inc, comment.module:
-  // Not yet working properly 25/03/2007 sun.
+// @todo Disabled, since not yet working properly 25/03/2007 sun.
+// @see common.inc, comment.module
+function _coder_postprocessor_array_rearrange() {
   return array(
     '#title' => 'Break array elements into separate lines, indented one level.',
     // ([\040\t]*) matches blanks and tabs.
@@ -1371,7 +1373,7 @@ function coder_postprocessor_array_rearrange() {
   );
 }
 
-function coder_replace_array_rearrange($matches) {
+function _coder_replace_array_rearrange($matches) {
   // Retrieve all array items, except the last one.
   preg_match_all('/(.+? => .+?,) /', $matches[3], $items);
 
