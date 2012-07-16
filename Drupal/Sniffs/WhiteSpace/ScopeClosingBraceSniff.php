@@ -4,31 +4,30 @@
  *
  * PHP version 5
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @link      http://Drupal.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://Drupal.php.net/package/PHP_CodeSniffer
  */
 
 /**
- * Drupal_Sniffs_Whitespace_ScopeClosingBraceSniff.
+ * Copied from PEAR_Sniffs_WhiteSpace_ScopeClosingBraceSniff to allow empty methods
+ * and classes.
  *
  * Checks that the closing braces of scopes are aligned correctly.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.2.2
- * @link      http://Drupal.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class Drupal_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer_Sniff
 {
+
+    /**
+     * The number of spaces code should be indented.
+     *
+     * @var int
+     */
+    public $indent = 2;
 
 
     /**
@@ -115,20 +114,26 @@ class Drupal_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer
 
         // Check now that the closing brace is lined up correctly.
         $braceIndent   = $tokens[$scopeEnd]['column'];
-        $isBreakCloser = ($tokens[$scopeEnd]['code'] === T_BREAK);
-        if (in_array($tokens[$stackPtr]['code'], array(T_CASE, T_DEFAULT)) === true
-            && $isBreakCloser === true
-        ) {
-            // BREAK statements should be indented 4 spaces from the
+        if (in_array($tokens[$stackPtr]['code'], array(T_CASE, T_DEFAULT)) === true) {
+            // BREAK and RETURN statements should be indented n spaces from the
             // CASE or DEFAULT statement.
-            if ($braceIndent !== ($startColumn + 2)) {
-                $error = 'Break statement indented incorrectly; expected '.($startColumn + 1).' spaces, found '.($braceIndent - 1);
-                $phpcsFile->addError($error, $scopeEnd);
+            if ($braceIndent !== ($startColumn + $this->indent)) {
+                $error = '%s statement indented incorrectly; expected %s spaces, found %s';
+                $data  = array(
+                          $tokens[$scopeEnd]['content'],
+                          ($startColumn + $this->indent - 1),
+                          ($braceIndent - 1),
+                         );
+                $phpcsFile->addError($error, $scopeEnd, 'BreakIdent', $data);
             }
         } else {
             if ($braceIndent !== $startColumn) {
-                $error = 'Closing brace indented incorrectly; expected '.($startColumn - 1).' spaces, found '.($braceIndent - 1);
-                $phpcsFile->addError($error, $scopeEnd);
+                $error = 'Closing brace indented incorrectly; expected %s spaces, found %s';
+                $data  = array(
+                          ($startColumn - 1),
+                          ($braceIndent - 1),
+                         );
+                $phpcsFile->addError($error, $scopeEnd, 'Indent', $data);
             }
         }
 

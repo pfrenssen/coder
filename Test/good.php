@@ -209,6 +209,19 @@ switch ($code) {
     $result->error = $status_message;
 }
 
+/**
+ * Allowed switch() statement in a function without breaks.
+ */
+function foo() {
+  switch ($x) {
+    case 1:
+      return 5;
+
+    case 2:
+      return 6;
+  }
+}
+
 do {
   $i;
 } while ($condition);
