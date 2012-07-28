@@ -708,4 +708,9 @@ watchdog('mymodule', t('Log message here.'));
 // Inline control structures are bad.
 if ($x == $y) $x = 42;
 
+// isset() must be all lower case.
+if (isSet($x)) {
+
+}
+
 ?>

@@ -194,6 +194,7 @@
   <severity>0</severity>
  </rule>
  
+ <rule ref="Squiz.PHP.LowercasePHPFunctions" />
  <rule ref="Squiz.Scope.MethodScope" />
  <rule ref="Squiz.WhiteSpace.SemicolonSpacing" />
  
