@@ -713,4 +713,11 @@ if (isSet($x)) {
 
 }
 
+/**
+ * Comment should end with '*', not '**' before the slash.
+ **/
+function test23() {
+
+}
+
 ?>

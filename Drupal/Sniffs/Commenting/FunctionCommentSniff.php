@@ -107,6 +107,10 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         } else if ($code !== T_DOC_COMMENT) {
             $phpcsFile->addError('Missing function doc comment', $stackPtr, 'Missing');
             return;
+        } else if (trim($tokens[$commentEnd]['content']) !== '*/') {
+            $error = 'Wrong function doc comment end; expected "*/", found "%s"';
+            $phpcsFile->addError($error, $commentEnd, 'WrongEnd', array(trim($tokens[$commentEnd]['content'])));
+            return;
         }
 
         // If there is any code between the function keyword and the doc block
