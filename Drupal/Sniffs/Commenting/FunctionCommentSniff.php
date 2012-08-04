@@ -79,6 +79,10 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
+        $this->currentFile = $phpcsFile;
+
+        $tokens = $phpcsFile->getTokens();
+
         $find = array(
                  T_COMMENT,
                  T_DOC_COMMENT,
@@ -93,19 +97,26 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             return;
         }
 
-        $this->currentFile = $phpcsFile;
-        $tokens            = $phpcsFile->getTokens();
-
         // If the token that we found was a class or a function, then this
         // function has no doc comment.
         $code = $tokens[$commentEnd]['code'];
 
         if ($code === T_COMMENT) {
-            $error = 'You must use "/**" style comments for a function comment';
-            $phpcsFile->addError($error, $stackPtr, 'WrongStyle');
+            // The function might actually be missing a comment, and this last comment
+            // found is just commenting a bit of code on a line. So if it is not the
+            // only thing on the line, assume we found nothing.
+            $prevContent = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, $commentEnd);
+            if ($tokens[$commentEnd]['line'] === $tokens[$commentEnd]['line']) {
+                $error = 'Missing function doc comment';
+                $phpcsFile->addError($error, $stackPtr, 'Missing');
+            } else {
+                $error = 'You must use "/**" style comments for a function comment';
+                $phpcsFile->addError($error, $stackPtr, 'WrongStyle');
+            }
             return;
         } else if ($code !== T_DOC_COMMENT) {
-            $phpcsFile->addError('Missing function doc comment', $stackPtr, 'Missing');
+            $error = 'Missing function doc comment';
+            $phpcsFile->addError($error, $stackPtr, 'Missing');
             return;
         } else if (trim($tokens[$commentEnd]['content']) !== '*/') {
             $error = 'Wrong function doc comment end; expected "*/", found "%s"';
