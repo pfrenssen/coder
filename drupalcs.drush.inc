@@ -63,7 +63,7 @@ function drushrc_drush_help($section) {
  * Implements drush_hook_COMMAND_validate().
  */
 function drush_drupalcs_validate($path = '') {
-  if (!_druaplcs_is_compatible_phpcs_installed()) {
+  if (!_drupalcs_is_compatible_phpcs_installed()) {
     $path_to_phpcs = _drupalcs_get_path();
     if ($path_to_phpcs) {
       return drush_set_error('NOT_INSTALLED', dt('PHP_CodeSniffer is not installed.'));
@@ -165,7 +165,7 @@ function _drupalcs_extensions($mode = '') {
  * @return boolean
  *   Whether or not a compatible version of PHP_CodeSniffer is installed.
  */
-function _druaplcs_is_compatible_phpcs_installed() {
+function _drupalcs_is_compatible_phpcs_installed() {
   // Check to see if phpcs is installed.
   $result = _drupalcs_get_phpcs_version('phpcs');
   if ($result) {
@@ -265,7 +265,7 @@ function _drupalcs_is_drupal_standard_installed($path_to_phpcs) {
  *   The path to PHP_CodeSniffer.
  */
 function _drupalcs_get_path() {
-  if (_druaplcs_is_compatible_phpcs_installed()) {
+  if (_drupalcs_is_compatible_phpcs_installed()) {
     return 'phpcs';
   }
   // This is a potential place to check for libraries.
