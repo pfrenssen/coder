@@ -167,14 +167,14 @@ function _drupalcs_extensions($mode = '') {
  */
 function _drupalcs_is_compatible_phpcs_installed() {
   // Check to see if phpcs is installed.
-  $result = _drupalcs_get_phpcs_version('phpcs');
-  if ($result) {
+  $version = _drupalcs_get_phpcs_version('phpcs');
+
+  if ($version) {
     // Check if Drupal standard is installed.
     if (_drupalcs_is_drupal_standard_installed('phpcs')) {
       return TRUE;
     }
     // A fix was applied after version 1.3.3 that allowed external Sniff paths.
-    $version = _drupalcs_get_phpcs_version_number('phpcs');
     // Version from git? Good luck.
     if ('@package_version@' == $version) {
       return TRUE;
@@ -188,45 +188,27 @@ function _drupalcs_is_compatible_phpcs_installed() {
 }
 
 /**
- * Get the version number of PHP_CodeSniffer.
- *
- * @param string $path_to_phpcs
- *   The path to PHP_CodeSniffer.
- *
- * @return string
- *   The version number of PHP_CodeSniffer, or -1 if it cannot be determined.
- */
-function _drupalcs_get_phpcs_version_number($path_to_phpcs) {
-  static $phpcs_version_number = NULL;
-
-  if (is_null($phpcs_version_number)) {
-    $result = _drupalcs_get_phpcs_version($path_to_phpcs);
-    if ($result) {
-      $phpcs_version_array = explode(' ', array_pop(drush_shell_exec_output()));
-      $phpcs_version_number = $phpcs_version_array[2];
-    }
-    else {
-      $phpcs_version_number = -1;
-    }
-  }
-
-  return $phpcs_version_number;
-}
-
-/**
  * Get the version of PHP_CodeSniffer.
  *
  * @param string $path_to_phpcs
  *   The path to PHP_CodeSniffer.
  *
  * @return string
- *   The result of the version command.
+ *   The version of PHP_CodeSniffer, or FALSE if it cannot be determined.
  */
 function _drupalcs_get_phpcs_version($path_to_phpcs) {
   static $phpcs_version = NULL;
 
   if (is_null($phpcs_version)) {
-    $phpcs_version = drush_shell_exec($path_to_phpcs . ' --version');
+    $result = drush_shell_exec($path_to_phpcs . ' --version');
+
+    if ($result) {
+      $phpcs_version_array = explode(' ', array_pop(drush_shell_exec_output()));
+      $phpcs_version = $phpcs_version_array[2];
+    }
+    else {
+      $phpcs_version = FALSE;
+    }
   }
 
   return $phpcs_version;
