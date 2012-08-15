@@ -720,4 +720,10 @@ function test23() {
 
 }
 
+// Security issue: http://drupal.org/node/750148
+preg_match('/.+/e', 'subject');
+preg_match('/.+/iemesuexADSUeXJ', 'subject');
+preg_filter('/.+/imsuexADSUXJ', 'replacement', 'subject');
+preg_replace('/.+/imsuxADSUeXJ', 'replacement', 'subject');
+
 ?>

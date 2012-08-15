@@ -542,3 +542,9 @@ watchdog('mymodule', 'Log message here.');
 // For assigning by reference it is allowed that there is no space after the
 // "=" oeprator.
 $batch =& batch_get();
+
+// Security issue: http://drupal.org/node/750148
+preg_match('/.+/i', 'subject');
+preg_match('/.+/imsuxADSUXJ', 'subject');
+preg_filter('/.+/i', 'replacement', 'subject');
+preg_replace('/.+/i', 'replacement', 'subject');
