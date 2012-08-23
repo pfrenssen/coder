@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Command line utility for coder_review.
@@ -71,9 +70,9 @@ function coder_review_drush_review() {
       _coder_review_drush_set_option($option);
     }
   }
-  $severity = drush_get_option('severity', '');
+  $severity = drush_get_option('severity');
   foreach (array('major', 'minor', 'critical') as $option) {
-    if (drush_get_option($option)) {
+    if ($severity == $option || drush_get_option($option)) {
       $severity_name = $option;
     }
   }
@@ -189,33 +188,33 @@ function coder_review_drush_review() {
           break;
       }
     }
-    if (_coder_review_drush_is_option('checkstyle')) {
-      _coder_review_drush_xml_output_header('checkstyle');
+  }
+  if (_coder_review_drush_is_option('checkstyle')) {
+    _coder_review_drush_xml_output_header('checkstyle');
+  }
+  elseif (_coder_review_drush_is_option('xml')) {
+    _coder_review_drush_xml_output_header('xml');
+  }
+  if (!empty($severity_name)) {
+    if (_coder_review_drush_is_option('xml')) {
+      _coder_review_drush_xml_output_severity($severity_name);
     }
-    elseif (_coder_review_drush_is_option('xml')) {
-      _coder_review_drush_xml_output_header('xml');
+    $output[] = dt('Severity @severity_name', array('@severity_name' => $severity_name));
+    $settings['coder_severity'] = _coder_review_severity($severity_name);
+  }
+  if (count($reviews)) {
+    if (_coder_review_drush_is_option('xml') && !_coder_review_drush_is_option('checkstyle')) {
+      _coder_review_drush_xml_output_reviews($reviews, $avail_reviews);
     }
-    if (!empty($severity_name)) {
-      if (_coder_review_drush_is_option('xml')) {
-        _coder_review_drush_xml_output_severity($severity_name);
+    else {
+      foreach ($reviews as $review) {
+        $output[] = $avail_reviews[$review]['#title'];
       }
-      $output[] = dt('Severity @severity_name', array('@severity_name' => $severity_name));
-      $settings['coder_severity'] = _coder_review_severity($severity_name);
     }
-    if (count($reviews)) {
-      if (_coder_review_drush_is_option('xml') && !_coder_review_drush_is_option('checkstyle')) {
-        _coder_review_drush_xml_output_reviews($reviews, $avail_reviews);
-      }
-      else {
-        foreach ($reviews as $review) {
-          $output[] = $avail_reviews[$review]['#title'];
-        }
-      }
-      $settings['coder_reviews'] = $reviews;
-    }
-    if (count($output) && !_coder_review_drush_is_option('summary') && !_coder_review_drush_is_option('xml') && !_coder_review_drush_is_option('checkstyle')) {
-      _coder_review_drush_print(implode(', ', $output) . "\n");
-    }
+    $settings['coder_reviews'] = $reviews;
+  }
+  if (!empty($output) && !_coder_review_drush_is_option('summary') && !_coder_review_drush_is_option('xml') && !_coder_review_drush_is_option('checkstyle')) {
+    _coder_review_drush_print(implode(', ', $output) . "\n");
   }
   _coder_review_set_form_modules($settings);
   $settings['op'] = 'drush';

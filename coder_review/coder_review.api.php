@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Coder hook function api documentation.
