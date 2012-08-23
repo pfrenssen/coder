@@ -153,16 +153,16 @@ function coder_review_security_reviews() {
     '#not' => '\$placeholder',
     '#source' => 'quote',
     '#warning_callback' => function () {
-			return array(
-				'#warning' => t('In SQL strings, Use !db_query() placeholders in place of variables.  This is a potential source of SQL injection attacks when the variable can come from user data.',
-					array(
-						'!db_query' => theme('drupalapi', array('function' => 'db_query')),
-					)
-				),
-				'#link' => 'http://drupal.org/writing-secure-code',
-				'#description' => t('Use %s and %d variable substitution.  When inserting an array of values use <code>$placeholders = implode(\',\', array_fill(0, count($args), "\'%s\'"));</code>'),
-			);
-		},
+      return array(
+        '#warning' => t('In SQL strings, Use !db_query() placeholders in place of variables.  This is a potential source of SQL injection attacks when the variable can come from user data.',
+          array(
+            '!db_query' => theme('drupalapi', array('function' => 'db_query')),
+          )
+        ),
+        '#link' => 'http://drupal.org/writing-secure-code',
+        '#description' => t('Use %s and %d variable substitution.  When inserting an array of values use <code>$placeholders = implode(\',\', array_fill(0, count($args), "\'%s\'"));</code>'),
+      );
+    },
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -182,11 +182,11 @@ function coder_review_security_reviews() {
     '#value' => '[\'"]access callback.*=.*\(',
     '#source' => 'allphp',
     '#warning_callback' => function () {
-			return array(
-				'#warning' => t("The value for the 'access callback' must always be a string which is the the name of the function - never a function call. It may also be assigned the value TRUE or FALSE if the callback is always (or never) accessible."),
-				'#link' => 'http://drupal.org/node/109157',
-			);
-		},
+      return array(
+        '#warning' => t("The value for the 'access callback' must always be a string which is the the name of the function - never a function call. It may also be assigned the value TRUE or FALSE if the callback is always (or never) accessible."),
+        '#link' => 'http://drupal.org/node/109157',
+      );
+    },
     '#function' => '_menu$',
   );
   $rules[] = array(
@@ -196,27 +196,27 @@ function coder_review_security_reviews() {
     '#never' => '((((==|!=|>=|<=|>|<)\s*|[!\s\(](form_get_cache|form_set_cache|format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup|isset|empty|foreach|while|if|elseif)\s*\(\s*)\$_(POST)\[.+?\])|\$_(POST)\[.+?\]\s*(\.=|=|!=))',
     '#source' => 'allphp',
     '#warning_callback' => function () {
-			return array(
-				'#warning' => t('Potential problem: use the Form API to prevent against CSRF attacks. If you need to use $_POST variables, ensure they are fully sanitized if displayed by using !check_plain(), !filter_xss() or similar.',
-					array(
-						'!check_plain' => theme('drupalapi', array('function' => 'check_plain')),
-						'!filter_xss' => theme('drupalapi', array('function' => 'filter_xss')),
-					)
-				),
-				'#link' => 'http://drupal.org/node/178896',
-			);
-		},
+      return array(
+        '#warning' => t('Potential problem: use the Form API to prevent against CSRF attacks. If you need to use $_POST variables, ensure they are fully sanitized if displayed by using !check_plain(), !filter_xss() or similar.',
+          array(
+            '!check_plain' => theme('drupalapi', array('function' => 'check_plain')),
+            '!filter_xss' => theme('drupalapi', array('function' => 'filter_xss')),
+          )
+        ),
+        '#link' => 'http://drupal.org/node/178896',
+      );
+    },
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'html',
     '#value' => '<form[\s\'"]',
     '#warning_callback' => function () {
-			return array(
-				'#warning' => t('Use the Form API to build forms to help prevent against CSRF attacks.'),
-				'#link' => 'http://drupal.org/node/178896',
-			);
-		},
+      return array(
+        '#warning' => t('Use the Form API to build forms to help prevent against CSRF attacks.'),
+        '#link' => 'http://drupal.org/node/178896',
+      );
+    },
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -224,33 +224,33 @@ function coder_review_security_reviews() {
     '#never' => '(^function\s)',
     '#source' => 'php',
     '#warning_callback' => function () {
-			return array(
-				'#warning' => t("Using !eval() or !drupal_eval() in your module's code could have a security risk if the PHP input provided to the function contains malicious code.",
-					array(
-						'!eval' => theme('phpapi', array('function' => 'eval')),
-						'!drupal_eval' => theme('drupalapi', array('function' => 'drupal_eval')),
-					)
-				),
-				'#link' => url('http://drupal.org/node/715010'),
-			);
-		},
+      return array(
+        '#warning' => t("Using !eval() or !drupal_eval() in your module's code could have a security risk if the PHP input provided to the function contains malicious code.",
+          array(
+            '!eval' => theme('phpapi', array('function' => 'eval')),
+            '!drupal_eval' => theme('drupalapi', array('function' => 'drupal_eval')),
+          )
+        ),
+        '#link' => url('http://drupal.org/node/715010'),
+      );
+    },
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\[][\'"]subject[\'"](\])*?\s*=(>)*?\s*\$',
     '#source' => 'allphp',
     '#warning_callback' => function () {
-			return array(
-				'#warning' => t('Potential problem: !hook_block() only accepts filtered text as the block title, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
-					array(
-						'!hook_block' => theme('drupalapi', array('function' => 'hook_block')),
-						'!check_plain' => theme('drupalapi', array('function' => 'check_plain')),
-						'!filter_xss' => theme('drupalapi', array('function' => 'filter_xss')),
-					)
-				),
-				'#link' => 'http://drupal.org/node/28984',
-			);
-		},
+      return array(
+        '#warning' => t('Potential problem: !hook_block() only accepts filtered text as the block title, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+          array(
+            '!hook_block' => theme('drupalapi', array('function' => 'hook_block')),
+            '!check_plain' => theme('drupalapi', array('function' => 'check_plain')),
+            '!filter_xss' => theme('drupalapi', array('function' => 'filter_xss')),
+          )
+        ),
+        '#link' => 'http://drupal.org/node/28984',
+      );
+    },
     '#function' => '_block$',
   );
   $rules[] = array(
@@ -267,7 +267,6 @@ function coder_review_security_reviews() {
   );
   return array('security' => $review);
 }
-
 
 /**
  * Define the rule callbacks.

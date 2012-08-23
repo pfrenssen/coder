@@ -189,8 +189,3 @@ function coder_review_i18n_reviews() {
   );
   return array('i18n' => $review);
 }
-
-/**
- * Define the warning callbacks.
- */
-

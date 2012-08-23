@@ -106,7 +106,13 @@ function coder_review_style_reviews() {
     '#type' => 'regex',
     '#source' => 'html',
     '#value' => '(?-i)<[A-Z]+',
-    '#warning_callback' => '_coder_review_style_xhtml_warning',
+    '#warning_callback' => function () {
+      return t('use lowercase html tags to comply with <a href="@xhtml">XHTML</a>',
+        array(
+          '@xhtml' => 'http://www.w3.org/TR/xhtml1/#h-4.2',
+        )
+      );
+    },
     '#severity' => 'minor',
   );
   $rules[] = array(
@@ -237,16 +243,4 @@ function _coder_review_style_core_global_regex() {
     $coreglobalregex = implode('|', $coreglobalvars);
   }
   return $coreglobalregex;
-}
-
-/**
- * Define the warning callbacks.
- */
-
-function _coder_review_style_xhtml_warning() {
-  return t('use lowercase html tags to comply with <a href="@xhtml">XHTML</a>',
-    array(
-      '@xhtml' => 'http://www.w3.org/TR/xhtml1/#h-4.2',
-    )
-  );
 }
