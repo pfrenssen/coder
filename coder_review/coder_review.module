@@ -2083,7 +2083,7 @@ function theme_coder_review_warning_msg($variables) {
  */
 function _coder_review_warning($rule) {
   if (isset($rule['#warning_callback'])) {
-    if (function_exists($rule['#warning_callback'])) {
+    if (is_callable($rule['#warning_callback']) || function_exists($rule['#warning_callback'])) {
       return $rule['#warning_callback']();
     }
     return t('please <a href="@report">report</a> this !warning',

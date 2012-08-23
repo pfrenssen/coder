@@ -31,7 +31,16 @@ function coder_review_sql_reviews() {
     '#type' => 'regex',
     '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . ')\s+.*[Ll][Ii][Mm][Ii][Tt]\s[0-9]+',
     '#source' => 'quote',
-    '#warning_callback' => '_coder_review_sql_db_query_range_warning',
+    '#warning_callback' => function () {
+      return array(
+        '#warning' => t('Use !db_query_range() instead of the SQL LIMIT clause',
+          array(
+            '!db_query_range' => theme('drupalapi', array('function' => 'db_query_range')),
+          )
+        ),
+      );
+    },
+    '#link' => 'http://drupal.org/node/1395',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -49,7 +58,12 @@ function coder_review_sql_reviews() {
     '#type' => 'regex',
     '#source' => 'allphp',
     '#value' => 'db_query\s*\(\s*[\'"]select\s+count\s*\(\s*\*\s*\)\s+from\s+',
-    '#warning_callback' => '_coder_review_sql_select_count_warning',
+    '#warning_callback' => function () {
+      return array(
+        '#warning' => t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actual number of rows.'),
+        '#link' => 'http://drupal.org/node/224333#select_count',
+      );
+    },
     '#severity' => 'minor',
   );
 
@@ -60,26 +74,3 @@ function coder_review_sql_reviews() {
   );
   return array('sql' => $review);
 }
-
-/**
- * Define the warning callbacks
- */
-
-function _coder_review_sql_db_query_range_warning() {
-  return array(
-    '#warning' => t('Use !db_query_range() instead of the SQL LIMIT clause',
-      array(
-        '!db_query_range' => theme('drupalapi', array('function' => 'db_query_range')),
-      )
-    ),
-    '#link' => 'http://drupal.org/node/1395',
-  );
-}
-
-function _coder_review_sql_select_count_warning() {
-  return array(
-    '#warning' => t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actual number of rows.'),
-    '#link' => 'http://drupal.org/node/224333#select_count',
-  );
-}
-
