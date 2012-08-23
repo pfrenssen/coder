@@ -6,39 +6,6 @@
  */
 
 /**
- * Implements hook_drush_help().
- */
-function coder_review_drush_help($section) {
-  switch ($section) {
-    case 'drush:coder-review':
-      return dt("usage: drush coder-review [options] [severity] [review] [what]"
-                . "\n  options:"
-                . "\n    summary - display summary information only, no warning output"
-                . "\n    no-empty - hide results that are empty"
-                . "\n    xml - output results as xml"
-                . "\n    checkstyle - output results in Checkstyle xml format"
-                . "\n  severity: show warnings at or above severity level"
-                . "\n     major|minor|critical"
-                . "\n  review: one or more reviews"
-                . "\n     upgrade7x|comment|i18n|security|sql|style"
-                . "\n       * style is the default"
-                . "\n  what:"
-                . "\n    all - review all modules and themes"
-                . "\n      * this is the default if nothing is explicitly specified"
-                . "\n    active - review all active modules and themes"
-                . "\n    core - review all of core, modules, themes, and includes"
-                . "\n    contrib - review all non-core modules"
-                . "\n    default - review 'default' modules and themes, as defined by settings"
-                . "\n    <name> - review specified module or theme name, i.e. taxonomy"
-                . "\n    no-<name> - exclude named modules and themes, i.e. no-taxonomy"
-                . "\n     combine with active|core|contrib|all|default"
-                . "\n    <patch-url> - URL to patch file"
-                . "\n    <file-path> - path to file or multiple files, relative to Drupal installation"
-    );
-  }
-}
-
-/**
  * Implements hook_drush_command().
  */
 function coder_review_drush_command() {
@@ -47,7 +14,36 @@ function coder_review_drush_command() {
     'description' => dt('Run code reviews'),
     'drupal dependencies' => array('coder_review'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'aliases' => array('coder', 'review', 'lint'),
+    'aliases' => array('coder'),
+    'options' => array(
+      'severity' => 'Show warnings at the specified level, one of major, minor, or critical.',
+      'major' => 'Show major and critical warnings.',
+      'minor' => 'Show all warnings.',
+      'critical' => 'Show only critical warnings.',
+      'reviews' => 'Run the specified review(s), accepts a comma separated list (no spaces) of style,i18n,security,sql,comment,upgrade7x,upgrade8x.',
+      'comment' => 'Run the comment review.',
+      'style' => 'Run the style review (default).',
+      'i18n' => 'Run the i18n review.',
+      'security' => 'Run the security review.',
+      'sql' => 'Run the SQL review.',
+      'upgrade7x' => 'Run the 6.x -> 7.x upgrade review.',
+      'upgrade8x' => 'Run the 7.x -> 8.x upgrade review.',
+      'core' => 'Review all of core.',
+      'contrib' => 'Review all of contrib.',
+      'active' => 'Review all active modules and themes.',
+      'all' => 'Review all modules and themes (default).',
+      'default' => 'Review "default" modules and themes (as defined in coder settings).',
+      'summary' => 'Display summary information only, no warning output.',
+      'no-empty' => 'Hide results that are empty',
+      'ignore' => 'Module(s) to ignore, accepts comma separated list (no spaces).',
+      'xml' => 'Output results as xml.',
+      'checkstyle' => 'Output results in Checkstyle xml format.',
+    ),
+    'arguments' => array(
+      'name' => 'Review specified module or theme name, i.e. taxonomy.',
+      'patch-url' => 'URL to patch file.',
+      'file-path' => 'Path to file or multiple files, relative to Drupal installation.',
+    ),
   );
   return $items;
 }
@@ -72,7 +68,7 @@ function coder_review_drush_review() {
   // Check for drush style options.
   foreach (array('summary', 'no-empty', 'xml', 'checkstyle') as $option) {
     if (drush_get_option($option)) {
-      _coder_review_drush_set_option($arg);
+      _coder_review_drush_set_option($option);
     }
   }
   $severity = drush_get_option('severity', '');
@@ -88,42 +84,60 @@ function coder_review_drush_review() {
     }
   }
 
+  $settings = _coder_review_get_default_settings();
+  $ignore_option = drush_get_option('ignore');
+  if ($ignore_option) {
+    foreach (explode(',', $ignore_option) as $option) {
+      _coder_review_set_form_modules($settings);
+      unset($settings['coder_modules-' . drupal_substr($option, 3)]);
+    }
+  }
+
+  $avail_reviews = _coder_review_reviews();
+  $reviews = array();
+  $reviews_option = drush_get_option('reviews');
+  if ($reviews_option) {
+    foreach (explode(',', $reviews_option) as $option) {
+      if (isset($avail_reviews[$option])) {
+        $reviews[$option] = $option;
+      }
+    }
+  }
+  foreach (array_keys($avail_reviews) as $option) {
+    if (drush_get_option($option)) {
+      $reviews[$option] = $option;
+    }
+  }
+  if (empty($reviews)) {
+    $reviews['style'] = 'style';
+  }
+
   // Process command line arguments.
   $args = func_get_args();
-  $reviews = array();
   $modules = array();
   $output = array();
-  $settings = _coder_review_get_default_settings();
   if (count($args)) {
-    $avail_reviews = _coder_review_reviews();
     foreach ($args as $arg) {
       switch ($arg) {
         case 'summary':
         case 'no-empty':
         case 'xml':
         case 'checkstyle':
-          _coder_review_drush_set_option($arg);
-          break;
         case 'active':
         case 'core':
         case 'contrib':
         case 'all':
         case 'default':
-          $settings = _coder_review_get_default_settings($arg);
-          $settings['coder_includes'] = TRUE;
-          break;
+          return drush_set_error(dt('use --@option.', array('@option' => $arg)));
+
         case 'major':
         case 'minor':
         case 'critical':
-          $severity_name = $arg;
-          break;
+          return drush_set_error(dt('use --severity or --@option.', array('@option' => $arg)));
+
         default:
           if (isset($avail_reviews[$arg])) {
-            $reviews[$arg] = $arg;
-          }
-          elseif (drupal_substr($arg, 0, 3) == 'no-') {
-            _coder_review_set_form_modules($settings);
-            unset($settings['coder_modules-' . drupal_substr($arg, 3)]);
+            return drush_set_error(dt('use --reviews or --@option.', array('@option' => $arg)));
           }
           elseif (strpos($arg, '*') !== FALSE || strpos($arg, '%') !== FALSE) {
             $result = db_query('SELECT name FROM {system} WHERE name LIKE :name', array(':name' => str_replace('*', '%', $arg)));
