@@ -47,6 +47,9 @@ function coder_review_drush_command() {
   return $items;
 }
 
+/**
+ * @todo: add function header comment.
+ */
 function _coder_review_set_form_modules(&$settings) {
   if (isset($settings['coder_modules'])) {
     foreach ($settings['coder_modules'] as $key => $value) {
@@ -62,14 +65,6 @@ function _coder_review_set_form_modules(&$settings) {
  * Do the actual review.
  */
 function coder_review_drush_review() {
-  _coder_review_drush_set_option('drush');
-
-  // Check for drush style options.
-  foreach (array('summary', 'no-empty', 'xml', 'checkstyle') as $option) {
-    if (drush_get_option($option)) {
-      _coder_review_drush_set_option($option);
-    }
-  }
   $severity = drush_get_option('severity');
   foreach (array('major', 'minor', 'critical') as $option) {
     if ($severity == $option || drush_get_option($option)) {
@@ -115,7 +110,7 @@ function coder_review_drush_review() {
   $args = func_get_args();
   $modules = array();
   $output = array();
-  if (count($args)) {
+  if (!empty($args)) {
     foreach ($args as $arg) {
       switch ($arg) {
         case 'summary':
@@ -189,21 +184,21 @@ function coder_review_drush_review() {
       }
     }
   }
-  if (_coder_review_drush_is_option('checkstyle')) {
+  if (drush_get_option('checkstyle')) {
     _coder_review_drush_xml_output_header('checkstyle');
   }
-  elseif (_coder_review_drush_is_option('xml')) {
+  elseif (drush_get_option('xml')) {
     _coder_review_drush_xml_output_header('xml');
   }
   if (!empty($severity_name)) {
-    if (_coder_review_drush_is_option('xml')) {
+    if (drush_get_option('xml')) {
       _coder_review_drush_xml_output_severity($severity_name);
     }
     $output[] = dt('Severity @severity_name', array('@severity_name' => $severity_name));
     $settings['coder_severity'] = _coder_review_severity($severity_name);
   }
-  if (count($reviews)) {
-    if (_coder_review_drush_is_option('xml') && !_coder_review_drush_is_option('checkstyle')) {
+  if (!empty($reviews)) {
+    if (drush_get_option('xml') && !drush_get_option('checkstyle')) {
       _coder_review_drush_xml_output_reviews($reviews, $avail_reviews);
     }
     else {
@@ -213,7 +208,7 @@ function coder_review_drush_review() {
     }
     $settings['coder_reviews'] = $reviews;
   }
-  if (!empty($output) && !_coder_review_drush_is_option('summary') && !_coder_review_drush_is_option('xml') && !_coder_review_drush_is_option('checkstyle')) {
+  if (!empty($output) && !drush_get_option('summary') && !drush_get_option('xml') && !drush_get_option('checkstyle')) {
     _coder_review_drush_print(implode(', ', $output) . "\n");
   }
   _coder_review_set_form_modules($settings);
@@ -222,10 +217,10 @@ function coder_review_drush_review() {
   $form_state['storage'] = $settings;
   coder_review_page_form(array(), $form_state);
 
-  if (_coder_review_drush_is_option('checkstyle')) {
+  if (drush_get_option('checkstyle')) {
     _coder_review_drush_xml_output_footer('checkstyle');
   }
-  elseif (_coder_review_drush_is_option('xml')) {
+  elseif (drush_get_option('xml')) {
     _coder_review_drush_xml_output_footer('xml');
   }
 }
@@ -255,8 +250,8 @@ function theme_drush_coder_review($variables) {
   $name = $variables['name'];
   $filename = $variables['filename'];
   $results = $variables['results'];
-  if (!_coder_review_drush_is_option('summary') && !empty($results) && ((count($results) && !isset($results[0])) || !_coder_review_drush_is_option('no-empty'))) {
-    if (_coder_review_drush_is_option('checkstyle') || _coder_review_drush_is_option('xml')) {
+  if (!drush_get_option('summary') && !empty($results) && ((!empty($results) && !isset($results[0])) || !drush_get_option('no-empty'))) {
+    if (drush_get_option('checkstyle') || drush_get_option('xml')) {
       _coder_review_drush_xml_output_results($filename, $results);
     }
     else {
@@ -278,7 +273,7 @@ function theme_drush_coder_review_warning($variables) {
     'normal' => 'warning',
     'critical' => 'error',
   );
-  if (_coder_review_drush_is_option('xml') || _coder_review_drush_is_option('checkstyle')) {
+  if (drush_get_option('xml') || drush_get_option('checkstyle')) {
     $attr = array(
       'line' => $lineno,
       'column' => 0,
@@ -286,18 +281,15 @@ function theme_drush_coder_review_warning($variables) {
       'message' => $warning,
       'source' => $line,
     );
-    if (_coder_review_drush_is_option('checkstyle')) {
+    if (drush_get_option('checkstyle')) {
       $attr['severity'] = $checkstyle_levels[$severity_name];
     }
-    $output = '<error ' . drupal_attributes($attr) . ' />';
-    return $output;
+    return '<error ' . drupal_attributes($attr) . ' />';
   }
-  else {
-    $output  = $lineno ? '+' . $lineno . ': ' : '';
-    $output .= '[' . $severity_name . '] ';
-    $output .= is_array($warning) ? $warning['#warning'] : $warning;
-    return _coder_review_drush_output($output);
-  }
+  $output  = $lineno ? '+' . $lineno . ': ' : '';
+  $output .= '[' . $severity_name . '] ';
+  $output .= is_array($warning) ? $warning['#warning'] : $warning;
+  return _coder_review_drush_output($output);
 }
 
 /**
@@ -306,10 +298,10 @@ function theme_drush_coder_review_warning($variables) {
 function coder_review_print_drush_messages() {
   foreach (drupal_get_messages() as $type => $messages) {
     $output = _coder_review_drush_output(implode("\n ", $messages));
-    if (_coder_review_drush_is_option('xml') && !_coder_review_drush_is_option('checkstyle')) {
+    if (drush_get_option('xml') && !drush_get_option('checkstyle')) {
       _coder_review_drush_print('<status type="' . $type . '">' . $output . '</status>');
     }
-    elseif (!_coder_review_drush_is_option('checkstyle')) {
+    elseif (!drush_get_option('checkstyle')) {
       _coder_review_drush_print(dt(drupal_ucfirst($type) . ' Messages') . ":\n " . $output . "\n");
     }
   }
@@ -323,25 +315,6 @@ function _coder_review_drush_output($output) {
 }
 
 /**
- * Helper function to set a command line option.
- */
-function _coder_review_drush_set_option($option) {
-  global $_coder_drush_options;
-  if (!isset($_coder_drush_options)) {
-    $_coder_drush_options = array();
-  }
-  $_coder_drush_options[$option] = TRUE;
-}
-
-/**
- * Helper function to determine if an option is set.
- */
-function _coder_review_drush_is_option($option) {
-  global $_coder_drush_options;
-  return isset($_coder_drush_options[$option]);
-}
-
-/**
  * Switch between print and pipe print output.
  */
 function _coder_review_drush_print($message) {
@@ -352,9 +325,6 @@ function _coder_review_drush_print($message) {
     drush_print($message);
   }
 }
-
-
-
 
 /**
  * XML output functions.
@@ -421,4 +391,3 @@ function _coder_review_drush_xml_output_results($filename, $results) {
     _coder_review_drush_print('<file name = "' . $filename . '">' . "\n" . implode("\n ", $results) . "\n" . '</file>');
   }
 }
-

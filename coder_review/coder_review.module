@@ -726,6 +726,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
   $reviews = array();
   $avail_reviews = _coder_review_reviews();
   $selected_reviews = $settings['coder_reviews'];
+  // @todo: isn't there some fancy array function do do this.
   foreach ($selected_reviews as $name => $checked) {
     if ($checked) {
       $reviews[$name] = $avail_reviews[$name];
@@ -886,7 +887,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         $display[] = t('@count warnings were flagged to be ignored', array('@count' => $summary['ignored']));
         drupal_set_message(implode(', ', $display));
 
-        if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+        if (function_exists('drush_verify_cli') && drush_verify_cli()) {
           print coder_review_print_drush_messages();
         }
       }
@@ -973,7 +974,7 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
       $form[$name][$filename]['#collapsed'] = FALSE;
       $form[$name]['#collapsed'] = FALSE;
     }
-    if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+    if (function_exists('drush_verify_cli') && drush_verify_cli()) {
       theme('coder_review', array('name' => $name, 'filename' => $filename, 'results' => $results));
     }
     else {
@@ -998,7 +999,7 @@ function _coder_review_form_output($name, $filename, $results) {
     '#results' => $results,
   );
   // When using Drush, render this element so that the theme output gets recorded.
-  if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+  if (function_exists('drush_verify_cli') && drush_verify_cli()) {
     render($output);
   }
   return $output;
@@ -1044,11 +1045,11 @@ function do_coder_reviews($coder_args) {
   // Load the cached results if they exist, but not for patches.
   if (empty($coder_args['#patch']) && empty($coder_args['#test']) && $coder_args['#cache']) {
     $cache_key = 'coder:' . md5(implode(':', array_keys($coder_args['#reviews']))) . $coder_args['#severity'] . ':' . $coder_args['#filename'];
-    if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
-      if (_coder_review_drush_is_option('checkstyle')) {
+    if (function_exists('drush_verify_cli') && drush_verify_cli()) {
+      if (drush_get_option('checkstyle')) {
         $cache_key .= ':drushcheckstyle';
       }
-      elseif (_coder_review_drush_is_option('xml')) {
+      elseif (drush_get_option('xml')) {
         $cache_key .= ':drushxml';
       }
     }
@@ -2045,7 +2046,7 @@ function coder_review_theme() {
  */
 function theme_coder_review($variables) {
   // Theme the output for the Drupal shell.
-  if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+  if (function_exists('drush_verify_cli') && drush_verify_cli()) {
     return theme_drush_coder_review($variables);
   }
 
@@ -2112,7 +2113,7 @@ function _coder_review_warning($rule) {
  */
 function theme_coder_review_warning($variables) {
   // theme the output for the Drupal shell
-  if (function_exists('_coder_review_drush_is_option') && _coder_review_drush_is_option('drush')) {
+  if (function_exists('drush_verify_cli') && drush_verify_cli()) {
     return theme_drush_coder_review_warning($variables);
   }
 
