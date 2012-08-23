@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * This include file implements coder_review functionality for 4.7 -> 5.x upgrades.
@@ -9,67 +8,66 @@
  * Implements hook_reviews().
  */
 function coder_review_5x_reviews() {
-  $rules = array(
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]user_mail\s*\(',
-      '#warning_callback' => '_coder_review_5x_user_mail_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]user_mail_wrapper\s*\(',
-      '#warning_callback' => '_coder_review_5x_user_mail_wrapper_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]message_na\s*\(',
-      '#warning_callback' => '_coder_review_5x_message_na_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]module_exist\s*\(',
-      '#warning_callback' => '_coder_review_5x_module_exist_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]drupal_call_js\s*\(',
-      '#warning_callback' => '_coder_review_5x_drupal_call_js_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]system_listing\s*\(',
-      '#warning_callback' => '_coder_review_5x_system_listing_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]node_get_name\s*\(',
-      '#warning_callback' => '_coder_review_5x_node_get_name_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#source' => 'allphp',
-      '#value' => '\$_POST\s*\[\s*[\'"]?op[\'"]?\s*\]',
-      '#warning' => '$_POST[\'op\'] deprecated in favor of $form_values[\'op\']',
-      '#severity' => 'normal',
-    ),
-    array(
-      '#type' => 'callback',
-      '#value' => '_coder_review_5x_callback',
-      '#warning_callback' => '_coder_review_5x_callback_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#source' => 'all',
-      '#value' => '[\s\(]theme_add_style\s*\(',
-      '#warning_callback' => '_coder_review_5x_theme_add_style_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#source' => 'all',
-      '#value' => '[\s\(]form_render\s*\(',
-      '#warning_callback' => '_coder_review_5x_form_render_warning',
-    ),
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]user_mail\s*\(',
+    '#warning_callback' => '_coder_review_5x_user_mail_warning',
   );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]user_mail_wrapper\s*\(',
+    '#warning_callback' => '_coder_review_5x_user_mail_wrapper_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]message_na\s*\(',
+    '#warning_callback' => '_coder_review_5x_message_na_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]module_exist\s*\(',
+    '#warning_callback' => '_coder_review_5x_module_exist_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]drupal_call_js\s*\(',
+    '#warning_callback' => '_coder_review_5x_drupal_call_js_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]system_listing\s*\(',
+    '#warning_callback' => '_coder_review_5x_system_listing_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]node_get_name\s*\(',
+    '#warning_callback' => '_coder_review_5x_node_get_name_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#source' => 'allphp',
+    '#value' => '\$_POST\s*\[\s*[\'"]?op[\'"]?\s*\]',
+    '#warning' => '$_POST[\'op\'] deprecated in favor of $form_values[\'op\']',
+    '#severity' => 'normal',
+  );
+  $rules[] = array(
+    '#type' => 'callback',
+    '#value' => '_coder_review_5x_callback',
+    '#warning_callback' => '_coder_review_5x_callback_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#source' => 'all',
+    '#value' => '[\s\(]theme_add_style\s*\(',
+    '#warning_callback' => '_coder_review_5x_theme_add_style_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#source' => 'all',
+    '#value' => '[\s\(]form_render\s*\(',
+    '#warning_callback' => '_coder_review_5x_form_render_warning',
+  );
+
   $review = array(
     '#title' => t('Converting 4.7.x modules to 5.x'),
     '#link' => 'http://drupal.org/node/64279',

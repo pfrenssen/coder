@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * This include file implements coder functionality for Drupal Standards.
@@ -15,195 +14,195 @@ function coder_review_security_reviews() {
   $allphp_argex = '(((\$?)[a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'[^\']+\'|"[^"]+")';
   $sanitize_argex = '((t|st|\$t|check_plain|format_plural|check_markup|field_filter_xss|filter_xss|filter_xss_admin)\s*\([^\)]+?\))';
   $table = '\{[A-Za-z_]+\}'; // table-regex
-  $rules = array(
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]trigger_error\s*\(\s*[^\$]+.+\$',
-      '#never' => '(^function\s|trigger_error\s*\(\s*(((st|t|\$t)\s*\()|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_trigger_error_filter_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]trigger_error\s*\(\s*(st|t|\$t)\s*\(\s*((.*?\$)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
-      '#never' => '(^function\s|trigger_error\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_trigger_error_filter_t_warning',
-    ),
-    /*
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]drupal_set_title\s*\(\s*[^\$)]+.+\$',
-      '#never' => '(^function\s|drupal_set_title\s*\(\s*(((st|t|\$t)\s*\()|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_drupal_set_title_filter_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]drupal_set_title\s*\(\s*(st|t|\$t)\s*\(\s*((.*?\$)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
-      '#never' => '(^function\s|drupal_set_title\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_drupal_set_title_filter_t_warning',
-    ),
-    */
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]drupal_set_message\s*\(\s*[^\$)]+.+\$',
-      '#never' => '(^function\s|drupal_set_message\s*\(\s*(((st|t|\$t)\s*\()|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_drupal_set_message_filter_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]drupal_set_message\s*\(\s*(st|t|\$t)\s*\(\s*((.*?\$)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
-      '#never' => '(^function\s|drupal_set_message\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_drupal_set_message_filter_t_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(](form_set_error|form_error)\s*\(\s*' . $argex . '\s*,\s*[^\$)]+.+\$',
-      '#never' => '(^function\s|(form_set_error|form_error)\s*\(\s*' . $argex . '\s*,\s*(((st|t|\$t)\s*\()|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_form_set_error_filter_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(](form_set_error|form_error)\s*\(\s*' . $argex . '\s*,\s*(st|t|\$t)\s*\(\s*((.*?\$)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
-      '#never' => '(^function\s|(form_set_error|form_error)\s*\(\s*' . $argex . '\s*,\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_form_set_error_filter_t_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]confirm_form\s*\(\s*' . $argex . '\s*,\s*[^\$\s]+.+\$[^,]+,\s*' . $argex . '\s*\)',
-      '#never' => '(^function\s|confirm_form\s*\(\s*' . $argex . '\s*,\s*(((st|t|\$t)\s*\()|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_confirm_form_filter_warning',
-    ),
-    // confirm_form($form, t( ($taint | "abc $taint " | 'abcs '. $taint | stuff), array('!taint' => $taint)), $path);
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]confirm_form\s*\(\s*' . $argex . '\s*,\s*(st|t|\$t)\s*\(\s*((\$\w+[,\)])|("[^"]+?\$\w+.*?"\s*[,\)])|([\'"].*?[\'"]\s*\.\s*\$\w)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
-      '#never' => '(^function\s|confirm_form\s*\(\s*' . $argex . '\s*,\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_confirm_form_filter_t_warning',
-    ),
-    // confirm_form 4th, 5th and 6th args
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}([^\$\s]+.+\$[^,\)]+)(' . $allphp_argex . ')??\)\s*;',
-      '#never' => '(^function\s|confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}((st|t|\$t|format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\([^\)\$]+\)).*?(' . $allphp_argex . ')??\)\s*;)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_confirm_form_filter_warning',
-    ),
-    // confirm_form($form, "safe string", $path, t( ($taint | "abc $taint " | 'abcs '. $taint | stuff), array('!taint' => $taint)), ...);
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}(st|t|\$t)\s*\(\s*((\$\w+[,\)])|("[^"]+?\$\w+.*?"\s*[,\)])|([\'"].*?[\'"]\s*\.\s*\$\w)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\))).*?(' . $allphp_argex . ')??\)\s*;',
-      '#never' => '(^function\s|confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\([^\)\$]+\)).*?(' . $allphp_argex . ')??\)\s*;)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_confirm_form_filter_t_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#severity' => 'minor',
-      '#value' => '[\s\(]l\(check_plain\(.*',
-      '#never' => '[\'"]html[\'"]\s*=>\s*(TRUE|1)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_l_check_plain_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '(?-i)\$REQUEST_URI',
-      '#warning_callback' => '_coder_review_security_request_uri_warning',
-      '#function-not' => '^(request_uri|drupal_detect_baseurl)$',
-    ),
-    array(
-      '#type' => 'regex',
-      '#source' => 'allphp',
-      '#value' => '(?-i)\"REQUEST_URI\"|\'REQUEST_URI\'',
-      '#warning_callback' => '_coder_review_security_request_uri_warning',
-      '#function-not' => '^(request_uri|drupal_detect_baseurl)$',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s+' . $table . ')\s+.*\$[a-z0-9_]+',
-      '#not' => '\$placeholder',
-      '#source' => 'quote',
-      '#warning_callback' => '_coder_review_security_sql_var_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s' . $table . ')\s+[^\']*?(\s+|\(|=|,)\%s',
-      '#source' => 'quote',
-      '#warning' => 'SQL query handling data in a potentially insecure way by using the %%s placeholder without wrapping it in single quotes.  This is a potential source of SQL injection attacks when the value can come from user data.',
-    ),
-    array(
-      '#type' => 'regex',
-      '#source' => 'allphp', // allow us to look inside the regex string
-      '#value' => '\bpreg_replace\s*\(\s*(\'(.)([^\'\\\\]|\\\\.)*\\2([^\'\\\\]|\\\\.)*|"(.)([^"\\\\]|\\\\.)*\\5([^"\\\\]|\\\\.)*)e',
-      '#warning' => "Use preg_replace_callback() instead of the 'e' modifier to preg_replace()",
-      '#severity' => 'critical',
-    ),
-    /*
-    array(
-      '#type' => 'regex',
-      '#value' => '.*[\'"]SELECT\s+.*\s+(FROM|JOIN)\s+\{node\}',
-      '#never' => '([\s\(]db_rewrite_sql\s*\(|\s\$\w+\s*=\s*[\'"]SELECT|[\'"]SELECT\s+COUNT\(|[\s\.]nid\s*=\s*%d)',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_db_rewrite_sql_warning',
-      '#function-not' => '_cron$',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]db_rewrite_sql\(\s*[\'"]SELECT\s+.*\s+(FROM|JOIN)\s+\{node\}([,\'"]+|\s+(ON|WHERE|HAVING|LIMIT|ORDER|GROUP)\s+)',
-      '#never' => '[\s\(]db_rewrite_sql\(\s*[\'"]SELECT\s+(COUNT\([^\)]+\))*.*\s+(FROM|JOIN)\s+\{node\}([,\'"]+|\s+(ON|WHERE|HAVING|LIMIT|ORDER|GROUP)\s+).*?,\s*[\'"]\{node\}[\'"]',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_db_rewrite_sql_warning',
-      '#function-not' => '_cron$',
-    ),
-    */
-    array(
-      '#type' => 'regex',
-      '#value' => '[\'"]access callback.*=.*\(',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_menu_access_callback_warning',
-      '#function' => '_menu$',
-    ),
-    array(
-      '#type' => 'regex',
-      '#severity' => 'minor',
-      '#value' => '\$_(POST)\[.+?\]',
-      '#never' => '((((==|!=|>=|<=|>|<)\s*|[!\s\(](form_get_cache|form_set_cache|format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup|isset|empty|foreach|while|if|elseif)\s*\(\s*)\$_(POST)\[.+?\])|\$_(POST)\[.+?\]\s*(\.=|=|!=))',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_post_get_request_filter_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#source' => 'html',
-      '#value' => '<form[\s\'"]',
-      '#warning_callback' => '_coder_review_security_form_tag_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(](drupal_)*?eval\s*\([^\)]*?\$',
-      '#never' => '(^function\s)',
-      '#source' => 'php',
-      '#warning_callback' => '_coder_review_security_eval_warning',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\[][\'"]subject[\'"](\])*?\s*=(>)*?\s*\$',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_security_block_title_warning',
-      '#function' => '_block$',
-    ),
-    array(
-      '#type' => 'callback',
-      '#value' => '_coder_review_security_callback',
-    ),
+
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]trigger_error\s*\(\s*[^\$]+.+\$',
+    '#never' => '(^function\s|trigger_error\s*\(\s*(((st|t|\$t)\s*\()|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_trigger_error_filter_warning',
   );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]trigger_error\s*\(\s*(st|t|\$t)\s*\(\s*((.*?\$)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
+    '#never' => '(^function\s|trigger_error\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_trigger_error_filter_t_warning',
+  );
+/*
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]drupal_set_title\s*\(\s*[^\$)]+.+\$',
+    '#never' => '(^function\s|drupal_set_title\s*\(\s*(((st|t|\$t)\s*\()|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_drupal_set_title_filter_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]drupal_set_title\s*\(\s*(st|t|\$t)\s*\(\s*((.*?\$)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
+    '#never' => '(^function\s|drupal_set_title\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_drupal_set_title_filter_t_warning',
+  );
+*/
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]drupal_set_message\s*\(\s*[^\$)]+.+\$',
+    '#never' => '(^function\s|drupal_set_message\s*\(\s*(((st|t|\$t)\s*\()|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_drupal_set_message_filter_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]drupal_set_message\s*\(\s*(st|t|\$t)\s*\(\s*((.*?\$)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
+    '#never' => '(^function\s|drupal_set_message\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_drupal_set_message_filter_t_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(](form_set_error|form_error)\s*\(\s*' . $argex . '\s*,\s*[^\$)]+.+\$',
+    '#never' => '(^function\s|(form_set_error|form_error)\s*\(\s*' . $argex . '\s*,\s*(((st|t|\$t)\s*\()|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_form_set_error_filter_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(](form_set_error|form_error)\s*\(\s*' . $argex . '\s*,\s*(st|t|\$t)\s*\(\s*((.*?\$)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
+    '#never' => '(^function\s|(form_set_error|form_error)\s*\(\s*' . $argex . '\s*,\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_form_set_error_filter_t_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]confirm_form\s*\(\s*' . $argex . '\s*,\s*[^\$\s]+.+\$[^,]+,\s*' . $argex . '\s*\)',
+    '#never' => '(^function\s|confirm_form\s*\(\s*' . $argex . '\s*,\s*(((st|t|\$t)\s*\()|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_confirm_form_filter_warning',
+  );
+  // confirm_form($form, t( ($taint | "abc $taint " | 'abcs '. $taint | stuff), array('!taint' => $taint)), $path);
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]confirm_form\s*\(\s*' . $argex . '\s*,\s*(st|t|\$t)\s*\(\s*((\$\w+[,\)])|("[^"]+?\$\w+.*?"\s*[,\)])|([\'"].*?[\'"]\s*\.\s*\$\w)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
+    '#never' => '(^function\s|confirm_form\s*\(\s*' . $argex . '\s*,\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_confirm_form_filter_t_warning',
+  );
+  // confirm_form 4th, 5th and 6th args
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}([^\$\s]+.+\$[^,\)]+)(' . $allphp_argex . ')??\)\s*;',
+    '#never' => '(^function\s|confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}((st|t|\$t|format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\([^\)\$]+\)).*?(' . $allphp_argex . ')??\)\s*;)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_confirm_form_filter_warning',
+  );
+  // confirm_form($form, "safe string", $path, t( ($taint | "abc $taint " | 'abcs '. $taint | stuff), array('!taint' => $taint)), ...);
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}(st|t|\$t)\s*\(\s*((\$\w+[,\)])|("[^"]+?\$\w+.*?"\s*[,\)])|([\'"].*?[\'"]\s*\.\s*\$\w)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\))).*?(' . $allphp_argex . ')??\)\s*;',
+    '#never' => '(^function\s|confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\([^\)\$]+\)).*?(' . $allphp_argex . ')??\)\s*;)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_confirm_form_filter_t_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#severity' => 'minor',
+    '#value' => '[\s\(]l\(check_plain\(.*',
+    '#never' => '[\'"]html[\'"]\s*=>\s*(TRUE|1)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_l_check_plain_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '(?-i)\$REQUEST_URI',
+    '#warning_callback' => '_coder_review_security_request_uri_warning',
+    '#function-not' => '^(request_uri|drupal_detect_baseurl)$',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#source' => 'allphp',
+    '#value' => '(?-i)\"REQUEST_URI\"|\'REQUEST_URI\'',
+    '#warning_callback' => '_coder_review_security_request_uri_warning',
+    '#function-not' => '^(request_uri|drupal_detect_baseurl)$',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s+' . $table . ')\s+.*\$[a-z0-9_]+',
+    '#not' => '\$placeholder',
+    '#source' => 'quote',
+    '#warning_callback' => '_coder_review_security_sql_var_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s' . $table . ')\s+[^\']*?(\s+|\(|=|,)\%s',
+    '#source' => 'quote',
+    '#warning' => 'SQL query handling data in a potentially insecure way by using the %%s placeholder without wrapping it in single quotes.  This is a potential source of SQL injection attacks when the value can come from user data.',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#source' => 'allphp', // allow us to look inside the regex string
+    '#value' => '\bpreg_replace\s*\(\s*(\'(.)([^\'\\\\]|\\\\.)*\\2([^\'\\\\]|\\\\.)*|"(.)([^"\\\\]|\\\\.)*\\5([^"\\\\]|\\\\.)*)e',
+    '#warning' => "Use preg_replace_callback() instead of the 'e' modifier to preg_replace()",
+    '#severity' => 'critical',
+  );
+/*
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '.*[\'"]SELECT\s+.*\s+(FROM|JOIN)\s+\{node\}',
+    '#never' => '([\s\(]db_rewrite_sql\s*\(|\s\$\w+\s*=\s*[\'"]SELECT|[\'"]SELECT\s+COUNT\(|[\s\.]nid\s*=\s*%d)',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_db_rewrite_sql_warning',
+    '#function-not' => '_cron$',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]db_rewrite_sql\(\s*[\'"]SELECT\s+.*\s+(FROM|JOIN)\s+\{node\}([,\'"]+|\s+(ON|WHERE|HAVING|LIMIT|ORDER|GROUP)\s+)',
+    '#never' => '[\s\(]db_rewrite_sql\(\s*[\'"]SELECT\s+(COUNT\([^\)]+\))*.*\s+(FROM|JOIN)\s+\{node\}([,\'"]+|\s+(ON|WHERE|HAVING|LIMIT|ORDER|GROUP)\s+).*?,\s*[\'"]\{node\}[\'"]',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_db_rewrite_sql_warning',
+    '#function-not' => '_cron$',
+  );
+*/
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\'"]access callback.*=.*\(',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_menu_access_callback_warning',
+    '#function' => '_menu$',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#severity' => 'minor',
+    '#value' => '\$_(POST)\[.+?\]',
+    '#never' => '((((==|!=|>=|<=|>|<)\s*|[!\s\(](form_get_cache|form_set_cache|format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup|isset|empty|foreach|while|if|elseif)\s*\(\s*)\$_(POST)\[.+?\])|\$_(POST)\[.+?\]\s*(\.=|=|!=))',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_post_get_request_filter_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#source' => 'html',
+    '#value' => '<form[\s\'"]',
+    '#warning_callback' => '_coder_review_security_form_tag_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(](drupal_)*?eval\s*\([^\)]*?\$',
+    '#never' => '(^function\s)',
+    '#source' => 'php',
+    '#warning_callback' => '_coder_review_security_eval_warning',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\[][\'"]subject[\'"](\])*?\s*=(>)*?\s*\$',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_security_block_title_warning',
+    '#function' => '_block$',
+  );
+  $rules[] = array(
+    '#type' => 'callback',
+    '#value' => '_coder_review_security_callback',
+  );
+
   $review = array(
     '#title' => 'Drupal Security Checks',
     '#link' => 'http://drupal.org/node/28984',

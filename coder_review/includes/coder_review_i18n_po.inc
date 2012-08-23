@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * This include file implements coder functionality to check for
@@ -11,13 +10,13 @@
  */
 function coder_review_i18n_po_reviews() {
   $argex = '(((\$?)[a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'\'|"")';
-  $rules = array(
-    array(
-      '#type' => 'callback',
-      '#filename' => array('po'),
-      '#value' => '_coder_review_translation_callback',
-    ),
+
+  $rules[] = array(
+    '#type' => 'callback',
+    '#filename' => array('po'),
+    '#value' => '_coder_review_translation_callback',
   );
+
   $review = array(
     '#title' => t('Translation files'),
     '#rules' => $rules,

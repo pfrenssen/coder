@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * This include file implements coder functionality to check for Internationalization issues.
@@ -10,79 +9,79 @@
  */
 function coder_review_i18n_reviews() {
   $argex = '(((\$?)[a-zA-Z_]+((\([^)]*\))|\[[^\]]*\])?)|[0-9]+(\.[0-9]*)?|\'\'|"")';
-  $rules = array(
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]l\s*\(\s*["\']',
-      '#filename-not' => array('install'),
-      '#warning_callback' => '_coder_review_i18n_l_without_t',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]l\s*\(\s*[\'"]',
-      '#function' => '_install$',
-      '#warning_callback' => '_coder_review_i18n_in_install_l_without_st',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]t\s*\(\s*[\'"]',
-      '#function' => '_install$',
-      '#warning_callback' => '_coder_review_i18n_in_install_t',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]alert\s*\(\s*[\'"]',
-      '#filename' => array('js'),
-      '#warning' => 'Javascript strings should be passed through Drupal.t().',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '#title\s*=>\s*[\'"][\'"]',
-      '#warning_callback' => '_coder_review_i18n_fapi_title_without_t',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]form_error\s*\(\s*' . $argex . '\s*,\s*[\'"]',
-      '#warning_callback' => '_coder_review_i18n_form_error_without_t',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\'"]title[\'"]\s*=>\s*[\'"][^<]',
-      '#warning_callback' => '_coder_review_i18n_in_hook_links_without_t',
-      '#source' => 'allphp',
-      '#function' => '_link$',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]drupal_set_title\s*\(\s*[\'"]',
-      '#warning_callback' => '_coder_review_i18n_drupal_set_title_without_t',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]drupal_set_message\s*\(\s*[\'"]',
-      '#warning_callback' => '_coder_review_i18n_drupal_set_message_without_t',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(]watchdog\s*\(\s*' . $argex . '\s*,\s*(t|st)\(',
-      '#warning_callback' => '_coder_review_i18n_watchdog_with_t',
-    ),
-    // @NOTE: Add duplicate of the 6.x upgrade rule.
-    array(
-      '#type' => 'regex',
-      '#function' => '_menu$',
-      '#source' => 'allphp',
-      '#value' => '\'title\'\s*=>\s*t\(|\'description\'\s*=>\s*t\(',
-      '#warning_callback' => '_coder_review_i18n_menu_with_t',
-    ),
-    array(
-      '#type' => 'regex',
-      '#value' => '[\s\(](t|st)\s*\(\s*[\'"](\s+|[^\)]*?\s+[\'"]\s*[,\)])',
-      '#not' => '[\s\(](t|st)\s*\(\s*[\'"][^\s].*?([\'"]\s+[^,\)])*.*[^\s][\'"][,\)]',
-      '#source' => 'allphp',
-      '#warning_callback' => '_coder_review_i18n_space_starts_or_ends_t',
-    ),
+
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]l\s*\(\s*["\']',
+    '#filename-not' => array('install'),
+    '#warning_callback' => '_coder_review_i18n_l_without_t',
   );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]l\s*\(\s*[\'"]',
+    '#function' => '_install$',
+    '#warning_callback' => '_coder_review_i18n_in_install_l_without_st',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]t\s*\(\s*[\'"]',
+    '#function' => '_install$',
+    '#warning_callback' => '_coder_review_i18n_in_install_t',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]alert\s*\(\s*[\'"]',
+    '#filename' => array('js'),
+    '#warning' => 'Javascript strings should be passed through Drupal.t().',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '#title\s*=>\s*[\'"][\'"]',
+    '#warning_callback' => '_coder_review_i18n_fapi_title_without_t',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]form_error\s*\(\s*' . $argex . '\s*,\s*[\'"]',
+    '#warning_callback' => '_coder_review_i18n_form_error_without_t',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\'"]title[\'"]\s*=>\s*[\'"][^<]',
+    '#warning_callback' => '_coder_review_i18n_in_hook_links_without_t',
+    '#source' => 'allphp',
+    '#function' => '_link$',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]drupal_set_title\s*\(\s*[\'"]',
+    '#warning_callback' => '_coder_review_i18n_drupal_set_title_without_t',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]drupal_set_message\s*\(\s*[\'"]',
+    '#warning_callback' => '_coder_review_i18n_drupal_set_message_without_t',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(]watchdog\s*\(\s*' . $argex . '\s*,\s*(t|st)\(',
+    '#warning_callback' => '_coder_review_i18n_watchdog_with_t',
+  );
+  // @NOTE: Add duplicate of the 6.x upgrade rule.
+  $rules[] = array(
+    '#type' => 'regex',
+    '#function' => '_menu$',
+    '#source' => 'allphp',
+    '#value' => '\'title\'\s*=>\s*t\(|\'description\'\s*=>\s*t\(',
+    '#warning_callback' => '_coder_review_i18n_menu_with_t',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '[\s\(](t|st)\s*\(\s*[\'"](\s+|[^\)]*?\s+[\'"]\s*[,\)])',
+    '#not' => '[\s\(](t|st)\s*\(\s*[\'"][^\s].*?([\'"]\s+[^,\)])*.*[^\s][\'"][,\)]',
+    '#source' => 'allphp',
+    '#warning_callback' => '_coder_review_i18n_space_starts_or_ends_t',
+  );
+
   $review = array(
     '#title' => t('Internationalization'),
     '#rules' => $rules,

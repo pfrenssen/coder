@@ -22,7 +22,6 @@ function coder_menu() {
  * Returns form items for the required module message.
  */
 function coder_display_required_module_message() {
-  $message = t('Please enable one or both of the "Coder Review" or "Coder Upgrade" modules.');
-  $build['coder_message']['#markup'] = $message;
+  $build['coder_message']['#markup'] = t('Please enable one or both of the "Coder Review" or "Coder Upgrade" modules.');
   return $build;
 }

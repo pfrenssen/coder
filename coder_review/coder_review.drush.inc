@@ -156,7 +156,7 @@ function coder_review_drush_review() {
                 }
                 if (is_dir($path)) {
                   $ext = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
-                  $settings['coder_file_list'] .= implode("\n", array_keys(drupal_system_listing('/\.(' . implode('|', $ext). ')$/', $path, 'filepath', 0)));
+                  $settings['coder_file_list'] .= implode("\n", array_keys(drupal_system_listing('/\.(' . implode('|', $ext) . ')$/', $path, 'filepath', 0)));
                 }
                 else {
                   $settings['coder_file_list'] .= $path . "\n";
@@ -276,7 +276,7 @@ function theme_drush_coder_review_warning($variables) {
     if (_coder_review_drush_is_option('checkstyle')) {
       $attr['severity'] = $checkstyle_levels[$severity_name];
     }
-    $output = '<error '. drupal_attributes($attr) . ' />';
+    $output = '<error ' . drupal_attributes($attr) . ' />';
     return $output;
   }
   else {
