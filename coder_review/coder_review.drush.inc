@@ -11,7 +11,6 @@ function coder_review_drush_command() {
   $items['coder-review'] = array(
     'callback' => 'coder_review_drush_review',
     'description' => dt('Run code reviews'),
-    'drupal dependencies' => array('coder_review'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'aliases' => array('coder'),
     'options' => array(
@@ -264,31 +263,46 @@ function theme_drush_coder_review($variables) {
  * Theme warning message, including source snippet.
  */
 function theme_drush_coder_review_warning($variables) {
-  $warning = $variables['warning'];
-  $severity_name = $variables['severity_name'];
-  $lineno = isset($variables['lineno']) ? $variables['lineno'] : 0;
-  $line = isset($variables['line']) ? $variables['line'] : '';
-  $checkstyle_levels = array(
-    'minor' => 'info',
-    'normal' => 'warning',
-    'critical' => 'error',
+  // Supply default theme variables.
+  $variables += array(
+    'lineno' => 0,
+    'line' => '',
+    'warning' => dt('unknown warning'),
   );
+
+  // Return warning as XML.
   if (drush_get_option('xml') || drush_get_option('checkstyle')) {
     $attr = array(
-      'line' => $lineno,
+      'line' => $variables['lineno'],
       'column' => 0,
-      'severity' => $severity_name,
-      'message' => $warning,
-      'source' => $line,
+      'severity' => $variables['severity_name'],
+      'message' => $variables['warning'],
+      'source' => $variables['line'],
     );
     if (drush_get_option('checkstyle')) {
-      $attr['severity'] = $checkstyle_levels[$severity_name];
+      $checkstyle_levels = array(
+        'minor' => 'info',
+        'normal' => 'warning',
+        'critical' => 'error',
+      );
+      $attr['severity'] = $checkstyle_levels[$variables['severity_name']];
     }
     return '<error ' . drupal_attributes($attr) . ' />';
   }
-  $output  = $lineno ? '+' . $lineno . ': ' : '';
-  $output .= '[' . $severity_name . '] ';
-  $output .= is_array($warning) ? $warning['#warning'] : $warning;
+
+  // Return warning as text output, formatted for the drush screen.
+  $output  = $variables['lineno'] ? '+' . $variables['lineno'] . ': ' : '';
+  $output .= '[' . $variables['severity_name'] . '] ';
+  if (is_string($variables['warning'])) {
+    $output .= $variables['warning'];
+  }
+  elseif (isset($variables['warning']['#warning'])) {
+    $output .= dt($variables['warning']['#warning']);
+  }
+  elseif (isset($variables['warning']['#text'])) {
+    $variables['warning'] += array('#args' => array());
+    $output .= call_user_func('dt', $variables['warning']['#text'], $variables['warning']['#args']);
+  }
   return _coder_review_drush_output($output);
 }
 
@@ -298,11 +312,13 @@ function theme_drush_coder_review_warning($variables) {
 function coder_review_print_drush_messages() {
   foreach (drupal_get_messages() as $type => $messages) {
     $output = _coder_review_drush_output(implode("\n ", $messages));
-    if (drush_get_option('xml') && !drush_get_option('checkstyle')) {
-      _coder_review_drush_print('<status type="' . $type . '">' . $output . '</status>');
-    }
-    elseif (!drush_get_option('checkstyle')) {
-      _coder_review_drush_print(dt(drupal_ucfirst($type) . ' Messages') . ":\n " . $output . "\n");
+    if (!drush_get_option('checkstyle')) {
+      if (drush_get_option('xml')) {
+        _coder_review_drush_print('<status type="' . $type . '">' . $output . '</status>');
+      }
+      else {
+        _coder_review_drush_print(dt(drupal_ucfirst($type) . ' Messages') . ":\n " . $output . "\n");
+      }
     }
   }
 }
@@ -336,30 +352,14 @@ function _coder_review_drush_print($message) {
 function _coder_review_drush_xml_output_header($type = 'xml') {
   // Put in an extra concatenation so syntax highlighting in vim doesn't break.
   _coder_review_drush_print('<?xml version="1.0" encoding="UTF-8"?' . '>');
-  switch ($type) {
-    case 'checkstyle':
-      _coder_review_drush_print('<checkstyle version="1.3.0RC1">');
-      break;
-    case 'xml':
-    default:
-      _coder_review_drush_print('<coderreview version="1.1">');
-      break;
-  }
+  _coder_review_drush_print($type == 'checkstyle' ? '<checkstyle version="1.3.0RC1">' : '<coderreview version="1.1">');
 }
 
 /**
  * XML: output appropriate footer tag.
  */
 function _coder_review_drush_xml_output_footer($type = 'xml') {
-  switch ($type) {
-    case 'checkstyle':
-      _coder_review_drush_print('</checkstyle>');
-      break;
-    case 'xml':
-    default:
-      _coder_review_drush_print('</coderreview>');
-      break;
-  }
+  _coder_review_drush_print($type == 'checkstyle' ? '</checkstyle>' : '</coderreview>');
 }
 
 /**

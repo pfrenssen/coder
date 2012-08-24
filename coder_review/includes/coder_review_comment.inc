@@ -13,12 +13,10 @@ function coder_review_comment_reviews() {
     '#source' => 'comment',
     '#value' => '$Id',
     '#case-sensitive' => TRUE,
-    '#warning_callback' => function () {
-      return array(
-        '#warning' => t('Commits to the Git repository do not require the CVS $Id' . '$ keyword in each file.'),
-        '#link' => 'http://drupal.org/coding-standards',
-      );
-    },
+    '#warning' => array(
+      '#text' => 'Commits to the Git repository do not require the CVS $Id' . '$ keyword in each file.',
+      '#link' => 'http://drupal.org/coding-standards',
+    ),
     '#severity' => 'minor',
   );
   $rules[] = array(
@@ -72,30 +70,24 @@ function coder_review_comment_reviews() {
     '#type' => 'grep_invert',
     '#source' => 'comment',
     '#value' => '@' . 'file',
-    '#warning_callback' => function () {
-      return array(
-        '#warning' => t('@' . 'file block missing'),
-        '#link' => 'http://drupal.org/node/1354#files',
-      );
-    },
+    '#warning' => array(
+      '#text' => '@' . 'file block missing',
+      '#link' => 'http://drupal.org/node/1354#files',
+    ),
     '#filename-not' => array('patch'),
   );
   $rules[] = array(
     '#type' => 'callback',
     '#value' => '_coder_review_comment_install_file_block_callback',
-    // @NOTE: This is not used.  It only exists to catch potential errors in this code.
-    '#warning_callback' => '_coder_review_comment_install_file_callback_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '@' . 'file\s+.+$',
-    '#warning_callback' => function () {
-      return array(
-        '#warning' => t('@' . 'file description should be on the following line'),
-        '#link' => 'http://drupal.org/node/1354#files',
-      );
-    },
+    '#warning' => array(
+      '#text' => '@' . 'file description should be on the following line',
+      '#link' => 'http://drupal.org/node/1354#files',
+    ),
     '#severity' => 'minor',
   );
   $rules[] = array(
@@ -179,12 +171,10 @@ function _coder_review_comment_install_file_block_callback(&$coder_args, $review
     if ($invalid_file_message) {
       $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
       $tmprule = $rule;
-      $tmprule['#warning_callback'] = function () {
-        return array(
-          '#warning' => t('For .install files, the @file description should be of the format "Install, update and uninstall functions for the XXX module.".'),
-          '#link' => 'http://drupal.org/coding-standards',
-        );
-      };
+      $tmprule['#warning'] = array(
+        '#text' => 'For .install files, the @file description should be of the format "Install, update and uninstall functions for the foo module.".',
+        '#link' => 'http://drupal.org/coding-standards',
+      );
       _coder_review_error($results, $tmprule, $severity_name, $theme_lineno, $theme_line, $ignores);
     }
   }

@@ -62,6 +62,8 @@ function _coder_review_reviews() {
 
 /**
  * Implements hook_reviews().
+ *
+ * Returns all of the reviews implemented by the coder module.
  */
 function coder_review_reviews() {
   $cache = &drupal_static(__FUNCTION__, array());
@@ -72,7 +74,8 @@ function coder_review_reviews() {
       require_once DRUPAL_ROOT . '/' . $file->uri;
       $function = $file->name . '_reviews';
       if (function_exists($function)) {
-        if ($review = call_user_func($function)) {
+        $review = $function();
+        if ($review) {
           $cache = array_merge($cache, $review);
         }
       }
@@ -1053,9 +1056,11 @@ function do_coder_reviews($coder_args) {
         $cache_key .= ':drushxml';
       }
     }
-    if (file_exists($filepath = realpath($coder_args['#filename']))) {
+    $filepath = realpath($coder_args['#filename']);
+    if (file_exists($filepath)) {
       $cache_mtime = filemtime($filepath);
-      if ($cache_results = cache_get($cache_key, 'cache_coder')) {
+      $cache_results = cache_get($cache_key, 'cache_coder');
+      if ($cache_results) {
         if ($cache_results->data['mtime'] == $cache_mtime && _coder_review_modified() < $cache_results->created) {
           return $cache_results->data['results'];
         }
@@ -1063,9 +1068,9 @@ function do_coder_reviews($coder_args) {
     }
   }
 
-  $results = array('#stats' => array('minor' => 0, 'normal' => 0, 'critical' => 0, 'ignored' => 0));
+  $results['#stats'] = array('minor' => 0, 'normal' => 0, 'critical' => 0, 'ignored' => 0);
 
-  // Skip php include files when the user requested severity is above minor.
+  // Skip PHP include files when the user requested severity is above minor.
   if (isset($coder_args['#php_minor']) && drupal_substr($coder_args['#filename'], -4) == '.php') {
     if ($coder_args['#severity'] > 1) {
       return $results;
@@ -1835,10 +1840,9 @@ function do_coder_review_grep_invert(&$coder_args, $review, $rule, $lines, &$res
  * @see do_coder_review_regex()
  */
 function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
-  if ($function = $rule['#value']) {
-    if (function_exists($function)) {
-      call_user_func_array($function, array(&$coder_args, $review, $rule, $lines, &$results));
-    }
+  $function = $rule['#value'];
+  if ($function && function_exists($function)) {
+    call_user_func_array($function, array(&$coder_args, $review, $rule, $lines, &$results));
   }
 }
 
@@ -1877,7 +1881,7 @@ function _coder_review_search_string($line, $rule) {
 function _coder_review_is_drupal_core($system) {
   $info_file = dirname(realpath($system->filename)) . '/' . $system->name . '.info';
   $info = drupal_parse_info_file($info_file);
-  return $info['package'] == 'Core';
+  return isset($info['package']) && strtolower($info['package']) == 'core';
 }
 
 /**
@@ -2008,33 +2012,41 @@ function theme_coder_review($variables) {
  */
 function theme_coder_review_warning_msg($variables) {
   $error = $variables['error'];
-  // @TODO: we can combine theme_coder_review_warning() and theme_coder_review_warning_msg(),
-  // But let's do this on the 7.x upgrade in case anyone's actually using it.
-
-  return theme('coder_review_warning', array(
-    'warning' => _coder_review_warning($error['rule']),
-    'severity_name' => $error['severity_name'],
-    'lineno' => $error['lineno'],
-    'line' => $error['line'],
-  ));
+  $error['warning'] = _coder_review_warning($error['rule']);
+  return theme('coder_review_warning', $error);
 }
 
 /**
  * Return the formatted warning message from the $rule.
  */
 function _coder_review_warning($rule) {
+  $t = function_exists('drush_verify_cli') && drush_verify_cli() ? 'dt' : 't';
+
+  // Call warning callbacks.
   if (isset($rule['#warning_callback'])) {
+    // This rule definition is deprecated.
     if (is_callable($rule['#warning_callback']) || function_exists($rule['#warning_callback'])) {
       return $rule['#warning_callback']();
     }
-    return t('please <a href="@report">report</a> this !warning',
-      array(
-        '@report' => 'http://drupal.org/node/add/project_issue/coder/bug',
-        '!warning' => $rule['#warning_callback'],
-      )
-    );
   }
-  return t($rule['#warning']);
+  elseif (isset($rule['#warning'])) {
+    // Return array warnings as-is.
+    // They get translated in theme_coder_review_warning().
+    if (is_array($rule['#warning'])) {
+      return $rule['#warning'];
+    }
+
+    // Warnings callback functions can now be stored as the #warning element.
+    if (is_callable($rule['#warning']) || function_exists($rule['#warning'])) {
+      return $rule['#warning']();
+    }
+
+    // Translate the warning message and return it.
+    return $t($rule['#warning']);
+  }
+
+  // No valid warning definition, return a warning about the warning.
+  return $t('Unknown warning');
 }
 
 /**
@@ -2053,7 +2065,7 @@ function _coder_review_warning($rule) {
  *   String contents of line.
  */
 function theme_coder_review_warning($variables) {
-  // theme the output for the Drupal shell
+  // Theme the output for the Drupal shell.
   if (function_exists('drush_verify_cli') && drush_verify_cli()) {
     return theme_drush_coder_review_warning($variables);
   }
@@ -2064,16 +2076,22 @@ function theme_coder_review_warning($variables) {
   $line = $variables['line'];
 
   // Extract description from warning.
+  $t = function_exists('drush_verify_cli') && drush_verify_cli() ? 'dt' : 't';
   if (is_array($warning)) {
     $description = isset($warning['#description']) ? $warning['#description'] : '';
-    $warning_msg = $warning['#warning'];
+    if (isset($warning['#warning'])) {
+      $warning_msg = $warning['#warning'];
+    }
+    elseif (isset($warning['#text'])) {
+      $warning_msg = call_user_func($t, $warning['#text'], isset($warning['#args']) ? $warning['#args'] : array());
+    }
     if (isset($warning['#link'])) {
       $warning_msg .= ' (' . l(t('Drupal Docs'), $warning['#link']) . ')';
     }
     $warning = $warning_msg;
   }
   if ($lineno) {
-    $warning = t('Line @number: !warning', array('@number' => $lineno, '!warning' => $warning));
+    $warning = $t('Line @number: !warning', array('@number' => $lineno, '!warning' => $warning));
     if ($line) {
       $warning .= '<pre>' . check_plain($line) . '</pre>';
     }
@@ -2083,7 +2101,7 @@ function theme_coder_review_warning($variables) {
     $class .= " coder-$severity_name";
   }
   $path = drupal_get_path('module', 'coder');
-  $title = t('severity: @severity', array('@severity' => $severity_name));
+  $title = $t('severity: @severity', array('@severity' => $severity_name));
   $img = theme('image', array(
     'path' => $path . "/images/$severity_name.png",
     'alt' => $title, 'title' => $title,
@@ -2092,7 +2110,7 @@ function theme_coder_review_warning($variables) {
   ));
   if (!empty($description)) {
     $img .= theme('image', array('path' => $path . '/images/more.png', 'alt' => t('click to read more'), 'atributes' => array('align' => 'right', 'class' => 'coder-more'), 'getsize' => FALSE));
-    $warning .= '<div class="coder-description">Explanation: ' . $description . '</div>';
+    $warning .= '<div class="coder-description">' . t('Explanation: @description', array('@description' => $description)) . '</div>';
   }
   return '<div class="' . $class . '">' . $img . $warning . '</div>';
 }
