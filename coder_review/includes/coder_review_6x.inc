@@ -14,43 +14,43 @@ function coder_review_6x_reviews() {
     '#type' => 'regex',
     '#function' => '_menu$',
     '#value' => '\$items\[\]\s*=|if\s*\(\$may_cache\)',
-    '#warning_callback' => '_coder_review_6x_new_menu_system_warning',
+    '#warning' => '_coder_review_6x_new_menu_system_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#function' => '_menu$',
     '#value' => '(for|foreach|while)\s*\(',
-    '#warning_callback' => '_coder_review_6x_new_menu_loop_warning',
+    '#warning' => '_coder_review_6x_new_menu_loop_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '_form_alter\s*\(\$',
-    '#warning_callback' => '_coder_review_6x_form_alter_warning',
+    '#warning' => '_coder_review_6x_form_alter_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '_link_alter\s*\(\$',
-    '#warning_callback' => '_coder_review_6x_link_alter_warning',
+    '#warning' => '_coder_review_6x_link_alter_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '_profile_alter\s*\(\$',
-    '#warning_callback' => '_coder_review_6x_profile_alter_warning',
+    '#warning' => '_coder_review_6x_profile_alter_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '_mail_alter\s*\([^,]+,',
-    '#warning_callback' => '_coder_review_6x_mail_alter_warning',
+    '#warning' => '_coder_review_6x_mail_alter_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]l\s*\((' . $argex . '\s*,\s*){3,}(' . $argex . ')\s*\)',
-    '#warning_callback' => '_coder_review_6x_url_l_warning',
+    '#warning' => '_coder_review_6x_url_l_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]url\s*\((' . $argex . '\s*,\s*){2,}(' . $argex . ')\s*\)',
-    '#warning_callback' => '_coder_review_6x_url_l_warning',
+    '#warning' => '_coder_review_6x_url_l_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -60,49 +60,49 @@ function coder_review_6x_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '(taxonomy_node_get_terms|taxonomy_node_get_terms_by_vocabulary|taxonomy_node_save|taxonomy_node_delete)\s*\(\s*(\d+|\$(nid|node->nid))',
-    '#warning_callback' => '_coder_review_6x_taxonomy_node_get_terms_warning',
+    '#warning' => '_coder_review_6x_taxonomy_node_get_terms_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]strtr\s*\(\s*format_plural\s*\(',
-    '#warning_callback' => '_coder_review_6x_format_plural_warning',
+    '#warning' => '_coder_review_6x_format_plural_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'watchdog\s*\(\s*\'\',\s*t\(\'',
-    '#warning_callback' => '_coder_review_6x_watchdog_warning',
+    '#warning' => '_coder_review_6x_watchdog_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]cache_set\s*\(\s*[^,]+,\s*([\'"]|\$table)',
-    '#warning_callback' => '_coder_review_6x_cache_set_warning',
+    '#warning' => '_coder_review_6x_cache_set_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]cache_set\s*\(\s*[^\)]+,\s*serialize\s*\(\s*',
-    '#warning_callback' => '_coder_review_6x_cache_serialize_warning',
+    '#warning' => '_coder_review_6x_cache_serialize_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]unserialize\s*\(\s*cache_get\s*\(',
-    '#warning_callback' => '_coder_review_6x_cache_serialize_warning',
+    '#warning' => '_coder_review_6x_cache_serialize_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '\$_SERVER\s*\[\s*[\'"]REMOTE_ADDR[\'"]\s*\]',
     '#source' => 'allphp',
-    '#warning_callback' => '_coder_review_6x_remote_addr_warning',
+    '#warning' => '_coder_review_6x_remote_addr_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]file_check_upload\s*\(',
-    '#warning_callback' => '_coder_review_6x_file_check_upload_warning',
+    '#warning' => '_coder_review_6x_file_check_upload_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]file_save_upload\s*\([^,]+\s*,\s*(\$dest|\$destination|\'\'|"")\s*',
     '#never' => 'function\s+file_save_upload',
-    '#warning_callback' => '_coder_review_6x_file_save_upload_warning',
+    '#warning' => '_coder_review_6x_file_save_upload_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -114,7 +114,7 @@ function coder_review_6x_reviews() {
     '#type' => 'callback',
     '#value' => '_coder_review_6x_callback',
     // @NOTE: This is not used.  It only exists to catch potential errors in this code.
-    '#warning_callback' => '_coder_review_6x_callback_warning',
+    '#warning' => '_coder_review_6x_callback_warning',
   );
   // FAPI Rules.
   $rules[] = array(
@@ -127,14 +127,14 @@ function coder_review_6x_reviews() {
     '#type' => 'regex',
     '#source' => 'allphp',
     '#value' => '\$form\s*\[\s*[\'"]#validate[\'"]\]\[[\'"]',
-    '#warning_callback' => '_coder_review_6x_formapi_element_validate_warning',
+    '#warning' => '_coder_review_6x_formapi_element_validate_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'allphp',
     '#function' => '_elements$',
     '#value' => '\s*[\'"]#validate[\'"]\s*=>\s*',
-    '#warning_callback' => '_coder_review_6x_formapi_element_validate_warning',
+    '#warning' => '_coder_review_6x_formapi_element_validate_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -145,56 +145,56 @@ function coder_review_6x_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '_(validate|submit)\s*\(\s*\$form_id',
-    '#warning_callback' => '_coder_review_6x_form_validate_and_submit_warning',
+    '#warning' => '_coder_review_6x_form_validate_and_submit_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '_(validate|submit)\s*\(\s*\$form\s*,\s*\$form_state\s*\)[^;]',
-    '#warning_callback' => '_coder_review_6x_form_validate_and_submit_warning',
+    '#warning' => '_coder_review_6x_form_validate_and_submit_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '_(prerender)\s*\(\s*\$form_id',
-    '#warning_callback' => '_coder_review_6x_form_prerender_warning',
+    '#warning' => '_coder_review_6x_form_prerender_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '\$form\[[\'"]#submit[\'"]\]\[[\'"]',
     '#source' => 'allphp',
-    '#warning_callback' => '_coder_review_6x_formapi_custom_params_warning',
+    '#warning' => '_coder_review_6x_formapi_custom_params_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]form_set_value\s*\([^,]+(,\s*[^,\)]+){0,1}\)',
-    '#warning_callback' => '_coder_review_6x_form_set_value_warning',
+    '#warning' => '_coder_review_6x_form_set_value_warning',
     '#not' => 'array\s*\(',
   );
 /*  From Delete API, which has been reverted.
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]confirm_form\s*\([^,]+(,\s*[^,]+){4,}',
-    '#warning_callback' => '_coder_review_6x_confirm_form_warning',
+    '#warning' => '_coder_review_6x_confirm_form_warning',
   );
 */
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]custom_url_rewrite\s*\(',
-    '#warning_callback' => '_coder_review_6x_custom_url_rewrite_warning',
+    '#warning' => '_coder_review_6x_custom_url_rewrite_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '_(info)\s*\(\s*\$field',
-    '#warning_callback' => '_coder_review_6x_hook_info_auth_warning',
+    '#warning' => '_coder_review_6x_hook_info_auth_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '_(auth)\s*\(\s*\$user',
-    '#warning_callback' => '_coder_review_6x_hook_info_auth_warning',
+    '#warning' => '_coder_review_6x_hook_info_auth_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'function\s+[a-z0-9_]+_(help)\s*\(\s*[^,]+\)',
-    '#warning_callback' => '_coder_review_6x_hook_help_warning',
+    '#warning' => '_coder_review_6x_hook_help_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -207,7 +207,7 @@ function coder_review_6x_reviews() {
     '#source' => 'allphp',
     '#function' => '_(un)?install$|_update_[0-9]+$',
     '#value' => '\$GLOBALS\[[\'"]?db_type[\'"]?\]',
-    '#warning_callback' => '_coder_review_6x_schema_api_warning',
+    '#warning' => '_coder_review_6x_schema_api_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -220,193 +220,193 @@ function coder_review_6x_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]theme_get_function\s*\(',
-    '#warning_callback' => '_coder_review_6x_theme_get_function_warning',
+    '#warning' => '_coder_review_6x_theme_get_function_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]db_num_rows\s*\(',
-    '#warning_callback' => '_coder_review_6x_db_num_rows_warning',
+    '#warning' => '_coder_review_6x_db_num_rows_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]drupal_retrieve_form\s*\(' . $argex . '\s*\)',
-    '#warning_callback' => '_coder_review_6x_drupal_retrieve_form_warning',
+    '#warning' => '_coder_review_6x_drupal_retrieve_form_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#function' => '_menu$',
     '#value' => 'node\/add\/',
     '#source' => 'all',
-    '#warning_callback' => '_coder_review_6x_menu_node_add_warning',
+    '#warning' => '_coder_review_6x_menu_node_add_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'variable_(get|set|del)\(\s*[\'"]comment_form_location[\'"]\s*(,|\))',
     '#source' => 'allphp',
-    '#warning_callback' => '_coder_review_6x_comment_form_location_warning',
+    '#warning' => '_coder_review_6x_comment_form_location_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '=\s*[\'"]comment_form_location[\'"]\s*;',
     '#source' => 'allphp',
-    '#warning_callback' => '_coder_review_6x_comment_form_location_warning',
+    '#warning' => '_coder_review_6x_comment_form_location_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'admin\/content\/comment\/settings',
     '#source' => 'quote',
-    '#warning_callback' => '_coder_review_6x_comment_form_location_warning',
+    '#warning' => '_coder_review_6x_comment_form_location_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]node_access_rebuild\s*\(',
     '#function' => '_disable$|_enable$',
-    '#warning_callback' => '_coder_review_6x_node_access_rebuild_warning',
+    '#warning' => '_coder_review_6x_node_access_rebuild_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'admin\/logs',
     '#source' => 'all',
-    '#warning_callback' => '_coder_review_6x_admin_logs_warning',
+    '#warning' => '_coder_review_6x_admin_logs_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'user_access\s*\(\s*\'\s*administer\s+access\s+control\s*\'\s*\)|admin\/user\/access',
     '#source' => 'all',
-    '#warning_callback' => '_coder_review_6x_administer_access_control_warning',
+    '#warning' => '_coder_review_6x_administer_access_control_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'allphp',
     '#value' => '(\$form\s*\[\s*[\'"]#DANGEROUS_SKIP_CHECK[\'"]|[\'"]#DANGEROUS_SKIP_CHECK[\'"]\s*=>)',
-    '#warning_callback' => '_coder_review_6x_dangerous_skip_check_warning',
+    '#warning' => '_coder_review_6x_dangerous_skip_check_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]locale_refresh_cache\s*\(',
-    '#warning_callback' => '_coder_review_6x_locale_refresh_cache_warning',
+    '#warning' => '_coder_review_6x_locale_refresh_cache_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]db_next_id\s*\(',
-    '#warning_callback' => '_coder_review_6x_db_next_id_warning',
+    '#warning' => '_coder_review_6x_db_next_id_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]menu_set_location\s*\(',
-    '#warning_callback' => '_coder_review_6x_menu_set_location_warning',
+    '#warning' => '_coder_review_6x_menu_set_location_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]taxonomy_get_vocabulary\s*\(',
-    '#warning_callback' => '_coder_review_6x_taxonomy_get_vocabulary_warning',
+    '#warning' => '_coder_review_6x_taxonomy_get_vocabulary_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]db_result\s*\((' . $argex . ')\s*,\s*' . $argex . '\);$',
-    '#warning_callback' => '_coder_review_6x_db_result_warning',
+    '#warning' => '_coder_review_6x_db_result_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'watchdog\s*\(\s*[\'"]debug[\'"]\s*,\s*',
     '#source' => 'allphp',
-    '#warning_callback' => '_coder_review_6x_watchdog_debug_warning',
+    '#warning' => '_coder_review_6x_watchdog_debug_warning',
   );
   // Book module rules -  start.
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_admin_orphan\s*\(',
-    '#warning_callback' => '_coder_review_6x_book_admin_orphan_warning',
+    '#warning' => '_coder_review_6x_book_admin_orphan_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_content\s*\(',
-    '#warning_callback' => '_coder_review_6x_book_content_warning',
+    '#warning' => '_coder_review_6x_book_content_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_form\s*\(',
-    '#warning_callback' => '_coder_review_6x_book_form_warning',
+    '#warning' => '_coder_review_6x_book_form_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_insert\s*\(',
-    '#warning_callback' => '_coder_review_6x_book_insert_warning',
+    '#warning' => '_coder_review_6x_book_insert_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_location\s*\(',
-    '#warning_callback' => '_coder_review_6x_book_location_warning',
+    '#warning' => '_coder_review_6x_book_location_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_location_down\s*\(',
-    '#warning_callback' => '_coder_review_6x_book_location_down_warning',
+    '#warning' => '_coder_review_6x_book_location_down_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_node_visitor_html_post\s*\(',
-    '#warning_callback' => '_coder_review_6x_book_node_visitor_html_post_warning',
+    '#warning' => '_coder_review_6x_book_node_visitor_html_post_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_node_visitor_html_pre\s*\(',
-    '#warning_callback' => '_coder_review_6x_book_node_visitor_html_pre_warning',
+    '#warning' => '_coder_review_6x_book_node_visitor_html_pre_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_recurse\s*\(',
-    '#warning_callback' => '_coder_review_6x_book_recurse_warning',
+    '#warning' => '_coder_review_6x_book_recurse_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_toc_recurse\s*\(',
-    '#warning_callback' => '_coder_review_6x_book_toc_recurse_warning',
+    '#warning' => '_coder_review_6x_book_toc_recurse_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_tree\s*\(',
-    '#warning_callback' => '_coder_review_6x_book_tree_warning',
+    '#warning' => '_coder_review_6x_book_tree_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_tree_recurse\s*\(',
-    '#warning_callback' => '_coder_review_6x_book_tree_recurse_warning',
+    '#warning' => '_coder_review_6x_book_tree_recurse_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_admin_edit\s*\((' . $argex . '\s*)\)',
-    '#warning_callback' => '_coder_review_6x_book_admin_edit_warning',
+    '#warning' => '_coder_review_6x_book_admin_edit_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(](book_toc\s*\((' . $argex . '\s*)\)|book_toc\s*\(\s*\))',
-    '#warning_callback' => '_coder_review_6x_book_toc_warning',
+    '#warning' => '_coder_review_6x_book_toc_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_export_html\s*\((' . $argex . '\s*,\s*)',
-    '#warning_callback' => '_coder_review_6x_book_export_html_warning',
+    '#warning' => '_coder_review_6x_book_export_html_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(](book_export\s*\((' . $argex . '\s*)\)|book_export\s*\(\s*\))',
-    '#warning_callback' => '_coder_review_6x_book_export_warning',
+    '#warning' => '_coder_review_6x_book_export_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_outline\s*\(\$(nid|node->nid)',
-    '#warning_callback' => '_coder_review_6x_book_outline_warning',
+    '#warning' => '_coder_review_6x_book_outline_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_prev\s*\(\$node',
-    '#warning_callback' => '_coder_review_6x_book_prev_warning',
+    '#warning' => '_coder_review_6x_book_prev_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]book_next\s*\(\$node',
-    '#warning_callback' => '_coder_review_6x_book_next_warning',
+    '#warning' => '_coder_review_6x_book_next_warning',
   );
   // Book module rules -  end.
   $rules[] = array(
@@ -421,66 +421,66 @@ function coder_review_6x_reviews() {
     '#function' => '_nodeapi$',
     '#source' => 'allphp',
     '#value' => '(case\s+[\'"]submit[\'"]\s*:)|(==\s*[\'"]submit[\'"])',
-    '#warning_callback' => '_coder_review_6x_nodeapi_submit_warning',
+    '#warning' => '_coder_review_6x_nodeapi_submit_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'allphp',
     '#value' => '[\s\(]drupal_mail\s*\(\s*[^,]+,\s*(\$to|\$recipient|\$[a-zA-Z_]+?\->mail|(\'|").+@.+(\'|"))',
-    '#warning_callback' => '_coder_review_6x_drupal_mail_warning',
+    '#warning' => '_coder_review_6x_drupal_mail_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '^(create\s+table\s+|alter\s+table\s+|drop\s+table\s+)',
     '#source' => 'quote',
-    '#warning_callback' => '_coder_review_6x_drupal_install_schema_warning',
+    '#warning' => '_coder_review_6x_drupal_install_schema_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]user_authenticate\s*\((' . $argex . '\s*,\s*)(' . $argex . ')\s*\)',
-    '#warning_callback' => '_coder_review_6x_user_authenticate_warning',
+    '#warning' => '_coder_review_6x_user_authenticate_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'function\s+[a-z0-9_]+_(access)\s*\((' . $argex . '\s*,\s*)(' . $argex . ')\s*\)',
-    '#warning_callback' => '_coder_review_6x_hook_access_warning',
+    '#warning' => '_coder_review_6x_hook_access_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'allphp',
     '#value' => '(node|user|menu|menu_link|taxonomy_vocabulary|contact|filter_format|forum_term|aggregator_feed|aggregator_category)_load\(arg\([0-9]\)\)',
-    '#warning_callback' => '_coder_review_6x_menu_get_object_warning',
+    '#warning' => '_coder_review_6x_menu_get_object_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#function' => '_submit$',
     '#value' => '\s+return\s+(' . $argex . ');',
-    '#warning_callback' => '_coder_review_6x_form_submit_warning',
+    '#warning' => '_coder_review_6x_form_submit_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#function' => '_menu$',
     '#source' => 'allphp',
     '#value' => '\'title\'\s*=>\s*t\(|\'description\'\s*=>\s*t\(',
-    '#warning_callback' => '_coder_review_6x_menu_localization_warning',
+    '#warning' => '_coder_review_6x_menu_localization_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'function\s+[a-z0-9_]+_(forms)\s*\(\s*[^,]+\)',
-    '#warning_callback' => '_coder_review_6x_hook_forms_warning',
+    '#warning' => '_coder_review_6x_hook_forms_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'allphp',
     '#value' => '\$form\s*\[\s*[\'"]#pre_render[\'"]\s*\]\[\s*[\'"].*[\'"]\s*\]\s*=',
-    '#warning_callback' => '_coder_review_6x_formapi_prerender_warning',
+    '#warning' => '_coder_review_6x_formapi_prerender_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#function' => '_menu$',
     '#value' => '[\'"]access callback.*=.*\(',
     '#source' => 'allphp',
-    '#warning_callback' => '_coder_review_6x_menu_access_callback_warning',
+    '#warning' => '_coder_review_6x_menu_access_callback_warning',
   );
 
   $review = array(
@@ -519,7 +519,7 @@ function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$resul
     if ($theme && !$hook_theme) {
       $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
       $tmprule = $rule;
-      $tmprule['#warning_callback'] = '_coder_review_6x_hook_theme_warning';
+      $tmprule['#warning'] = '_coder_review_6x_hook_theme_warning';
       _coder_review_error($results, $tmprule, $severity_name, $theme_lineno, $theme_line, $ignores);
     }
 
@@ -531,7 +531,7 @@ function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$resul
           if (preg_match('/^dependencies\s*=/', $line)) {
             $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
             $tmprule = $rule;
-            $tmprule['#warning_callback'] = '_coder_review_6x_dependency_warning';
+            $tmprule['#warning'] = '_coder_review_6x_dependency_warning';
             _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
           }
           if (preg_match('/^core\s*=/', $line)) {
@@ -541,7 +541,7 @@ function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$resul
         if (!isset($core)) {
           $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
           $tmprule = $rule;
-          $tmprule['#warning_callback'] = '_coder_review_6x_core_warning';
+          $tmprule['#warning'] = '_coder_review_6x_core_warning';
           _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
         }
       }
@@ -552,7 +552,7 @@ function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$resul
     if (file_exists($dir . '/po') && !file_exists($dir . '/translations')) {
       $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
       $tmprule = $rule;
-      $tmprule['#warning_callback'] = '_coder_review_6x_translations_warning';
+      $tmprule['#warning'] = '_coder_review_6x_translations_warning';
       _coder_review_error($results, $tmprule, $severity_name, -1, $dir);
     }
   }

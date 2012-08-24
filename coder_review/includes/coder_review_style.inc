@@ -106,7 +106,7 @@ function coder_review_style_reviews() {
     '#type' => 'regex',
     '#source' => 'html',
     '#value' => '(?-i)<[A-Z]+',
-    '#warning_callback' => function () {
+    '#warning' => function () {
       return t('use lowercase html tags to comply with <a href="@xhtml">XHTML</a>',
         array(
           '@xhtml' => 'http://www.w3.org/TR/xhtml1/#h-4.2',

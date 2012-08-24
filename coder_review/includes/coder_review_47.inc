@@ -11,27 +11,27 @@ function coder_review_47_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'function\s+\w+(_node_name|_node_type)\s*\(',
-    '#warning_callback' => 'coder_review_47_hook_node_info_warning',
+    '#warning' => 'coder_review_47_hook_node_info_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]node_load\s*\(\s*array\s*\(',
-    '#warning_callback' => '_coder_review_47_node_load_warning',
+    '#warning' => '_coder_review_47_node_load_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]node_list\s*\(',
-    '#warning_callback' => '_coder_review_47_node_list_warning',
+    '#warning' => '_coder_review_47_node_list_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]module_get_node_name\s*\(',
-    '#warning_callback' => '_coder_review_47_module_get_name_warning',
+    '#warning' => '_coder_review_47_module_get_name_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]format_name\s*\(',
-    '#warning_callback' => '_coder_review_47_format_name_warning',
+    '#warning' => '_coder_review_47_format_name_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -41,7 +41,7 @@ function coder_review_47_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]message_access\s*\(',
-    '#warning_callback' => '_coder_review_47_message_access_warning',
+    '#warning' => '_coder_review_47_message_access_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -52,44 +52,44 @@ function coder_review_47_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]conf_url_rewrite\s*\(',
-    '#warning_callback' => '_coder_review_47_conf_url_rewrite_warning',
+    '#warning' => '_coder_review_47_conf_url_rewrite_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]node_delete\s*\(\s*array\s*\(',
-    '#warning_callback' => '_coder_review_47_node_delete_warning',
+    '#warning' => '_coder_review_47_node_delete_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'allphp',
     '#value' => '[\s\(]variable_get\s*\(\s*[\'"]+file_directory_temp[\'"]+\s*,',
-    '#warning_callback' => '_coder_review_47_file_directory_temp_warning',
+    '#warning' => '_coder_review_47_file_directory_temp_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'allphp',
     '#value' => '[\s\(]variable_get\s*\(\s*[\'"]+file_directory_path[\'"]+\s*,',
-    '#warning_callback' => '_coder_review_47_file_directory_path_warning',
+    '#warning' => '_coder_review_47_file_directory_path_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]array2object\s*\(',
-    '#warning_callback' => '_coder_review_47_array2object_warning',
+    '#warning' => '_coder_review_47_array2object_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'function\s+\w+_onload\s*\(',
-    '#warning_callback' => '_coder_review_47_hook_onload_warning',
+    '#warning' => '_coder_review_47_hook_onload_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]node_validate_title\s*\(',
-    '#warning_callback' => '_coder_review_47_node_validate_title_warning',
+    '#warning' => '_coder_review_47_node_validate_title_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]tablesort_pager\s*\(',
-    '#warning_callback' => '_coder_review_47_tablesort_pager_warning',
+    '#warning' => '_coder_review_47_tablesort_pager_warning',
   );
   $rules[] = array(
     '#type' => 'regex',

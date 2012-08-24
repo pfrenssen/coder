@@ -14,7 +14,7 @@ function coder_review_i18n_reviews() {
     '#type' => 'regex',
     '#value' => '[\s\(]l\s*\(\s*["\']',
     '#filename-not' => array('install'),
-    '#warning_callback' => function () {
+    '#warning' => function () {
       return array(
         '#warning' => t('The $text argument to !l() should be enclosed within !t() so that it is translatable.',
           array(
@@ -29,7 +29,7 @@ function coder_review_i18n_reviews() {
     '#type' => 'regex',
     '#value' => '[\s\(]l\s*\(\s*[\'"]',
     '#function' => '_install$',
-    '#warning_callback' => function () {
+    '#warning' => function () {
       return array(
         '#warning' => t('The $text argument to !l() should be enclosed within !st() so that it is translatable from within the install.',
           array(
@@ -44,7 +44,7 @@ function coder_review_i18n_reviews() {
     '#type' => 'regex',
     '#value' => '[\s\(]t\s*\(\s*[\'"]',
     '#function' => '_install$',
-    '#warning_callback' => function () {
+    '#warning' => function () {
       return array(
         '#warning' => t('Use !st() instead of !t() in !hook_install(), !hook_uninstall() and !hook_update_N()',
           array(
@@ -67,7 +67,7 @@ function coder_review_i18n_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '#title\s*=>\s*[\'"][\'"]',
-    '#warning_callback' => function () {
+    '#warning' => function () {
       return array(
         '#warning' => t('The FAPI #title should be enclosed within !t() so that it is translatable.',
           array(
@@ -81,7 +81,7 @@ function coder_review_i18n_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]form_error\s*\(\s*' . $argex . '\s*,\s*[\'"]',
-    '#warning_callback' => function () {
+    '#warning' => function () {
       return array(
         '#warning' => t('The $message argument to !form_error() should be enclosed within !t() so that it is translatable.',
           array(
@@ -95,7 +95,7 @@ function coder_review_i18n_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\'"]title[\'"]\s*=>\s*[\'"][^<]',
-    '#warning_callback' => function () {
+    '#warning' => function () {
       return array(
         '#warning' => t("The 'title' option should be enclosed within !t() so that it is translatable.",
           array(
@@ -110,7 +110,7 @@ function coder_review_i18n_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]drupal_set_title\s*\(\s*[\'"]',
-    '#warning_callback' => function () {
+    '#warning' => function () {
       return array(
         '#warning' => t('The $title argument to !drupal_set_title() should be enclosed within !t() so that it is translatable.',
           array(
@@ -124,7 +124,7 @@ function coder_review_i18n_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]drupal_set_message\s*\(\s*[\'"]',
-    '#warning_callback' => function () {
+    '#warning' => function () {
       return array(
         '#warning' => t('The $message argument to !drupal_set_message() should be enclosed within !t() so that it is translatable.',
           array(
@@ -138,7 +138,7 @@ function coder_review_i18n_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]watchdog\s*\(\s*' . $argex . '\s*,\s*(t|st)\(',
-    '#warning_callback' => function () {
+    '#warning' => function () {
       return array(
         '#warning' => t('The $message argument to !watchdog() should NOT be enclosed within !t(), so that it can be properly translated at display time.',
           array(
@@ -155,7 +155,7 @@ function coder_review_i18n_reviews() {
     '#function' => '_menu$',
     '#source' => 'allphp',
     '#value' => '\'title\'\s*=>\s*t\(|\'description\'\s*=>\s*t\(',
-    '#warning_callback' => function () {
+    '#warning' => function () {
       return array(
         '#warning' => t('Menu item titles and descriptions should NOT be enclosed within !t().',
           array(
@@ -171,7 +171,7 @@ function coder_review_i18n_reviews() {
     '#value' => '[\s\(](t|st)\s*\(\s*[\'"](\s+|[^\)]*?\s+[\'"]\s*[,\)])',
     '#not' => '[\s\(](t|st)\s*\(\s*[\'"][^\s].*?([\'"]\s+[^,\)])*.*[^\s][\'"][,\)]',
     '#source' => 'allphp',
-    '#warning_callback' => function () {
+    '#warning' => function () {
       return array(
         '#warning' => t('The $string argument to !t() should not begin or end with a space.',
           array(

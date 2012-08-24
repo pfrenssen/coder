@@ -11,37 +11,37 @@ function coder_review_5x_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]user_mail\s*\(',
-    '#warning_callback' => '_coder_review_5x_user_mail_warning',
+    '#warning' => '_coder_review_5x_user_mail_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]user_mail_wrapper\s*\(',
-    '#warning_callback' => '_coder_review_5x_user_mail_wrapper_warning',
+    '#warning' => '_coder_review_5x_user_mail_wrapper_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]message_na\s*\(',
-    '#warning_callback' => '_coder_review_5x_message_na_warning',
+    '#warning' => '_coder_review_5x_message_na_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]module_exist\s*\(',
-    '#warning_callback' => '_coder_review_5x_module_exist_warning',
+    '#warning' => '_coder_review_5x_module_exist_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]drupal_call_js\s*\(',
-    '#warning_callback' => '_coder_review_5x_drupal_call_js_warning',
+    '#warning' => '_coder_review_5x_drupal_call_js_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]system_listing\s*\(',
-    '#warning_callback' => '_coder_review_5x_system_listing_warning',
+    '#warning' => '_coder_review_5x_system_listing_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]node_get_name\s*\(',
-    '#warning_callback' => '_coder_review_5x_node_get_name_warning',
+    '#warning' => '_coder_review_5x_node_get_name_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -53,19 +53,19 @@ function coder_review_5x_reviews() {
   $rules[] = array(
     '#type' => 'callback',
     '#value' => '_coder_review_5x_callback',
-    '#warning_callback' => '_coder_review_5x_callback_warning',
+    '#warning' => '_coder_review_5x_callback_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'all',
     '#value' => '[\s\(]theme_add_style\s*\(',
-    '#warning_callback' => '_coder_review_5x_theme_add_style_warning',
+    '#warning' => '_coder_review_5x_theme_add_style_warning',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'all',
     '#value' => '[\s\(]form_render\s*\(',
-    '#warning_callback' => '_coder_review_5x_form_render_warning',
+    '#warning' => '_coder_review_5x_form_render_warning',
   );
 
   $review = array(
