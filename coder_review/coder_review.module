@@ -106,7 +106,7 @@ function coder_review_menu() {
   $items['admin/config/development/coder/review'] = array(
     'title' => 'Review',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('coder_review_page'),
+    'page arguments' => array('coder_review_page_form'),
     'access arguments' => array('view code review'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -2,
