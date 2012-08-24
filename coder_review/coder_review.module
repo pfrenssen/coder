@@ -46,7 +46,7 @@ function coder_review_flush_caches() {
 function coder_review_help($page, $arg) {
   switch ($page) {
     case 'coder_review#disclaimer':
-      return t('Coder provides helpful hints without false positives, but offers no guarantee for creating good code. You are the final arbitrar. If in doubt, read the Drupal documentation (see review links below and <a href="@api">api.drupal.org</a>).', array('@api' => 'http://api.drupal.org'));
+      return t('Coder provides helpful hints trying to minimize false positives, but offers no guarantees. You are the final arbitrar. If in doubt, please read the Drupal documentation (see review links below and <a href="@api">api.drupal.org</a>).', array('@api' => 'http://api.drupal.org'));
 
     case 'drush:coder_review':
       return t('coder_review [summary] [@reviews] [minor|major|critical] [active|core|all|default|<modules>] [no-<module>]', array('@reviews' => implode('|', array_keys(_coder_review_reviews()))));
@@ -67,7 +67,7 @@ function _coder_review_reviews() {
  */
 function coder_review_reviews() {
   $cache = &drupal_static(__FUNCTION__, array());
-  if (empty($cache)) {
+  if (!$cache) {
     $path = drupal_get_path('module', 'coder_review') . '/includes';
     $files = drupal_system_listing('/coder_review_.*\.inc$/', $path, 'filepath', 0);
     foreach ($files as $file) {
@@ -76,7 +76,7 @@ function coder_review_reviews() {
       if (function_exists($function)) {
         $review = $function();
         if ($review) {
-          $cache = array_merge($cache, $review);
+          $cache += $review;
         }
       }
     }
@@ -105,7 +105,8 @@ function coder_review_permission() {
 function coder_review_menu() {
   $items['admin/config/development/coder/review'] = array(
     'title' => 'Review',
-    'page callback' => 'coder_review_page',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('coder_review_page'),
     'access arguments' => array('view code review'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -2,
@@ -113,8 +114,8 @@ function coder_review_menu() {
   foreach (array('select', 'default', 'active', 'core', 'all', 'files', 'patches') as $delta => $option) {
     $items["admin/config/development/coder/review/$option"] = array(
       'title' => ucfirst($option),
-      'page callback' => 'coder_review_page',
-      'page arguments' => $option == 'select' ? array() : array($option),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('coder_review_page_form', $option),
       'access arguments' => array('view code review'),
       'type' => $delta ? MENU_LOCAL_TASK : MENU_DEFAULT_LOCAL_TASK,
       'weight' => $delta,
@@ -137,7 +138,8 @@ function coder_review_menu() {
  * Implements hook_menu_alter().
  */
 function coder_review_menu_alter(&$items) {
-  $items['admin/config/development/coder']['page callback'] = 'coder_review_page';
+  $items['admin/config/development/coder']['page callback'] = 'drupal_get_form';
+  $items['admin/config/development/coder']['page arguments'] = array('coder_review_page_form');
 }
 
 /**
@@ -330,8 +332,8 @@ function _coder_review_settings_form($settings, &$system, &$files) {
       }
       elseif (preg_match("/^(@@\s+\-\d+,\d+\s+\+\d+,\d+\s+@@)\s*((function|(protected|private|public)*\s*class)\s([\w]+).*?)*$/", $line, $matches)) {
         if (!empty($patch)) {
-          $patches[$filename . ': ' . $patch_line_numbers] = $patch;
-          $system[$filename . ': ' . $patch_line_numbers] = $filename;
+          $patches["$filename: $patch_line_numbers"] = $patch;
+          $system["$filename: $patch_line_numbers"] = $filename;
           $patch = '';
         }
         if (isset($matches[3]) && isset($matches[4])) {
@@ -593,16 +595,6 @@ function _coder_review_settings_array(&$form_state, $type) {
     }
   }
   return $systems;
-}
-
-/**
- * Code review page.
- */
-function coder_review_page($type = '') {
-  $form = drupal_get_form('coder_review_page_form', $type);
-  $output = '<div class="coder-disclaimer">' . coder_review_help('coder#disclaimer', array()) . '</div>';
-  $output .= drupal_render($form);
-  return $output;
 }
 
 /**
@@ -904,6 +896,12 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
       '#collapsed' => !empty($form),
       '#weight' => -1,
     );
+    $form['disclaimer'] = array(
+      '#prefix' => '<div class="coder-disclaimer">',
+      '#markup' => coder_review_help('coder_review#disclaimer', array()),
+      '#suffix' => '</div>',
+      '#weight' => -2,
+    );
     if ($form['settings']['#collapsed']) {
       $form['settings']['#prefix'] = t('<div class="coder-settings">Use the Selection form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/config/development/coder/review/settings'), '@default' => url('admin/config/development/coder/review/default')));
     }
@@ -1142,7 +1140,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
   $regex = '/(' . implode('|', array_merge(array('module'), $coder_args['#php_extensions'])) . ')$/';
   if (!preg_match($regex, $coder_args['#filename'])) {
     $is_php_file = 0;
-  /*
+/*
     // If this isn't a php file, then don't try to parse it.
     if ((($filepath = realpath($coder_args['#filename'])) && file_exists($filepath))) {
       $full_lines = file($filepath);
@@ -1156,7 +1154,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
         return 1;
       }
     }
-  */
+*/
   }
 
   $filepath = realpath($coder_args['#filename']);
