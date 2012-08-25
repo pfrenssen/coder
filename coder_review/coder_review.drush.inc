@@ -65,12 +65,20 @@ function _coder_review_set_form_modules(&$settings) {
  * Do the actual review.
  */
 function coder_review_drush_review() {
+  // Bootstrap enough to run.
+  if (!function_exists('coder_review_reviews')) {
+    require_once realpath(dirname(__FILE__)) . '/coder_review.module';
+  }
+
+  // Get the command line options severity options.
   $severity = drush_get_option('severity');
   foreach (array('major', 'minor', 'critical') as $option) {
     if ($severity == $option || drush_get_option($option)) {
       $severity_name = $option;
     }
   }
+
+  // Get the command line options module grouping options.
   foreach (array('active', 'core', 'contrib', 'all', 'default') as $option) {
     if (drush_get_option($option)) {
       $settings = _coder_review_get_default_settings($option);
@@ -78,6 +86,7 @@ function coder_review_drush_review() {
     }
   }
 
+  // Get the command line options ignore options.
   $settings = _coder_review_get_default_settings();
   $ignore_option = drush_get_option('ignore');
   if ($ignore_option) {
@@ -87,6 +96,7 @@ function coder_review_drush_review() {
     }
   }
 
+  // Get the command line review options.
   $avail_reviews = _coder_review_reviews();
   $reviews = array();
   $reviews_option = drush_get_option('reviews');
@@ -150,7 +160,7 @@ function coder_review_drush_review() {
             $settings['coder_includes'] = TRUE;
           }
           else {
-            $root = drupal_realpath('.');
+            $root = dirname(__FILE__);
             if (_coder_review_drush_is_patch_arg($arg, $root)) {
               $settings['coder_patches'] = 1;
               $settings['coder_patch_link'] = $arg;
@@ -163,7 +173,7 @@ function coder_review_drush_review() {
                   $settings['coder_file_list'] = '';
                 }
                 if (is_dir($path)) {
-                  $ext = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
+                  $ext = _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
                   $settings['coder_file_list'] .= implode("\n", array_keys(drupal_system_listing('/\.(' . implode('|', $ext) . ')$/', $path, 'filepath', 0)));
                 }
                 else {
@@ -229,7 +239,7 @@ function coder_review_drush_review() {
  * Handle patch reviews.
  */
 function _coder_review_drush_is_patch_arg(&$arg, $root) {
-  if (drupal_substr($arg, 0, 7) == 'http://') {
+  if (substr($arg, 0, 7) == 'http://') {
     return TRUE;
   }
   if (preg_match('/\.(patch|diff|tmp)$/', $arg)) {

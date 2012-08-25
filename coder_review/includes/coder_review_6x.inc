@@ -239,23 +239,27 @@ function coder_review_6x_reviews() {
     '#source' => 'all',
     '#warning' => '_coder_review_6x_menu_node_add_warning',
   );
+  $location_warning = array(
+    '#warning' => _t('Comment settings are now per node type.'),
+    '#link' => 'http://drupal.org/node/114774#comment_settings_per_node_type',
+  );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'variable_(get|set|del)\(\s*[\'"]comment_form_location[\'"]\s*(,|\))',
     '#source' => 'allphp',
-    '#warning' => '_coder_review_6x_comment_form_location_warning',
+    '#warning' => $location_warning,
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '=\s*[\'"]comment_form_location[\'"]\s*;',
     '#source' => 'allphp',
-    '#warning' => '_coder_review_6x_comment_form_location_warning',
+    '#warning' => $location_warning,
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'admin\/content\/comment\/settings',
     '#source' => 'quote',
-    '#warning' => '_coder_review_6x_comment_form_location_warning',
+    '#warning' => $location_warning,
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -267,19 +271,28 @@ function coder_review_6x_reviews() {
     '#type' => 'regex',
     '#value' => 'admin\/logs',
     '#source' => 'all',
-    '#warning' => '_coder_review_6x_admin_logs_warning',
+    '#warning' => array(
+      '#text' => 'admin' . '/logs has been renamed to admin/reports, including all subpages.',
+      '#link' => 'http://drupal.org/node/114774#locale',
+    ),
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'user_access\s*\(\s*\'\s*administer\s+access\s+control\s*\'\s*\)|admin\/user\/access',
     '#source' => 'all',
-    '#warning' => '_coder_review_6x_administer_access_control_warning',
+    '#warning' => array(
+      '#text' => 'The "administer access control" permission has been renamed to "administer permissions", and the path \'admin/' . 'user/access\' to \'admin/user/permissions\'.',
+      '#link' => 'http://drupal.org/node/114774#permissions',
+    ),
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'allphp',
     '#value' => '(\$form\s*\[\s*[\'"]#DANGEROUS_SKIP_CHECK[\'"]|[\'"]#DANGEROUS_SKIP_CHECK[\'"]\s*=>)',
-    '#warning' => '_coder_review_6x_dangerous_skip_check_warning',
+    '#warning' => array(
+      '#text' => 'Support for form property #DANGEROUS_SKIP_CHECK has been removed.',
+      '#link' => 'http://drupal.org/node/114774#choice_check',
+    ),
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -433,7 +446,10 @@ function coder_review_6x_reviews() {
     '#type' => 'regex',
     '#value' => '^(create\s+table\s+|alter\s+table\s+|drop\s+table\s+)',
     '#source' => 'quote',
-    '#warning' => '_coder_review_6x_drupal_install_schema_warning',
+    '#warning' => array(
+      '#text' => 'Use the new Schema API to create, alter and drop tables rather than db_query()',
+      '#link' => 'http://drupal.org/node/146862',
+    ),
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -455,14 +471,20 @@ function coder_review_6x_reviews() {
     '#type' => 'regex',
     '#function' => '_submit$',
     '#value' => '\s+return\s+(' . $argex . ');',
-    '#warning' => '_coder_review_6x_form_submit_warning',
+    '#warning' => array(
+      '#text' => 'Submit handlers use $form_state[\'redirect\'] rather than returning urls',
+      '#link' => 'http://drupal.org/node/144132#redirect',
+    ),
   );
   $rules[] = array(
     '#type' => 'regex',
     '#function' => '_menu$',
     '#source' => 'allphp',
     '#value' => '\'title\'\s*=>\s*t\(|\'description\'\s*=>\s*t\(',
-    '#warning' => '_coder_review_6x_menu_localization_warning',
+    '#warning' => array(
+      '#text' => 'Menu item titles and descriptions should now no longer be wrapped in t() calls.',
+      '#link' => 'http://drupal.org/node/140311',
+    ),
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -480,11 +502,14 @@ function coder_review_6x_reviews() {
     '#function' => '_menu$',
     '#value' => '[\'"]access callback.*=.*\(',
     '#source' => 'allphp',
-    '#warning' => '_coder_review_6x_menu_access_callback_warning',
+    '#warning' => array(
+      '#text' => "The value for the 'access callback' must always be a string which is the the name of the function - never a function call. It may also be assigned the value TRUE or FALSE if the callback is always (or never) accessible.",
+      '#link' => 'http://drupal.org/node/109157',
+    ),
   );
 
   $review = array(
-    '#title' => t('Converting 5.x modules to 6.x'),
+    '#title' => 'Converting 5.x modules to 6.x',
     '#link' => 'http://drupal.org/node/114774',
     '#rules' => $rules,
     '#severity' => 'critical',
@@ -564,44 +589,44 @@ function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$resul
 
 function _coder_review_6x_core_warning() {
   return array(
-    '#warning' => t('New syntax for .info files files requires core=6.x'),
+    '#warning' => 'New syntax for .info files files requires core=6.x',
     '#link' => 'http://drupal.org/node/114774#info',
   );
 }
 
 function _coder_review_6x_dependency_warning() {
   return array(
-    '#warning' => t('New syntax for .info files, use dependencies[]'),
+    '#warning' => 'New syntax for .info files, use dependencies[]',
     '#link' => 'http://drupal.org/node/114774#info',
   );
 }
 
 function _coder_review_6x_translations_warning() {
   return array(
-    '#warning' => t('Translations moved from ./po to ./translations'),
+    '#warning' => 'Translations moved from ./po to ./translations',
     '#link' => 'http://drupal.org/node/114774#translations_directory',
   );
 }
 
 function _coder_review_6x_new_menu_system_warning() {
   return array(
-    '#warning' => t('The menu system has been completely over-hauled in 6.x.'),
+    '#warning' => 'The menu system has been completely over-hauled in 6.x.',
     '#link' => 'http://drupal.org/node/103114',
   );
 }
 
 function _coder_review_6x_new_menu_loop_warning() {
   return array(
-    '#warning' => t('The menu system has been completely over-hauled in 6.x, and if you are looping, you are probably doing something wrong.'),
+    '#warning' => 'The menu system has been completely over-hauled in 6.x, and if you are looping, you are probably doing something wrong.',
     '#link' => 'http://drupal.org/node/103114',
   );
 }
 
 function _coder_review_6x_form_alter_warning() {
   return array(
-    '#warning' => t('!hook_form_alter() parameters have changed',
+    '#warning' => _t('!hook_form_alter() parameters have changed',
       array(
-        '!hook_form_alter' => theme('drupalapi', array('function' => 'hook_form_alter', 'version' => '6')),
+        '!hook_form_alter' => _drupalapi('hook_form_alter', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/144132#form-alter',
@@ -610,9 +635,9 @@ function _coder_review_6x_form_alter_warning() {
 
 function _coder_review_6x_link_alter_warning() {
   return array(
-    '#warning' => t('!hook_link_alter() parameters have changed',
+    '#warning' => _t('!hook_link_alter() parameters have changed',
       array(
-        '!hook_link_alter' => theme('drupalapi', array('function' => 'hook_link_alter', 'version' => '6')),
+        '!hook_link_alter' => _drupalapi('hook_link_alter', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#link-alter',
@@ -621,9 +646,9 @@ function _coder_review_6x_link_alter_warning() {
 
 function _coder_review_6x_profile_alter_warning() {
   return array(
-    '#warning' => t('!hook_profile_alter() parameters have changed',
+    '#warning' => _t('!hook_profile_alter() parameters have changed',
       array(
-        '!hook_profile_alter' => theme('drupalapi', array('function' => 'hook_profile_alter', 'version' => '6')),
+        '!hook_profile_alter' => _drupalapi('hook_profile_alter', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#profile-alter',
@@ -632,9 +657,9 @@ function _coder_review_6x_profile_alter_warning() {
 
 function _coder_review_6x_mail_alter_warning() {
   return array(
-    '#warning' => t('!hook_mail_alter() parameters have changed',
+    '#warning' => _t('!hook_mail_alter() parameters have changed',
       array(
-        '!hook_mail_alter' => theme('drupalapi', array('function' => 'hook_mail_alter', 'version' => '6')),
+        '!hook_mail_alter' => _drupalapi('hook_mail_alter', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#mail-alter',
@@ -643,9 +668,9 @@ function _coder_review_6x_mail_alter_warning() {
 
 function _coder_review_6x_hook_theme_warning() {
   return array(
-    '#warning' => t('new !hook_theme() function is required to register theme_ functions',
+    '#warning' => _t('new !hook_theme() function is required to register theme_ functions',
       array(
-        '!hook_theme' => theme('drupalapi', array('function' => 'hook_theme', 'version' => '6')),
+        '!hook_theme' => _drupalapi('hook_theme', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#theme_registry',
@@ -654,10 +679,10 @@ function _coder_review_6x_hook_theme_warning() {
 
 function _coder_review_6x_url_l_warning() {
   return array(
-    '#warning' => t('!url() and !l() arguments changed, if you have a lot of these use <a href="@script">this conversion script</a>',
+    '#warning' => _t('!url() and !l() arguments changed, if you have a lot of these use <a href="@script">this conversion script</a>',
       array(
-        '!url' => theme('drupalapi', array('function' => 'url', 'version' => '6')),
-        '!l' => theme('drupalapi', array('function' => 'l', 'version' => '6')),
+        '!url' => _drupalapi('url', 6),
+        '!l' => _drupalapi('l', 6),
         '@script' => 'http://drupal.org/files/issues/replace.php_.txt',
       )
     ),
@@ -667,12 +692,12 @@ function _coder_review_6x_url_l_warning() {
 
 function _coder_review_6x_taxonomy_node_get_terms_warning() {
   return array(
-    '#warning' => t('!taxonomy_node_get_terms(), !taxonomy_node_get_terms_by_vocabulary(), !taxonomy_node_save and !taxonomy_node_delete() now take a full $node object, not just a nid (node id).',
+    '#warning' => _t('!taxonomy_node_get_terms(), !taxonomy_node_get_terms_by_vocabulary(), !taxonomy_node_save and !taxonomy_node_delete() now take a full $node object, not just a nid (node id).',
       array(
-        '!taxonomy_node_get_terms' => theme('drupalapi', array('function' => 'taxonomy_node_get_terms', 'version' => '6')),
-        '!taxonomy_node_get_terms_by_vocabulary' => theme('drupalapi', array('function' => 'taxonomy_node_get_terms_by_vocabulary', 'version' => '6')),
-        '!taxonomy_node_save' => theme('drupalapi', array('function' => 'taxonomy_node_save', 'version' => '6')),
-        '!taxonomy_node_delete' => theme('drupalapi', array('function' => 'taxonomy_node_delete', 'version' => '6')),
+        '!taxonomy_node_get_terms' => _drupalapi('taxonomy_node_get_terms', 6),
+        '!taxonomy_node_get_terms_by_vocabulary' => _drupalapi('taxonomy_node_get_terms_by_vocabulary', 6),
+        '!taxonomy_node_save' => _drupalapi('taxonomy_node_save', 6),
+        '!taxonomy_node_delete' => _drupalapi('taxonomy_node_delete', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#taxonomy-revisions',
@@ -681,10 +706,10 @@ function _coder_review_6x_taxonomy_node_get_terms_warning() {
 
 function _coder_review_6x_format_plural_warning() {
   return array(
-    '#warning' => t('!format_plural() accepts replacements, you no longer need to use !strtr()',
+    '#warning' => _t('!format_plural() accepts replacements, you no longer need to use !strtr()',
       array(
-        '!format_plural' => theme('drupalapi', array('function' => 'format_plural', 'version' => '6')),
-        '!strtr' => theme('phpapi', array('function' => 'strtr')),
+        '!format_plural' => _drupalapi('format_plural', 6),
+        '!strtr' => _phpapi('strtr'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#format-plural',
@@ -693,10 +718,10 @@ function _coder_review_6x_format_plural_warning() {
 
 function _coder_review_6x_watchdog_warning() {
   return array(
-    '#warning' => t('Parameters of !watchdog() changed, you <em>must</em> remove calls to !t()',
+    '#warning' => _t('Parameters of !watchdog() changed, you <em>must</em> remove calls to !t()',
       array(
-        '!watchdog' => theme('drupalapi', array('function' => 'watchdog', 'version' => '6')),
-        '!t' => theme('drupalapi', array('function' => 't', 'version' => '6')),
+        '!watchdog' => _drupalapi('watchdog', 6),
+        '!t' => _drupalapi('t', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#watchdog_parameters',
@@ -705,9 +730,9 @@ function _coder_review_6x_watchdog_warning() {
 
 function _coder_review_6x_cache_set_warning() {
   return array(
-    '#warning' => t('Changes to !cache_set() parameter order',
+    '#warning' => _t('Changes to !cache_set() parameter order',
       array(
-        '!cache_set' => theme('drupalapi', array('function' => 'cache_set', 'version' => '6')),
+        '!cache_set' => _drupalapi('cache_set', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#cache-set-parameter-order',
@@ -716,10 +741,10 @@ function _coder_review_6x_cache_set_warning() {
 
 function _coder_review_6x_cache_serialize_warning() {
   return array(
-    '#warning' => t('!cache_set() and !cache_get() automatically (un)serialize complex data types',
+    '#warning' => _t('!cache_set() and !cache_get() automatically (un)serialize complex data types',
       array(
-        '!cache_set' => theme('drupalapi', array('function' => 'cache_set', 'version' => '6')),
-        '!cache_get' => theme('drupalapi', array('function' => 'cache_get', 'version' => '6')),
+        '!cache_set' => _drupalapi('cache_set', 6),
+        '!cache_get' => _drupalapi('cache_get', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#cache-data-parameter',
@@ -728,9 +753,9 @@ function _coder_review_6x_cache_serialize_warning() {
 
 function _coder_review_6x_remote_addr_warning() {
   return array(
-    '#warning' => t('Use new !ip_address() function instead of $_SERVER[\'REMOTE_ADDR\']',
+    '#warning' => _t('Use new !ip_address() function instead of $_SERVER[\'REMOTE_ADDR\']',
       array(
-        '!ip_address' => theme('drupalapi', array('function' => 'ip_address', 'version' => '6')),
+        '!ip_address' => _drupalapi('ip_address', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#ip-address',
@@ -739,10 +764,10 @@ function _coder_review_6x_remote_addr_warning() {
 
 function _coder_review_6x_file_check_upload_warning() {
   return array(
-    '#warning' => t('!file_check_upload() merged into !file_save_upload()',
+    '#warning' => _t('!file_check_upload() merged into !file_save_upload()',
       array(
-        '!file_check_upload' => theme('drupalapi', array('function' => 'file_check_upload', 'version' => '5')),
-        '!file_save_upload' => theme('drupalapi', array('function' => 'file_save_upload', 'version' => '6')),
+        '!file_check_upload' => _drupalapi('file_check_upload', '5'),
+        '!file_save_upload' => _drupalapi('file_save_upload', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#file-check-upload',
@@ -751,9 +776,9 @@ function _coder_review_6x_file_check_upload_warning() {
 
 function _coder_review_6x_file_save_upload_warning() {
   return array(
-    '#warning' => t('Parameters for !file_save_upload() have changed',
+    '#warning' => _t('Parameters for !file_save_upload() have changed',
       array(
-        '!file_save_upload' => theme('drupalapi', array('function' => 'file_save_upload', 'version' => '6')),
+        '!file_save_upload' => _drupalapi('file_save_upload', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#file-check-upload',
@@ -769,21 +794,21 @@ function _coder_review_6x_formapi_element_validate_warning() {
 
 function _coder_review_6x_form_validate_and_submit_warning() {
   return array(
-    '#warning' => t('The parameters for form validation and submission functions have changed to $form, &$form_state.'),
+    '#warning' => _t('The parameters for form validation and submission functions have changed to $form, &$form_state.'),
     '#link' => 'http://drupal.org/node/144132#process-params',
   );
 }
 
 function _coder_review_6x_form_prerender_warning() {
   return array(
-    '#warning' => t('The parameters for form prerender functions have changed to $form.'),
+    '#warning' => _t('The parameters for form prerender functions have changed to $form.'),
     '#link' => 'http://drupal.org/node/144132#pre-render',
   );
 }
 
 function _coder_review_6x_formapi_prerender_warning() {
   return array(
-    '#warning' => t('The form API for the #pre_render property has changed structure.'),
+    '#warning' => _t('The form API for the #pre_render property has changed structure.'),
     '#link' => 'http://drupal.org/node/144132#pre-render',
   );
 }
@@ -797,9 +822,9 @@ function _coder_review_6x_formapi_custom_params_warning() {
 
 function _coder_review_6x_form_set_value_warning() {
   return array(
-    '#warning' => t('!form_set_value() parameters have changed',
+    '#warning' => _t('!form_set_value() parameters have changed',
       array(
-        '!form_set_value' => theme('drupalapi', array('function' => 'form_set_value', 'version' => '6')),
+        '!form_set_value' => _drupalapi('form_set_value', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/144132#set-value',
@@ -808,9 +833,9 @@ function _coder_review_6x_form_set_value_warning() {
 
 function _coder_review_6x_confirm_form_warning() {
   return array(
-    '#warning' => t('The arguments to !confirm_form() have changed',
+    '#warning' => _t('The arguments to !confirm_form() have changed',
       array(
-        '!confirm_form' => theme('drupalapi', array('function' => 'confirm_form', 'version' => '6')),
+        '!confirm_form' => _drupalapi('confirm_form', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#confirm-form-args',
@@ -819,11 +844,11 @@ function _coder_review_6x_confirm_form_warning() {
 
 function _coder_review_6x_custom_url_rewrite_warning() {
   return array(
-    '#warning' => t('In place of !custom_url_rewrite(), use !custom_url_rewrite_inbound() or !custom_url_rewrite_outbound()',
+    '#warning' => _t('In place of !custom_url_rewrite(), use !custom_url_rewrite_inbound() or !custom_url_rewrite_outbound()',
       array(
-        '!custom_url_rewrite' => theme('drupalapi', array('function' => 'custom_url_rewrite', 'version' => '5')),
-        '!custom_url_rewrite_inbound' => theme('drupalapi', array('function' => 'custom_url_rewrite_inbound', 'version' => '6')),
-        '!custom_url_rewrite_outbound' => theme('drupalapi', array('function' => 'custom_url_rewrite_outbound', 'version' => '6')),
+        '!custom_url_rewrite' => _drupalapi('custom_url_rewrite', '5'),
+        '!custom_url_rewrite_inbound' => _drupalapi('custom_url_rewrite_inbound', 6),
+        '!custom_url_rewrite_outbound' => _drupalapi('custom_url_rewrite_outbound', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#custom-url-rewrite',
@@ -832,9 +857,9 @@ function _coder_review_6x_custom_url_rewrite_warning() {
 
 function _coder_review_6x_hook_info_auth_warning() {
   return array(
-    '#warning' => t('hook no longer exists, use !hook_form_alter() to swap your own validation handler',
+    '#warning' => _t('hook no longer exists, use !hook_form_alter() to swap your own validation handler',
       array(
-        '!hook_form_alter' => theme('drupalapi', array('function' => 'hook_form_alter', 'version' => '6')),
+        '!hook_form_alter' => _drupalapi('hook_form_alter', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#dist-auth',
@@ -843,50 +868,50 @@ function _coder_review_6x_hook_info_auth_warning() {
 
 function _coder_review_6x_hook_help_warning() {
   return array(
-    '#warning' => t('The arguments to !hook_help() have changed',
+    '#warning' => _t('The arguments to !hook_help() have changed',
       array(
-        '!hook_help' => theme('drupalapi', array('function' => 'hook_help', 'version' => '6')),
+        '!hook_help' => _drupalapi('hook_help', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#hook-help',
-    '#description' => t('Change the first two lines to <code>function yourmodule_help($path, $arg) {' . "\n" . ' switch ($path) { ...</code>.'),
+    '#description' => _t('Change the first two lines to <code>function yourmodule_help($path, $arg) {' . "\n" . ' switch ($path) { ...</code>.'),
   );
 }
 
 function _coder_review_6x_schema_api_warning() {
   return array(
-    '#warning' => t('A new schema API has been added in 6.x'),
+    '#warning' => _t('A new schema API has been added in 6.x'),
     '#link' => 'http://drupal.org/node/146843',
-    '#description' => t('This patch caused changes to the format of hook_install(), hook_uninstall(), and hook_update_N(). No longer are switch statements done on $GLOBALS[\'db_type\']; instead, use the variety of schema API functions to perform table manipulation.'),
+    '#description' => _t('This patch caused changes to the format of hook_install(), hook_uninstall(), and hook_update_N(). No longer are switch statements done on $GLOBALS[\'db_type\']; instead, use the variety of schema API functions to perform table manipulation.'),
   );
 }
 
 function _coder_review_6x_theme_get_function_warning() {
-  return t('!theme_get_function() has been deprecated because of template theming; see !theme_get_registry()',
+  return _t('!theme_get_function() has been deprecated because of template theming; see !theme_get_registry()',
     array(
-      '!theme_get_function' => theme('drupalapi', array('function' => 'theme_get_function', 'version' => '5')),
-      '!theme_get_registry' => theme('drupalapi', array('function' => 'theme_get_registry', 'version' => '6')),
+      '!theme_get_function' => _drupalapi('theme_get_function', '5'),
+      '!theme_get_registry' => _drupalapi('theme_get_registry', 6),
     )
   );
 }
 
 function _coder_review_6x_db_num_rows_warning() {
   return array(
-    '#warning' => t('!db_num_rows() has been deprecated',
+    '#warning' => _t('!db_num_rows() has been deprecated',
       array(
-        '!db_num_rows' => theme('drupalapi', array('function' => 'db_num_rows', 'version' => '5')),
+        '!db_num_rows' => _drupalapi('db_num_rows', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#db-num-rows',
-    '#description' => t('The db_num_rows() method was removed from the database abstraction layer in 6.x core, as it was a database dependent method.  Use SELECT COUNT(*) or some other appropriate solutions'),
+    '#description' => _t('The db_num_rows() method was removed from the database abstraction layer in 6.x core, as it was a database dependent method.  Use SELECT COUNT(*) or some other appropriate solutions'),
   );
 }
 
 function _coder_review_6x_drupal_retrieve_form_warning() {
   return array(
-    '#warning' => t('Parameters for !drupal_retrieve_form() have changed, add $form_state as a second argument',
+    '#warning' => _t('Parameters for !drupal_retrieve_form() have changed, add $form_state as a second argument',
       array(
-        '!drupal_retrieve_form' => theme('drupalapi', array('function' => 'drupal_retrieve_form', 'version' => '6')),
+        '!drupal_retrieve_form' => _drupalapi('drupal_retrieve_form', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/144132#retrieve-form',
@@ -895,7 +920,7 @@ function _coder_review_6x_drupal_retrieve_form_warning() {
 
 function _coder_review_6x_menu_node_add_warning() {
   return array(
-    '#warning' => t('The node/add/$type menu items are now auto-generated by the menu system in 6.x. You should not declare them in your menu hook. See <a href="@url">node/add is now menu generated</a>.',
+    '#warning' => _t('The node/add/$type menu items are now auto-generated by the menu system in 6.x. You should not declare them in your menu hook. See <a href="@url">node/add is now menu generated</a>.',
       array(
         '@url' => url('http://drupal.org/node/114774#node_add_summary'),
       )
@@ -904,53 +929,25 @@ function _coder_review_6x_menu_node_add_warning() {
   );
 }
 
-function _coder_review_6x_comment_form_location_warning() {
-  return array(
-    '#warning' => t('Comment settings are now per node type.'),
-    '#link' => 'http://drupal.org/node/114774#comment_settings_per_node_type',
-  );
-}
-
 function _coder_review_6x_node_access_rebuild_warning() {
   return array(
-    '#warning' => t('!node_access_rebuild() should not be called from !hook_enable() or !hook_disable() functions any more.',
+    '#warning' => _t('!node_access_rebuild() should not be called from !hook_enable() or !hook_disable() functions any more.',
       array(
-        '!node_access_rebuild' => theme('drupalapi', array('function' => 'node_access_rebuild', 'version' => '6')),
-        '!hook_enable' => theme('drupalapi', array('function' => 'hook_enable', 'version' => '6')),
-        '!hook_disable' => theme('drupalapi', array('function' => 'hook_disable', 'version' => '6')),
+        '!node_access_rebuild' => _drupalapi('node_access_rebuild', 6),
+        '!hook_enable' => _drupalapi('hook_enable', 6),
+        '!hook_disable' => _drupalapi('hook_disable', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#node_access_rebuild_batch',
   );
 }
 
-function _coder_review_6x_admin_logs_warning() {
-  return array(
-    '#warning' => t('admin' . '/logs has been renamed to admin/reports, including all subpages.'),
-    '#link' => 'http://drupal.org/node/114774#locale',
-  );
-}
-
-function _coder_review_6x_administer_access_control_warning() {
-  return array(
-    '#warning' => t('The "administer access control" permission has been renamed to "administer permissions", and the path \'admin/' . 'user/access\' to \'admin/user/permissions\'.'),
-    '#link' => 'http://drupal.org/node/114774#permissions',
-  );
-}
-
-function _coder_review_6x_dangerous_skip_check_warning() {
-  return array(
-    '#warning' => t('Support for form property #DANGEROUS_SKIP_CHECK has been removed.'),
-    '#link' => 'http://drupal.org/node/114774#choice_check',
-  );
-}
-
 function _coder_review_6x_locale_refresh_cache_warning() {
   return array(
-    '#warning' => t('!locale_refresh_cache() is deprecated.  Use !cache_clear_all() instead.',
+    '#warning' => _t('!locale_refresh_cache() is deprecated.  Use !cache_clear_all() instead.',
       array(
-        '!locale_refresh_cache' => theme('drupalapi', array('function' => 'locale_refresh_cache', 'version' => '5')),
-        '!cache_clear_all' => theme('drupalapi', array('function' => 'cache_clear_all', 'version' => '6')),
+        '!locale_refresh_cache' => _drupalapi('locale_refresh_cache', '5'),
+        '!cache_clear_all' => _drupalapi('cache_clear_all', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#locale',
@@ -959,10 +956,10 @@ function _coder_review_6x_locale_refresh_cache_warning() {
 
 function _coder_review_6x_db_next_id_warning() {
   return array(
-    '#warning' => t('!db_next_id() is deprecated.  Use !db_last_insert_id() instead.',
+    '#warning' => _t('!db_next_id() is deprecated.  Use !db_last_insert_id() instead.',
       array(
-        '!db_next_id' => theme('drupalapi', array('function' => 'db_next_id', 'version' => '5')),
-        '!db_last_insert_id' => theme('drupalapi', array('function' => 'db_last_insert_id', 'version' => '6')),
+        '!db_next_id' => _drupalapi('db_next_id', '5'),
+        '!db_last_insert_id' => _drupalapi('db_last_insert_id', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#db_last_insert_id',
@@ -971,11 +968,11 @@ function _coder_review_6x_db_next_id_warning() {
 
 function _coder_review_6x_menu_set_location_warning() {
   return array(
-    '#warning' => t('!menu_set_location() is deprecated.  Use !drupal_set_breadcrumb() to set a custom breadcrumb or !menu_set_item() to set the current location in the menu tree.',
+    '#warning' => _t('!menu_set_location() is deprecated.  Use !drupal_set_breadcrumb() to set a custom breadcrumb or !menu_set_item() to set the current location in the menu tree.',
       array(
-        '!menu_set_location' => theme('drupalapi', array('function' => 'menu_set_location', 'version' => '5')),
-        '!drupal_set_breadcrumb' => theme('drupalapi', array('function' => 'drupal_set_breadcrumb', 'version' => '6')),
-        '!menu_set_item' => theme('drupalapi', array('function' => 'menu_set_item', 'version' => '6')),
+        '!menu_set_location' => _drupalapi('menu_set_location', '5'),
+        '!drupal_set_breadcrumb' => _drupalapi('drupal_set_breadcrumb', 6),
+        '!menu_set_item' => _drupalapi('menu_set_item', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#menu_set_location',
@@ -984,10 +981,10 @@ function _coder_review_6x_menu_set_location_warning() {
 
 function _coder_review_6x_taxonomy_get_vocabulary_warning() {
   return array(
-    '#warning' => t('!taxonomy_get_vocabulary() is deprecated.  Use !taxonomy_vocabulary_load() instead.',
+    '#warning' => _t('!taxonomy_get_vocabulary() is deprecated.  Use !taxonomy_vocabulary_load() instead.',
       array(
-        '!taxonomy_get_vocabulary' => theme('drupalapi', array('function' => 'taxonomy_get_vocabulary', 'version' => '5')),
-        '!taxonomy_vocabulary_load' => theme('drupalapi', array('function' => 'taxonomy_vocabulary_load', 'version' => '6')),
+        '!taxonomy_get_vocabulary' => _drupalapi('taxonomy_get_vocabulary', '5'),
+        '!taxonomy_vocabulary_load' => _drupalapi('taxonomy_vocabulary_load', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#taxonomy-load',
@@ -996,9 +993,9 @@ function _coder_review_6x_taxonomy_get_vocabulary_warning() {
 
 function _coder_review_6x_watchdog_debug_warning() {
   return array(
-    '#warning' => t('Parameters of !watchdog() changed, you use $severity WATCHDOG_DEBUG instead of $type \'debug\'',
+    '#warning' => _t('Parameters of !watchdog() changed, you use $severity WATCHDOG_DEBUG instead of $type \'debug\'',
       array(
-        '!watchdog' => theme('drupalapi', array('function' => 'watchdog', 'version' => '6'))
+        '!watchdog' => _drupalapi('watchdog', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#watchdog_logging',
@@ -1007,9 +1004,9 @@ function _coder_review_6x_watchdog_debug_warning() {
 
 function _coder_review_6x_book_admin_orphan_warning() {
   return array(
-    '#warning' => t('!book_admin_orphan() is deprecated',
+    '#warning' => _t('!book_admin_orphan() is deprecated',
       array(
-        '!book_admin_orphan' => theme('drupalapi', array('function' => 'book_admin_orphan', 'version' => '5'))
+        '!book_admin_orphan' => _drupalapi('book_admin_orphan', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1018,9 +1015,9 @@ function _coder_review_6x_book_admin_orphan_warning() {
 
 function _coder_review_6x_book_content_warning() {
   return array(
-    '#warning' => t('!book_content() is deprecated',
+    '#warning' => _t('!book_content() is deprecated',
       array(
-        '!book_content' => theme('drupalapi', array('function' => 'book_content', 'version' => '5'))
+        '!book_content' => _drupalapi('book_content', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1029,9 +1026,9 @@ function _coder_review_6x_book_content_warning() {
 
 function _coder_review_6x_book_form_warning() {
   return array(
-    '#warning' => t('!book_form() is deprecated',
+    '#warning' => _t('!book_form() is deprecated',
       array(
-        '!book_form' => theme('drupalapi', array('function' => 'book_form', 'version' => '5'))
+        '!book_form' => _drupalapi('book_form', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1040,9 +1037,9 @@ function _coder_review_6x_book_form_warning() {
 
 function _coder_review_6x_book_insert_warning() {
   return array(
-    '#warning' => t('!book_insert() is deprecated',
+    '#warning' => _t('!book_insert() is deprecated',
       array(
-        '!book_insert' => theme('drupalapi', array('function' => 'book_insert', 'version' => '5'))
+        '!book_insert' => _drupalapi('book_insert', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1051,9 +1048,9 @@ function _coder_review_6x_book_insert_warning() {
 
 function _coder_review_6x_book_location_warning() {
   return array(
-    '#warning' => t('!book_location() is deprecated',
+    '#warning' => _t('!book_location() is deprecated',
       array(
-        '!book_location' => theme('drupalapi', array('function' => 'book_location', 'version' => '5'))
+        '!book_location' => _drupalapi('book_location', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1062,9 +1059,9 @@ function _coder_review_6x_book_location_warning() {
 
 function _coder_review_6x_book_location_down_warning() {
   return array(
-    '#warning' => t('!book_location_down() is deprecated',
+    '#warning' => _t('!book_location_down() is deprecated',
       array(
-        '!book_location_down' => theme('drupalapi', array('function' => 'book_location_down', 'version' => '5'))
+        '!book_location_down' => _drupalapi('book_location_down', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1073,9 +1070,9 @@ function _coder_review_6x_book_location_down_warning() {
 
 function _coder_review_6x_book_node_visitor_html_post_warning() {
   return array(
-    '#warning' => t('!book_node_visitor_html_post() is deprecated',
+    '#warning' => _t('!book_node_visitor_html_post() is deprecated',
       array(
-        '!book_node_visitor_html_post' => theme('drupalapi', array('function' => 'book_node_visitor_html_post', 'version' => '5'))
+        '!book_node_visitor_html_post' => _drupalapi('book_node_visitor_html_post', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1084,9 +1081,9 @@ function _coder_review_6x_book_node_visitor_html_post_warning() {
 
 function _coder_review_6x_book_node_visitor_html_pre_warning() {
   return array(
-    '#warning' => t('!book_node_visitor_html_pre() is deprecated',
+    '#warning' => _t('!book_node_visitor_html_pre() is deprecated',
       array(
-        '!book_node_visitor_html_pre' => theme('drupalapi', array('function' => 'book_node_visitor_html_pre', 'version' => '5'))
+        '!book_node_visitor_html_pre' => _drupalapi('book_node_visitor_html_pre', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1095,9 +1092,9 @@ function _coder_review_6x_book_node_visitor_html_pre_warning() {
 
 function _coder_review_6x_book_recurse_warning() {
   return array(
-    '#warning' => t('!book_recurse() is deprecated',
+    '#warning' => _t('!book_recurse() is deprecated',
       array(
-        '!book_recurse' => theme('drupalapi', array('function' => 'book_recurse', 'version' => '5'))
+        '!book_recurse' => _drupalapi('book_recurse', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1106,9 +1103,9 @@ function _coder_review_6x_book_recurse_warning() {
 
 function _coder_review_6x_book_toc_recurse_warning() {
   return array(
-    '#warning' => t('!book_toc_recurse() is deprecated',
+    '#warning' => _t('!book_toc_recurse() is deprecated',
       array(
-        '!book_toc_recurse' => theme('drupalapi', array('function' => 'book_toc_recurse', 'version' => '5'))
+        '!book_toc_recurse' => _drupalapi('book_toc_recurse', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1117,9 +1114,9 @@ function _coder_review_6x_book_toc_recurse_warning() {
 
 function _coder_review_6x_book_tree_warning() {
   return array(
-    '#warning' => t('!book_tree() is deprecated',
+    '#warning' => _t('!book_tree() is deprecated',
       array(
-        '!book_tree' => theme('drupalapi', array('function' => 'book_tree', 'version' => '5'))
+        '!book_tree' => _drupalapi('book_tree', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1128,9 +1125,9 @@ function _coder_review_6x_book_tree_warning() {
 
 function _coder_review_6x_book_tree_recurse_warning() {
   return array(
-    '#warning' => t('!book_tree_recurse() is deprecated',
+    '#warning' => _t('!book_tree_recurse() is deprecated',
       array(
-        '!book_tree_recurse' => theme('drupalapi', array('function' => 'book_tree_recurse', 'version' => '5'))
+        '!book_tree_recurse' => _drupalapi('book_tree_recurse', '5'),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1139,9 +1136,9 @@ function _coder_review_6x_book_tree_recurse_warning() {
 
 function _coder_review_6x_book_admin_edit_warning() {
   return array(
-    '#warning' => t('Parameters to !book_admin_edit() have changed',
+    '#warning' => _t('Parameters to !book_admin_edit() have changed',
       array(
-        '!book_admin_edit' => theme('drupalapi', array('function' => 'book_admin_edit', 'version' => '6'))
+        '!book_admin_edit' => _drupalapi('book_admin_edit', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1150,9 +1147,9 @@ function _coder_review_6x_book_admin_edit_warning() {
 
 function _coder_review_6x_book_toc_warning() {
   return array(
-    '#warning' => t('Parameters to !book_toc() have changed',
+    '#warning' => _t('Parameters to !book_toc() have changed',
       array(
-        '!book_toc' => theme('drupalapi', array('function' => 'book_toc', 'version' => '6'))
+        '!book_toc' => _drupalapi('book_toc', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1161,9 +1158,9 @@ function _coder_review_6x_book_toc_warning() {
 
 function _coder_review_6x_book_export_html_warning() {
   return array(
-    '#warning' => t('Parameters to !book_export_html() have changed',
+    '#warning' => _t('Parameters to !book_export_html() have changed',
       array(
-        '!book_export_html' => theme('drupalapi', array('function' => 'book_export_html', 'version' => '6'))
+        '!book_export_html' => _drupalapi('book_export_html', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1172,9 +1169,9 @@ function _coder_review_6x_book_export_html_warning() {
 
 function _coder_review_6x_book_export_warning() {
   return array(
-    '#warning' => t('Parameters to !book_export() have changed',
+    '#warning' => _t('Parameters to !book_export() have changed',
       array(
-        '!book_export' => theme('drupalapi', array('function' => 'book_export', 'version' => '6'))
+        '!book_export' => _drupalapi('book_export', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1183,9 +1180,9 @@ function _coder_review_6x_book_export_warning() {
 
 function _coder_review_6x_book_outline_warning() {
   return array(
-    '#warning' => t('Parameters to !book_outline() have changed',
+    '#warning' => _t('Parameters to !book_outline() have changed',
       array(
-        '!book_outline' => theme('drupalapi', array('function' => 'book_outline', 'version' => '6'))
+        '!book_outline' => _drupalapi('book_outline', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1194,9 +1191,9 @@ function _coder_review_6x_book_outline_warning() {
 
 function _coder_review_6x_book_prev_warning() {
   return array(
-    '#warning' => t('Parameters to !book_prev() have changed',
+    '#warning' => _t('Parameters to !book_prev() have changed',
       array(
-        '!book_prev' => theme('drupalapi', array('function' => 'book_prev', 'version' => '6'))
+        '!book_prev' => _drupalapi('book_prev', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1205,9 +1202,9 @@ function _coder_review_6x_book_prev_warning() {
 
 function _coder_review_6x_book_next_warning() {
   return array(
-    '#warning' => t('Parameters to !book_next() have changed',
+    '#warning' => _t('Parameters to !book_next() have changed',
       array(
-        '!book_next' => theme('drupalapi', array('function' => 'book_next', 'version' => '6'))
+        '!book_next' => _drupalapi('book_next', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#book_module',
@@ -1216,9 +1213,9 @@ function _coder_review_6x_book_next_warning() {
 
 function _coder_review_6x_nodeapi_submit_warning() {
   return array(
-    '#warning' => t('!hook_nodeapi(\'submit\') has been replaced by op=\'presave\'',
+    '#warning' => _t('!hook_nodeapi(\'submit\') has been replaced by op=\'presave\'',
       array(
-        '!hook_nodeapi' => theme('drupalapi', array('function' => 'hook_nodeapi', 'version' => '6'))
+        '!hook_nodeapi' => _drupalapi('hook_nodeapi', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#nodeapi_presave',
@@ -1227,9 +1224,9 @@ function _coder_review_6x_nodeapi_submit_warning() {
 
 function _coder_review_6x_db_result_warning() {
   return array(
-    '#warning' => t('Remove $row argument from !db_result() method',
+    '#warning' => _t('Remove $row argument from !db_result() method',
       array(
-        '!db_result' => theme('drupalapi', array('function' => 'db_result', 'version' => '6'))
+        '!db_result' => _drupalapi('db_result', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#db-result',
@@ -1238,27 +1235,20 @@ function _coder_review_6x_db_result_warning() {
 
 function _coder_review_6x_drupal_mail_warning() {
   return array(
-    '#warning' => t('Parameters to !drupal_mail() have changed',
+    '#warning' => _t('Parameters to !drupal_mail() have changed',
       array(
-        '!drupal_mail' => theme('drupalapi', array('function' => 'drupal_mail', 'version' => '6'))
+        '!drupal_mail' => _drupalapi('drupal_mail', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/189367',
   );
 }
 
-function _coder_review_6x_drupal_install_schema_warning() {
-  return array(
-    '#warning' => t('Use the new Schema API to create, alter and drop tables rather than db_query()'),
-    '#link' => 'http://drupal.org/node/146862',
-  );
-}
-
 function _coder_review_6x_user_authenticate_warning() {
   return array(
-    '#warning' => t('Parameters to !user_authenticate have changed',
+    '#warning' => _t('Parameters to !user_authenticate have changed',
       array(
-        '!user_authenticate' => theme('drupalapi', array('function' => 'user_authenticate', 'version' => '6'))
+        '!user_authenticate' => _drupalapi('user_authenticate', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#user_authenticate',
@@ -1267,9 +1257,9 @@ function _coder_review_6x_user_authenticate_warning() {
 
 function _coder_review_6x_hook_access_warning() {
   return array(
-    '#warning' => t('Parameters to !hook_access() have changed',
+    '#warning' => _t('Parameters to !hook_access() have changed',
       array(
-        '!hook_access' => theme('drupalapi', array('function' => 'hook_access', 'version' => '6'))
+        '!hook_access' => _drupalapi('hook_access', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#hook_access',
@@ -1278,45 +1268,22 @@ function _coder_review_6x_hook_access_warning() {
 
 function _coder_review_6x_menu_get_object_warning() {
   return array(
-    '#warning' => t('Use !menu_get_object() to get an object based on your path',
+    '#warning' => _t('Use !menu_get_object() to get an object based on your path',
       array(
-        '!menu_get_object' => theme('drupalapi', array('function' => 'menu_get_object', 'version' => '6'))
+        '!menu_get_object' => _drupalapi('menu_get_object', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/114774#menu_get_object',
   );
 }
 
-function _coder_review_6x_form_submit_warning() {
-  return array(
-    '#warning' => t('Submit handlers use $form_state[\'redirect\'] rather than returning urls'),
-    '#link' => 'http://drupal.org/node/144132#redirect',
-  );
-}
-
-
-function _coder_review_6x_menu_localization_warning() {
-  return array(
-    '#warning' => t('Menu item titles and descriptions should now no longer be wrapped in t() calls.'),
-    '#link' => 'http://drupal.org/node/140311',
-  );
-}
-
 function _coder_review_6x_hook_forms_warning() {
   return array(
-    '#warning' => t('The arguments to !hook_forms() have changed',
+    '#warning' => _t('The arguments to !hook_forms() have changed',
       array(
-        '!hook_forms' => theme('drupalapi', array('function' => 'hook_forms', 'version' => '6')),
+        '!hook_forms' => _drupalapi('hook_forms', 6),
       )
     ),
     '#link' => 'http://drupal.org/node/144132#hook-forms',
   );
 }
-
-function _coder_review_6x_menu_access_callback_warning() {
-  return array(
-    '#warning' => t("The value for the 'access callback' must always be a string which is the the name of the function - never a function call. It may also be assigned the value TRUE or FALSE if the callback is always (or never) accessible."),
-    '#link' => 'http://drupal.org/node/109157',
-  );
-}
-

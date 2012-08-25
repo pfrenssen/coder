@@ -18,9 +18,9 @@ function coder_review_i18n_po_reviews() {
   );
 
   $review = array(
-    '#title' => t('Translation files'),
+    '#title' => 'Translation files',
     '#rules' => $rules,
-    '#description' => t('experimental'),
+    '#description' => 'Checks for .po translation issues, this is somewhat experimental',
   );
   return array('i18n_po' => $review);
 }

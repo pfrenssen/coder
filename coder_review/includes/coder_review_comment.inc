@@ -136,10 +136,10 @@ function coder_review_comment_reviews() {
   );
 
   $review = array(
-    '#title' => t('Drupal Commenting Standards'),
+    '#title' => 'Drupal Commenting Standards',
     '#link' => 'http://drupal.org/node/318',
     '#rules' => $rules,
-    '#description' => t('every developer should use'),
+    '#description' => 'Checks for the Drupal commenting standards; every developer should use this.',
   );
   return array('comment' => $review);
 }

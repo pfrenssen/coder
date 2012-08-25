@@ -69,7 +69,7 @@ function coder_review_5x_reviews() {
   );
 
   $review = array(
-    '#title' => t('Converting 4.7.x modules to 5.x'),
+    '#title' => 'Converting 4.7.x modules to 5.x',
     '#link' => 'http://drupal.org/node/64279',
     '#rules' => $rules,
     '#severity' => 'critical',
@@ -98,86 +98,86 @@ function _coder_review_5x_callback(&$coder_args, $review, $rule, $lines, &$resul
  */
 
 function _coder_review_5x_callback_warning() {
-  return t('All modules now need to have a <a href="@info">modulename.info file</a>', array('@info' => 'http://drupal.org/node/101009'));
+  return _t('All modules now need to have a <a href="@info">modulename.info file</a>', array('@info' => 'http://drupal.org/node/101009'));
 }
 
 function _coder_review_5x_user_mail_warning() {
-  return t('!user_mail() is replaced by !drupal_mail()',
+  return _t('!user_mail() is replaced by !drupal_mail()',
     array(
-      '!user_mail' => theme('drupalapi', array('function' => 'user_mail', 'version' => '4.7')),
-      '!drupal_mail' => theme('drupalapi', array('function' => 'drupal_mail', 'version' => '5')),
+      '!user_mail' => _drupalapi('user_mail', 4.7),
+      '!drupal_mail' => _drupalapi('drupal_mail', 5),
     )
   );
 }
 
 function _coder_review_5x_user_mail_wrapper_warning() {
-  return t('!user_mail_wrapper() changed to !drupal_mail_wrapper()',
+  return _t('!user_mail_wrapper() changed to !drupal_mail_wrapper()',
     array(
-      '!user_mail_wrapper' => theme('drupalapi', array('function' => 'user_mail_wrapper', 'version' => '4.7')),
-      '!drupal_mail_wrapper' => theme('drupalapi', array('function' => 'drupal_mail_wrapper', 'version' => '5')),
+      '!user_mail_wrapper' => _drupalapi('user_mail_wrapper', 4.7),
+      '!drupal_mail_wrapper' => _drupalapi('drupal_mail_wrapper', 5),
     )
   );
 }
 
 function _coder_review_5x_message_na_warning() {
-  return t('The function !message_na() was removed, remove it from your modules as well and replace it with !t(\'n/a\')',
+  return _t('The function !message_na() was removed, remove it from your modules as well and replace it with !t(\'n/a\')',
     array(
-      '!message_na' => theme('drupalapi', array('function' => 'message_na', 'version' => '4.7')),
-      '!t' => theme('drupalapi', array('function' => 't', 'version' => '5')),
+      '!message_na' => _drupalapi('message_na', 4.7),
+      '!t' => _drupalapi('t', 5),
     )
   );
 }
 
 function _coder_review_5x_module_exist_warning() {
-  return t('!module_exist() is now !module_exists()',
+  return _t('!module_exist() is now !module_exists()',
     array(
-      '!module_exist' => theme('drupalapi', array('function' => 'module_exist', 'version' => '4.7')),
-      '!module_exists' => theme('drupalapi', array('function' => 'module_exists', 'version' => '5')),
+      '!module_exist' => _drupalapi('module_exist', 4.7),
+      '!module_exists' => _drupalapi('module_exists', 5),
     )
   );
 }
 
 function _coder_review_5x_drupal_call_js_warning() {
-  return t('Remove !drupal_call_js(), use "!drupal_add_js(\'myCustomFunction(your, parameters, here)\', \'inline\');" instead',
+  return _t('Remove !drupal_call_js(), use "!drupal_add_js(\'myCustomFunction(your, parameters, here)\', \'inline\');" instead',
     array(
-      '!drupal_call_js' => theme('drupalapi', array('function' => 'drupal_call_js', 'version' => '4.7')),
-      '!drupal_add_js' => theme('drupalapi', array('function' => 'drupal_add_js', 'version' => '5')),
+      '!drupal_call_js' => _drupalapi('drupal_call_js', 4.7),
+      '!drupal_add_js' => _drupalapi('drupal_add_js', 5),
     )
   );
 }
 
 function _coder_review_5x_system_listing_warning() {
-  return t('!system_listing() is now !drupal_system_listing()',
+  return _t('!system_listing() is now !drupal_system_listing()',
     array(
-      '!system_listing' => theme('drupalapi', array('function' => 'system_listing', 'version' => '4.7')),
-      '!drupal_system_listing' => theme('drupalapi', array('function' => 'drupal_system_listing', 'version' => '5')),
+      '!system_listing' => _drupalapi('system_listing', 4.7),
+      '!drupal_system_listing' => _drupalapi('drupal_system_listing', 5),
     )
   );
 }
 
 function _coder_review_5x_theme_add_style_warning() {
-  return t('Replace !theme_add_style() with !drupal_add_css()',
+  return _t('Replace !theme_add_style() with !drupal_add_css()',
     array(
-      '!theme_add_style' => theme('drupalapi', array('function' => 'theme_add_style', 'version' => '4.7')),
-      '!drupal_add_css' => theme('drupalapi', array('function' => 'drupal_add_css', 'version' => '5')),
+      '!theme_add_style' => _drupalapi('theme_add_style', 4.7),
+      '!drupal_add_css' => _drupalapi('drupal_add_css', 5),
     )
   );
 }
 
 function _coder_review_5x_form_render_warning() {
-  return t('Replace !form_render() with !drupal_render()',
+  return _t('Replace !form_render() with !drupal_render()',
     array(
-      '!form_render' => theme('drupalapi', array('function' => 'form_render', 'version' => '4.7')),
-      '!drupal_render' => theme('drupalapi', array('function' => 'drupal_render', 'version' => '5')),
+      '!form_render' => _drupalapi('form_render', 4.7),
+      '!drupal_render' => _drupalapi('drupal_render', 5),
     )
   );
 }
 
 function _coder_review_5x_node_get_name_warning() {
-  return t('Replace !node_get_name($node) with !node_get_types(\'name\', $node)',
+  return _t('Replace !node_get_name($node) with !node_get_types(\'name\', $node)',
     array(
-      '!node_get_name' => theme('drupalapi', array('function' => 'node_get_name', 'version' => '4.7')),
-      '!node_get_types' => theme('drupalapi', array('function' => 'node_get_types', 'version' => '5')),
+      '!node_get_name' => _drupalapi('node_get_name', 4.7),
+      '!node_get_types' => _drupalapi('node_get_types', 5),
     )
   );
 }

@@ -33,9 +33,9 @@ function coder_review_sql_reviews() {
     '#source' => 'quote',
     '#warning' => function () {
       return array(
-        '#warning' => t('Use !db_query_range() instead of the SQL LIMIT clause',
+        '#warning' => _t('Use !db_query_range() instead of the SQL LIMIT clause',
           array(
-            '!db_query_range' => theme('drupalapi', array('function' => 'db_query_range')),
+            '!db_query_range' => _drupalapi('db_query_range'),
           )
         ),
       );
@@ -60,7 +60,7 @@ function coder_review_sql_reviews() {
     '#value' => 'db_query\s*\(\s*[\'"]select\s+count\s*\(\s*\*\s*\)\s+from\s+',
     '#warning' => function () {
       return array(
-        '#warning' => t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actual number of rows.'),
+        '#warning' => _t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actual number of rows.'),
         '#link' => 'http://drupal.org/node/224333#select_count',
       );
     },
@@ -68,9 +68,9 @@ function coder_review_sql_reviews() {
   );
 
   $review = array(
-    '#title' => t('Drupal SQL Standards'),
+    '#title' => 'Drupal SQL Standards',
     '#rules' => $rules,
-    '#description' => t('Somewhat obsolete review, needs updating to DBTNG.'),
+    '#description' => 'Checks for SQL strings inside db_query, since the change to DBTNG, this is less useful.',
   );
   return array('sql' => $review);
 }

@@ -16,10 +16,10 @@ function coder_review_druplart_reviews() {
   );
 
   $review = array(
-    '#title' => t("Drupl'Art Coding Style"),
+    '#title' => "Drupl'Art Coding Style",
     '#link' => 'http://drupalwatchdog.com/2/1/druplart',
     '#rules' => $rules,
-    '#description' => t('Suggestions from the author.'),
+    '#description' => 'Checks for coding style suggested by the author.',
   );
   return array('druplart' => $review);
 }

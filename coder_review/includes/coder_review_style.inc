@@ -107,7 +107,7 @@ function coder_review_style_reviews() {
     '#source' => 'html',
     '#value' => '(?-i)<[A-Z]+',
     '#warning' => function () {
-      return t('use lowercase html tags to comply with <a href="@xhtml">XHTML</a>',
+      return _t('use lowercase html tags to comply with <a href="@xhtml">XHTML</a>',
         array(
           '@xhtml' => 'http://www.w3.org/TR/xhtml1/#h-4.2',
         )
@@ -166,10 +166,10 @@ function coder_review_style_reviews() {
   );
 
   $review = array(
-    '#title' => t('Drupal Coding Standards'),
+    '#title' => 'Drupal Coding Standards',
     '#link' => 'http://drupal.org/node/318',
     '#rules' => $rules,
-    '#description' => t('every developer should use'),
+    '#description' => 'Checks for Drupal coding standards. Every developer should use this.',
   );
   return array('style' => $review);
 }

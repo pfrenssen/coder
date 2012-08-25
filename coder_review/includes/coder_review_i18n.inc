@@ -16,10 +16,10 @@ function coder_review_i18n_reviews() {
     '#filename-not' => array('install'),
     '#warning' => function () {
       return array(
-        '#warning' => t('The $text argument to !l() should be enclosed within !t() so that it is translatable.',
+        '#warning' => _t('The $text argument to !l() should be enclosed within !t() so that it is translatable.',
           array(
-            '!l' => theme('drupalapi', array('function' => 'l')),
-            '!t' => theme('drupalapi', array('function' => 't')),
+            '!l' => _drupalapi('l'),
+            '!t' => _drupalapi('t'),
           )
         ),
       );
@@ -31,10 +31,10 @@ function coder_review_i18n_reviews() {
     '#function' => '_install$',
     '#warning' => function () {
       return array(
-        '#warning' => t('The $text argument to !l() should be enclosed within !st() so that it is translatable from within the install.',
+        '#warning' => _t('The $text argument to !l() should be enclosed within !st() so that it is translatable from within the install.',
           array(
-            '!l' => theme('drupalapi', array('function' => 'l')),
-            '!st' => theme('drupalapi', array('function' => 'st')),
+            '!l' => _drupalapi('l'),
+            '!st' => _drupalapi('st'),
           )
         ),
       );
@@ -46,13 +46,13 @@ function coder_review_i18n_reviews() {
     '#function' => '_install$',
     '#warning' => function () {
       return array(
-        '#warning' => t('Use !st() instead of !t() in !hook_install(), !hook_uninstall() and !hook_update_N()',
+        '#warning' => _t('Use !st() instead of !t() in !hook_install(), !hook_uninstall() and !hook_update_N()',
           array(
-            '!st' => theme('drupalapi', array('function' => 'st')),
-            '!t' => theme('drupalapi', array('function' => 't')),
-            '!hook_install' => theme('drupalapi', array('function' => 'hook_install')),
-            '!hook_uninstall' => theme('drupalapi', array('function' => 'hook_uninstall')),
-            '!hook_update_N' => theme('drupalapi', array('function' => 'hook_update_N')),
+            '!st' => _drupalapi('st'),
+            '!t' => _drupalapi('t'),
+            '!hook_install' => _drupalapi('hook_install'),
+            '!hook_uninstall' => _drupalapi('hook_uninstall'),
+            '!hook_update_N' => _drupalapi('hook_update_N'),
           )
         ),
       );
@@ -69,10 +69,10 @@ function coder_review_i18n_reviews() {
     '#value' => '#title\s*=>\s*[\'"][\'"]',
     '#warning' => function () {
       return array(
-        '#warning' => t('The FAPI #title should be enclosed within !t() so that it is translatable.',
+        '#warning' => _t('The FAPI #title should be enclosed within !t() so that it is translatable.',
           array(
-            '!l' => theme('drupalapi', array('function' => 'l')),
-            '!t' => theme('drupalapi', array('function' => 't')),
+            '!l' => _drupalapi('l'),
+            '!t' => _drupalapi('t'),
           )
         ),
       );
@@ -83,10 +83,10 @@ function coder_review_i18n_reviews() {
     '#value' => '[\s\(]form_error\s*\(\s*' . $argex . '\s*,\s*[\'"]',
     '#warning' => function () {
       return array(
-        '#warning' => t('The $message argument to !form_error() should be enclosed within !t() so that it is translatable.',
+        '#warning' => _t('The $message argument to !form_error() should be enclosed within !t() so that it is translatable.',
           array(
-            '!form_error' => theme('drupalapi', array('function' => 'form_error')),
-            '!t' => theme('drupalapi', array('function' => 't')),
+            '!form_error' => _drupalapi('form_error'),
+            '!t' => _drupalapi('t'),
           )
         ),
       );
@@ -97,9 +97,9 @@ function coder_review_i18n_reviews() {
     '#value' => '[\'"]title[\'"]\s*=>\s*[\'"][^<]',
     '#warning' => function () {
       return array(
-        '#warning' => t("The 'title' option should be enclosed within !t() so that it is translatable.",
+        '#warning' => _t("The 'title' option should be enclosed within !t() so that it is translatable.",
           array(
-            '!t' => theme('drupalapi', array('function' => 't')),
+            '!t' => _drupalapi('t'),
           )
         ),
       );
@@ -112,10 +112,10 @@ function coder_review_i18n_reviews() {
     '#value' => '[\s\(]drupal_set_title\s*\(\s*[\'"]',
     '#warning' => function () {
       return array(
-        '#warning' => t('The $title argument to !drupal_set_title() should be enclosed within !t() so that it is translatable.',
+        '#warning' => _t('The $title argument to !drupal_set_title() should be enclosed within !t() so that it is translatable.',
           array(
-            '!drupal_set_title' => theme('drupalapi', array('function' => 'drupal_set_title')),
-            '!t' => theme('drupalapi', array('function' => 't')),
+            '!drupal_set_title' => _drupalapi('drupal_set_title'),
+            '!t' => _drupalapi('t'),
           )
         ),
       );
@@ -126,10 +126,10 @@ function coder_review_i18n_reviews() {
     '#value' => '[\s\(]drupal_set_message\s*\(\s*[\'"]',
     '#warning' => function () {
       return array(
-        '#warning' => t('The $message argument to !drupal_set_message() should be enclosed within !t() so that it is translatable.',
+        '#warning' => _t('The $message argument to !drupal_set_message() should be enclosed within !t() so that it is translatable.',
           array(
-            '!drupal_set_message' => theme('drupalapi', array('function' => 'drupal_set_message')),
-            '!t' => theme('drupalapi', array('function' => 't')),
+            '!drupal_set_message' => _drupalapi('drupal_set_message'),
+            '!t' => _drupalapi('t'),
           )
         ),
       );
@@ -140,10 +140,10 @@ function coder_review_i18n_reviews() {
     '#value' => '[\s\(]watchdog\s*\(\s*' . $argex . '\s*,\s*(t|st)\(',
     '#warning' => function () {
       return array(
-        '#warning' => t('The $message argument to !watchdog() should NOT be enclosed within !t(), so that it can be properly translated at display time.',
+        '#warning' => _t('The $message argument to !watchdog() should NOT be enclosed within !t(), so that it can be properly translated at display time.',
           array(
-            '!watchdog' => theme('drupalapi', array('function' => 'watchdog')),
-            '!t' => theme('drupalapi', array('function' => 't')),
+            '!watchdog' => _drupalapi('watchdog'),
+            '!t' => _drupalapi('t'),
           )
         ),
       );
@@ -157,9 +157,9 @@ function coder_review_i18n_reviews() {
     '#value' => '\'title\'\s*=>\s*t\(|\'description\'\s*=>\s*t\(',
     '#warning' => function () {
       return array(
-        '#warning' => t('Menu item titles and descriptions should NOT be enclosed within !t().',
+        '#warning' => _t('Menu item titles and descriptions should NOT be enclosed within !t().',
           array(
-            '!t' => theme('drupalapi', array('function' => 't')),
+            '!t' => _drupalapi('t'),
           )
         ),
         '#link' => 'http://drupal.org/node/140311',
@@ -173,9 +173,9 @@ function coder_review_i18n_reviews() {
     '#source' => 'allphp',
     '#warning' => function () {
       return array(
-        '#warning' => t('The $string argument to !t() should not begin or end with a space.',
+        '#warning' => _t('The $string argument to !t() should not begin or end with a space.',
           array(
-            '!t' => theme('drupalapi', array('function' => 't')),
+            '!t' => _drupalapi('t'),
           )
         ),
         '#link' => 'http://drupal.org/node/304150',
@@ -184,7 +184,7 @@ function coder_review_i18n_reviews() {
   );
 
   $review = array(
-    '#title' => t('Internationalization'),
+    '#title' => 'Internationalization',
     '#rules' => $rules,
   );
   return array('i18n' => $review);

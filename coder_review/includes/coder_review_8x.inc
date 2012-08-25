@@ -12,7 +12,7 @@ function coder_review_8x_reviews() {
   );
 
   $review = array(
-    '#title' => t('Converting 7.x modules to 8.x'),
+    '#title' => 'Converting 7.x modules to 8.x',
     '#link' => 'http://drupal.org/list-changes/drupal?to_branch=8.x',
     '#rules' => $rules,
     '#severity' => 'critical',
