@@ -1944,58 +1944,10 @@ function _coder_review_search_string($line, $rule) {
 /**
  * Return true if $module is in Drupal core.
  */
-function _coder_review_is_drupal_core($module) {
-  static $core;
-  if (!isset($core)) {
-    $core = array(
-      // Modules:
-      'aggregator' => 1,
-      'block' => 1,
-      'blog' => 1,
-      'blogapi' => 1,
-      'book' => 1,
-      'color' => 1,
-      'comment' => 1,
-      'contact' => 1,
-      'dblog' => 1,
-      'field' => 1,
-      'filter' => 1,
-      'forum' => 1,
-      'help' => 1,
-      'locale' => 1,
-      'menu' => 1,
-      'node' => 1,
-      'openid' => 1,
-      'path' => 1,
-      'php' => 1,
-      'ping' => 1,
-      'poll' => 1,
-      'profile' => 1,
-      'search' => 1,
-      'simpletest' => 1,
-      'statistics' => 1,
-      'syslog' => 1,
-      'system' => 1,
-      'taxonomy' => 1,
-      'throttle' => 1,
-      'tracker' => 1,
-      'translation' => 1,
-      'trigger' => 1,
-      'update' => 1,
-      'upload' => 1,
-      'user' => 1,
-
-      // Themes:
-      'bluemarine' => 1,
-      'chameleon' => 1,
-      'garland' => 1,
-      'marvin' => 1,
-      'minnelli' => 1,
-      'pushbutton' => 1,
-      'stark' => 1,
-    );
-  }
-  return isset($core[$module->name]) ? 1 : 0;
+function _coder_review_is_drupal_core($system) {
+  $info_file = dirname(realpath($system->filename)) . '/' . $system->name . '.info';
+  $info = drupal_parse_info_file($info_file);
+  return !empty($info['package']) && strtolower($info['package']) == 'core';
 }
 
 /**
