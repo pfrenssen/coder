@@ -145,7 +145,7 @@ function coder_review_i18n_reviews() {
       '#args' => array(
             '!t' => _drupalapi('t'),
       ),
-      '#link' => 'http://drupal.org/node/304150',
+      '#link' => _drupalnode(304150),
     ),
   );
 

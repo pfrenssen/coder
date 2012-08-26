@@ -2180,6 +2180,22 @@ function _drush() {
 }
 
 /**
+ * Return a link to the Drupal node.
+ *
+ * @param $nid
+ *   Nid to link to.
+ * @param $anchor
+ *   Optional anchor.
+ */
+function _drupalnode($nid, $anchor = '') {
+  $link = "http://drupal.org/node/$nid";
+  if ($anchor) {
+    $link .= "#$anchor";
+  }
+  return $link;
+}
+
+/**
  * Return a link to the Drupal API docs.
  *
  * @param $function

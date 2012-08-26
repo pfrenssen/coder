@@ -97,7 +97,7 @@ function coder_review_5x_reviews() {
     '#value' => '_coder_review_5x_callback',
     '#warning' => array(
       '#text' => 'modules Mow need to have a modulename.info file',
-      '#link' => 'http://drupal.org/node/101009',
+      '#link' => _drupalnode(101009),
     ),
   );
   $rules[] = array(
@@ -127,7 +127,7 @@ function coder_review_5x_reviews() {
 
   $review = array(
     '#title' => 'Converting 4.7.x modules to 5.x',
-    '#link' => 'http://drupal.org/node/64279',
+    '#link' => _drupalnode(64279),
     '#rules' => $rules,
     '#severity' => 'critical',
   );

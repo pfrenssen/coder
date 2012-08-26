@@ -35,7 +35,7 @@ function coder_review_security_reviews() {
         '!check_plain' => _drupalapi('check_plain'),
         '!filter_xss' => _drupalapi('filter_xss'),
       ),
-      '#link' => 'http://drupal.org/node/28984',
+      '#link' => _drupalnode(28984),
     ),
   );
   $rules[] = array(
@@ -107,7 +107,7 @@ function coder_review_security_reviews() {
         '!l' => _drupalapi('l'),
         '!check_plain' => _drupalapi('check_plain'),
       ),
-      '#link' => 'http://drupal.org/node/28984',
+      '#link' => _drupalnode(28984),
     ),
   );
   $rules[] = array(
@@ -133,7 +133,7 @@ function coder_review_security_reviews() {
       '#args' => array(
         '!db_query' => _drupalapi('db_query'),
       ),
-      '#link' => 'http://drupal.org/writing-secure-code',
+      '#link' => _drupalnode(62304),
       '#description' => 'Use %s and %d variable substitution.  When inserting an array of values use <code>$placeholders = implode(\',\', array_fill(0, count($args), "\'%s\'"));</code>',
     ),
   );
@@ -156,7 +156,7 @@ function coder_review_security_reviews() {
     '#source' => 'allphp',
     '#warning' => array(
       '#text' => "The value for the 'access callback' must always be a string which is the the name of the function - never a function call. It may also be assigned the value TRUE or FALSE if the callback is always (or never) accessible.",
-      '#link' => 'http://drupal.org/node/109157',
+      '#link' => _drupalnode(109157),
     ),
     '#function' => '_menu$',
   );
@@ -172,7 +172,7 @@ function coder_review_security_reviews() {
         '!check_plain' => _drupalapi('check_plain'),
         '!filter_xss' => _drupalapi('filter_xss'),
       ),
-      '#link' => 'http://drupal.org/node/178896',
+      '#link' => _drupalnode(178896),
     ),
   );
   $rules[] = array(
@@ -181,7 +181,7 @@ function coder_review_security_reviews() {
     '#value' => '<form[\s\'"]',
     '#warning' => array(
       '#text' => 'Use the Form API to build forms to help prevent against CSRF attacks.',
-      '#link' => 'http://drupal.org/node/178896',
+      '#link' => _drupalnode(178896),
     ),
   );
   $rules[] = array(
@@ -195,7 +195,7 @@ function coder_review_security_reviews() {
         '!eval' => _phpapi('eval'),
         '!drupal_eval' => _drupalapi('drupal_eval'),
       ),
-      '#link' => url('http://drupal.org/node/715010'),
+      '#link' => _drupalnode(715010),
     ),
   );
   $rules[] = array(
@@ -209,7 +209,7 @@ function coder_review_security_reviews() {
         '!check_plain' => _drupalapi('check_plain'),
         '!filter_xss' => _drupalapi('filter_xss'),
       ),
-      '#link' => 'http://drupal.org/node/28984',
+      '#link' => _drupalnode(28984),
     ),
     '#function' => '_block$',
   );
@@ -220,7 +220,7 @@ function coder_review_security_reviews() {
 
   $review = array(
     '#title' => 'Drupal Security Checks',
-    '#link' => 'http://drupal.org/node/28984',
+    '#link' => _drupalnode(28984),
     '#rules' => $rules,
     '#severity' => 'critical',
     '#description' => 'Checks for security issues. This is a very basic security check. It errs on the side of caution so may give false positives.',
@@ -392,7 +392,7 @@ function _coder_review_security_trigger_error_filter_warning() {
       '!check_plain' => _drupalapi('check_plain'),
       '!filter_xss' => _drupalapi('filter_xss'),
     ),
-    '#link' => 'http://drupal.org/node/28984',
+    '#link' => _drupalnode(28984),
   );
 }
 
@@ -404,7 +404,7 @@ function _coder_review_security_drupal_set_message_filter_warning() {
       '!check_plain' => _drupalapi('check_plain'),
       '!filter_xss' => _drupalapi('filter_xss'),
     ),
-    '#link' => 'http://drupal.org/node/28984',
+    '#link' => _drupalnode(28984),
   );
 }
 
@@ -417,7 +417,7 @@ function _coder_review_security_drupal_set_message_filter_t_warning() {
       '!check_plain' => _drupalapi('check_plain'),
       '!filter_xss' => _drupalapi('filter_xss'),
     ),
-    '#link' => 'http://drupal.org/node/28984',
+    '#link' => _drupalnode(28984),
   );
 }
 
@@ -430,7 +430,7 @@ function _coder_review_security_form_set_error_filter_warning() {
       '!check_plain' => _drupalapi('check_plain'),
       '!filter_xss' => _drupalapi('filter_xss'),
     ),
-    '#link' => 'http://drupal.org/node/28984',
+    '#link' => _drupalnode(28984),
   );
 }
 
@@ -444,7 +444,7 @@ function _coder_review_security_form_set_error_filter_t_warning() {
       '!check_plain' => _drupalapi('check_plain'),
       '!filter_xss' => _drupalapi('filter_xss'),
     ),
-    '#link' => 'http://drupal.org/node/28984',
+    '#link' => _drupalnode(28984),
   );
 }
 
@@ -456,7 +456,7 @@ function _coder_review_security_confirm_form_filter_warning() {
       '!check_plain' => _drupalapi('check_plain'),
       '!filter_xss' => _drupalapi('filter_xss'),
     ),
-    '#link' => 'http://drupal.org/node/28984',
+    '#link' => _drupalnode(28984),
   );
 }
 
@@ -469,7 +469,7 @@ function _coder_review_security_confirm_form_filter_t_warning() {
       '!check_plain' => _drupalapi('check_plain'),
       '!filter_xss' => _drupalapi('filter_xss'),
     ),
-    '#link' => 'http://drupal.org/node/28984',
+    '#link' => _drupalnode(28984),
   );
 }
 
@@ -490,7 +490,7 @@ function _coder_review_security_fapi_title_description_warning() {
       '!check_plain' => _drupalapi('check_plain'),
       '!filter_xss' => _drupalapi('filter_xss'),
     ),
-    '#link' => 'http://drupal.org/node/28984',
+    '#link' => _drupalnode(28984),
   );
 }
 
@@ -502,6 +502,6 @@ function _coder_review_security_fapi_markup_value_warning() {
       '!check_plain' => _drupalapi('check_plain'),
       '!filter_xss' => _drupalapi('filter_xss'),
     ),
-    '#link' => 'http://drupal.org/node/28984',
+    '#link' => _drupalnode(28984),
   );
 }

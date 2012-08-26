@@ -172,7 +172,7 @@ function coder_review_47_reviews() {
 
   $review = array(
     '#title' => 'Converting 4.6.x modules to 4.7.x',
-    '#link' => 'http://drupal.org/node/22218',
+    '#link' => _drupalnode(22218),
     '#rules' => $rules,
     '#severity' => 'critical',
   );

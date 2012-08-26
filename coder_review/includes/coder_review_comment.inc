@@ -15,7 +15,7 @@ function coder_review_comment_reviews() {
     '#case-sensitive' => TRUE,
     '#warning' => array(
       '#text' => 'Commits to the Git repository do not require the CVS $Id' . '$ keyword in each file.',
-      '#link' => 'http://drupal.org/coding-standards',
+      '#link' => _drupalnode(318),
     ),
     '#severity' => 'minor',
   );
@@ -72,7 +72,7 @@ function coder_review_comment_reviews() {
     '#value' => '@' . 'file',
     '#warning' => array(
       '#text' => '@' . 'file block missing',
-      '#link' => 'http://drupal.org/node/1354#files',
+      '#link' => _drupalnode(1354, 'files'),
     ),
     '#filename-not' => array('patch'),
   );
@@ -86,7 +86,7 @@ function coder_review_comment_reviews() {
     '#value' => '@' . 'file\s+.+$',
     '#warning' => array(
       '#text' => '@' . 'file description should be on the following line',
-      '#link' => 'http://drupal.org/node/1354#files',
+      '#link' => _drupalnode(1354, 'files'),
     ),
     '#severity' => 'minor',
   );
@@ -137,7 +137,7 @@ function coder_review_comment_reviews() {
 
   $review = array(
     '#title' => 'Drupal Commenting Standards',
-    '#link' => 'http://drupal.org/node/318',
+    '#link' => _drupalnode(318),
     '#rules' => $rules,
     '#description' => 'Checks for the Drupal commenting standards; every developer should use this.',
   );
@@ -173,7 +173,7 @@ function _coder_review_comment_install_file_block_callback(&$coder_args, $review
       $tmprule = $rule;
       $tmprule['#warning'] = array(
         '#text' => 'For .install files, the @file description should be of the format "Install, update and uninstall functions for the foo module.".',
-        '#link' => 'http://drupal.org/coding-standards',
+        '#link' => _drupalnode(318),
       );
       _coder_review_error($results, $tmprule, $severity_name, $theme_lineno, $theme_line, $ignores);
     }

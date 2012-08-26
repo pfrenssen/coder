@@ -166,7 +166,7 @@ function coder_review_style_reviews() {
 
   $review = array(
     '#title' => 'Drupal Coding Standards',
-    '#link' => 'http://drupal.org/node/318',
+    '#link' => _drupalnode(318),
     '#rules' => $rules,
     '#description' => 'Checks for Drupal coding standards. Every developer should use this.',
   );
