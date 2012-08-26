@@ -27,36 +27,17 @@ function coder_review_security_reviews() {
     '#value' => '[\s\(]trigger_error\s*\(\s*(st|t|\$t)\s*\(\s*((.*?\$)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
     '#never' => '(^function\s|trigger_error\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
     '#source' => 'allphp',
-    '#warning' => function () {
-      return array(
-        '#warning' => _t('Potential problem: !trigger_error() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
-          array(
-            '!trigger_error' => _phpapi('trigger_error'),
-            '!t' => _drupalapi('t'),
-            '!check_plain' => _drupalapi('check_plain'),
-            '!filter_xss' => _drupalapi('filter_xss'),
-          )
-        ),
-        '#link' => 'http://drupal.org/node/28984',
-      );
-    },
+    '#warning' => array(
+      '#text' => 'Potential problem: !trigger_error() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
+      '#args' => array(
+        '!trigger_error' => _phpapi('trigger_error'),
+        '!t' => _drupalapi('t'),
+        '!check_plain' => _drupalapi('check_plain'),
+        '!filter_xss' => _drupalapi('filter_xss'),
+      ),
+      '#link' => 'http://drupal.org/node/28984',
+    ),
   );
-/*
-  $rules[] = array(
-    '#type' => 'regex',
-    '#value' => '[\s\(]drupal_set_title\s*\(\s*[^\$)]+.+\$',
-    '#never' => '(^function\s|drupal_set_title\s*\(\s*(((st|t|\$t)\s*\()|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-    '#source' => 'allphp',
-    '#warning' => '_coder_review_security_drupal_set_title_filter_warning',
-  );
-  $rules[] = array(
-    '#type' => 'regex',
-    '#value' => '[\s\(]drupal_set_title\s*\(\s*(st|t|\$t)\s*\(\s*((.*?\$)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
-    '#never' => '(^function\s|drupal_set_title\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
-    '#source' => 'allphp',
-    '#warning' => '_coder_review_security_drupal_set_title_filter_t_warning',
-  );
-*/
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]drupal_set_message\s*\(\s*[^\$)]+.+\$',
@@ -92,7 +73,6 @@ function coder_review_security_reviews() {
     '#source' => 'allphp',
     '#warning' => '_coder_review_security_confirm_form_filter_warning',
   );
-  // confirm_form($form, t( ($taint | "abc $taint " | 'abcs '. $taint | stuff), array('!taint' => $taint)), $path);
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]confirm_form\s*\(\s*' . $argex . '\s*,\s*(st|t|\$t)\s*\(\s*((\$\w+[,\)])|("[^"]+?\$\w+.*?"\s*[,\)])|([\'"].*?[\'"]\s*\.\s*\$\w)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
@@ -108,7 +88,6 @@ function coder_review_security_reviews() {
     '#source' => 'allphp',
     '#warning' => '_coder_review_security_confirm_form_filter_warning',
   );
-  // confirm_form($form, "safe string", $path, t( ($taint | "abc $taint " | 'abcs '. $taint | stuff), array('!taint' => $taint)), ...);
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}(st|t|\$t)\s*\(\s*((\$\w+[,\)])|("[^"]+?\$\w+.*?"\s*[,\)])|([\'"].*?[\'"]\s*\.\s*\$\w)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\))).*?(' . $allphp_argex . ')??\)\s*;',
@@ -122,17 +101,14 @@ function coder_review_security_reviews() {
     '#value' => '[\s\(]l\(check_plain\(.*',
     '#never' => '[\'"]html[\'"]\s*=>\s*(TRUE|1)',
     '#source' => 'allphp',
-    '#warning' => function () {
-      return array(
-        '#warning' => _t('!l() already contains a !check_plain() call by default.',
-          array(
-            '!l' => _drupalapi('l'),
-            '!check_plain' => _drupalapi('check_plain'),
-          )
-        ),
-        '#link' => 'http://drupal.org/node/28984',
-      );
-    },
+    '#warning' => array(
+      '#text' => '!l() already contains a !check_plain() call by default.',
+      '#args' => array(
+        '!l' => _drupalapi('l'),
+        '!check_plain' => _drupalapi('check_plain'),
+      ),
+      '#link' => 'http://drupal.org/node/28984',
+    ),
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -152,17 +128,14 @@ function coder_review_security_reviews() {
     '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s+' . $table . ')\s+.*\$[a-z0-9_]+',
     '#not' => '\$placeholder',
     '#source' => 'quote',
-    '#warning' => function () {
-      return array(
-        '#warning' => _t('In SQL strings, Use !db_query() placeholders in place of variables.  This is a potential source of SQL injection attacks when the variable can come from user data.',
-          array(
-            '!db_query' => _drupalapi('db_query'),
-          )
-        ),
-        '#link' => 'http://drupal.org/writing-secure-code',
-        '#description' => _t('Use %s and %d variable substitution.  When inserting an array of values use <code>$placeholders = implode(\',\', array_fill(0, count($args), "\'%s\'"));</code>'),
-      );
-    },
+    '#warning' => array(
+      '#text' => 'In SQL strings, Use !db_query() placeholders in place of variables.  This is a potential source of SQL injection attacks when the variable can come from user data.',
+      '#args' => array(
+        '!db_query' => _drupalapi('db_query'),
+      ),
+      '#link' => 'http://drupal.org/writing-secure-code',
+      '#description' => 'Use %s and %d variable substitution.  When inserting an array of values use <code>$placeholders = implode(\',\', array_fill(0, count($args), "\'%s\'"));</code>',
+    ),
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -181,12 +154,10 @@ function coder_review_security_reviews() {
     '#type' => 'regex',
     '#value' => '[\'"]access callback.*=.*\(',
     '#source' => 'allphp',
-    '#warning' => function () {
-      return array(
-        '#warning' => _t("The value for the 'access callback' must always be a string which is the the name of the function - never a function call. It may also be assigned the value TRUE or FALSE if the callback is always (or never) accessible."),
-        '#link' => 'http://drupal.org/node/109157',
-      );
-    },
+    '#warning' => array(
+      '#text' => "The value for the 'access callback' must always be a string which is the the name of the function - never a function call. It may also be assigned the value TRUE or FALSE if the callback is always (or never) accessible.",
+      '#link' => 'http://drupal.org/node/109157',
+    ),
     '#function' => '_menu$',
   );
   $rules[] = array(
@@ -195,62 +166,51 @@ function coder_review_security_reviews() {
     '#value' => '\$_(POST)\[.+?\]',
     '#never' => '((((==|!=|>=|<=|>|<)\s*|[!\s\(](form_get_cache|form_set_cache|format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup|isset|empty|foreach|while|if|elseif)\s*\(\s*)\$_(POST)\[.+?\])|\$_(POST)\[.+?\]\s*(\.=|=|!=))',
     '#source' => 'allphp',
-    '#warning' => function () {
-      return array(
-        '#warning' => _t('Potential problem: use the Form API to prevent against CSRF attacks. If you need to use $_POST variables, ensure they are fully sanitized if displayed by using !check_plain(), !filter_xss() or similar.',
-          array(
-            '!check_plain' => _drupalapi('check_plain'),
-            '!filter_xss' => _drupalapi('filter_xss'),
-          )
-        ),
-        '#link' => 'http://drupal.org/node/178896',
-      );
-    },
+    '#warning' => array(
+      '#text' => 'Potential problem: use the Form API to prevent against CSRF attacks. If you need to use $_POST variables, ensure they are fully sanitized if displayed by using !check_plain(), !filter_xss() or similar.',
+      '#args' => array(
+        '!check_plain' => _drupalapi('check_plain'),
+        '!filter_xss' => _drupalapi('filter_xss'),
+      ),
+      '#link' => 'http://drupal.org/node/178896',
+    ),
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'html',
     '#value' => '<form[\s\'"]',
-    '#warning' => function () {
-      return array(
-        '#warning' => _t('Use the Form API to build forms to help prevent against CSRF attacks.'),
-        '#link' => 'http://drupal.org/node/178896',
-      );
-    },
+    '#warning' => array(
+      '#text' => 'Use the Form API to build forms to help prevent against CSRF attacks.',
+      '#link' => 'http://drupal.org/node/178896',
+    ),
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(](drupal_)*?eval\s*\([^\)]*?\$',
     '#never' => '(^function\s)',
     '#source' => 'php',
-    '#warning' => function () {
-      return array(
-        '#warning' => _t("Using !eval() or !drupal_eval() in your module's code could have a security risk if the PHP input provided to the function contains malicious code.",
-          array(
-            '!eval' => _phpapi('eval'),
-            '!drupal_eval' => _drupalapi('drupal_eval'),
-          )
-        ),
-        '#link' => url('http://drupal.org/node/715010'),
-      );
-    },
+    '#warning' => array(
+      '#text' => "Using !eval() or !drupal_eval() in your module's code could have a security risk if the PHP input provided to the function contains malicious code.",
+      '#args' => array(
+        '!eval' => _phpapi('eval'),
+        '!drupal_eval' => _drupalapi('drupal_eval'),
+      ),
+      '#link' => url('http://drupal.org/node/715010'),
+    ),
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\[][\'"]subject[\'"](\])*?\s*=(>)*?\s*\$',
     '#source' => 'allphp',
-    '#warning' => function () {
-      return array(
-        '#warning' => _t('Potential problem: !hook_block() only accepts filtered text as the block title, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
-          array(
-            '!hook_block' => _drupalapi('hook_block'),
-            '!check_plain' => _drupalapi('check_plain'),
-            '!filter_xss' => _drupalapi('filter_xss'),
-          )
-        ),
-        '#link' => 'http://drupal.org/node/28984',
-      );
-    },
+    '#warning' => array(
+      '#text' => 'Potential problem: !hook_block() only accepts filtered text as the block title, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+      '#args' => array(
+        '!hook_block' => _drupalapi('hook_block'),
+        '!check_plain' => _drupalapi('check_plain'),
+        '!filter_xss' => _drupalapi('filter_xss'),
+      ),
+      '#link' => 'http://drupal.org/node/28984',
+    ),
     '#function' => '_block$',
   );
   $rules[] = array(
@@ -307,16 +267,6 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
 
       // If we've just exited a function, run forward match checks.
       if ($function_paren <= 0) {
-        // db_rewrite_sql()
-/*
-        if (isset($forward_matches['db_rewrite_sql'])) {
-          $after_never_regex = '/[\s\(]db_rewrite_sql\s*\(\s*\$' . $forward_matches['db_rewrite_sql'] . '[\s,\)]/';
-          if (!preg_match($after_never_regex, $this_function, $sanitized_matches)) {
-            $rule = _coder_review_security_db_rewrite_sql_warning();
-            _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
-          }
-        }
-*/
         // FAPI #value
         if (isset($forward_matches['fapi_markup_value'])) {
           $find_match = '/[\s=]array\s*\(\s*([^\)]*?([\'"]#value[\'"]\s*=>\s*.*?\$' . $forward_matches['fapi_markup_value'] . '.*?))\);/';
@@ -336,7 +286,8 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       continue;
     }
 
-    // Run our multi-line reviews.
+    // Run multi-line reviews.
+
     // trigger_error()
     $regex = '/[\s\(]trigger_error\s*\(\s*\$(\w+)\s*[,\)]/';
     $never_regex = '/(^function\s|trigger_error\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)/';
@@ -344,25 +295,12 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule = _coder_review_security_trigger_error_filter_warning();
+          $rule['#warning'] = _coder_review_security_trigger_error_filter_warning();
           _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
-    // drupal_set_title()
-/*
-    $regex = '/[\s\(]drupal_set_title\s*\(\s*\$(\w+)\s*[,\)]/';
-    $never_regex = '/(^function\s|drupal_set_title\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)/';
-    if (preg_match($regex, $line, $matches)) {
-      if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
-        $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
-        if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule = _coder_review_security_drupal_set_title_filter_warning();
-          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
-        }
-      }
-    }
-*/
+
     // drupal_set_message()
     $regex = '/[\s\(]drupal_set_message\s*\(\s*\$(\w+)\s*[,\)]/';
     $never_regex = '/(^function\s|drupal_set_message\s*\(\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)/';
@@ -370,11 +308,12 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule = _coder_review_security_drupal_set_message_filter_warning();
+          $rule['#warning'] = _coder_review_security_drupal_set_message_filter_warning();
           _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
+
     // form_set_error() and form_error()
     $regex = '/[\s\(](form_set_error|form_error)\s*\(\s*' . $argex . '\s*,\s*\$(\w+)\s*[,\)]/';
     $never_regex = '/(^function\s|(form_set_error|form_error)\s*\(\s*' . $argex . '\s*,\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)/';
@@ -382,11 +321,12 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[8] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule = _coder_review_security_form_set_error_filter_warning();
+          $rule['#warning'] = _coder_review_security_form_set_error_filter_warning();
           _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
+
     // confirm_form()
     $regex = '/[\s\(]confirm_form\s*\(\s*' . $argex . '\s*,\s*\$(\w+)\s*[,\)]/';
     $never_regex = '/(^function\s|confirm_form\s*\(\s*' . $argex . '\s*,\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)/';
@@ -394,11 +334,12 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[7] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule = _coder_review_security_confirm_form_filter_warning();
+          $rule['#warning'] = _coder_review_security_confirm_form_filter_warning();
           _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
+
     // confirm_form() - 4th, 5th and 6th args
     $regex = '/[\s\(]confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}\$(\w+)\s*[,\)]/';
     $never_regex = '/(^function\s|confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)/';
@@ -406,16 +347,12 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[11] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule = _coder_review_security_confirm_form_filter_warning();
+          $rule['#warning'] = _coder_review_security_confirm_form_filter_warning();
           _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
-    // db_rewrite_sql()
-    $regex = '/\$(\w+)\s*=\s*[\'"]SELECT\s+(.*)\s+(FROM|JOIN)\s+\{node\}(.*)?/';
-    if (preg_match($regex, $line, $matches) && !preg_match('/COUNT\s*\(/', $matches[2]) && !preg_match('/[\s\.]nid\s*=\s*%d/', $matches[4])) {
-      $forward_matches['db_rewrite_sql'] = $matches[1];
-    }
+
     // FAPI #title and #description
     $regex = '/[\'"]#(title|description)[\'"]\s*=>\s*.*?\$(\w+)\s*.*?[,\)]/';
     $never_regex = '/([\'"]#(title|description)[\'"]\s*=>\s*((((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*))/';
@@ -423,11 +360,12 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule = _coder_review_security_fapi_title_description_warning();
+          $rule['#warning'] = _coder_review_security_fapi_title_description_warning();
           _coder_review_error($results, $rule, $severity_name, $lineno, $line, $ignores);
         }
       }
     }
+
     // FAPI #value
     $regex = '/[\'"]#value[\'"]\s*=>\s*.*?\$(\w+)\s*.*?[,\)]/';
     $never_regex = '/([\'"]#value[\'"]\s*=>\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*)/';
@@ -448,54 +386,23 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
 
 function _coder_review_security_trigger_error_filter_warning() {
   return array(
-    '#warning' => _t('Potential problem: !trigger_error() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
-      array(
-        '!trigger_error' => _phpapi('trigger_error'),
-        '!check_plain' => _drupalapi('check_plain'),
-        '!filter_xss' => _drupalapi('filter_xss'),
-      )
+    '#text' => 'Potential problem: !trigger_error() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+    '#args' => array(
+      '!trigger_error' => _phpapi('trigger_error'),
+      '!check_plain' => _drupalapi('check_plain'),
+      '!filter_xss' => _drupalapi('filter_xss'),
     ),
     '#link' => 'http://drupal.org/node/28984',
   );
 }
-
-/*
-function _coder_review_security_drupal_set_title_filter_warning() {
-  return array(
-    '#warning' => _t('Potential problem: !drupal_set_title() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
-      array(
-        '!drupal_set_title' => _drupalapi('drupal_set_title'),
-        '!check_plain' => _drupalapi('check_plain'),
-        '!filter_xss' => _drupalapi('filter_xss'),
-      )
-    ),
-    '#link' => 'http://drupal.org/node/28984',
-  );
-}
-
-function _coder_review_security_drupal_set_title_filter_t_warning() {
-  return array(
-    '#warning' => _t('Potential problem: !drupal_set_title() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
-      array(
-        '!drupal_set_title' => _drupalapi('drupal_set_title'),
-        '!t' => _drupalapi('t'),
-        '!check_plain' => _drupalapi('check_plain'),
-        '!filter_xss' => _drupalapi('filter_xss'),
-      )
-    ),
-    '#link' => 'http://drupal.org/node/28984',
-  );
-}
-*/
 
 function _coder_review_security_drupal_set_message_filter_warning() {
   return array(
-    '#warning' => _t('Potential problem: !drupal_set_message() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
-      array(
-        '!drupal_set_message' => _drupalapi('drupal_set_message'),
-        '!check_plain' => _drupalapi('check_plain'),
-        '!filter_xss' => _drupalapi('filter_xss'),
-      )
+    '#text' => 'Potential problem: !drupal_set_message() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+    '#args' => array(
+      '!drupal_set_message' => _drupalapi('drupal_set_message'),
+      '!check_plain' => _drupalapi('check_plain'),
+      '!filter_xss' => _drupalapi('filter_xss'),
     ),
     '#link' => 'http://drupal.org/node/28984',
   );
@@ -503,13 +410,12 @@ function _coder_review_security_drupal_set_message_filter_warning() {
 
 function _coder_review_security_drupal_set_message_filter_t_warning() {
   return array(
-    '#warning' => _t('Potential problem: !drupal_set_message() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
-      array(
-        '!drupal_set_message' => _drupalapi('drupal_set_message'),
-        '!t' => _drupalapi('t'),
-        '!check_plain' => _drupalapi('check_plain'),
-        '!filter_xss' => _drupalapi('filter_xss'),
-      )
+    '#text' => 'Potential problem: !drupal_set_message() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
+    '#args' => array(
+      '!drupal_set_message' => _drupalapi('drupal_set_message'),
+      '!t' => _drupalapi('t'),
+      '!check_plain' => _drupalapi('check_plain'),
+      '!filter_xss' => _drupalapi('filter_xss'),
     ),
     '#link' => 'http://drupal.org/node/28984',
   );
@@ -517,13 +423,12 @@ function _coder_review_security_drupal_set_message_filter_t_warning() {
 
 function _coder_review_security_form_set_error_filter_warning() {
   return array(
-    '#warning' => _t('Potential problem: !form_set_error() and !form_error() only accept filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
-      array(
-        '!form_set_error' => _drupalapi('form_set_error'),
-        '!form_error' => _drupalapi('form_error'),
-        '!check_plain' => _drupalapi('check_plain'),
-        '!filter_xss' => _drupalapi('filter_xss'),
-      )
+    '#text' => 'Potential problem: !form_set_error() and !form_error() only accept filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+    '#args' => array(
+      '!form_set_error' => _drupalapi('form_set_error'),
+      '!form_error' => _drupalapi('form_error'),
+      '!check_plain' => _drupalapi('check_plain'),
+      '!filter_xss' => _drupalapi('filter_xss'),
     ),
     '#link' => 'http://drupal.org/node/28984',
   );
@@ -531,14 +436,13 @@ function _coder_review_security_form_set_error_filter_warning() {
 
 function _coder_review_security_form_set_error_filter_t_warning() {
   return array(
-    '#warning' => _t('Potential problem: !form_set_error() and !form_error() only accept filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
-      array(
-        '!form_set_error' => _drupalapi('form_set_error'),
-        '!form_error' => _drupalapi('form_error'),
-        '!t' => _drupalapi('t'),
-        '!check_plain' => _drupalapi('check_plain'),
-        '!filter_xss' => _drupalapi('filter_xss'),
-      )
+    '#text' => 'Potential problem: !form_set_error() and !form_error() only accept filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
+    '#args' => array(
+      '!form_set_error' => _drupalapi('form_set_error'),
+      '!form_error' => _drupalapi('form_error'),
+      '!t' => _drupalapi('t'),
+      '!check_plain' => _drupalapi('check_plain'),
+      '!filter_xss' => _drupalapi('filter_xss'),
     ),
     '#link' => 'http://drupal.org/node/28984',
   );
@@ -546,12 +450,11 @@ function _coder_review_security_form_set_error_filter_t_warning() {
 
 function _coder_review_security_confirm_form_filter_warning() {
   return array(
-    '#warning' => _t('Potential problem: !confirm_form() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
-      array(
-        '!confirm_form' => _drupalapi('confirm_form'),
-        '!check_plain' => _drupalapi('check_plain'),
-        '!filter_xss' => _drupalapi('filter_xss'),
-      )
+    '#text' => 'Potential problem: !confirm_form() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',
+    '#args' => array(
+      '!confirm_form' => _drupalapi('confirm_form'),
+      '!check_plain' => _drupalapi('check_plain'),
+      '!filter_xss' => _drupalapi('filter_xss'),
     ),
     '#link' => 'http://drupal.org/node/28984',
   );
@@ -559,13 +462,12 @@ function _coder_review_security_confirm_form_filter_warning() {
 
 function _coder_review_security_confirm_form_filter_t_warning() {
   return array(
-    '#warning' => _t('Potential problem: !confirm_form() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
-      array(
-        '!confirm_form' => _drupalapi('confirm_form'),
-        '!t' => _drupalapi('t'),
-        '!check_plain' => _drupalapi('check_plain'),
-        '!filter_xss' => _drupalapi('filter_xss'),
-      )
+    '#text' => 'Potential problem: !confirm_form() only accepts filtered text, be sure all !placeholders for $variables in !t() are fully sanitized using !check_plain(), !filter_xss() or similar.',
+    '#args' => array(
+      '!confirm_form' => _drupalapi('confirm_form'),
+      '!t' => _drupalapi('t'),
+      '!check_plain' => _drupalapi('check_plain'),
+      '!filter_xss' => _drupalapi('filter_xss'),
     ),
     '#link' => 'http://drupal.org/node/28984',
   );
@@ -573,22 +475,20 @@ function _coder_review_security_confirm_form_filter_t_warning() {
 
 function _coder_review_security_request_uri_warning() {
   return array(
-    '#warning' => _t('the use of REQUEST_URI is prone to XSS exploits and does not work on IIS; use !request_uri() instead',
-      array(
-        '!request_uri' => _drupalapi('request_uri'),
-      )
+    '#text' => 'the use of REQUEST_URI is prone to XSS exploits and does not work on IIS; use !request_uri() instead',
+    '#args' => array(
+      '!request_uri' => _drupalapi('request_uri'),
     ),
   );
 }
 
 function _coder_review_security_fapi_title_description_warning() {
   return array(
-    '#warning' => _t("Potential problem: FAPI elements '#title' and '#description' only accept filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your \$variable is fully sanitized.",
-      array(
-        '!hook_form' => _drupalapi('hook_form'),
-        '!check_plain' => _drupalapi('check_plain'),
-        '!filter_xss' => _drupalapi('filter_xss'),
-      )
+    '#text' => "Potential problem: FAPI elements '#title' and '#description' only accept filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your \$variable is fully sanitized.",
+    '#args' => array(
+      '!hook_form' => _drupalapi('hook_form'),
+      '!check_plain' => _drupalapi('check_plain'),
+      '!filter_xss' => _drupalapi('filter_xss'),
     ),
     '#link' => 'http://drupal.org/node/28984',
   );
@@ -596,12 +496,11 @@ function _coder_review_security_fapi_title_description_warning() {
 
 function _coder_review_security_fapi_markup_value_warning() {
   return array(
-    '#warning' => _t("Potential problem: when FAPI element '#type' is set to 'markup' (default), '#value' only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your \$variable is fully sanitized.",
-      array(
-        '!hook_form' => _drupalapi('hook_form'),
-        '!check_plain' => _drupalapi('check_plain'),
-        '!filter_xss' => _drupalapi('filter_xss'),
-      )
+    '#text' => "Potential problem: when FAPI element '#type' is set to 'markup' (default), '#value' only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your \$variable is fully sanitized.",
+    '#args' => array(
+      '!hook_form' => _drupalapi('hook_form'),
+      '!check_plain' => _drupalapi('check_plain'),
+      '!filter_xss' => _drupalapi('filter_xss'),
     ),
     '#link' => 'http://drupal.org/node/28984',
   );

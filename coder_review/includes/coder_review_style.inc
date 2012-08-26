@@ -106,13 +106,12 @@ function coder_review_style_reviews() {
     '#type' => 'regex',
     '#source' => 'html',
     '#value' => '(?-i)<[A-Z]+',
-    '#warning' => function () {
-      return _t('use lowercase html tags to comply with <a href="@xhtml">XHTML</a>',
-        array(
-          '@xhtml' => 'http://www.w3.org/TR/xhtml1/#h-4.2',
-        )
-      );
-    },
+    '#warning' => array(
+      '#text' => 'use lowercase html tags to comply with <a href="@xhtml">XHTML</a>',
+      '#args' => array(
+        '@xhtml' => 'http://www.w3.org/TR/xhtml1/#h-4.2',
+      ),
+    ),
     '#severity' => 'minor',
   );
   $rules[] = array(
@@ -193,8 +192,6 @@ function _coder_review_style_closing_php_callback(&$coder_args, $review, $rule, 
 function _coder_review_style_core_global_regex() {
   static $coreglobalregex;
   if (!isset($coreglobalregex)) {
-    // Note: there's a little extra overhead in formatting this list as an
-    // array, but I think it makes it more readable and maintainable.
     $coreglobalvars = array(
       'base_insecure_url',
       'base_path',

@@ -278,7 +278,7 @@ function theme_drush_coder_review_warning($variables) {
   $variables += array(
     'lineno' => 0,
     'line' => '',
-    'warning' => dt('unknown warning'),
+    'warning' => dt('Unknown warning (drush)'),
   );
 
   // Return warning as XML.

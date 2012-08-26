@@ -31,16 +31,13 @@ function coder_review_sql_reviews() {
     '#type' => 'regex',
     '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . ')\s+.*[Ll][Ii][Mm][Ii][Tt]\s[0-9]+',
     '#source' => 'quote',
-    '#warning' => function () {
-      return array(
-        '#warning' => _t('Use !db_query_range() instead of the SQL LIMIT clause',
-          array(
-            '!db_query_range' => _drupalapi('db_query_range'),
-          )
-        ),
-      );
-    },
-    '#link' => 'http://drupal.org/node/1395',
+    '#warning' => array(
+      '#text' => 'Use !db_query_range() instead of the SQL LIMIT clause',
+      '#args' => array(
+        '!db_query_range' => _drupalapi('db_query_range'),
+      ),
+      '#link' => 'http://drupal.org/node/1395',
+    ),
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -58,12 +55,10 @@ function coder_review_sql_reviews() {
     '#type' => 'regex',
     '#source' => 'allphp',
     '#value' => 'db_query\s*\(\s*[\'"]select\s+count\s*\(\s*\*\s*\)\s+from\s+',
-    '#warning' => function () {
-      return array(
-        '#warning' => _t('You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actual number of rows.'),
-        '#link' => 'http://drupal.org/node/224333#select_count',
-      );
-    },
+    '#warning' => array(
+      '#text' => 'You may not want to use SELECT COUNT(*), if all you want to do is check for the existance of any rows, rather than the actual number of rows.',
+      '#link' => 'http://drupal.org/node/224333#select_count',
+    ),
     '#severity' => 'minor',
   );
 
