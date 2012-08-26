@@ -13,9 +13,9 @@ class CoderReviewSQLTest extends CoderReviewTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => t('Coder SQL Tests'),
-      'description' => t('Tests for the coder SQL review.'),
-      'group' => t('Coder'),
+      'name' => 'Coder SQL Tests',
+      'description' => 'Tests for the coder SQL review.',
+      'group' => 'CoderRevew',
     );
   }
 

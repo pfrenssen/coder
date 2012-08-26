@@ -13,9 +13,9 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => t('Coder Style Tests'),
-      'description' => t('Tests for the coder style review.'),
-      'group' => t('Coder'),
+      'name' => 'Coder Style Tests',
+      'description' => 'Tests for the coder style review.',
+      'group' => 'CoderRevew',
     );
   }
 

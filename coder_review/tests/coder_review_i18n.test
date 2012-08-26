@@ -13,9 +13,9 @@ class CoderReviewI18NTest extends CoderReviewTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => t('Coder I18N Tests'),
-      'description' => t('Tests for the coder I18N review.'),
-      'group' => t('Coder'),
+      'name' => 'Coder I18N Tests',
+      'description' => 'Tests for the coder I18N review.',
+      'group' => 'CoderRevew',
     );
   }
 

@@ -13,9 +13,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => t('Coder Upgrade 7.x Tests'),
-      'description' => t('Tests for the coder upgrade7x review.'),
-      'group' => t('Coder'),
+      'name' => 'Coder Upgrade 7.x Tests',
+      'description' => 'Tests for the coder upgrade7x review.',
+      'group' => 'CoderRevew',
     );
   }
 

@@ -84,10 +84,19 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
     $warnings = array();
     foreach ($results as $error) {
       $warning = _coder_review_warning($error['rule']);
-      if (is_array($warning)) {
-        $warning = $warning['#warning'];
+      // @todo: should strings get translated in simpletests?
+      if (is_string($warning)) {
+        $warnings[] = $warning;
       }
-      $warnings[] = $warning;
+      elseif (isset($warning['#text'])) {
+        $warnings[] = $warning['#text'];
+      }
+      elseif (isset($warning['#warning'])) {
+        $warnings[] = $warning['#warning'];
+      }
+      else {
+        $warnings[] = 'Unknown warning (simpletest)';
+      }
     }
     return implode('; ', $warnings);
   }
