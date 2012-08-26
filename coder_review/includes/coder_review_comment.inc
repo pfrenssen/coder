@@ -39,7 +39,10 @@ function coder_review_comment_reviews() {
     '#source' => 'comment',
     '#value' => '.*\@see\s*',
     '#not' => '^(\s*\*|\/\/)\s*\@see.*$',
-    '#warning' => '@see should always be at the beginning of a line, never inline in other comments.',
+    '#warning' => array(
+      '#text' => '@see should always be at the beginning of a line, never inline in other comments.',
+      '#link' => _drupalnode(1354),
+    ),
     '#severity' => 'minor',
   );
   $rules[] = array(
@@ -47,7 +50,10 @@ function coder_review_comment_reviews() {
     '#source' => 'comment',
     '#value' => '\@see\s*.*',
     '#not' => '^\@see\s+((\w+\(\)|[\w\.\-\?\/:\&=]+\.[\w\.\->\?\/:\&=]+)[,\s]+)*(\w+\(\)|[\w\.\->\?\/:\&=]+\.[\w\.\->\?\/:\&=]+)\W*$',
-    '#warning' => '@see should always be followed by a filename, a URL, class/interface name (optionally including method), or a function name including ().',
+    '#warning' => array(
+      '#text' => '@see should always be followed by a filename, a URL, class/interface name (optionally including method), or a function name including ().',
+      '#link' => _drupalnode(1354),
+    ),
     '#severity' => 'minor',
   );
   $rules[] = array(
@@ -55,7 +61,10 @@ function coder_review_comment_reviews() {
     '#source' => 'comment',
     '#value' => '\@see\s*\w+.*$',
     '#not' => '^\@see\s+([\w\.\-\(\)\?\/:\&=]+,\s)*[\w\.\-\(\)\?\/:\&=]+?[\w\(\)\/]$',
-    '#warning' => '@see references should be separated by "," followed by a single space and with no trailing punctuation',
+    '#warning' => array(
+      '#text' => '@see references should be separated by "," followed by a single space and with no trailing punctuation',
+      '#link' => _drupalnode(1354),
+    ),
     '#severity' => 'minor',
   );
   $rules[] = array(
@@ -63,7 +72,10 @@ function coder_review_comment_reviews() {
     '#source' => 'comment',
     '#value' => '\@see\s.*$',
     '#not' => '^\@see [^\s]',
-    '#warning' => '@see should be separated from the references by one space only',
+    '#warning' => array(
+      '#text' => '@see should be separated from the references by one space only',
+      '#link' => _drupalnode(1354),
+    ),
     '#severity' => 'minor',
   );
   $rules[] = array(
@@ -137,7 +149,7 @@ function coder_review_comment_reviews() {
 
   $review = array(
     '#title' => 'Drupal Commenting Standards',
-    '#link' => _drupalnode(318),
+    '#link' => _drupalnode(318, 'comment'),
     '#rules' => $rules,
     '#description' => 'Checks for the Drupal commenting standards; every developer should use this.',
   );
