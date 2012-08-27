@@ -146,6 +146,13 @@ function coder_review_comment_reviews() {
     '#severity' => 'minor',
     '#case-sensitive' => TRUE,
   );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#source' => 'all',
+    '#value' => '^\s*\/\*$',
+    '#warning' => 'Block comments should begin with /** and not /*',
+    '#severity' => 'minor',
+  );
 
   $review = array(
     '#title' => 'Drupal Commenting Standards',

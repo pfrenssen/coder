@@ -325,6 +325,7 @@ function coder_review_6x_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'function\s+[a-z0-9_]+_(help)\s*\(\s*[^,]+\)',
+    '#not' => '_drush_help\(',
     '#warning' => array(
       '#text' => 'The arguments to !hook_help() have changed',
       '#args' => array(

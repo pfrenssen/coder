@@ -39,13 +39,11 @@ function coder_review_i18n_reviews() {
     '#value' => '[\s\(]t\s*\(\s*[\'"]',
     '#function' => '_install$',
     '#warning' => array(
-      '#text' => 'Use !st() instead of !t() in !hook_install(), !hook_uninstall() and !hook_update_N()',
+      '#text' => 'Use !st() instead of !t() in !hook_install()',
       '#args' => array(
         '!st' => _drupalapi('st'),
         '!t' => _drupalapi('t'),
         '!hook_install' => _drupalapi('hook_install'),
-        '!hook_uninstall' => _drupalapi('hook_uninstall'),
-        '!hook_update_N' => _drupalapi('hook_update_N'),
       ),
     ),
   );

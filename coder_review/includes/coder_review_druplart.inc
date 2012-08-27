@@ -10,8 +10,27 @@
 function coder_review_druplart_reviews() {
   $rules[] = array(
     '#type' => 'regex',
-    '#value' => 'if \(.* = .*\)',
+    '#value' => 'if \(.*\s+=\s+.*\)',
     '#warning' => 'Consider putting the assignment on a line above the conditional.',
+    '#severity' => 'minor',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => 'global\s+\$user;',
+    '#warning' => 'Use $GLOBALS[\'user\'] instead of global $user, because the latter is prone to accidentally overwriting the global user object.',
+    '#severity' => 'minor',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#function' => '_(submit|validate)$',
+    '#value' => '\s+return\s+(TRUE|FALSE)',
+    '#warning' => 'Submit and validate handlers return values are ignored.',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#function' => '_menu$',
+    '#value' => '\s+\$items\s+=\s+array\(\)',
+    '#warning' => 'This array initialization is unnecessary if the array is assigned in all code paths.',
     '#severity' => 'minor',
   );
 
@@ -22,5 +41,6 @@ function coder_review_druplart_reviews() {
     '#description' => 'Checks for coding style suggested by the author.',
     '#version' => 2,
   );
+print_r($review);
   return array('druplart' => $review);
 }

@@ -81,11 +81,14 @@ function coder_review_drush_review() {
     if (drush_get_option($option)) {
       $settings = _coder_review_get_default_settings($option);
       $settings['coder_includes'] = TRUE;
+      break;
     }
+  }
+  if (!isset($settings)) {
+    $settings = _coder_review_get_default_settings();
   }
 
   // Get the command line options ignore options.
-  $settings = _coder_review_get_default_settings();
   $ignore_option = drush_get_option('ignore');
   if ($ignore_option) {
     foreach (explode(',', $ignore_option) as $option) {
@@ -304,7 +307,7 @@ function theme_drush_coder_review_warning($variables) {
   }
 
   // Return warning as text output, formatted for the drush screen.
-  $output  = $variables['lineno'] ? '+' . $variables['lineno'] . ': ' : '';
+  $output  = $variables['lineno'] ? ($variables['lineno'] == -1 ? dt('File') : ('+' . $variables['lineno'])) . ': ' : '';
   $output .= '[' . $variables['severity_name'] . '] ';
   if (is_string($variables['warning'])) {
     $output .= $variables['warning'];

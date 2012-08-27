@@ -43,7 +43,7 @@ function coder_review_sql_reviews() {
     '#type' => 'regex',
     '#value' => '^(select\s+.*\s+from\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s' . $table . ')\s+.*!=',
     '#source' => 'quote',
-    '#warning' => 'Use ANSI standard <> instead of !=',
+    '#warning' => 'Use ANSI standard &lt;&gt; instead of !=',
   );
   $rules[] = array(
     '#type' => 'regex',

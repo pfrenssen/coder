@@ -962,6 +962,76 @@ function _coder_review_search_string($line, $rule) {
 }
 
 /**
+ * Returns a active settings array for coder_review.
+ *
+ * The name is a misnomer, but is a largely correct characterization
+ * for most of Coder's settings as the variables usually do not exist.
+ *
+ * @param $args
+ *   String settings argument, can be 'settings', 'active', 'core', 'all'
+ *   and 'default'.
+ *
+ * @return
+ *   Associative array of settings in form setting name => setting value.
+ */
+function _coder_review_get_default_settings($arg = 'default') {
+  $settings['coder_reviews'] = _variable_get('coder_reviews', _coder_review_default_reviews());
+  $settings['coder_severity'] = _variable_get('coder_severity', SEVERITY_NORMAL);
+
+  // Determine any options based on the passed in URL.
+  switch ($arg) {
+    case 'settings':
+      $settings['coder_includes'] = 1;
+      break;
+
+    case 'active':
+      $settings['coder_active_modules'] = 1;
+      break;
+
+    case 'core':
+      $settings['coder_core'] = 1;
+      $settings['coder_includes'] = 1;
+      break;
+
+    case 'all':
+      $settings['coder_core'] = 1;
+      $settings['coder_includes'] = 1;
+      $settings['coder_all'] = 1;
+      break;
+
+    case 'contrib':
+      $settings['coder_includes'] = 1;
+      $settings['coder_contrib'] = 1;
+      break;
+
+    case 'files':
+      $settings['coder_files'] = 1;
+      break;
+
+    case 'patches':
+      $settings['coder_patches'] = 1;
+      break;
+
+    case 'default':
+      $settings['coder_active_modules'] = _variable_get('coder_active_modules', 1);
+      $settings['coder_core'] = _variable_get('coder_core', 0);
+      $settings['coder_includes'] = _variable_get('coder_includes', 0);
+      $settings['coder_includes_exclusions'] = _variable_get('coder_includes_exclusions', '');
+      $settings['coder_modules'] = _variable_get('coder_modules', array());
+      $settings['coder_themes'] = _variable_get('coder_themes', array());
+      break;
+
+    default:
+      $settings['coder_includes'] = 1;
+      $settings['coder_includes_exclusions'] = _variable_get('coder_includes_exclusions', '');
+      // TODO: Does this need to go into coder_review_themes sometimes?
+      $settings['coder_modules'] = array($arg => $arg);
+      break;
+  }
+  return $settings;
+}
+
+/**
  * Return true if $module is in Drupal core.
  */
 function _coder_review_is_drupal_core($system) {
