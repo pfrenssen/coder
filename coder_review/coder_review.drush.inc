@@ -18,7 +18,7 @@ function coder_review_drush_command() {
       'major' => 'Show major and critical warnings.',
       'minor' => 'Show all warnings.',
       'critical' => 'Show only critical warnings.',
-      'reviews' => 'Run the specified review(s), accepts a comma separated list (no spaces) of style,i18n,security,sql,comment,upgrade7x,upgrade8x.',
+      'reviews' => 'Run the specified review(s), "all" runs all reviews, also accepts a comma separated list (no spaces).',
       'comment' => 'Run the comment review.',
       'style' => 'Run the style review (default).',
       'i18n' => 'Run the i18n review.',
@@ -99,9 +99,14 @@ function coder_review_drush_review() {
   $reviews = array();
   $reviews_option = drush_get_option('reviews');
   if ($reviews_option) {
-    foreach (explode(',', $reviews_option) as $option) {
-      if (isset($avail_reviews[$option])) {
-        $reviews[$option] = $option;
+    if ($reviews_option == 'all') {
+       $reviews += drupal_map_assoc(array_keys($avail_reviews));
+    }
+    else {
+      foreach (explode(',', $reviews_option) as $option) {
+        if (isset($avail_reviews[$option])) {
+          $reviews[$option] = $option;
+        }
       }
     }
   }
