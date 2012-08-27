@@ -375,7 +375,7 @@ function coder_review_7x_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'php',
-    '#value' => '[\s\(]drupal_(un)*install_schema\s*\(',
+    '#value' => '[\s\(]drupal_(un)?install_schema\s*\(',
     '#warning' => array(
       '#text' => 'A module no longer should explicitly install or uninstall its database schema in !hook_install() or !hook_uninstall().',
       '#args' => array(
@@ -384,6 +384,7 @@ function coder_review_7x_reviews() {
       ),
       '#link' => _drupalnode(224333, 'install-schema'),
     ),
+    '#function' => '_(un)?install$',
     '#function-not' => '^system_install$',
     '#filename' => array('install'),
   );
