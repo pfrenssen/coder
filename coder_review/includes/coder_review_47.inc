@@ -175,6 +175,7 @@ function coder_review_47_reviews() {
     '#link' => _drupalnode(22218),
     '#rules' => $rules,
     '#severity' => 'critical',
+    '#version' => 2,
   );
   return array('upgrade47' => $review);
 }

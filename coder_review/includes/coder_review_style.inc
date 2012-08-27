@@ -169,6 +169,7 @@ function coder_review_style_reviews() {
     '#link' => _drupalnode(318),
     '#rules' => $rules,
     '#description' => 'Checks for Drupal coding standards. Every developer should use this.',
+    '#version' => 2,
   );
   return array('style' => $review);
 }

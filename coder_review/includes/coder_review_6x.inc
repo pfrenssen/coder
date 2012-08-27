@@ -885,6 +885,7 @@ function coder_review_6x_reviews() {
     '#link' => _drupalnode(114774),
     '#rules' => $rules,
     '#severity' => 'critical',
+    '#version' => 2,
   );
   return array('upgrade6x' => $review);
 }

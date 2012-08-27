@@ -66,9 +66,7 @@ function _coder_review_set_form_modules(&$settings) {
  */
 function coder_review_drush_review() {
   // Bootstrap enough to run.
-  if (!function_exists('coder_review_reviews')) {
-    require_once realpath(dirname(__FILE__)) . '/coder_review.module';
-  }
+  require_once realpath(dirname(__FILE__)) . '/coder_review.common.inc';
 
   // Get the command line options severity options.
   $severity = drush_get_option('severity');
@@ -143,7 +141,7 @@ function coder_review_drush_review() {
           if (isset($avail_reviews[$arg])) {
             return drush_set_error(dt('use --reviews or --@option.', array('@option' => $arg)));
           }
-          elseif (strpos($arg, '*') !== FALSE || strpos($arg, '%') !== FALSE) {
+          elseif (function_exists('db_query') && (strpos($arg, '*') !== FALSE || strpos($arg, '%') !== FALSE)) {
             $result = db_query('SELECT name FROM {system} WHERE name LIKE :name', array(':name' => str_replace('*', '%', $arg)));
             foreach ($result as $system) {
               $settings['coder_modules-' . $system->name] = 1;
@@ -166,7 +164,7 @@ function coder_review_drush_review() {
               $settings['coder_patch_link'] = $arg;
             }
             else {
-              $path = preg_replace(",^$root/,", '', $_SERVER['OLDPWD'] . '/' . $arg);
+              $path = preg_replace(",^$root/,", '', (function_exists('drush_getcwd') ? drush_getcwd() : getcwd()) . '/' . $arg);
               if (file_exists($path)) {
                 $settings['coder_files'] = 1;
                 if (empty($settings['coder_file_list'])) {
@@ -174,6 +172,7 @@ function coder_review_drush_review() {
                 }
                 if (is_dir($path)) {
                   $ext = _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
+                  // @todo: convert this to not use drupal_system_listing().
                   $settings['coder_file_list'] .= implode("\n", array_keys(drupal_system_listing('/\.(' . implode('|', $ext) . ')$/', $path, 'filepath', 0)));
                 }
                 else {
@@ -242,13 +241,11 @@ function _coder_review_drush_is_patch_arg(&$arg, $root) {
   if (substr($arg, 0, 7) == 'http://') {
     return TRUE;
   }
-  if (preg_match('/\.(patch|diff|tmp)$/', $arg)) {
-    if (isset($_SERVER['OLDPWD'])) {
-      $path = preg_replace(",^$root/,", '', $_SERVER['OLDPWD'] . '/' . $arg);
-      if (is_file($path)) {
-        $arg = $path;
-        return TRUE;
-      }
+  if (_drush() && preg_match('/\.(patch|diff|tmp)$/', $arg)) {
+    $path = preg_replace(",^$root/,", '', drush_cwd() . '/' . $arg);
+    if (is_file($path)) {
+      $arg = $path;
+      return TRUE;
     }
   }
 }

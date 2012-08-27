@@ -5,6 +5,7 @@ core = 7.x
 dependencies[] = coder
 
 ; only list files with class declarations
+;files[] = coder_review.common.inc
 files[] = tests/coder_review_test_case.tinc
 files[] = tests/coder_review_6x.test
 files[] = tests/coder_review_7x.test

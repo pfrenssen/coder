@@ -152,6 +152,7 @@ function coder_review_i18n_reviews() {
   $review = array(
     '#title' => 'Internationalization',
     '#rules' => $rules,
+    '#version' => 2,
   );
   return array('i18n' => $review);
 }

@@ -16,6 +16,7 @@ function coder_review_8x_reviews() {
     '#link' => 'http://drupal.org/list-changes/drupal?to_branch=8.x',
     '#rules' => $rules,
     '#severity' => 'critical',
+    '#version' => 2,
   );
 
   return array('upgrade8x' => $review);

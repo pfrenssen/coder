@@ -11,6 +11,9 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
   function __construct($review_name, $id = NULL) {
     parent::__construct($id);
     $this->review_name = $review_name;
+
+    // Bootstrap enough to run.
+    require_once realpath(dirname(__FILE__)) . '/../coder_review.common.inc';
   }
 
   function setUp() {
@@ -18,7 +21,10 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
   }
 
   function runTest($code, $severity = SEVERITY_MINOR) {
+    // Get the available reviews.
     $reviews = coder_review_reviews();
+
+    // Get the required extensions.
     $ext = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
 
     // Review code snippets in the test files.
@@ -39,7 +45,10 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
   }
 
   function runTestModuleTest($severity = SEVERITY_MINOR) {
+    // Get the available reviews.
     $reviews = coder_review_reviews();
+
+    // Get the required extensions.
     $ext = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
 
     // Review the coder_review_test module.

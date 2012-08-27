@@ -152,6 +152,7 @@ function coder_review_comment_reviews() {
     '#link' => _drupalnode(318, 'comment'),
     '#rules' => $rules,
     '#description' => 'Checks for the Drupal commenting standards; every developer should use this.',
+    '#version' => 2,
   );
   return array('comment' => $review);
 }

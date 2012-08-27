@@ -13,9 +13,9 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => 'Coder Security Tests',
+      'name' => 'Coder Review Security Tests',
       'description' => 'Tests for the coder security review.',
-      'group' => 'CoderRevew',
+      'group' => 'CoderReview',
     );
   }
 

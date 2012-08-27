@@ -20,6 +20,7 @@ function coder_review_druplart_reviews() {
     '#link' => 'http://drupalwatchdog.com/2/1/druplart',
     '#rules' => $rules,
     '#description' => 'Checks for coding style suggested by the author.',
+    '#version' => 2,
   );
   return array('druplart' => $review);
 }

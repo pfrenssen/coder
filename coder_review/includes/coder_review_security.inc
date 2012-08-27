@@ -224,6 +224,7 @@ function coder_review_security_reviews() {
     '#rules' => $rules,
     '#severity' => 'critical',
     '#description' => 'Checks for security issues. This is a very basic security check. It errs on the side of caution so may give false positives.',
+    '#version' => 2,
   );
   return array('security' => $review);
 }

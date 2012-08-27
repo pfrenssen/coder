@@ -13,9 +13,9 @@ class CoderReviewCommentTest extends CoderReviewTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => 'Coder Comment Style Tests',
+      'name' => 'Coder Review Comment Style Tests',
       'description' => 'Tests for the coder commenting standards review.',
-      'group' => 'CoderRevew',
+      'group' => 'CoderReview',
     );
   }
 

@@ -130,6 +130,7 @@ function coder_review_5x_reviews() {
     '#link' => _drupalnode(64279),
     '#rules' => $rules,
     '#severity' => 'critical',
+    '#version' => 2,
   );
   return array('upgrade5x' => $review);
 }

@@ -1219,7 +1219,7 @@ function coder_review_7x_reviews() {
       '#text' => '!drupal_clone() has been removed and the PHP 5 !clone should be used instead.',
       '#args' => array(
         '!drupal_clone' => _drupalapi('drupal_clone', 6),
-        '!clone' => l(_t('!clone', array('!clone' => 'clone')), 'http://us.php.net/language.oop5.cloning'),
+        '!clone' => _phpapi('clone'),
       ),
       '#link' => _drupalnode(224333, 'drupal_clone'),
     ),
@@ -1242,6 +1242,7 @@ function coder_review_7x_reviews() {
     '#link' => _drupalnode(394070),
     '#rules' => $rules,
     '#severity' => 'critical',
+    '#version' => 2,
   );
   return array('upgrade7x' => $review);
 }
