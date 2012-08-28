@@ -217,26 +217,8 @@ function do_coder_reviews($coder_args) {
  *   Integer 1 if success.
  */
 function _coder_review_read_and_parse_file(&$coder_args) {
-  $is_php_file = 1;
   $regex = '/(' . implode('|', array_merge(array('module'), $coder_args['#php_extensions'])) . ')$/';
-  if (!preg_match($regex, $coder_args['#filename'])) {
-    $is_php_file = 0;
-/*
-    // If this isn't a php file, then don't try to parse it.
-    if ((($filepath = realpath($coder_args['#filename'])) && file_exists($filepath))) {
-      $full_lines = file($filepath);
-      if ($full_lines[0] != '<?php') {
-        foreach ($full_lines as $lineno => $line) {
-          if (($line = trim($line, "\r\n")) != '') {
-            $all_lines[$lineno] = $line;
-          }
-        }
-        $coder_args['#all_lines'] = $all_lines;
-        return 1;
-      }
-    }
-*/
-  }
+  $is_php_file = preg_match($regex, $coder_args['#filename']);
 
   $filepath = realpath($coder_args['#filename']);
   // Get the path to the module file.
@@ -779,46 +761,74 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
     $regex = '/' . $rule['#value'] . '/' . $regexflags;
     $class_regex = isset($rule['#class']) ? '/' . $rule['#class'] . '/' : '';
     $class_not_regex = isset($rule['#class-not']) ? '/' . $rule['#class-not'] . '/' : '';
-    $class_current = '';
+    $class_current = array();
     $class_paren = 0;
+    $class_current_parens = array();
     $function_regex = isset($rule['#function']) ? '/' . $rule['#function'] . '/' : '';
     $function_not_regex = isset($rule['#function-not']) ? '/' . $rule['#function-not'] . '/' : '';
-    $function_current = '';
+    $function_current = array();
     $function_paren = 0;
+    $function_current_parens = array();
     $not_regex = isset($rule['#not']) ? '/' . $rule['#not'] . '/' . $regexflags : '';
     $never_regex = isset($rule['#never']) ? '/' . $rule['#never'] . '/' . $regexflags : '';
     foreach ($lines as $lineno => $line_array) {
-      foreach ($line_array as $line) {
+      foreach ($line_array as $linematch => $line) {
         // Some rules apply only within certain functions.
+        // @todo: Take into account that PHP supports nested classes and functions.
         if ($function_regex || $function_not_regex) {
-          if (preg_match('/function (\w+)\s*\(/', $line, $match)) {
-            $function_current = $match[1];
-          }
-          if (preg_match('/([{}])/', $line, $match)) {
-            $function_paren += ($match[0] == '{') ? 1 : -1;
-          }
-          if ($function_paren < 0 || $function_current == ''
-              || ($function_regex && !preg_match($function_regex, $function_current))
-              || ($function_not_regex && preg_match($function_not_regex, $function_current))
-              ) {
-            continue;
+          // Use PHP lines (sanitized sanitized), to avoid matches in strings and comments.
+          if (!empty($coder_args['#php_array_lines'][$lineno][$linematch])) {
+            $phpline = $coder_args['#php_array_lines'][$lineno][$linematch];
+            if (preg_match('/function (\w+)\s*\(/', $phpline, $match) && !preg_match('/;/', $phpline)) {
+              array_unshift($function_current, $match[1]);
+              array_unshift($function_current_parens, $function_paren);
+            }
+            if (preg_match_all('/([{}])/', $phpline, $match)) {
+              foreach ($match[0] as $paren_match) {
+                $function_paren += ($paren_match == '{') ? 1 : -1;
+              }
+
+              if ($function_paren <= $function_current_parens[0]) {
+                array_shift($function_current);
+                array_shift($function_current_parens);
+              }
+            }
           }
         }
+
         // Some rules apply only within certain classes.
+        // @todo: Take into account that PHP supports nested classes and functions.
         if ($class_regex || $class_not_regex) {
-          if (preg_match('/class (\w+)/', $line, $match) || preg_match('/interface (\w+)/', $line, $match)) {
-            $class_current = $match[1];
-          }
-          if (preg_match('/([{}])/', $line, $match)) {
-            $class_paren += ($match[0] == '{') ? 1 : -1;
-          }
-          if ($class_paren < 0 || ($class_regex && $class_current == '')
-            || ($class_regex && !preg_match($class_regex, $class_current))
-            || ($class_not_regex && preg_match($class_not_regex, $class_current))
-            ) {
-            continue;
+          // Use PHP lines (sanitized sanitized), to avoid matches in strings and comments.
+          if (!empty($coder_args['#php_array_lines'][$lineno][$linematch])) {
+            $phpline = $coder_args['#php_array_lines'][$lineno][$linematch];
+            if (preg_match('/class (\w+)/', $phpline, $match) || preg_match('/interface (\w+)/', $phpline, $match)) {
+              array_unshift($class_current, $match[1]);
+              array_unshift($class_current_parens, $class_paren);
+            }
+            if (preg_match_all('/([{}])/', $phpline, $match)) {
+              foreach ($match[0] as $paren_match) {
+                $class_paren += ($paren_match == '{') ? 1 : -1;
+              }
+
+              if ($class_paren <= $class_current_parens[0]) {
+                array_shift($class_current);
+                array_shift($class_current_parens);
+              }
+            }
           }
         }
+
+            if (   ($function_regex && (!$function_current || !preg_match($function_regex, $function_current[0])))
+                || ($function_not_regex && $function_current && preg_match($function_not_regex, $function_current[0]))
+               ) {
+              continue;
+            }
+            if (   ($class_regex && (!$class_current || !preg_match($class_regex, $class_current[0])))
+                || ($class_not_regex && $class_current && preg_match($class_not_regex, $class_current[0]))
+               ) {
+              continue;
+            }
 
         if (preg_match($regex, $line, $matches)) {
           // Don't match some regex's.
@@ -975,6 +985,19 @@ function _coder_review_search_string($line, $rule) {
  *   Associative array of settings in form setting name => setting value.
  */
 function _coder_review_get_default_settings($arg = 'default') {
+  $settings = array(
+    'coder_includes' => 0,
+    'coder_includes_exclusions' => '',
+    'coder_active_modules' => 0,
+    'coder_core' => 0,
+    'coder_all' => 0,
+    'coder_contrib' => 0,
+    'coder_files' => 0,
+    'coder_file_list' => '',
+    'coder_patches' => 0,
+    'coder_modules' => array(),
+    'coder_themes' => array(),
+  );
   $settings['coder_reviews'] = _variable_get('coder_reviews', _coder_review_default_reviews());
   $settings['coder_severity'] = _variable_get('coder_severity', SEVERITY_NORMAL);
 

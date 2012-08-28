@@ -10,14 +10,28 @@
 function coder_review_druplart_reviews() {
   $rules[] = array(
     '#type' => 'regex',
-    '#value' => 'if \(.*\s+=\s+.*\)',
-    '#warning' => 'Consider putting the assignment on a line above the conditional.',
+    '#value' => 'if\s+\(.*(&&|\|\|)\s+\$\w+\s+[\+\-\*\/\.]?=\s+.*\)',
+    '#warning' => 'Dangerous assignment inside conditional may never happen, consider first putting on a separate line, or at the very least, use parenthesis to force precedence.',
+    '#severity' => 'minor',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => 'if \(\!\(.*\s+=\s+.*\)\)',
+    '#warning' => 'Consider removing the extra parenthesis, instead use if (!$foo = bar()) {.',
+    '#severity' => 'minor',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => 'if\s+\(.*\$\w+\s+[\+\-\*\/\.]?=\s+.*\)',
+    // Don't display this if we match either of the regex's above.
+    '#not' => '(' . $rules[0]['#value'] . '|' . $rules[1]['#value'] .')',
+    '#warning' => 'Consider putting the assignment on a line above the conditional for better readability.',
     '#severity' => 'minor',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'global\s+\$user;',
-    '#warning' => 'Use $GLOBALS[\'user\'] instead of global $user, because the latter is prone to accidentally overwriting the global user object.',
+    '#warning' => 'Consider $GLOBALS[\'user\'] instead of global $user.',
     '#severity' => 'minor',
   );
   $rules[] = array(
@@ -30,7 +44,7 @@ function coder_review_druplart_reviews() {
     '#type' => 'regex',
     '#function' => '_menu$',
     '#value' => '\s+\$items\s+=\s+array\(\)',
-    '#warning' => 'This array initialization is unnecessary if the array is assigned in all code paths.',
+    '#warning' => 'Array initialization may be unnecessary if the array is assigned in all code paths.',
     '#severity' => 'minor',
   );
 
@@ -41,6 +55,5 @@ function coder_review_druplart_reviews() {
     '#description' => 'Checks for coding style suggested by the author.',
     '#version' => 2,
   );
-print_r($review);
   return array('druplart' => $review);
 }

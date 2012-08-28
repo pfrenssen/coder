@@ -80,7 +80,7 @@ function coder_review_drush_review() {
   foreach (array('active', 'core', 'contrib', 'all', 'default') as $option) {
     if (drush_get_option($option)) {
       $settings = _coder_review_get_default_settings($option);
-      $settings['coder_includes'] = TRUE;
+      $settings['coder_includes'] = 1;
       break;
     }
   }
@@ -163,7 +163,7 @@ function coder_review_drush_review() {
             unset($settings['coder_core']);
             unset($settings['coder_all']);
             unset($settings['coder_modules']);
-            $settings['coder_includes'] = TRUE;
+            $settings['coder_includes'] = 1;
           }
           else {
             $root = dirname(__FILE__);
@@ -182,14 +182,18 @@ function coder_review_drush_review() {
                   $ext = _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
                   // @todo: convert this to not use drupal_system_listing().
                   $settings['coder_file_list'] .= implode("\n", array_keys(drupal_system_listing('/\.(' . implode('|', $ext) . ')$/', $path, 'filepath', 0)));
+                  $settings['coder_includes'] = 1;
                 }
                 else {
+                  if (empty($settings['coder_file_lsit'])) {
+                    $settings['coder_includes'] = 0;
+                  }
                   $settings['coder_file_list'] .= $path . "\n";
                 }
               }
               else {
                 $settings['coder_modules-' . $arg] = 1;
-                $settings['coder_includes'] = TRUE;
+                $settings['coder_includes'] = 1;
               }
             }
             unset($settings['coder_active_modules']);

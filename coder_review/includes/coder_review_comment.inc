@@ -151,7 +151,25 @@ function coder_review_comment_reviews() {
     '#source' => 'all',
     '#value' => '^\s*\/\*$',
     '#warning' => 'Block comments should begin with /** and not /*',
+    '#function-not' => '.+',
+    // @todo: this rule misses function header comments inside a class
+    // because we can't tell the difference between a comment above a function and one above a variable.
+    '#class-not' => '.+',
     '#severity' => 'minor',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#source' => 'all',
+    '#value' => '^\s*\/\*',
+    '#warning' => 'C style comments should not be used within functions.',
+    '#function' => '.+',
+    '#severity' => 'minor',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#source' => 'all',
+    '#value' => '^\s*#
+    '#warning' => 'Do not use shell style comments (lines beginning with a #).',
   );
 
   $review = array(
