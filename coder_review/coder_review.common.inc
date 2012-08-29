@@ -164,7 +164,7 @@ function do_coder_reviews($coder_args) {
     foreach ($errors as $key => $error) {
       if (is_numeric($key)) {
         $error['warning'] = _coder_review_warning($error['rule']);
-        $results[$key] = theme('coder_review_warning_msg', array('error' => $error));
+        $results[$key] = theme_coder_review_warning_msg(array('error' => $error));
       }
     }
 
@@ -185,6 +185,91 @@ function do_coder_reviews($coder_args) {
   }
 
   return $results;
+}
+
+/**
+ * Format a coder_review warning to be included in results, creating the text.
+ *
+ * @param $results
+ *   Results array variable to save errors to.
+ * @param $error
+ *   Error array from _coder_review_error().
+ */
+function theme_coder_review_warning_msg($variables) {
+  $error = $variables['error'];
+  $error['warning'] = _coder_review_warning($error['rule']);
+  return theme_coder_review_warning($error);
+}
+
+/**
+ * Format a coder_review warning to be included in results.
+ *
+ * @param $warning
+ *   Either summary warning description, or an array in format:
+ *     - '#warning' => Summary warning description;
+ *     - '#description' => Detailed warning description;
+ *     - '#link' => Link to an explanatory document.
+ * @param $severity_name
+ *   String severity name.
+ * @param $lineno
+ *   Integer line number of error.
+ * @param $line
+ *   String contents of line.
+ */
+function theme_coder_review_warning($variables) {
+  // Theme the output for the Drupal shell.
+  if (_drush()) {
+    return theme_drush_coder_review_warning($variables);
+  }
+
+  $warning = $variables['warning'];
+  $severity_name = $variables['severity_name'];
+  $lineno = $variables['lineno'];
+  $line = $variables['line'];
+
+  // Extract description from warning.
+  if (is_array($warning)) {
+    $description = isset($warning['#description']) ? _t($warning['#description']) : '';
+    if (isset($warning['#warning'])) {
+      $warning_msg = _t($warning['#warning']);
+    }
+    elseif (isset($warning['#text'])) {
+      $warning += array('#args' => array());
+      $warning_msg = _t($warning['#text'], $warning['#args']);
+    }
+    if (isset($warning['#link'])) {
+      $warning_msg .= ' (' . l(_t('Drupal Docs'), $warning['#link']) . ')';
+    }
+    $warning = $warning_msg;
+  }
+  if ($lineno) {
+    if ($lineno > 0) {
+      $warning = _t('Line @number: !warning', array('@number' => $lineno, '!warning' => $warning));
+    }
+    else {
+      $warning = _t('File: !warning', array('!warning' => $warning));
+    }
+    if ($line) {
+      $warning .= '<pre>' . check_plain($line) . '</pre>';
+    }
+  }
+  $class = 'coder-warning';
+  if ($severity_name) {
+    $class .= " coder-$severity_name";
+  }
+  $path = _coder_review_path() . '/..';
+  $title = _t('severity: @severity', array('@severity' => $severity_name));
+  $img = theme('image', array(
+    'path' => $path . "/images/$severity_name.png",
+    'alt' => $title, 'title' => $title,
+    'attributes' => array('align' => 'right', 'class' => 'coder'),
+    'getsize' => FALSE,
+  ));
+  if (!empty($description)) {
+    $img .= theme('image', array('path' => $path . '/images/more.png', 'alt' => t('click to read more'), 'atributes' => array('align' => 'right', 'class' => 'coder-more'), 'getsize' => FALSE));
+    $warning .= '<div class="coder-description">' . t('Explanation: @description', array('@description' => $description)) . '</div>';
+  }
+  return '<div class="' . $class . '">' . $img . $warning . '</div>';
 }
 
 /**
@@ -737,7 +822,7 @@ function do_coder_review($coder_args, $review) {
       }
 
       // If it's a patch, it can contain any sort of file, so ensure the file
-      // being processed is either php or one of the supported extensions.
+      // being processed is either PHP or one of the supported extensions.
       if ($is_patch) {
         $regex = '/(' . implode('|', $allowed_extensions) . ')$/i';
         if (!preg_match($regex, $filename, $matches)) {

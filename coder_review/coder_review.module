@@ -481,43 +481,6 @@ function _coder_review_settings_form($settings, &$system, &$files) {
 }
 
 /**
- * Implement theme function for table_cols.
- *
- * Implement theme_cols to theme the radiobuttons and checkboxes form
- * elements in a table column.
- */
-function theme_coder_review_table_cols($variables) {
-  if (!isset($variables['form']) || !is_array($variables['form'])) {
-    return '';
-  }
-  $form = $variables['form'];
-  $total = 0;
-  $cols = isset($form['#cols']) ? $form['#cols'] : 3;
-  foreach ($form as $element_id => $element) {
-    if ($element_id[0] != '#') {
-      ++$total;
-    }
-  }
-  $total = (int) (($total % $cols) ? (($total + $cols - 1) / $cols) : ($total / $cols));
-  $pos = 0;
-  $rows = array();
-
-  foreach ($form as $element_id => $element) {
-    if ($element_id[0] != '#') {
-      ++$pos;
-      $row = $pos % $total;
-      $col = $pos / $total;
-      if (!isset($rows[$row])) {
-        $rows[$row] = array();
-      }
-      $rows[$row][$col] = drupal_render($element);
-    }
-  }
-
-  return theme('table', array('rows' => $rows, 'attributes' => array('id' => 'filter-order')));
-}
-
-/**
  * Generate settings array for either modules or themes.
  *
  * @param $form_state
@@ -977,19 +940,6 @@ function coder_review_theme() {
         'results' => NULL,
       ),
     ),
-    'coder_review_warning' => array(
-      'variables' => array(
-        'warning' => NULL,
-        'severity_name' => NULL,
-        'lineno' => NULL,
-        'line' => NULL,
-      ),
-    ),
-    'coder_review_warning_msg' => array(
-      'variables' => array(
-        'error' => NULL,
-      ),
-    ),
     'coder_review_table_cols' => array(
       'render element' => 'form',
     ),
@@ -1015,88 +965,40 @@ function theme_coder_review($variables) {
 }
 
 /**
- * Format a coder_review warning to be included in results, creating the text.
+ * Implement theme function for table_cols.
  *
- * @param $results
- *   Results array variable to save errors to.
- * @param $error
- *   Error array from _coder_review_error().
+ * Implement theme_cols to theme the radiobuttons and checkboxes form
+ * elements in a table column.
  */
-function theme_coder_review_warning_msg($variables) {
-  $error = $variables['error'];
-  $error['warning'] = _coder_review_warning($error['rule']);
-  return theme('coder_review_warning', $error);
-}
+function theme_coder_review_table_cols($variables) {
+  if (!isset($variables['form']) || !is_array($variables['form'])) {
+    return '';
+  }
+  $form = $variables['form'];
+  $total = 0;
+  $cols = isset($form['#cols']) ? $form['#cols'] : 3;
+  foreach ($form as $element_id => $element) {
+    if ($element_id[0] != '#') {
+      ++$total;
+    }
+  }
+  $total = (int) (($total % $cols) ? (($total + $cols - 1) / $cols) : ($total / $cols));
+  $pos = 0;
+  $rows = array();
 
-/**
- * Format a coder_review warning to be included in results.
- *
- * @param $warning
- *   Either summary warning description, or an array in format:
- *     - '#warning' => Summary warning description;
- *     - '#description' => Detailed warning description;
- *     - '#link' => Link to an explanatory document.
- * @param $severity_name
- *   String severity name.
- * @param $lineno
- *   Integer line number of error.
- * @param $line
- *   String contents of line.
- */
-function theme_coder_review_warning($variables) {
-  // Theme the output for the Drupal shell.
-  if (_drush()) {
-    return theme_drush_coder_review_warning($variables);
+  foreach ($form as $element_id => $element) {
+    if ($element_id[0] != '#') {
+      ++$pos;
+      $row = $pos % $total;
+      $col = $pos / $total;
+      if (!isset($rows[$row])) {
+        $rows[$row] = array();
+      }
+      $rows[$row][$col] = drupal_render($element);
+    }
   }
 
-  $warning = $variables['warning'];
-  $severity_name = $variables['severity_name'];
-  $lineno = $variables['lineno'];
-  $line = $variables['line'];
-
-  // Extract description from warning.
-  if (is_array($warning)) {
-    $description = isset($warning['#description']) ? _t($warning['#description']) : '';
-    if (isset($warning['#warning'])) {
-      $warning_msg = _t($warning['#warning']);
-    }
-    elseif (isset($warning['#text'])) {
-      $warning += array('#args' => array());
-      $warning_msg = _t($warning['#text'], $warning['#args']);
-    }
-    if (isset($warning['#link'])) {
-      $warning_msg .= ' (' . l(_t('Drupal Docs'), $warning['#link']) . ')';
-    }
-    $warning = $warning_msg;
-  }
-  if ($lineno) {
-    if ($lineno > 0) {
-      $warning = _t('Line @number: !warning', array('@number' => $lineno, '!warning' => $warning));
-    }
-    else {
-      $warning = _t('File: !warning', array('!warning' => $warning));
-    }
-    if ($line) {
-      $warning .= '<pre>' . check_plain($line) . '</pre>';
-    }
-  }
-  $class = 'coder-warning';
-  if ($severity_name) {
-    $class .= " coder-$severity_name";
-  }
-  $path = _coder_review_path() . '/..';
-  $title = _t('severity: @severity', array('@severity' => $severity_name));
-  $img = theme('image', array(
-    'path' => $path . "/images/$severity_name.png",
-    'alt' => $title, 'title' => $title,
-    'attributes' => array('align' => 'right', 'class' => 'coder'),
-    'getsize' => FALSE,
-  ));
-  if (!empty($description)) {
-    $img .= theme('image', array('path' => $path . '/images/more.png', 'alt' => t('click to read more'), 'atributes' => array('align' => 'right', 'class' => 'coder-more'), 'getsize' => FALSE));
-    $warning .= '<div class="coder-description">' . t('Explanation: @description', array('@description' => $description)) . '</div>';
-  }
-  return '<div class="' . $class . '">' . $img . $warning . '</div>';
+  return theme('table', array('rows' => $rows, 'attributes' => array('id' => 'filter-order')));
 }
 
 /**
