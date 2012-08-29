@@ -190,8 +190,8 @@ function _coder_review_comment_install_file_block_callback(&$coder_args, $review
   $ignores = $coder_args['#ignore_lines'];
   $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   // Only perform this check on install files.
-  $filename = $coder_args['#filename'];
-  if (drupal_substr($filename, -7) == '.install') {
+  $pathinfo = pathinfo($coder_args['#filename']);
+  if ($pathinfo['extension'] == 'install') {
     $file_found = 0;
     $invalid_file_message = 0;
     foreach ($lines as $lineno => $line) {

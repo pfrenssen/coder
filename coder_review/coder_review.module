@@ -531,12 +531,12 @@ function theme_coder_review_table_cols($variables) {
  */
 function _coder_review_settings_array(&$form_state, $type) {
   $typekey = "coder_{$type}s-";
-  $typelen = drupal_strlen($typekey);
+  $typelen = _strlen($typekey);
   $systems = array();
   foreach ($form_state['storage'] as $key => $value) {
-    if (drupal_substr($key, 0, $typelen) == $typekey) {
+    if (_substr($key, 0, $typelen) == $typekey) {
       if ($value == 1) {
-        $system = drupal_substr($key, $typelen);
+        $system = _substr($key, $typelen);
         $systems[$system] = 1;
       }
       unset($form_state['storage'][$key]);
@@ -611,7 +611,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
 
     // Code review non-module core files.
     $module_weight = 0;
-    if ($settings['coder_core']) {
+    if ($settings['coder_core'] && function_exists('drupal_alter')) {
       $php_extensions = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
       $coder_args = array(
         '#reviews' => $reviews,
@@ -631,7 +631,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         '#collapsed' => TRUE,
         '#weight' => ++$module_weight,
       );
-      $phpfiles = file_scan_directory('.', '/.*\.php/', array('recurse' => FALSE, 'key' => 'name'));
+      $includefiles = _file_list('includes', '/\.php$/', FALSE);
       _coder_review_page_form_includes(
         $form,
         $coder_args,
@@ -650,7 +650,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         '#collapsed' => TRUE,
         '#weight' => ++$module_weight,
       );
-      $includefiles = drupal_system_listing('/.*\.inc$/', 'includes', 'filepath', 0);
+      $includefiles = _file_list('includes', '/\.inc$/');
       _coder_review_page_form_includes(
         $form,
         $coder_args,
@@ -664,7 +664,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
     // Loop through the selected modules and themes.
     if (isset($system)) {
       // Determine which file extensions to include, based on the rules.
-      $php_extensions = variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
+      $php_extensions = _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
       $include_extensions = _coder_review_get_reviews_extensions($php_extensions, $reviews);
       $includes = array_merge($php_extensions, $include_extensions);
 
@@ -673,16 +673,16 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
       $patch = '';
       foreach ($system as $name => $checked) {
         if ($checked) {
-          // Process this one file.
           $filename = isset($files[$name]) ? $files[$name] : FALSE;
           if (!$filename) {
-            drupal_set_message(t('Code review file for %module not found', array('%module' => $name)), 'error');
+            _message(t('Code review file for %module not found', array('%module' => $name)), 'error');
             continue;
           }
           if ($settings['coder_patches']) {
             $patch = $filename;
             $filename = $name;
           }
+          $pathinfo = pathinfo($filename);
           $coder_args = array(
             '#reviews' => $reviews,
             '#severity' => $settings['coder_severity'],
@@ -693,13 +693,17 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
             '#ignore_lines' => (isset($ignores[$filename]) && is_array($ignores[$filename])) ? $ignores[$filename] : array(),
             '#cache' => TRUE,
           );
-          drupal_alter('coder_review_args', $coder_args);
+          if (function_exists('drupal_alter')) {
+            drupal_alter('coder_review_args', $coder_args);
+          }
 
+          // Process this one file.
           $results = do_coder_reviews($coder_args);
           $stats[$filename] = $results['#stats'];
           unset($results['#stats']);
-
-          module_invoke_all('coder_review_results_view', $results);
+          if (function_exists('module_invoke_all')) {
+            module_invoke_all('coder_review_results_view', $results);
+          }
 
           // Output the results in a collapsible fieldset.
           $form[$name] = array(
@@ -713,24 +717,23 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
             $form[$name]['#collapsed'] = FALSE;
           }
           else {
-            $results[] = t('No Problems Found');
+            $results[] = _t('No Problems Found');
           }
           $form[$name]['output'] = _coder_review_form_output($name, $filename, $results);
           $form[$name]['output']['#weight'] = -1;
 
           // Process the same directory include files.
           if ($settings['coder_includes']) {
-            // @note: Convert to the realpath here so drupal_system_listing
-            // doesn't return additional paths (i.e., try "module").
             $path = str_replace('\\', '/', dirname(realpath($filename)));
-            if ($path) {
-              if (!isset($dups[$path])) {
-                if (drupal_substr($filename, -7) == '.module') {
-                  $coder_args['#php_minor'] = 1;
-                }
-                $dups[$path] = 1;
-                $regex = '/\.(' . implode('|', $includes) . ')$/';
-                $includefiles = drupal_system_listing($regex, dirname($filename), 'filepath', 0);
+            if ($path && !isset($dups[$path])) {
+              if ($pathinfo['extension'] == 'module') {
+                $coder_args['#php_minor'] = 1;
+              }
+              $dups[$path] = 1;
+              $regex = '/\.(' . implode('|', $includes) . ')$/';
+              $includefiles = _file_list($pathinfo['dirname'], $regex);
+              $includefiles = array_diff($includefiles, $system);
+              if ($includefiles) {
                 $offset = strpos($filename, dirname($filename));
                 $stats[$filename]['#includes'] = _coder_review_page_form_includes(
                   $form,
@@ -762,52 +765,54 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
           }
         }
         if (!$settings['coder_patches']) {
-          $display[] = t('Coder found @count projects', array('@count' => count($stats)));
-          $display[] = t('@count files', array('@count' => $summary['files']));
+          $display[] = _t('Coder found @count projects', array('@count' => count($stats)));
+          $display[] = _t('@count files', array('@count' => $summary['files']));
         }
         else {
-          $display[] = t('Coder found @count patch hunks', array('@count' => count($stats)));
+          $display[] = _t('Coder found @count patch hunks', array('@count' => count($stats)));
         }
         foreach (array('critical', 'normal', 'minor') as $severity_name) {
           if ($summary['sums'][$severity_name] > 0) {
-            $display[] = t('@count %severity_name warnings', array('@count' => $summary['sums'][$severity_name], '%severity_name' => $severity_name));
+            $display[] = _t('@count %severity_name warnings', array('@count' => $summary['sums'][$severity_name], '%severity_name' => $severity_name));
           }
         }
-        $display[] = t('@count warnings were flagged to be ignored', array('@count' => $summary['sums']['ignored']));
-        drupal_set_message(implode(', ', $display));
+        $display[] = _t('@count warnings were flagged to be ignored', array('@count' => $summary['sums']['ignored']));
 
+        _message(implode(', ', $display));
         if (_drush()) {
-          print coder_review_print_drush_messages();
+          coder_review_print_drush_messages($messages);
         }
       }
     }
 
-    // Prepend the settings form.
-    $form['disclaimer'] = array(
-      '#prefix' => '<div class="coder-disclaimer">',
-      '#markup' => coder_review_help('coder_review#disclaimer', array()),
-      '#suffix' => '</div>',
-      '#weight' => -3,
-    );
-    $form['settings'] = array(
-      '#type' => 'fieldset',
-      '#title' => _t('Selection form'),
-      '#collapsible' => TRUE,
-      '#collapsed' => !empty($form),
-      '#weight' => -2,
-    );
-    $form['submit'] = array(
-      '#type' => 'submit',
-      '#value' => _t('Run reviews'),
-      '#weight' => -1,
-    );
-    if ($form['settings']['#collapsed']) {
-      $form['settings']['#prefix'] = t('<div class="coder-settings">Use the Selection form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/config/development/coder/review/settings'), '@default' => url('admin/config/development/coder/review/default')));
+    if (!_drush()) {
+      // Prepend the settings form.
+      $form['disclaimer'] = array(
+        '#prefix' => '<div class="coder-disclaimer">',
+        '#markup' => coder_review_help('coder_review#disclaimer', array()),
+        '#suffix' => '</div>',
+        '#weight' => -3,
+      );
+      $form['settings'] = array(
+        '#type' => 'fieldset',
+        '#title' => _t('Selection form'),
+        '#collapsible' => TRUE,
+        '#collapsed' => !empty($form),
+        '#weight' => -2,
+      );
+      $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => _t('Run reviews'),
+        '#weight' => -1,
+      );
+      if ($form['settings']['#collapsed']) {
+        $form['settings']['#prefix'] = _t('<div class="coder-settings">Use the Selection form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/config/development/coder/review/settings'), '@default' => url('admin/config/development/coder/review/default')));
+      }
+      $form['settings'][] = $coder_form;
+      $form['#attached']['css'] = array(
+        _coder_review_path() . '/coder_review.css',
+      );
     }
-    $form['settings'][] = $coder_form;
-    $form['#attached']['css'] = array(
-      _coder_review_path() . '/coder_review.css',
-    );
   }
   return $form;
 }
@@ -845,7 +850,7 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
       // Don't review this file.
       continue;
     }
-    $filename = drupal_substr($file->uri, $offset);
+    $filename = _substr($file->uri, $offset);
     $php_extensions = _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
     $coder_args['#filename'] = $filename;
     $coder_args['#php_extensions'] = $php_extensions;
@@ -854,7 +859,9 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
     $stats[$filename] = $results['#stats'];
     unset($results['#stats']);
 
-    module_invoke_all('coder_review_results_view', $results);
+    if (function_exists('module_invoke_all')) {
+      module_invoke_all('coder_review_results_view', $results);
+    }
 
     // Output the results in a collapsible fieldset.
     $form[$name][$filename] = array(
@@ -869,7 +876,7 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
       $form[$name]['#collapsed'] = FALSE;
     }
     else {
-      $results[] = t('No Problems Found');
+      $results[] = _t('No Problems Found');
     }
     if (_drush()) {
       theme_drush_coder_review(array('name' => $name, 'filename' => $filename, 'results' => $results));
@@ -925,7 +932,7 @@ function coder_review_parse_ignores($filepath, $line_prefix = '') {
 
   // Ensure the file exists.
   if (!is_file($filepath) || !is_readable($filepath)) {
-    drupal_set_message(t("File %file doesn't exist or isn't readable.", array('%file' => $filepath)), 'error');
+    _message(t("File %file doesn't exist or isn't readable.", array('%file' => $filepath)), 'error');
     return array();
   }
 

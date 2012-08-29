@@ -188,8 +188,8 @@ function coder_review_drush_review() {
                   $settings['coder_file_list'] = '';
                 }
                 if (is_dir($path)) {
-                  $settings['coder_file_list'] .= implode("\n", coder_review_file_list($path));
-print $settings['coder_file_list'] . "\n";
+                  $regex = '/\.(' . implode('|', _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'))) . '$)/';
+                  $settings['coder_file_list'] .= implode("\n", _file_list($path, $regex));
                   $settings['coder_includes'] = 1;
                 }
                 else {
@@ -243,6 +243,10 @@ print $settings['coder_file_list'] . "\n";
   _coder_review_set_form_modules($settings);
   $settings['op'] = 'drush';
 
+  // Bootstrap the module.
+  // @todo: separate this out better into an API, so we don't need the module.
+  require_once realpath(dirname(__FILE__)) . '/coder_review.module';
+
   $form_state['storage'] = $settings;
   coder_review_page_form(array(), $form_state);
 
@@ -252,23 +256,6 @@ print $settings['coder_file_list'] . "\n";
   elseif (drush_get_option('xml')) {
     _coder_review_drush_xml_output_footer('xml');
   }
-}
-
-/**
- * Return all available file paths as an array.
- */
-function coder_review_file_list($path) {
-  $files = array();
-  $regex = '/\.(' . implode('|', _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'))) . '$)/';
-  foreach (scandir($path) as $file) {
-    if ($file != '.' && $file != '..' && is_dir("$path/$file")) {
-      $files += coder_review_file_list("$path/$file");
-    }
-    elseif (preg_match($regex, $file)) {
-      $files["$path/$file"] = "$path/$file";
-    }
-  }
-  return $files;
 }
 
 /**
@@ -352,11 +339,12 @@ function theme_drush_coder_review_warning($variables) {
 }
 
 /**
- * Handle printing of drupal_set_message() messages.
+ * Handle printing of messages.
  */
 function coder_review_print_drush_messages() {
-  foreach (drupal_get_messages() as $type => $messages) {
+  foreach (_message() as $type => $messages) {
     $output = _coder_review_drush_output(implode("\n ", $messages));
+
     if (!drush_get_option('checkstyle')) {
       if (drush_get_option('xml')) {
         _coder_review_drush_print('<status type="' . $type . '">' . $output . '</status>');

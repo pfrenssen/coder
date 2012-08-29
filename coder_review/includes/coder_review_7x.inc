@@ -1256,12 +1256,13 @@ function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule
   $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   // Only perform this check for module's (not includes).
   $filename = $coder_args['#filename'];
-  if (drupal_substr($filename, -7) == '.module') {
+  $pathinfo = pathinfo($filename);
+  if ($pathinfo['extension'] == 'module') {
     // @NOTE: no simpletest for this.
     // Read the .info file.
     $files_line = FALSE;
     $core = FALSE;
-    $filename = drupal_substr(realpath($filename), 0, -7) . '.info';
+    $filename = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '.info';
     if (file_exists($filename)) {
       $lines = file($filename);
       if ($lines) {
@@ -1338,8 +1339,9 @@ function _coder_review_7x_cache_implementation_review_callback(&$coder_args, $re
     return;
   }
   if (file_exists($filename)) {
-    // Only do it for php files.
-    if (drupal_substr($filename, -7) == '.module' || drupal_substr($filename, -4) == '.php' || drupal_substr($filename, -4) == '.inc') {
+    // Only do it for PHP files.
+    $pathinfo = pathinfo($filename);
+    if (in_array($pathinfo['extension'], array('module', 'php', 'inc'))) {
       $lines = file($filename);
       if ($lines) {
         foreach ($lines as $lineno => $line) {
@@ -1368,7 +1370,8 @@ function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review
   $filename = $coder_args['#filename'];
   if (file_exists($filename)) {
     // Only do it for js files.
-    if (drupal_substr($filename, -3) == '.js') {
+    $pathinfo = pathinfo($filename);
+    if ($pathinfo['extension'] == 'js') {
       $lines = file($filename);
       if ($lines) {
         $detach = FALSE;
@@ -1400,8 +1403,8 @@ function _coder_review_7x_comment_doxygen_file_review_callback(&$coder_args, $re
   // Only perform this check on install files.
   $ignores = $coder_args['#ignore_lines'];
   $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
-  $filename = $coder_args['#filename'];
-  if (drupal_substr($filename, -7) == '.install') {
+  $pathinfo = pathinfo($coder_args['#filename']);
+  if ($pathinfo['extension'] == 'install') {
     $file_found = 0;
     $invalid_file_message = 0;
     foreach ($lines as $lineno => $line) {

@@ -127,10 +127,8 @@ function do_coder_reviews($coder_args) {
     if (file_exists($filepath)) {
       $cache_mtime = filemtime($filepath);
       $cache_results = _cache_get($cache_key, 'cache_coder');
-      if ($cache_results) {
-        if ($cache_results->data['mtime'] == $cache_mtime && _coder_review_modified() < $cache_results->created) {
-          return $cache_results->data['results'];
-        }
+      if ($cache_results && $cache_results->data['mtime'] == $cache_mtime && _coder_review_modified() < $cache_results->created) {
+        return $cache_results->data['results'];
       }
     }
   }
@@ -1162,14 +1160,14 @@ function _coder_review_path() {
  * Return data from the cache.
  */
 function _cache_get($cid, $bin = 'default') {
-  return function_exists('cache_get') ? cache_get($cid, $bin) : drush_cache_get($cid, $bin);
+  return function_exists('cache_get') ? cache_get($cid, $bin) : array(); // drush_cache_get($cid, $bin);
 }
 
 /**
  * Store data in the cache.
  */
 function _cache_set($cid, $data, $bin = 'default') {
-  return function_exists('cache_set') ? cache_set($cid, $data, $bin) : drush_cache_set($cid, $data, $bin);
+  return function_exists('cache_set') ? cache_set($cid, $data, $bin) : array(); // drush_cache_set($cid, $data, $bin);
 }
 
 /**
@@ -1184,4 +1182,37 @@ function _substr($text, $start, $length = NULL) {
  */
 function _strlen($text) {
   return function_exists('drupal_strlen') ? drupal_strlen($text) : strlen($text);
+}
+
+/**
+ * Return all available file paths matching the regular expression.
+ */
+function _file_list($path, $regex, $recurse = TRUE) {
+  $files = array();
+  foreach (scandir($path) as $file) {
+    if ($file != '.' && $file != '..' && is_dir("$path/$file")) {
+      if ($recurse) {
+        $files += _file_list("$path/$file", $regex);
+      }
+    }
+    elseif (preg_match($regex, $file)) {
+      $files["$path/$file"] = "$path/$file";
+    }
+  }
+  return $files;
+}
+
+/**
+ * Display and retrieve messages.
+ */
+function _message($message = NULL, $type = 'status') {
+  if (function_exists('drupal_set_message')) {
+    drupal_set_message($message);
+  }
+
+  static $messages = array();
+  if ($message) {
+    $messages[$type][] = $message;
+  }
+  return $messages;
 }
