@@ -22,31 +22,20 @@ function _coder_review_reviews() {
 function coder_review_reviews() {
   static $cache = array();
   if (!$cache) {
-    if (_drush()) {
-      $path = dirname(__FILE__) . '/includes';
-      $handle = opendir($path);
-      if ($handle) {
-        while ($file = readdir($handle)) {
-          if ($file[0] != '.') {
-            $files[_substr($file, 0, -4)] = "$path/$file";
+    $path = _coder_review_path() . '/includes';
+    foreach (scandir($path) as $file) {
+      $pathinfo = pathinfo("$path/$file");
+      if ($pathinfo['extension'] == 'inc') {
+        require_once "$path/$file";
+        $function = $pathinfo['filename'] . '_reviews';
+        if (function_exists($function)) {
+          $review = $function();
+          if ($review) {
+            foreach (array_keys($review) as $review_name) {
+              $review[$review_name]['#file'] = "$path/$file";
+            }
+            $cache += $review;
           }
-        }
-        closedir($handle);
-      }
-    }
-    else {
-      $path = _coder_review_path() . '/includes';
-      foreach (drupal_system_listing('/coder_review_.*\.inc$/', $path, 'filepath', 0) as $file) {
-        $files[$file->name] = DRUPAL_ROOT . '/' . $file->uri;
-      }
-    }
-    foreach ($files as $filename => $filepath) {
-      require_once $filepath;
-      $function = $filename . '_reviews';
-      if (function_exists($function)) {
-        $review = $function();
-        if ($review) {
-          $cache += $review;
         }
       }
     }
@@ -91,19 +80,18 @@ function _coder_review_get_reviews_extensions($defaults, $reviews) {
  * Return last modification timestamp of coder_review and all of its dependencies.
  */
 function _coder_review_modified() {
-  static $_coder_mtime;
-  if (!isset($_coder_mtime)) {
-    $path = _coder_review_path();
-    $includefiles = drupal_system_listing('/.*\.(inc|module|coder_review_ignores.txt)$/', $path . '/includes', 'filepath', 0);
-    $_coder_mtime = filemtime(realpath($path . '/coder_review.module'));
-    foreach ($includefiles as $file) {
-      $mtime = filemtime(realpath($path . '/includes/' . $file->filename));
-      if ($mtime > $_coder_mtime) {
-        $_coder_mtime = $mtime;
+  static $cached_mtime;
+  if (!isset($cached_mtime)) {
+    $cached_mtime = filemtime(_coder_review_path() . '/coder_review.module');
+
+    foreach (coder_review_reviews() as $review) {
+      $mtime = filemtime($review['#file']);
+      if ($mtime > $cached_mtime) {
+        $cached_mtime = $mtime;
       }
     }
   }
-  return $_coder_mtime;
+  return $cached_mtime;
 }
 
 /**
@@ -162,7 +150,8 @@ function do_coder_reviews($coder_args) {
     $errors = array();
     foreach ($coder_args['#reviews'] as $review_name => $review) {
       $review['#review_name'] = $review_name;
-      if ($result = do_coder_review($coder_args, $review)) {
+      $result = do_coder_review($coder_args, $review);
+      if ($result) {
         // ignored isn't a severity level, but is a stat we need to track.
         foreach (array('critical', 'normal', 'minor', 'ignored') as $severity_level) {
           if (isset($result['#stats'][$severity_level])) {
@@ -220,9 +209,9 @@ function _coder_review_read_and_parse_file(&$coder_args) {
   $regex = '/(' . implode('|', array_merge(array('module'), $coder_args['#php_extensions'])) . ')$/';
   $is_php_file = preg_match($regex, $coder_args['#filename']);
 
-  $filepath = realpath($coder_args['#filename']);
   // Get the path to the module file.
-  if (!empty($coder_args['#patch']) || !empty($coder_args['#test']) || (($filepath = realpath($coder_args['#filename'])) && file_exists($filepath))) {
+  $filepath = realpath($coder_args['#filename']);
+  if (!empty($coder_args['#patch']) || !empty($coder_args['#test']) || file_exists($filepath)) {
     $in_php = ($is_php_file ? 0 : 1);
     $in_allphp = ($is_php_file ? 0 : 1);
     $in_comment = 0;
@@ -1166,7 +1155,7 @@ function _phpapi($function) {
  * Return the path to the coder_review module.
  */
 function _coder_review_path() {
-  return function_exists('drupal_get_path') ? drupal_get_path('module', 'coder_review') : dirname(__FILE__);
+  return /*function_exists('drupal_get_path') ? drupal_get_path('module', 'coder_review') :*/ dirname(__FILE__);
 }
 
 /**

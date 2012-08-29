@@ -103,7 +103,10 @@ function coder_review_drush_review() {
   $reviews_option = drush_get_option('reviews');
   if ($reviews_option) {
     if ($reviews_option == 'all') {
-      $reviews += drupal_map_assoc(array_keys($avail_reviews));
+      // @note: Don't use drupal_map_assoc because of bootstrap level.
+      $avail_review_keys = array_keys($avail_reviews);
+      $reviews += array_combine($avail_review_keys, $avail_review_keys);
+//    $reviews += drupal_map_assoc(array_keys($avail_reviews));
     }
     else {
       foreach (explode(',', $reviews_option) as $option) {
@@ -185,9 +188,8 @@ function coder_review_drush_review() {
                   $settings['coder_file_list'] = '';
                 }
                 if (is_dir($path)) {
-                  $ext = _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
-                  // @todo: convert this to not use drupal_system_listing().
-                  $settings['coder_file_list'] .= implode("\n", array_keys(drupal_system_listing('/\.(' . implode('|', $ext) . ')$/', $path, 'filepath', 0)));
+                  $settings['coder_file_list'] .= implode("\n", coder_review_file_list($path));
+print $settings['coder_file_list'] . "\n";
                   $settings['coder_includes'] = 1;
                 }
                 else {
@@ -250,6 +252,23 @@ function coder_review_drush_review() {
   elseif (drush_get_option('xml')) {
     _coder_review_drush_xml_output_footer('xml');
   }
+}
+
+/**
+ * Return all available file paths as an array.
+ */
+function coder_review_file_list($path) {
+  $files = array();
+  $regex = '/\.(' . implode('|', _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'))) . '$)/';
+  foreach (scandir($path) as $file) {
+    if ($file != '.' && $file != '..' && is_dir("$path/$file")) {
+      $files += coder_review_file_list("$path/$file");
+    }
+    elseif (preg_match($regex, $file)) {
+      $files["$path/$file"] = "$path/$file";
+    }
+  }
+  return $files;
 }
 
 /**
