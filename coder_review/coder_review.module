@@ -18,10 +18,6 @@
  * - http://cvs.drupal.org/viewcvs/drupal/drupal/scripts/code-style.pl
  */
 
-define('SEVERITY_MINOR', 1);
-define('SEVERITY_NORMAL', 5);
-define('SEVERITY_CRITICAL', 9);
-
 /**
  * Implements hook_coder_review_ignore().
  */
@@ -156,6 +152,9 @@ function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) 
  *   Array for form API for the settings box.
  */
 function _coder_review_settings_form($settings, &$system, &$files) {
+  // Bootstrap enough to run.
+  require_once realpath(dirname(__FILE__)) . '/coder_review.common.inc';
+
   // Add the javascript.
   $form['#attached']['js'] = array(
     _coder_review_path() . '/coder_review.js',
@@ -567,6 +566,9 @@ function coder_review_page_form_submit($form, &$form_state) {
  * modules/themes to run them on.
  */
 function coder_review_page_form($form, &$form_state, $arg = '') {
+  // Bootstrap enough to run.
+  require_once realpath(dirname(__FILE__)) . '/coder_review.common.inc';
+
   if (isset($form_state['storage'])) {
     $settings = $form_state['storage'];
     $settings['coder_modules'] = _coder_review_settings_array($form_state, 'module');

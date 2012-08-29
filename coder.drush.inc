@@ -28,7 +28,7 @@ function coder_drush_command() {
 }
 
 /**
- * Implementation of hook_drush_help().
+ * Implements hook_drush_help().
  */
 function coder_drush_help($section) {
   switch ($section) {
