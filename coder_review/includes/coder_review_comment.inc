@@ -160,8 +160,8 @@ function coder_review_comment_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'all',
-    '#value' => '^\s*\/\*',
-    '#warning' => 'C style comments should not be used within functions.',
+    '#value' => '^\s*\/\*\*',
+    '#warning' => 'Block comments should not be used within functions, instead just use C style /* instead of /**.',
     '#function' => '.+',
     '#severity' => 'minor',
   );
@@ -169,7 +169,7 @@ function coder_review_comment_reviews() {
     '#type' => 'regex',
     '#source' => 'all',
     '#value' => '^\s*#
-    '#warning' => 'Do not use shell style comments (lines beginning with a #).',
+    '#warning' => 'Never use shell style comments, use // instead or #',
   );
 
   $review = array(

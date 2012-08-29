@@ -173,7 +173,13 @@ function coder_review_drush_review() {
             }
             else {
               $path = preg_replace(",^$root/,", '', (function_exists('drush_getcwd') ? drush_getcwd() : getcwd()) . '/' . $arg);
-              if (file_exists($path)) {
+              if (!file_exists($path)) {
+                $path = $root . '/' . $arg;
+                if (!file_exists($path)) {
+                  $path = '';
+                }
+              }
+              if ($path) {
                 $settings['coder_files'] = 1;
                 if (empty($settings['coder_file_list'])) {
                   $settings['coder_file_list'] = '';

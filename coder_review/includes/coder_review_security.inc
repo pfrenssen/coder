@@ -78,7 +78,7 @@ function coder_review_security_reviews() {
     '#value' => '[\s\(]confirm_form\s*\(\s*' . $argex . '\s*,\s*(st|t|\$t)\s*\(\s*((\$\w+[,\)])|("[^"]+?\$\w+.*?"\s*[,\)])|([\'"].*?[\'"]\s*\.\s*\$\w)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\)))',
     '#never' => '(^function\s|confirm_form\s*\(\s*' . $argex . '\s*,\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\().*$)',
     '#source' => 'allphp',
-    '#warning' => '_coder_review_security_confirm_form_filter_t_warning',
+    '#warning' => _coder_review_security_confirm_form_filter_t_warning(),
   );
   // confirm_form 4th, 5th and 6th args
   $rules[] = array(
@@ -93,7 +93,7 @@ function coder_review_security_reviews() {
     '#value' => '[\s\(]confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}(st|t|\$t)\s*\(\s*((\$\w+[,\)])|("[^"]+?\$\w+.*?"\s*[,\)])|([\'"].*?[\'"]\s*\.\s*\$\w)|([\'"].*?!\w+.*?[\'"]\s*,)|(.*?array\(.*?!\w+.*?\))).*?(' . $allphp_argex . ')??\)\s*;',
     '#never' => '(^function\s|confirm_form\s*\(\s*((' . $allphp_argex . '|' . $sanitize_argex . ')\s*,\s*){3,5}(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\([^\)\$]+\)).*?(' . $allphp_argex . ')??\)\s*;)',
     '#source' => 'allphp',
-    '#warning' => '_coder_review_security_confirm_form_filter_t_warning',
+    '#warning' => _coder_review_security_confirm_form_filter_t_warning(),
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -113,15 +113,15 @@ function coder_review_security_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '(?-i)\$REQUEST_URI',
-    '#warning' => '_coder_review_security_request_uri_warning',
-    '#function-not' => '^(request_uri|drupal_detect_baseurl)$',
+    '#warning' => _coder_review_security_request_uri_warning(),
+    '#function-not' => '^(request_uri|request_path|drupal_detect_baseurl)$',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'allphp',
     '#value' => '(?-i)\"REQUEST_URI\"|\'REQUEST_URI\'',
-    '#warning' => '_coder_review_security_request_uri_warning',
-    '#function-not' => '^(request_uri|drupal_detect_baseurl)$',
+    '#warning' => _coder_review_security_request_uri_warning(),
+    '#function-not' => '^(request_uri|request_path|drupal_detect_baseurl)$',
   );
   $rules[] = array(
     '#type' => 'regex',

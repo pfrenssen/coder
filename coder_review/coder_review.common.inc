@@ -403,7 +403,9 @@ function _coder_review_read_and_parse_file(&$coder_args) {
         }
 
         elseif ($in_heredoc) {
-          if ($beginning_of_line && $char == $in_heredoc[0] && drupal_substr($content, $pos, $in_heredoc_length) == $in_heredoc) {
+          // @note: drupal_substr does not properly handle multi-byte characters in this string.
+          // @todo: check other places where the drupal_ string functions fail.
+          if ($beginning_of_line && $char == $in_heredoc[0] && substr($content, $pos, $in_heredoc_length) == $in_heredoc) {
             $this_all_lines .= drupal_substr($content, $pos + 1, $in_heredoc_length - 1);
             $in_heredoc = 0;
             $pos += $in_heredoc_length;
@@ -585,6 +587,54 @@ function _coder_review_read_and_parse_file(&$coder_args) {
     $coder_args['#doublequote_array_lines'] = $doublequote_lines;
     $coder_args['#comment_array_lines'] = $comment_lines;
     $coder_args['#all_lines'] = $full_lines;
+
+    // Given the sanitized PHP lines, determine the class and function for each line.
+    $stack = array();
+    $class_stack = $class_stack_paren = array();
+    $function_stack = $function_stack_paren = array();
+    $paren_depth = 0;
+    foreach ($php_lines as $lineno => $line_array) {
+      foreach ($line_array as $line) {
+        // Check if this line is the beginning of a function definition.
+        if (preg_match('/function (\w+)\s*\(/', $line, $match) && !preg_match('/;/', $line)) {
+          array_unshift($function_stack, $match[1]);
+          array_unshift($function_stack_paren, $paren_depth);
+//print "$lineno: " . str_repeat(' ', $function_stack_paren[0]) . "function $function_stack[0] {\n";
+        }
+
+        // Check if this line is the beginning of a class definition.
+        if (preg_match('/class (\w+)/', $line, $match) || preg_match('/interface (\w+)/', $line, $match)) {
+          array_unshift($class_stack, $match[1]);
+          array_unshift($class_stack_paren, $paren_depth);
+//print "$lineno: " . str_repeat(' ', $classstack_paren[0]) . "class $class_stack[0] {\n";
+        }
+
+        // Check if this line changes the parenthesis depth.
+        if (preg_match_all('/([{}])/', $line, $match)) {
+          foreach ($match[0] as $paren_match) {
+            $paren_depth += ($paren_match == '{') ? 1 : -1;
+          }
+
+          // If the depth is now less than then current function depth, pop the function from the stack.
+          if ($paren_depth <= $function_stack_paren[0]) {
+//print "$lineno: " . str_repeat(' ', $function_stack_paren[0]) . "} // function $function_stack[0] {\n";
+            array_shift($function_stack);
+            array_shift($function_stack_paren);
+          }
+
+          // If the depth is now less than the current class depth, pop the class from the stack.
+          if ($paren_depth <= $class_stack_paren[0]) {
+//print "$lineno: " . str_repeat(' ', $class_stack_paren[0]) . "} // class $class_stack[0] {\n";
+            array_shift($class_stack);
+            array_shift($class_stack_paren);
+          }
+        }
+
+        // Cache the current function and class for each line of each file.
+        $stack[$lineno] = array($class_stack[0], $function_stack[0]);
+      }
+    }
+    $coder_args['#stack'] = $stack;
     return 1;
   }
 }
@@ -761,76 +811,24 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
     $regex = '/' . $rule['#value'] . '/' . $regexflags;
     $class_regex = isset($rule['#class']) ? '/' . $rule['#class'] . '/' : '';
     $class_not_regex = isset($rule['#class-not']) ? '/' . $rule['#class-not'] . '/' : '';
-    $class_current = array();
-    $class_paren = 0;
-    $class_current_parens = array();
     $function_regex = isset($rule['#function']) ? '/' . $rule['#function'] . '/' : '';
     $function_not_regex = isset($rule['#function-not']) ? '/' . $rule['#function-not'] . '/' : '';
-    $function_current = array();
-    $function_paren = 0;
-    $function_current_parens = array();
     $not_regex = isset($rule['#not']) ? '/' . $rule['#not'] . '/' . $regexflags : '';
     $never_regex = isset($rule['#never']) ? '/' . $rule['#never'] . '/' . $regexflags : '';
+
     foreach ($lines as $lineno => $line_array) {
-      foreach ($line_array as $linematch => $line) {
-        // Some rules apply only within certain functions.
-        // @todo: Take into account that PHP supports nested classes and functions.
-        if ($function_regex || $function_not_regex) {
-          // Use PHP lines (sanitized sanitized), to avoid matches in strings and comments.
-          if (!empty($coder_args['#php_array_lines'][$lineno][$linematch])) {
-            $phpline = $coder_args['#php_array_lines'][$lineno][$linematch];
-            if (preg_match('/function (\w+)\s*\(/', $phpline, $match) && !preg_match('/;/', $phpline)) {
-              array_unshift($function_current, $match[1]);
-              array_unshift($function_current_parens, $function_paren);
-            }
-            if (preg_match_all('/([{}])/', $phpline, $match)) {
-              foreach ($match[0] as $paren_match) {
-                $function_paren += ($paren_match == '{') ? 1 : -1;
-              }
-
-              if ($function_paren <= $function_current_parens[0]) {
-                array_shift($function_current);
-                array_shift($function_current_parens);
-              }
-            }
-          }
-        }
-
-        // Some rules apply only within certain classes.
-        // @todo: Take into account that PHP supports nested classes and functions.
-        if ($class_regex || $class_not_regex) {
-          // Use PHP lines (sanitized sanitized), to avoid matches in strings and comments.
-          if (!empty($coder_args['#php_array_lines'][$lineno][$linematch])) {
-            $phpline = $coder_args['#php_array_lines'][$lineno][$linematch];
-            if (preg_match('/class (\w+)/', $phpline, $match) || preg_match('/interface (\w+)/', $phpline, $match)) {
-              array_unshift($class_current, $match[1]);
-              array_unshift($class_current_parens, $class_paren);
-            }
-            if (preg_match_all('/([{}])/', $phpline, $match)) {
-              foreach ($match[0] as $paren_match) {
-                $class_paren += ($paren_match == '{') ? 1 : -1;
-              }
-
-              if ($class_paren <= $class_current_parens[0]) {
-                array_shift($class_current);
-                array_shift($class_current_parens);
-              }
-            }
-          }
-        }
-
-            if (   ($function_regex && (!$function_current || !preg_match($function_regex, $function_current[0])))
-                || ($function_not_regex && $function_current && preg_match($function_not_regex, $function_current[0]))
-               ) {
-              continue;
-            }
-            if (   ($class_regex && (!$class_current || !preg_match($class_regex, $class_current[0])))
-                || ($class_not_regex && $class_current && preg_match($class_not_regex, $class_current[0]))
-               ) {
-              continue;
-            }
-
+      foreach ($line_array as $line) {
         if (preg_match($regex, $line, $matches)) {
+          // Some rules apply only within certain functions and classes.
+          list($class_current, $function_current) = isset($coder_args['#stack'][$lineno]) ? $coder_args['#stack'][$lineno] : array();
+          if (   ($function_regex && (!$function_current || !preg_match($function_regex, $function_current)))
+              || ($function_not_regex && $function_current && preg_match($function_not_regex, $function_current))
+              || ($class_regex && (!$class_current || !preg_match($class_regex, $class_current[0])))
+              || ($class_not_regex && $class_current && preg_match($class_not_regex, $class_current[0]))
+             ) {
+            continue;
+          }
+
           // Don't match some regex's.
           if ($not_regex) {
             foreach ($matches as $match) {
