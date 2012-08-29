@@ -1,5 +1,10 @@
 <?php
 /**
+ * @file
+ * Coder module administrative forms and functions.
+ */
+
+/**
  * Configuration page.
  */
 function coder_review_admin_settings($form, &$form_state) {

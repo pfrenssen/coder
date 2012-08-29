@@ -20,8 +20,6 @@
 
 /**
  * Implements hook_coder_review_ignore().
- */
-/*
 function coder_review_coder_review_ignore() {
   return array(
     'path' => _coder_review_path(),
@@ -785,27 +783,28 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
     }
 
     // Prepend the settings form.
+    $form['disclaimer'] = array(
+      '#prefix' => '<div class="coder-disclaimer">',
+      '#markup' => coder_review_help('coder_review#disclaimer', array()),
+      '#suffix' => '</div>',
+      '#weight' => -3,
+    );
     $form['settings'] = array(
       '#type' => 'fieldset',
       '#title' => _t('Selection form'),
       '#collapsible' => TRUE,
       '#collapsed' => !empty($form),
-      '#weight' => -1,
-    );
-    $form['disclaimer'] = array(
-      '#prefix' => '<div class="coder-disclaimer">',
-      '#markup' => coder_review_help('coder_review#disclaimer', array()),
-      '#suffix' => '</div>',
       '#weight' => -2,
+    );
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => _t('Run reviews'),
+      '#weight' => -1,
     );
     if ($form['settings']['#collapsed']) {
       $form['settings']['#prefix'] = t('<div class="coder-settings">Use the Selection form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/config/development/coder/review/settings'), '@default' => url('admin/config/development/coder/review/default')));
     }
     $form['settings'][] = $coder_form;
-    $form['settings']['submit'] = array(
-      '#type' => 'submit',
-      '#value' => _t('Run reviews'),
-    );
     $form['#attached']['css'] = array(
       _coder_review_path() . '/coder_review.css',
     );

@@ -40,7 +40,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#update_sql and TEST MODULE
     $this->assertCoderReviewFail('  $ret = update_sql("UPDATE {node} SET status = 1");');
-    
 
     // http://drupal.org/node/224333#update_php
   }

@@ -210,7 +210,7 @@ function coder_review_6x_reviews() {
     '#value' => '_coder_review_6x_callback',
   );
 
-  /**
+  /*
    * @{
    * FAPI rules.
    */
@@ -318,7 +318,7 @@ function coder_review_6x_reviews() {
     '#warning' => $hook_info_auth_warning,
   );
 
-  /**
+  /*
    * @} End of FAPI rules.
    */
 
@@ -537,7 +537,7 @@ function coder_review_6x_reviews() {
     ),
   );
 
-  /**
+  /*
    * @{
    * Book module rules.
    */
@@ -752,7 +752,7 @@ function coder_review_6x_reviews() {
     ),
   );
 
-  /**
+  /*
    * @} End of Book module rules.
    */
 

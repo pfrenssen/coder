@@ -45,11 +45,12 @@ function coder_review_comment_reviews() {
     ),
     '#severity' => 'minor',
   );
+  // @todo: make this handle: see http://drupal.org/node/224333#block_optional
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '\@see\s*.*',
-    '#not' => '^\@see\s+((\w+\(\)|[\w\.\-\?\/:\&=]+\.[\w\.\->\?\/:\&=]+)[,\s]+)*(\w+\(\)|[\w\.\->\?\/:\&=]+\.[\w\.\->\?\/:\&=]+)\W*$',
+    '#not' => '^\@see\s+((\w+\(\)|[\w\.\-\?\/:\#\&=]+\.[\w\.\->\?\/:\#\&=]+)[,\s]+)*(\w+\(\)|[\w\.\->\?\/:\#\&=]+\.[\w\.\->\?\/:\#\&=]+)\W*$',
     '#warning' => array(
       '#text' => '@see should always be followed by a filename, a URL, class/interface name (optionally including method), or a function name including ().',
       '#link' => _drupalnode(1354),
@@ -60,7 +61,7 @@ function coder_review_comment_reviews() {
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '\@see\s*\w+.*$',
-    '#not' => '^\@see\s+([\w\.\-\(\)\?\/:\&=]+,\s)*[\w\.\-\(\)\?\/:\&=]+?[\w\(\)\/]$',
+    '#not' => '^\@see\s+([\w\.\-\(\)\?\/:\#\&=]+,\s)*[\w\.\-\(\)\?\/:\#\&=]+?[\w\(\)\/]$',
     '#warning' => array(
       '#text' => '@see references should be separated by "," followed by a single space and with no trailing punctuation',
       '#link' => _drupalnode(1354),

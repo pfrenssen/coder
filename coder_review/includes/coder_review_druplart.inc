@@ -24,7 +24,7 @@ function coder_review_druplart_reviews() {
     '#type' => 'regex',
     '#value' => 'if\s+\(.*\$\w+\s+[\+\-\*\/\.]?=\s+.*\)',
     // Don't display this if we match either of the regex's above.
-    '#not' => '(' . $rules[0]['#value'] . '|' . $rules[1]['#value'] .')',
+    '#not' => '(' . $rules[0]['#value'] . '|' . $rules[1]['#value'] . ')',
     '#warning' => 'Consider putting the assignment on a line above the conditional for better readability.',
     '#severity' => 'minor',
   );

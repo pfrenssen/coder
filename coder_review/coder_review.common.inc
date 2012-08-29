@@ -616,14 +616,14 @@ function _coder_review_read_and_parse_file(&$coder_args) {
           }
 
           // If the depth is now less than then current function depth, pop the function from the stack.
-          if ($paren_depth <= $function_stack_paren[0]) {
+          if ($function_stack_paren && $paren_depth <= $function_stack_paren[0]) {
 //print "$lineno: " . str_repeat(' ', $function_stack_paren[0]) . "} // function $function_stack[0] {\n";
             array_shift($function_stack);
             array_shift($function_stack_paren);
           }
 
           // If the depth is now less than the current class depth, pop the class from the stack.
-          if ($paren_depth <= $class_stack_paren[0]) {
+          if ($class_stack_paren && $paren_depth <= $class_stack_paren[0]) {
 //print "$lineno: " . str_repeat(' ', $class_stack_paren[0]) . "} // class $class_stack[0] {\n";
             array_shift($class_stack);
             array_shift($class_stack_paren);
@@ -631,7 +631,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
         }
 
         // Cache the current function and class for each line of each file.
-        $stack[$lineno] = array($class_stack[0], $function_stack[0]);
+        $stack[$lineno] = array($class_stack ? $class_stack[0] : '', $function_stack ? $function_stack[0] : '');
       }
     }
     $coder_args['#stack'] = $stack;
@@ -820,12 +820,12 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
       foreach ($line_array as $line) {
         if (preg_match($regex, $line, $matches)) {
           // Some rules apply only within certain functions and classes.
-          list($class_current, $function_current) = isset($coder_args['#stack'][$lineno]) ? $coder_args['#stack'][$lineno] : array();
+          list($class_current, $function_current) = isset($coder_args['#stack'][$lineno]) ? $coder_args['#stack'][$lineno] : array('', '');
           if (   ($function_regex && (!$function_current || !preg_match($function_regex, $function_current)))
               || ($function_not_regex && $function_current && preg_match($function_not_regex, $function_current))
               || ($class_regex && (!$class_current || !preg_match($class_regex, $class_current[0])))
               || ($class_not_regex && $class_current && preg_match($class_not_regex, $class_current[0]))
-             ) {
+            ) {
             continue;
           }
 

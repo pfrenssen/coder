@@ -112,7 +112,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  drupal_set_title(t("Here is some ". $tainted_data));');
     $this->assertCoderReviewFail('  drupal_set_title(t("Here is some !tainted_data", array("!tainted_data" => $tainted_data));');
   }
-  */
+*/
 
   function testSecurityFormError() {
     $this->assertCoderReviewPass('  form_error("name", t("Here is some safe_data"));');
@@ -226,7 +226,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  function foo() {\n  \$results = db_query(\"SELECT * FROM {mytable} t INNER JOIN {node} n ON t.nid = n.nid\");\n}");
     $this->assertCoderReviewFail("  function foo() {\n  \$results = db_query(db_rewrite_sql(\"SELECT * FROM {mytable} t INNER JOIN {node} ON t.nid = n.nid\"));\n}");
   }
-  */
+*/
 
   function testSecurityPostGetRequest() {
     $this->assertCoderReviewPass('  $_POST["safe_data"] = "abc";');

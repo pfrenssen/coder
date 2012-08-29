@@ -103,7 +103,7 @@ function coder_review_drush_review() {
   $reviews_option = drush_get_option('reviews');
   if ($reviews_option) {
     if ($reviews_option == 'all') {
-       $reviews += drupal_map_assoc(array_keys($avail_reviews));
+      $reviews += drupal_map_assoc(array_keys($avail_reviews));
     }
     else {
       foreach (explode(',', $reviews_option) as $option) {
@@ -343,7 +343,7 @@ function coder_review_print_drush_messages() {
         _coder_review_drush_print('<status type="' . $type . '">' . $output . '</status>');
       }
       else {
-        _coder_review_drush_print(dt(drupal_ucfirst($type) . ' Messages') . ":\n " . $output . "\n");
+        _coder_review_drush_print(dt(ucfirst($type) . ' Messages') . ":\n " . $output . "\n");
       }
     }
   }
