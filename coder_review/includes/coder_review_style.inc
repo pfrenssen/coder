@@ -132,6 +132,7 @@ function coder_review_style_reviews() {
     '#warning' => 'There should be no trailing spaces',
     '#severity' => 'minor',
   );
+  // @todo: review if this rule throws too many false positives.
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(](strlen|strtolower|strtoupper|substr|ucfirst)\s*\(',

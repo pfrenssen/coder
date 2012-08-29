@@ -73,7 +73,7 @@ function coder_review_menu() {
   );
   foreach (array('select', 'default', 'active', 'core', 'all', 'files', 'patches') as $delta => $option) {
     $items["admin/config/development/coder/review/$option"] = array(
-      'title' => ucfirst($option),
+      'title' => drupal_ucfirst($option),
       'page callback' => 'drupal_get_form',
       'page arguments' => array('coder_review_page_form', $option),
       'access arguments' => array('view code review'),
@@ -531,12 +531,12 @@ function theme_coder_review_table_cols($variables) {
  */
 function _coder_review_settings_array(&$form_state, $type) {
   $typekey = "coder_{$type}s-";
-  $typelen = strlen($typekey);
+  $typelen = drupal_strlen($typekey);
   $systems = array();
   foreach ($form_state['storage'] as $key => $value) {
-    if (substr($key, 0, $typelen) == $typekey) {
+    if (drupal_substr($key, 0, $typelen) == $typekey) {
       if ($value == 1) {
-        $system = substr($key, $typelen);
+        $system = drupal_substr($key, $typelen);
         $systems[$system] = 1;
       }
       unset($form_state['storage'][$key]);
@@ -845,7 +845,7 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
       // Don't review this file.
       continue;
     }
-    $filename = substr($file->uri, $offset);
+    $filename = drupal_substr($file->uri, $offset);
     $php_extensions = _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
     $coder_args['#filename'] = $filename;
     $coder_args['#php_extensions'] = $php_extensions;

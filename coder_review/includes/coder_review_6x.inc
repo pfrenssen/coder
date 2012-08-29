@@ -899,7 +899,7 @@ function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$resul
   $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   // Only perform this check on module's (not includes).
   $filename = $coder_args['#filename'];
-  if (substr($filename, -7) == '.module') {
+  if (_substr($filename, -7) == '.module') {
     // If there are any theme functions, make sure that a hook_theme exists.
     $theme = $hook_theme = FALSE;
     foreach ($lines as $lineno => $line) {
@@ -928,7 +928,7 @@ function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$resul
     }
 
     // Read the .info file.
-    $filename = substr(realpath($filename), 0, -7) . '.info';
+    $filename = _substr(realpath($filename), 0, -7) . '.info';
     if (file_exists($filename)) {
       $lines = file($filename);
       if ($lines) {

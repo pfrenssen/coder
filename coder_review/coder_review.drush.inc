@@ -93,7 +93,7 @@ function coder_review_drush_review() {
   if ($ignore_option) {
     foreach (explode(',', $ignore_option) as $option) {
       _coder_review_set_form_modules($settings);
-      unset($settings['coder_modules-' . drupal_substr($option, 3)]);
+      unset($settings['coder_modules-' . _substr($option, 3)]);
     }
   }
 
@@ -256,7 +256,7 @@ function coder_review_drush_review() {
  * Handle patch reviews.
  */
 function _coder_review_drush_is_patch_arg(&$arg, $root) {
-  if (substr($arg, 0, 7) == 'http://') {
+  if (_substr($arg, 0, 7) == 'http://') {
     return TRUE;
   }
   if (_drush() && preg_match('/\.(patch|diff|tmp)$/', $arg)) {

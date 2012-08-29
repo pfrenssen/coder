@@ -28,7 +28,7 @@ function coder_review_reviews() {
       if ($handle) {
         while ($file = readdir($handle)) {
           if ($file[0] != '.') {
-            $files[substr($file, 0, -4)] = "$path/$file";
+            $files[_substr($file, 0, -4)] = "$path/$file";
           }
         }
         closedir($handle);
@@ -150,7 +150,7 @@ function do_coder_reviews($coder_args) {
   $results['#stats'] = array('minor' => 0, 'normal' => 0, 'critical' => 0, 'ignored' => 0);
 
   // Skip PHP include files when the user requested severity is above minor.
-  if (isset($coder_args['#php_minor']) && substr($coder_args['#filename'], -4) == '.php') {
+  if (isset($coder_args['#php_minor']) && _substr($coder_args['#filename'], -4) == '.php') {
     if ($coder_args['#severity'] > 1) {
       return $results;
     }
@@ -246,7 +246,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
     else {
       $content = file_get_contents($filepath) . "\n";
     }
-    $content_length = drupal_strlen($content);
+    $content_length = _strlen($content);
 
     $in_comment = 0;
     $beginning_of_line = 0;
@@ -406,7 +406,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
           // @note: drupal_substr does not properly handle multi-byte characters in this string.
           // @todo: check other places where the drupal_ string functions fail.
           if ($beginning_of_line && $char == $in_heredoc[0] && substr($content, $pos, $in_heredoc_length) == $in_heredoc) {
-            $this_all_lines .= drupal_substr($content, $pos + 1, $in_heredoc_length - 1);
+            $this_all_lines .= _substr($content, $pos + 1, $in_heredoc_length - 1);
             $in_heredoc = 0;
             $pos += $in_heredoc_length;
           }
@@ -495,7 +495,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
                     $pos --;
                     if (preg_match('/^\s*(\w+)/', $heredoc, $match)) {
                       $in_heredoc = $match[1];
-                      $in_heredoc_length = drupal_strlen($in_heredoc);
+                      $in_heredoc_length = _strlen($in_heredoc);
                     }
                     break;
                   }
@@ -527,7 +527,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
                 $this_all_lines .= '? ';
                 $pos += 2;
               }
-              elseif (drupal_substr($content, $pos + 2, 3) == 'php') {
+              elseif (_substr($content, $pos + 2, 3) == 'php') {
                 $in_php = 1;
                 $in_allphp = 1;
                 $this_all_lines .= '?php';
@@ -679,7 +679,7 @@ function _coder_review_severity($severity_name, $default_value = SEVERITY_NORMAL
 function _coder_review_severity_name($coder_args, $review, $rule) {
   // NOTE: Warnings in php includes are suspicious because
   // PHP includes are frequently 3rd party products.
-  if (isset($coder_args['#php_minor']) && drupal_substr($coder_args['#filename'], -4) == '.php') {
+  if (isset($coder_args['#php_minor']) && _substr($coder_args['#filename'], -4) == '.php') {
     return 'minor';
   }
 
@@ -1181,4 +1181,18 @@ function _cache_get($cid, $bin = 'default') {
  */
 function _cache_set($cid, $data, $bin = 'default') {
   return function_exists('cache_set') ? cache_set($cid, $data, $bin) : drush_cache_set($cid, $data, $bin);
+}
+
+/**
+ * Return a substring.
+ */
+function _substr($text, $start, $length = NULL) {
+  return function_exists('drupal_substr') ? drupal_substr($text, $start, $length) : substr($text, $start, $length);
+}
+
+/**
+ * Return the strlen.
+ */
+function _strlen($text) {
+  return function_exists('drupal_strlen') ? drupal_strlen($text) : strlen($text);
 }
