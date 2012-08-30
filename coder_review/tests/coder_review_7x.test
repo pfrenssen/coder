@@ -261,11 +261,11 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  if (comment_load($cid))');
 
     // Any menu items that are using the %_comment wildcard will need to change to %comment.
-    $this->assertCoderReviewFail('  function mymodule_menu() {\n$items[\'foo/%_comment\'] = array();\n}');
-    $this->assertCoderReviewFail('  function mymodule_menu_alter() {\n$items[\'foo/%_comment\'] = array();\n}');
-    $this->assertCoderReviewPass('  function mymodule_menu() {\n$items[\'foo/%comment\'] = array();\n}');
-    $this->assertCoderReviewPass('  function mymodule_menu_alter() {\n$items[\'foo/%comment\'] = array();\n}');
-    $this->assertCoderReviewPass('  $foo = \'foo/%_comment\';');
+    $this->assertCoderReviewFail("  function mymodule_menu() {\n\$items['foo/%_comment'] = array();\n}");
+    $this->assertCoderReviewFail("  function mymodule_menu_alter() {\n\$items['foo/%_comment'] = array();\n}");
+    $this->assertCoderReviewPass("  function mymodule_menu() {\n\$items['foo/%comment'] = array();\n}");
+    $this->assertCoderReviewPass("  function mymodule_menu_alter() {\n\$items['foo/%comment'] = array();\n}");
+    $this->assertCoderReviewPass("  \$foo = 'foo/%_comment';");
 
     // http://drupal.org/node/224333#comment_status
     $this->assertCoderReviewFail(' db_query(\'SELECT cid FROM {comments} WHERE status = 0\');');

@@ -431,7 +431,7 @@ function coder_review_7x_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'allphp',
-    '#function' => '_menu$|_menu_alter$',
+    '#function' => '_(menu|menu_alter)$',
     '#value' => '%_comment',
     '#warning' => array(
       '#text' => '%_comment wildcard has been renamed to %comment',
