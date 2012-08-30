@@ -257,7 +257,7 @@ function theme_coder_review_warning($variables) {
   if ($severity_name) {
     $class .= " coder-$severity_name";
   }
-  $path = _coder_review_file_path() . '/..';
+  $path = drupal_get_path('module', 'coder_review') . '/..';
   $title = _t('severity: @severity', array('@severity' => $severity_name));
   $img = theme('image', array(
     'path' => $path . "/images/$severity_name.png",
