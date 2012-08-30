@@ -22,7 +22,7 @@
  * Implements hook_coder_review_ignore().
 function coder_review_coder_review_ignore() {
   return array(
-    'path' => _coder_review_path(),
+    'path' => _coder_review_file_path(),
   );
 }
  */
@@ -113,16 +113,19 @@ function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) 
     return;
   }
 
-  // Don't bother bootstrapping coder_review.common.inc just for _coder_review_path().
-  $form['#attached']['css'] = array(
-    dirname(__FILE__) . '/coder_review.css',
-  );
-  foreach ($form['modules'] as $package => $modules) {
-    if ($package[0] != '#') {
-      foreach ($modules as $name => $data) {
-        if ($name[0] != '#') {
-          // @todo: put in the "Operations" column instead of modifying the description.
-          $form['modules'][$package][$name]['description']['#markup'] .= ' (' . l(t('Code review'), "admin/config/development/coder/review/$name") . ')';
+  $form['#attached']['css'][] = drupal_get_path('module', 'coder_review') . '/coder_review.css';
+
+  foreach ($form['modules'] as $package_name => &$package) {
+    if ($package_name[0] != '#' /*&& $package_name != 'Core'*/) {
+      foreach ($package as $module_name => &$module) {
+        if ($module_name[0] != '#') {
+          $module['links']['coder_review'] = array(
+            '#type' => 'link',
+            '#title' => t('Code review'),
+            '#href' => "admin/config/development/coder/review/$module_name",
+            '#options' => array('attributes' => array('class' => array('module-link', 'module-link-coder-review'), 'title' => t('Coder review'))),
+          );
+          $package['#theme'] = 'coder_review_modules_fieldset';
         }
       }
     }
@@ -155,9 +158,9 @@ function _coder_review_settings_form($settings, &$system, &$files) {
   require_once realpath(dirname(__FILE__)) . '/coder_review.common.inc';
 
   // Add the javascript.
-  $form['#attached']['js'] = array(
-    _coder_review_path() . '/coder_review.js',
-  );
+  if (function_exists('drupal_get_path')) {
+    $form['#attached']['js'][] = drupal_get_path('module', 'coder_review') . '/coder_review.js';
+  }
 
   // Create the list of review options from the coder review plug-ins.
   // Maintain a secondary list based on #title only, to make sorting possible.
@@ -595,7 +598,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         '#collapsed' => TRUE,
         '#weight' => ++$module_weight,
       );
-      $includefiles = _file_list('includes', '/\.php$/', FALSE);
+      $phpfiles = _file_list('includes', '/\.php$/', FALSE);
       _coder_review_page_form_includes(
         $form,
         $coder_args,
@@ -773,9 +776,10 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         $form['settings']['#prefix'] = _t('<div class="coder-settings">Use the Selection form to select options for this code review, or change the <a href="@settings">Default Settings</a> and use the <a href="@default">Default</a> tab above.</div>', array('@settings' => url('admin/config/development/coder/review/settings'), '@default' => url('admin/config/development/coder/review/default')));
       }
       $form['settings'][] = $coder_form;
-      $form['#attached']['css'] = array(
-        _coder_review_path() . '/coder_review.css',
-      );
+
+      if (function_exists('drupal_get_path')) {
+        $form['#attached']['css'][] = drupal_get_path('module', 'coder_review') . '/coder_review.css';
+      }
     }
   }
   return $form;
@@ -810,11 +814,11 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
   $weight = 0;
   $exclusions = str_replace(array("\r\n", "\r", "\n", '/', '*', '.'), array('|', '|', '|', '\\/', '.*', '\\.'), $exclusions);
   foreach ($files as $file) {
-    if (!empty($exclusions) && preg_match("/$exclusions/", $file->uri)) {
+    if (!empty($exclusions) && preg_match("/$exclusions/", $file)) {
       // Don't review this file.
       continue;
     }
-    $filename = _substr($file->uri, $offset);
+    $filename = _substr($file, $offset);
     $php_extensions = _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
     $coder_args['#filename'] = $filename;
     $coder_args['#php_extensions'] = $php_extensions;
@@ -876,7 +880,7 @@ function _coder_review_form_output($name, $filename, $results) {
  * Get list of lines to ignore.
  */
 function coder_review_get_ignores() {
-  $ignores = coder_review_parse_ignores(_coder_review_path() . '/core.coder_review_ignores.txt');
+  $ignores = coder_review_parse_ignores(_coder_review_file_path() . '/core.coder_review_ignores.txt');
   if (function_exists('module_implements')) {
     foreach (module_implements('coder_review_ignore') as $module) {
       $function = $module . '_coder_review_ignore';
@@ -922,7 +926,7 @@ function coder_review_parse_ignores($filepath, $line_prefix = '') {
  * Implements hook_simpletest().
  */
 function coder_review_simpletest() {
-  return array_keys(file_scan_directory(_coder_review_path() . '/tests', '/\.test/'));
+  return array_keys(file_scan_directory(_coder_review_file_path() . '/tests', '/\.test/'));
 }
 
 /**
@@ -943,6 +947,10 @@ function coder_review_theme() {
     ),
     'coder_review_table_cols' => array(
       'render element' => 'form',
+    ),
+    'coder_review_modules_fieldset' => array(
+      'render element' => 'form',
+      'file' => 'coder_review.admin.inc',
     ),
   );
 }

@@ -22,7 +22,7 @@ function _coder_review_reviews() {
 function coder_review_reviews() {
   static $cache = array();
   if (!$cache) {
-    $path = _coder_review_path() . '/includes';
+    $path = _coder_review_file_path() . '/includes';
     foreach (scandir($path) as $file) {
       $pathinfo = pathinfo("$path/$file");
       if ($pathinfo['extension'] == 'inc') {
@@ -82,7 +82,7 @@ function _coder_review_get_reviews_extensions($defaults, $reviews) {
 function _coder_review_modified() {
   static $cached_mtime;
   if (!isset($cached_mtime)) {
-    $cached_mtime = filemtime(_coder_review_path() . '/coder_review.module');
+    $cached_mtime = filemtime(_coder_review_file_path() . '/coder_review.module');
 
     foreach (coder_review_reviews() as $review) {
       $mtime = filemtime($review['#file']);
@@ -257,7 +257,7 @@ function theme_coder_review_warning($variables) {
   if ($severity_name) {
     $class .= " coder-$severity_name";
   }
-  $path = _coder_review_path() . '/..';
+  $path = _coder_review_file_path() . '/..';
   $title = _t('severity: @severity', array('@severity' => $severity_name));
   $img = theme('image', array(
     'path' => $path . "/images/$severity_name.png",
@@ -1237,8 +1237,8 @@ function _phpapi($function) {
 /**
  * Return the path to the coder_review module.
  */
-function _coder_review_path() {
-  return /*function_exists('drupal_get_path') ? drupal_get_path('module', 'coder_review') :*/ dirname(__FILE__);
+function _coder_review_file_path() {
+  return dirname(__FILE__);
 }
 
 /**

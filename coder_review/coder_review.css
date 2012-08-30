@@ -43,3 +43,8 @@ code.good {
 .admin-coder {
   font-size: 0.9em;
 }
+
+a.module-link-coder-review {
+  /* @todo: replace this image with a more subdued/grayed-out png. */
+  background: url(../images/module.png) 0 50% no-repeat;
+}
