@@ -109,19 +109,20 @@ function coder_review_menu_alter(&$items) {
  * module description.
  */
 function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) {
-  if (empty($form['#theme']) || $form['#theme'] != 'confirm_form') {
-    if (user_access('view code review')) {
-      $form['#attached']['css'] = array(
-        _coder_review_path() . '/coder_review.css',
-      );
-      foreach ($form['modules'] as $package => $modules) {
-        if (!preg_match('/^#/', $package)) {
-          foreach ($modules as $name => $data) {
-            if (!preg_match('/^#/', $name)) {
-              $description = $data['description']['#markup'];
-              $form['modules'][$package][$name]['description']['#markup'] = $description . ' (' . l(t('Code review'), "admin/config/development/coder/review/$name") . ')';
-            }
-          }
+  if (!user_access('view code review') || (!empty($form['#theme']) && $form['#theme'] == 'confirm_form')) {
+    return;
+  }
+
+  // Don't bother bootstrapping coder_review.common.inc just for _coder_review_path().
+  $form['#attached']['css'] = array(
+    dirname(__FILE__) . '/coder_review.css',
+  );
+  foreach ($form['modules'] as $package => $modules) {
+    if ($package[0] != '#') {
+      foreach ($modules as $name => $data) {
+        if ($name[0] != '#') {
+          // @todo: put in the "Operations" column instead of modifying the description.
+          $form['modules'][$package][$name]['description']['#markup'] .= ' (' . l(t('Code review'), "admin/config/development/coder/review/$name") . ')';
         }
       }
     }
