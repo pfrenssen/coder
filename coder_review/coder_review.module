@@ -750,18 +750,18 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
 
     if (!_drush()) {
       // Prepend the settings form.
-      $form['disclaimer'] = array(
-        '#prefix' => '<div class="coder-disclaimer">',
-        '#markup' => coder_review_help('coder_review#disclaimer', array()),
-        '#suffix' => '</div>',
-        '#weight' => -3,
-      );
       $form['settings'] = array(
         '#type' => 'fieldset',
         '#title' => _t('Selection form'),
         '#collapsible' => TRUE,
         '#collapsed' => !empty($form),
         '#weight' => -2,
+      );
+      $form['disclaimer'] = array(
+        '#prefix' => '<div class="coder-disclaimer">',
+        '#markup' => coder_review_help('coder_review#disclaimer', array()),
+        '#suffix' => '</div>',
+        '#weight' => -3,
       );
       $form['submit'] = array(
         '#type' => 'submit',
