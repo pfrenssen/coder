@@ -223,8 +223,8 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             }
         }
 
-        $error = 'There must be no blank line following an inline comment';
-        $phpcsFile->addError($error, $stackPtr, 'SpacingAfter');
+        $warning = 'There must be no blank line following an inline comment';
+        $phpcsFile->addWarning($warning, $stackPtr, 'SpacingAfter');
 
     }//end process()
 
