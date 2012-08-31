@@ -528,6 +528,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  function mymodule_user(\$op");
     $this->assertCoderReviewFail("  function mymodule_user(\$type, \$edit\, &\$account");
 
+    $this->assertCoderReviewFail("  function mymodule_comment(&\$ai, \$op)");
+
     // http://drupal.org/node/224333#logout_path
     $this->assertCoderReviewFail('  drupal_goto(\'logout\');');
     $this->assertCoderReviewPass("  drupal_goto('user/logout');");

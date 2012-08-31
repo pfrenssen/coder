@@ -1099,7 +1099,19 @@ function coder_review_7x_reviews() {
     '#warning' => array(
       '#text' => '!hook_nodeapi() has been split into a number of smaller hooks.',
       '#args' => array(
-        '!hook_nodeapi()' => _drupalapi('hook_nodeapi', 7),
+        '!hook_nodeapi()' => _drupalapi('hook_nodeapi', 6),
+      ),
+      '#link' => _drupalnode(224333, 'remove_op'),
+    ),
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => 'function\s+[a-z0-9_]+_(comment)\s*\(.*,\s*\$op\)',
+    '#warning' => array(
+      '#text' => '!hook_comment() has been split into a number of smaller hooks, for example !hook_comment_view().',
+      '#args' => array(
+        '!hook_comment()' => _drupalapi('hook_comment', 6),
+        '!hook_comment_view()' => _drupalapi('hook_comment_view', 7),
       ),
       '#link' => _drupalnode(224333, 'remove_op'),
     ),
