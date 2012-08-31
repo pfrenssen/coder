@@ -318,7 +318,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
     else {
       $content = file_get_contents($filepath) . "\n";
     }
-    $content_length = _strlen($content);
+    $content_length = strlen($content);
 
     $in_comment = 0;
     $beginning_of_line = 0;

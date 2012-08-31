@@ -76,6 +76,11 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  if ($a == 1) {$b = 2;');
     $this->assertCoderReviewFail('  else if ($a == 1) {');
     $this->assertCoderReviewPass('  elseif ($a == 1) {');
+    $this->assertCoderReviewFail('  if($a == 1) {');
+  }
+
+  function testMultibyte() {
+    $this->assertCoderReviewFail("  \$a = 'óóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóó';\n  if(\$a == 1) {\n");
   }
 
   function testStyleStringConcatentation() {
