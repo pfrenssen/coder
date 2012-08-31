@@ -250,9 +250,12 @@ function _coder_review_comment_missing_docblock(&$coder_args, $review, $rule, $l
     }
     if ($warning) {
       $tmprule['#warning'] = array(
-        '#text' => "Missing docblock above $warning",
+        '#text' => "Missing docblock above $warning @ref",
+        '#args' => array(
+          '@ref' => implode('::', array_filter($current_stack)),
+        ),
         '#link' => _drupalnode(1354, $anchor),
-       );
+      );
       _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
     }
     $prev_stack = $current_stack;

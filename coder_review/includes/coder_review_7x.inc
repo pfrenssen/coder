@@ -1484,19 +1484,6 @@ function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, 
  * Define the warning callbacks.
  */
 
-// @todo: this warning is never called?
-function _coder_review_7x_http_header_functions_warning() {
-  return array(
-    '#warning' => _t('Parameters to !drupal_set_header() have changed and it has been renamed to !drupal_add_http_header().',
-      array(
-        '!drupal_set_header()' => _drupalapi('drupal_set_header', 6),
-        '!drupal_add_http_header()' => _drupalapi('drupal_add_http_header', 7),
-      )
-    ),
-    '#link' => _drupalnode(224333, 'http_header_functions'),
-  );
-}
-
 /**
  * Return the warning text for http://drupal.org/node/224333#drupal_behaviors.
  *

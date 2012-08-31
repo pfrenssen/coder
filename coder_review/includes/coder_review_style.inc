@@ -191,6 +191,9 @@ function _coder_review_style_closing_php_callback(&$coder_args, $review, $rule, 
   }
 }
 
+/**
+ * Return regex of all global core variables.
+ */
 function _coder_review_style_core_global_regex() {
   static $coreglobalregex;
   if (!isset($coreglobalregex)) {

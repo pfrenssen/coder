@@ -116,7 +116,7 @@ function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) 
   $form['#attached']['css'][] = drupal_get_path('module', 'coder_review') . '/coder_review.css';
 
   foreach ($form['modules'] as $package_name => &$package) {
-    if ($package_name[0] != '#' /*&& $package_name != 'Core'*/) {
+    if ($package_name[0] != '#') {
       foreach ($package as $module_name => &$module) {
         if ($module_name[0] != '#') {
           $module['links']['coder_review'] = array(
