@@ -870,10 +870,10 @@ function coder_review_7x_reviews() {
     '#value' => '[\s\(]drupal_execute\s*\(',
     '#warning' => '_coder_review_7x_drupal_execute_renamed_warning',
     '#warning' => array(
-      '#text' => '!drupal_execute() has been renamed to !drupal_submit_form()',
+      '#text' => '!drupal_execute() has been renamed to !drupal_form_submit()',
       '#args' => array(
         '!drupal_execute()' => _drupalapi('drupal_execute', 6),
-        '!drupal_submit_form()' => _drupalapi('drupal_submit_form', 7),
+        '!drupal_form_submit()' => _drupalapi('drupal_form_submit', 7),
       ),
       '#link' => _drupalnode(224333, 'drupal_execute_drupal_form_submit'),
     ),
