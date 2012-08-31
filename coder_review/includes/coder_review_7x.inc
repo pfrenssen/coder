@@ -407,7 +407,7 @@ function coder_review_7x_reviews() {
   );
   $rules[] = array(
     '#type' => 'regex',
-    '#value' => 'function\s+[a-z0-9_]+_(block)\s*\(',
+    '#value' => 'function\s+[a-z0-9_]+_(block)\s*\(\s*\$op',
     '#warning' => array(
       '#text' => '!hook_block() has been split into a number of smaller hooks.',
       '#args' => array(
@@ -980,7 +980,7 @@ function coder_review_7x_reviews() {
   );
   $rules[] = array(
     '#type' => 'regex',
-    '#value' => 'function\s+[a-z0-9_]+_(user)\s*\(',
+    '#value' => 'function\s+[a-z0-9_]+_(user)\s*\(\s*(\$op|.*,\s*&\$account)',
     '#warning' => array(
       '#text' => '!hook_user() has been removed in favour of hook_user_$op functions, for example !hook_user_presave().',
       '#args' => array(

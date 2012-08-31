@@ -244,8 +244,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
     // http://drupal.org/node/224333#remove_op
     $this->assertCoderReviewFail("  function mymodule_block(\$op, \$delta, \$edit) {\n}");
-    $this->assertCoderReviewFail("  function mymodule_block(\$delta, \$edit) {\n  if (\$op == 'list') {\n  }\n}");
-    $this->assertCoderReviewFail("  function mymodule_block(\$delta, \$edit) {\n  switch (\$op) {\n  case 'list':\n  }\n}");
+    $this->assertCoderReviewFail("  function mymodule_block(\$op, \$delta, \$edit) {\n  if (\$op == 'list') {\n  }\n}");
+    $this->assertCoderReviewFail("  function mymodule_block(\$op, \$delta, \$edit) {\n  switch (\$op) {\n  case 'list':\n  }\n}");
 
   }
 
@@ -525,7 +525,8 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  function foo_user_delete($edit, $uid)');
 
     // http://drupal.org/node/224333#remove_op
-    $this->assertCoderReviewFail("  function mymodule_user(");
+    $this->assertCoderReviewFail("  function mymodule_user(\$op");
+    $this->assertCoderReviewFail("  function mymodule_user(\$type, \$edit\, &\$account");
 
     // http://drupal.org/node/224333#logout_path
     $this->assertCoderReviewFail('  drupal_goto(\'logout\');');
