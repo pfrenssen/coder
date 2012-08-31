@@ -172,6 +172,10 @@ function coder_review_comment_reviews() {
     '#value' => '^\s*#
     '#warning' => 'Never use shell style comments, use // instead or #',
   );
+  $rules[] = array(
+    '#type' => 'callback',
+    '#value' => '_coder_review_comment_missing_docblock',
+  );
 
   $review = array(
     '#title' => 'Drupal Commenting Standards',
@@ -214,7 +218,45 @@ function _coder_review_comment_install_file_block_callback(&$coder_args, $review
         '#text' => 'For .install files, the @file description should be of the format "Install, update and uninstall functions for the foo module.".',
         '#link' => _drupalnode(318),
       );
-      _coder_review_error($results, $tmprule, $severity_name, $theme_lineno, $theme_line, $ignores);
+      _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
+    }
+  }
+}
+
+/**
+ * Define the rull callback function to check for missing docblocks.
+ */
+function _coder_review_comment_missing_docblock(&$coder_args, $review, $rule, $lines, &$results) {
+  // Setup variable to display warnings.
+  $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
+  $tmprule = $rule;
+
+  // Look for where all the classes and functions start.
+  $prev_stack = array('', '');
+  foreach ($coder_args['#stack'] as $lineno => $current_stack) {
+    $warning = NULL;
+    if ($current_stack[0] && $current_stack[0] != $prev_stack[0]) {
+      $warning = _coder_review_docblock($coder_args, $lineno) ? '' : 'class';
+    }
+    elseif ($current_stack[1] && $current_stack[1] != $prev_stack[1]) {
+      $warning = _coder_review_docblock($coder_args, $lineno) ? '' : ($current_stack[0] ? 'method' : 'function');
+    }
+    if ($warning) {
+      $tmprule['#warning'] = "Missing docblock above $warning";
+      _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
+    }
+    $prev_stack = $current_stack;
+  }
+}
+
+/**
+ * Return if there is a docbock comment above the line.
+ */
+function _coder_review_docblock(&$coder_args, $lineno) {
+  $lines = $coder_args['#comment_array_lines'];
+  while (--$lineno > 0) {
+    if ($lines[$lineno][0]) {
+      return $lines[$lineno][0] == ' */';
     }
   }
 }
