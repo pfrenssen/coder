@@ -175,6 +175,7 @@ function coder_review_comment_reviews() {
   $rules[] = array(
     '#type' => 'callback',
     '#value' => '_coder_review_comment_missing_docblock',
+    '#severity' => 'minor',
   );
 
   $review = array(
@@ -236,13 +237,22 @@ function _coder_review_comment_missing_docblock(&$coder_args, $review, $rule, $l
   foreach ($coder_args['#stack'] as $lineno => $current_stack) {
     $warning = NULL;
     if ($current_stack[0] && $current_stack[0] != $prev_stack[0]) {
-      $warning = _coder_review_comment_is_docblock_above($coder_args, $lineno) ? '' : 'class';
+      if (!_coder_review_comment_is_docblock_above($coder_args, $lineno)) {
+        $warning = 'class or interface';
+        $anchor = 'classes';
+      }
     }
     elseif ($current_stack[1] && $current_stack[1] != $prev_stack[1]) {
-      $warning = _coder_review_comment_is_docblock_above($coder_args, $lineno) ? '' : ($current_stack[0] ? 'method' : 'function');
+      if (!_coder_review_comment_is_docblock_above($coder_args, $lineno)) {
+        $warning = $current_stack[0] ? 'method' : 'function';
+        $anchor = $current_stack[0] ? 'classes' : 'functions';
+      }
     }
     if ($warning) {
-      $tmprule['#warning'] = "Missing docblock above $warning";
+      $tmprule['#warning'] = array(
+        '#text' => "Missing docblock above $warning",
+        '#link' => _drupalnode(1354, $anchor),
+       );
       _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
     }
     $prev_stack = $current_stack;
@@ -253,10 +263,10 @@ function _coder_review_comment_missing_docblock(&$coder_args, $review, $rule, $l
  * Return if there is a docbock comment above the line.
  */
 function _coder_review_comment_is_docblock_above(&$coder_args, $lineno) {
-  $lines = $coder_args['#comment_array_lines'];
+  $lines = $coder_args['#all_array_lines'];
   while (--$lineno > 0) {
     if (isset($lines[$lineno])) {
-      return $lines[$lineno][0] == ' */';
+      return substr($lines[$lineno][0], -2) == '*/';
     }
   }
 }
