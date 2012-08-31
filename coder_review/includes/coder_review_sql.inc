@@ -18,7 +18,8 @@ function coder_review_sql_reviews() {
     '#source' => 'quote',
     '#warning' => 'SQL keywords should be upper case',
     '#case-sensitive' => TRUE,
-    '#severity' => 'minor'
+    '#severity' => 'minor',
+    '#never' => '[\s=\(](t|st|dt)\s*\(',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -26,6 +27,7 @@ function coder_review_sql_reviews() {
     '#source' => 'quote',
     '#warning' => 'table names should be enclosed in {curly_brackets}',
     '#severity' => 'critical',
+    '#never' => '[\s=\(](t|st|dt)\s*\(',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -38,18 +40,21 @@ function coder_review_sql_reviews() {
       ),
       '#link' => _drupalnode(1395),
     ),
+    '#never' => '[\s=\(](t|st|dt)\s*\(',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '^(select\s+.*\s+from\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s' . $table . ')\s+.*!=',
     '#source' => 'quote',
     '#warning' => 'Use ANSI standard &lt;&gt; instead of !=',
+    '#never' => '[\s=\(](t|st|dt)\s*\(',
   );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '^(select\s+.*\s+from\s+' . $table . '\s+.+?=\s*`|insert\s+into\s+' . $table . '\s+.*?VALUES\s*(\(\s*`|\(.*?,\s*`)|update\s+' . $table . '\s+set\s+.*?=\s*`|delete\s+from\s' . $table . '\s+.*?=\s*`)',
     '#source' => 'quote',
-    '#warning' => "Don't use back ticks to quote values as it is not compliant with ANSI SQL"
+    '#warning' => "Don't use back ticks to quote values as it is not compliant with ANSI SQL",
+    '#never' => '[\s=\(](t|st|dt)\s*\(',
   );
   $rules[] = array(
     '#type' => 'regex',

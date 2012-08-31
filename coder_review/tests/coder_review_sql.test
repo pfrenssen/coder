@@ -24,10 +24,11 @@ class CoderReviewSQLTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  $sql = "insert into {node} (changed) VALUES (%d)";');
     $this->assertCoderReviewFail('  $sql = "delete from {node}";');
     $this->assertCoderReviewFail('  $sql = "update {node} set changed = now()";');
-    $this->assertCoderReviewFail('  $var = t("select something from this");');
+    $this->assertCoderReviewPass('  $var = t("select something from this");');
     $this->assertCoderReviewPass('  $var = t("update something");');
     $this->assertCoderReviewPass('  $var = t("insert something");');
     $this->assertCoderReviewPass('  $var = t("delete something");');
+    $this->assertCoderReviewPass("  \$notsql = t('Select a role from the list.');");
   }
 
   function testSQLBracketNode() {
