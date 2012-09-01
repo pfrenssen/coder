@@ -233,24 +233,23 @@ function _coder_review_comment_missing_docblock(&$coder_args, $review, $rule, $l
   $tmprule = $rule;
 
   // Look for where all the classes and functions start.
+  $alllines = $coder_args['#all_array_lines'];
   $prev_stack = array('', '');
   foreach ($coder_args['#stack'] as $lineno => $current_stack) {
-    $warning = NULL;
+    $anchor = NULL;
     if ($current_stack[0] && $current_stack[0] != $prev_stack[0]) {
-      if (!_coder_review_comment_is_docblock_above($coder_args, $lineno)) {
-        $warning = 'class or interface';
+      if (!isset($alllines[$lineno - 1]) || substr($alllines[$lineno - 1][0], -2) != '*/') {
         $anchor = 'classes';
       }
     }
     elseif ($current_stack[1] && $current_stack[1] != $prev_stack[1]) {
-      if (!_coder_review_comment_is_docblock_above($coder_args, $lineno)) {
-        $warning = $current_stack[0] ? 'method' : 'function';
+      if (!isset($alllines[$lineno - 1]) || substr($alllines[$lineno - 1][0], -2) != '*/') {
         $anchor = $current_stack[0] ? 'classes' : 'functions';
       }
     }
-    if ($warning) {
+    if ($anchor) {
       $tmprule['#warning'] = array(
-        '#text' => "Missing docblock above $warning @ref",
+        '#text' => "Docblock should be immediately above @ref",
         '#args' => array(
           '@ref' => implode('::', array_filter($current_stack)),
         ),
@@ -259,17 +258,5 @@ function _coder_review_comment_missing_docblock(&$coder_args, $review, $rule, $l
       _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
     }
     $prev_stack = $current_stack;
-  }
-}
-
-/**
- * Return if there is a docbock comment above the line.
- */
-function _coder_review_comment_is_docblock_above(&$coder_args, $lineno) {
-  $lines = $coder_args['#all_array_lines'];
-  while (--$lineno > 0) {
-    if (isset($lines[$lineno])) {
-      return substr($lines[$lineno][0], -2) == '*/';
-    }
   }
 }

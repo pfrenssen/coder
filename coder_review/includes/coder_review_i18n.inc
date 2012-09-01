@@ -33,6 +33,7 @@ function coder_review_i18n_reviews() {
         '!st' => _drupalapi('st'),
       ),
     ),
+    '#filename' => array('install'),
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -46,6 +47,7 @@ function coder_review_i18n_reviews() {
         '!hook_install' => _drupalapi('hook_install'),
       ),
     ),
+    '#filename' => array('install'),
   );
   $rules[] = array(
     '#type' => 'regex',

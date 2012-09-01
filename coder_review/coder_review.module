@@ -598,7 +598,8 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         '#collapsed' => TRUE,
         '#weight' => ++$module_weight,
       );
-      $phpfiles = _file_list('includes', '/\.php$/', FALSE);
+      $phpfiles = _file_list('.', '/\.php$/', FALSE);
+      sort($phpfiles);
       _coder_review_page_form_includes(
         $form,
         $coder_args,
@@ -618,6 +619,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         '#weight' => ++$module_weight,
       );
       $includefiles = _file_list('includes', '/\.inc$/');
+      sort($includefiles);
       _coder_review_page_form_includes(
         $form,
         $coder_args,
@@ -701,6 +703,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
               $includefiles = _file_list($pathinfo['dirname'], $regex);
               $includefiles = array_diff($includefiles, $system);
               if ($includefiles) {
+                sort($includefiles);
                 $offset = strpos($filename, dirname($filename));
                 $stats[$filename]['#includes'] = _coder_review_page_form_includes(
                   $form,

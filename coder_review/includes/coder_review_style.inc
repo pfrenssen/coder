@@ -164,6 +164,22 @@ function coder_review_style_reviews() {
     '#warning' => 'When labelling buttons, make it clear what the button does, "Submit" is too generic.',
     '#severity' => 'minor',
   );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => 'class\s+([a-z]|\w*_)',
+    '#case-sensitive' => TRUE,
+    '#warning' => 'Classes and interfaces should use UpperCamel naming.',
+    '#severity' => 'minor',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => 'function\s+([A-Z]|\w*_)\s*\(',
+    '#case-sensitive' => TRUE,
+    '#warning' => 'Methods and class properties should use lowerCamel naming.',
+    '#class' => '.+',
+    '#not' => 'function\s+__(construct|destruct)\s*\(',
+    '#severity' => 'minor',
+  );
 
   $review = array(
     '#title' => 'Drupal Coding Standards',
