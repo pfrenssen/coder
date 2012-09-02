@@ -4,6 +4,7 @@ img.coder {
 
 .coder-normal {
   background-color: #ffd;
+  color: #000;
 }
 
 .coder-minor {
@@ -11,6 +12,7 @@ img.coder {
 
 .coder-critical {
   background-color: #ffe7dd;
+  color: #000;
 }
 
 .coder code {
@@ -34,6 +36,7 @@ code.good {
 
 .coder-description code {
   background: #edf1f3;
+  color: #000;
 }
 
 .coder-settings {
