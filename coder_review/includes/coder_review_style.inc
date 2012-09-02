@@ -10,6 +10,7 @@
 function coder_review_style_reviews() {
   $br = 'br';
 
+  // @todo: add more specific #link's foreach #warning.
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '\t',
@@ -84,15 +85,23 @@ function coder_review_style_reviews() {
   );
   $rules[] = array(
     '#type' => 'regex',
-    '#value' => '(?-i)(function\s+|\$)(([a-z]+[A-Z]+([a-z]*[A-Z]*)*)|([A-Z]+[a-z]+([A-Z]*[a-z]*)*))',
+    '#value' => '(?-i)(function\s+|\$)(([a-z]+_?[A-Z]+)|([A-Z]+_?[a-z]+))',
     '#warning' => 'do not use mixed case (camelCase), use lower case and _',
     '#class-not' => '.+',
     '#filename-not' => array('test'), // Add this line too for patch files, where we don't have have class context.
   );
   $rules[] = array(
     '#type' => 'regex',
+    '#value' => '(?-i)(function\s+[A-Z]+\s*\('
+    '#warning' => array(
+      '#text' => ''do not use upper case function names',
+      '#link' => _drupalnode(318, 'naming'),
+    ),
+  );
+  $rules[] = array(
+    '#type' => 'regex',
     '#value' => '\s(stdclass)\s*\(',
-    '#not' => '^(?-i)stdClass$',
+    '#not' => '^(?-i)stdClass',
     '#warning' => "use stdClass caseCapitalization, it's the one exception to the mixed case style standard",
   );
   $rules[] = array(
@@ -166,7 +175,7 @@ function coder_review_style_reviews() {
   );
   $rules[] = array(
     '#type' => 'regex',
-    '#value' => 'class\s+([a-z]|\w*_)',
+    '#value' => '(class|interface)\s+([a-z]|\w*_)',
     '#case-sensitive' => TRUE,
     '#warning' => 'Classes and interfaces should use UpperCamel naming.',
     '#severity' => 'minor',

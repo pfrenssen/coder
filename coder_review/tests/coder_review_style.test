@@ -38,8 +38,10 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  $var = $obj->camelCase();');
     $this->assertCoderReviewFail('  $camelCase = "1";');
     $this->assertCoderReviewFail('  function camelCase() {');
-    $this->assertCoderReviewPass("  class myClass {\nfunction camelCase() {");
-    $this->assertCoderReviewPass("  interface myClass {\nfunction camelCase() {");
+    $this->assertCoderReviewFail("  class myClass {\nfunction camelCase() {");
+    $this->assertCoderReviewFail("  interface myClass {\nfunction camelCase() {");
+    $this->assertCoderReviewPass("  class MyClass {\nfunction camelCase() {");
+    $this->assertCoderReviewPass("  interface MyClass {\nfunction camelCase() {");
     $this->assertCoderReviewPass('  ?>This is embedded php and should Not trigger a camelCase error.<?php');
     $this->assertCoderReviewPass("  ?>This second embedded php and should Not trigger\na camelCase error.<?php");
     $this->assertCoderReviewPass('  $var = 0xFF;');
@@ -109,5 +111,11 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  \$var = <<< __EOD__\n<br>\n__EOD__;");
     $this->assertCoderReviewFail("  \$var = <<< __EOD__\n<B>\n__EOD__;");
     $this->assertCoderReviewPass("  \$var = <<< __EOD__\n<br/>\n__EOD__;");
+  }
+
+  function testFunctionName() {
+    $this->assertCoderReviewFail('function camelCase() {');
+    $this->assertCoderReviewFail('function any_Upper_case() {');
+    $this->assertCoderReviewPass("class CamelCase {\nfunction camelCase() {\n");
   }
 }
