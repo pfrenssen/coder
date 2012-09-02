@@ -184,6 +184,7 @@ function coder_review_comment_reviews() {
     '#rules' => $rules,
     '#description' => 'Checks for the Drupal commenting standards; every developer should use this.',
     '#version' => 2,
+    '#image' => 'images/comment.png',
   );
   return array('comment' => $review);
 }
@@ -192,8 +193,6 @@ function coder_review_comment_reviews() {
  * Define the rule callbacks for comment install file block, see do_coder_review_callback().
  */
 function _coder_review_comment_install_file_block_callback(&$coder_args, $review, $rule, $lines, &$results) {
-  $ignores = $coder_args['#ignore_lines'];
-  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   // Only perform this check on install files.
   $pathinfo = pathinfo($coder_args['#filename']);
   if ($pathinfo['extension'] == 'install') {
@@ -219,7 +218,8 @@ function _coder_review_comment_install_file_block_callback(&$coder_args, $review
         '#text' => 'For .install files, the @file description should be of the format "Install, update and uninstall functions for the foo module.".',
         '#link' => _drupalnode(318),
       );
-      _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
+      $review_name = $review['#review_name'];
+      _coder_review_error($results, $tmprule, $review_name, $severity_name, $lineno, $line, $coder_args['#ignore_lines'][$review_name]);
     }
   }
 }
@@ -255,7 +255,8 @@ function _coder_review_comment_missing_docblock(&$coder_args, $review, $rule, $l
         ),
         '#link' => _drupalnode(1354, $anchor),
       );
-      _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $ignores);
+      $review_name = $review['#review_name'];
+      _coder_review_error($results, $tmprule, $review_name, $severity_name, $lineno, $alllines[$lineno][0], $coder_args['#ignore_lines'][$review_name]);
     }
     $prev_stack = $current_stack;
   }

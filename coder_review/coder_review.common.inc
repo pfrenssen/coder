@@ -11,7 +11,11 @@ define('SEVERITY_CRITICAL', 9);
  * Get all of the code review modules, including contributions.
  */
 function _coder_review_reviews() {
-  return function_exists('module_invoke_all') ? module_invoke_all('reviews') : coder_review_reviews();
+  static $cache = array();
+  if (!$cache) {
+    $cache = function_exists('module_invoke_all') ? module_invoke_all('reviews') : coder_review_reviews();
+  }
+  return $cache;
 }
 
 /**
@@ -224,6 +228,7 @@ function theme_coder_review_warning($variables) {
 
   $warning = $variables['warning'];
   $severity_name = $variables['severity_name'];
+  $review_name = $variables['review_name'];
   $lineno = $variables['lineno'];
   $line = $variables['line'];
 
@@ -253,6 +258,8 @@ function theme_coder_review_warning($variables) {
       $warning .= '<pre>' . check_plain($line) . '</pre>';
     }
   }
+
+  // Add informative images and classes to the output.
   $class = 'coder-warning';
   if ($severity_name) {
     $class .= " coder-$severity_name";
@@ -261,12 +268,30 @@ function theme_coder_review_warning($variables) {
   $title = _t('severity: @severity', array('@severity' => $severity_name));
   $img = theme('image', array(
     'path' => $path . "/images/$severity_name.png",
-    'alt' => $title, 'title' => $title,
+    'alt' => $title,
+    'title' => $title,
     'attributes' => array('align' => 'right', 'class' => 'coder'),
     'getsize' => FALSE,
   ));
+  $avail_reviews = _coder_review_reviews();
+  if (isset($avail_reviews[$review_name]['#image'])) {
+    $title = _t('review: @review', array('@review' => $review_name));
+    $review_image = $avail_reviews[$review_name]['#image'];
+    $img .= theme('image', array(
+      'path' => (substr($review_image, 0, 7) == 'images/' ? "$path/" : '') . $review_image,
+      'alt' => $title,
+      'title' => $title,
+      'attributes' => array('align' => 'right', 'class' => 'coder-review'),
+      'getsize' => FALSE,
+    ));
+  }
   if (!empty($description)) {
-    $img .= theme('image', array('path' => $path . '/images/more.png', 'alt' => t('click to read more'), 'atributes' => array('align' => 'right', 'class' => 'coder-more'), 'getsize' => FALSE));
+    $img .= theme('image', array(
+      'path' => $path . '/images/more.png',
+      'alt' => t('click to read more'),
+      'atributes' => array('align' => 'right', 'class' => 'coder-more'),
+      'getsize' => FALSE,
+    ));
     $warning .= '<div class="coder-description">' . t('Explanation: @description', array('@description' => $description)) . '</div>';
   }
   return '<div class="' . $class . '">' . $img . $warning . '</div>';
@@ -367,7 +392,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
         // Remove coder's simpletests assertions as they validly contain bad
         // code, for testing the review rules.
         if (preg_match('/assertCoderReview(Fail|Pass)/', $this_all_lines)) {
-          $lineno++;
+          ++$lineno;
           $this_all_lines = '';
           $this_php_lines = '';
           $this_allphp_lines = '';
@@ -416,7 +441,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
         }
 
         // Save this line and start a new line.
-        $lineno++;
+        ++$lineno;
         $this_all_lines = '';
         $this_php_lines = '';
         $this_allphp_lines = '';
@@ -801,6 +826,9 @@ function do_coder_review($coder_args, $review) {
       $is_patch = 1;
     }
 
+    // Set the ignore lines array if it is empty.
+    $coder_args['#ignore_lines'] += array($review['#review_name'] => array());
+
     foreach ($review['#rules'] as $rule) {
       // Ignore rules that don't match the file extension.
       $filename_includes = isset($rule['#filename']) ? $rule['#filename'] : (isset($rule['#filename-not']) ? $coder_args['#php_extensions'] : NULL);
@@ -887,6 +915,7 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
     $function_not_regex = isset($rule['#function-not']) ? '/' . $rule['#function-not'] . '/' : '';
     $not_regex = isset($rule['#not']) ? '/' . $rule['#not'] . '/' . $regexflags : '';
     $never_regex = isset($rule['#never']) ? '/' . $rule['#never'] . '/' . $regexflags : '';
+    $review_name = $review['#review_name'];
 
     foreach ($lines as $lineno => $line_array) {
       foreach ($line_array as $line) {
@@ -917,10 +946,7 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
 
           $line = $coder_args['#all_lines'][$lineno];
           $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-          if (!isset($coder_args['#ignore_lines'][$review['#review_name']])) {
-            $coder_args['#ignore_lines'][$review['#review_name']] = array();
-          }
-          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $coder_args['#ignore_lines'][$review['#review_name']]);
+          _coder_review_error($results, $rule, $review_name, $severity_name, $lineno, $line, $coder_args['#ignore_lines'][$review_name]);
         }
       }
     }
@@ -934,6 +960,8 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
  *   Results array variable to save errors to.
  * @param $rule
  *   Rule array that triggered the error.
+ * @param $review_name
+ *   String name of review.
  * @param $severity_name
  *   String severity of error as detected by _coder_review_severity_name().
  * @param $lineno
@@ -943,18 +971,24 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
  * @param $original
  *   Deprecated.
  */
-function _coder_review_error(&$results, $rule, $severity_name, $lineno = -1, $line = '', $ignores = array()) {
+function _coder_review_error(&$results, $rule, $review_name, $severity_name, $lineno = -1, $line = '', $ignores = array()) {
   // Note: The use of the $key allows multiple errors on one line.
   // This assumes that no line of source has more than 10000 lines of code
   // and that we have fewer than 10000 errors.
   global $_coder_errno;
   // Skip warnings we've been told to ignore.
-  if (is_array($ignores) && in_array($lineno, $ignores)) {
-    $results['#stats']['ignored']++;
+  if ($ignores && in_array($lineno, $ignores)) {
+    ++$results['#stats']['ignored'];
   }
   else {
     $key = ($lineno + 1) * 10000 + ($_coder_errno++);
-    $results[$key] = array('rule' => $rule, 'severity_name' => $severity_name, 'lineno' => $lineno, 'line' => $line);
+    $results[$key] = array(
+      'rule' => $rule,
+      'severity_name' => $severity_name,
+      'review_name' => $review_name,
+      'lineno' => $lineno,
+      'line' => $line,
+    );
     ++$results['#stats'][$severity_name];
   }
 }
@@ -966,15 +1000,13 @@ function _coder_review_error(&$results, $rule, $severity_name, $lineno = -1, $li
  */
 function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
   if (isset($rule['#value'])) {
+    $review_name = $review['#review_name'];
     foreach ($lines as $lineno => $line_array) {
       foreach ($line_array as $line) {
         if (_coder_review_search_string($line, $rule)) {
           $line = $coder_args['#all_lines'][$lineno];
           $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-          if (!isset($coder_args['#ignore_lines'][$review['#review_name']])) {
-            $coder_args['#ignore_lines'][$review['#review_name']] = array();
-          }
-          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $coder_args['#ignore_lines'][$review['#review_name']]);
+          _coder_review_error($results, $rule, $review_name, $severity_name, $lineno, $line, $coder_args['#ignore_lines'][$review_name]);
         }
       }
     }
@@ -996,7 +1028,7 @@ function do_coder_review_grep_invert(&$coder_args, $review, $rule, $lines, &$res
       }
     }
     $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-    _coder_review_error($results, $rule, $severity_name);
+    _coder_review_error($results, $rule, $review['#review_name'], $severity_name);
   }
 }
 

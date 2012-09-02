@@ -327,7 +327,7 @@ function theme_drush_coder_review_warning($variables) {
 
   // Return warning as text output, formatted for the drush screen.
   $output  = $variables['lineno'] ? ($variables['lineno'] == -1 ? dt('File') : ('+' . $variables['lineno'])) . ': ' : '';
-  $output .= '[' . $variables['severity_name'] . '] ';
+  $output .= '[' . $variables['review_name'] . ', ' . $variables['severity_name'] . '] ';
   if (is_string($variables['warning'])) {
     $output .= $variables['warning'];
   }

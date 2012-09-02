@@ -47,6 +47,12 @@ function coder_review_druplart_reviews() {
     '#warning' => 'Array initialization may be unnecessary if the array is assigned in all code paths.',
     '#severity' => 'minor',
   );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#value' => '\$\w+(\+\+|--)\s*;',
+    '#warning' => 'Consider using $++foo instead of $foo++ when simply incrementing or decrementing.',
+    '#severity' => 'minor',
+  );
 
   $review = array(
     '#title' => "Drupl'Art Coding Style",
@@ -54,6 +60,7 @@ function coder_review_druplart_reviews() {
     '#rules' => $rules,
     '#description' => 'Checks for coding style suggested by the author.',
     '#version' => 2,
+    '#image' => 'images/druplart.png',
   );
   return array('druplart' => $review);
 }

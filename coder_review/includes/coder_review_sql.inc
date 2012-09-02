@@ -72,6 +72,7 @@ function coder_review_sql_reviews() {
     '#rules' => $rules,
     '#description' => 'Checks for SQL strings inside db_query, since the change to DBTNG, this is less useful.',
     '#version' => 2,
+    '#image' => 'images/sql.png',
   );
   return array('sql' => $review);
 }

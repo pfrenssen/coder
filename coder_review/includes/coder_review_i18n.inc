@@ -153,6 +153,7 @@ function coder_review_i18n_reviews() {
     '#title' => 'Internationalization',
     '#rules' => $rules,
     '#version' => 2,
+    '#image' => 'images/i18n.png',
   );
   return array('i18n' => $review);
 }

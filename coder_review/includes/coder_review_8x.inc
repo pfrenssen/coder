@@ -17,6 +17,7 @@ function coder_review_8x_reviews() {
     '#rules' => $rules,
     '#severity' => 'critical',
     '#version' => 2,
+    '#image' => 'images/8.png',
   );
 
   return array('upgrade8x' => $review);

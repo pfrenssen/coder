@@ -22,6 +22,7 @@ function coder_review_i18n_po_reviews() {
     '#rules' => $rules,
     '#description' => 'Checks for .po translation issues, this is somewhat experimental',
     '#version' => 2,
+    '#image' => 'images/po.png',
   );
   return array('i18n_po' => $review);
 }
@@ -57,7 +58,7 @@ function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines
         $rule = array(
           '#warning' => "The first letter in the translation text should have the same capitalization as it's original text.",
         );
-        _coder_review_error($results, $rule, $severity_name, $lineno, $msgstr);
+        _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $msgstr);
       }
 
       // Check the translation trailing periods.
@@ -65,7 +66,7 @@ function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines
         $rule = array(
           '#warning' => 'The translation text should end in a period when the same original text also ends in a period.',
         );
-        _coder_review_error($results, $rule, $severity_name, $lineno, $msgstr);
+        _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $msgstr);
       }
 
       // Check punctuation characters.
@@ -75,7 +76,7 @@ function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines
             $rule = array(
               '#warning' => 'Punctuation characters (.,:;?!) from the original text should exist in the translation.',
             );
-            _coder_review_error($results, $rule, $severity_name, $lineno, $msgstr);
+            _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $msgstr);
           }
         }
       }
@@ -85,7 +86,7 @@ function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines
             $rule = array(
               '#warning' => 'Punctuations characters (.,:;?!) in the translation should also exist in the original text.',
             );
-            _coder_review_error($results, $rule, $severity_name, $lineno, $msgstr);
+            _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $msgstr);
           }
         }
       }
@@ -97,7 +98,7 @@ function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines
             $rule = array(
               '#warning' => 'HTML from the original text should also exist in the translation.'
             );
-            _coder_review_error($results, $rule, $severity_name, $lineno, $msgstr);
+            _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $msgstr);
           }
         }
       }
@@ -109,7 +110,7 @@ function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines
             $rule = array(
               '#warning' => 'If placeholders like !name, @name or %name exist in the original text, they must also exist in the translation.',
             );
-            _coder_review_error($results, $rule, $severity_name, $lineno, $msgstr);
+            _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $msgstr);
           }
         }
       }

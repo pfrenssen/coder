@@ -187,6 +187,7 @@ function coder_review_style_reviews() {
     '#rules' => $rules,
     '#description' => 'Checks for Drupal coding standards. Every developer should use this.',
     '#version' => 2,
+    '#image' => 'images/style.png',
   );
   return array('style' => $review);
 }
@@ -203,7 +204,7 @@ function _coder_review_style_closing_php_callback(&$coder_args, $review, $rule, 
   }
   if ($last && $lastline && preg_match('/\?>\s*$/i', $lastline)) {
     $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-    _coder_review_error($results, $rule, $severity_name, count($lines));
+    _coder_review_error($results, $rule, $review['#review_name'], $severity_name, count($lines));
   }
 }
 

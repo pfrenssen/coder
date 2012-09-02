@@ -721,13 +721,13 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
       if ($stats) {
         $summary = array('files' => 0, 'sums' => array('minor' => 0, 'normal' => 0, 'critical' => 0, 'ignored' => 0));
         foreach ($stats as $stat) {
-          $summary['files']++;
+          ++$summary['files'];
           foreach (array_keys($summary['sums']) as $key) {
             $summary['sums'][$key] += $stat[$key];
           }
           if (isset($stat['#includes'])) {
             foreach ($stat['#includes'] as $includestat) {
-              $summary['files']++;
+              ++$summary['files'];
               foreach (array_keys($summary['sums']) as $key) {
                 $summary['sums'][$key] += $includestat[$key];
               }

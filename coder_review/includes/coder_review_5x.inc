@@ -131,6 +131,7 @@ function coder_review_5x_reviews() {
     '#rules' => $rules,
     '#severity' => 'critical',
     '#version' => 2,
+    '#image' => 'images/5.png',
   );
   return array('upgrade5x' => $review);
 }
@@ -146,7 +147,7 @@ function _coder_review_5x_callback(&$coder_args, $review, $rule, $lines, &$resul
     $filename = drupal_substr(realpath($filename), 0, -7) . '.info';
     if (!file_exists($filename)) {
       $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-      _coder_review_error($results, $rule, $severity_name);
+      _coder_review_error($results, $rule, $review['#review_name'], $severity_name);
     }
   }
 }

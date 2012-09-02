@@ -48,3 +48,7 @@ a.module-link-coder-review {
   /* @todo: replace this image with a more subdued/grayed-out png. */
   background: url(../images/module.png) 0 50% no-repeat;
 }
+
+.coder li {
+  min-height: 20px;
+}

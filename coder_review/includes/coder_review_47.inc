@@ -15,7 +15,7 @@ function coder_review_47_reviews() {
       '#text' => 'implement !hook_node_info() to create a module which defines node type(s)',
       '#args' => array(
         '!hook_node_info' => _drupalapi('hook_node_info', 4.7),
-      )
+      ),
     ),
   );
   $rules[] = array(
@@ -176,6 +176,7 @@ function coder_review_47_reviews() {
     '#rules' => $rules,
     '#severity' => 'critical',
     '#version' => 2,
+    '#image' => 'images/47.png',
   );
   return array('upgrade47' => $review);
 }
