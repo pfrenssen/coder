@@ -92,9 +92,9 @@ function coder_review_style_reviews() {
   );
   $rules[] = array(
     '#type' => 'regex',
-    '#value' => '(?-i)(function\s+[A-Z]+\s*\('
+    '#value' => '(?-i)(function\s+[A-Z]+\s*\()',
     '#warning' => array(
-      '#text' => ''do not use upper case function names',
+      '#text' => 'do not use UPPERCASE() function names',
       '#link' => _drupalnode(318, 'naming'),
     ),
   );
