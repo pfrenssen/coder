@@ -141,11 +141,10 @@ function coder_review_5x_reviews() {
  */
 function _coder_review_5x_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // Only perform this check on module's (not includes).
-  $filename = $coder_args['#filename'];
-  if (_substr($filename, -7) == '.module') {
+  $pathinfo = pathinfo(realpath($coder_args['#filename']));
+  if ($pathinfo['extension'] == 'module') {
     // Make sure that a .info file exists.
-    $filename = drupal_substr(realpath($filename), 0, -7) . '.info';
-    if (!file_exists($filename)) {
+    if (!file_exists($pathinfo['dirname'] . '/' . $pathinfo['filename'] . '.info')) {
       $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
       _coder_review_error($results, $rule, $review['#review_name'], $severity_name);
     }
