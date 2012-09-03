@@ -264,7 +264,7 @@ function theme_coder_review_warning($variables) {
   if ($severity_name) {
     $class .= " coder-$severity_name";
   }
-  $path = drupal_get_path('module', 'coder_review') . '/..';
+  $path = _coder_review_path() . '/..';
   $title = _t('severity: @severity', array('@severity' => $severity_name));
   $img = theme('image', array(
     'path' => $path . "/images/$severity_name.png",
@@ -1273,10 +1273,17 @@ function _phpapi($function) {
 }
 
 /**
- * Return the path to the coder_review module.
+ * Return the file system path to the coder_review module.
  */
 function _coder_review_file_path() {
   return dirname(__FILE__);
+}
+
+/**
+ * Return the URL path to the coder_review module.
+ */
+function _coder_review_path() {
+  return drupal_get_path('module', 'coder_review');
 }
 
 /**
