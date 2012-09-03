@@ -118,4 +118,9 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('function any_Upper_case() {');
     $this->assertCoderReviewPass("class CamelCase {\nfunction camelCase() {\n");
   }
+
+  function testShellComment() {
+    $this->assertCoderReviewPass("# Shell Comment.\n");
+    $this->assertCoderReviewPass("\$a = '# Not a Shell Comment.'\n");
+  }
 }

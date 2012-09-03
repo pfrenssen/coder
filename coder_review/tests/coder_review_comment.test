@@ -75,4 +75,7 @@ class CoderReviewCommentTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail($this->comment_header . "// @see some_function");
   }
 
+  function testShellComment() {
+    $this->assertCoderReviewFail($this->comment_header . "# function shell_comment() {\n");
+  }
 }

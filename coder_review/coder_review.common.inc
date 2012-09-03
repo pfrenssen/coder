@@ -382,7 +382,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
       // Get the current character.
       $char = $content[$pos];
       if ($char == "\n") {
-        if ($in_comment === '/') { // End C++ style comments on newline.
+        if ($in_comment === '/' || $in_comment === '#') { // End C++ style comments on newline.
           $in_comment = 0;
         }
 
@@ -566,6 +566,12 @@ function _coder_review_read_and_parse_file(&$coder_args) {
                 }
                 $this_quote_sep = FALSE;
               }
+              break;
+
+            case '#':
+              $this_comment_lines .= $char;
+              $in_comment = $char;
+              unset($char);
               break;
 
             case '/':

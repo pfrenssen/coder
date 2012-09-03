@@ -29,6 +29,16 @@ function coder_review_comment_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#source' => 'comment',
+    '#value' => '^\s*#',
+    '#warning' => array(
+      '#text' => 'Use of Perl/shell style comments (#) is discouraged.',
+      '#link' => _drupalnode(1354, 'inline'),
+    ),
+    '#severity' => 'minor',
+  );
+  $rules[] = array(
+    '#type' => 'regex',
+    '#source' => 'comment',
     '#value' => '^\s*\*.+|^\/\*.+',
     '#not' => '^\s*\*\s+|^\/\*\s+|^\/\*\*|^\s*\*\/',
     '#warning' => 'put a space between the asterisk and the comment text',
