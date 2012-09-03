@@ -837,7 +837,7 @@ function do_coder_review($coder_args, $review) {
 
     foreach ($review['#rules'] as $rule) {
       // Ignore rules that don't match the file extension.
-      $filename_includes = isset($rule['#filename']) ? $rule['#filename'] : (isset($rule['#filename-not']) ? $coder_args['#php_extensions'] : NULL);
+      $filename_includes = isset($rule['#filename']) ? $rule['#filename'] : (isset($rule['#filename-not']) ? $allowed_extensions : NULL);
       if ($filename_includes) {
         $regex = '/(' . implode('|', $filename_includes) . ')$/i';
         if (!preg_match($regex, $filename, $matches)) {
