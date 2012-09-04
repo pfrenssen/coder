@@ -58,7 +58,7 @@ function coder_review_druplart_reviews() {
     '#title' => "Drupl'Art Coding Style",
     '#link' => 'http://drupalwatchdog.com/2/1/druplart',
     '#rules' => $rules,
-    '#description' => 'Checks for coding style suggested by the author.',
+    '#description' => 'Optional; Checks for coding style suggested by the author.',
     '#version' => 2,
     '#image' => 'images/druplart.png',
   );

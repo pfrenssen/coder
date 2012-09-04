@@ -19,7 +19,13 @@ function coder_review_sniffer_reviews() {
     '#rules' => $rules,
     '#version' => 2,
     '#image' => 'images/sniffer.png',
+    '#description' => "Optional; Checks for Drupal CodeSniffer rules; which are good but often stricter than Drupal's Standards.",
   );
+
+  @include_once 'PHP/CodeSniffer.php';
+  if (!class_exists('PHP_CodeSniffer')) {
+    $review['#description'] = ' You must install drupalcs.';
+  }
 
   return array('sniffer' => $review);
 }
@@ -28,13 +34,12 @@ function coder_review_sniffer_reviews() {
  * Define the rule callbacks for code sniffer.
  */
 function _coder_review_sniffer_callback(&$coder_args, $review, $rule, $lines, &$results) {
-  // Include the CodeSniffer class once.
-  include_once 'PHP/CodeSniffer.php';
   if (!class_exists('PHP_CodeSniffer')) {
     _message(_t('PHP/CodeSniffer.php not found'), 'error');
     return;
   }
 
+  // Include the CodeSniffer class once.
   // Allocate the CodeSniffer object once.
   static $phpcs, $phpcs_dir, $phpcs_cli;
   if (!isset($phpcs)) {
@@ -77,10 +82,10 @@ function _coder_review_sniffer_callback(&$coder_args, $review, $rule, $lines, &$
   // Process this file.
   // Restore the CodeSniffer directory during file processing.
   // Then restore it back to our directory.
+  $filename = realpath($coder_args['#filename']);
   $current_dir = getcwd();
   chdir($phpcs_dir);
-  $filename = $coder_args['#filename'];
-  $phpcs_file = $phpcs->processFile($filename); // , $coder_args['#raw_contents']);
+  $phpcs_file = $phpcs->processFile($filename, $coder_args['#raw_contents']);
   chdir($current_dir);
 
   // Read the errors.
@@ -99,12 +104,12 @@ function _coder_review_sniffer_callback(&$coder_args, $review, $rule, $lines, &$
  * Store the Code Sniffer warnings as Coder warnings.
  */
 function _coder_review_sniffer_warnings(&$results, $lines, $ignores, $sniffer_warnings) {
-  foreach ($sniffer_warnings as $sniffer_error_no => $sniffer_warning) {
-    foreach ($sniffer_warning as $lineno => $warning) {
+  foreach ($sniffer_warnings as $lineno => $sniffer_warning) {
+    foreach ($sniffer_warning as $warning_no => $warning) {
       $rule['#warning'] = $warning[0]['message'];
       // @todo: set the severiy name.
       $severity_name = 'minor'; // $warning[0]['severity'];
-      _coder_review_error($results, $rule, 'sniffer', $severity_name, $lineno, $line[$lineno], $ignores);
+      _coder_review_error($results, $rule, 'sniffer', $severity_name, $lineno, $lines[$lineno][0], $ignores);
     }
   }
 }
