@@ -21,6 +21,7 @@ function coder_review_drush_command() {
       'reviews' => 'Run the specified review(s), "all" runs all reviews, also accepts a comma separated list (no spaces).',
       'comment' => 'Run the comment review.',
       'style' => 'Run the style review (default).',
+      'sniffer' => 'Run the CodeSniffer review.',
       'i18n' => 'Run the i18n review.',
       'security' => 'Run the security review.',
       'sql' => 'Run the SQL review.',

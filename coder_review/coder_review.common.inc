@@ -314,7 +314,7 @@ function theme_coder_review_warning($variables) {
  *   Integer 1 if success.
  */
 function _coder_review_read_and_parse_file(&$coder_args) {
-  $regex = '/(' . implode('|', array_merge(array('module'), $coder_args['#php_extensions'])) . ')$/';
+  $regex = '/(' . implode('|', array_merge(array('module', 'theme'), $coder_args['#php_extensions'])) . ')$/';
   $is_php_file = preg_match($regex, $coder_args['#filename']);
 
   // Get the path to the module file.
@@ -690,6 +690,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
     $coder_args['#doublequote_array_lines'] = $doublequote_lines;
     $coder_args['#comment_array_lines'] = $comment_lines;
     $coder_args['#all_lines'] = $full_lines;
+    $coder_args['#raw_contents'] = $content;
 
     // Given the sanitized PHP lines, determine the class and function for each line.
     $stack = array();
@@ -817,7 +818,7 @@ function do_coder_review($coder_args, $review) {
   $allowed_extensions = array_merge(
     $coder_args['#php_extensions'],
     $coder_args['#include_extensions'],
-    array('module')
+    array('module', 'theme')
   );
   if ($review['#rules']) {
     // Get the review's severity, used when the rule severity is not defined.
@@ -886,9 +887,6 @@ function do_coder_review($coder_args, $review) {
             break;
           case 'callback':
             do_coder_review_callback($coder_args, $review, $rule, $lines, $results);
-            break;
-          // @todo:
-          case 'token':
             break;
         }
       }
@@ -1045,8 +1043,17 @@ function do_coder_review_grep_invert(&$coder_args, $review, $rule, $lines, &$res
  */
 function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
   $function = $rule['#value'];
-  if ($function && function_exists($function)) {
-    call_user_func_array($function, array(&$coder_args, $review, $rule, $lines, &$results));
+  if ($function) {
+    if (function_exists($function)) {
+      call_user_func_array($function, array(&$coder_args, $review, $rule, $lines, &$results));
+    }
+    else {
+      static $bad;
+      if (!isset($bad[$function])) {
+        $bad[$function] = 1;
+        _message(_t('Invalid rule callback @function', array('@function' => $function)), 'error');
+      }
+    }
   }
 }
 

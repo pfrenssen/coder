@@ -721,7 +721,7 @@ function coder_review_7x_reviews() {
     ),
   );
   $jquery_13_warning = array(
-    '#text' => _t('jQuery has been upgraded to version 1.3.'),
+    '#text' => 'jQuery has been upgraded to version 1.3.',
     '#link' => _drupalnode(224333, 'jquery_13'),
   );
   $rules[] = array(
@@ -743,7 +743,7 @@ function coder_review_7x_reviews() {
     '#filename' => array('js'),
     '#warning' => '_coder_review_7x_no_jsenabled_warning',
     '#warning' => array(
-      '#text' => _t('JavaScript variable Drupal.jsEnabled has been removed.'),
+      '#text' => 'JavaScript variable Drupal.jsEnabled has been removed.',
       '#link' => _drupalnode(224333, 'no-jsenabled'),
     ),
   );
@@ -1172,7 +1172,7 @@ function coder_review_7x_reviews() {
     '#type' => 'regex',
     '#value' => 'function\s+[a-z0-9_]+_(nodeapi)_[a-z]+\s*\(',
     '#warning' => array(
-      '#text' => _t('hook_nodeapi_xxx() has been renamed to hook_node_xxx().'),
+      '#text' => 'hook_nodeapi_xxx() has been renamed to hook_node_xxx().',
       '#link' => _drupalnode(224333, 'hook_node_xxx'),
     ),
   );
@@ -1482,7 +1482,7 @@ function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, 
             $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
             $tmprule = $rule;
             $tmprule['#warning'] = array(
-              '#text' => _t("Block module is now optional, make sure you declare it as a dependency in your module's .info file."),
+              '#text' => "Block module is now optional, make sure you declare it as a dependency in your module's .info file.",
               '#link' => _drupalnode(224333, 'block_optional'),
             );
             _coder_review_error($results, $tmprule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
