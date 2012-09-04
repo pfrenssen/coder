@@ -1322,6 +1322,20 @@ function _strlen($text) {
 }
 
 /**
+ * Return the string in UPPERCASE.
+ */
+function _strtoupper($text) {
+  return function_exists('drupal_strtoupper') ? drupal_strtoupper($text) : strtoupper($text);
+}
+
+/**
+ * Return the string in lowercase.
+ */
+function _strtolower($text) {
+  return function_exists('drupal_strtolower') ? drupal_strtolower($text) : strtolower($text);
+}
+
+/**
  * Return all available file paths matching the regular expression.
  */
 function _file_list($path, $regex, $recurse = TRUE) {

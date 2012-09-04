@@ -54,18 +54,16 @@ function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines
 
     // Check the translation first capitable letter.
     if (!empty($msgstr)) {
-      if (ctype_upper($msgid[0]) != ctype_upper($msgstr[0])) {
-        $rule = array(
-          '#warning' => "The first letter in the translation text should have the same capitalization as it's original text.",
-        );
+      $msgid0 = _substr($msgid, 0, 1);
+      $msgstr0 = _substr($msgstr, 0, 1);
+      if (($msgid0 == _strtoupper($msgid0) && $msgstr0 != _strtoupper($msgstr0)) || ($msgid0 == _strtolower($msgid0) && $msgstr0 != _strtolower($msgstr0))) {
+        $rule['#warning'] = "The first letter in the translation text should have the same capitalization as it's original text.";
         _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $msgstr);
       }
 
       // Check the translation trailing periods.
       if (_substr($msgid, -1, 1) == '.' && !_substr($msgstr, -1, 1) != '.') {
-        $rule = array(
-          '#warning' => 'The translation text should end in a period when the same original text also ends in a period.',
-        );
+        $rule['#warning'] = 'The translation text should end in a period when the same original text also ends in a period.';
         _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $msgstr);
       }
 
@@ -73,9 +71,7 @@ function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines
       if (preg_match_all('/[\.,:;?!]/', $msgid, $matches)) {
         foreach ($matches[0] as $html) {
           if (stripos($msgstr, $html) === FALSE) {
-            $rule = array(
-              '#warning' => 'Punctuation characters (.,:;?!) from the original text should exist in the translation.',
-            );
+            $rule['#warning'] = 'Punctuation characters (.,:;?!) from the original text should exist in the translation.';
             _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $msgstr);
           }
         }
@@ -83,9 +79,7 @@ function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines
       if (preg_match_all('/[\.,:;?!]/', $msgstr, $matches)) {
         foreach ($matches[0] as $html) {
           if (stripos($msgid, $html) === FALSE) {
-            $rule = array(
-              '#warning' => 'Punctuations characters (.,:;?!) in the translation should also exist in the original text.',
-            );
+            $rule['#warning'] = 'Punctuations characters (.,:;?!) in the translation should also exist in the original text.';
             _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $msgstr);
           }
         }
@@ -95,9 +89,7 @@ function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines
       if (preg_match_all('/<[^>]*>/', $msgid, $matches)) {
         foreach ($matches[0] as $html) {
           if (stripos($msgstr, $html) === FALSE) {
-            $rule = array(
-              '#warning' => 'HTML from the original text should also exist in the translation.'
-            );
+            $rule['#warning'] = 'HTML from the original text should also exist in the translation.';
             _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $msgstr);
           }
         }
@@ -107,9 +99,7 @@ function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines
       if (preg_match_all('/[\!\@\%]\w+/', $msgid, $matches)) {
         foreach ($matches[0] as $placeholder) {
           if (stripos($msgstr, $placeholder) === FALSE) {
-            $rule = array(
-              '#warning' => 'If placeholders like !name, @name or %name exist in the original text, they must also exist in the translation.',
-            );
+            $rule['#warning'] = 'If placeholders like !name, @name or %name exist in the original text, they must also exist in the translation.';
             _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $msgstr);
           }
         }
