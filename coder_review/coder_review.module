@@ -105,7 +105,7 @@ function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) 
     return;
   }
 
-  $path = _coder_review_path();
+  $path = drupal_get_path('module', 'coder_review');
   $form['#attached']['css'][] = "$path/coder_review.css";
 //$form['#attached']['css'][] = array("$path/coder_review.print.css" => array('media' => 'print'));
 
