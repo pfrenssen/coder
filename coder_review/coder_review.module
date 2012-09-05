@@ -19,15 +19,6 @@
  */
 
 /**
- * Implements hook_coder_review_ignore().
-function coder_review_coder_review_ignore() {
-  return array(
-    'path' => _coder_review_file_path(),
-  );
-}
- */
-
-/**
  * Implements hook_flush_caches().
  */
 function coder_review_flush_caches() {
@@ -71,6 +62,7 @@ function coder_review_menu() {
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -2,
   );
+  // @ignore upgrade6x_1
   foreach (array('select', 'default', 'active', 'core', 'all', 'files', 'patches') as $delta => $option) {
     $items["admin/config/development/coder/review/$option"] = array(
       'title' => drupal_ucfirst($option),
@@ -374,6 +366,7 @@ function _coder_review_settings_form($settings, &$system, &$files) {
     $form['coder_what']['coder_includes'] = array(
       '#type' => 'checkbox',
       '#default_value' => $settings['coder_includes'],
+      // @ignore security_fapi_title
       '#title' => _t('include files (@ext)', array('@ext' => implode(' | ', $ext))),
     );
     $form['coder_what']['coder_includes_exclusion_fieldset'] = array(
@@ -475,6 +468,7 @@ function _coder_review_settings_form($settings, &$system, &$files) {
       }
       $form['coder_what']["coder_${type}s"]['checkboxes']["coder_${type}s-$name"] = array(
         '#type' => 'checkbox',
+        // @ignore security_fapi_title
         '#title' => $link,
         '#default_value' => $default_value,
         '#attributes' => array('class' => $classes),
@@ -575,9 +569,6 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
       }
     }
 
-    // Get the list of lines to ignore.
-    $ignores = coder_review_get_ignores();
-
     // Code review non-module core files.
     $module_weight = 0;
     if ($settings['coder_core'] && function_exists('drupal_alter')) {
@@ -609,8 +600,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         $phpfiles,
         2,
         0,
-        $settings['coder_includes_exclusions'],
-        $ignores);
+        $settings['coder_includes_exclusions']);
 
       // Review core include files.
       $form['core_includes'] = array(
@@ -628,8 +618,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         'core_includes',
         $includefiles,
         0,
-        $settings['coder_includes_exclusions'],
-        $ignores);
+        $settings['coder_includes_exclusions']);
     }
 
     // Loop through the selected modules and themes.
@@ -661,7 +650,6 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
             '#patch' => $patch,
             '#php_extensions' => $php_extensions,
             '#include_extensions' => $include_extensions,
-            '#ignore_lines' => (isset($ignores[$filename]) && is_array($ignores[$filename])) ? $ignores[$filename] : array(),
             '#cache' => TRUE,
           );
           if (function_exists('drupal_alter')) {
@@ -679,6 +667,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
           // Output the results in a collapsible fieldset.
           $form[$name] = array(
             '#type' => 'fieldset',
+            // @ignore security_fapi_title
             '#title' => $filename,
             '#collapsible' => TRUE,
             '#collapsed' => TRUE,
@@ -713,8 +702,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
                   $name,
                   $includefiles,
                   $offset,
-                  $settings['coder_includes_exclusions'],
-                  $ignores);
+                  $settings['coder_includes_exclusions']);
               }
             }
           }
@@ -806,14 +794,12 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
  *   Integer offset to munge filenames with.
  * @param $exclusions
  *   Exclusions that should be ignored in $files.
- * @param $ignores
- *   Array of lines per file to be skipped for defined reviews.
  *
  * @return
  *   Statistics array in form: string filename => array value of
  *   '#stats' from do_coder_reviews().
  */
-function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $offset, $exclusions, $ignores) {
+function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $offset, $exclusions) {
   $stats = array();
   $coder_args['#name'] = $name;
   $weight = 0;
@@ -827,7 +813,6 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
     $php_extensions = _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
     $coder_args['#filename'] = $filename;
     $coder_args['#php_extensions'] = $php_extensions;
-    $coder_args['#ignore_lines'] = (isset($ignores[$filename]) && is_array($ignores[$filename])) ? $ignores[$filename] : array();
     $results = do_coder_reviews($coder_args);
     $stats[$filename] = $results['#stats'];
     unset($results['#stats']);
@@ -879,52 +864,6 @@ function _coder_review_form_output($name, $filename, $results) {
     theme_drush_coder_review(array('name' => $name, 'filename' => $filename, 'results' => $results));
   }
   return $output;
-}
-
-/**
- * Get list of lines to ignore.
- */
-function coder_review_get_ignores() {
-  $ignores = coder_review_parse_ignores(_coder_review_file_path() . '/core.coder_review_ignores.txt');
-  if (function_exists('module_implements')) {
-    foreach (module_implements('coder_review_ignore') as $module) {
-      $function = $module . '_coder_review_ignore';
-      $default_info = array('path' => '', 'line prefix' => '');
-      $info = array_merge($default_info, $function());
-      $ignores += coder_review_parse_ignores($info['path'] . '/' . $module . '.coder_review_ignores.txt', $info['line prefix']);
-    }
-  }
-  return $ignores;
-}
-
-/**
- * Parse an 'ignore' file.
- */
-function coder_review_parse_ignores($filepath, $line_prefix = '') {
-  $ignores = array();
-
-  // Ensure the file exists.
-  if (!is_file($filepath) || !is_readable($filepath)) {
-    _message(t("File %file doesn't exist or isn't readable.", array('%file' => $filepath)), 'error');
-    return array();
-  }
-
-  // Read in the file contents.
-  $lines = file($filepath);
-
-  // Parse the contents.
-  foreach ($lines as $line) {
-    $line = trim($line);
-    if (empty($line) || preg_match('/^;/', $line, $matches)) {
-      continue;
-    }
-    $line = $line_prefix . $line;
-    // filename:lineo:review
-    $parts = explode(':', $line);
-    // $ignores[filename][review][] = lineno
-    $ignores[$parts[0]][$parts[2]][] = $parts[1];
-  }
-  return $ignores;
 }
 
 /**

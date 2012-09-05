@@ -118,11 +118,15 @@ function coder_review_drush_review() {
     }
   }
   foreach (array_keys($avail_reviews) as $option) {
-    if (drush_get_option($option)) {
+    $enabled = drush_get_option($option);
+    if ($enabled === '0' || $enabled === 'no' || $enabled === 'off') {
+      unset($reviews[$option]);
+    }
+    elseif ($enabled) {
       $reviews[$option] = $option;
     }
   }
-  if (empty($reviews)) {
+  if (!$reviews) {
     $reviews['style'] = 'style';
   }
 
@@ -230,7 +234,7 @@ function coder_review_drush_review() {
     $output[] = dt('Severity @severity_name', array('@severity_name' => $severity_name));
     $settings['coder_severity'] = _coder_review_severity($severity_name);
   }
-  if (!empty($reviews)) {
+  if ($reviews) {
     if (drush_get_option('xml') && !drush_get_option('checkstyle')) {
       _coder_review_drush_xml_output_reviews($reviews, $avail_reviews);
     }
@@ -328,7 +332,7 @@ function theme_drush_coder_review_warning($variables) {
 
   // Return warning as text output, formatted for the drush screen.
   $output  = $variables['lineno'] ? ($variables['lineno'] == -1 ? dt('File') : ('+' . $variables['lineno'])) . ': ' : '';
-  $output .= '[' . $variables['review_name'] . ', ' . $variables['severity_name'] . '] ';
+  $output .= '[' . $variables['review_name'] . '_' . $variables['rule_name'] . ', ' . $variables['severity_name'] . '] ';
   if (is_string($variables['warning'])) {
     $output .= $variables['warning'];
   }
@@ -395,6 +399,7 @@ function _coder_review_drush_xml_output_header($type = 'xml') {
 /**
  * XML: output appropriate footer tag.
  */
+// @ignore upgrade7x_74
 function _coder_review_drush_xml_output_footer($type = 'xml') {
   _coder_review_drush_print($type == 'checkstyle' ? '</checkstyle>' : '</coderreview>');
 }

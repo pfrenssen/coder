@@ -228,8 +228,7 @@ function _coder_review_comment_install_file_block_callback(&$coder_args, $review
         '#text' => 'For .install files, the @file description should be of the format "Install, update and uninstall functions for the foo module.".',
         '#link' => _drupalnode(318),
       );
-      $review_name = $review['#review_name'];
-      _coder_review_error($results, $tmprule, $review_name, $severity_name, $lineno, $line, $coder_args['#ignore_lines'][$review_name]);
+      _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
     }
   }
 }
@@ -265,8 +264,7 @@ function _coder_review_comment_missing_docblock(&$coder_args, $review, $rule, $l
         ),
         '#link' => _drupalnode(1354, $anchor),
       );
-      $review_name = $review['#review_name'];
-      _coder_review_error($results, $tmprule, $review_name, $severity_name, $lineno, $alllines[$lineno][0], $coder_args['#ignore_lines'][$review_name]);
+      _coder_review_error($results, $tmprule, $severity_name, $lineno, $alllines[$lineno][0], $coder_args['#ignores']);
     }
     $prev_stack = $current_stack;
   }

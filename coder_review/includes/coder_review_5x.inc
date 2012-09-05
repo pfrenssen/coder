@@ -146,7 +146,7 @@ function _coder_review_5x_callback(&$coder_args, $review, $rule, $lines, &$resul
     // Make sure that a .info file exists.
     if (!file_exists($pathinfo['dirname'] . '/' . $pathinfo['filename'] . '.info')) {
       $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-      _coder_review_error($results, $rule, $review['#review_name'], $severity_name);
+      _coder_review_error($results, $rule, $severity_name);
     }
   }
 }

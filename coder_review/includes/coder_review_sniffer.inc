@@ -92,24 +92,24 @@ function _coder_review_sniffer_callback(&$coder_args, $review, $rule, $lines, &$
   $errors = $phpcs_file->getErrors();
   $warnings = $phpcs_file->getWarnings();
   if ($errors || $warnings) {
-    $ignores = $coder_args['#ignore_lines'];
-    $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
-
-    _coder_review_sniffer_warnings($results, $lines, $ignores, $errors);
-    _coder_review_sniffer_warnings($results, $lines, $ignores, $warnings);
+    _coder_review_sniffer_warnings($results, $rule, $lines, $coder_args['#ignores'], $errors);
+    _coder_review_sniffer_warnings($results, $rule, $lines, $coder_args['#ignores'], $warnings);
   }
 }
 
 /**
  * Store the Code Sniffer warnings as Coder warnings.
  */
-function _coder_review_sniffer_warnings(&$results, $lines, $ignores, $sniffer_warnings) {
+function _coder_review_sniffer_warnings(&$results, $rule, $lines, $ignores, $sniffer_warnings) {
   foreach ($sniffer_warnings as $lineno => $sniffer_warning) {
     foreach ($sniffer_warning as $warning_no => $warning) {
-      $rule['#warning'] = $warning[0]['message'];
+      $tmprule = $rule;
+      $tmprule['#review_name'] = 'sniffer';
+      $tmprule['#rule_name'] = md5($warning[0]['message']);
+      $tmprule['#warning'] = $warning[0]['message'];
       // @todo: set the severiy name.
       $severity_name = 'minor'; // $warning[0]['severity'];
-      _coder_review_error($results, $rule, 'sniffer', $severity_name, $lineno, $lines[$lineno][0], $ignores);
+      _coder_review_error($results, $tmprule, $severity_name, $lineno, $lines[$lineno][0], $ignores);
     }
   }
 }

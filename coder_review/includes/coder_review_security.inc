@@ -240,8 +240,6 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
   $sanitize_argex = '((t|st|\$t|check_plain|format_plural|check_markup|field_filter_xss|filter_xss|filter_xss_admin)\s*\([^\)]+?\))';
 
   $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-  $ignores = $coder_args['#ignore_lines'];
-  $ignores = (empty($ignores) || !isset($ignores[$review['#review_name']])) ? array() : $ignores[$review['#review_name']];
 
   // Check for calls to trigger_error(), confirm_form(), drupal_set_title(),
   // drupal_set_message(), form_error() and form_set_error() on $vars without a
@@ -274,8 +272,10 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
           $find_match = '/[\s=]array\s*\(\s*([^\)]*?([\'"]#value[\'"]\s*=>\s*.*?\$' . $forward_matches['fapi_markup_value'] . '.*?))\);/';
           if (preg_match($find_match, $this_function, $sanitized_matches)) {
             if (!preg_match('/[\'"]#type[\'"]/', $sanitized_matches[1], $markup_matches) || preg_match('/[\'"]#type[\'"]\s*=>\s*[\'"]markup[\'"]/', $sanitized_matches[1], $markup_matches)) {
-              $rule = _coder_review_security_fapi_markup_value_warning();
-              _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+              $tmprule = $rule;
+              $tmprule['#rule_name'] = 'fapi_markup';
+              $tmprule['#warning'] = _coder_review_security_fapi_markup_value_warning();
+              _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
             }
           }
         }
@@ -297,8 +297,10 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule['#warning'] = _coder_review_security_trigger_error_filter_warning();
-          _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+          $tmprule = $rule;
+          $tmprule['#rule_name'] = 'trigger_error';
+          $tmprule['#warning'] = _coder_review_security_trigger_error_filter_warning();
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
         }
       }
     }
@@ -310,8 +312,10 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule['#warning'] = _coder_review_security_drupal_set_message_filter_warning();
-          _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+          $tmprule = $rule;
+          $tmprule['#rule_name'] = 'dsm';
+          $tmprule['#warning'] = _coder_review_security_drupal_set_message_filter_warning();
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
         }
       }
     }
@@ -323,8 +327,10 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[8] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule['#warning'] = _coder_review_security_form_set_error_filter_warning();
-          _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+          $tmprule = $rule;
+          $tmprule['#rule_name'] = 'form_set_error';
+          $tmprule['#warning'] = _coder_review_security_form_set_error_filter_warning();
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
         }
       }
     }
@@ -336,8 +342,10 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[7] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule['#warning'] = _coder_review_security_confirm_form_filter_warning();
-          _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+          $tmprule = $rule;
+          $tmprule['#rule_name'] = 'confirm_form';
+          $tmprule['#warning'] = _coder_review_security_confirm_form_filter_warning();
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
         }
       }
     }
@@ -349,8 +357,10 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[11] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule['#warning'] = _coder_review_security_confirm_form_filter_warning();
-          _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+          $tmprule = $rule;
+          $tmprule['#rule_name'] = 'comfirm_form_456';
+          $tmprule['#warning'] = _coder_review_security_confirm_form_filter_warning();
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
         }
       }
     }
@@ -362,8 +372,10 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
       if (!preg_match($never_regex, $coder_args['#all_lines'][$lineno])) {
         $before_never_regex = '/[\s]\$' . $matches[1] . '\s*=\s*(((st|t|\$t)\s*\(((\s*[\'"][^!]+?[\'"]\s*,)|(.*?array\([^!]+\))))|(format_plural|field_filter_xss|filter_xss|filter_xss_admin|check_plain|check_markup)\s*\()/';
         if (!preg_match($before_never_regex, $this_function, $sanitized_matches)) {
-          $rule['#warning'] = _coder_review_security_fapi_title_description_warning();
-          _coder_review_error($results, $rule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+          $tmprule = $rule;
+          $tmprule['#rule_name'] = 'fapi_title';
+          $tmprule['#warning'] = _coder_review_security_fapi_title_description_warning();
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
         }
       }
     }

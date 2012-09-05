@@ -896,8 +896,6 @@ function coder_review_6x_reviews() {
  * Define the rule callbacks for 6.x, see do_coder_review_callback().
  */
 function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$results) {
-  $ignores = $coder_args['#ignore_lines'];
-  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   // Only perform this check on module's (not includes).
   $filename = $coder_args['#filename'];
   if (_substr($filename, -7) == '.module') {
@@ -925,7 +923,7 @@ function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$resul
         ),
         '#link' => _drupalnode(114774, 'theme_registry'),
       );
-      _coder_review_error($results, $tmprule, $review['#review_name'], $severity_name, $theme_lineno, $theme_line, $ignores);
+      _coder_review_error($results, $tmprule, $severity_name, $theme_lineno, $theme_line, $coder_args['#ignores']);
     }
 
     // Read the .info file.
@@ -942,7 +940,7 @@ function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$resul
               '#warning' => 'New syntax for .info files, use dependencies[]',
               '#link' => _drupalnode(114774, 'info'),
             );
-            _coder_review_error($results, $tmprule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+            _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
           }
           if (preg_match('/^core\s*=/', $line)) {
             $core = TRUE;
@@ -955,7 +953,7 @@ function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$resul
             '#text' => 'New syntax for .info files files requires core=6.x',
             '#link' => _drupalnode(114774, 'info'),
           );
-          _coder_review_error($results, $tmprule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
         }
       }
     }
@@ -969,7 +967,7 @@ function _coder_review_6x_callback(&$coder_args, $review, $rule, $lines, &$resul
         '#text' => 'Translations moved from ./po to ./translations',
         '#link' => _drupalnode(114774, 'translations_directory'),
       );
-      _coder_review_error($results, $tmprule, $review['#review_name'], $severity_name, -1, $dir);
+      _coder_review_error($results, $tmprule, $severity_name, -1, $dir);
     }
   }
 }

@@ -1265,8 +1265,6 @@ function coder_review_7x_reviews() {
  * Define the rule callbacks for 7.x, see do_coder_review_callback().
  */
 function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
-  $ignores = $coder_args['#ignore_lines'];
-  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   // Only perform this check for module's (not includes).
   $filename = $coder_args['#filename'];
   $pathinfo = pathinfo($filename);
@@ -1294,13 +1292,13 @@ function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule
             '#text' => 'Module .info files must now specify all loadable code files explicitly.',
             '#link' => _drupalnode(224333, 'registry'),
           );
-          _coder_review_error($results, $tmprule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
         }
         if (!$core) {
           $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
           $tmprule = $rule;
           $tmprule['#warning'] = 'Info file should specify core=7.x';
-          _coder_review_error($results, $tmprule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+          _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
         }
       }
     }
@@ -1311,8 +1309,6 @@ function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule
  * Define the rule callbacks for 7.x, see do_coder_review_callback().
  */
 function _coder_review_7x_module_implements_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
-  $ignores = $coder_args['#ignore_lines'];
-  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   $depth = 0;
   foreach ($lines as $lineno => $line) {
     if ($depth == 0) {
@@ -1328,7 +1324,7 @@ function _coder_review_7x_module_implements_review_callback(&$coder_args, $revie
           '#text' => 'Use module_implements not module_list when calling hook implementations.',
           '#link' => _drupalnode(224333, 'module_implements_not_module_list'),
         );
-        _coder_review_error($results, $tmprule, $review['#review_name'], $severity_name, $lineno, $line[0], $ignores);
+        _coder_review_error($results, $tmprule, $severity_name, $lineno, $line[0], $coder_args['#ignores']);
       }
       if (strpos($line[0], '{') !== FALSE) {
         $depth --;
@@ -1345,8 +1341,6 @@ function _coder_review_7x_module_implements_review_callback(&$coder_args, $revie
  */
 function _coder_review_7x_cache_implementation_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // @NOTE: no simpletest for this.
-  $ignores = $coder_args['#ignore_lines'];
-  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   $filename = $coder_args['#filename'];
   if ($filename == 'includes/cache-install.inc' || $filename == 'includes/cache.inc') {
     return;
@@ -1365,7 +1359,7 @@ function _coder_review_7x_cache_implementation_review_callback(&$coder_args, $re
               '#text' => 'Alternative cache implementations have changed.',
               '#link' => _drupalnode(224333, 'cache_implementation'),
             );
-            _coder_review_error($results, $tmprule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+            _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
           }
         }
       }
@@ -1378,8 +1372,6 @@ function _coder_review_7x_cache_implementation_review_callback(&$coder_args, $re
  */
 function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // @NOTE: no simpletest for this.
-  $ignores = $coder_args['#ignore_lines'];
-  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   $filename = $coder_args['#filename'];
   if (file_exists($filename)) {
     // Only do it for js files.
@@ -1400,7 +1392,7 @@ function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review
             $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
             $tmprule = $rule;
             $tmprule['#warning'] = _coder_review_7x_drupal_behaviors_warning();
-            _coder_review_error($results, $tmprule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+            _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
           }
         }
       }
@@ -1414,8 +1406,6 @@ function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review
 function _coder_review_7x_comment_doxygen_file_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // @NOTE: no simpletest for this.
   // Only perform this check on install files.
-  $ignores = $coder_args['#ignore_lines'];
-  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   $pathinfo = pathinfo($coder_args['#filename']);
   if ($pathinfo['extension'] == 'install') {
     $file_found = 0;
@@ -1440,7 +1430,7 @@ function _coder_review_7x_comment_doxygen_file_review_callback(&$coder_args, $re
         '#text' => 'For .install files, the @file description should be of the format "Install, update and uninstall functions for the XXX module.".',
         '#link' => _drupalnode(224333, 'afile'),
       );
-      _coder_review_error($results, $tmprule, $review['#review_name'], $severity_name, $theme_lineno, $theme_line, $ignores);
+      _coder_review_error($results, $tmprule, $severity_name, $theme_lineno, $theme_line, $coder_args['#ignores']);
     }
   }
 }
@@ -1451,8 +1441,6 @@ function _coder_review_7x_comment_doxygen_file_review_callback(&$coder_args, $re
  * @see http://drupal.org/node/224333#block_optional
  */
 function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
-  $ignores = $coder_args['#ignore_lines'];
-  $ignores = (empty($ignores) ? array() : $ignores[$review['#review_name']]);
   $functions_to_check = array('block_list', 'block_custom_block_get', 'block_page_build');
   $filename = $coder_args['#filename'];
 
@@ -1485,7 +1473,7 @@ function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, 
               '#text' => "Block module is now optional, make sure you declare it as a dependency in your module's .info file.",
               '#link' => _drupalnode(224333, 'block_optional'),
             );
-            _coder_review_error($results, $tmprule, $review['#review_name'], $severity_name, $lineno, $line, $ignores);
+            _coder_review_error($results, $tmprule, $severity_name, $lineno, $line, $coder_args['#ignores']);
           }
         }
       }

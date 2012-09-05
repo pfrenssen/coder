@@ -93,11 +93,6 @@ function _coder_review_modified() {
       $files[] = $review['#file'];
     }
 
-    // @todo: add all possible .coder_review_ignores.txt files.
-    // But since we might be abandoning this for inline ignores, let's wait.
-    // @see http://drupal.org/node/1585790
-    // @see http://drupal.org/node/1772676
-
     // Find the newest filetime.
     foreach ($files as $file) {
       $mtime = filemtime($file);
@@ -179,7 +174,7 @@ function do_coder_reviews($coder_args) {
     foreach ($errors as $key => $error) {
       if (is_numeric($key)) {
         $error['warning'] = _coder_review_warning($error['rule']);
-        $results[$key] = theme_coder_review_warning_msg(array('error' => $error));
+        $results[$key] = theme_coder_review_warning($error);
       }
     }
 
@@ -203,33 +198,19 @@ function do_coder_reviews($coder_args) {
 }
 
 /**
- * Format a coder_review warning to be included in results, creating the text.
- *
- * @param $results
- *   Results array variable to save errors to.
- * @param $error
- *   Error array from _coder_review_error().
- */
-function theme_coder_review_warning_msg($variables) {
-  $error = $variables['error'];
-  $error['warning'] = _coder_review_warning($error['rule']);
-  return theme_coder_review_warning($error);
-}
-
-/**
  * Format a coder_review warning to be included in results.
  *
- * @param $warning
- *   Either summary warning description, or an array in format:
+ * @param $variables
+ *   Theme variables.
+ *   - warning : Either summary warning description, or an array in format:
  *     - '#warning' => Summary warning description;
  *     - '#description' => Detailed warning description;
  *     - '#link' => Link to an explanatory document.
- * @param $severity_name
- *   String severity name.
- * @param $lineno
- *   Integer line number of error.
- * @param $line
- *   String contents of line.
+ *   - severity_name : String severity name.
+ *   - lineno : Integer line number of error.
+ *   - line : String contents of line.
+ *   - review_name : String review name.
+ *   - rule_name : String rule name.
  */
 function theme_coder_review_warning($variables) {
   // Theme the output for the Drupal shell.
@@ -240,6 +221,7 @@ function theme_coder_review_warning($variables) {
   $warning = $variables['warning'];
   $severity_name = $variables['severity_name'];
   $review_name = $variables['review_name'];
+  $rule_name = $variables['rule_name'];
   $lineno = $variables['lineno'];
   $line = $variables['line'];
 
@@ -286,7 +268,7 @@ function theme_coder_review_warning($variables) {
   ));
   $avail_reviews = _coder_review_reviews();
   if (isset($avail_reviews[$review_name]['#image'])) {
-    $title = _t('review: @review', array('@review' => $review_name));
+    $title = _t('review: @review_@rule', array('@review' => $review_name, '@rule' => $rule_name));
     $review_image = $avail_reviews[$review_name]['#image'];
     $img .= theme('image', array(
       'path' => (substr($review_image, 0, 7) == 'images/' ? "$path/" : '') . $review_image,
@@ -672,6 +654,20 @@ function _coder_review_read_and_parse_file(&$coder_args) {
     $coder_args['#all_lines'] = isset($full_lines) ? $full_lines : array();
     $coder_args['#raw_contents'] = $content;
 
+    // Read the coder warning directives in the comments.
+    foreach ($coder_args['#comment_array_lines'] as $lineno => $line_array) {
+      foreach ($line_array as $line) {
+        $pos = strpos($line, '@ignore ');
+        if ($pos !== FALSE && preg_match_all('/(\w+)[\s,]*/', _substr($line, $pos + 8), $matches)) {
+          foreach ($matches[1] as $ignore) {
+            $ignores[$lineno][$ignore] = $ignore;
+            $ignores[$lineno + 1][$ignore] = $ignore;
+          }
+        }
+      }
+    }
+    $coder_args['#ignores'] = isset($ignores) ? $ignores : array();
+
     // Given the sanitized PHP lines, determine the class and function for each line.
     $stack = array();
     $class_stack = $class_stack_paren = array();
@@ -683,14 +679,12 @@ function _coder_review_read_and_parse_file(&$coder_args) {
         if (preg_match('/function (\w+)\s*\(/', $line, $match) && !preg_match('/;/', $line)) {
           array_unshift($function_stack, $match[1]);
           array_unshift($function_stack_paren, $paren_depth);
-//print "$lineno: " . str_repeat(' ', $function_stack_paren[0]) . "function $function_stack[0] {\n";
         }
 
         // Check if this line is the beginning of a class definition.
         if (preg_match('/class (\w+)/', $line, $match) || preg_match('/interface (\w+)/', $line, $match)) {
           array_unshift($class_stack, $match[1]);
           array_unshift($class_stack_paren, $paren_depth);
-//print "$lineno: " . str_repeat(' ', $classstack_paren[0]) . "class $class_stack[0] {\n";
         }
 
         // Check if this line changes the parenthesis depth.
@@ -701,14 +695,12 @@ function _coder_review_read_and_parse_file(&$coder_args) {
 
           // If the depth is now less than then current function depth, pop the function from the stack.
           if ($function_stack_paren && $paren_depth <= $function_stack_paren[0]) {
-//print "$lineno: " . str_repeat(' ', $function_stack_paren[0]) . "} // function $function_stack[0] {\n";
             array_shift($function_stack);
             array_shift($function_stack_paren);
           }
 
           // If the depth is now less than the current class depth, pop the class from the stack.
           if ($class_stack_paren && $paren_depth <= $class_stack_paren[0]) {
-//print "$lineno: " . str_repeat(' ', $class_stack_paren[0]) . "} // class $class_stack[0] {\n";
             array_shift($class_stack);
             array_shift($class_stack_paren);
           }
@@ -813,10 +805,12 @@ function do_coder_review($coder_args, $review) {
       $is_patch = 1;
     }
 
-    // Set the ignore lines array if it is empty.
-    $coder_args['#ignore_lines'] += array($review['#review_name'] => array());
+    foreach ($review['#rules'] as $rule_name => $rule) {
+      $rule += array(
+        '#rule_name' => $rule_name,
+        '#review_name' => $review['#review_name'],
+      );
 
-    foreach ($review['#rules'] as $rule) {
       // Ignore rules that don't match the file extension.
       $filename_includes = isset($rule['#filename']) ? $rule['#filename'] : (isset($rule['#filename-not']) ? $allowed_extensions : NULL);
       if ($filename_includes) {
@@ -930,7 +924,7 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
 
           $line = $coder_args['#all_lines'][$lineno];
           $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-          _coder_review_error($results, $rule, $review_name, $severity_name, $lineno, $line, $coder_args['#ignore_lines'][$review_name]);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $coder_args['#ignores']);
         }
       }
     }
@@ -944,24 +938,23 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
  *   Results array variable to save errors to.
  * @param $rule
  *   Rule array that triggered the error.
- * @param $review_name
- *   String name of review.
  * @param $severity_name
  *   String severity of error as detected by _coder_review_severity_name().
  * @param $lineno
  *   Line number of error.
  * @param $line
  *   Contents of line that triggered error.
- * @param $original
- *   Deprecated.
+ * @param $ignores
+ *   Warnings to ignore.
  */
-function _coder_review_error(&$results, $rule, $review_name, $severity_name, $lineno = -1, $line = '', $ignores = array()) {
+function _coder_review_error(&$results, $rule, $severity_name, $lineno = -1, $line = '', $ignores = array()) {
   // Note: The use of the $key allows multiple errors on one line.
   // This assumes that no line of source has more than 10000 lines of code
   // and that we have fewer than 10000 errors.
   global $_coder_errno;
+
   // Skip warnings we've been told to ignore.
-  if ($ignores && in_array($lineno, $ignores)) {
+  if (_coder_review_ignore($rule, $lineno, $ignores)) {
     ++$results['#stats']['ignored'];
   }
   else {
@@ -969,12 +962,21 @@ function _coder_review_error(&$results, $rule, $review_name, $severity_name, $li
     $results[$key] = array(
       'rule' => $rule,
       'severity_name' => $severity_name,
-      'review_name' => $review_name,
+      'review_name' => $rule['#review_name'],
+      'rule_name' => $rule['#rule_name'],
       'lineno' => $lineno,
       'line' => $line,
     );
     ++$results['#stats'][$severity_name];
   }
+}
+
+/**
+ * Returns TRUE if the rule should be ignored.
+ */
+function _coder_review_ignore($rule, $lineno, $ignores) {
+  $name = $rule['#review_name'] . '_' . $rule['#rule_name'];
+  return isset($ignores[$lineno][$name]);
 }
 
 /**
@@ -984,13 +986,12 @@ function _coder_review_error(&$results, $rule, $review_name, $severity_name, $li
  */
 function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
   if (isset($rule['#value'])) {
-    $review_name = $review['#review_name'];
     foreach ($lines as $lineno => $line_array) {
       foreach ($line_array as $line) {
         if (_coder_review_search_string($line, $rule)) {
           $line = $coder_args['#all_lines'][$lineno];
           $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-          _coder_review_error($results, $rule, $review_name, $severity_name, $lineno, $line, $coder_args['#ignore_lines'][$review_name]);
+          _coder_review_error($results, $rule, $severity_name, $lineno, $line, $coder_args['#ignores']);
         }
       }
     }
@@ -1012,7 +1013,7 @@ function do_coder_review_grep_invert(&$coder_args, $review, $rule, $lines, &$res
       }
     }
     $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
-    _coder_review_error($results, $rule, $review['#review_name'], $severity_name);
+    _coder_review_error($results, $rule, $severity_name);
   }
 }
 
@@ -1338,6 +1339,7 @@ function _file_list($path, $regex, $recurse = TRUE) {
  */
 function _message($message = NULL, $type = 'status') {
   if (function_exists('drupal_set_message')) {
+    // @ignore security_dsm
     drupal_set_message($message);
   }
 
