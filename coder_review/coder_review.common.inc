@@ -325,14 +325,25 @@ function theme_coder_review_warning($variables) {
  *   Integer 1 if success.
  */
 function _coder_review_read_and_parse_file(&$coder_args) {
-  $regex = '/(' . implode('|', array_merge(array('module', 'theme'), $coder_args['#php_extensions'])) . ')$/';
-  $is_php_file = preg_match($regex, $coder_args['#filename']);
+  // Determine the file extension type.
+  // Set all allowed PHP extensions to 'php'.
+  $pathinfo = pathinfo($coder_args['#filename']);
+  $allowed_extensions = array_merge(
+    $coder_args['#php_extensions'],
+    $coder_args['#include_extensions'],
+    array('module', 'theme')
+  );
+  $ext = in_array($pathinfo['extension'], $allowed_extensions) ? 'php' : $pathinfo['extension'];
+
+  // The use of variables with 'php' in them ($in_php, $in_all_php, $php_lines, etc.)
+  // is misleading. All references to such should be renamed 'code' because we are also
+  // using this engine to read 'js' files.
 
   // Get the path to the module file.
   $filepath = realpath($coder_args['#filename']);
   if (!empty($coder_args['#patch']) || !empty($coder_args['#test']) || file_exists($filepath)) {
-    $in_php = ($is_php_file ? 0 : 1);
-    $in_allphp = ($is_php_file ? 0 : 1);
+    $in_php = ($ext == 'js') ? 1 : 0;
+    $in_allphp = $in_php;
     $in_comment = 0;
 
     if (!empty($coder_args['#patch'])) {
@@ -352,26 +363,19 @@ function _coder_review_read_and_parse_file(&$coder_args) {
       $in_allphp = 1;
     }
     else {
-      $content = file_get_contents($filepath) . "\n";
+      $content = file_get_contents($filepath);
     }
+    $content .= "\n";
     $content_length = strlen($content);
 
     $in_comment = 0;
-    $beginning_of_line = 0;
     $in_quote_html = 0;
     $in_backslash = 0;
     $in_quote = 0;
     $in_heredoc = 0;
+    $in_heredoc_length = 0;
     $in_heredoc_html = '';
-    $heredoc = '';
-    $all_lines = array();
-    $full_lines = array();
-    $php_lines = array();
-    $allphp_lines = array();
-    $html_lines = array();
-    $quote_lines = array();
-    $doublequote_lines = array();
-    $comment_lines = array();
+    $beginning_of_line = 0;
     $this_all_lines = '';
     $this_php_lines = '';
     $this_allphp_lines = '';
@@ -531,7 +535,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
         }
 
         // Look for the ending php tag.
-        elseif ($char == '?' && $content[$pos + 1] == '>' && $in_comment !== '*') {
+        elseif ($ext == 'php' && $char == '?' && $content[$pos + 1] == '>' && $in_comment !== '*') {
           unset($char);
           $in_php = 0;
           $in_allphp = 0;
@@ -603,6 +607,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
 
                 // Get the heredoc word.
                 // Read until the end-of-line.
+                $heredoc = '';
                 for ($pos += 3; $pos < $content_length; ++$pos) {
                   $char = $content[$pos];
                   if ($char == "\n") {
@@ -616,7 +621,6 @@ function _coder_review_read_and_parse_file(&$coder_args) {
                   $this_all_lines .= $char;
                   $heredoc .= $char;
                 }
-                $heredoc = '';
 
                 // Replace heredoc's with an empty string.
                 $this_php_lines .= '\'\'';
@@ -634,7 +638,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
       else {
         switch ($char) {
           case '<':
-            if ($content[$pos + 1] == '?') {
+            if ($ext == 'php' && $content[$pos + 1] == '?') {
               if ($content[$pos + 2] == ' ') {
                 $in_php = 1;
                 $in_allphp = 1;
@@ -657,50 +661,15 @@ function _coder_review_read_and_parse_file(&$coder_args) {
       }
     }
 
-    if (trim($this_all_lines) != '') {
-      $all_lines[$lineno] = array($this_all_lines);
-      $full_lines[$lineno] = $this_all_lines;
-    }
-    if (trim($this_php_lines) != '') {
-      $php_lines[$lineno] = array($this_php_lines);
-    }
-    if (trim($this_allphp_lines) != '') {
-      $allphp_lines[$lineno] = array($this_allphp_lines);
-    }
-    if (trim($this_html_lines) != '') {
-      $html_lines[$lineno] = array($this_html_lines);
-    }
-    $quotes = array();
-    foreach ($this_quote_lines as $quote_line) {
-      if (trim($quote_line, "\r\n") != '') {
-        $quotes[] = $quote_line;
-      }
-    }
-    if ($quotes) {
-      $quote_lines[$lineno] = $quotes;
-    }
-    $quotes = array();
-    foreach ($this_doublequote_lines as $quote_line) {
-      if (trim($quote_line, "\r\n") != '') {
-        $quotes[] = $quote_line;
-      }
-    }
-    if ($quotes) {
-      $doublequote_lines[$lineno] = $quotes;
-    }
-    if (trim($this_comment_lines) != '') {
-      $comment_lines[$lineno] = array($this_comment_lines);
-    }
-
     // Add the files lines to the arguments.
-    $coder_args['#all_array_lines'] = $all_lines;
-    $coder_args['#php_array_lines'] = $php_lines;
-    $coder_args['#allphp_array_lines'] = $allphp_lines;
-    $coder_args['#html_array_lines'] = $html_lines;
-    $coder_args['#quote_array_lines'] = $quote_lines;
-    $coder_args['#doublequote_array_lines'] = $doublequote_lines;
-    $coder_args['#comment_array_lines'] = $comment_lines;
-    $coder_args['#all_lines'] = $full_lines;
+    $coder_args['#all_array_lines'] = isset($all_lines) ? $all_lines : array();
+    $coder_args['#php_array_lines'] = isset($php_lines) ? $php_lines : array();
+    $coder_args['#allphp_array_lines'] = isset($allphp_lines) ? $allphp_lines : array();
+    $coder_args['#html_array_lines'] = isset($html_lines) ? $html_lines : array();
+    $coder_args['#quote_array_lines'] = isset($quote_lines) ? $quote_lines : array();
+    $coder_args['#doublequote_array_lines'] = isset($doublequote_lines) ? $doublequote_lines : array();
+    $coder_args['#comment_array_lines'] = isset($comment_lines) ? $comment_lines : array();
+    $coder_args['#all_lines'] = isset($full_lines) ? $full_lines : array();
     $coder_args['#raw_contents'] = $content;
 
     // Given the sanitized PHP lines, determine the class and function for each line.
@@ -708,7 +677,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
     $class_stack = $class_stack_paren = array();
     $function_stack = $function_stack_paren = array();
     $paren_depth = 0;
-    foreach ($php_lines as $lineno => $line_array) {
+    foreach ($coder_args['#php_array_lines'] as $lineno => $line_array) {
       foreach ($line_array as $line) {
         // Check if this line is the beginning of a function definition.
         if (preg_match('/function (\w+)\s*\(/', $line, $match) && !preg_match('/;/', $line)) {
