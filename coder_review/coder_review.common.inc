@@ -84,12 +84,23 @@ function _coder_review_get_reviews_extensions($defaults, $reviews) {
  * Return last modification timestamp of coder_review and all of its dependencies.
  */
 function _coder_review_modified() {
-  static $cached_mtime;
-  if (!isset($cached_mtime)) {
-    $cached_mtime = filemtime(_coder_review_file_path() . '/coder_review.module');
-
+  static $cached_mtime = 0;
+  if (!$cached_mtime) {
+    // Create a list of all files whose times are worth checking.
+    $files[] = _coder_review_file_path() . '/coder_review.module';
+    $files[] = _coder_review_file_path() . '/coder_review.common.inc';
     foreach (coder_review_reviews() as $review) {
-      $mtime = filemtime($review['#file']);
+      $files[] = $review['#file'];
+    }
+
+    // @todo: add all possible .coder_review_ignores.txt files.
+    // But since we might be abandoning this for inline ignores, let's wait.
+    // @see http://drupal.org/node/1585790
+    // @see http://drupal.org/node/1772676
+
+    // Find the newest filetime.
+    foreach ($files as $file) {
+      $mtime = filemtime($file);
       if ($mtime > $cached_mtime) {
         $cached_mtime = $mtime;
       }
