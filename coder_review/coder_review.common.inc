@@ -727,7 +727,10 @@ function _coder_review_read_and_parse_file(&$coder_args) {
 
               // Find the end of the class or function.
               if ($current_scope) {
-                for ($scope = 1; isset($stack[$lineno + $scope]) && $stack[$lineno + $scope][$stack_index] == $current_scope; ++$scope) {
+                for ($scope = 1; !isset($stack[$lineno + $scope]) || $stack[$lineno + $scope][$stack_index] == $current_scope; ++$scope) {
+                  if ($lineno + $scope > $coder_args['#num_lines']) {
+                    break;
+                  }
                 }
               }
             }
@@ -737,7 +740,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
               }
             }
 
-            if (is_int($scope)) {
+            if (is_numeric($scope)) {
               for ($line_offset = 0; $line_offset <= $scope; ++$line_offset) {
                 $ignores[$lineno + $line_offset][$rule_name] = $rule_name;
               }

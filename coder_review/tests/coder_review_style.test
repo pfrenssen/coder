@@ -125,6 +125,23 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   function testIgnores() {
-    // @todo:
+    $bad = '  $a = $v. "string";';
+    $good = '  $a = $v . "string";';
+    $ignore = '// @ignore style_string_spacing';
+    $this->assertCoderReviewFail($bad);
+    $this->assertCoderReviewPass("$ignore:file\n$bad");
+    $this->assertCoderReviewFail("function bad() {\n$bad\n}\n");
+    $this->assertCoderReviewPass("$ignore:function\nfunction bad() {\n$bad\n}\n");
+    $this->assertCoderReviewFail("$ignore:function\nfunction good() {\n$good\n}\nfunction bad() {\n$bad;\n}\n");
+    $this->assertCoderReviewPass("$ignore:1\n$bad");
+    $this->assertCoderReviewPass("$ignore\n$bad");
+    $this->assertCoderReviewFail("$ignore\n\n$bad");
+    $this->assertCoderReviewPass("$ignore:2\n\n$bad");
+    $this->assertCoderReviewFail("class C {\n\nfunction bad() {\n$bad\n}\n};\n");
+    $this->assertCoderReviewPass("$ignore:class\nclass C {\n\n  protected function bad() {\n  $bad\n  }\n};\n");
+    $this->assertCoderReviewPass("class C {\n$ignore:class\n  protected function bad() {\n$bad\n}\n};\n");
+    $this->assertCoderReviewFail("class C {\n  protected function bad() {\n  $bad\n  }\n};$ignore:file\n");
+    $this->assertCoderReviewPass("class C {\n  protected function bad() {\n$ignore:function\n  $bad\n  }\n};\n");
+    $this->assertCoderReviewPass("class C {\n$ignore:class\n  protected function bad() {\n  $bad\n  }\n};\n");
   }
 }
