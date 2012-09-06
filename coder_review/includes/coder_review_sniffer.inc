@@ -11,6 +11,7 @@ function coder_review_sniffer_reviews() {
   $rules[] = array(
     '#type' => 'callback',
     '#value' => '_coder_review_sniffer_callback',
+    '#source' => 'all',
   );
 
   $review = array(
@@ -22,8 +23,10 @@ function coder_review_sniffer_reviews() {
     '#description' => "Optional; Checks for Drupal CodeSniffer rules; which are good but often stricter than Drupal's Standards.",
   );
 
-  @include_once 'PHP/CodeSniffer.php';
-  if (!class_exists('PHP_CodeSniffer')) {
+  try {
+    @include_once 'PHP/CodeSniffer.php';
+  }
+  catch (Exception $e) {
     $review['#description'] = ' You must install drupalcs.';
   }
 
@@ -109,7 +112,7 @@ function _coder_review_sniffer_warnings(&$results, $rule, $lines, $ignores, $sni
       $tmprule['#warning'] = $warning[0]['message'];
       // @todo: set the severiy name.
       $severity_name = 'minor'; // $warning[0]['severity'];
-      _coder_review_error($results, $tmprule, $severity_name, $lineno, $lines[$lineno][0], $ignores);
+      _coder_review_error($results, $tmprule, $severity_name, $lineno, isset($lines[$lineno][0]) ? $lines[$lineno][0] : '', $ignores);
     }
   }
 }
