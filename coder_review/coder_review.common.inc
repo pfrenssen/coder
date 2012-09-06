@@ -711,11 +711,23 @@ function _coder_review_read_and_parse_file(&$coder_args) {
               // Find the end of the file.
               $scope = $coder_args['#num_lines'] - $lineno;
             }
-            elseif ($scope == 'function') {
-              // Find the end of the function.
-              $function = empty($stack[$lineno][1]) ? (empty($stack[$lineno + 1][1]) ? NULL : $stack[$lineno + 1][1]) : $stack[$lineno][1];
-              if ($function) {
-                for ($scope = 1; isset($stack[$lineno + $scope]) && $stack[$lineno + $scope] == $function; ++$scope) {
+            elseif ($scope == 'class' || $scope == 'function') {
+              // What scope are we looking for?
+              // #stack is an array($class_name, $function_name).
+              $stack_index = $scope == 'class' ? 0 : 1;
+
+              // Find the current scope.
+              $current_scope = NULL;
+              foreach (array(0, 1) as $current_lineno) {
+                if (!empty($stack[$lineno + $current_lineno][$stack_index])) {
+                  $current_scope = $stack[$lineno + $current_lineno][$stack_index];
+                  break;
+                }
+              }
+
+              // Find the end of the class or function.
+              if ($current_scope) {
+                for ($scope = 1; isset($stack[$lineno + $scope]) && $stack[$lineno + $scope][$stack_index] == $current_scope; ++$scope) {
                 }
               }
             }

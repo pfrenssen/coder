@@ -11,86 +11,86 @@ function coder_review_style_reviews() {
   $br = 'br';
 
   // @todo: add more specific #link's foreach #warning.
-  $rules[] = array(
+  $rules['no_tabs'] = array(
     '#type' => 'regex',
     '#value' => '\t',
     '#warning' => 'Use an indent of 2 spaces, with no tabs',
   );
-  $rules[] = array(
+  $rules['indent_spaces'] = array(
     '#type' => 'regex',
     '#never' => '<\?php',
     '#value' => '^ (  )*[^ \'".]',
     '#warning' => 'Use an indent of 2 spaces, with no tabs',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['control_spacing'] = array(
     '#type' => 'regex',
     '#value' => '\s(if|elseif|while|foreach|switch|case|return|for|catch)\(',
     '#warning' => 'Control statements should have one space between the control keyword and opening parenthesis',
   );
-  $rules[] = array(
+  $rules['function_spacing'] = array(
     '#type' => 'regex',
     '#value' => '[\s\(](\w+)\s\(',
     '#not' => '^(if|elseif|while|foreach|switch|case|return|for|list|catch|function)$',
     '#warning' => 'Functions should be called with no spaces between the function name and opening parentheses',
   );
-  $rules[] = array(
+  $rules['paren_spacing'] = array(
     '#type' => 'regex',
     '#value' => '\){',
     '#warning' => 'use a space between the closing parenthesis and the open bracket',
   );
-  $rules[] = array(
+  $rules['array_spacing'] = array(
     '#type' => 'regex',
     '#value' => '(\S=>|=>\S)',
     '#source' => 'php',
     '#warning' => 'Arrays should be formatted with a space separating each element and assignment operator',
   );
-  $rules[] = array(
+  $rules['string_spacing'] = array(
     '#type' => 'regex',
     '#value' => '(\.(?:|\s{2,})[^\)\=\s0-9]|[^\(\s0-9](?:|\s{2,})\.)',
     '#warning' => 'String concatenation should be formatted with a space separating the operators (dot .) and the surrounding terms',
   );
-  $rules[] = array(
+  $rules['opening_php'] = array(
     '#type' => 'regex',
     '#value' => '<\?(\w+)',
     '#not' => '^(php|xml)$',
     '#warning' => 'Always use &lt;?php ?&gt; to delimit PHP code, not the &lt;? ?&gt; shorthand',
   );
-  $rules[] = array(
+  $rules['global_vars'] = array(
     '#type' => 'regex',
     '#value' => 'global\s+\$(\w+)(,\s\$(\w+))*',
     '#not' => '^_|^(' . _coder_review_style_core_global_regex() . ')$',
     '#warning' => 'global variables should start with a single underscore followed by the module and another underscore',
   );
-  $rules[] = array(
+  $rules['closing_php'] = array(
     '#type' => 'callback',
     '#source' => 'all',
     '#value' => '_coder_review_style_closing_php_callback',
     '#warning' => 'the final ?> should be omitted from all code files',
   );
-  $rules[] = array(
+  $rules['else_spacing'] = array(
     '#type' => 'regex',
     '#value' => '}\s*else',
     '#warning' => 'else statements should begin on a new line',
   );
-  $rules[] = array(
+  $rules['comma_spacing'] = array(
     '#type' => 'regex',
     '#value' => '[,][^ \n\r]',
     '#warning' => 'missing space after comma',
   );
-  $rules[] = array(
+  $rules['curly_braces'] = array(
     '#type' => 'regex',
     '#value' => '^\s*{',
     '#warning' => 'curly braces { should end a line, not start one',
   );
-  $rules[] = array(
+  $rules['camel_case'] = array(
     '#type' => 'regex',
     '#value' => '(?-i)(function\s+|\$)(([a-z]+_?[A-Z]+)|([A-Z]+_?[a-z]+))',
     '#warning' => 'do not use mixed case (camelCase), use lower case and _',
     '#class-not' => '.+',
     '#filename-not' => array('test'), // Add this line too for patch files, where we don't have have class context.
   );
-  $rules[] = array(
+  $rules['upper_functions'] = array(
     '#type' => 'regex',
     '#value' => '(?-i)(function\s+[A-Z]+\s*\()',
     '#warning' => array(
@@ -98,20 +98,20 @@ function coder_review_style_reviews() {
       '#link' => _drupalnode(318, 'naming'),
     ),
   );
-  $rules[] = array(
+  $rules['stdclass'] = array(
     '#type' => 'regex',
     '#value' => '\s(stdclass)\s*\(',
     '#not' => '^(?-i)stdClass',
     '#warning' => "use stdClass caseCapitalization, it's the one exception to the mixed case style standard",
   );
-  $rules[] = array(
+  $rules['br'] = array(
     '#type' => 'regex',
     '#source' => 'html',
     '#value' => '<' . $br . '>', // NOTE: use $br only to avoid a warning.
     '#warning' => 'use &lt;br /&gt; instead of &lt;br&gt;',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['lowercase_html'] = array(
     '#type' => 'regex',
     '#source' => 'html',
     '#value' => '(?-i)<[A-Z]+',
@@ -123,18 +123,18 @@ function coder_review_style_reviews() {
     ),
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['control_newline'] = array(
     '#type' => 'regex',
     '#value' => '\s(if|elseif|while|foreach|switch|return|for|catch)\s*\(.*\) \s*{\s*[^\s]+',
     '#warning' => 'The control statement should be on a separate line from the control conditional',
   );
-  $rules[] = array(
+  $rules['template_controls'] = array(
     '#type' => 'regex',
     '#filename' => array('tpl.php'),
     '#value' => '\s(if|elseif)\s*\(.*\) \s*{\s*[^\s]+',
     '#warning' => 'The control statement should use ":" syntax instead of curly braces.',
   );
-  $rules[] = array(
+  $rules['trailing_spaces'] = array(
     '#type' => 'regex',
     '#source' => 'all',
     '#value' => '[ \t]+$',
@@ -142,45 +142,45 @@ function coder_review_style_reviews() {
     '#severity' => 'minor',
   );
   // @todo: review if this rule throws too many false positives.
-  $rules[] = array(
+  $rules['drupal_strings'] = array(
     '#type' => 'regex',
     '#value' => '[\s\(](strlen|strtolower|strtoupper|substr|ucfirst)\s*\(',
     '#warning' => 'in most cases, replace the string function with the drupal_ equivalent string functions',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['array_index'] = array(
     '#type' => 'regex',
     '#value' => '\[\s*[A-Za-z][A-Za-z0-9_]*\s*]',
     '#not' => '\[\s*[A-Z][A-Z0-9_]*\s*]',
     '#warning' => 'use quotes around a string literal array index, this is not only a style issue, but a known performance problem',
     '#case-sensitive' => TRUE,
   );
-  $rules[] = array(
+  $rules['uppercase_constants'] = array(
     '#type' => 'regex',
     '#value' => '[\s=>]+(true|false|null)[\)\s;,\n\r]+',
     '#case-sensitive' => TRUE,
     '#warning' => 'Use uppercase for PHP constants, e.g. NULL, TRUE, FALSE',
   );
-  $rules[] = array(
+  $rules['elseif'] = array(
     '#type' => 'regex',
     '#value' => '\s+else\s+if\s*\(',
     '#warning' => 'Use "elseif" in place of "else if"',
   );
-  $rules[] = array(
+  $rules['button_submit'] = array(
     '#type' => 'regex',
     '#value' => '\s*[\'"]#value[\'"]\s*=>\s*t\s*\(\s*[\'"]Submit[\'"]\s*\)',
     '#source' => 'allphp',
     '#warning' => 'When labelling buttons, make it clear what the button does, "Submit" is too generic.',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['class_names'] = array(
     '#type' => 'regex',
     '#value' => '(class|interface)\s+([a-z]|\w*_)',
     '#case-sensitive' => TRUE,
     '#warning' => 'Classes and interfaces should use UpperCamel naming.',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['method_names'] = array(
     '#type' => 'regex',
     '#value' => 'function\s+([A-Z]|\w*_)\s*\(',
     '#case-sensitive' => TRUE,

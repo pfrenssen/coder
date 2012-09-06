@@ -34,7 +34,6 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
       '#test' => $code,
       '#php_extensions' => $ext,
       '#include_extensions' => _coder_review_get_reviews_extensions($ext, $reviews),
-      '#ignore_lines' => array(),
     );
     _coder_review_read_and_parse_file($coder_args);
     $reviews[$this->review_name]['#review_name'] = $this->review_name;
@@ -57,7 +56,6 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
       '#filename' => drupal_get_path('module', 'coder_review_test') . '/coder_review_test.module',
       '#php_extensions' => $ext,
       '#include_extensions' => _coder_review_get_reviews_extensions($ext, $reviews),
-      '#ignore_lines' => array(),
     );
     _coder_review_read_and_parse_file($coder_args);
     $reviews[$this->review_name]['#review_name'] = $this->review_name;

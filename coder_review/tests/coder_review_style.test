@@ -123,4 +123,8 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("# Shell Comment.\n");
     $this->assertCoderReviewPass("\$a = '# Not a Shell Comment.'\n");
   }
+
+  function testIgnores() {
+    // @todo:
+  }
 }
