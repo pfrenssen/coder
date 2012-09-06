@@ -12,7 +12,7 @@ function coder_review_sql_reviews() {
   $bad = '[A-Za-z_]+';
 
   // NOTE: this doesn't catch all non-upper case keywords, but is a good start
-  $rules[] = array(
+  $rules['upper'] = array(
     '#type' => 'regex',
     '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s+' . $table . ')',
     '#source' => 'quote',
@@ -21,7 +21,7 @@ function coder_review_sql_reviews() {
     '#severity' => 'minor',
     '#never' => '[\s=\(](t|st|dt)\s*\(',
   );
-  $rules[] = array(
+  $rules['curly'] = array(
     '#type' => 'regex',
     '#value' => '^(select\s+.*\s+from\s+' . $bad . '|insert\s+into\s+' . $bad . '|update\s+' . $bad . '\s+set|delete\s+from\s' . $bad . ')',
     '#source' => 'quote',
@@ -29,7 +29,7 @@ function coder_review_sql_reviews() {
     '#severity' => 'critical',
     '#never' => '[\s=\(](t|st|dt)\s*\(',
   );
-  $rules[] = array(
+  $rules['limit'] = array(
     '#type' => 'regex',
     '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . ')\s+.*[Ll][Ii][Mm][Ii][Tt]\s[0-9]+',
     '#source' => 'quote',
@@ -42,21 +42,21 @@ function coder_review_sql_reviews() {
     ),
     '#never' => '[\s=\(](t|st|dt)\s*\(',
   );
-  $rules[] = array(
+  $rules['noteq'] = array(
     '#type' => 'regex',
     '#value' => '^(select\s+.*\s+from\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s' . $table . ')\s+.*!=',
     '#source' => 'quote',
     '#warning' => 'Use ANSI standard &lt;&gt; instead of !=',
     '#never' => '[\s=\(](t|st|dt)\s*\(',
   );
-  $rules[] = array(
+  $rules['backtick'] = array(
     '#type' => 'regex',
     '#value' => '^(select\s+.*\s+from\s+' . $table . '\s+.+?=\s*`|insert\s+into\s+' . $table . '\s+.*?VALUES\s*(\(\s*`|\(.*?,\s*`)|update\s+' . $table . '\s+set\s+.*?=\s*`|delete\s+from\s' . $table . '\s+.*?=\s*`)',
     '#source' => 'quote',
     '#warning' => "Don't use back ticks to quote values as it is not compliant with ANSI SQL",
     '#never' => '[\s=\(](t|st|dt)\s*\(',
   );
-  $rules[] = array(
+  $rules['count'] = array(
     '#type' => 'regex',
     '#source' => 'allphp',
     '#value' => 'db_query\s*\(\s*[\'"]select\s+count\s*\(\s*\*\s*\)\s+from\s+',
