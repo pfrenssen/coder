@@ -1,5 +1,5 @@
 name = Coder Review
-description = Developer module which reviews your code identifying coding style problems and where updates to the API are required.
+description = "Developer module" which reviews your code identifying coding style problems and where updates to the API are required.
 package = Development
 core = 7.x
 dependencies[] = coder

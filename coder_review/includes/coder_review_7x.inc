@@ -12,11 +12,11 @@ function coder_review_7x_reviews() {
 
   $rules[] = array(
     '#type' => 'callback',
-    '#value' => '_coder_review_7x_comment_doxygen_file_review_callback',
+    '#value' => '_coder_review_7x_comment_doxygen_file_callback',
   );
   $rules[] = array(
     '#type' => 'callback',
-    '#value' => '_coder_review_7x_info_file_review_callback',
+    '#value' => '_coder_review_7x_info_file_callback',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -43,7 +43,7 @@ function coder_review_7x_reviews() {
   );
   $rules[] = array(
     '#type' => 'callback',
-    '#value' => '_coder_review_7x_module_implements_review_callback',
+    '#value' => '_coder_review_7x_module_implements_callback',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -193,7 +193,7 @@ function coder_review_7x_reviews() {
   );
   $rules[] = array(
     '#type' => 'callback',
-    '#value' => '_coder_review_7x_cache_implementation_review_callback',
+    '#value' => '_coder_review_7x_cache_implementation_callback',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -403,7 +403,7 @@ function coder_review_7x_reviews() {
   $rules[] = array(
     '#type' => 'callback',
     '#source' => 'allphp',
-    '#value' => '_coder_review_7x_optional_block_review_callback',
+    '#value' => '_coder_review_7x_optional_block_callback',
   );
   $rules[] = array(
     '#type' => 'regex',
@@ -658,7 +658,7 @@ function coder_review_7x_reviews() {
   );
   $rules[] = array(
     '#type' => 'callback',
-    '#value' => '_coder_review_7x_drupal_behaviors_review_callback',
+    '#value' => '_coder_review_7x_drupal_behaviors_callback',
     '#filename' => array('js'),
   );
   $rules[] = array(
@@ -1262,9 +1262,9 @@ function coder_review_7x_reviews() {
 }
 
 /**
- * Define the rule callbacks for 7.x, see do_coder_review_callback().
+ * Define the rule callbacks for 7.x, see do_coder_callback().
  */
-function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_7x_info_file_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // Only perform this check for module's (not includes).
   $filename = $coder_args['#filename'];
   $pathinfo = pathinfo($filename);
@@ -1306,9 +1306,9 @@ function _coder_review_7x_info_file_review_callback(&$coder_args, $review, $rule
 }
 
 /**
- * Define the rule callbacks for 7.x, see do_coder_review_callback().
+ * Define the rule callbacks for 7.x, see do_coder_callback().
  */
-function _coder_review_7x_module_implements_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_7x_module_implements_callback(&$coder_args, $review, $rule, $lines, &$results) {
   $depth = 0;
   foreach ($lines as $lineno => $line) {
     if ($depth == 0) {
@@ -1339,7 +1339,7 @@ function _coder_review_7x_module_implements_review_callback(&$coder_args, $revie
 /**
  * @todo: add a function header comment.
  */
-function _coder_review_7x_cache_implementation_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_7x_cache_implementation_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // @NOTE: no simpletest for this.
   $filename = $coder_args['#filename'];
   if ($filename == 'includes/cache-install.inc' || $filename == 'includes/cache.inc') {
@@ -1370,7 +1370,7 @@ function _coder_review_7x_cache_implementation_review_callback(&$coder_args, $re
 /**
  * @todo: add a function header comment.
  */
-function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_7x_drupal_behaviors_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // @NOTE: no simpletest for this.
   $filename = $coder_args['#filename'];
   if (file_exists($filename)) {
@@ -1403,7 +1403,7 @@ function _coder_review_7x_drupal_behaviors_review_callback(&$coder_args, $review
 /**
  * @todo: add a function header comment.
  */
-function _coder_review_7x_comment_doxygen_file_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_7x_comment_doxygen_file_callback(&$coder_args, $review, $rule, $lines, &$results) {
   // @NOTE: no simpletest for this.
   // Only perform this check on install files.
   $pathinfo = pathinfo($coder_args['#filename']);
@@ -1440,7 +1440,7 @@ function _coder_review_7x_comment_doxygen_file_review_callback(&$coder_args, $re
  *
  * @see http://drupal.org/node/224333#block_optional
  */
-function _coder_review_7x_optional_block_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_7x_optional_block_callback(&$coder_args, $review, $rule, $lines, &$results) {
   $functions_to_check = array('block_list', 'block_custom_block_get', 'block_page_build');
   $filename = $coder_args['#filename'];
 
