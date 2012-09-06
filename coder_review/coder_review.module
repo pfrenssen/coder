@@ -101,7 +101,7 @@ function coder_review_menu_alter(&$items) {
  * module description.
  */
 function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) {
-  if (!user_access('view code review') || (!empty($form['#theme']) && $form['#theme'] == 'confirm_form')) {
+  if (!user_access('view code review') || isset($form['confirm'])) {
     return;
   }
 
