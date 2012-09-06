@@ -653,20 +653,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
     $coder_args['#comment_array_lines'] = isset($comment_lines) ? $comment_lines : array();
     $coder_args['#all_lines'] = isset($full_lines) ? $full_lines : array();
     $coder_args['#raw_contents'] = $content;
-
-    // Read the coder warning directives in the comments.
-    foreach ($coder_args['#comment_array_lines'] as $lineno => $line_array) {
-      foreach ($line_array as $line) {
-        $pos = strpos($line, '@ignore ');
-        if ($pos !== FALSE && preg_match_all('/(\w+)[\s,]*/', _substr($line, $pos + 8), $matches)) {
-          foreach ($matches[1] as $ignore) {
-            $ignores[$lineno][$ignore] = $ignore;
-            $ignores[$lineno + 1][$ignore] = $ignore;
-          }
-        }
-      }
-    }
-    $coder_args['#ignores'] = isset($ignores) ? $ignores : array();
+    $coder_args['#num_lines'] = isset($full_lines) ? key(array_slice($full_lines, -1, 1, TRUE)) : 0; 
 
     // Given the sanitized PHP lines, determine the class and function for each line.
     $stack = array();
@@ -711,6 +698,44 @@ function _coder_review_read_and_parse_file(&$coder_args) {
       }
     }
     $coder_args['#stack'] = $stack;
+
+    // Read the coder warning directives in the comments.
+    foreach ($coder_args['#comment_array_lines'] as $lineno => $line_array) {
+      foreach ($line_array as $line) {
+        $pos = strpos($line, '@ignore ');
+        if ($pos !== FALSE && preg_match_all('/([\w:]+)[\s,]*/', _substr($line, $pos + 8), $matches)) {
+          foreach ($matches[1] as $ignore) {
+            list($rule_name, $scope) = explode(':', "$ignore:1");
+
+            if ($scope == 'file') {
+              // Find the end of the file.
+              $scope = $coder_args['#num_lines'] - $lineno;
+            }
+            elseif ($scope == 'function') {
+              // Find the end of the function.
+              $function = empty($stack[$lineno][1]) ? (empty($stack[$lineno + 1][1]) ? NULL : $stack[$lineno + 1][1]) : $stack[$lineno][1];
+              if ($function) {
+                for ($scope = 1; isset($stack[$lineno + $scope]) && $stack[$lineno + $scope] == $function; ++$scope) {
+                }
+              }
+            }
+            elseif ($scope == 'comment') {
+              // Find the next line that is not a comment.
+              for ($scope = 0; !empty($comment_lines[$lineno + $scope + 1]); ++$scope) {
+              }
+            }
+
+            if (is_int($scope)) {
+              for ($line_offset = 0; $line_offset <= $scope; ++$line_offset) {
+                $ignores[$lineno + $line_offset][$rule_name] = $rule_name;
+              }
+            }
+          }
+        }
+      }
+    }
+    $coder_args['#ignores'] = isset($ignores) ? $ignores : array();
+
     return 1;
   }
 }
