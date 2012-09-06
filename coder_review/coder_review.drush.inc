@@ -28,6 +28,7 @@ function coder_review_drush_command() {
       'upgrade7x' => 'Run the 6.x -> 7.x upgrade review.',
       'upgrade8x' => 'Run the 7.x -> 8.x upgrade review.',
       'druplart' => 'Run the druplart review.',
+      'release' => 'Run the production-ready review.',
       'core' => 'Review all of core.',
       'contrib' => 'Review all of contrib.',
       'active' => 'Review all active modules and themes.',
