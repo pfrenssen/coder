@@ -8,6 +8,9 @@
  * Configuration page.
  */
 function coder_review_admin_settings($form, &$form_state) {
+  // Bootstrap enough to run.
+  require_once realpath(dirname(__FILE__)) . '/coder_review.common.inc';
+
   $settings = _coder_review_get_default_settings();
   $form = _coder_review_settings_form($settings, $system, $files);
   $form['help'] = array(
