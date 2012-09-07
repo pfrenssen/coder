@@ -242,10 +242,10 @@ function theme_coder_review_warning($variables) {
   }
   if ($lineno) {
     if ($lineno > 0) {
-      $warning = _t('Line @number: !warning', array('@number' => $lineno, '!warning' => $warning));
+      $warning = _t('Line @number: !warning [@review_@rule]', array('@number' => $lineno, '!warning' => $warning, '@review' => $review_name, '@rule' => $rule_name));
     }
     else {
-      $warning = _t('File: !warning', array('!warning' => $warning));
+      $warning = _t('File: !warning [@review_@rule]', array('!warning' => $warning, '@review' => $review_name, '@rule' => $rule_name));
     }
     if ($line) {
       $warning .= '<pre>' . check_plain($line) . '</pre>';
