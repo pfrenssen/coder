@@ -198,6 +198,12 @@ function _coder_review_settings_form($settings, &$system, &$files) {
     '#description' => _t('show warnings at or above the severity warning level'),
     '#default_value' => $settings['coder_severity'],
   );
+  $form['coder_reviews_group']['coder_ignore'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => $settings['coder_ignore'],
+    '#title' => _t('handle code ignores'),
+    '#description' => _t('Coder is a helpful assistant, not a Drill Sergant. Since the developer should always know better than Coder, the <a href="!help">Coder @ignore system</a> allows developers to tell coder to ignore certain warnings. Uncheck this field to see all warnings, even those that are ignored.', array('!help' => _drupalnode(1772676))),
+  );
 
   if ($settings['coder_files']) {
     $form['coder_what'] = array(
@@ -556,6 +562,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
     'coder_files' => 0,
     'coder_files_list' => '',
     'coder_active_modules' => 0,
+    'coder_ignore' => 1,
   );
 
   $coder_form = _coder_review_settings_form($settings, $system, $files);
@@ -580,6 +587,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         '#include_extensions' => array(),
 //      '#filename' => $filename,
         '#cache' => TRUE,
+        '#settings_ignore' => $settings['coder_ignore'],
       );
       drupal_alter('coder_review_args', $coder_args);
 
@@ -651,6 +659,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
             '#php_extensions' => $php_extensions,
             '#include_extensions' => $include_extensions,
             '#cache' => TRUE,
+            '#settings_ignore' => $settings['coder_ignore'],
           );
           if (function_exists('drupal_alter')) {
             drupal_alter('coder_review_args', $coder_args);

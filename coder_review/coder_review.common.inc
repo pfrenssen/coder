@@ -749,7 +749,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
         }
       }
     }
-    $coder_args['#ignores'] = isset($ignores) ? $ignores : array();
+    $coder_args['#ignores'] = isset($ignores) && $coder_args['#settings_ignore']? $ignores : array();
 
     return 1;
   }
@@ -1133,6 +1133,7 @@ function _coder_review_get_default_settings($arg = 'default') {
     'coder_patches' => 0,
     'coder_modules' => array(),
     'coder_themes' => array(),
+    'coder_ignore' => 1,
   );
   $settings['coder_reviews'] = _variable_get('coder_reviews', _coder_review_default_reviews());
   $settings['coder_severity'] = _variable_get('coder_severity', SEVERITY_NORMAL);

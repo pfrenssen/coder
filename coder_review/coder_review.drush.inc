@@ -35,8 +35,9 @@ function coder_review_drush_command() {
       'all' => 'Review all modules and themes (default).',
       'default' => 'Review "default" modules and themes (as defined in coder settings).',
       'summary' => 'Display summary information only, no warning output.',
-      'no-empty' => 'Hide results that are empty',
-      'ignore' => 'Module(s) to ignore, accepts comma separated list (no spaces).',
+      'no-empty' => 'Hide results that are empty, opposite of --empty.',
+      'empty' => 'Show or hide results that are empty, valid options are 0|no|off, on by default.',
+      'ignore' => 'Enable or disable Ignore handling, valid options are 0|no|off, on by default.',
       'xml' => 'Output results as xml.',
       'checkstyle' => 'Output results in Checkstyle xml format.',
     ),
@@ -90,15 +91,6 @@ function coder_review_drush_review() {
     $settings = _coder_review_get_default_settings();
   }
 
-  // Get the command line options ignore options.
-  $ignore_option = drush_get_option('ignore');
-  if ($ignore_option) {
-    foreach (explode(',', $ignore_option) as $option) {
-      _coder_review_set_form_modules($settings);
-      unset($settings['coder_modules-' . _substr($option, 3)]);
-    }
-  }
-
   // Get the command line review options.
   $avail_reviews = _coder_review_reviews();
   $reviews = array();
@@ -119,8 +111,7 @@ function coder_review_drush_review() {
     }
   }
   foreach (array_keys($avail_reviews) as $option) {
-    $enabled = drush_get_option($option);
-    if ($enabled === '0' || $enabled === 'no' || $enabled === 'off') {
+    if (_coder_review_drush_get_option_no($option)) {
       unset($reviews[$option]);
     }
     elseif ($enabled) {
@@ -249,6 +240,9 @@ function coder_review_drush_review() {
   if (!empty($output) && !drush_get_option('summary') && !drush_get_option('xml') && !drush_get_option('checkstyle')) {
     _coder_review_drush_print(implode(', ', $output) . "\n");
   }
+  if (_coder_review_drush_get_option_no('ignore')) {
+    $settings['coder_ignore'] = 0;
+  }
   _coder_review_set_form_modules($settings);
   $settings['op'] = 'drush';
 
@@ -265,6 +259,23 @@ function coder_review_drush_review() {
   elseif (drush_get_option('xml')) {
     _coder_review_drush_xml_output_footer('xml');
   }
+}
+
+/**
+ * Return TRUE if the option is explicitly disabled.
+ *
+ * Options can be disabled several ways:
+ *   --no-option
+ *   --option=0
+ *   --option=no
+ *   --option=off
+ */
+function _coder_review_drush_get_option_no($option) {
+  if (drush_get_option("no-$option")) {
+    return TRUE;
+  }
+  $enabled = drush_get_option($option);
+  return $enabled === '0' || $enabled === 'no' || $enabled === 'off';
 }
 
 /**
@@ -290,7 +301,8 @@ function theme_drush_coder_review($variables) {
   $name = $variables['name'];
   $filename = $variables['filename'];
   $results = $variables['results'];
-  if (!drush_get_option('summary') && !empty($results) && ((!empty($results) && !isset($results[0])) || !drush_get_option('no-empty'))) {
+  $no_empty = _coder_review_drush_get_option_no('empty');
+  if (!drush_get_option('summary') && !empty($results) && ((!empty($results) && !isset($results[0])) || !$no_empty)) {
     if (drush_get_option('checkstyle') || drush_get_option('xml')) {
       _coder_review_drush_xml_output_results($filename, $results);
     }
@@ -433,4 +445,10 @@ function _coder_review_drush_xml_output_results($filename, $results) {
   else {
     _coder_review_drush_print('<file name = "' . $filename . '">' . "\n" . implode("\n ", $results) . "\n" . '</file>');
   }
+}
+
+/**
+ * 
+ */
+function _drush_get_option_isoff() {
 }
