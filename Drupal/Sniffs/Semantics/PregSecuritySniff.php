@@ -66,18 +66,23 @@ class Drupal_Sniffs_Semantics_PregSecuritySniff extends Drupal_Sniffs_Semantics_
         }
 
         $pattern = $tokens[$argument['start']]['content'];
-        // Check if there is the evil e flag.
-        if (preg_match('/\/[\w]{0,}e[\w]{0,}\b/', $pattern)) {
-            $warn = 'Using the e flag in %s is a possible security risk. For details see http://drupal.org/node/750148';
-            $phpcsFile->addError(
-                $warn,
-                $argument['start'],
-                'PregEFlag',
-                array($tokens[$stackPtr]['content'])
-            );
-            return;
+        $quote = substr($pattern, 0, 1);
+        // Check that the pattern is a string.
+        if ($quote == '"' || $quote == "'") {
+            // Get the delimiter - first char after the enclosing quotes.
+            $delimiter = preg_quote(substr($pattern, 1, 1), '/');
+            // Check if there is the evil e flag.
+            if (preg_match('/' . $delimiter . '[\w]{0,}e[\w]{0,}\b/', $pattern)) {
+                $warn = 'Using the e flag in %s is a possible security risk. For details see http://drupal.org/node/750148';
+                $phpcsFile->addError(
+                    $warn,
+                    $argument['start'],
+                    'PregEFlag',
+                    array($tokens[$stackPtr]['content'])
+                );
+                return;
+            }
         }
-
     }//end processFunctionCall()
 
 

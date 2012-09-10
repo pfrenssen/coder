@@ -725,5 +725,10 @@ preg_match('/.+/e', 'subject');
 preg_match('/.+/iemesuexADSUeXJ', 'subject');
 preg_filter('/.+/imsuexADSUXJ', 'replacement', 'subject');
 preg_replace('/.+/imsuxADSUeXJ', 'replacement', 'subject');
+// Use a not so common delimiter.
+preg_match('@.+@e', 'subject');
+preg_match('@.+@iemesuexADSUeXJ', 'subject');
+preg_filter('@.+@imsuexADSUXJ', 'replacement', 'subject');
+preg_replace('@.+@imsuxADSUeXJ', 'replacement', 'subject');
 
 ?>
