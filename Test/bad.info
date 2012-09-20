@@ -1,0 +1,6 @@
+; name, description, core is missing here.
+
+; Non-existing file.
+files[] = includes/non-existing.php
+; File does not contain class/interface definition.
+files[] = bad.tpl.php
