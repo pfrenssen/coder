@@ -715,7 +715,7 @@ function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
     $key1 = coder_upgrade_callback_filter($key1);
     cdp("new key1 = $key1");
     $body1 = $case1->body->getElement();
-    if (get_class($body1) == 'PGPFunctionCall' /*&& $body1->type == T_RETURN*/) {
+    if ($body1 && get_class($body1) == 'PGPFunctionCall' /*&& $body1->type == T_RETURN*/) {
       // Use case 1: returns an array.
       cdp("body1 is an array");
       if ($key1 != 'name') {
@@ -727,7 +727,7 @@ function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
         return;
       }
       $value1 = $body1->getParameter()->getElement();
-      if (get_class($value1) == 'PGPArray') {
+      if ($value1 && get_class($value1) == 'PGPArray') {
         $node_x = $value1->values->first();
         while ($node_x->next != NULL) {
           $data = $node_x->data;
@@ -741,7 +741,7 @@ function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
         }
       }
     }
-    elseif (get_class($body1) == 'PGPConditional' && $body1->type == T_SWITCH) {
+    elseif ($body1 && get_class($body1) == 'PGPConditional' && $body1->type == T_SWITCH) {
       // Use case 2: switch statement on $delta.
       $switch2 = &$body1;
       $operand2 = $switch2->conditions->toString();
@@ -761,7 +761,7 @@ function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
         $key2 = trim($case2->case->stripComments()->toString(), "'\"");
         cdp("key2 = $key2");
         $body2 = $case2->body->getElement();
-        if (get_class($body2) == 'PGPFunctionCall') {
+        if ($body2 && get_class($body2) == 'PGPFunctionCall') {
           // Use case 2: returns an array.
           if ($body2->type != T_RETURN) {
             clp("ERROR: switch statement operand does not match first function parameter in hook_filter");
