@@ -8,25 +8,25 @@
 
 /**
  * The default directory to store modules to be converted.
- * Relative to file_directory_path().
+ * Relative to public stream wrapper path.
  */
 define('DEADWOOD_DIR', 'coder_upgrade');
 
 /**
  * The default directory to store modules to be converted.
- * Relative to file_directory_path().
+ * Relative to public stream wrapper path.
  */
 define('DEADWOOD_OLD', 'coder_upgrade/old');
 
 /**
  * The default directory to store converted modules.
- * Relative to file_directory_path().
+ * Relative to public stream wrapper path.
  */
 define('DEADWOOD_NEW', 'coder_upgrade/new');
 
 /**
  * The default directory to store patch files.
- * Relative to file_directory_path().
+ * Relative to public stream wrapper path.
  */
 define('DEADWOOD_PATCH', 'coder_upgrade/patch');
 
@@ -106,7 +106,7 @@ function coder_upgrade_clean_directory($path, $remove_me = FALSE) {
  */
 function coder_upgrade_directory_path($name, $add_slash = TRUE, $stream_format = FALSE) {
   $slash = $add_slash ? '/' : '';
-  $prefix_no_slash = $stream_format ? file_default_scheme() . ':/' : file_directory_path();
+  $prefix_no_slash = $stream_format ? file_default_scheme() . ':/' : file_stream_path();
   $prefix = $prefix_no_slash . '/';
 
   switch ($name) {
@@ -153,20 +153,18 @@ function coder_upgrade_path($type = '') {
  *   A string containing the directory path of a stream. FALSE is returned if
  *   the scheme is invalid or a wrapper could not be instantiated.
  */
-if (!function_exists('file_directory_path')) {
-  function file_directory_path($scheme = 'public') {
-    global $_coder_upgrade_files_base;
+function file_stream_path($scheme = 'public') {
+  global $_coder_upgrade_files_base;
 
-    if (isset($_coder_upgrade_files_base)) {
-      // This is being run as a separate process outside of Drupal.
-      return $_coder_upgrade_files_base;
-    }
-    elseif ($wrapper = file_stream_wrapper_get_instance_by_scheme($scheme)) {
-      return $wrapper->getDirectoryPath();
-    }
-    else {
-      return FALSE;
-    }
+  if (isset($_coder_upgrade_files_base)) {
+    // This is being run as a separate process outside of Drupal.
+    return $_coder_upgrade_files_base;
+  }
+  elseif ($wrapper = file_stream_wrapper_get_instance_by_scheme($scheme)) {
+    return $wrapper->getDirectoryPath();
+  }
+  else {
+    return FALSE;
   }
 }
 
