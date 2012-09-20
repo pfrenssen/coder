@@ -1456,6 +1456,8 @@ function example_theme_changes() {
   // Themes in installed core modules.
   // Single quotes.
   theme('user_list', $users, $title);
+  // Next two add $width, $height after $path.
+  theme('image', $path, $alt, $title, $attributes, $getsize);
   theme('image_style', $style_name, $path, $alt, $title, $attributes, $getsize);
   theme('menu_admin_overview', $title, $name, $description);
   theme('rdf_template_variable_wrapper', $content, $attributes, $context, $inline);
