@@ -216,11 +216,11 @@ function coder_upgrade_convert_dir($upgrades, $extensions, $item, $recursive = T
   $filenames = scandir($dirname . '/');
   foreach ($filenames as $filename) {
     $_coder_upgrade_filename = $dirname . '/' . $filename;
-    if (substr(basename($filename), 0, 1) == '.' || in_array(basename($filename), $ignore)) {
-      // Ignore all hidden directories and CVS directory.
-      continue;
-    }
     if (is_dir($dirname . '/' . $filename)) {
+      if (substr(basename($filename), 0, 1) == '.' || in_array(basename($filename), $ignore)) {
+        // Ignore all hidden directories and CVS directory.
+        continue;
+      }
       $new_filename = $filename;
       // Handle D6 conversion item #79.
       if ($filename == 'po') {
