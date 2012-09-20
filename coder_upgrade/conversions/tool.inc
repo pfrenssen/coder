@@ -249,6 +249,7 @@ function coder_upgrade_op_to_hook($node, $case_node, $hook, $parameters) {
         $function->body = $case2->body;
         break;
       }
+      $case_node2 = $case_node2->next;
     }
   }
 
