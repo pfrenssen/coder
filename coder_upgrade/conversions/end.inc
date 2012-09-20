@@ -131,7 +131,7 @@ function coder_upgrade_add_file_entries($dirname = '', $files = array(), &$items
       if ($extension == 'php' && substr($file, -8) == '.tpl.php') {
         // Exclude template files.
       }
-      elseif (in_array($extension, $extensions) && in_array($_coder_upgrade_dirname . '/' . $path . $file, $_coder_upgrade_class_files)) {
+      elseif (in_array($extension, $extensions) && in_array($dirname . '/' . $file, $_coder_upgrade_class_files)) {
         $items[] = $path . $file;
       }
       elseif ($extension == 'info') {
