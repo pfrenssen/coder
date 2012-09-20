@@ -705,7 +705,7 @@ function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
   $current1 = $cases1->first();
   while ($current1->next != NULL) {
     $case1 = $current1->data;
-    if ($case1->type == T_DEFAULT) {
+    if (!($case1 instanceof PGPCase) || $case1->type == T_DEFAULT) {
       $current1 = $current1->next;
       continue;
     }
@@ -754,7 +754,7 @@ function coder_upgrade_convert_filter(&$node, &$reader) { // DONE
       $current2 = $cases2->first();
       while ($current2->next != NULL) {
         $case2 = $current2->data;
-        if ($case2->type == T_DEFAULT) {
+        if (!($case2 instanceof PGPCase) || $case2->type == T_DEFAULT) {
           $current2 = $current2->next;
           continue;
         }
@@ -948,7 +948,7 @@ function coder_upgrade_convert_filter_tips(&$node) { // DONE
   $current1 = $cases1->first();
   while ($current1->next != NULL) {
     $case1 = $current1->data;
-    if ($case1->type == T_DEFAULT) {
+    if (!($case1 instanceof PGPCase) || $case1->type == T_DEFAULT) {
       $current1 = $current1->next;
       continue;
     }
@@ -1332,7 +1332,7 @@ function coder_upgrade_callback_block($node, $case_node, $operation = '') {
 
   if (!$operation) {
     $case = &$case_node->data;
-    if (!($case instanceof PGPCase)) {
+    if (!($case instanceof PGPCase) || $case->type == T_DEFAULT) {
       cdp("Houston, we've got an unexpected statement");
       return;
     }
@@ -1402,7 +1402,7 @@ function coder_upgrade_callback_comment($node, $case_node, $operation = '') {
 
   if (!$operation) {
     $case = &$case_node->data;
-    if (!($case instanceof PGPCase)) {
+    if (!($case instanceof PGPCase) || $case->type == T_DEFAULT) {
       cdp("Houston, we've got an unexpected statement");
       return;
     }
@@ -1455,7 +1455,7 @@ function coder_upgrade_callback_nodeapi($node, $case_node, $operation = '') {
 
   if (!$operation) {
     $case = &$case_node->data;
-    if (!($case instanceof PGPCase)) {
+    if (!($case instanceof PGPCase) || $case->type == T_DEFAULT) {
       cdp("Houston, we've got an unexpected statement");
       return;
     }
@@ -1542,7 +1542,7 @@ function coder_upgrade_callback_node_type($node, $case_node, $operation = '') {
 
   if (!$operation) {
     $case = &$case_node->data;
-    if (!($case instanceof PGPCase)) {
+    if (!($case instanceof PGPCase) || $case->type == T_DEFAULT) {
       cdp("Houston, we've got an unexpected statement");
       return;
     }
@@ -1588,7 +1588,7 @@ function coder_upgrade_callback_user($node, $case_node, $operation = '') {
 
   if (!$operation) {
     $case = &$case_node->data;
-    if (!($case instanceof PGPCase)) {
+    if (!($case instanceof PGPCase) || $case->type == T_DEFAULT) {
       cdp("Houston, we've got an unexpected statement");
       return;
     }
