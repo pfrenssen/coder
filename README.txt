@@ -1,71 +1,22 @@
--------------------------------------------------------------------------------
-                            Drupal Code Sniffer
--------------------------------------------------------------------------------
 
-Drupal Code Sniffer (drupalcs) is a coding standard validation tool for Drupal
-and contributed modules/themes.
+Developer Module that assists with code review and version upgrade that
+supports a plug-in extensible hook system so contributed modules can
+define additional review standards.
 
-Online documentation: http://drupal.org/node/1419980
-
+Built-in support for:
+ - Drupal Coding Standards - http://drupal.org/node/318
+ - Handle text in a secure fashion - http://drupal.org/node/28984
+ - Converting 4.6.x modules to 4.7.x - http://drupal.org/node/22218
+ - Converting 4.7.x modules to 5.x - http://drupal.org/node/64279
 
 Installation
 ------------
 
-Requirements:
-  - PEAR
-  - PHPCS
+Copy coder.module to your module directory and then enable on the admin
+modules page.  Enable the modules that admin/config/development/coder/settings
+works on, then view the coder results page at coder.
 
-- Install PEAR  ( http://pear.php.net/manual/en/installation.php )
-- Install PHPCS ( http://pear.php.net/package/PHP_CodeSniffer )
-- Sym-link the drupalcs directory into the standards folder for PHP_CodeSniffer.
-  The code for that looks like this:
-
-$> sudo ln -sv /path/to/drupalcs/Drupal $(pear config-get php_dir)/PHP/CodeSniffer/Standards 
-
-Please see the online documentation for more detailed instructions:
-
-  http://drupal.org/node/1419988
-
-Installation: Drush
--------------------
-
-While drupalcs can be used as a standalone set of rules for PHP_CodeSniffer,
-drush command support is included to facilitate ease of use, installation,
-and leveraging of drush features such as site aliasing.
-
-Extract the contents of the drupalcs project into one of the locations specified
-in the drush README.txt COMMANDS section, such as the subdirectory of the
-.drush folder in your home directory.  For other alternatives, please see
-http://drupal.org/node/1419988
-
-Usage (running in a shell)
---------------------------
-
-$> phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme /path/to/drupal_module
-
-Usage (drush)
--------------
-
-$> drush drupalcs sites/all/modules/custom
-
-Working with Editors
---------------------
-Drupal Code Sniffer can be used with various editors.
-
-Editors:
-
-eclipse: http://drupal.org/node/1420004
-Komodo: http://drupal.org/node/1419996
-Netbeans: http://drupal.org/node/1420008
-Sublime Text: http://drupal.org/node/1419996
-vim: http://drupal.org/node/1419996
-
-
-Attention
----------
-This is still a draft!!
-Please cross check with http://drupal.org/coding-standards and
-http://drupal.org/project/coder if the validation is correct
-
-Known Issues:
-Documentation Tags just rarly supported - there are many missing / disabled sniffs
+Author
+------
+Doug Green
+douggreen@douggreenconsulting.com
