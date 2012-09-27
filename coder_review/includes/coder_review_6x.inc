@@ -818,6 +818,7 @@ function coder_review_6x_reviews() {
       ),
       '#link' => _drupalnode(114774, 'hook_access'),
     ),
+    '#function-not' => '^\w+_(node|field)_access$',
   );
   $rules[] = array(
     '#type' => 'regex',
