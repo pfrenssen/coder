@@ -317,7 +317,7 @@ function coder_review_7x_reviews() {
   $rules[] = array(
     '#type' => 'regex',
     '#value' => 'function\s+[a-z0-9_]+_(access)\s*\(',
-    '#function-not' => '^\w+_(node|field)_access$',
+    '#function-not' => '^[^_]\w+_(node|field)_access$',
     '#warning' => array(
       '#text' => '!hook_access() removed in favor of !hook_node_access().',
       '#args' => array(
