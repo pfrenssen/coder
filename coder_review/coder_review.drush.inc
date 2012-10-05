@@ -12,7 +12,7 @@ function coder_review_drush_command() {
     'callback' => 'coder_review_drush_review',
     'description' => dt('Run code reviews'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'aliases' => array('coder'),
+    'aliases' => array('coder', 'sniffer'),
     'options' => array(
       'severity' => 'Show warnings at the specified level, one of major, minor, or critical.',
       'major' => 'Show major and critical warnings.',
@@ -114,12 +114,14 @@ function coder_review_drush_review() {
     if (_coder_review_drush_get_option_no($option)) {
       unset($reviews[$option]);
     }
-    elseif ($enabled) {
+    elseif (drush_get_option($option)) {
       $reviews[$option] = $option;
     }
   }
   if (!$reviews) {
-    $reviews['style'] = 'style';
+    $args = drush_parse_args();
+    $review = $args[0] == 'sniffer' ? 'sniffer' : 'style';
+    $reviews[$review] = $review;
   }
 
   // Process command line arguments.
