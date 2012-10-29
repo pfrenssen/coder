@@ -52,3 +52,17 @@ function bad_requirements() {
   // t() should not be used directly.
   $message = t('Message');
 }
+
+/**
+ * Empty hook_install() is not allowed.
+ */
+function bad_install() {
+
+}
+
+/**
+ * Empty hook_uninstall() is not allowed.
+ */
+function bad_uninstall() {
+
+}
