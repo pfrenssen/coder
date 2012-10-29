@@ -77,7 +77,8 @@ function _coder_review_sniffer_callback(&$coder_args, $review, $rule, $lines, &$
     $phpcs_cli = new CoderReviewCodeSnifferClient($allowed_extensions);
     $phpcs->setCli($phpcs_cli);
 
-    $phpcs->setTokenListeners('Drupal', array());
+    $sniffer_dir = __DIR__ . '/../../coder_sniffer/Drupal';
+    $phpcs->setTokenListeners($sniffer_dir, array());
     $phpcs->populateCustomRules();
     $phpcs->populateTokenListeners();
   }
