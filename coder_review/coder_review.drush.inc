@@ -37,6 +37,7 @@ function coder_review_drush_command() {
       'no-empty' => 'Hide results that are empty, opposite of --empty.',
       'empty' => 'Show or hide results that are empty, valid options are 0|no|off, on by default.',
       'ignore' => 'Enable or disable Ignore handling, valid options are 0|no|off, on by default.',
+      'ignorename' => 'Enable display of ignore "rule names", helpful when adding ignores.',
       'xml' => 'Output results as xml.',
       'checkstyle' => 'Output results in Checkstyle xml format.',
     ),
@@ -351,7 +352,12 @@ function theme_drush_coder_review_warning($variables) {
 
   // Return warning as text output, formatted for the drush screen.
   $output  = $variables['lineno'] ? ($variables['lineno'] == -1 ? dt('File') : ('+' . $variables['lineno'])) . ': ' : '';
-  $output .= '[' . $variables['review_name'] . '_' . $variables['rule_name'] . ', ' . $variables['severity_name'] . '] ';
+  if (drush_get_option('ignorename')) {
+    $output .= '[' . $variables['review_name'] . '_' . $variables['rule_name'] . ', ' . $variables['severity_name'] . '] ';
+  }
+  else {
+    $output .= '[' . $variables['severity_name'] . '] ';
+  }
   if (is_string($variables['warning'])) {
     $output .= $variables['warning'];
   }
