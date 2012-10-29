@@ -34,6 +34,7 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
       '#test' => $code,
       '#php_extensions' => $ext,
       '#include_extensions' => _coder_review_get_reviews_extensions($ext, $reviews),
+      '#settings_ignore' => 1,
     );
     _coder_review_read_and_parse_file($coder_args);
     $reviews[$this->review_name]['#review_name'] = $this->review_name;

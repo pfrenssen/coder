@@ -749,7 +749,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
         }
       }
     }
-    $coder_args['#ignores'] = isset($ignores) && $coder_args['#settings_ignore']? $ignores : array();
+    $coder_args['#ignores'] = isset($ignores) && $coder_args['#settings_ignore'] ? $ignores : array();
 
     return 1;
   }
