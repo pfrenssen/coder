@@ -4,9 +4,17 @@
  * @file
  * Set of simpletests for the coding style standards review.
  */
+
 require_once dirname(__FILE__) . '/coder_review_test_case.tinc';
 
+/**
+ * ???
+ */
 class CoderReviewStyleTest extends CoderReviewTestCase {
+
+  /**
+   * ???
+   */
   function __construct($id = NULL) {
     parent::__construct('style', $id);
   }
@@ -19,6 +27,9 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     );
   }
 
+  /**
+   * ???
+   */
   function testStyleArrayIndex() {
     $this->assertCoderReviewPass('$some_array[FOO_BAR] = $baz;');
     $this->assertCoderReviewFail('$some_array[foo_bar] = $baz;');
@@ -26,6 +37,9 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  $a[\'hello\'] = "hello";');
   }
 
+  /**
+   * ???
+   */
   function testStyleTabs() {
     $this->assertCoderReviewPass('// Tab in	comment');
     $this->assertCoderReviewPass('$var = "tab in	double quote"');
@@ -33,6 +47,9 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('	$var = "tab in line";');
   }
 
+  /**
+   * ???
+   */
   function testStyleCamelCase() {
     $this->assertCoderReviewPass('  $var = new stdClass();');
     $this->assertCoderReviewPass('  $var = $obj->camelCase();');
@@ -47,11 +64,17 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  $var = 0xFF;');
   }
 
+  /**
+   * ???
+   */
   function testStyleBr() {
     $this->assertCoderReviewFail('  print "<br>";');
     $this->assertCoderReviewFail('  ?><br><?php');
   }
 
+  /**
+   * ???
+   */
   function testStyleConstants() {
     $this->assertCoderReviewPass('  $a = TRUE;');
     $this->assertCoderReviewPass('  $atrue = "true";');
@@ -61,15 +84,24 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('    return false;');
   }
 
+  /**
+   * ???
+   */
   function testStyleClosingPhp() {
     $this->assertCoderReviewFail("  print 'hello';\n?>");
   }
 
+  /**
+   * ???
+   */
   function testStyleTrailingSpaces() {
     $this->assertCoderReviewFail('  $left = "trailing spaces follow";   ');
     $this->assertCoderReviewPass('  $left = "no trailing spaces";');
   }
 
+  /**
+   * ???
+   */
   function testStyleControlStructures() {
     $this->assertCoderReviewFail('  if ($a == 1) { }');
     $this->assertCoderReviewPass('  if ($a == 1) {');
@@ -81,10 +113,16 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  if($a == 1) {');
   }
 
+  /**
+   * ???
+   */
   function testMultibyte() {
     $this->assertCoderReviewFail("  \$a = 'óóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóó';\n  if(\$a == 1) {\n");
   }
 
+  /**
+   * ???
+   */
   function testStyleStringConcatentation() {
     $this->assertCoderReviewPass('  if ($file = file_check_upload($fieldname . "_upload")) {');
     $this->assertCoderReviewFail('  if ($file = file_check_upload($fieldname ."_upload")) {');
@@ -107,23 +145,35 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  $a = 1.0 * .1 * 1. * (0.1) * (1.) * (.1) * (1.0);');
   }
 
+  /**
+   * ???
+   */
   function testStyleHerdocStrings() {
     $this->assertCoderReviewFail("  \$var = <<< __EOD__\n<br>\n__EOD__;");
     $this->assertCoderReviewFail("  \$var = <<< __EOD__\n<B>\n__EOD__;");
     $this->assertCoderReviewPass("  \$var = <<< __EOD__\n<br/>\n__EOD__;");
   }
 
+  /**
+   * ???
+   */
   function testFunctionName() {
     $this->assertCoderReviewFail('function camelCase() {');
     $this->assertCoderReviewFail('function any_Upper_case() {');
     $this->assertCoderReviewPass("class CamelCase {\nfunction camelCase() {\n");
   }
 
+  /**
+   * ???
+   */
   function testShellComment() {
     $this->assertCoderReviewPass("# Shell Comment.\n");
     $this->assertCoderReviewPass("\$a = '# Not a Shell Comment.'\n");
   }
 
+  /**
+   * ???
+   */
   function testIgnores() {
     $bad = '  $a = $v. "string";';
     $good = '  $a = $v . "string";';
@@ -144,4 +194,5 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("class C {\n  protected function bad() {\n$ignore:function\n  $bad\n  }\n};\n");
     $this->assertCoderReviewPass("class C {\n$ignore:class\n  protected function bad() {\n  $bad\n  }\n};\n");
   }
+
 }

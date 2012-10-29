@@ -4,9 +4,27 @@
  * @file
  * Set of simpletests for the commenting standards review.
  */
+
 require_once dirname(__FILE__) . '/coder_review_test_case.tinc';
 
+/**
+ * Tests the functionality of comment review rules in Coder_review module.
+ */
 class CoderReviewCommentTest extends CoderReviewTestCase {
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = array('coder_review');
+
+  /**
+   * Constructs an instance of the CoderReviewCommentTest object.
+   *
+   * @param string|null $id
+   *   (optional) The identifier string for this test. Defaults to NULL.
+   */
   function __construct($id = NULL) {
     parent::__construct('comment', $id);
   }
@@ -25,17 +43,26 @@ class CoderReviewCommentTest extends CoderReviewTestCase {
     $this->comment_header = $this->file_line;
   }
 
+  /**
+   * ???
+   */
   function testGeneralCommentStyle() {
     $this->assertCoderReviewPass($this->comment_header . "/**\n * Comment.\n");
     $this->assertCoderReviewFail($this->comment_header . "/**\n* Comment.\n");
     $this->assertCoderReviewFail($this->comment_header . "/**\n *Comment.\n");
   }
 
+  /**
+   * ???
+   */
   function testIdCommentLine() {
     $this->assertCoderReviewFail($this->comment_header . '// $Id$' . "\n");
     $this->assertCoderReviewFail($this->comment_header . '/* $Id$ */' . "\n");
   }
 
+  /**
+   * ???
+   */
   function testHookImplementationComment() {
     $this->assertCoderReviewPass($this->comment_header . "/**\n * Implements hook_foo().\n */");
     $this->assertCoderReviewFail($this->comment_header . "/**\n * Implements hook_foo()\n */");
@@ -47,12 +74,18 @@ class CoderReviewCommentTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail($this->comment_header . "/**\n * Implementation of hook_foo().\n */");
   }
 
+  /**
+   * ???
+   */
   function testFileDoxygenComment() {
     $this->assertCoderReviewPass("/**\n * @file\n * File description.");
     $this->assertCoderReviewFail("/**\n * @file File description.");
     $this->assertCoderReviewFail("/**\n * @file File description.");
   }
 
+  /**
+   * ???
+   */
   function testSeeDoxygenComment() {
     $this->assertCoderReviewPass($this->comment_header . "/**\n * @see some_function()");
     $this->assertCoderReviewPass($this->comment_header . "/**\n * @see some_function(), foo.tpl.php");
@@ -75,6 +108,9 @@ class CoderReviewCommentTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail($this->comment_header . "// @see some_function");
   }
 
+  /**
+   * ???
+   */
   function testShellComment() {
     $this->assertCoderReviewFail($this->comment_header . "# function shell_comment() {\n");
   }

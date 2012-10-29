@@ -1,7 +1,8 @@
 <?php
+
 /**
  * @file
- * Command line utility for coder_review.
+ * Command line utility support for Coder_review module.
  */
 
 /**
@@ -51,9 +52,27 @@ function coder_review_drush_command() {
 }
 
 /**
- * @todo: add function header comment.
+ * Implements hook_drush_help()
  */
-function _coder_review_set_form_modules(&$settings) {
+function coder_review_drush_help($section) {
+  switch ($section) {
+    case 'drush:coder-review':
+      $help = dt('This comand will execute Coder reviews on a given path, using Drupal Coding Standard definitions.');
+      // @todo What else should be added to the help message?  Popular options?
+      return $help;
+
+  }
+}
+
+/**
+ * Determines which Coder modules are active for this run.
+ *
+ * @param array $settings
+ *   An associative array of Coder modules, passed by reference.
+ *
+ * @todo Add function header comment. Still needed?
+ */
+function _coder_review_set_form_modules(array &$settings) {
   if (isset($settings['coder_modules'])) {
     foreach ($settings['coder_modules'] as $key => $value) {
       if ($value == 1) {
@@ -65,7 +84,7 @@ function _coder_review_set_form_modules(&$settings) {
 }
 
 /**
- * Do the actual review.
+ * Performs the actual review for drush.
  */
 function drush_coder_review() {
   // Bootstrap Drupal if it is available.
@@ -269,13 +288,19 @@ function drush_coder_review() {
 }
 
 /**
- * Return TRUE if the option is explicitly disabled.
+ * Determines if a specific option is explicitly disabled.
  *
- * Options can be disabled several ways:
+ * Options can be disabled several ways in drush:
  *   --no-option
  *   --option=0
  *   --option=no
  *   --option=off
+ *
+ * @param string $option
+ *   A drush command option as a string.
+ *
+ * @return bool
+ *   TRUE if the specific option is disabled; otherwise, FALSE.
  */
 function _coder_review_drush_get_option_no($option) {
   if (drush_get_option("no-$option")) {
@@ -287,6 +312,14 @@ function _coder_review_drush_get_option_no($option) {
 
 /**
  * Handle patch reviews.
+ *
+ * @param ??? $arg
+ *   ???, passed by reference.
+ * @param ??? $root
+ *   ???
+ *
+ * @return ???
+ *   ???
  */
 function _coder_review_drush_is_patch_arg(&$arg, $root) {
   if (_substr($arg, 0, 7) == 'http://') {
@@ -302,9 +335,17 @@ function _coder_review_drush_is_patch_arg(&$arg, $root) {
 }
 
 /**
- * Theme printing of results and filenames.
+ * Returns the results and filenames of a review in a format for drush use.
+ *
+ * @param array $variables
+ *   An associative array with the following keys:
+ *   - name:
+ *   - filename:
+ *   - results:
+ *
+ * @ingroup themeable
  */
-function theme_drush_coder_review($variables) {
+function theme_drush_coder_review(array $variables) {
   $name = $variables['name'];
   $filename = $variables['filename'];
   $results = $variables['results'];
@@ -320,9 +361,20 @@ function theme_drush_coder_review($variables) {
 }
 
 /**
- * Theme warning message, including source snippet.
+ * Returns warning message, including source snippet, in format for drush use.
+ *
+ * @param array $variables
+ *   An associative array with the following keys:
+ *   - lineno:
+ *   - severity_name:
+ *   - warning:
+ *   - line:
+ *   - rule_name:
+ *   - review_name:
+ *
+ * @ingroup themeable
  */
-function theme_drush_coder_review_warning($variables) {
+function theme_drush_coder_review_warning(array $variables) {
   // Supply default theme variables.
   $variables += array(
     'lineno' => 0,
@@ -372,7 +424,7 @@ function theme_drush_coder_review_warning($variables) {
 }
 
 /**
- * Handle printing of messages.
+ * Prints Coder review messages in a format for drush use.
  */
 function coder_review_print_drush_messages() {
   foreach (_message() as $type => $messages) {
@@ -390,14 +442,23 @@ function coder_review_print_drush_messages() {
 }
 
 /**
- * Strip HTML tags from drush output.
+ * Strips all HTML tags from drush output.
+ *
+ * @param string $output
+ *   A string that may contain one or more HTML tags.
+ *
+ * @return string
+ *   A modified string without any HTML tags.
  */
 function _coder_review_drush_output($output) {
   return html_entity_decode(strip_tags($output));
 }
 
 /**
- * Switch between print and pipe print output.
+ * Switches between drush print and drush print pipe of output.
+ *
+ * @param string $message
+ *   A message string to print for display in drush.
  */
 function _coder_review_drush_print($message) {
   if (drush_get_context('DRUSH_PIPE')) {
@@ -409,11 +470,10 @@ function _coder_review_drush_print($message) {
 }
 
 /**
- * XML output functions.
- */
-
-/**
- * XML: output appropriate header tag.
+ * Formats output as an appropriate XML header tag.
+ *
+ * @param string $type
+ *   (optional) The type of XML desired. Defaults to 'xml'.
  */
 function _coder_review_drush_xml_output_header($type = 'xml') {
   // Put in an extra concatenation so syntax highlighting in vim doesn't break.
@@ -422,7 +482,12 @@ function _coder_review_drush_xml_output_header($type = 'xml') {
 }
 
 /**
- * XML: output appropriate footer tag.
+ * Formats output as an appropriate XML footer tag.
+ *
+ * @param string $type
+ *   (optional) The type of XML desired. Defaults to 'xml'.
+ *
+ * @todo Where is the @ignore syntax and use documented in this module?
  */
 // @ignore upgrade7x_74
 function _coder_review_drush_xml_output_footer($type = 'xml') {
@@ -430,16 +495,24 @@ function _coder_review_drush_xml_output_footer($type = 'xml') {
 }
 
 /**
- * XML: output severity level if provided.
+ * Formats XML output for a severity level.
+ *
+ * @param string $severity_name
+ *   The severity level name as a string.
  */
 function _coder_review_drush_xml_output_severity($severity_name) {
   _coder_review_drush_print('<severity>' . $severity_name . '</severity>');
 }
 
 /**
- * XML: output list of chosen reviews.
+ * Formats XML output for a list of chosen Coder reviews.
+ *
+ * @param array $reviews
+ *   An array of Reviews.
+ * @param array $avail_reviews
+ *   ???
  */
-function _coder_review_drush_xml_output_reviews($reviews, $avail_reviews) {
+function _coder_review_drush_xml_output_reviews(array $reviews, array $avail_reviews) {
   _coder_review_drush_print('<reviews>');
   foreach ($reviews as $review) {
     _coder_review_drush_print('<review>' . $avail_reviews[$review]['#title'] . '</review>');
@@ -448,9 +521,14 @@ function _coder_review_drush_xml_output_reviews($reviews, $avail_reviews) {
 }
 
 /**
- * XML: output filename and its results (if any).
+ * Formats XML output for a filename and its results (if any).
+ *
+ * @param string $filename
+ *   The filename as a string.
+ * @param array $results
+ *   A Results array from performing a Coder review.
  */
-function _coder_review_drush_xml_output_results($filename, $results) {
+function _coder_review_drush_xml_output_results($filename, array $results) {
   if (empty($results) || (count($results) == 1 && isset($results[0]))) {
     _coder_review_drush_print('<file name = "' . $filename . '" />');
   }
@@ -460,7 +538,7 @@ function _coder_review_drush_xml_output_results($filename, $results) {
 }
 
 /**
- * 
+ * ??? What is this option for?  Is it needed?
  */
 function _drush_get_option_isoff() {
 }

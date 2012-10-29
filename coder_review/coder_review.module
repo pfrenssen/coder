@@ -1,9 +1,12 @@
 <?php
+
 /**
  * @file
+ * Developer module to assist with coder reviews and API upgrade suggestions.
+ *
  * Developer Module that assists with code review and version upgrade that
- * supports a plug-in extensible hook system so contributed modules can
- * define additional review standards.
+ * supports a plug-in extensible hook system so contributed modules can define
+ * additional review standards.
  *
  * Built-in support for:
  * - Drupal Coding Standards - http://drupal.org/node/318
@@ -97,8 +100,8 @@ function coder_review_menu_alter(&$items) {
 /**
  * Implements hook_form_FORMID_alter().
  *
- * Modify the module display view by adding a Coder Review link to every
- * module description.
+ * Modify the module display view by adding a Coder Review link to every module
+ * description.
  */
 function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) {
   if (!user_access('view code review') || isset($form['confirm'])) {
@@ -127,7 +130,7 @@ function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) 
 }
 
 /**
- * Build settings form API array for coder_review.
+ * Form constructor: Builds settings form API array for coder_review.
  *
  * Generates a form with the default reviews and default modules/themes to
  * run Coder on.
@@ -135,19 +138,23 @@ function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) 
  * Actual forms may have additional sections added to them, this is simply a
  * base.
  *
- * @param $settings
- *   Settings array for coder_review in the format of _coder_review_get_default_settings().
- * @param $system
+ * @param array $settings
+ *   Settings array for coder_review in the format of
+ *   _coder_review_get_default_settings().
+ * @param array $system
  *   Array of module and theme information, in form string theme/module
- *   name => boolean TRUE if checked by coder_review already.
- * @param $files
+ *   name => boolean TRUE if checked by coder_review already, passed by
+ *   reference.
+ * @param array $files
  *   Associative array of files, in form string theme/module name => string
- *   filename to check.
+ *   filename to check, passed by reference.
  *
- * @return
+ * @return array
  *   Array for form API for the settings box.
+ *
+ * @see coder_review_page_form()
  */
-function _coder_review_settings_form($settings, &$system, &$files) {
+function _coder_review_settings_form(array $settings, array &$system, array &$files) {
   // Bootstrap enough to run.
   require_once realpath(dirname(__FILE__)) . '/coder_review.common.inc';
 
@@ -487,18 +494,21 @@ function _coder_review_settings_form($settings, &$system, &$files) {
 }
 
 /**
- * Generate settings array for either modules or themes.
+ * Generates a settings array for either modules or themes names.
  *
- * @param $form_state
- *   Form array passed to submit function (note: entries that are processed.
- *   are removed for efficiency's sake).
- * @param $type
+ * @param array $form_state
+ *   The form state array that is passed to a submit function, passed by
+ *   reference. Note: As entries are processed, they are removed for the sake
+ *   of efficiency.
+ * @param string $type
  *   String type to generate settings for, either 'module' or 'theme'.
  *
- * @return
- *   Settings lookup array in form module/theme name => 1
+ * @return array
+ *   An associative array with keys of module/theme name and a value of 1.
+ *
+ * @see coder_review_page_form()
  */
-function _coder_review_settings_array(&$form_state, $type) {
+function _coder_review_settings_array(array &$form_state, $type) {
   $typekey = "coder_{$type}s-";
   $typelen = _strlen($typekey);
   $systems = array();
@@ -531,6 +541,9 @@ function coder_review_page_form_submit($form, &$form_state) {
  *
  * Implements coder_review's main form, in which a user can select reviews and
  * modules/themes to run them on.
+ *
+ * @see _coder_review_settings_array()
+ * @see _coder_review_settings_form()
  */
 function coder_review_page_form($form, &$form_state, $arg = '') {
   // Bootstrap enough to run.
@@ -788,27 +801,30 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
 }
 
 /**
- * Add results to form array for display on form page.
+ * Adds results to form definition for display on the coder review page.
  *
- * @param $form
- *   Form array variable to be modified.
- * @param $coder_args
- *   Coder settings, see do_coder_reviews() for details.
- * @param $name
- *   Name of form element.
- * @param $files
- *   Array of file objects to check and display the results of, see
- *   file_scan_directory().
- * @param $offset
- *   Integer offset to munge filenames with.
- * @param $exclusions
- *   Exclusions that should be ignored in $files.
+ * @param array $form
+ *   Form array definition to be modified, passed by reference.
+ * @param array $coder_args
+ *   An array of Coder settings. See do_coder_reviews() for details.
+ * @param string $name
+ *   Name of the form element.
+ * @param array $files
+ *   An array of file objects to check and display the results for. See
+ *   file_scan_directory() for details.
+ * @param int $offset
+ *   An integer offset to munge filenames with.
+ * @param array $exclusions
+ *   An array of exclusions that should be ignored in the $files array.
  *
- * @return
- *   Statistics array in form: string filename => array value of
- *   '#stats' from do_coder_reviews().
+ * @return array
+ *   Statistics array in form: string filename => array value of '#stats' from
+ *   do_coder_reviews().
+ *
+ * @see do_coder_review()
+ * @see file_scan_directory()
  */
-function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $offset, $exclusions) {
+function _coder_review_page_form_includes(array &$form, array $coder_args, $name, array $files, $offset, array $exclusions) {
   $stats = array();
   $coder_args['#name'] = $name;
   $weight = 0;
@@ -861,6 +877,17 @@ function _coder_review_page_form_includes(&$form, $coder_args, $name, $files, $o
 }
 
 /**
+ * ???
+ *
+ * @param ??? $name
+ *   ???
+ * @param ??? $filename
+ *   ???
+ * @param ??? $results
+ *   ???
+ *
+ * @return array
+ *   ???
  */
 function _coder_review_form_output($name, $filename, $results) {
   $output = array(
@@ -909,14 +936,15 @@ function coder_review_theme() {
 }
 
 /**
- * Format coder_review form and results.
+ * Returns HTML for line entry in coder_review_form() and the results produced.
  *
- * @param $name
- *   Name of module/theme checked, not used.
- * @param $filename
- *   String filename checked.
- * @param $results
- *   Array list of results HTML to display. See do_coder_reviews() for format.
+ * @param array $variables
+ *   An associative array containing the following keys:
+ *   - filename: The filename that was checked as a string.
+ *   - results: An array that lists of the results (in HTML format) to display.
+ *     See do_coder_reviews() for format.
+ *
+ * @ingroup themeable
  */
 function theme_coder_review($variables) {
   $output = '<h2>' . basename($variables['filename']) . '</h2>';
@@ -927,10 +955,16 @@ function theme_coder_review($variables) {
 }
 
 /**
- * Implement theme function for table_cols.
+ * Returns HTML for table column elements of coder_review_form().
  *
- * Implement theme_cols to theme the radiobuttons and checkboxes form
- * elements in a table column.
+ * This function themes the radio buttons and check boxes form elements that
+ * might exist in a table column.
+ *
+ * @param array $variables
+ *   An associative array containing the follwoing keys:
+ *   - form: An array with the form definition elements.
+ *
+ * @ingroup themeable
  */
 function theme_coder_review_table_cols($variables) {
   if (!isset($variables['form']) || !is_array($variables['form'])) {

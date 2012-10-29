@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * This include file implements coder functionality for comments.
@@ -200,9 +201,11 @@ function coder_review_comment_reviews() {
 }
 
 /**
- * Define the rule callbacks for comment install file block, see do_coder_review_callback().
+ * Rule callback: Checks for comment install file block.
+ *
+ * @see do_coder_review_callback()
  */
-function _coder_review_comment_install_file_block_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_comment_install_file_block_callback(array &$coder_args, array $review, array $rule, array $lines, array &$results) {
   // Only perform this check on install files.
   $pathinfo = pathinfo($coder_args['#filename']);
   if ($pathinfo['extension'] == 'install') {
@@ -234,9 +237,11 @@ function _coder_review_comment_install_file_block_callback(&$coder_args, $review
 }
 
 /**
- * Define the rull callback function to check for missing docblocks.
+ * Rule callback: Checks for missing docblocks.
+ *
+ * @see do_coder_review_callback()
  */
-function _coder_review_comment_missing_docblock(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_comment_missing_docblock(array &$coder_args, array $review, array $rule, array $lines, array &$results) {
   // Setup variable to display warnings.
   $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
   $tmprule = $rule;

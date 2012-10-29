@@ -2,15 +2,39 @@
 
 /**
  * @file
- * Main coder test suite.
+ * Definition of Drupal\coder_review\Tests\CoderReviewTestCase.
  */
 
+/**
+ * Defines the base class for unit testing the Coder_review functionality.
+ */
 class CoderReviewTestCase extends DrupalUnitTestCase {
-  protected $review_name;
 
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = array('coder_review');
+
+  /**
+   * The name of the review.
+   *
+   * @var string
+   */
+  protected $reviewName;
+
+  /**
+   * Constructs an instance of the CoderReviewTestCase object.
+   *
+   * @param string $review_name
+   *   The name of the review.
+   * @param string|null $id
+   *   (optional) The identifier string for this test. Defaults to NULL.
+   */
   function __construct($review_name, $id = NULL) {
     parent::__construct($id);
-    $this->review_name = $review_name;
+    $this->reviewName = $review_name;
 
     // Bootstrap enough to run.
     require_once realpath(dirname(__FILE__)) . '/../coder_review.common.inc';
@@ -20,6 +44,17 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
     parent::setUp('coder_review');
   }
 
+  /**
+   * Runs a Coder_review test.
+   *
+   * @param ??? $code
+   *   ???
+   * @param int $severity
+   *   (optional) A severity code as an integer. Defaults to SEVERITY_MINOR.
+   *
+   * @return array
+   *   A Results array.
+   */
   function runTest($code, $severity = SEVERITY_MINOR) {
     // Get the available reviews.
     $reviews = coder_review_reviews();
@@ -37,13 +72,22 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
       '#settings_ignore' => 1,
     );
     _coder_review_read_and_parse_file($coder_args);
-    $reviews[$this->review_name]['#review_name'] = $this->review_name;
-    $results = do_coder_review($coder_args, $reviews[$this->review_name]);
+    $reviews[$this->reviewName]['#review_name'] = $this->reviewName;
+    $results = do_coder_review($coder_args, $reviews[$this->reviewName]);
 
     unset($results['#stats']);
     return $results;
   }
 
+  /**
+   * Runs a Coder_review module test.
+   *
+   * @param int $severity
+   *   (optional) A severity code as an integer. Defaults to SEVERITY_MINOR.
+   *
+   * @return array
+   *   A Results array.
+   */
   function runTestModuleTest($severity = SEVERITY_MINOR) {
     // Get the available reviews.
     $reviews = coder_review_reviews();
@@ -59,13 +103,19 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
       '#include_extensions' => _coder_review_get_reviews_extensions($ext, $reviews),
     );
     _coder_review_read_and_parse_file($coder_args);
-    $reviews[$this->review_name]['#review_name'] = $this->review_name;
-    $results = do_coder_review($coder_args, $reviews[$this->review_name]);
+    $reviews[$this->reviewName]['#review_name'] = $this->reviewName;
+    $results = do_coder_review($coder_args, $reviews[$this->reviewName]);
 
     unset($results['#stats']);
     return $results;
   }
 
+  /**
+   * Asserts that some source code PASSES the Coder_review process.
+   *
+   * @param ??? $code
+   *   ???
+   */
   protected function assertCoderReviewPass($code) {
     // Run the coder review on the code snippet.
     $results = $this->runTest($code);
@@ -77,6 +127,12 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
     $this->assertTrue(count($results) == 0, $message);
   }
 
+  /**
+   * Asserts that some source code FAILS the Coder_review process.
+   *
+   * @param ??? $code
+   *   ???
+   */
   protected function assertCoderReviewFail($code) {
     // Run the coder review on the code snippet.
     $results = $this->runTest($code);
@@ -87,7 +143,16 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
     $message .= '<pre>' . check_plain(str_replace(array('%s', '%d'), array('%%s', '%%d'), $code)) . '</pre>';
     $this->assertTrue(count($results), $message);
   }
-  
+
+  /**
+   * ???
+   *
+   * @param array $results
+   *   A Result array.
+   *
+   * @return string
+   *   ???
+   */
   private function getWarnings($results) {
     $warnings = array();
     foreach ($results as $error) {

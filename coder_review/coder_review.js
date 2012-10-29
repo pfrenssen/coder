@@ -1,3 +1,7 @@
+/**
+ * Javascript for the Coder_review module.
+ */
+
 (function ($) {
   jQuery.fn.extend({
     check : function() { return this.each(function() { this.checked = true; }); },

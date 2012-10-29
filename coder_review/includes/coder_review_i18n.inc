@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * This include file implements coder functionality to check for Internationalization issues.

@@ -1,7 +1,8 @@
 <?php
+
 /**
  * @file
- * Drush support.
+ * Command line utility support for Coder_sniffer module.
  */
 
 /**
@@ -80,7 +81,7 @@ function drush_drupalcs_validate($path = '') {
 }
 
 /**
- * A command callback; executes PHP_CodeSniffer with Drupal standards.
+ * Drush command callback; executes PHP_CodeSniffer with Drupal standards.
  */
 function drush_drupalcs($path = '') {
   $phpcs_path = _drupalcs_get_path();
@@ -132,13 +133,14 @@ function drush_drupalcs($path = '') {
 }
 
 /**
- * Define the default extensions scanned by PHP_CodeSniffer.
+ * Defines the default file extensions scanned by PHP_CodeSniffer.
  *
  * @param string $mode
- *   Optional; can be set to extended.
+ *   (optional) A mode that can be set to 'extended'. Defaults to an empty
+ *   string.
  *
  * @return array
- *   Extensions that cover standard Drupal projects.
+ *   An array of file extensions that cover standard Drupal projects.
  */
 function _drupalcs_extensions($mode = '') {
   $extensions = array(
@@ -160,10 +162,11 @@ function _drupalcs_extensions($mode = '') {
 }
 
 /**
- * Check to see if a compatible version of PHP_CodeSniffer is installed.
+ * Checks to see if a compatible version of PHP_CodeSniffer is installed.
  *
- * @return boolean
- *   Whether or not a compatible version of PHP_CodeSniffer is installed.
+ * @return bool
+ *   A Boolean indicating whether or not a compatible version of
+ *   PHP_CodeSniffer is installed.
  */
 function _drupalcs_is_compatible_phpcs_installed() {
   // Check to see if phpcs is installed.
@@ -188,7 +191,7 @@ function _drupalcs_is_compatible_phpcs_installed() {
 }
 
 /**
- * Get the version of PHP_CodeSniffer.
+ * Gets the version of PHP_CodeSniffer.
  *
  * @param string $path_to_phpcs
  *   The path to PHP_CodeSniffer.
@@ -215,13 +218,13 @@ function _drupalcs_get_phpcs_version($path_to_phpcs) {
 }
 
 /**
- * Check to see if the Drupal standard has been installed.
+ * Checks to see if the Drupal standard profile has been installed.
  *
  * @param string $path_to_phpcs
  *   The path to PHP_CodeSniffer.
  *
- * @return boolean
- *   Returns TRUE if Drupal standard has been installed.
+ * @return bool
+ *   TRUE if Drupal standard profile has been installed; otherwsie, FALSE.
  */
 function _drupalcs_is_drupal_standard_installed($path_to_phpcs) {
   static $standard_installed = NULL;
@@ -241,7 +244,7 @@ function _drupalcs_is_drupal_standard_installed($path_to_phpcs) {
 }
 
 /**
- * Get the path to PHP_CodeSniffer.
+ * Gets the path to PHP_CodeSniffer.
  *
  * @return string
  *   The path to PHP_CodeSniffer.
@@ -255,7 +258,7 @@ function _drupalcs_get_path() {
 }
 
 /**
- * Get the full coding standard for PHP_CodeSniffer.
+ * Gets the full coding standard for PHP_CodeSniffer.
  *
  * @param string $path_to_phpcs
  *   The path to PHP_CodeSniffer.

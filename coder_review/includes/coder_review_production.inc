@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Implement coder functionality to check for debugging in production releases.

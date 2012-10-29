@@ -4,9 +4,17 @@
  * @file
  * Set of simpletests for the coder 6.x to 7.x api upgrade review.
  */
+
 require_once dirname(__FILE__) . '/coder_review_test_case.tinc';
 
+/**
+ * ???
+ */
 class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
+
+  /**
+   * ???
+   */
   function __construct($id = NULL) {
     parent::__construct('upgrade7x', $id);
   }
@@ -19,6 +27,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     );
   }
 
+  /**
+   * ???
+   */
   function testTestModule7x() {
     // http://drupal.org/node/224333#block_optional
 
@@ -26,6 +37,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
 
+  /**
+   * ???
+   */
   function testModule7x() {
     // N/A - in comment review - http://drupal.org/node/224333#afile
     // N/A - http://drupal.org/node/224333#module_file_during_install
@@ -44,6 +58,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#update_php
   }
 
+  /**
+   * ???
+   */
   function testSystem7x() {
     // N/A - http://drupal.org/node/224333#variable_get_default_null
     // N/A - http://drupal.org/node/224333#hook_modules_action
@@ -156,6 +173,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   }
 
+  /**
+   * ???
+   */
   function testPermissions7x() {
     // N/A - in system http://drupal.org/node/224333#moved_statistics_settings
     // N/A - http://drupal.org/node/224333#user-roles-api
@@ -193,6 +213,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   }
 
+  /**
+   * ???
+   */
   function testDatabase7x() {
     // N/A - http://drupal.org/node/224333#schema_date_time --- Schema API now supports date and time types natively
     // N/A - http://drupal.org/node/224333#foreign-keys-added
@@ -225,6 +248,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  db_query( 'SELECT COUNT (*) FROM {users}')");
   }
 
+  /**
+   * ???
+   */
   function testMenu7x() {
     // N/A - http://drupal.org/node/224333#international_item
 
@@ -238,6 +264,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   }
 
+  /**
+   * ???
+   */
   function testBlock7x() {
     // TEST MODULE - http://drupal.org/node/224333#block_optional
     // N/A - http://drupal.org/node/224333#hook_block_info_alter
@@ -249,6 +278,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
 
   }
 
+  /**
+   * ???
+   */
   function testComments7x() {
     // N/A - http://drupal.org/node/224333#comment_load_multiple
     // N/A - http://drupal.org/node/224333#comment_save_refactor
@@ -284,6 +316,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
   }
 
 
+  /**
+   * ???
+   */
   function testInput7x() {
     // http://drupal.org/node/224333#check_markup_params
     $this->assertCoderReviewFail('  check_markup($body, $format, $check);');
@@ -328,6 +363,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#filter-formats-parameters
   }
 
+  /**
+   * ???
+   */
   function testTaxonomy7x() {
     // N/A - http://drupal.org/node/224333#taxonomy_term_load_multiple
     // N/A - http://drupal.org/node/224333#taxonomy_hooks
@@ -377,6 +415,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#taxonomy-node
   }
 
+  /**
+   * ???
+   */
   function testJavascript7x() {
     // N/A - http://drupal.org/node/224333#jquery_ui
     // N/A - http://drupal.org/node/224333#attached_js
@@ -413,6 +454,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#rename-drupal-to-js
   }
 
+  /**
+   * ???
+   */
   function testCss7x() {
     // N/A - http://drupal.org/node/224333#attached_js
     // N/A - http://drupal.org/node/224333#drupal_add_css_inline
@@ -429,6 +473,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#class_attribute_array
   }
 
+  /**
+   * ???
+   */
   function testTheming7x() {
     // http://drupal.org/node/224333#rebuild_functions
     $this->assertCoderReviewFail('  drupal_rebuild_theme_registry();');
@@ -450,6 +497,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#theme_changes
   }
 
+  /**
+   * ???
+   */
   function testForm7x() {
     // http://drupal.org/node/224333#poundtheme
 
@@ -483,6 +533,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  \$form['#ahah'] = 'foo';");
   }
 
+  /**
+   * ???
+   */
   function testFile7x() {
     // N/A - http://drupal.org/node/224333#file_load_multiple
     // N/A - http://drupal.org/node/224333#file_check_directory_recursive
@@ -516,6 +569,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  \$files = drupal_system_listing('\.module\$', 'modules', 'name', 0);");
   }
 
+  /**
+   * ???
+   */
   function testUser7x() {
     // N/A - http://drupal.org/node/224333#specified_ids
 
@@ -555,6 +611,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  function mymodule_profile_alter(');
   }
 
+  /**
+   * ???
+   */
   function testNode7x() {
     // N/A - http://drupal.org/node/224333#delete_multiple
     // N/A - http://drupal.org/node/224333#specified_ids
@@ -610,6 +669,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  function mymodule_node_foo(&\$node, \$teaser, \$page)");
   }
 
+  /**
+   * ???
+   */
   function testMultilingual7x() {
     // http://drupal.org/node/224333#locale_context
     $this->assertCoderReviewFail("  t('Welcome to our site', array(), 'de');");
@@ -626,6 +688,9 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  format_plural(\$count, '1 comment', '@count comments', array(), array('langcode' => 'de'));");
   }
 
+  /**
+   * ???
+   */
   function testMisc7x() {
     // N/A - http://drupal.org/node/224333#sticky_headers
     // N/A - http://drupal.org/node/224332#implementation_hook_comment
@@ -659,4 +724,5 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     // http://drupal.org/node/224333#trigger_overhaul
     // http://drupal.org/node/224333#hook_entity_load
   }
+
 }

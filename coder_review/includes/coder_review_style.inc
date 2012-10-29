@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * This include file implements coder functionality for Drupal Standards.
+ * This include file implements coder_review functionality for Drupal Standards.
  */
 
 /**
@@ -141,7 +141,7 @@ function coder_review_style_reviews() {
     '#warning' => 'There should be no trailing spaces',
     '#severity' => 'minor',
   );
-  // @todo: review if this rule throws too many false positives.
+  // @todo Review if this rule throws too many false positives.
   $rules['drupal_strings'] = array(
     '#type' => 'regex',
     '#value' => '[\s\(](strlen|strtolower|strtoupper|substr|ucfirst)\s*\(',
@@ -202,9 +202,11 @@ function coder_review_style_reviews() {
 }
 
 /**
- * Define the rule callbacks for style.
+ * Rule callback: Defines the rule callbacks for style.
+ *
+ * @see do_coder_review_callback()
  */
-function _coder_review_style_closing_php_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_style_closing_php_callback(array &$coder_args, array $review, array $rule, array $lines, array &$results) {
   for ($lineno = -1; $last = array_slice($lines, $lineno); $lineno --) {
     $lastline = $last[0][0];
     if (preg_match('/\S/', $lastline)) {
@@ -218,7 +220,7 @@ function _coder_review_style_closing_php_callback(&$coder_args, $review, $rule, 
 }
 
 /**
- * Return regex of all global core variables.
+ * Returns regex of all global core variables.
  */
 function _coder_review_style_core_global_regex() {
   static $coreglobalregex;

@@ -1,14 +1,29 @@
 <?php
+
 /**
  * @file
  */
 
+/**
+ * Specifies the Minor severity level.
+ */
 define('SEVERITY_MINOR', 1);
+
+/**
+ * Specifies the Normal severity level.
+ */
 define('SEVERITY_NORMAL', 5);
+
+/**
+ * Specifies the Critical severity level.
+ */
 define('SEVERITY_CRITICAL', 9);
 
 /**
- * Get all of the code review modules, including contributions.
+ * Creates a list of all modules that implement hook_reviews().
+ *
+ * @return array
+ *   An array of return values of the from  hook_reviews() implementations.
  */
 function _coder_review_reviews() {
   static $cache = array();
@@ -21,7 +36,16 @@ function _coder_review_reviews() {
 /**
  * Implements hook_reviews().
  *
- * Returns all of the reviews implemented by the coder module.
+ * This creates an array of all of the reviews that are implemented by the
+ * coder_review module.
+ *
+ * @return array
+ *   An associative array as described in hook_reviews() documentation in the
+ *   coder_review.api.php file.
+ *
+ * @see hook_reviews()
+ *
+ * @todo Add an abbreviated explanation of what is coder_review.api.php.
  */
 function coder_review_reviews() {
   static $cache = array();
@@ -48,10 +72,17 @@ function coder_review_reviews() {
 }
 
 /**
- * Helper functions for settings form.
+ * Defines a default list of reviews to perform a coder_review analysis upon.
+ *
+ * @return array
+ *   An associative array with keys set to the names of the reviews to perform.
+ *   The values are set to ???
+ *
+ * @see _coder_review_get_default_settings()
  */
 function _coder_review_default_reviews() {
-  // Don't use drupal_map_assoc() so that this will run without Drupal bootstraped.
+  // Do not use drupal_map_assoc() so that this will run without Drupal being
+  // bootstraped.
   return array(
     'style' => 'style',
     'sql' => 'sql',
@@ -62,9 +93,21 @@ function _coder_review_default_reviews() {
 }
 
 /**
- * Return the extensions used by the reviews, that aren't part of the default extensions.
+ * Creates a list of required filename extensions the included in default list.
+ *
+ * @param array $defaults
+ *   An array of default filename extensions.
+ * @param array $reviews
+ *   An array of available coder reviews.
+ *
+ * @return array
+ *   An array of file extensions, which are required to perform any of the
+ *   reviews, but arenot part of the default filename extension list.
+ *
+ * @see coder_review_page_form()
+ * @see coder_review_test_case.tinc::runTest()
  */
-function _coder_review_get_reviews_extensions($defaults, $reviews) {
+function _coder_review_get_reviews_extensions(array $defaults, array $reviews) {
   $extensions = array();
   foreach ($reviews as $key => $review) {
     foreach ($review['#rules'] as $rule) {
@@ -81,12 +124,16 @@ function _coder_review_get_reviews_extensions($defaults, $reviews) {
 }
 
 /**
- * Return last modification timestamp of coder_review and all of its dependencies.
+ * Determines most recent modification timestamp of key coder_review code files.
+ *
+ * @return int
+ *   A Unix timestamp that represents the latest time that any of the key code
+ *   files that are part of the coder_review module was modified.
  */
 function _coder_review_modified() {
   static $cached_mtime = 0;
   if (!$cached_mtime) {
-    // Create a list of all files whose times are worth checking.
+    // Create a list of all files whose timestamps are worth checking.
     $files[] = _coder_review_file_path() . '/coder_review.module';
     $files[] = _coder_review_file_path() . '/coder_review.common.inc';
     foreach (coder_review_reviews() as $review) {
@@ -105,25 +152,31 @@ function _coder_review_modified() {
 }
 
 /**
- * Perform batch coder reviews for multiple files.
+ * Performs coder reviews for multiple code review definition files.
  *
- * @param $coder_args
- *   Array of coder arguments, valid arguments are:
- *     - '#reviews' => array list of reviews to perform, see _coder_review_reviews();
- *     - '#severity' => integer magic number, see constants SEVERITY_*;
- *     - '#filename' => string filename to check,
- *     - '#patch' => string patch lines to check,
+ * @param array $coder_args
+ *   An associative array of coder arguments. The valid arguments are:
+ *   - #reviews => An array list of reviews to perform.  For more information,
+ *     see _coder_review_reviews().
+ *   - #severity => An integer magic number. See the constants SEVERITY_*, as
+ *     defined at the top of coder_review.common.inc.
+ *   - #filename => A string with the filename to check.
+ *   - #patch => A string with the patch lines to perform a review on.
  *
- * @return
- *   Array of results, in form:
- *     - '#stats' => Array with error counts for all severities, in form
- *         'minor' => integer count, 'normal' => integer count;
- *         'critical' => integer count;
- *     - integer ID => HTML error for display.
+ * @return array
+ *   An associative array of results, in the form:
+ *   - #stats => An array with error counts for all severities, in the form:
+ *     - 'minor' => An integer count.
+ *     - 'normal' => An integer count.
+ *     - 'critical' => An integer count.
+ *   - integer ID => An HTML error message string for display.
+ *
+ * @see _coder_review_reviews()
  */
-function do_coder_reviews($coder_args) {
+function do_coder_reviews(array $coder_args) {
   // Load the cached results if they exist, but not for patches.
   if (empty($coder_args['#patch']) && empty($coder_args['#test']) && $coder_args['#cache']) {
+    // @todo Replace md5() with with sha256().  See [#723802] for more info.
     $cache_key = 'coder:' . md5(implode(':', array_keys($coder_args['#reviews']))) . $coder_args['#severity'] . ':' . $coder_args['#filename'];
     if (_drush()) {
       if (drush_get_option('checkstyle')) {
@@ -198,19 +251,21 @@ function do_coder_reviews($coder_args) {
 }
 
 /**
- * Format a coder_review warning to be included in results.
+ * Returns HTML for a coder_review warning to be included in results.
  *
- * @param $variables
- *   Theme variables.
- *   - warning : Either summary warning description, or an array in format:
- *     - '#warning' => Summary warning description;
- *     - '#description' => Detailed warning description;
- *     - '#link' => Link to an explanatory document.
- *   - severity_name : String severity name.
- *   - lineno : Integer line number of error.
- *   - line : String contents of line.
- *   - review_name : String review name.
- *   - rule_name : String rule name.
+ * @param array $variables
+ *   An associative array, which includes the following keys:
+ *   - warning: Either summary warning description, or an array in format:
+ *     - #warning: A summary warning description.
+ *     - #description: A detailed warning description.
+ *     - #link: A link to an explanatory document.
+ *   - severity_name: The severity name as a string.
+ *   - lineno: An integer line number on which error was detected.
+ *   - line: A string with the contents of line.
+ *   - review_name: A string with the review name.
+ *   - rule_name: A string with the rule name.
+ *
+ * @ingroup themeable
  */
 function theme_coder_review_warning($variables) {
   // Theme the output for the Drupal shell.
@@ -291,22 +346,31 @@ function theme_coder_review_warning($variables) {
 }
 
 /**
- * Parse and read a file into a format easy to validate.
+ * Parses and reads source files into a format for easier review validation.
  *
- * @param $coder_args
- *   Coder arguments array variable to add file lines of code (with
- *   trailing newlines. The following array indices are added:
- *     '#all_array_lines', '#php_array_lines', '#allphp_array_lines',
- *     '#html_array_lines', '#quote_array_lines', '#doublequote_array_lines',
- *     '#comment_array_lines', and #all_lines.
- *   The _array_ variants are multidimensional arrays, the first index for
- *   the line number, and the second index for each occurance within the line.
- *   #all_lines is a simple array, with each line from the file as an index.
+ * For each source file, the following file lines of code (with trailing
+ * newlines) will be added to the Coder arguments array:
+ * - #all_array_lines:
+ * - #all_lines:
+ * - #allphp_array_lines:
+ * - #comment_array_lines:
+ * - #doublequote_array_lines:
+ * - #html_array_lines:
+ * - #php_array_lines:
+ * - #quote_array_lines:
  *
- * @return
+ * The _array_ variants are multidimensional arrays, the first index for the
+ * line number, and the second index for each occurance within the line.
+ * #all_lines is a simple array, with each line from the source file as an
+ * index.
+ *
+ * @param array $coder_args
+ *   A Coder arguments array, passed by reference.
+ *
+ * @return int
  *   Integer 1 if success.
  */
-function _coder_review_read_and_parse_file(&$coder_args) {
+function _coder_review_read_and_parse_file(array &$coder_args) {
   // Determine the file extension type.
   // Set all allowed PHP extensions to 'php'.
   $pathinfo = pathinfo($coder_args['#filename']);
@@ -317,9 +381,9 @@ function _coder_review_read_and_parse_file(&$coder_args) {
   );
   $ext = in_array($pathinfo['extension'], $allowed_extensions) ? 'php' : $pathinfo['extension'];
 
-  // The use of variables with 'php' in them ($in_php, $in_all_php, $php_lines, etc.)
-  // is misleading. All references to such should be renamed 'code' because we are also
-  // using this engine to read 'js' files.
+  // The use of variables with 'php' in them ($in_php, $in_all_php, $php_lines,
+  // etc.) is misleading. All references to such should be renamed 'code'
+  // because we also are using this engine to read 'js' files.
 
   // Get the path to the module file.
   $filepath = realpath($coder_args['#filename']);
@@ -379,7 +443,8 @@ function _coder_review_read_and_parse_file(&$coder_args) {
       // Get the current character.
       $char = $content[$pos];
       if ($char == "\n") {
-        if ($in_comment === '/' || $in_comment === '#') { // End C++ style comments on newline.
+        // End C++ style comments on newline.
+        if ($in_comment === '/' || $in_comment === '#') {
           $in_comment = 0;
         }
 
@@ -458,8 +523,8 @@ function _coder_review_read_and_parse_file(&$coder_args) {
       $this_all_lines .= $char;
 
       if ($in_php || $in_allphp) {
-        // When in a quoted string, look for the trailing quote
-        // strip characters in the string, replacing with '' or "".
+        // When in a quoted string, look for the trailing quote; strip the
+        // characters in the string and replace with '' or "".
         if ($in_quote) {
           if ($in_backslash) {
             $in_backslash = 0;
@@ -525,7 +590,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
           ++$pos;
         }
 
-        // When in a comment look for the trailing comment.
+        // When in a comment, look for the trailing comment.
         elseif ($in_comment) {
           $this_comment_lines .= $char;
           if ($in_comment == '*' && $char == '*' && $content[$pos + 1] == '/') {
@@ -534,7 +599,8 @@ function _coder_review_read_and_parse_file(&$coder_args) {
             $this_comment_lines .= '/';
             ++$pos;
           }
-          unset($char); // Don't add comments to php output.
+          // Do not add comments to php output.
+          unset($char);
         }
 
         else {
@@ -542,7 +608,8 @@ function _coder_review_read_and_parse_file(&$coder_args) {
             case ',':
             case ')':
             case '(':
-            case '>': // For 'foo' => 'bar' type syntax.
+            // For 'foo' => 'bar' type syntax.
+            case '>':
             case ':':
               // Look for separators which force a new quote string.
               if ($this_quote_index < 0 || !empty($this_quote_lines[$this_quote_index])) {
@@ -635,7 +702,7 @@ function _coder_review_read_and_parse_file(&$coder_args) {
               }
               break;
             }
-            // FALLTHROUGH
+            // Purposefully fall through.
           default:
             $this_html_lines .= $char;
             break;
@@ -653,9 +720,10 @@ function _coder_review_read_and_parse_file(&$coder_args) {
     $coder_args['#comment_array_lines'] = isset($comment_lines) ? $comment_lines : array();
     $coder_args['#all_lines'] = isset($full_lines) ? $full_lines : array();
     $coder_args['#raw_contents'] = $content;
-    $coder_args['#num_lines'] = isset($full_lines) ? key(array_slice($full_lines, -1, 1, TRUE)) : 0; 
+    $coder_args['#num_lines'] = isset($full_lines) ? key(array_slice($full_lines, -1, 1, TRUE)) : 0;
 
-    // Given the sanitized PHP lines, determine the class and function for each line.
+    // Given the sanitized PHP lines, determine the class and function for each
+    // line.
     $stack = array();
     $class_stack = $class_stack_paren = array();
     $function_stack = $function_stack_paren = array();
@@ -680,13 +748,15 @@ function _coder_review_read_and_parse_file(&$coder_args) {
             $paren_depth += ($paren_match == '{') ? 1 : -1;
           }
 
-          // If the depth is now less than then current function depth, pop the function from the stack.
+          // If the depth is now less than then current function depth, pop the
+          // function from the stack.
           if ($function_stack_paren && $paren_depth <= $function_stack_paren[0]) {
             array_shift($function_stack);
             array_shift($function_stack_paren);
           }
 
-          // If the depth is now less than the current class depth, pop the class from the stack.
+          // If the depth is now less than the current class depth, pop the
+          // class from the stack.
           if ($class_stack_paren && $paren_depth <= $class_stack_paren[0]) {
             array_shift($class_stack);
             array_shift($class_stack_paren);
@@ -756,15 +826,16 @@ function _coder_review_read_and_parse_file(&$coder_args) {
 }
 
 /**
- * Return the integer severity magic number for a string severity.
+ * Determines the integer severity magic number for a severity string.
  *
- * @param $severity_name
- *   String severity name 'minor', 'normal', or 'critical'.
- * @param $default_value
- *   Integer magic number to use if severity string is not recognized.
+ * @param string $severity_name
+ *   The name of severity string, e.g., 'minor', 'normal', or 'critical'.
+ * @param int $default_value
+ *   (optional) An integer magic number to use if severity string is not
+ *   recognized. Defaults to SEVERITY_NORMAL.
  *
- * @return
- *   Integer magic number, see SEVERITY_* constants.
+ * @return int
+ *   An integer magic number, see SEVERITY_* constants.
  */
 function _coder_review_severity($severity_name, $default_value = SEVERITY_NORMAL) {
   // @note: Implemented this way in hopes that it is faster than a PHP switch.
@@ -782,17 +853,20 @@ function _coder_review_severity($severity_name, $default_value = SEVERITY_NORMAL
 /**
  * Return string severity for a given error.
  *
- * @param $coder_args
- *   Coder settings array, see do_coder_reviews().
- * @param $review
- *   Review array, see hook_reviews(), contains rule arrays.
- * @param $rule
- *   Rule array that was triggered, see individual entries from hook_reviews().
+ * @param array $coder_args
+ *   A Coder settings array. See do_coder_reviews() for format information.
+ * @param array $review
+ *   Review array that contains rule arrays. See hook_reviews() for details.
+ * @param array $rule
+ *   Rule array that was triggered. See individual entries from hook_reviews().
  *
- * @return
- *   String severity of error.
+ * @return string
+ *   A string describing the severity of the error.
+ *
+ * @see do_coder_reviews()
+ * @see hook_review()
  */
-function _coder_review_severity_name($coder_args, $review, $rule) {
+function _coder_review_severity_name(array $coder_args, array $review, array $rule) {
   // NOTE: Warnings in php includes are suspicious because
   // PHP includes are frequently 3rd party products.
   if (isset($coder_args['#php_minor']) && _substr($coder_args['#filename'], -4) == '.php') {
@@ -814,18 +888,24 @@ function _coder_review_severity_name($coder_args, $review, $rule) {
 }
 
 /**
- * Perform code review for a review array.
+ * Performs a code review for a review array.
  *
- * @param $coder_args
- *   Array coder_review settings, must have been prepared with _coder_review_read_and_parse_file(),
- *   see do_coder_reviews() for format.
- * @param $review
- *   Review array, see hook_review().
+ * @param array $coder_args
+ *   An array of coder_review settings, which must have been prepared with
+ *   _coder_review_read_and_parse_file().  See do_coder_reviews() for more
+ *   information on the array format.
+ * @param array $review
+ *   A review array. See hook_review() for format details.
  *
- * @return
- *   Array results, see do_coder_reviews() return value for format.
+ * @return array
+ *   An array of coder_review results. See do_coder_reviews() return value for
+ *   more information on the format.
+ *
+ * @see do_coder_reviews()
+ * @see hook_review()
+ * @see _coder_review_read_and_parse_file()
  */
-function do_coder_review($coder_args, $review) {
+function do_coder_review(array $coder_args, array $review) {
   $results = array('#stats' => array('minor' => 0, 'normal' => 0, 'critical' => 0, 'ignored' => 0));
   $allowed_extensions = array_merge(
     $coder_args['#php_extensions'],
@@ -860,7 +940,8 @@ function do_coder_review($coder_args, $review) {
         }
       }
 
-      // Ignore rules that do match the file extension, javascript files are excluded by default.
+      // Ignore rules that do match the file extension, javascript files are
+      // excluded by default.
       $not = isset($rule['#filename-not']) ? $rule['#filename-not'] : (isset($rule['#filename']) ? NULL : $coder_args['#include_extensions']);
       if ($not) {
         $regex = '/(' . implode('|', $not) . ')$/i';
@@ -882,7 +963,8 @@ function do_coder_review($coder_args, $review) {
       // Perform the review if above the user requested severity.
       $severity = _coder_review_severity(isset($rule['#severity']) ? $rule['#severity'] : '', $default_severity);
       if ($severity >= $coder_args['#severity']) {
-        if (isset($rule['#source'])) { // Values: all, html, comment, allphp or php.
+         // Permissible values for #source: all, html, comment, allphp or php.
+        if (isset($rule['#source'])) {
           $source = '#' . $rule['#source'] . '_array_lines';
           $lines = isset($coder_args[$source]) ? $coder_args[$source] : array();
         }
@@ -902,6 +984,7 @@ function do_coder_review($coder_args, $review) {
           case 'callback':
             do_coder_review_callback($coder_args, $review, $rule, $lines, $results);
             break;
+          // @todo Should an error message be set if #type is not in above list?
         }
       }
     }
@@ -910,20 +993,26 @@ function do_coder_review($coder_args, $review) {
 }
 
 /**
- * Implements do_coder_review_* for regex match.
+ * Performs a 'regex' type of coder_review.
  *
- * @param $coder_args
- *   Coder settings array variable, see do_coder_review() for format.
- * @param $review
+ * This type of do_coder_review_* attempts to locate occurances based on a
+ * regular expression string.
+ *
+ * @param array $coder_args
+ *   A Coder settings array, passed by reference. See do_coder_review() for format.
+ * @param array $review
  *   Review array the current rule belongs to, used by _coder_review_severity_name().
- * @param $rule
+ * @param array $rule
  *   Rule array being checked.
- * @param $lines
+ * @param array $lines
  *   Pertinent source file lines according to rule's '#source' value.
- * @param $results
- *   Results array variable to save errors to.
+ * @param array $results
+ *   Results array variable to save errors to, passed by reference.
+ *
+ * @see do_coder_review()
+ * @see _coder_review_severity_name()
  */
-function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) {
+function do_coder_review_regex(array &$coder_args, array $review, array $rule, array $lines, array &$results) {
   if (isset($rule['#value']) && !empty($lines)) {
     $regexflags = isset($rule['#case-sensitive']) ? '' : 'i';
     $regex = '/' . $rule['#value'] . '/' . $regexflags;
@@ -974,23 +1063,27 @@ function do_coder_review_regex(&$coder_args, $review, $rule, $lines, &$results) 
 /**
  * Builds an error message based on the rule that failed and other information.
  *
- * @param $results
- *   Results array variable to save errors to.
- * @param $rule
- *   Rule array that triggered the error.
- * @param $severity_name
- *   String severity of error as detected by _coder_review_severity_name().
- * @param $lineno
- *   Line number of error.
- * @param $line
- *   Contents of line that triggered error.
- * @param $ignores
- *   Warnings to ignore.
+ * @param array $results
+ *   A Results array variable to save errors to, passed by reference.
+ * @param array $rule
+ *   A Rule array that triggered the error.
+ * @param string $severity_name
+ *   A severity of error string as detected by _coder_review_severity_name().
+ * @param int $lineno
+ *   (optional) The line number on which the error was detected. Defaults to
+ *   negative one.
+ * @param string $line
+ *   (optional) The content of the line that triggered the error. Defaults to an
+ *   empty string.
+ * @param array $ignores
+ *   (optional) Any warnings to ignore. Defaults to an empty array.
+ *
+ * @see _coder_review_severity_name()
  */
-function _coder_review_error(&$results, $rule, $severity_name, $lineno = -1, $line = '', $ignores = array()) {
-  // Note: The use of the $key allows multiple errors on one line.
-  // This assumes that no line of source has more than 10000 lines of code
-  // and that we have fewer than 10000 errors.
+function _coder_review_error(array &$results, array $rule, $severity_name, $lineno = -1, $line = '', $ignores = array()) {
+  // Note: The use of the $key allows multiple errors on one line. This assumes
+  // that no line of source has more than 10000 lines of code and that we have
+  // fewer than 10000 errors.
   global $_coder_errno;
 
   // Skip warnings we've been told to ignore.
@@ -1012,19 +1105,43 @@ function _coder_review_error(&$results, $rule, $severity_name, $lineno = -1, $li
 }
 
 /**
- * Returns TRUE if the rule should be ignored.
+ * Determines whether a rule should be ignored.
+ *
+ * @param array $rule
+ *   A Rule array that triggered the error.
+ * @param int $lineno
+ *   The line number on which the error was detected.
+ * @param array $ignores
+ *   Any warnings to ignore.
+ *
+ * @return bool
+ *   TRUE if the ruleshould be ignored; otherwise, FALSE.
  */
-function _coder_review_ignore($rule, $lineno, $ignores) {
+function _coder_review_ignore(array $rule, $lineno, array $ignores) {
   $name = $rule['#review_name'] . '_' . $rule['#rule_name'];
   return isset($ignores[$lineno][$name]);
 }
 
 /**
- * Search for a string.
+ * Performs a 'grep' type of coder_review.
  *
- * @see do_coder_review_regex()
+ * This type of do_coder_review_* searches for the occurance of a string.
+ *
+ * @param array $coder_args
+ *   A Coder settings array, passed by reference. See do_coder_review() for format.
+ * @param array $review
+ *   Review array the current rule belongs to, used by _coder_review_severity_name().
+ * @param array $rule
+ *   Rule array being checked.
+ * @param array $lines
+ *   Pertinent source file lines according to rule's '#source' value.
+ * @param array $results
+ *   Results array variable to save errors to, passed by reference.
+ *
+ * @see do_coder_review()
+ * @see _coder_review_severity_name()
  */
-function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
+function do_coder_review_grep(array &$coder_args, array $review, array $rule, array $lines, array &$results) {
   if (isset($rule['#value'])) {
     foreach ($lines as $lineno => $line_array) {
       foreach ($line_array as $line) {
@@ -1039,11 +1156,26 @@ function do_coder_review_grep(&$coder_args, $review, $rule, $lines, &$results) {
 }
 
 /**
- * Search for potentially missing string.
+ * Performs a 'grep_invert' type of coder_review.
  *
- * @see do_coder_review_regex()
+ * This type of do_coder_review_* searches for the absence of the occurance of a
+ * string.
+ *
+ * @param array $coder_args
+ *   A Coder settings array, passed by reference. See do_coder_review() for format.
+ * @param array $review
+ *   Review array the current rule belongs to, used by _coder_review_severity_name().
+ * @param array $rule
+ *   Rule array being checked.
+ * @param array $lines
+ *   Pertinent source file lines according to rule's '#source' value.
+ * @param array $results
+ *   Results array variable to save errors to, passed by reference.
+ *
+ * @see do_coder_review()
+ * @see _coder_review_severity_name()
  */
-function do_coder_review_grep_invert(&$coder_args, $review, $rule, $lines, &$results) {
+function do_coder_review_grep_invert(array &$coder_args, array $review, array $rule, array $lines, array &$results) {
   if (isset($rule['#value'])) {
     foreach ($lines as $lineno => $line_array) {
       foreach ($line_array as $line) {
@@ -1058,11 +1190,26 @@ function do_coder_review_grep_invert(&$coder_args, $review, $rule, $lines, &$res
 }
 
 /**
- * Allow for an arbitrary callback function to perform a review.
+ * Performs a 'callback' type of coder_review.
  *
- * @see do_coder_review_regex()
+ * This type of do_coder_review_* allows for an arbitrary callback function to
+ * perform a review.
+ *
+ * @param array $coder_args
+ *   A Coder settings array, passed by reference. See do_coder_review() for format.
+ * @param array $review
+ *   Review array the current rule belongs to, used by _coder_review_severity_name().
+ * @param array $rule
+ *   Rule array being checked.
+ * @param array $lines
+ *   Pertinent source file lines according to rule's '#source' value.
+ * @param array $results
+ *   Results array variable to save errors to, passed by reference.
+ *
+ * @see do_coder_review()
+ * @see _coder_review_severity_name()
  */
-function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function do_coder_review_callback(array &$coder_args, array $review, array $rule, array $lines, array &$results) {
   $function = $rule['#value'];
   if ($function) {
     if (function_exists($function)) {
@@ -1079,17 +1226,17 @@ function do_coder_review_callback(&$coder_args, $review, $rule, $lines, &$result
 }
 
 /**
- * Search for a string.
+ * Searches for the occurance of a string in a line of text.
  *
- * Uses the fastest available php function for searching.
+ * This function uses the fastest available PHP function for searching.
  *
- * @param $line
+ * @param string $line
  *   Haystack.
- * @param $rule
- *   Rule to process.
+ * @param array $rule
+ *   A Rule array to process.
  *
  * @return
- *   TRUE if needle is in haystack.
+ *   TRUE if needle is in haystack; otherwise, FALSE.
  */
 function _coder_review_search_string($line, $rule) {
   // Case-sensitive search with strpos() (supported everywhere).
@@ -1108,17 +1255,17 @@ function _coder_review_search_string($line, $rule) {
 }
 
 /**
- * Returns a active settings array for coder_review.
+ * Returns an active settings array for coder_review.
  *
  * The name is a misnomer, but is a largely correct characterization
  * for most of Coder's settings as the variables usually do not exist.
  *
- * @param $args
- *   String settings argument, can be 'settings', 'active', 'core', 'all'
- *   and 'default'.
+ * @param string $args
+ *   (optional) A string settings argument, can be 'settings', 'active', 'core',
+ *   'all' and 'default'. Defaults to 'default'.
  *
  * @return
- *   Associative array of settings in form setting name => setting value.
+ *   Associative array of settings in the form of setting name => setting value.
  */
 function _coder_review_get_default_settings($arg = 'default') {
   $settings = array(
@@ -1192,7 +1339,13 @@ function _coder_review_get_default_settings($arg = 'default') {
 }
 
 /**
- * Return true if $module is in Drupal core.
+ * Determines if a module is part of Drupal's core group.
+ *
+ * @param object $system
+ *   ???
+ *
+ * @return bool
+ *   TRUE if a module is part of Drupal's core group; otherwise, FALSE.
  */
 function _coder_review_is_drupal_core($system) {
   $info_file = dirname(realpath($system->filename)) . '/' . $system->name . '.info';
@@ -1201,9 +1354,16 @@ function _coder_review_is_drupal_core($system) {
 }
 
 /**
- * Return the formatted warning message from the $rule.
+ * Creates a formatted warning message from a Rule array definition.
+ *
+ * @param array $rule
+ *   A Rule definition array.
+ *
+ * @return string
+ *   A formatted warning message.
+ *   @todo Is this an HTML string?  Is it sanitized?  Needs better explanation.
  */
-function _coder_review_warning($rule) {
+function _coder_review_warning(array $rule) {
   // @todo: add version check so we handle tranlations right for older rules definitions.
   // ... or should we just ignore them?
   // This will require passing the review to this function.
@@ -1231,45 +1391,79 @@ function _coder_review_warning($rule) {
     return _t($rule['#warning']);
   }
 
-  // No valid warning definition, return a warning about the warning.
+  // No valid warning definition: return a warning about the warning.
   return _t('Unknown warning');
 }
 
 /**
- * Wrapper t() function that works in Drush cli.
+ * Defines a wrapper t() function that works in Drush cli.
+ *
+ * @param string $string
+ *   ???
+ * @param array $args
+ *   ???
+ * @param array $options
+ *   ???
+ *
+ * @return string
+ *   ???
  */
 function _t($string, $args = array(), $options = array()) {
   return _drush() ? dt($string, $args) : t($string, $args, $options);
 }
 
 /**
- * Wrapper l() function that works in Drush cli.
+ * Defines a wrapper l() function that works in Drush cli.
+ *
+ * @param ??? $text
+ *   ???
+ * @param ??? $path
+ *   ???
+ * @param array $options
+ *   ???
+ *
+ * @return ???
+ *   ???
  */
 function _l($text, $path, $options = array()) {
   return function_exists('l') ? l($text, $path, $options) : "$text $path";
 }
 
 /**
- * Wrapper variable_get() function that works in Drush cli.
+ * Defines a wrapper variable_get() function that works in Drush cli.
+ *
+ * @param string $variable
+ *   The name of the variable.
+ * @param mixed $default
+ *   The default value for the variable.
+ *
+ * @return mixed
+ *   The value of the variable.
  */
-function _variable_get($var, $default = NULL) {
-  return function_exists('variable_get') ? variable_get($var, $default) : $default;
+function _variable_get($variable, $default = NULL) {
+  return function_exists('variable_get') ? variable_get($variable, $default) : $default;
 }
 
 /**
- * Return TRUE if running the Drush client.
+ * Determines if currently running with the Drush client.
+ *
+ * @return bool
+ *   TRUE if currently running with the Drush client; otherwise, FALSE.
  */
 function _drush() {
   return function_exists('drush_verify_cli') && drush_verify_cli();
 }
 
 /**
- * Return a link to the Drupal node.
+ * Creates a link to the Drupal node.
  *
- * @param $nid
- *   Nid to link to.
- * @param $anchor
- *   Optional anchor.
+ * @param int $nid
+ *   The Drupal Node ID to link to.
+ * @param string $anchor
+ *   (optional) An anchor tag. Defaults to an empty string.
+ *
+ * @return string
+ *   ???
  */
 function _drupalnode($nid, $anchor = '') {
   $link = "http://drupal.org/node/$nid";
@@ -1280,85 +1474,157 @@ function _drupalnode($nid, $anchor = '') {
 }
 
 /**
- * Return a link to the Drupal API docs.
+ * Creates a link to the Drupal API docs.
  *
- * @param $function
- *   Function to link to.
- * @param $version
- *   Version to link to.
+ * @param string $function
+ *   The name of a function to link to.
+ * @param ??? $version
+ *   (optional) The Drupal version to link to.
+ *
+ * @return string
+ *   ???
+ *
+ * @todo Add variable to store the default value to reference, e.g., d8.
  */
 function _drupalapi($function, $version = '') {
   return _l($function, "http://api.drupal.org/api/function/$function/$version");
 }
 
 /**
- * Return a link to the PHP API docs.
+ * Creates a link to the PHP API docs.
  *
- * @param $function
- *   Function to link to.
+ * @param string $function
+ *   The PHP function documentation to link to.
+ *
+ * @return string
+ *   ???
  */
 function _phpapi($function) {
   return _l($function, "http://php.net/$function");
 }
 
 /**
- * Return the file system path to the coder_review module.
+ * Returns the file system path to the coder_review module.
+ *
+ * @return string
+ *   The file system path to the coder_review module.
  */
 function _coder_review_file_path() {
   return dirname(__FILE__);
 }
 
 /**
- * Return the URL path to the coder_review module.
+ * Returns the URL path to the coder_review module.
+ *
+ * @return string
+ *   The URL path to the coder_review module.
  */
 function _coder_review_path() {
   return drupal_get_path('module', 'coder_review');
 }
 
 /**
- * Return data from the cache.
+ * Retrieves data from the cache.
+ *
+ * @param string $cid
+ *
+ * @param mixed $data
+ *
+ * @param string $bin
+ *   (optional) The name of the bin in which to store the cached data.
+ *
+ * @return ???
+ *   ???
  */
 function _cache_get($cid, $bin = 'default') {
   return function_exists('cache_get') ? cache_get($cid, $bin) : array(); // drush_cache_get($cid, $bin);
 }
 
 /**
- * Store data in the cache.
+ * Stores data in the cache.
+ *
+ * @param string $cid
+ *
+ * @param mixed $data
+ *
+ * @param string $bin
+ *   (optional) The name of the bin in which to store the cached data.
+ *
+ * @return ???
+ *   ???
  */
 function _cache_set($cid, $data, $bin = 'default') {
   return function_exists('cache_set') ? cache_set($cid, $data, $bin) : array(); // drush_cache_set($cid, $data, $bin);
 }
 
 /**
- * Return a substring.
+ * Returns a sub string.
+ *
+ * @param string $text
+ *   ???
+ * @param int $start
+ *   ???
+ * @param int $length
+ *   ???
+ *
+ * @return ???
+ *   ???
  */
 function _substr($text, $start, $length = NULL) {
   return function_exists('drupal_substr') ? drupal_substr($text, $start, $length) : substr($text, $start, $length);
 }
 
 /**
- * Return the strlen.
+ * Returns the length of a string.
+ *
+ * @param string $text
+ *   ???
+ *
+ * @return int
+ *   ???
  */
 function _strlen($text) {
   return function_exists('drupal_strlen') ? drupal_strlen($text) : strlen($text);
 }
 
 /**
- * Return the string in UPPERCASE.
+ * Returns a string converted to all UPPERCASE letters.
+ *
+ * @param string $text
+ *   ???
+ *
+ * @return string
+ *   ???
  */
 function _strtoupper($text) {
   return function_exists('drupal_strtoupper') ? drupal_strtoupper($text) : strtoupper($text);
 }
 
 /**
- * Return the string in lowercase.
+ * Returns a string converted to all lowercase letters.
+ *
+ * @param string $text
+ *   ???
+ *
+ * @return string
+ *   ???
  */
 function _strtolower($text) {
   return function_exists('drupal_strtolower') ? drupal_strtolower($text) : strtolower($text);
 }
 
 /**
- * Return all available file paths matching the regular expression.
+ * Returns all available file paths matching the regular expression.
+ *
+ * @param ??? $path
+ *   ???
+ * @param ??? $regex
+ *   ???
+ * @param bool $recurse
+ *   (optional) ??? Defaults to TRUE.
+ *
+ * @return array
+ *   ???
  */
 function _file_list($path, $regex, $recurse = TRUE) {
   $files = array();
@@ -1376,7 +1642,15 @@ function _file_list($path, $regex, $recurse = TRUE) {
 }
 
 /**
- * Display and retrieve messages.
+ * Displays and retrieves messages.
+ *
+ * @param ??? $message
+ *   (optional) ??? Defaults to NULL.
+ * @param string $type
+ *   (optional) ??? Defaults to 'status'.
+ *
+ * @return array
+ *   ???
  */
 function _message($message = NULL, $type = 'status') {
   if (function_exists('drupal_set_message')) {

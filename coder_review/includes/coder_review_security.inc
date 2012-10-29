@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * This include file implements coder functionality for Drupal Standards.
@@ -395,9 +396,12 @@ function _coder_review_security_callback(&$coder_args, $review, $rule, $lines, &
 }
 
 /**
- * Define the warning callbacks.
+ * Warning callback: Defines the parameters for trigger_error_filter_warning.
+ *
+ * @return array
+ *   An array of warning message parameters to be used in the construction of a
+ *   warning display string.
  */
-
 function _coder_review_security_trigger_error_filter_warning() {
   return array(
     '#text' => 'Potential problem: !trigger_error() only accepts filtered text, be sure to use !check_plain(), !filter_xss() or similar to ensure your $variable is fully sanitized.',

@@ -1,11 +1,16 @@
 <?php
+
 /**
  * @file
- * This include file implements coder functionality for PHP_CodeSniffer.
+ * This include file implements coder_review functionality for PHP_CodeSniffer.
  */
 
 /**
  * Implements hook_reviews().
+ *
+ * @throws \Exception
+ *
+ * @todo Should we add a use \Exception intruction at top of this file?
  */
 function coder_review_sniffer_reviews() {
   $rules[] = array(
@@ -34,9 +39,11 @@ function coder_review_sniffer_reviews() {
 }
 
 /**
- * Define the rule callbacks for code sniffer.
+ * Rule callback: Runs the PHP_CodeSniffer project for this Coder setting.
+ *
+ * @see do_coder_review_callback()
  */
-function _coder_review_sniffer_callback(&$coder_args, $review, $rule, $lines, &$results) {
+function _coder_review_sniffer_callback(array &$coder_args, array $review, array $rule, array $lines, array &$results) {
   if (!class_exists('PHP_CodeSniffer')) {
     _message(_t('PHP/CodeSniffer.php not found'), 'error');
     return;
@@ -102,13 +109,25 @@ function _coder_review_sniffer_callback(&$coder_args, $review, $rule, $lines, &$
 }
 
 /**
- * Store the Code Sniffer warnings as Coder warnings.
+ * Stores the Code Sniffer warnings as Coder warnings.
+ *
+ * @param array $results
+ *   A Results array variable to save errors to, passed by reference.
+ * @param array $rule
+ *   A Rule array that triggered the error.
+ * @param array $lines
+ *   Pertinent source file lines according to rule's '#source' value.
+ * @param array $ignores
+ *   An array of warnings to ignore.
+ * @param array $sniffer_warnings
+ *   An array of warning from a sniffer review.
  */
-function _coder_review_sniffer_warnings(&$results, $rule, $lines, $ignores, $sniffer_warnings) {
+function _coder_review_sniffer_warnings(array &$results, array $rule, array $lines, array $ignores, array $sniffer_warnings) {
   foreach ($sniffer_warnings as $lineno => $sniffer_warning) {
     foreach ($sniffer_warning as $warning_no => $warning) {
       $tmprule = $rule;
       $tmprule['#review_name'] = 'sniffer';
+      // @todo Replace md5() with with sha256().  See [#723802] for more info.
       $tmprule['#rule_name'] = md5($warning[0]['message']);
       $tmprule['#warning'] = $warning[0]['message'];
       // @todo: set the severiy name.

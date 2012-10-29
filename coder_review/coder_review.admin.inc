@@ -1,11 +1,15 @@
 <?php
+
 /**
  * @file
- * Coder module administrative forms and functions.
+ * Administrative forms and functions for the Coder module.
  */
 
 /**
- * Configuration page.
+ * Page callback: Configures administrative settings via system_settings_form().
+ *
+ * @see coder_review_menu()
+ * @see coder_review_settings_form_submit()
  */
 function coder_review_admin_settings($form, &$form_state) {
   // Bootstrap enough to run.
@@ -23,7 +27,7 @@ function coder_review_admin_settings($form, &$form_state) {
 }
 
 /**
- * Callback function for settings page.
+ * Form submission hander for coder_review_admin_settings().
  */
 function coder_review_settings_form_submit($form, &$form_state) {
   $form_state['storage'] = $form_state['values'];
@@ -34,14 +38,16 @@ function coder_review_settings_form_submit($form, &$form_state) {
 /**
  * Returns HTML for the modules form.
  *
- * This was copied from theme_system_modules_fieldset and modified to handle
+ * This was copied from theme_system_modules_fieldset() and modified to handle
  * additional links.
  *
- * @todo: create an issue for this and get this function into D8.
- *
- * @param $variables
- *   An associative array containing:
+ * @param array $variables
+ *   An associative array containing the key:
  *   - form: A render element representing the form.
+ *
+ * @ingroup themeable
+ *
+ * @todo Create an issue for this and get this function into D8.
  */
 function theme_coder_review_modules_fieldset($variables) {
   $form = $variables['form'];

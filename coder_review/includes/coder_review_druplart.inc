@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * This include file implements coder functionality for style I prefer, Drupl'Art.

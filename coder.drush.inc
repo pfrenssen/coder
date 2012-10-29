@@ -38,6 +38,8 @@ function coder_drush_help($section) {
 }
 
 /**
+ * Performs the desired coder-format command for drush.
+ *
  * Drush command callback for coder-format.
  */
 function drush_coder_format() {

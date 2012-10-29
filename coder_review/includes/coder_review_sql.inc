@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * This include file implements coder functionality for SQL strings
@@ -11,7 +12,7 @@ function coder_review_sql_reviews() {
   $table = '\{[A-Za-z_]+\}'; // table-regex
   $bad = '[A-Za-z_]+';
 
-  // NOTE: this doesn't catch all non-upper case keywords, but is a good start
+  // NOTE: This doesn't catch all non-upper case keywords, but is a good start.
   $rules['upper'] = array(
     '#type' => 'regex',
     '#value' => '^(select\s+.*\s+from\s+' . $table . '|insert\s+into\s+' . $table . '|update\s+' . $table . '\s+set|delete\s+from\s+' . $table . ')',

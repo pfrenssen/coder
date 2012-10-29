@@ -1,7 +1,7 @@
 
-Developer Module that assists with code review and version upgrade that
-supports a plug-in extensible hook system so contributed modules can
-define additional review standards.
+Developer Module that assists with code review and version upgrade that supports
+a plug-in extensible hook system so contributed modules can define additional
+review standards.
 
 Built-in support for:
  - Drupal Coding Standards - http://drupal.org/node/318

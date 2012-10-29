@@ -4,9 +4,20 @@
  * @file
  * Set of simpletests for the coder 5.x to 6.x api upgrade review.
  */
+
 require_once dirname(__FILE__) . '/coder_review_test_case.tinc';
 
+/**
+ * ???
+ */
 class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
+
+  /**
+   * Constructs an instance of a CoderReviewUpgrade6xTest object.
+   *
+   * @param string $id
+   *   A test identifier as a string.
+   */
   function __construct($id = NULL) {
     parent::__construct('upgrade6x', $id);
   }
@@ -19,6 +30,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     );
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6x() {
     $this->assertCoderReviewFail('  function my_module_forms($args) {');
     $this->assertCoderReviewPass('  function my_module_forms($form_id, $args) {');
@@ -51,6 +65,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail("  function myform_validate() {\n  \$a = \$form['foo'];\n}");
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xFAPI() {
     $this->assertCoderReviewFail('  $form[\'#base\'] = \'http://example.com\';');
     $this->assertCoderReviewFail('  \'#base\' => \'my_shared_form_id\',');
@@ -69,6 +86,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  $form[\'abc\'] = array("#value" => t("Submit"));');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xMenu() {
     $this->assertCoderReviewPass("  function mymodule_menu() {\n  \$items = array();\n}");
     $this->assertCoderReviewFail("  function mymodule_menu() {\n  \$items[] = array();\n}");
@@ -95,6 +115,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  menu_set_location();');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xDatabase() {
     $this->assertCoderReviewFail("  function mymodule_install() {\n  \$type = \$GLOBALS['db_type'];\n}");
     $this->assertCoderReviewFail("  function mymodule_uninstall() {\n  \$type = \$GLOBALS['db_type'];\n}");
@@ -109,6 +132,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  $sql = "ALTER TABLE foo";');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xFile() {
     $this->assertCoderReviewFail('  if ($file = file_check_upload(\'picture_upload\')) {');
     $this->assertCoderReviewFail('  $file = file_save_upload(\'picture_upload\', $destination, FILE_EXISTS_REPLACE); ');
@@ -121,6 +147,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  if (db_query(\'SELECT * FROM {file_revisions}\')) {');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xLinkUrl() {
     $this->assertCoderReviewFail('  $link = l($text, $path, $attributes, NULL, NULL, FALSE, TRUE);');
     $this->assertCoderReviewFail('  $link = l($text, $path, $attributes, NULL);');
@@ -138,6 +167,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  $url = url($path, array(\'absolute\' => TRUE));');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xTaxonomy() {
     $this->assertCoderReviewFail('  taxonomy_get_vocabulary($vid);');
     $this->assertCoderReviewFail('  taxonomy_node_get_terms($nid);');
@@ -158,11 +190,17 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  taxonomy_node_save($node);');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xFormatPlural() {
     $this->assertCoderReviewFail('  strtr(format_plural($num, \'1 %type post\', \'@count %type posts\'), array(\'%type\' => theme(\'placeholder\', $type)));');
     $this->assertCoderReviewPass('  format_plural($num, \'1 %type post\', \'@count %type posts\', array(\'%type\' => $type));');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xWatdog() {
     $this->assertCoderReviewFail('  watchdog(\'debug\', \'My debug message.\');');
     $this->assertCoderReviewFail('  watchdog(\'user\', t(\'Removed user.\'));');
@@ -170,6 +208,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  watchdog(\'user\', \'Removed %username user.\', array(\'%username\' => $user->name));');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xDrupalMail() {
     $this->assertCoderReviewFail('  drupal_mail($action, $to, $subject, $body, $from);');
     $this->assertCoderReviewFail('  drupal_mail(\'action_email\', $recipient, $subject, $body, $from);');
@@ -178,6 +219,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  drupal_mail(\'system\', "action_email", $recipient, $language, $params);');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xUserAuthenticate() {
     $this->assertCoderReviewFail('  user_authenticate($name, $pass);');
     $this->assertCoderReviewFail('  user_authenticate("name", \'pass\');');
@@ -185,6 +229,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  user_authenticate(array(\'name\' => $name, \'pass\' => $pass));');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xCache() {
     $this->assertCoderReviewFail('  cache_set(\'simple_cid\', \'cache\', $simple);');
     $this->assertCoderReviewFail('  cache_set(\'simple_cid\', "cache", $simple);');
@@ -197,17 +244,26 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  $complex = cache_get(\'complex_cid\');');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xNodeAccessRebuild() {
     $this->assertCoderReviewFail("  function mymodule_enable() {\n  node_access_rebuild();\n}");
     $this->assertCoderReviewFail("  function mymodule_disable() {\n  node_access_rebuild();\n}");
     $this->assertCoderReviewPass("  function mymodule_function() {\n  node_access_rebuild();\n}");
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xNodeAPI() {
     $this->assertCoderReviewFail("  function mymodule_nodeapi() {\n  switch (\$op) {\n    case 'submit': return;\n  }\n}");
     $this->assertCoderReviewFail("  function mymodule_nodeapi() {\n  if (\$op == 'submit') {\n  }\n}");
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xHooks() {
     $this->assertCoderReviewFail('  function mymodule_access($op, $node) {');
     $this->assertCoderReviewPass('  function mymodule_access($op, $node, $account) {');
@@ -221,6 +277,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  function mymodule_profile_alter(&$account) {');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xBookAPI() {
     $this->assertCoderReviewFail('  book_admin_orphan();');
     $this->assertCoderReviewFail('  book_content();');
@@ -254,6 +313,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass('  book_next($book_link);');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xDeprecatedHooks() {
     $this->assertCoderReviewFail('  function mymodule_auth($username, $password, $server) {');
     $this->assertCoderReviewFail('  function mymodule_info($field = 0) {');
@@ -262,6 +324,9 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  theme_get_function();');
   }
 
+  /**
+   * ???
+   */
   function testUpgrade6xDeprecatedMisc() {
     $this->assertCoderReviewFail('  custom_url_rewrite($url);');
     $this->assertCoderReviewPass('  custom_url_rewrite_inbound($url);');
@@ -278,4 +343,5 @@ class CoderReviewUpgrade6xTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  $ip = $_SERVER[\'REMOTE_ADDR\'];');
     $this->assertCoderReviewFail('  global $locale;');
   }
+
 }

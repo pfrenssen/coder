@@ -1,8 +1,11 @@
 <?php
+
 /**
  * @file
- * This include file implements coder functionality to check for
- * Internationalization issues in translation files.
+ * Provides coder_reviews for internationalization translation file issues.
+
+ * This include file implements coder review functionality to check for
+ * Internationalization issues in translation (.po) files.
  */
 
 /**
@@ -28,7 +31,7 @@ function coder_review_i18n_po_reviews() {
 }
 
 /**
- * Define the rule callbacks for style.
+ * Rule callback: Defines how to check for issues in translation files.
  */
 function _coder_review_translation_callback(&$coder_args, $review, $rule, $lines, &$results) {
   $severity_name = _coder_review_severity_name($coder_args, $review, $rule);
