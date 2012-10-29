@@ -72,7 +72,7 @@ function coder_review_reviews() {
 }
 
 /**
- * Defines a default list of reviews to perform a coder_review analysis upon.
+ * Returns a default list of reviews to perform a coder_review analysis upon.
  *
  * @return array
  *   An associative array with keys set to the names of the reviews to perform.
@@ -1396,41 +1396,37 @@ function _coder_review_warning(array $rule) {
 }
 
 /**
- * Defines a wrapper t() function that works in Drush cli.
+ * Define a wrapper t() function that works in Drush cli.
  *
  * @param string $string
- *   ???
  * @param array $args
- *   ???
  * @param array $options
- *   ???
  *
  * @return string
- *   ???
+ *
+ * @see t()
  */
 function _t($string, $args = array(), $options = array()) {
   return _drush() ? dt($string, $args) : t($string, $args, $options);
 }
 
 /**
- * Defines a wrapper l() function that works in Drush cli.
+ * Define a wrapper l() function that works in Drush cli.
  *
- * @param ??? $text
- *   ???
- * @param ??? $path
- *   ???
+ * @param string $text
+ * @param string $path
  * @param array $options
- *   ???
  *
- * @return ???
- *   ???
+ * @return string
+ *
+ * @see l()
  */
 function _l($text, $path, $options = array()) {
   return function_exists('l') ? l($text, $path, $options) : "$text $path";
 }
 
 /**
- * Defines a wrapper variable_get() function that works in Drush cli.
+ * Define a wrapper variable_get() function that works in Drush cli.
  *
  * @param string $variable
  *   The name of the variable.
@@ -1439,6 +1435,8 @@ function _l($text, $path, $options = array()) {
  *
  * @return mixed
  *   The value of the variable.
+ *
+ * @see variable_get()
  */
 function _variable_get($variable, $default = NULL) {
   return function_exists('variable_get') ? variable_get($variable, $default) : $default;
@@ -1463,7 +1461,8 @@ function _drush() {
  *   (optional) An anchor tag. Defaults to an empty string.
  *
  * @return string
- *   ???
+ *   An HTML link to the drupal.org node.
+ *   Except when called from Drush, then it is a plain text link.
  */
 function _drupalnode($nid, $anchor = '') {
   $link = "http://drupal.org/node/$nid";
@@ -1478,13 +1477,12 @@ function _drupalnode($nid, $anchor = '') {
  *
  * @param string $function
  *   The name of a function to link to.
- * @param ??? $version
+ * @param string $version
  *   (optional) The Drupal version to link to.
  *
  * @return string
- *   ???
- *
- * @todo Add variable to store the default value to reference, e.g., d8.
+ *   An HTML link to the Drupal API documents for the function and version.
+ *   Except when called from Drush, then it is a plain text link.
  */
 function _drupalapi($function, $version = '') {
   return _l($function, "http://api.drupal.org/api/function/$function/$version");
@@ -1497,7 +1495,8 @@ function _drupalapi($function, $version = '') {
  *   The PHP function documentation to link to.
  *
  * @return string
- *   ???
+ *   An HTML link to the PHP documents for the function.
+ *   Except when called from Drush, then it is a plain text link.
  */
 function _phpapi($function) {
   return _l($function, "http://php.net/$function");
@@ -1527,14 +1526,16 @@ function _coder_review_path() {
  * Retrieves data from the cache.
  *
  * @param string $cid
- *
+ *   ???
  * @param mixed $data
- *
+ *   ???
  * @param string $bin
  *   (optional) The name of the bin in which to store the cached data.
  *
  * @return ???
  *   ???
+ *
+ * @see cache_get()
  */
 function _cache_get($cid, $bin = 'default') {
   return function_exists('cache_get') ? cache_get($cid, $bin) : array(); // drush_cache_get($cid, $bin);
@@ -1544,14 +1545,16 @@ function _cache_get($cid, $bin = 'default') {
  * Stores data in the cache.
  *
  * @param string $cid
- *
+ *   ???
  * @param mixed $data
- *
+ *   ???
  * @param string $bin
  *   (optional) The name of the bin in which to store the cached data.
  *
  * @return ???
  *   ???
+ *
+ * @see cache_set()
  */
 function _cache_set($cid, $data, $bin = 'default') {
   return function_exists('cache_set') ? cache_set($cid, $data, $bin) : array(); // drush_cache_set($cid, $data, $bin);
@@ -1569,6 +1572,8 @@ function _cache_set($cid, $data, $bin = 'default') {
  *
  * @return ???
  *   ???
+ *
+ * @see drupal_substr()
  */
 function _substr($text, $start, $length = NULL) {
   return function_exists('drupal_substr') ? drupal_substr($text, $start, $length) : substr($text, $start, $length);
@@ -1582,6 +1587,8 @@ function _substr($text, $start, $length = NULL) {
  *
  * @return int
  *   ???
+ *
+ * @see drupal_strlen()
  */
 function _strlen($text) {
   return function_exists('drupal_strlen') ? drupal_strlen($text) : strlen($text);
@@ -1595,6 +1602,8 @@ function _strlen($text) {
  *
  * @return string
  *   ???
+ *
+ * @see drupal_strtoupper()
  */
 function _strtoupper($text) {
   return function_exists('drupal_strtoupper') ? drupal_strtoupper($text) : strtoupper($text);
@@ -1608,6 +1617,8 @@ function _strtoupper($text) {
  *
  * @return string
  *   ???
+ *
+ * @see drupal_strtolower()
  */
 function _strtolower($text) {
   return function_exists('drupal_strtolower') ? drupal_strtolower($text) : strtolower($text);

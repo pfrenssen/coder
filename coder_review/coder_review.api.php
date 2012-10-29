@@ -64,15 +64,7 @@
  *   provided by the module that implements this hook.
  */
 function hook_reviews() {
-  static $cache = array();
-  if (!$cache) {
-
-  }
-  return $cache;
+  $review = array(
+  );
+  return $review;
 }
-
-/**
- * Is there also a hook_review()?
- *
- * It was mentioned in the documentation for do_coder_review().
- */

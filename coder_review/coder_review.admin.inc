@@ -27,7 +27,7 @@ function coder_review_admin_settings($form, &$form_state) {
 }
 
 /**
- * Form submission hander for coder_review_admin_settings().
+ * Form submission handler for coder_review_admin_settings().
  */
 function coder_review_settings_form_submit($form, &$form_state) {
   $form_state['storage'] = $form_state['values'];
