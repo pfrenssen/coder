@@ -9,7 +9,6 @@
  */
 function coder_review_drush_command() {
   $items['coder-review'] = array(
-    'callback' => 'coder_review_drush_review',
     'description' => dt('Run code reviews'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'aliases' => array('coder', 'sniffer'),
@@ -67,8 +66,13 @@ function _coder_review_set_form_modules(&$settings) {
 /**
  * Do the actual review.
  */
-function coder_review_drush_review() {
-  // Bootstrap enough to run.
+function drush_coder_review() {
+  // Bootstrap Drupal if it is available.
+  if (drush_conf_path(_drush_bootstrap_selected_uri)) {
+    drush_bootstrap(DRUSH_BOOTSTRAP_DRUPAL_FULL);
+  }
+
+  // Bootstrap enough of coder review to run.
   require_once realpath(dirname(__FILE__)) . '/coder_review.common.inc';
 
   // Get the command line options severity options.
