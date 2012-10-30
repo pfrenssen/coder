@@ -16,32 +16,22 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Semantics_TInHookSchemaSniff implements PHP_CodeSniffer_Sniff
+class Drupal_Sniffs_Semantics_TInHookSchemaSniff extends Drupal_Sniffs_Semantics_FunctionDefinition
 {
 
 
     /**
-     * Returns an array of tokens this test wants to listen for.
+     * Process this function definition.
      *
-     * @return array
-     */
-    public function register()
-    {
-        return array(T_STRING);
-
-    }//end register()
-
-
-    /**
-     * Processes this test, when one of its tokens is encountered.
-     *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
+     * @param int                  $stackPtr     The position of the function
+     *                                           name in the stack.
+     * @param int                  $functionPtr  The position of the function
+     *                                           keyword in the stack.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function processFunction(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $functionPtr)
     {
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -7));
         // Only check in *.install files.
@@ -55,22 +45,11 @@ class Drupal_Sniffs_Semantics_TInHookSchemaSniff implements PHP_CodeSniffer_Snif
             return;
         }
 
-        // Check if this is a function definition.
-        $function = $phpcsFile->findPrevious(
-            PHP_CodeSniffer_Tokens::$emptyTokens,
-            ($stackPtr - 1),
-            null,
-            true
-        );
-        if ($tokens[$function]['code'] !== T_FUNCTION) {
-            return;
-        }
-
         // Search in the function body for t() calls.
         $string = $phpcsFile->findNext(
             T_STRING,
-            $tokens[$function]['scope_opener'],
-            $tokens[$function]['scope_closer']
+            $tokens[$functionPtr]['scope_opener'],
+            $tokens[$functionPtr]['scope_closer']
         );
         while ($string !== false) {
             if ($tokens[$string]['content'] === 't') {
@@ -91,11 +70,11 @@ class Drupal_Sniffs_Semantics_TInHookSchemaSniff implements PHP_CodeSniffer_Snif
             $string = $phpcsFile->findNext(
                 T_STRING,
                 ($string + 1),
-                $tokens[$function]['scope_closer']
+                $tokens[$functionPtr]['scope_closer']
             );
         }//end while
 
-    }//end process()
+    }//end processFunction()
 
 
 }//end class

@@ -17,32 +17,22 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Semantics_InstallHooksSniff implements PHP_CodeSniffer_Sniff
+class Drupal_Sniffs_Semantics_InstallHooksSniff extends Drupal_Sniffs_Semantics_FunctionDefinition
 {
 
 
     /**
-     * Returns an array of tokens this test wants to listen for.
+     * Process this function definition.
      *
-     * @return array
-     */
-    public function register()
-    {
-        return array(T_STRING);
-
-    }//end register()
-
-
-    /**
-     * Processes this test, when one of its tokens is encountered.
-     *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
+     * @param int                  $stackPtr     The position of the function
+     *                                           name in the stack.
+     * @param int                  $functionPtr  The position of the function
+     *                                           keyword in the stack.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function processFunction(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $functionPtr)
     {
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -6));
         // Only check in *.module files.
@@ -51,16 +41,6 @@ class Drupal_Sniffs_Semantics_InstallHooksSniff implements PHP_CodeSniffer_Sniff
         }
 
         $tokens = $phpcsFile->getTokens();
-        // Check if this is a function definition.
-        $function = $phpcsFile->findPrevious(
-            PHP_CodeSniffer_Tokens::$emptyTokens,
-            ($stackPtr - 1),
-            null,
-            true
-        );
-        if ($tokens[$function]['code'] !== T_FUNCTION) {
-            return;
-        }
 
         $fileName = substr(basename($phpcsFile->getFilename()), 0, -7);
         if ($tokens[$stackPtr]['content'] === ($fileName.'_install')
@@ -75,7 +55,7 @@ class Drupal_Sniffs_Semantics_InstallHooksSniff implements PHP_CodeSniffer_Sniff
             $phpcsFile->addError($error, $stackPtr, 'InstallHook', $data);
         }
 
-    }//end process()
+    }//end processFunction()
 
 
 }//end class

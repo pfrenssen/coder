@@ -33,19 +33,32 @@ class Drupal_Sniffs_Semantics_LStringTranslatableSniff extends Drupal_Sniffs_Sem
 
 
     /**
-     * Processes this test, when one of its function names is encountered.
+     * Processes this function call.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param PHP_CodeSniffer_File $phpcsFile
+     *   The file being scanned.
+     * @param int $stackPtr
+     *   The position of the function call in the stack.
+     * @param int $openBracket
+     *   The position of the opening parenthesis in the stack.
+     * @param int $closeBracket
+     *   The position of the closing parenthesis in the stack.
+     * @param Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
+     *   Can be used to retreive the function's arguments with the getArgument()
+     *   method.
      *
      * @return void
      */
-    public function processFunctionCall(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
-    {
+    public function processFunctionCall(
+        PHP_CodeSniffer_File $phpcsFile,
+        $stackPtr,
+        $openBracket,
+        $closeBracket,
+        Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
+    ) {
         $tokens = $phpcsFile->getTokens();
         // Get the first argument passed to l().
-        $argument = $this->getArgument(1);
+        $argument = $sniff->getArgument(1);
         if ($tokens[$argument['start']]['code'] === T_CONSTANT_ENCAPSED_STRING) {
             $error = 'The $text argument to l() should be enclosed within t() so that it is translatable';
             $phpcsFile->addError($error, $stackPtr, 'LArg');

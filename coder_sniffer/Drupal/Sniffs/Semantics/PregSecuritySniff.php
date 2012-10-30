@@ -29,31 +29,44 @@ class Drupal_Sniffs_Semantics_PregSecuritySniff extends Drupal_Sniffs_Semantics_
     public function registerFunctionNames()
     {
         return array(
-          'preg_filter',
-          'preg_grep',
-          'preg_match',
-          'preg_match_all',
-          'preg_replace',
-          'preg_replace_callback',
-          'preg_split',
-        );
+                'preg_filter',
+                'preg_grep',
+                'preg_match',
+                'preg_match_all',
+                'preg_replace',
+                'preg_replace_callback',
+                'preg_split',
+               );
 
     }//end registerFunctionNames()
 
 
     /**
-     * Processes this test, when one of its tokens is encountered.
+     * Processes this function call.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param PHP_CodeSniffer_File $phpcsFile
+     *   The file being scanned.
+     * @param int $stackPtr
+     *   The position of the function call in the stack.
+     * @param int $openBracket
+     *   The position of the opening parenthesis in the stack.
+     * @param int $closeBracket
+     *   The position of the closing parenthesis in the stack.
+     * @param Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
+     *   Can be used to retreive the function's arguments with the getArgument()
+     *   method.
      *
      * @return void
      */
-    public function processFunctionCall(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
-    {
+    public function processFunctionCall(
+        PHP_CodeSniffer_File $phpcsFile,
+        $stackPtr,
+        $openBracket,
+        $closeBracket,
+        Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
+    ) {
         $tokens   = $phpcsFile->getTokens();
-        $argument = $this->getArgument(1);
+        $argument = $sniff->getArgument(1);
 
         if ($argument === false) {
             return;
