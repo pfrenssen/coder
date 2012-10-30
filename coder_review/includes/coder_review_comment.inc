@@ -9,7 +9,7 @@
  * Implements hook_reviews().
  */
 function coder_review_comment_reviews() {
-  $rules[] = array(
+  $rules['cvsid'] = array(
     '#type' => 'grep',
     '#source' => 'comment',
     '#value' => '$Id',
@@ -20,16 +20,16 @@ function coder_review_comment_reviews() {
     ),
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_indent'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '^\*',
     '#warning' => 'indent secondary line of comment one space ',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_shell'] = array(
     '#type' => 'regex',
-    '#source' => 'comment',
+    '#source' => 'all',
     '#value' => '^\s*#',
     '#warning' => array(
       '#text' => 'Use of Perl/shell style comments (#) is discouraged.',
@@ -37,7 +37,7 @@ function coder_review_comment_reviews() {
     ),
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_space'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '^\s*\*.+|^\/\*.+',
@@ -45,7 +45,7 @@ function coder_review_comment_reviews() {
     '#warning' => 'put a space between the asterisk and the comment text',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_see_inline'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '.*\@see\s*',
@@ -57,7 +57,7 @@ function coder_review_comment_reviews() {
     '#severity' => 'minor',
   );
   // @todo: make this handle: see http://drupal.org/node/224333#block_optional
-  $rules[] = array(
+  $rules['comment_see'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '\@see\s*.*',
@@ -68,7 +68,7 @@ function coder_review_comment_reviews() {
     ),
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_see_sep'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '\@see\s*\w+.*$',
@@ -79,7 +79,7 @@ function coder_review_comment_reviews() {
     ),
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_see_space'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '\@see\s.*$',
@@ -90,7 +90,7 @@ function coder_review_comment_reviews() {
     ),
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_file'] = array(
     '#type' => 'grep_invert',
     '#source' => 'comment',
     '#value' => '@' . 'file',
@@ -114,28 +114,28 @@ function coder_review_comment_reviews() {
     ),
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_implements_period'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => 'Implements*\s+hook_\w+\(\)\s*$',
     '#warning' => 'Missing period',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_implements_paren'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => 'Implements*\s+hook_\w+\s*\.*$',
     '#warning' => 'Missing parenthesis after function name',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_implementation'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '\s*Implementation\s+of\s+hook_\w+',
     '#warning' => 'Comment should be read "Implements hook_foo()."',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_implements'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '^.*?\*\s*Implements\s+hook_\w+\(\)\.',
@@ -143,14 +143,14 @@ function coder_review_comment_reviews() {
     '#warning' => 'Format should be <code>* Implements hook_foo().</code>',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_implements_docblock'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '\/\/\s*Implements\s+hook_\w+\(\)\.',
     '#warning' => 'Implements comment should be in a comment block.',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['comment_implements_cap'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => 'implements\s+hook_\w+',
@@ -158,7 +158,7 @@ function coder_review_comment_reviews() {
     '#severity' => 'minor',
     '#case-sensitive' => TRUE,
   );
-  $rules[] = array(
+  $rules['docblock_comment'] = array(
     '#type' => 'regex',
     '#source' => 'all',
     '#value' => '^\s*\/\*$',
@@ -169,7 +169,7 @@ function coder_review_comment_reviews() {
     '#class-not' => '.+',
     '#severity' => 'minor',
   );
-  $rules[] = array(
+  $rules['docblock_function'] = array(
     '#type' => 'regex',
     '#source' => 'all',
     '#value' => '^\s*\/\*\*',
@@ -177,13 +177,7 @@ function coder_review_comment_reviews() {
     '#function' => '.+',
     '#severity' => 'minor',
   );
-  $rules[] = array(
-    '#type' => 'regex',
-    '#source' => 'all',
-    '#value' => '^\s*#
-    '#warning' => 'Never use shell style comments, use // instead or #',
-  );
-  $rules[] = array(
+  $rules['comment_docblock_missing'] = array(
     '#type' => 'callback',
     '#value' => '_coder_review_comment_missing_docblock',
     '#severity' => 'minor',
