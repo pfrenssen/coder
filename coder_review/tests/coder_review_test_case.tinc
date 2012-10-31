@@ -47,8 +47,8 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
   /**
    * Runs a Coder_review test.
    *
-   * @param ??? $code
-   *   ???
+   * @param string $code
+   *   The string of code to review.
    * @param int $severity
    *   (optional) A severity code as an integer. Defaults to SEVERITY_MINOR.
    *
@@ -75,6 +75,7 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
     $reviews[$this->reviewName]['#review_name'] = $this->reviewName;
     $results = do_coder_review($coder_args, $reviews[$this->reviewName]);
 
+    // @todo Why are we not returning '#stats' key?
     unset($results['#stats']);
     return $results;
   }
@@ -86,7 +87,7 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
    *   (optional) A severity code as an integer. Defaults to SEVERITY_MINOR.
    *
    * @return array
-   *   A Results array.
+   *   A Coder Results array.
    */
   function runTestModuleTest($severity = SEVERITY_MINOR) {
     // Get the available reviews.
@@ -106,6 +107,7 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
     $reviews[$this->reviewName]['#review_name'] = $this->reviewName;
     $results = do_coder_review($coder_args, $reviews[$this->reviewName]);
 
+    // @todo Again, why are we not returning '#stats' key?
     unset($results['#stats']);
     return $results;
   }
@@ -113,8 +115,8 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
   /**
    * Asserts that some source code PASSES the Coder_review process.
    *
-   * @param ??? $code
-   *   ???
+   * @param string $code
+   *   The code snippet that was reviewed.
    */
   protected function assertCoderReviewPass($code) {
     // Run the coder review on the code snippet.
@@ -130,8 +132,8 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
   /**
    * Asserts that some source code FAILS the Coder_review process.
    *
-   * @param ??? $code
-   *   ???
+   * @param string $code
+   *   The code snippet that was reviewed.
    */
   protected function assertCoderReviewFail($code) {
     // Run the coder review on the code snippet.
@@ -145,19 +147,18 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
   }
 
   /**
-   * ???
+   * Retrieves the warnings from a Coder test as a concatenated string.
    *
    * @param array $results
-   *   A Result array.
+   *   A Coder Result array.
    *
    * @return string
-   *   ???
+   *   A concatenated string of warnings for this test.
    */
   private function getWarnings($results) {
     $warnings = array();
     foreach ($results as $error) {
       $warning = _coder_review_warning($error['rule']);
-      // @todo: should strings get translated in simpletests?
       if (is_string($warning)) {
         $warnings[] = $warning;
       }

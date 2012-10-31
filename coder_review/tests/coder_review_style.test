@@ -8,12 +8,15 @@
 require_once dirname(__FILE__) . '/coder_review_test_case.tinc';
 
 /**
- * ???
+ * Class to test for the style of the required Drupal coding standards.
  */
 class CoderReviewStyleTest extends CoderReviewTestCase {
 
   /**
-   * ???
+   * Constructor that creates a CoderReviewStyleTest instance.
+   *
+   * @param string|null $id
+   *   (optional) The test identifier. Defaults to NULL.
    */
   function __construct($id = NULL) {
     parent::__construct('style', $id);
@@ -28,7 +31,7 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests for the correct formatting of an array index.
    */
   function testStyleArrayIndex() {
     $this->assertCoderReviewPass('$some_array[FOO_BAR] = $baz;');
@@ -38,7 +41,7 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests for the correct formatting of tab character in code.
    */
   function testStyleTabs() {
     $this->assertCoderReviewPass('// Tab in	comment');
@@ -48,7 +51,7 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests for the correct use of camelCase text.
    */
   function testStyleCamelCase() {
     $this->assertCoderReviewPass('  $var = new stdClass();');
@@ -65,7 +68,7 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests for correct use of '<br>' HTML tag.
    */
   function testStyleBr() {
     $this->assertCoderReviewFail('  print "<br>";');
@@ -73,7 +76,7 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests for correct use of TRUE/FALSE constants.
    */
   function testStyleConstants() {
     $this->assertCoderReviewPass('  $a = TRUE;');
@@ -85,14 +88,14 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests for absence of closing '?>' text in php files.
    */
   function testStyleClosingPhp() {
     $this->assertCoderReviewFail("  print 'hello';\n?>");
   }
 
   /**
-   * ???
+   * Tests for the presence of trailing space detection functionality.
    */
   function testStyleTrailingSpaces() {
     $this->assertCoderReviewFail('  $left = "trailing spaces follow";   ');
@@ -100,7 +103,7 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests for the correct use of control structures.
    */
   function testStyleControlStructures() {
     $this->assertCoderReviewFail('  if ($a == 1) { }');
@@ -114,14 +117,14 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests for the detection of multi-byte characters in a code snippet.
    */
   function testMultibyte() {
     $this->assertCoderReviewFail("  \$a = 'óóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóóó';\n  if(\$a == 1) {\n");
   }
 
   /**
-   * ???
+   * Tests for the detection of correct style of string concatenation.
    */
   function testStyleStringConcatentation() {
     $this->assertCoderReviewPass('  if ($file = file_check_upload($fieldname . "_upload")) {');
@@ -146,7 +149,7 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests for the correct style use of Heredocs.
    */
   function testStyleHerdocStrings() {
     $this->assertCoderReviewFail("  \$var = <<< __EOD__\n<br>\n__EOD__;");
@@ -155,7 +158,7 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests for correct detection of camelCase function names.
    */
   function testFunctionName() {
     $this->assertCoderReviewFail('function camelCase() {');
@@ -164,7 +167,7 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests for the correct detection of shell comments.
    */
   function testShellComment() {
     $this->assertCoderReviewPass("# Shell Comment.\n");
@@ -172,7 +175,7 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * ??? Not sure what this group of tests are for.
    */
   function testIgnores() {
     $bad = '  $a = $v. "string";';
