@@ -175,7 +175,7 @@ class CoderReviewStyleTest extends CoderReviewTestCase {
   }
 
   /**
-   * ??? Not sure what this group of tests are for.
+   * Tests the @ignore coder directive for ignoring errors.
    */
   function testIgnores() {
     $bad = '  $a = $v. "string";';

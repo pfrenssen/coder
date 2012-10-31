@@ -7,10 +7,16 @@
 
 require_once dirname(__FILE__) . '/coder_review_test_case.tinc';
 
+/**
+ * Tests the Coder_review functionality to detect security-related rules.
+ */
 class CoderReviewSecurityTest extends CoderReviewTestCase {
 
   /**
-   * ???
+   * Constructs a CoderReviewSecurityTest instance.
+   *
+   * @param string|null $id
+   *   (optional) An identifier for this test run. Defaults to NULL.
    */
   function __construct($id = NULL) {
     parent::__construct('security', $id);
@@ -25,7 +31,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests functionality to detect correct use of Drupal check_plain() function.
    */
   function testSecurityCheckPlain() {
     $this->assertCoderReviewFail('$var = l(check_plain($input), "path/to/drupal");');
@@ -39,7 +45,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests functionality to detect correct use of SQL variable injection.
    */
   function testSecuritySQLVariableInjection() {
     $this->assertCoderReviewFail('  $results = db_query("SELECT * FROM {node_revisions} WHERE nid=$nid");');
@@ -56,7 +62,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests functionality to detect correct use of SQL unquoted placeholders.
    */
   function testSecuritySQLUnquotedPlaceholders() {
     $this->assertCoderReviewFail('  $sql = "SELECT * FROM {foo} WHERE name=%s";');
@@ -74,7 +80,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests functionality to detect correct use of drupal_set_message().
    */
   function testSecurityDrupalSetMessage() {
     $this->assertCoderReviewPass('  drupal_set_message(t("Here is some safe_data"));');
@@ -94,7 +100,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests functionality to detect correct use of trigger_error() function.
    */
   function testSecurityTriggerError() {
     $this->assertCoderReviewPass('  trigger_error(t("Here is some safe_data"));');
@@ -115,7 +121,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests functionality to detect the correct use of drupal_set_title().
    */
 /*
   function testSecurityDrupalSetTitle() {
@@ -138,7 +144,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
 */
 
   /**
-   * ???
+   * Tests the functionality to detect the correct use of Drupal form_error().
    */
   function testSecurityFormError() {
     $this->assertCoderReviewPass('  form_error("name", t("Here is some safe_data"));');
@@ -160,7 +166,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests the functionality to detect correct use of Drupal form_set_error().
    */
   function testSecurityFormSetError() {
     $this->assertCoderReviewPass('  form_set_error("name", t("Here is some safe_data"));');
@@ -182,7 +188,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests the functionality to detect correct use of confirm_form() function.
    */
   function testSecurityConfirmForm() {
     $this->assertCoderReviewPass('  confirm_form($form, t("Here is some safe_question"), $path);');
@@ -232,6 +238,9 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  confirm_form($form, check_plain($tainted_question), $path, t("Here is some !tainted_desc", array("!tainted_desc" =>  $tainted_desc)));');
   }
 
+  /**
+   * Tests the functionality to detect correct use of preg_replace().
+   */
   function testSecurityPregReplaceEval() {
     $this->assertCoderReviewPass('  $txt = preg_replace("@(<a href=(.\S+?)[^>]*>(.+?)</a>)@mi", "myfunction("\\2", "\\3")", $txt);');
     $this->assertCoderReviewFail('  $txt = preg_replace("@(<a href=(.\S+?)[^>]*>(.+?)</a>)@emi", "myfunction("\\2", "\\3")", $txt);');
@@ -242,7 +251,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests the functionality to detect correct use of db_rewrite_sql() function.
    */
 /*
   function testSecurityDbRewrite() {
@@ -264,7 +273,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
 */
 
   /**
-   * ???
+   * Tests the functionality to detect the correct use of getting POST request.
    */
   function testSecurityPostGetRequest() {
     $this->assertCoderReviewPass('  $_POST["safe_data"] = "abc";');
@@ -279,7 +288,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests the functionality to detect the correct use eval() function.
    */
   function testSecurityEval() {
     $this->assertCoderReviewFail('  return drupal_eval($code);');
@@ -287,7 +296,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests the functionality to detect the correct use of FORM HTML tag.
    */
   function testSecurityFormTag() {
     $this->assertCoderReviewFail('  ?'. '><FORM action="foo.php"><?php');
@@ -296,7 +305,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests the functionality to detect correct use of $block['subject'] key.
    */
   function testSecurityBlockSubject() {
     $this->assertCoderReviewPass("  function mymodule_block() {\n  \$block['subject'] = 'title';\n}");
@@ -306,7 +315,9 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests functionality to detect correct use of #title element in FAPI array.
+   *
+   * @todo Break out checks for FAPI Description to its own method.
    */
   function testSecurityFAPITitleDescription() {
     $this->assertCoderReviewPass("  function mymodule_form() {\n  \$field = array(\n '#title' => t('%title', array('%title' => \$title)),\n  );\n}");
@@ -322,7 +333,7 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests functionality to detect correct use of #value element in FAPI array.
    */
   function testSecurityFAPIMarkupValue() {
     $this->assertCoderReviewPass("  function mymodule_function() {\n  \$field = array(\n '#value' => \$value,\n  );\n}");

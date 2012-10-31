@@ -8,12 +8,15 @@
 require_once dirname(__FILE__) . '/coder_review_test_case.tinc';
 
 /**
- * ???
+ * Tests the Coder_review detection of internationalization functionality.
  */
-class CoderReviewI18NTest extends CoderReviewTestCase {
+class CoderReviewI18nTest extends CoderReviewTestCase {
 
   /**
-   * ???
+   * Constructs a CoderReviewI18nTest instance.
+   *
+   * @param string|null $id
+   *   (optional) An identifier for this test run. Defaults to NULL.
    */
   function __construct($id = NULL) {
     parent::__construct('i18n', $id);
@@ -28,7 +31,7 @@ class CoderReviewI18NTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests functionality to detect correct use of spaces in t() function.
    */
   function testI18NSpaces() {
     $this->assertCoderReviewPass('  $var = t("Your rating");');
@@ -63,7 +66,7 @@ class CoderReviewI18NTest extends CoderReviewTestCase {
   }
 
   /**
-   * ???
+   * Tests functionality to detect multiple incorrect use of t() function.
    */
   function testExtraTs() {
     $this->assertCoderReviewPass("  watchdog('name', 'Your message.');");
