@@ -154,7 +154,7 @@ function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) 
  *
  * @see coder_review_page_form()
  */
-function _coder_review_settings_form(array $settings, array &$system, array &$files) {
+function _coder_review_settings_form(array $settings, &$system, &$files) {
   // Bootstrap enough to run.
   require_once realpath(dirname(__FILE__)) . '/coder_review.common.inc';
 
@@ -824,7 +824,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
  * @see do_coder_review()
  * @see file_scan_directory()
  */
-function _coder_review_page_form_includes(array &$form, array $coder_args, $name, array $files, $offset, array $exclusions) {
+function _coder_review_page_form_includes(array &$form, array $coder_args, $name, array $files, $offset, $exclusions) {
   $stats = array();
   $coder_args['#name'] = $name;
   $weight = 0;
