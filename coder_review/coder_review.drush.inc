@@ -48,6 +48,10 @@ function coder_review_drush_command() {
       'file-path' => 'Path to file or multiple files, relative to Drupal installation.',
     ),
   );
+  $items['install-php-code-sniffer'] = array(
+    'description' => dt('Install PHP Code_Sniffer'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
   return $items;
 }
 
@@ -284,6 +288,48 @@ function drush_coder_review() {
   }
   elseif (drush_get_option('xml')) {
     _coder_review_drush_xml_output_footer('xml');
+  }
+}
+
+/**
+ * Drush command installs PHP Code_Sniffer.
+ *
+ * @todo: support Windows?
+ */
+function drush_coder_review_install_php_code_sniffer() {
+  // Try loading CodeSniffer first, and if it already exists, exit.
+  try {
+    @include_once 'PHP/CodeSniffer.php';
+    drush_print(dt('PHP_CodeSniffer already installed.'));
+  }
+  catch (Exception $e) {
+    $missing = TRUE;
+  }
+
+  // Install PHP_CodeSniffer using pear.
+  if (!empty($missing)) {
+    if (!drush_shell_exec('pear update-channels') || !drush_shell_exec('pear install PHP_CodeSniffer')) {
+      return drush_set_error('PHP_CODESNIFFER', dt('pear install failed: @output.', array('@output' => implode("; ", drush_shell_exec_output()))));
+    }
+  }
+
+  // Get the pear install directory.
+  if (drush_shell_exec('pear config-get php_dir')) {
+    $output = drush_shell_exec_output();
+    $php_dir = $output[0];
+
+    // Check that the pear include path is include in the PHP path. 
+    if (strpos(ini_get('include_path'), $php_dir) === FALSE) {
+      // @todo: Add the include path to php.ini.
+      drush_print(dt('Please add @dir to include_path in php.ini', array('@dir' => $php_dir)));
+    }
+
+    // Symlink the Drupal Coder sniffs.
+    $link = "$php_dir/PHP/CodeSniffer/Standards";
+    $target = __DIR__ . "/../coder_sniffer/Drupal";
+    if (!is_link($link) || readlink($link) != $target) {
+      drush_shell_exec("ln -s $target $link");
+    }
   }
 }
 
@@ -535,10 +581,4 @@ function _coder_review_drush_xml_output_results($filename, array $results) {
   else {
     _coder_review_drush_print('<file name = "' . $filename . '">' . "\n" . implode("\n ", $results) . "\n" . '</file>');
   }
-}
-
-/**
- * ??? What is this option for?  Is it needed?
- */
-function _drush_get_option_isoff() {
 }
