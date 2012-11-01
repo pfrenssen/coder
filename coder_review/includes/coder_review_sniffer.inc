@@ -127,8 +127,7 @@ function _coder_review_sniffer_warnings(array &$results, array $rule, array $lin
     foreach ($sniffer_warning as $warning_no => $warning) {
       $tmprule = $rule;
       $tmprule['#review_name'] = 'sniffer';
-      // @todo Replace md5() with with sha256().  See [#723802] for more info.
-      $tmprule['#rule_name'] = md5($warning[0]['message']);
+      $tmprule['#rule_name'] = str_replace('.', '_', strtolower(str_replace('Drupal.', '', $warning[0]['source'])));
       $tmprule['#warning'] = $warning[0]['message'];
       // @todo: set the severiy name.
       $severity_name = 'minor'; // $warning[0]['severity'];
