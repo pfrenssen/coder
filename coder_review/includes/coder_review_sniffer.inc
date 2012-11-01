@@ -94,6 +94,12 @@ function _coder_review_sniffer_callback(array &$coder_args, array $review, array
   // Restore the CodeSniffer directory during file processing.
   // Then restore it back to our directory.
   $filename = realpath($coder_args['#filename']);
+  if (!$filename) {
+    $tmpname = drupal_tempnam('temporary://', 'file');
+    if (file_put_contents($tmpname, $coder_args['#raw_contents']) !== FALSE) {
+      $filename = $tmpname;
+    }
+  }
   $current_dir = getcwd();
   chdir($phpcs_dir);
   $phpcs_file = $phpcs->processFile($filename, $coder_args['#raw_contents']);
@@ -105,6 +111,9 @@ function _coder_review_sniffer_callback(array &$coder_args, array $review, array
   if ($errors || $warnings) {
     _coder_review_sniffer_warnings($results, $rule, $lines, $coder_args['#ignores'], $errors);
     _coder_review_sniffer_warnings($results, $rule, $lines, $coder_args['#ignores'], $warnings);
+  }
+  if (isset($tmpname) && $filename == $tmpname) {
+    unlink($tmpname);
   }
 }
 
