@@ -142,12 +142,14 @@ function coder_review_style_reviews() {
     '#severity' => 'minor',
   );
   // @todo Review if this rule throws too many false positives.
+/*
   $rules['drupal_strings'] = array(
     '#type' => 'regex',
     '#value' => '[\s\(](strlen|strtolower|strtoupper|substr|ucfirst)\s*\(',
     '#warning' => 'in most cases, replace the string function with the drupal_ equivalent string functions',
     '#severity' => 'minor',
   );
+*/
   $rules['array_index'] = array(
     '#type' => 'regex',
     '#value' => '\[\s*[A-Za-z][A-Za-z0-9_]*\s*]',
