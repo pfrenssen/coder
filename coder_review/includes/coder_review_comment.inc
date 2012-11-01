@@ -131,7 +131,7 @@ function coder_review_comment_reviews() {
   $rules['comment_implementation'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
-    '#value' => '\s*Implementation\s+of\s+hook_\w+',
+    '#value' => '\s*(Implementation|Implement|Implements)\s+of\s+hook_\w+',
     '#warning' => 'Comment should be read "Implements hook_foo()."',
     '#severity' => 'minor',
   );
