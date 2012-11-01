@@ -19,27 +19,27 @@ function coder_review_sniffer_reviews() {
     '#source' => 'all',
   );
 
-  $review = array(
-    '#title' => 'Drupal CodeSniffer',
-    '#link' => 'http://drupal.org/project/drupalcs',
-    '#rules' => $rules,
-    '#version' => 2,
-    '#image' => 'images/sniffer.png',
-    '#description' => "Optional; Checks for Drupal CodeSniffer rules; which are good but often stricter than Drupal's Standards.",
-  );
-
+  // Load the primary PHP CodeSniffer class.
   try {
     @include_once 'PHP/CodeSniffer.php';
   }
   catch (Exception $e) {
-    $review['#description'] = ' You must install drupalcs.';
+    $review['#description'] = ' You must install PHP Code_Sniffer.';
   }
 
+  $review = array(
+    '#title' => 'Drupal CodeSniffer',
+    '#link' => 'http://pear.php.net/package/PHP_CodeSniffer',
+    '#rules' => $rules,
+    '#version' => 2,
+    '#image' => 'images/sniffer.png',
+    '#description' => 'Optional; Checks for PHP Coder_Sniffer rules.',
+  );
   return array('sniffer' => $review);
 }
 
 /**
- * Rule callback: Runs the PHP_CodeSniffer project for this Coder setting.
+ * Rule callback: Runs the PHP_CodeSniffer rules.
  *
  * @see do_coder_review_callback()
  */
@@ -136,3 +136,4 @@ function _coder_review_sniffer_warnings(array &$results, array $rule, array $lin
     }
   }
 }
+

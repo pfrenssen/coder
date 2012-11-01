@@ -75,7 +75,7 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
     $reviews[$this->reviewName]['#review_name'] = $this->reviewName;
     $results = do_coder_review($coder_args, $reviews[$this->reviewName]);
 
-    // @todo Why are we not returning '#stats' key?
+    // Remove statistics such that we only return warnings.
     unset($results['#stats']);
     return $results;
   }
@@ -107,7 +107,7 @@ class CoderReviewTestCase extends DrupalUnitTestCase {
     $reviews[$this->reviewName]['#review_name'] = $this->reviewName;
     $results = do_coder_review($coder_args, $reviews[$this->reviewName]);
 
-    // @todo Again, why are we not returning '#stats' key?
+    // Remove statistics such that we only return warnings.
     unset($results['#stats']);
     return $results;
   }
