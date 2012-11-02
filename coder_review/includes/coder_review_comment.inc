@@ -90,7 +90,7 @@ function coder_review_comment_reviews() {
     ),
     '#severity' => 'minor',
   );
-  $rules['comment_file'] = array(
+  $rules['docblock_file'] = array(
     '#type' => 'grep_invert',
     '#source' => 'comment',
     '#value' => '@' . 'file',
@@ -104,7 +104,7 @@ function coder_review_comment_reviews() {
     '#type' => 'callback',
     '#value' => '_coder_review_comment_install_file_block_callback',
   );
-  $rules[] = array(
+  $rules['comment_file'] = array(
     '#type' => 'regex',
     '#source' => 'comment',
     '#value' => '@' . 'file\s+.+$',
@@ -176,6 +176,22 @@ function coder_review_comment_reviews() {
     '#warning' => 'Block comments should not be used within functions, instead just use C style /* instead of /**.',
     '#function' => '.+',
     '#severity' => 'minor',
+  );
+  $rules['comment_eg'] = array(
+    '#type' => 'regex',
+    '#source' => array('comment', 'quote'),
+    '#value' => '(e\.g\. |\(eg)',
+    '#warning' => "The correct use of the string is 'e.g.,' (with a comma after it). However, for clarity, consider changing 'e.g.' to 'for example,'.",
+    '#severity' => 'minor',
+    '#case-sensitive' => TRUE,
+  );
+  $rules['comment_ie'] = array(
+    '#type' => 'regex',
+    '#source' => array('comment', 'quote'),
+    '#warning' => "The correct use of the string is 'i.e.' (with no comma after it). However, for clarity, consider changing 'i.e.' to 'for example,' or 'that is'.",
+    '#value' => '(i\.e\.,| ie |\(ie |^ie )',
+    '#severity' => 'minor',
+    '#case-sensitive' => TRUE,
   );
   $rules['comment_docblock_missing'] = array(
     '#type' => 'callback',

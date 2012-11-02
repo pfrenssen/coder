@@ -963,28 +963,27 @@ function do_coder_review(array $coder_args, array $review) {
       // Perform the review if above the user requested severity.
       $severity = _coder_review_severity(isset($rule['#severity']) ? $rule['#severity'] : '', $default_severity);
       if ($severity >= $coder_args['#severity']) {
-         // Permissible values for #source: all, html, comment, allphp or php.
-        if (isset($rule['#source'])) {
-          $source = '#' . $rule['#source'] . '_array_lines';
-          $lines = isset($coder_args[$source]) ? $coder_args[$source] : array();
-        }
-        else {
-          $lines = isset($coder_args['#php_array_lines']) ? $coder_args['#php_array_lines'] : array();
-        }
-        switch ($rule['#type']) {
-          case 'regex':
-            do_coder_review_regex($coder_args, $review, $rule, $lines, $results);
-            break;
-          case 'grep':
-            do_coder_review_grep($coder_args, $review, $rule, $lines, $results);
-            break;
-          case 'grep_invert':
-            do_coder_review_grep_invert($coder_args, $review, $rule, $lines, $results);
-            break;
-          case 'callback':
-            do_coder_review_callback($coder_args, $review, $rule, $lines, $results);
-            break;
-          // @todo Should an error message be set if #type is not in above list?
+        // #source can be an array, a string, or empty.
+        $rule_sources = isset($rule['#source']) ? (is_array($rule['#source']) ? $rule['#source'] : array($rule['#source'])) : array('php');
+        foreach ($rule_sources as $source) {
+          // Permissible values for #source: all, html, comment, allphp or php.
+          $source_lines = '#' . $source . '_array_lines';
+          $lines = isset($coder_args[$source_lines]) ? $coder_args[$source_lines] : array();
+          switch ($rule['#type']) {
+            case 'regex':
+              do_coder_review_regex($coder_args, $review, $rule, $lines, $results);
+              break;
+            case 'grep':
+              do_coder_review_grep($coder_args, $review, $rule, $lines, $results);
+              break;
+            case 'grep_invert':
+              do_coder_review_grep_invert($coder_args, $review, $rule, $lines, $results);
+              break;
+            case 'callback':
+              do_coder_review_callback($coder_args, $review, $rule, $lines, $results);
+              break;
+            // @todo Should an error message be set if #type is not in above list?
+          }
         }
       }
     }
