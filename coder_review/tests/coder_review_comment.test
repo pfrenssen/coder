@@ -117,7 +117,7 @@ class CoderReviewCommentTest extends CoderReviewTestCase {
   }
 
   /**
-   * Tests functionality to detect i.e. and e.q. phrases in comments.
+   * Tests functionality to detect i.e. and e.g. phrases in comments.
    */
   function testForExample() {
     $this->assertCoderReviewFail($this->comment_header . "// Whatever, e.g. this is wrong.\n");
