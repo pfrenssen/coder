@@ -396,7 +396,7 @@ function theme_drush_coder_review(array $variables) {
   $filename = $variables['filename'];
   $results = $variables['results'];
   $no_empty = _coder_review_drush_get_option_no('empty');
-  if (!drush_get_option('summary') && !empty($results) && ((!empty($results) && !isset($results[0])) || !$no_empty)) {
+  if (!drush_get_option('summary') && !empty($results) && ((empty($results[0]) || $results[0] != _t('No Problems Found')) || !$no_empty)) {
     if (drush_get_option('checkstyle') || drush_get_option('xml')) {
       _coder_review_drush_xml_output_results($filename, $results);
     }
