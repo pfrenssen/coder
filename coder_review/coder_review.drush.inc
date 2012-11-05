@@ -318,7 +318,7 @@ function drush_coder_review_install_php_code_sniffer() {
     $output = drush_shell_exec_output();
     $php_dir = $output[0];
 
-    // Check that the pear include path is include in the PHP path. 
+    // Check that the pear include path is include in the PHP path.
     if (strpos(ini_get('include_path'), $php_dir) === FALSE) {
       // @todo: Add the include path to php.ini.
       drush_print(dt('Please add @dir to include_path in php.ini', array('@dir' => $php_dir)));

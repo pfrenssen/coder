@@ -89,6 +89,7 @@ function _coder_review_default_reviews() {
     'comment' => 'comment',
     'security' => 'security',
     'i18n' => 'i18n',
+    'sniffer' => 'sniffer',
   );
 }
 
