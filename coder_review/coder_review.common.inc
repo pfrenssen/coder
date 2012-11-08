@@ -913,6 +913,9 @@ function do_coder_review(array $coder_args, array $review) {
     $coder_args['#include_extensions'],
     array('module', 'theme')
   );
+  if (!empty($review['#js'])) {
+    $allowed_extensions[] = 'js';
+  }
   if ($review['#rules']) {
     // Get the review's severity, used when the rule severity is not defined.
     $default_severity = isset($review['#severity']) ? _coder_review_severity($review['#severity']) : SEVERITY_NORMAL;
@@ -983,7 +986,9 @@ function do_coder_review(array $coder_args, array $review) {
             case 'callback':
               do_coder_review_callback($coder_args, $review, $rule, $lines, $results);
               break;
-            // @todo Should an error message be set if #type is not in above list?
+            default:
+              _message(_t('Invalid rule type @type', array('@type' => $rule['#type'])), 'error');
+              break;
           }
         }
       }

@@ -206,6 +206,7 @@ function coder_review_comment_reviews() {
     '#description' => 'Checks for the Drupal commenting standards; every developer should use this.',
     '#version' => 2,
     '#image' => 'images/comment.png',
+    '#js' => TRUE,
   );
   return array('comment' => $review);
 }
