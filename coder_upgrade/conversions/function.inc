@@ -853,7 +853,7 @@ function coder_upgrade_new_filter_hook($node, $hook, $filters = array()) { // DO
   foreach ($filters as $key => $filter) {
     $string .= "\$filters[$key] = array(\n";
     foreach ($filter as $key2 => $value) {
-      $string .= "\t'$key2' => $value,\n";
+      $string .= "  '$key2' => $value,\n";
     }
     $string .= ");\n";
   }
