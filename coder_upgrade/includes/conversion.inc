@@ -34,7 +34,7 @@ function coder_upgrade_conversions_form($form, &$form_state) {
   $form['convert'] = array(
     '#type' => 'submit',
     '#value' => t('Convert files'),
-    '#disabled' => !$checks_passed, // '#disabled' => empty($form['tabs']['directories']['list']['#options']),
+    '#disabled' => !gplib_version_check(),
   );
 
   return $form;

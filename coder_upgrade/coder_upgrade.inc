@@ -172,6 +172,7 @@ function file_stream_path($scheme = 'public') {
  * Checks for proper installation of required modules and library.
  *
  * @todo Remove this once everyone gets used to the library concept.
+ * @deprecated No longer used.
  *
  * @return boolean
  *   TRUE if required modules and library are installed; FALSE otherwise.
