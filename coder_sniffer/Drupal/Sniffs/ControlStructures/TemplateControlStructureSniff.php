@@ -61,7 +61,9 @@ class Drupal_Sniffs_ControlStructures_TemplateControlStructureSniff implements P
         $tokens = $phpcsFile->getTokens();
 
         // If there is a scope opener, then there is a opening curly brace.
-        if (isset($tokens[$stackPtr]['scope_opener']) === true) {
+        if (isset($tokens[$stackPtr]['scope_opener']) === true
+            && $tokens[$tokens[$stackPtr]['scope_opener']]['code'] !== T_COLON
+        ) {
             $error = 'The control statement should use the ":" alternative syntax instead of curly braces in template files';
             $phpcsFile->addError($error, $stackPtr, 'CurlyBracket');
         }
