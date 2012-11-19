@@ -54,16 +54,6 @@ function coder_review_7x_reviews() {
       '#link' => _drupalnode(224333, 'absolute_includes'),
     ),
   );
-  // @todo: should this rule move to the security review?
-  $rules[] = array(
-    '#type' => 'grep',
-    '#value' => '$_SESSION',
-    '#warning' => array(
-      '#text' => 'Note that it is important that modules try not to use $_SESSION for anonymous users.',
-      '#link' => _drupalnode(224333, 'drupal_set_session'),
-    ),
-    '#severity' => 'minor',
-  );
   $rules[] = array(
     '#type' => 'regex',
     '#value' => '[\s\(]time\s*\([\w\d\'"]*\)',

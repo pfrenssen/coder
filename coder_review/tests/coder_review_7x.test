@@ -85,11 +85,6 @@ class CoderReviewUpgrade7xTest extends CoderReviewTestCase {
     $this->assertCoderReviewPass("  include  DRUPAL_ROOT . '/' . variable_get('cache_inc', 'includes/cache.inc');");
     $this->assertCoderReviewPass("  include_once  DRUPAL_ROOT . '/' . variable_get('cache_inc', 'includes/cache.inc');");
 
-    // TODO - http://drupal.org/node/224333#drupal_set_session
-    $this->assertCoderReviewFail('  $foo = $_SESSION["foo"];');
-    $this->assertCoderReviewFail('  $foo = $_SESSION[' . "'foo'" . '];');
-    $this->assertCoderReviewFail('  if ($_SESSION["foo"])');
-
     // http://drupal.org/node/224333#time
     $this->assertCoderReviewFail('  $time = time();');
     $this->assertCoderReviewFail('  $time = foo(time());');
