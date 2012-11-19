@@ -1,10 +1,9 @@
-name = "Coder Upgrade"
-
-description = "Modifies source code to assist with the upgrade of a module for changes to a relied upon API."
-
+name = Coder Upgrade
+description = Modifies source code to assist with the upgrade of a module for changes to a relied upon API.
 package = Development
-;dependencies[] = coder ; Not a dependency
-dependencies[] = gplib
+core = 7.x
+
+dependencies[] = gplib (<2.0)
 
 ; only list files with class declarations
 ;files[] = coder_upgrade.help.inc
@@ -24,5 +23,3 @@ files[] = coder_upgrade.test
 ;files[] = conversions/coder_upgrade.regex.inc
 
 configure = admin/config/development/coder/upgrade/settings
-
-core = 7.x

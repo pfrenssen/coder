@@ -131,8 +131,8 @@ function coder_upgrade_add_file_entries($dirname = '', $files = array(), &$items
       if ($extension == 'php' && substr($file, -8) == '.tpl.php') {
         // Exclude template files.
       }
-      elseif (in_array($extension, $extensions) && in_array($_coder_upgrade_dirname . '/' . $path . $file, $_coder_upgrade_class_files)) {
-        $items[] = $path . $file;
+      elseif (in_array($extension, $extensions) && in_array($dirname . '/' . $file, $_coder_upgrade_class_files)) {
+        $items[] = $dirname . '/' . $file;
       }
       elseif ($extension == 'info') {
         // Save the name of the .info file.
@@ -150,6 +150,7 @@ function coder_upgrade_add_file_entries($dirname = '', $files = array(), &$items
     // Add sorted entries to .info file.
     $new .= "\n";
     foreach ($items as $item) {
+      $item = str_replace($dirname . '/', '', $item);
       $new .= "files[] = $item\n";
     }
     if (file_put_contents($info_file, $new) === FALSE) {

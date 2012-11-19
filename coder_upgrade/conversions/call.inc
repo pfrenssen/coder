@@ -2463,6 +2463,18 @@ function coder_upgrade_upgrade_call_theme_alter(&$node, &$reader) { // DONE
 
   // Process changes to specific themes.
   $theme = trim($item->printParameter(), "'\"");
+  // This change is not documented.
+  // Width and height parameters have been added after path.
+  if ($theme == 'image' || $theme == 'image_style') { // DONE
+    $index = $theme == 'image' ? 2 : 3;
+    if ($item->parameterCount() > $index) {
+      // Delete $getsize parameter.
+      $item->deleteParameter($index + 3);
+      // Insert placeholders for width and height parameters.
+      $editor->insertParameter($item, $index, "''");
+      $editor->insertParameter($item, $index + 1, "''");
+    }
+  }
   // http://drupal.org/node/224333#theme_page
   if ($theme == 'page') { // DONE
     $item->insertStatementBefore($editor->commentToStatement('// TODO Please change this theme call as discussed at http://drupal.org/node/224333#theme_page.'));
