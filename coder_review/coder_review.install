@@ -35,10 +35,7 @@ function coder_review_schema() {
  */
 function coder_review_requirements($phase) {
   // Load the primary PHP CodeSniffer class.
-  try {
-    @include_once 'PHP/CodeSniffer.php';
-  }
-  catch (Exception $e) {
+  if (!@include_once 'PHP/CodeSniffer.php') {
     $missing = TRUE;
   }
 
