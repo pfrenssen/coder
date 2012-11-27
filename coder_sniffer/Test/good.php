@@ -553,3 +553,6 @@ preg_match('@.+@i', 'subject');
 preg_match('@.+@imsuxADSUXJ', 'subject');
 preg_filter('@.+@i', 'replacement', 'subject');
 preg_replace('@.+@i', 'replacement', 'subject');
+
+interface MyWellNamedInterface {
+}

@@ -731,4 +731,7 @@ preg_match('@.+@iemesuexADSUeXJ', 'subject');
 preg_filter('@.+@imsuexADSUXJ', 'replacement', 'subject');
 preg_replace('@.+@imsuxADSUeXJ', 'replacement', 'subject');
 
+interface notA_GoodInterfaceName {
+}
+
 ?>
