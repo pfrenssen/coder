@@ -626,11 +626,13 @@ function test16() {
  *
  * @param type $x
  *   Description here.
+ * @param boolean $y
+ *   Description here.
  *
  * @return unknown_type
  *   Description here.
  */
-function test17($x) {
+function test17($x, $y) {
 
 }
 

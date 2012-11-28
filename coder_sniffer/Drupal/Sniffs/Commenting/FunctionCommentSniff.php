@@ -55,6 +55,16 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
      */
     protected $currentFile = null;
 
+    /**
+     * A map of invalid data types to valid ones for param and return documentation.
+     *
+     * @var array
+     */
+    protected $invalidTypes = array(
+                               'boolean' => 'bool',
+                               'integer' => 'int',
+                              );
+
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -347,6 +357,12 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $this->currentFile->addError($error, $errorPos, 'InvalidReturnType', $data);
                 }
 
+                if (isset($this->invalidTypes[$return->getValue()]) === true) {
+                    $error = 'Invalid @return data type, expected %s but found %s';
+                    $data = array($this->invalidTypes[$return->getValue()], $return->getValue());
+                    $this->currentFile->addError($error, $errorPos, 'InvalidReturnTypeName', $data);
+                }
+
                 if (trim($comment) === '') {
                     $error = 'Missing comment for @return statement';
                     $this->currentFile->addError($error, $errorPos, 'MissingReturnComment');
@@ -478,6 +494,12 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $error = 'Expected a valid @param data type, but found %s';
                     $data = array($param->getType());
                     $this->currentFile->addError($error, $errorPos, 'InvalidParamType', $data);
+                }
+
+                if (isset($this->invalidTypes[$param->getType()]) === true) {
+                    $error = 'Invalid @param data type, expected %s but found %s';
+                    $data = array($this->invalidTypes[$param->getType()], $param->getType());
+                    $this->currentFile->addError($error, $errorPos, 'InvalidParamTypeName', $data);
                 }
 
                 if ($paramComment === '') {
