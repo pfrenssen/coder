@@ -471,6 +471,26 @@ function mymodule_foo_some_type_bar() {
 }
 
 /**
+ * Implements hook_test_info().
+ *
+ * @param int $param
+ *   Duplicated documentation which should be on the hook definition only.
+ */
+function mymodule_test_info($param) {
+
+}
+
+/**
+ * Implements hook_test2_info().
+ *
+ * @return int
+ *   Duplicated documentation which should be on the hook definition only.
+ */
+function mymodule_test2_info($param) {
+
+}
+
+/**
  *
  * Extra newline above is not allowed.
  */
