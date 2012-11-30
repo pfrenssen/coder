@@ -254,6 +254,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             $line  = ($newlineSpan > 1) ? 'newlines' : 'newline';
             $error = "Extra $line found before function comment short description";
             $phpcsFile->addError($error, ($commentStart + 1));
+            return;
         }
 
         $newlineCount = (substr_count($short, $phpcsFile->eolChar) + 1);
@@ -277,6 +278,11 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         if (substr_count($testShort, $phpcsFile->eolChar) !== 0) {
             $error = 'Function comment short description must be on a single line';
             $phpcsFile->addError($error, ($commentStart + 1), 'ShortSingleLine');
+        }
+
+        if (strpos($short, $testShort) !== 1) {
+            $error = 'Function comment short description must start with exactly one space';
+            $phpcsFile->addError($error, ($commentStart + 1), 'ShortStartSpace');
         }
 
         if (preg_match('|[A-Z]|', $testShort[0]) === 0) {

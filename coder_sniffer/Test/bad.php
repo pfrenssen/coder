@@ -742,6 +742,13 @@ function test23() {
 
 }
 
+/**
+ *  Comment has 2 spaces at the beginning.
+ */
+function test24() {
+
+}
+
 // Security issue: http://drupal.org/node/750148
 preg_match('/.+/e', 'subject');
 preg_match('/.+/iemesuexADSUeXJ', 'subject');
