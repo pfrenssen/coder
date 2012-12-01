@@ -27,7 +27,7 @@ class Drupal_Sniffs_Formatting_SpaceColonSniff implements PHP_CodeSniffer_Sniff
      */
     public function register()
     {
-        return array(T_COLON);
+        return array(T_INLINE_ELSE);
 
     }//end register()
 
