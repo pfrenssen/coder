@@ -42,27 +42,7 @@ class Drupal_Sniffs_NamingConventions_ValidVariableNameSniff
             return;
         }
 
-        $memberName     = ltrim($tokens[$stackPtr]['content'], '$');
-        $isPublic       = ($memberProps['scope'] === 'private') ? false : true;
-        $scope          = $memberProps['scope'];
-        $scopeSpecified = $memberProps['scope_specified'];
-
-        // Even if it's a private member, it must not have an underscore on the
-        // front.
-        if ($isPublic === false && $memberName{0} === '_') {
-            $error = "Private member variable \"$memberName\" must not be
-            	prefixed with an underscore - it is discouraged in PHP 5-specific code";
-            $phpcsFile->addError($error, $stackPtr);
-            return;
-        }
-
-        // If it's not a private member, it must not have an underscore on the front.
-        if ($isPublic === true && $scopeSpecified === true && $memberName{0} === '_') {
-            $error = ucfirst($scope)." member variable \"$memberName\" must not be
-                prefixed with an underscore";
-            $phpcsFile->addError($error, $stackPtr);
-            return;
-        }
+        $memberName = ltrim($tokens[$stackPtr]['content'], '$');
 
         if (strpos($memberName, '_') !== false) {
             $error = 'Class property %s should use lowerCamel naming without underscores';
