@@ -763,4 +763,11 @@ preg_replace('@.+@imsuxADSUeXJ', 'replacement', 'subject');
 interface notA_GoodInterfaceName {
 }
 
+// The catch statement must be on a new line.
+try {
+  do_something();
+} catch (Exception $e) {
+  scream();
+}
+
 ?>

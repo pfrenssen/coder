@@ -556,3 +556,11 @@ preg_replace('@.+@i', 'replacement', 'subject');
 
 interface MyWellNamedInterface {
 }
+
+// Correctly formed try/catch block.
+try {
+  do_something();
+}
+catch (Exception $e) {
+  scream();
+}

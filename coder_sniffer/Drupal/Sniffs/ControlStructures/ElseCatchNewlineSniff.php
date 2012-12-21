@@ -1,29 +1,25 @@
 <?php
 /**
- * Checks that else/elseif statements start on a new line.
+ * Checks that else/elseif/catch statements start on a new line.
  *
  * PHP version 5
  *
  * @category PHP
  * @package  PHP_CodeSniffer
- * @author   Klaus Purer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
 /**
- * Checks that else/elseif statements start on a new line.
+ * Checks that else/elseif/catch statements start on a new line.
  *
  * Unfortunately we need this sniff because
- * Drupal_Sniffs_ControlStructures_ControlSignatureSniff does not
- * detect this.
+ * Drupal_Sniffs_ControlStructures_ControlSignatureSniff does not detect this.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
- * @author   Klaus Purer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_ControlStructures_ElseNewlineSniff implements
-PHP_CodeSniffer_Sniff
+class Drupal_Sniffs_ControlStructures_ElseCatchNewlineSniff implements PHP_CodeSniffer_Sniff
 {
 
 
@@ -37,6 +33,7 @@ PHP_CodeSniffer_Sniff
         return array(
                 T_ELSE,
                 T_ELSEIF,
+                T_CATCH,
                );
 
     }//end register()
