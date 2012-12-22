@@ -770,4 +770,7 @@ try {
   scream();
 }
 
+// Function name aliases should not be used.
+$x = join($glue, $pieces);
+
 ?>
