@@ -20,7 +20,8 @@ class Drupal_Sniffs_Semantics_FunctionCallSniff implements PHP_CodeSniffer_Sniff
 {
 
     /**
-     * Collection of objects that get notified during processing.
+     * Collection of objects that get notified during processing. This array is keyed
+     * by the function names the listeners are interested in.
      *
      * @var array
      */
@@ -85,17 +86,10 @@ class Drupal_Sniffs_Semantics_FunctionCallSniff implements PHP_CodeSniffer_Sniff
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        $tokens          = $phpcsFile->getTokens();
-        $activeListeners = array();
-        foreach (self::$listeners as $listener) {
-            $functionNames = $listener->registerFunctionNames();
-            if (in_array($tokens[$stackPtr]['content'], $functionNames) === true) {
-                $activeListeners[] = $listener;
-            }
-        }
-
-        // No listener is interested in this function name, so return early.
-        if (empty($activeListeners) === true) {
+        $tokens       = $phpcsFile->getTokens();
+        $functionName = $tokens[$stackPtr]['content'];
+        if (isset(static::$listeners[$functionName]) === false) {
+            // No listener is interested in this function name, so return early.
             return;
         }
 
@@ -137,7 +131,7 @@ class Drupal_Sniffs_Semantics_FunctionCallSniff implements PHP_CodeSniffer_Sniff
         $this->closeBracket = $tokens[$openBracket]['parenthesis_closer'];
         $this->arguments    = array();
 
-        foreach ($activeListeners as $listener) {
+        foreach (static::$listeners[$functionName] as $listener) {
             $listener->processFunctionCall($phpcsFile, $stackPtr, $openBracket, $this->closeBracket, $this);
         }
 
@@ -221,7 +215,10 @@ class Drupal_Sniffs_Semantics_FunctionCallSniff implements PHP_CodeSniffer_Sniff
      */
     public static function registerListener($listener)
     {
-        self::$listeners[] = $listener;
+        $funtionNames = $listener->registerFunctionNames();
+        foreach ($funtionNames as $name) {
+            static::$listeners[$name][] = $listener;
+        }
 
     }//end registerListener()
 
