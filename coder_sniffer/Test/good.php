@@ -522,6 +522,13 @@ function mymodule_foo_some_type_bar() {
 }
 
 /**
+ * Implements hook_foo_bar() for foo_bar.tpl.php.
+ */
+function mymodule_foo_bar() {
+
+}
+
+/**
  * Not documenting all parameters is allowed.
  *
  * @param Node $node
