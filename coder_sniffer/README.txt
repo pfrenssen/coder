@@ -13,7 +13,7 @@ Installation
 
 Requirements:
   - PEAR
-  - PHPCS
+  - PHPCS 1.3.5 or newer
 
 - Install PEAR  ( http://pear.php.net/manual/en/installation.php )
 - Install PHPCS ( http://pear.php.net/package/PHP_CodeSniffer )

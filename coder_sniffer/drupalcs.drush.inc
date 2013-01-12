@@ -183,7 +183,7 @@ function _drupalcs_is_compatible_phpcs_installed() {
       return TRUE;
     }
     // Version number comparison.
-    if (version_compare($version, '1.3.3', '>')) {
+    if (version_compare($version, '1.3.4', '>')) {
       return TRUE;
     }
   }
