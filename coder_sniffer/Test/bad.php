@@ -749,6 +749,16 @@ function test24() {
 
 }
 
+/**
+ * Wrong tag indentation.
+ *
+ *  @return bool
+ *   Description.
+ */
+function test24() {
+  return TRUE;
+}
+
 // Security issue: http://drupal.org/node/750148
 preg_match('/.+/e', 'subject');
 preg_match('/.+/iemesuexADSUeXJ', 'subject');

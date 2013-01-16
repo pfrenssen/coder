@@ -49,6 +49,27 @@ PHP_CodeSniffer_Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
+        // We are only interested in function/class/interface doc block comments.
+        $nextToken = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $ignore    = array(
+                      T_CLASS,
+                      T_INTERFACE,
+                      T_FUNCTION,
+                      T_PUBLIC,
+                      T_PRIVATE,
+                      T_PROTECTED,
+                      T_STATIC,
+                      T_ABSTRACT,
+                     );
+
+        if (in_array($tokens[$nextToken]['code'], $ignore) === false) {
+            // Could be a file comment.
+            $prevToken = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+            if ($tokens[$prevToken]['code'] !== T_OPEN_TAG) {
+                return;
+            }
+        }
+
         // We only want to get the first comment in a block. If there is
         // a comment on the line before this one, return.
         $docComment = $phpcsFile->findPrevious(T_DOC_COMMENT, ($stackPtr - 1));
@@ -80,16 +101,23 @@ PHP_CodeSniffer_Sniff
             $content   = $tokens[$commentPointer]['content'];
             $firstChar = substr($content, 0, 1);
             $lastChar  = substr($content, -1);
-            if ($firstChar !== '/' && $lastChar !== '/') {
+            if ($firstChar !== '/' &&  $lastChar !== '/') {
                 $matches = array();
-                preg_match('|^(\s+)?\*(\s+)?|', $content, $matches);
+                preg_match('|^(\s+)?\*(\s+)?@|', $content, $matches);
                 if (empty($matches) === false) {
                     if (isset($matches[2]) === false) {
-                        $error = 'Expected 1 space between asterisk and comment; 0 found';
-                        $phpcsFile->addError($error, $commentPointer, 'NoSpaceBeforeComment');
+                        $error = 'Expected 1 space between asterisk and tag; 0 found';
+                        $phpcsFile->addError($error, $commentPointer, 'NoSpaceBeforeTag');
+                    } else {
+                        $length = strlen($matches[2]);
+                        if ($length !== 1) {
+                            $error = 'Expected 1 space between asterisk and tag; %s found';
+                            $data  = array($length);
+                            $phpcsFile->addError($error, $commentPointer, 'SpaceBeforeTag', $data);
+                        }
                     }
                 }
-            }//end if
+            }//end foreach
 
             // Check the alignment of each asterisk.
             $currentColumn  = strpos($content, '*');
@@ -102,9 +130,9 @@ PHP_CodeSniffer_Sniff
 
             $error = 'Expected %s space(s) before asterisk; %s found';
             $data  = array(
-                      ($requiredColumn - 1),
-                      ($currentColumn - 1),
-                     );
+                     ($requiredColumn - 1),
+                     ($currentColumn - 1),
+                    );
             $phpcsFile->addError($error, $commentPointer, 'SpaceBeforeAsterisk', $data);
         }//end foreach
 
