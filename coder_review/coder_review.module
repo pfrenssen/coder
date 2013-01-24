@@ -156,7 +156,9 @@ function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) 
  */
 function _coder_review_settings_form(array $settings, &$system, &$files) {
   // Bootstrap enough to run.
-  require_once realpath(dirname(__FILE__)) . '/coder_review.common.inc';
+  if (!function_exists('_coder_review_reviews')) {
+    require_once realpath(__DIR__) . '/coder_review.common.inc';
+  }
 
   // Add the javascript.
   if (function_exists('drupal_get_path')) {
@@ -547,7 +549,9 @@ function coder_review_page_form_submit($form, &$form_state) {
  */
 function coder_review_page_form($form, &$form_state, $arg = '') {
   // Bootstrap enough to run.
-  require_once realpath(dirname(__FILE__)) . '/coder_review.common.inc';
+  if (!function_exists('_coder_review_reviews')) {
+    require_once realpath(__DIR__) . '/coder_review.common.inc';
+  }
 
   if (isset($form_state['storage'])) {
     $settings = $form_state['storage'];

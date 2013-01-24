@@ -97,7 +97,7 @@ function drush_coder_review() {
   }
 
   // Bootstrap enough of coder review to run.
-  require_once realpath(dirname(__FILE__)) . '/coder_review.common.inc';
+  require_once realpath(__DIR__) . '/coder_review.common.inc';
 
   // Get the command line options severity options.
   $severity = drush_get_option('severity');
@@ -278,7 +278,9 @@ function drush_coder_review() {
 
   // Bootstrap the module.
   // @todo: separate this out better into an API, so we don't need the module.
-  require_once realpath(dirname(__FILE__)) . '/coder_review.module';
+  if (!function_exists('coder_review_page_form')) {
+    require_once realpath(__DIR__) . '/coder_review.module';
+  }
 
   $form_state['storage'] = $settings;
   coder_review_page_form(array(), $form_state);
