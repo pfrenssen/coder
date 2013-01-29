@@ -110,7 +110,6 @@ function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) 
 
   $path = drupal_get_path('module', 'coder_review');
   $form['#attached']['css'][] = "$path/coder_review.css";
-//$form['#attached']['css'][] = array("$path/coder_review.print.css" => array('media' => 'print'));
 
   foreach ($form['modules'] as $package_name => &$package) {
     if ($package_name[0] != '#') {
@@ -202,7 +201,7 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
     '#options' => array(
       SEVERITY_MINOR => 'minor (most)',
       SEVERITY_NORMAL => 'normal',
-      SEVERITY_CRITICAL => 'critical (fewest)'
+      SEVERITY_CRITICAL => 'critical (fewest)',
     ),
     '#description' => _t('show warnings at or above the severity warning level'),
     '#default_value' => $settings['coder_severity'],
@@ -377,7 +376,7 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
       '#default_value' => $settings['coder_core'],
       '#title' => _t('core files (php, modules, and includes)'),
     );
-    $ext = _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
+    $ext = _coder_review_php_ext();
     $form['coder_what']['coder_includes'] = array(
       '#type' => 'checkbox',
       '#default_value' => $settings['coder_includes'],
@@ -602,7 +601,6 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
         '#severity' => $settings['coder_severity'],
         '#php_extensions' => $php_extensions,
         '#include_extensions' => array(),
-//      '#filename' => $filename,
         '#cache' => TRUE,
         '#settings_ignore' => $settings['coder_ignore'],
       );
@@ -649,7 +647,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
     // Loop through the selected modules and themes.
     if (isset($system)) {
       // Determine which file extensions to include, based on the rules.
-      $php_extensions = _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
+      $php_extensions = _coder_review_php_ext();
       $include_extensions = _coder_review_get_reviews_extensions($php_extensions, $reviews);
       $includes = array_merge($php_extensions, $include_extensions);
 
@@ -839,7 +837,7 @@ function _coder_review_page_form_includes(array &$form, array $coder_args, $name
       continue;
     }
     $filename = _substr($file, $offset);
-    $php_extensions = _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
+    $php_extensions = _coder_review_php_ext();
     $coder_args['#filename'] = $filename;
     $coder_args['#php_extensions'] = $php_extensions;
     $results = do_coder_reviews($coder_args);

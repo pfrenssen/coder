@@ -2,6 +2,7 @@
 
 /**
  * @file
+ * Common functions used by both the drush and form interfaces.
  */
 
 /**
@@ -38,10 +39,6 @@ function _coder_review_reviews() {
  *
  * This creates an array of all of the reviews that are implemented by the
  * coder_review module.
- *
- * @return array
- *   An associative array as described in hook_reviews() documentation in the
- *   coder_review.api.php file.
  *
  * @see hook_reviews()
  *
@@ -214,7 +211,7 @@ function do_coder_reviews(array $coder_args) {
       $review['#review_name'] = $review_name;
       $result = do_coder_review($coder_args, $review);
       if ($result) {
-        // ignored isn't a severity level, but is a stat we need to track.
+        // Keep track of severity and "ignored" statistics.
         foreach (array('critical', 'normal', 'minor', 'ignored') as $severity_level) {
           if (isset($result['#stats'][$severity_level])) {
             $results['#stats'][$severity_level] += $result['#stats'][$severity_level];
@@ -382,9 +379,10 @@ function _coder_review_read_and_parse_file(array &$coder_args) {
   );
   $ext = in_array($pathinfo['extension'], $allowed_extensions) ? 'php' : $pathinfo['extension'];
 
-  // The use of variables with 'php' in them ($in_php, $in_all_php, $php_lines,
-  // etc.) is misleading. All references to such should be renamed 'code'
-  // because we also are using this engine to read 'js' files.
+  /* The use of variables with 'php' in them ($in_php, $in_all_php, $php_lines,
+   * etc.) is misleading. All references to such should be renamed 'code'
+   * because we also are using this engine to read 'js' files.
+   */
 
   // Get the path to the module file.
   $filepath = realpath($coder_args['#filename']);
@@ -624,9 +622,9 @@ function _coder_review_read_and_parse_file(array &$coder_args) {
                 $this_php_lines .= $char;
                 $in_quote = $char;
                 if ($this_quote_sep) {
-                  $this_quote_lines[++ $this_quote_index] = '';
+                  $this_quote_lines[++$this_quote_index] = '';
                   if ($char == '"') {
-                    $this_doublequote_lines[++ $this_doublequote_index] = '';
+                    $this_doublequote_lines[++$this_doublequote_index] = '';
                   }
                 }
                 $this_quote_sep = FALSE;
@@ -661,7 +659,7 @@ function _coder_review_read_and_parse_file(array &$coder_args) {
                 for ($pos += 3; $pos < $content_length; ++$pos) {
                   $char = $content[$pos];
                   if ($char == "\n") {
-                    $pos --;
+                    $pos--;
                     if (preg_match('/^\s*(\w+)/', $heredoc, $match)) {
                       $in_heredoc = $match[1];
                       $in_heredoc_length = _strlen($in_heredoc);
@@ -977,15 +975,19 @@ function do_coder_review(array $coder_args, array $review) {
             case 'regex':
               do_coder_review_regex($coder_args, $review, $rule, $lines, $results);
               break;
+
             case 'grep':
               do_coder_review_grep($coder_args, $review, $rule, $lines, $results);
               break;
+
             case 'grep_invert':
               do_coder_review_grep_invert($coder_args, $review, $rule, $lines, $results);
               break;
+
             case 'callback':
               do_coder_review_callback($coder_args, $review, $rule, $lines, $results);
               break;
+
             default:
               _message(_t('Invalid rule type @type', array('@type' => $rule['#type'])), 'error');
               break;
@@ -1366,12 +1368,13 @@ function _coder_review_is_drupal_core($system) {
  *
  * @return string
  *   A formatted warning message.
- *   @todo Is this an HTML string?  Is it sanitized?  Needs better explanation.
+ *   @todo Is this an HTML string? Is it sanitized? Needs better explanation.
  */
 function _coder_review_warning(array $rule) {
-  // @todo: add version check so we handle tranlations right for older rules definitions.
-  // ... or should we just ignore them?
-  // This will require passing the review to this function.
+  /* @todo: add version check so we handle tranlations right for older rules definitions.
+   * ... or should we just ignore them?
+   * This will require passing the review to this function.
+   */
 
   // Call warning callbacks.
   if (isset($rule['#warning_callback'])) {
@@ -1445,6 +1448,13 @@ function _l($text, $path, $options = array()) {
  */
 function _variable_get($variable, $default = NULL) {
   return function_exists('variable_get') ? variable_get($variable, $default) : $default;
+}
+
+/**
+ * Return the valid PHP extensions.
+ */
+function _coder_review_php_ext() {
+  return _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'));
 }
 
 /**
@@ -1532,8 +1542,6 @@ function _coder_review_path() {
  *
  * @param string $cid
  *   ???
- * @param mixed $data
- *   ???
  * @param string $bin
  *   (optional) The name of the bin in which to store the cached data.
  *
@@ -1543,7 +1551,7 @@ function _coder_review_path() {
  * @see cache_get()
  */
 function _cache_get($cid, $bin = 'default') {
-  return function_exists('cache_get') ? cache_get($cid, $bin) : array(); // drush_cache_get($cid, $bin);
+  return function_exists('cache_get') ? cache_get($cid, $bin) : array();
 }
 
 /**
@@ -1562,7 +1570,7 @@ function _cache_get($cid, $bin = 'default') {
  * @see cache_set()
  */
 function _cache_set($cid, $data, $bin = 'default') {
-  return function_exists('cache_set') ? cache_set($cid, $data, $bin) : array(); // drush_cache_set($cid, $data, $bin);
+  return function_exists('cache_set') ? cache_set($cid, $data, $bin) : array();
 }
 
 /**

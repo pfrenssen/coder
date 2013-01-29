@@ -58,7 +58,7 @@ function coder_review_drush_command() {
 }
 
 /**
- * Implements hook_drush_help()
+ * Implements hook_drush_help().
  */
 function coder_review_drush_help($section) {
   switch ($section) {
@@ -97,8 +97,10 @@ function _drush_coder_review_git($uninstall = FALSE) {
   $realroot = realpath(DRUPAL_ROOT) . '/';
   $realgit = realpath($gitpath . '/../');
   $gitrelative = substr($realgit, strlen($realroot));
+  // @ignore sniffer_strings_unnecessarystringconcat_found
   $doxygen_file = '@' . 'file';
 
+  // @ignore sniffer_squiz_whitespace_operatorspacing_nospaceafter
   $pre_commit_code =<<< __PRE_COMMIT__
 #!/usr/bin/php
 <?php
@@ -108,7 +110,7 @@ function _drush_coder_review_git($uninstall = FALSE) {
  * following the naming convention of pre-commit_example.
  *
  * This script was created by drush coder-review --git.
- * Do not modify. 
+ * Do not modify.
  */
 \$GITPATH = "$gitpath";
 
@@ -148,6 +150,7 @@ __PRE_COMMIT__;
   }
   $coder_args = implode(' ', $args);
 
+  // @ignore sniffer_squiz_whitespace_operatorspacing_nospaceafter
   $coder_commit_code =<<< __CODER_COMMIT__
 #!/usr/bin/php
 <?php
@@ -156,7 +159,7 @@ __PRE_COMMIT__;
  * Coder pre-commit hook.
  *
  * This script was created by drush coder-review --git.
- * Do not modify. 
+ * Do not modify.
  */
 \$GITPATH = '$gitpath';
 \$GITRELATIVE = '$gitrelative';
@@ -255,7 +258,7 @@ function _drush_coder_git_path() {
  */
 function drush_coder_review() {
   // Bootstrap Drupal if it is available.
-  if (drush_conf_path(_drush_bootstrap_selected_uri)) {
+  if (drush_conf_path(_DRUSH_BOOTSTRAP_SELECTED_URI)) {
     drush_bootstrap(DRUSH_BOOTSTRAP_DRUPAL_FULL);
   }
 
@@ -298,7 +301,6 @@ function drush_coder_review() {
       // @note: Don't use drupal_map_assoc because of bootstrap level.
       $avail_review_keys = array_keys($avail_reviews);
       $reviews += array_combine($avail_review_keys, $avail_review_keys);
-//    $reviews += drupal_map_assoc(array_keys($avail_reviews));
     }
     else {
       foreach (explode(',', $reviews_option) as $option) {
@@ -388,7 +390,7 @@ function drush_coder_review() {
                   $settings['coder_file_list'] = '';
                 }
                 if (is_dir($path)) {
-                  $regex = '/\.(' . implode('|', _variable_get('coder_review_php_ext', array('inc', 'php', 'install', 'test'))) . '$)/';
+                  $regex = '/\.(' . implode('|', _coder_review_php_ext()) . '$)/';
                   $settings['coder_file_list'] .= implode("\n", _file_list($path, $regex));
                   $settings['coder_includes'] = 1;
                 }
@@ -668,6 +670,7 @@ function theme_drush_coder_review_warning(array $variables) {
  * Prints Coder review messages in a format for drush use.
  *
  * @param array $summary
+ *   An array of summary statistics about warnings and errors.
  */
 function coder_review_print_drush_messages(array $summary) {
   // Count the number of warnings/errors.
@@ -740,7 +743,7 @@ function _coder_review_drush_xml_output_header($type = 'xml') {
  *
  * @todo Where is the @ignore syntax and use documented in this module?
  */
-// @ignore upgrade7x_74
+// @ignore upgrade7x_74 sniffer_commenting_functioncomment_missing
 function _coder_review_drush_xml_output_footer($type = 'xml') {
   _coder_review_drush_print($type == 'checkstyle' ? '</checkstyle>' : '</coderreview>');
 }
