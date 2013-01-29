@@ -750,12 +750,12 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
             }
           }
         }
-        if (!$settings['coder_patches']) {
-          $display[] = _t('Coder found @count projects', array('@count' => count($stats)));
-          $display[] = _t('@count files', array('@count' => $summary['files']));
+        if ($settings['coder_patches']) {
+          $display[] = _t('Coder found @count patch hunks', array('@count' => count($stats)));
         }
         else {
-          $display[] = _t('Coder found @count patch hunks', array('@count' => count($stats)));
+          $display[] = _t('Coder found @count projects', array('@count' => count($stats)));
+          $display[] = _t('@count files', array('@count' => $summary['files']));
         }
         foreach (array('critical', 'normal', 'minor') as $severity_name) {
           if ($summary['sums'][$severity_name] > 0) {
@@ -766,7 +766,7 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
 
         _message(implode(', ', $display));
         if (_drush()) {
-          coder_review_print_drush_messages($messages);
+          coder_review_print_drush_messages($summary);
         }
       }
     }

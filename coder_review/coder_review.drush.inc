@@ -29,6 +29,7 @@ function coder_review_drush_command() {
       'upgrade8x' => 'Run the 7.x -> 8.x upgrade review.',
       'druplart' => 'Run the druplart review.',
       'release' => 'Run the production-ready review.',
+      'sniffer' => 'Run the PHP CodeSniffer review.',
       'core' => 'Review all of core.',
       'contrib' => 'Review all of contrib.',
       'active' => 'Review all active modules and themes.',
@@ -41,6 +42,7 @@ function coder_review_drush_command() {
       'ignorename' => 'Enable display of ignore "rule names", helpful when adding ignores.',
       'xml' => 'Output results as xml.',
       'checkstyle' => 'Output results in Checkstyle xml format.',
+      'git' => 'Install this coder command as a .git pre-commit hook',
     ),
     'arguments' => array(
       'name' => 'Review specified module or theme name, i.e. taxonomy.',
@@ -64,7 +66,6 @@ function coder_review_drush_help($section) {
       $help = dt('This comand will execute Coder reviews on a given path, using Drupal Coding Standard definitions.');
       // @todo What else should be added to the help message?  Popular options?
       return $help;
-
   }
 }
 
@@ -88,6 +89,153 @@ function _coder_review_set_form_modules(array &$settings) {
 }
 
 /**
+ * Install coder as a git pre-commit hook.
+ */
+function _drush_coder_review_git() {
+  $gitpath = _drush_coder_git_path();
+
+  $realroot = realpath(DRUPAL_ROOT) . '/';
+  $realgit = realpath($gitpath . '/../');
+  $gitrelative = substr($realgit, strlen($realroot));
+  $doxygen_file = '@' . 'file';
+
+  $pre_commit_code =<<< __PRE_COMMIT__
+#!/usr/bin/php
+<?php
+/**
+ * $doxygen_file
+ * Generic .git pre-commit hook runs all pre-commit hooks
+ * following the naming convention of pre-commit_example.
+ *
+ * This script was created by drush coder-review --git.
+ * Do not modify. 
+ */
+\$GITPATH = "$gitpath";
+
+/**
+ * Return array of pre-commit_ files with their full relative paths.
+ */
+function find_pre_commit(\$dir = '.') {
+  \$files = array();
+  foreach (scandir(\$dir) as \$file) {
+    if (substr(\$file, 0, 11) == 'pre-commit_' && is_executable("\$dir/\$file")) {
+      \$files[] = "\$dir/\$file";
+    }
+    elseif (\$file != '.' && \$file != '..' && is_dir("\$dir/\$file")) {
+      \$files = array_merge(\$files, find_pre_commit("\$dir/\$file"));
+    }
+  }
+  return \$files;
+}
+
+// Run each pre-commit script.
+foreach (find_pre_commit(\$GITPATH) as \$pre_commit) {
+  system(\$pre_commit, \$ret);
+  if (\$ret != 0) {
+    // Exit as soon as one of the scripts returns an error.
+    exit(\$ret);
+  }
+}
+__PRE_COMMIT__;
+
+  _drush_coder_write_file("$gitpath/hooks/pre-commit", $pre_commit_code, 0755);
+
+  $args = $_SERVER['argv'];
+  foreach ($args as $delta => $arg) {
+    if ($delta == 0 || $delta == 1 || $arg == '--y' || $arg == '--git' || $arg == '-y') {
+      unset($args[$delta]);
+    }
+  }
+  $coder_args = implode(' ', $args);
+
+  $coder_commit_code =<<< __CODER_COMMIT__
+#!/usr/bin/php
+<?php
+/**
+ * $doxygen_file
+ * Coder pre-commit hook.
+ *
+ * This script was created by drush coder-review --git.
+ * Do not modify. 
+ */
+\$GITPATH = '$gitpath';
+\$GITRELATIVE = '$gitrelative';
+\$CODER_ARGS = '--empty=no $coder_args';
+
+// Find the files that are ready to checkin.
+// The magic revision is for an initial commit: diff against an empty tree object.
+// See .git/pre-commit.sample.
+exec('git rev-parse --verify HEAD 2> /dev/null 2>&1', \$dummy, \$ret);
+\$against = (\$ret == 0) ? 'HEAD' : '4b825dc642cb6eb9a060e54bf8d69288fbee4904';
+exec("git diff --cached --name-only \$against", \$files);
+
+// Convert .git relative path to DRUPAL_ROOT relative.
+foreach (\$files as &\$file) {
+  \$file = "\$GITRELATIVE/\$file";
+}
+
+// Run coder against the .git files.
+\$cmd = "drush \$CODER_ARGS";
+print "Coder pre-commit: \$cmd\\n - " . implode("\\n - ", \$files) ."\\n\\n";
+system(\$cmd . ' ' . implode(' ', \$files), \$ret);
+if (\$ret) {
+  exit(\$ret);
+}
+__CODER_COMMIT__;
+  _drush_coder_write_file("$gitpath/hooks/pre-commit_coder", $coder_commit_code, 0755);
+}
+
+/**
+ * Helper function to write a file with error checking.
+ */
+function _drush_coder_write_file($file, $contents, $perms = 0644) {
+  $contents .= "\n";
+  $args = array('@file' => $file);
+  if (file_exists($file)) {
+    $existing = file_get_contents($file);
+    if ($existing == $contents) {
+      if ($perms && (fileperms($file) & 0777) != $perms) {
+        drush_print(dt('correcting permissions @file', $args));
+        chmod($file, $perms);
+      }
+      else {
+        drush_print(dt('ignore @file, already up to date.', $args));
+      }
+      return 1;
+    }
+    if (!drush_get_context('DRUSH_AFFIRMATIVE') && !drush_confirm(dt('overwrite @file with new contents', array('@file' => $file)))) {
+      return drush_error(dt('user aborted'));
+    }
+  }
+  if (file_put_contents($file, $contents)) {
+    if ($perms) {
+      chmod($file, $perms);
+    }
+    drush_print(dt('writing @file', $args));
+    return 1;
+  }
+  return drush_error(dt('error writing @file', $args));
+}
+
+/**
+ * Get the git path.
+ */
+function _drush_coder_git_path() {
+  static $gitpath;
+  if (empty($gitpath)) {
+    $path = drush_cwd();
+    do {
+      if (is_dir("$path/.git")) {
+        $gitpath = "$path/.git";
+        break;
+      }
+      $path = realpath("$path/..");
+    } while ($path != DRUPAL_ROOT);
+  }
+  return $gitpath;
+}
+
+/**
  * Performs the actual review for drush.
  */
 function drush_coder_review() {
@@ -98,6 +246,11 @@ function drush_coder_review() {
 
   // Bootstrap enough of coder review to run.
   require_once realpath(__DIR__) . '/coder_review.common.inc';
+
+  // Check for the 'git' option.
+  if (drush_get_option('git')) {
+    return _drush_coder_review_git();
+  }
 
   // Get the command line options severity options.
   $severity = drush_get_option('severity');
@@ -300,12 +453,11 @@ function drush_coder_review() {
  */
 function drush_coder_review_install_php_code_sniffer() {
   // Try loading CodeSniffer first, and if it already exists, exit.
-  try {
-    @include_once 'PHP/CodeSniffer.php';
-    drush_print(dt('PHP_CodeSniffer already installed.'));
-  }
-  catch (Exception $e) {
+  if (!@include_once 'PHP/CodeSniffer.php') {
     $missing = TRUE;
+  }
+  else {
+    drush_print(dt('PHP_CodeSniffer already installed.'));
   }
 
   // Install PHP_CodeSniffer using pear.
@@ -379,6 +531,30 @@ function _coder_review_drush_is_patch_arg(&$arg, $root) {
       $arg = $path;
       return TRUE;
     }
+  }
+}
+
+/**
+ * Save and return the exit error code.
+ */
+function _coder_review_exit($exitcode = -1) {
+  static $ret = 1;
+  if ($exitcode >= 0) {
+    $ret = $exitcode;
+  }
+  return $ret;
+}
+
+/**
+ * Implements hook_drush_exit().
+ *
+ * Force coder to exit with a shell exit code.
+ * Drush does not support this natively.
+ */
+function coder_review_drush_exit() {
+  $exitcode = _coder_review_exit();
+  if ($exitcode != 1) {
+    exit($exitcode);
   }
 }
 
@@ -473,17 +649,27 @@ function theme_drush_coder_review_warning(array $variables) {
 
 /**
  * Prints Coder review messages in a format for drush use.
+ *
+ * @param array $summary
  */
-function coder_review_print_drush_messages() {
-  foreach (_message() as $type => $messages) {
-    $output = _coder_review_drush_output(implode("\n ", $messages));
+function coder_review_print_drush_messages(array $summary) {
+  // Count the number of warnings/errors.
+  $sum = array_sum($summary['sums']);
+  _coder_review_exit($sum ? 0 : 1);
 
-    if (!drush_get_option('checkstyle')) {
-      if (drush_get_option('xml')) {
-        _coder_review_drush_print('<status type="' . $type . '">' . $output . '</status>');
-      }
-      else {
-        _coder_review_drush_print(dt(ucfirst($type) . ' Messages') . ":\n " . $output . "\n");
+  // Display messages if there is something to display.
+  $no_empty = _coder_review_drush_get_option_no('empty');
+  if ($no_empty || $sum) {
+    foreach (_message() as $type => $messages) {
+      $output = _coder_review_drush_output(implode("\n ", $messages));
+
+      if (!drush_get_option('checkstyle')) {
+        if (drush_get_option('xml')) {
+          _coder_review_drush_print('<status type="' . $type . '">' . $output . '</status>');
+        }
+        else {
+          _coder_review_drush_print(dt(ucfirst($type) . ' Messages') . ":\n " . $output . "\n");
+        }
       }
     }
   }
