@@ -91,7 +91,7 @@ function _coder_review_set_form_modules(array &$settings) {
 /**
  * Install coder as a git pre-commit hook.
  */
-function _drush_coder_review_git() {
+function _drush_coder_review_git($uninstall = FALSE) {
   $gitpath = _drush_coder_git_path();
 
   $realroot = realpath(DRUPAL_ROOT) . '/';
@@ -138,7 +138,7 @@ foreach (find_pre_commit(\$GITPATH) as \$pre_commit) {
 }
 __PRE_COMMIT__;
 
-  _drush_coder_write_file("$gitpath/hooks/pre-commit", $pre_commit_code, 0755);
+  _drush_coder_write_file("$gitpath/hooks/pre-commit", $pre_commit_code, 0755, $uninstall);
 
   $args = $_SERVER['argv'];
   foreach ($args as $delta => $arg) {
@@ -182,18 +182,22 @@ if (\$ret) {
   exit(\$ret);
 }
 __CODER_COMMIT__;
-  _drush_coder_write_file("$gitpath/hooks/pre-commit_coder", $coder_commit_code, 0755);
+  _drush_coder_write_file("$gitpath/hooks/pre-commit_coder", $coder_commit_code, 0755, $uninstall);
 }
 
 /**
  * Helper function to write a file with error checking.
  */
-function _drush_coder_write_file($file, $contents, $perms = 0644) {
+function _drush_coder_write_file($file, $contents, $perms = 0644, $uninstall = FALSE) {
   $contents .= "\n";
   $args = array('@file' => $file);
   if (file_exists($file)) {
     $existing = file_get_contents($file);
     if ($existing == $contents) {
+      if ($uninstall) {
+        drush_print(dt('removing @file', $args));
+        return unlink($file);
+      }
       if ($perms && (fileperms($file) & 0777) != $perms) {
         drush_print(dt('correcting permissions @file', $args));
         chmod($file, $perms);
@@ -203,9 +207,20 @@ function _drush_coder_write_file($file, $contents, $perms = 0644) {
       }
       return 1;
     }
-    if (!drush_get_context('DRUSH_AFFIRMATIVE') && !drush_confirm(dt('overwrite @file with new contents', array('@file' => $file)))) {
-      return drush_error(dt('user aborted'));
+    // Only print the question when not using --yes.
+    if (!drush_get_context('DRUSH_AFFIRMATIVE')) {
+      if (!drush_confirm(dt($uninstall ? 'remove @file possibly from another source' : 'overwrite @file with new contents', $args))) {
+        return drush_error(dt('user aborted'));
+      }
     }
+    // Remove existing files.
+    if ($uninstall) {
+      drush_print(dt('removing @file', $args));
+      return unlink($file);
+    }
+  }
+  elseif ($uninstall) {
+    return 1;
   }
   if (file_put_contents($file, $contents)) {
     if ($perms) {
@@ -248,8 +263,10 @@ function drush_coder_review() {
   require_once realpath(__DIR__) . '/coder_review.common.inc';
 
   // Check for the 'git' option.
-  if (drush_get_option('git')) {
-    return _drush_coder_review_git();
+  $git = drush_get_option('git');
+  if (!empty($git)) {
+    $uninstall = $git === 'no' || $git === 'off' || $git === 'remove' || $git === 'uninstall';
+    return _drush_coder_review_git($uninstall);
   }
 
   // Get the command line options severity options.
