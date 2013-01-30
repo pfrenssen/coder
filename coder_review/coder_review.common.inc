@@ -29,7 +29,13 @@ define('SEVERITY_CRITICAL', 9);
 function _coder_review_reviews() {
   static $cache = array();
   if (!$cache) {
-    $cache = function_exists('module_invoke_all') ? module_invoke_all('reviews') : coder_review_reviews();
+    // Always get the coder review.
+    $cache = coder_review_reviews();
+
+    // When Drupal is bootstrapped, also get all reviews.
+    if (function_exists('module_invoke_all')) {
+      $cache = array_merge($cache, module_invoke_all('reviews'));
+    }
   }
   return $cache;
 }
@@ -1430,7 +1436,7 @@ function _t($string, $args = array(), $options = array()) {
  * @see l()
  */
 function _l($text, $path, $options = array()) {
-  return function_exists('l') ? l($text, $path, $options) : "$text $path";
+  return _drush() ? "$text $path" : l($text, $path, $options);
 }
 
 /**

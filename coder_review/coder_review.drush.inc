@@ -258,8 +258,8 @@ function _drush_coder_git_path() {
  */
 function drush_coder_review() {
   // Bootstrap Drupal if it is available.
-  if (drush_conf_path(_DRUSH_BOOTSTRAP_SELECTED_URI)) {
-    drush_bootstrap(DRUSH_BOOTSTRAP_DRUPAL_FULL);
+  if (drush_conf_path(_drush_bootstrap_selected_uri()) && !function_exists('drupal_goto')) {
+    drush_bootstrap_to_phase(DRUSH_BOOTSTRAP_DRUPAL_LOGIN);
   }
 
   // Bootstrap enough of coder review to run.
