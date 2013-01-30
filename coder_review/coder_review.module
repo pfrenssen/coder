@@ -98,37 +98,6 @@ function coder_review_menu_alter(&$items) {
 }
 
 /**
- * Implements hook_form_FORMID_alter().
- *
- * Modify the module display view by adding a Coder Review link to every module
- * description.
- */
-function coder_review_form_system_modules_alter(&$form, &$form_state, $form_id) {
-  if (!user_access('view code review') || isset($form['confirm'])) {
-    return;
-  }
-
-  $path = drupal_get_path('module', 'coder_review');
-  $form['#attached']['css'][] = "$path/coder_review.css";
-
-  foreach ($form['modules'] as $package_name => &$package) {
-    if ($package_name[0] != '#') {
-      foreach ($package as $module_name => &$module) {
-        if ($module_name[0] != '#') {
-          $module['links']['coder_review'] = array(
-            '#type' => 'link',
-            '#title' => t('Code review'),
-            '#href' => "admin/config/development/coder/review/$module_name",
-            '#options' => array('attributes' => array('class' => array('module-link', 'module-link-coder-review'), 'title' => t('Coder review'))),
-          );
-          $package['#theme'] = 'coder_review_modules_fieldset';
-        }
-      }
-    }
-  }
-}
-
-/**
  * Form constructor: Builds settings form API array for coder_review.
  *
  * Generates a form with the default reviews and default modules/themes to
@@ -183,9 +152,8 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
 
   // What reviews should be used?
   $form['coder_reviews_group'] = array(
-    '#type' => 'fieldset',
+    '#type' => 'details',
     '#title' => _t('Reviews'),
-    '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
   $form['coder_reviews_group']['coder_reviews'] = array(
@@ -215,9 +183,8 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
 
   if ($settings['coder_files']) {
     $form['coder_what'] = array(
-      '#type' => 'fieldset',
+      '#type' => 'details',
       '#title' => _t('What to review'),
-      '#collapsible' => TRUE,
       '#collapsed' => FALSE,
     );
     $form['coder_what']['coder_file_list'] = array(
@@ -240,9 +207,8 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
   elseif ($settings['coder_patches']) {
     // Display what to review options.
     $form['coder_what'] = array(
-      '#type' => 'fieldset',
+      '#type' => 'details',
       '#title' => _t('What to review'),
-      '#collapsible' => TRUE,
       '#collapsed' => FALSE,
     );
     $form['coder_what']['coder_patch_help'] = array(
@@ -334,8 +300,7 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
   }
   elseif (function_exists('db_query')) {
     // Get the modules and theme.
-    $sql = "SELECT name, filename, type, status FROM {system} WHERE type='module' OR type='theme' ORDER BY weight ASC, filename ASC";
-    $result = db_query($sql);
+    $result = _coder_review_get_system_data();
     $system_modules = $system_themes = array();
     foreach ($result as $system) {
       $display_name = $system->name;
@@ -360,9 +325,8 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
 
     // Display what to review options.
     $form['coder_what'] = array(
-      '#type' => 'fieldset',
+      '#type' => 'details',
       '#title' => _t('What to review'),
-      '#collapsible' => TRUE,
       '#collapsed' => FALSE,
     );
     // @note: Should rename var.
@@ -383,13 +347,12 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
       // @ignore security_fapi_title
       '#title' => _t('include files (@ext)', array('@ext' => implode(' | ', $ext))),
     );
-    $form['coder_what']['coder_includes_exclusion_fieldset'] = array(
-      '#type' => 'fieldset',
+    $form['coder_what']['coder_includes_exclusion_details'] = array(
+      '#type' => 'details',
       '#title' => _t('Include file exclusions'),
-      '#collapsible' => TRUE,
       '#collapsed' => TRUE,
     );
-    $form['coder_what']['coder_includes_exclusion_fieldset']['coder_includes_exclusions'] = array(
+    $form['coder_what']['coder_includes_exclusion_details']['coder_includes_exclusions'] = array(
       '#rows' => 3,
       '#type' => 'textarea',
       '#default_value' => $settings['coder_includes_exclusions'],
@@ -398,9 +361,8 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
 
     // Display the modules in a fieldset.
     $form['coder_what']['coder_modules'] = array(
-      '#type' => 'fieldset',
+      '#type' => 'details',
       '#title' => _t('Select specific modules'),
-      '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       'checkboxes' => array(
         '#theme' => 'coder_review_table_cols',
@@ -431,9 +393,8 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
 
     // Display the themes in a fieldset.
     $form['coder_what']['coder_themes'] = array(
-      '#type' => 'fieldset',
+      '#type' => 'details',
       '#title' => _t('Select specific themes'),
-      '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       'checkboxes' => array(
         '#theme' => 'coder_review_table_cols',
@@ -608,9 +569,8 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
 
       // Review core PHP files.
       $form['core_php'] = array(
-        '#type' => 'fieldset',
+        '#type' => 'details',
         '#title' => 'core (php)',
-        '#collapsible' => TRUE,
         '#collapsed' => TRUE,
         '#weight' => ++$module_weight,
       );
@@ -627,9 +587,8 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
 
       // Review core include files.
       $form['core_includes'] = array(
-        '#type' => 'fieldset',
+        '#type' => 'details',
         '#title' => 'core (includes)',
-        '#collapsible' => TRUE,
         '#collapsed' => TRUE,
         '#weight' => ++$module_weight,
       );
@@ -690,10 +649,9 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
 
           // Output the results in a collapsible fieldset.
           $form[$name] = array(
-            '#type' => 'fieldset',
+            '#type' => 'details',
             // @ignore security_fapi_title
             '#title' => $filename,
-            '#collapsible' => TRUE,
             '#collapsed' => TRUE,
             '#weight' => ++$module_weight,
           );
@@ -772,9 +730,8 @@ function coder_review_page_form($form, &$form_state, $arg = '') {
     if (!_drush()) {
       // Prepend the settings form.
       $form['settings'] = array(
-        '#type' => 'fieldset',
+        '#type' => 'details',
         '#title' => _t('Selection form'),
-        '#collapsible' => TRUE,
         '#collapsed' => !empty($form),
         '#weight' => -2,
       );
@@ -850,9 +807,8 @@ function _coder_review_page_form_includes(array &$form, array $coder_args, $name
 
     // Output the results in a collapsible fieldset.
     $form[$name][$filename] = array(
-      '#type' => 'fieldset',
+      '#type' => 'details',
       '#title' => $filename,
-      '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       '#weight' => ++$weight,
     );
@@ -930,7 +886,7 @@ function coder_review_theme() {
     'coder_review_table_cols' => array(
       'render element' => 'form',
     ),
-    'coder_review_modules_fieldset' => array(
+    'coder_review_modules_details' => array(
       'render element' => 'form',
       'file' => 'coder_review.admin.inc',
     ),

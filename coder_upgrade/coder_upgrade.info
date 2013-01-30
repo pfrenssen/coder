@@ -1,7 +1,7 @@
 name = Coder Upgrade
 description = Modifies source code to assist with the upgrade of a module for changes to a relied upon API.
 package = Development
-core = 7.x
+core = 8.x
 
 dependencies[] = gplib (<2.0)
 

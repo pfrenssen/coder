@@ -352,10 +352,13 @@ function drush_coder_review() {
             return drush_set_error(dt('use --reviews or --@option.', array('@option' => $arg)));
           }
           elseif (function_exists('db_query') && (strpos($arg, '*') !== FALSE || strpos($arg, '%') !== FALSE)) {
-            $result = db_query('SELECT name FROM {system} WHERE name LIKE :name', array(':name' => str_replace('*', '%', $arg)));
-            foreach ($result as $system) {
-              $settings['coder_modules-' . $system->name] = 1;
-              $match = TRUE;
+            $result = _coder_review_get_system_data();
+            $arg = strtr($arg, array('*' => '', '%' => ''));
+            foreach ($result as $name => $system) {
+              if (stripos($name, $arg) !== FALSE) {
+                $settings['coder_modules-' . $name] = 1;
+                $match = TRUE;
+              }
             }
             if (!isset($match)) {
               _coder_review_drush_print(dt('no matches found for @name', array('@name' => $arg)));

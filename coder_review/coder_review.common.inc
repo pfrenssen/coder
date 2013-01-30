@@ -319,7 +319,7 @@ function theme_coder_review_warning($variables) {
   $path = _coder_review_path() . '/..';
   $title = _t('severity: @severity', array('@severity' => $severity_name));
   $img = theme('image', array(
-    'path' => $path . "/images/$severity_name.png",
+    'uri' => $path . "/images/$severity_name.png",
     'alt' => $title,
     'title' => $title,
     'attributes' => array('align' => 'right', 'class' => 'coder'),
@@ -330,7 +330,7 @@ function theme_coder_review_warning($variables) {
     $title = _t('review: @review_@rule', array('@review' => $review_name, '@rule' => $rule_name));
     $review_image = $avail_reviews[$review_name]['#image'];
     $img .= theme('image', array(
-      'path' => (substr($review_image, 0, 7) == 'images/' ? "$path/" : '') . $review_image,
+      'uri' => (substr($review_image, 0, 7) == 'images/' ? "$path/" : '') . $review_image,
       'alt' => $title,
       'title' => $title,
       'attributes' => array('align' => 'right', 'class' => 'coder-review'),
@@ -339,7 +339,7 @@ function theme_coder_review_warning($variables) {
   }
   if (!empty($description)) {
     $img .= theme('image', array(
-      'path' => $path . '/images/more.png',
+      'uri' => $path . '/images/more.png',
       'alt' => t('click to read more'),
       'atributes' => array('align' => 'right', 'class' => 'coder-more'),
       'getsize' => FALSE,
@@ -1693,4 +1693,22 @@ function _message($message = NULL, $type = 'status') {
     $messages[$type][] = $message;
   }
   return $messages;
+}
+
+/**
+ * Returns list of available modules and themes.
+ *
+ * As the {system} table has been removed in D8 so we can't use it anymore.
+ * http://drupal.org/node/1813642
+ */
+function _coder_review_get_system_data() {
+  $modules = system_rebuild_module_data();
+  foreach ($modules as $key => $value) {
+    $modules[$key]->type = 'module';
+  }
+  $themes = system_rebuild_theme_data();
+  foreach ($themes as $key => $value) {
+    $themes[$key]->type = 'theme';
+  }
+  return array_merge($modules, $themes);
 }

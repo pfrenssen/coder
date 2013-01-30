@@ -58,7 +58,8 @@ class CoderReviewSecurityTest extends CoderReviewTestCase {
     $this->assertCoderReviewFail('  $results = db_query("SELECT * FROM {foo} WHERE name=$name");');
     $this->assertCoderReviewFail('  db_query("INSERT INTO {foo} SET name=\'$name\'");');
     $this->assertCoderReviewFail('  $sql = "INSERT INTO {foo} SET name=\'$name\'";');
-    $this->assertCoderReviewPass('  db_result(db_query("SELECT filename FROM {system} WHERE name = \'%s\'", "ad_$detail->adtype"));');
+    // The {system} table has been removed in D8.
+    //$this->assertCoderReviewPass('  db_result(db_query("SELECT filename FROM {system} WHERE name = \'%s\'", "ad_$detail->adtype"));');
   }
 
   /**
