@@ -61,6 +61,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
      * @var array
      */
     protected $invalidTypes = array(
+                               'Array' => 'array',
                                'boolean' => 'bool',
                                'integer' => 'int',
                               );
