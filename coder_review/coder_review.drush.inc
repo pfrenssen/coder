@@ -242,13 +242,16 @@ function _drush_coder_git_path() {
   static $gitpath;
   if (empty($gitpath)) {
     $path = drush_cwd();
-    do {
+    while (TRUE) {
       if (is_dir("$path/.git")) {
         $gitpath = "$path/.git";
         break;
       }
+      if ($path == DRUPAL_ROOT) {
+        break;
+      }
       $path = realpath("$path/..");
-    } while ($path != DRUPAL_ROOT);
+    }
   }
   return $gitpath;
 }
