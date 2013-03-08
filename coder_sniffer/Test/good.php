@@ -571,3 +571,5 @@ try {
 catch (Exception $e) {
   scream();
 }
+
+$result = $x ?: FALSE;

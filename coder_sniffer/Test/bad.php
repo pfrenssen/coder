@@ -723,6 +723,7 @@ $x = $y == $z ? 23 :42;
 $x = $y == $z ? 23  : 42;
 $x = $y == $z ? 23  :  42;
 $x = $y == $z ? 23 :'foo';
+$x = $y == $z ? : 42;
 
 // Watchdog messages should not use t().
 watchdog('mymodule', t('Log message here.'));
