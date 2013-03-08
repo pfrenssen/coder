@@ -88,7 +88,7 @@ class Drupal_Sniffs_Semantics_FunctionCallSniff implements PHP_CodeSniffer_Sniff
     {
         $tokens       = $phpcsFile->getTokens();
         $functionName = $tokens[$stackPtr]['content'];
-        if (isset(static::$listeners[$functionName]) === false) {
+        if (isset(self::$listeners[$functionName]) === false) {
             // No listener is interested in this function name, so return early.
             return;
         }
@@ -131,7 +131,7 @@ class Drupal_Sniffs_Semantics_FunctionCallSniff implements PHP_CodeSniffer_Sniff
         $this->closeBracket = $tokens[$openBracket]['parenthesis_closer'];
         $this->arguments    = array();
 
-        foreach (static::$listeners[$functionName] as $listener) {
+        foreach (self::$listeners[$functionName] as $listener) {
             $listener->processFunctionCall($phpcsFile, $stackPtr, $openBracket, $this->closeBracket, $this);
         }
 
@@ -217,7 +217,7 @@ class Drupal_Sniffs_Semantics_FunctionCallSniff implements PHP_CodeSniffer_Sniff
     {
         $funtionNames = $listener->registerFunctionNames();
         foreach ($funtionNames as $name) {
-            static::$listeners[$name][] = $listener;
+            self::$listeners[$name][] = $listener;
         }
 
     }//end registerListener()
