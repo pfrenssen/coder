@@ -756,8 +756,15 @@ function test24() {
  *  @return bool
  *   Description.
  */
-function test24() {
+function test25() {
   return TRUE;
+}
+
+class FooBar2 {
+  /**
+   * Function body should be on a line by itself, same for the closing brace.
+   */
+  public function test26() {print 'x';}
 }
 
 // Security issue: http://drupal.org/node/750148
