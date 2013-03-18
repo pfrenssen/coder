@@ -299,7 +299,6 @@ class Drupal_Sniffs_Semantics_FunctionAliasSniff extends Drupal_Sniffs_Semantics
         'swfsprite' => 'swfsprite_init',
         'swftext' => 'swftext_init',
         'swftextfield' => 'swftextfield_init',
-        'unlink' => 'domxml_unlink_node',
         'xptr_new_context' => 'xpath_new_context',
     );
 
