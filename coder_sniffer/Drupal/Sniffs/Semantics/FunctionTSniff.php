@@ -68,6 +68,8 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
 
         if ($tokens[$argument['start']]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
             // Not a translatable string literal.
+            $warning = 'Only string literals should be passed to t() where possible';
+            $phpcsFile->addWarning($warning, $argument['start'], 'NotLiteralString');
             return;
         }
 
