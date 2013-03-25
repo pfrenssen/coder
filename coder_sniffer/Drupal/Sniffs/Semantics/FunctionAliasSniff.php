@@ -232,7 +232,6 @@ class Drupal_Sniffs_Semantics_FunctionAliasSniff extends Drupal_Sniffs_Semantics
         'recode' => 'recode_string',
         'remove' => 'swfmovie_remove',
         'remove' => 'swfsprite_remove',
-        'rewind' => 'rewinddir',
         'root' => 'domxml_root',
         'rotate' => 'swfdisplayitem_rotate',
         'rotateto' => 'swfdisplayitem_rotateTo',
