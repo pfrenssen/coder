@@ -10,8 +10,7 @@
  */
 
 /**
- * Check the usage of the t() function to not escape translateable strings with back
- * slashes. Also checks that the first argument does not use string concatenation.
+ * Checks the usage of variable_get() in forms and the variable name.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -58,13 +57,14 @@ class DrupalPractice_Sniffs_General_VariableNameSniff extends Drupal_Sniffs_Sema
         Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
     ) {
         $tokens = $phpcsFile->getTokens();
-        
+
         // We assume that the sequence '#default_value' => variable_get(...)
         // indicates a variable that the module owns.
         $arrow = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
         if ($arrow === false || $tokens[$arrow]['code'] !== T_DOUBLE_ARROW) {
             return;
         }
+
         $arrayKey = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($arrow - 1), null, true);
         if ($arrayKey === false
             || $tokens[$arrayKey]['code'] !== T_CONSTANT_ENCAPSED_STRING
@@ -75,18 +75,29 @@ class DrupalPractice_Sniffs_General_VariableNameSniff extends Drupal_Sniffs_Sema
 
         $argument = $sniff->getArgument(1);
 
+        // Variable name is not a literal string, so we return early.
         if ($argument === false || $tokens[$argument['start']]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
             return;
         }
 
         $moduleName = DrupalPractice_Project::getName($phpcsFile);
-        print_r($moduleName);
         if ($moduleName === false) {
             return;
         }
+
         $variableName = substr($tokens[$argument['start']]['content'], 1, -1);
+        if (strpos($variableName, $moduleName) !== 0) {
+            $warning = 'All variables defined by your module must be prefixed with your module\'s name to avoid name collisions with others. Expected %s but found %s';
+            $data    = array(
+                        $moduleName.'_'.$variableName,
+                        $variableName,
+                       );
+            $phpcsFile->addWarning($warning, $argument['start'], 'VariableName', $data);
+        }
 
     }//end processFunctionCall()
 
 
 }//end class
+
+?>
