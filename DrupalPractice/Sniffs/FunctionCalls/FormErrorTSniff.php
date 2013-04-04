@@ -27,7 +27,10 @@ class DrupalPractice_Sniffs_FunctionCalls_FormErrorTSniff extends Drupal_Sniffs_
      */
     public function registerFunctionNames()
     {
-        return array('form_set_error');
+        return array(
+                'form_set_error',
+                'form_error',
+               );
 
     }//end registerFunctionNames()
 
