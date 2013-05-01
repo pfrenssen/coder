@@ -87,9 +87,9 @@ class DrupalPractice_Sniffs_General_VariableNameSniff extends Drupal_Sniffs_Sema
 
         $variableName = substr($tokens[$argument['start']]['content'], 1, -1);
         if (strpos($variableName, $moduleName) !== 0) {
-            $warning = 'All variables defined by your module must be prefixed with your module\'s name to avoid name collisions with others. Expected %s but found %s';
+            $warning = 'All variables defined by your module must be prefixed with your module\'s name to avoid name collisions with others. Expected start with "%s" but found "%s"';
             $data    = array(
-                        $moduleName.'_'.$variableName,
+                        $moduleName,
                         $variableName,
                        );
             $phpcsFile->addWarning($warning, $argument['start'], 'VariableName', $data);
