@@ -73,6 +73,12 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
             return;
         }
 
+        if ($tokens[$argument['start']]['content'] === '""' || $tokens[$argument['start']]['content'] === "''") {
+            $warning = 'Do not pass empty strings to t()';
+            $phpcsFile->addWarning($warning, $argument['start'], 'EmptyString');
+            return;
+        }
+
         $concatFound = $phpcsFile->findNext(T_STRING_CONCAT, $argument['start'], $argument['end']);
         if ($concatFound !== false) {
             $error = 'Concatenating translatable strings is not allowed, use placeholders instead and only one string literal';

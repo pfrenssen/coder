@@ -791,4 +791,8 @@ try {
 // Function name aliases should not be used.
 $x = join($glue, $pieces);
 
+// Empty strings passed to t() are wrong.
+t('');
+t("");
+
 ?>
