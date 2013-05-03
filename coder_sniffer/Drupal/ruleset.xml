@@ -176,6 +176,9 @@
  <rule ref="Squiz.ControlStructures.SwitchDeclaration.MissingDefault">
   <severity>0</severity>
  </rule>
+ <rule ref="Squiz.ControlStructures.SwitchDeclaration.SpacingAfterCase">
+  <severity>0</severity>
+ </rule>
  <rule ref="Squiz.ControlStructures.SwitchDeclaration.SpacingAfterDefaultBreak">
   <severity>0</severity>
  </rule>
