@@ -20,7 +20,7 @@ function drupalcs_drush_command() {
     'aliases' => array('dcs'),
     'options' => array(
       'extensions' => array(
-        'description' => dt('Comma delimited list of file extensions to scan.  The default is @default', array(
+        'description' => dt('Comma delimited list of file extensions to scan. The default is @default', array(
           '@default' => implode(',', _drupalcs_extensions()),
         )),
         'example-value' => dt('php,module'),
@@ -30,7 +30,7 @@ function drupalcs_drush_command() {
         'example-value' => dt('extended'),
       ),
       'report' => array(
-        'description' => dt('Specify the report format.  Options are: full, xml, checkstyle, csv, emacs, source, summary, svnblame, gitblame or hgblame.'),
+        'description' => dt('Specify the report format. Options are: full, xml, checkstyle, csv, emacs, source, summary, svnblame, gitblame or hgblame.'),
         'example-value' => dt('xml'),
       ),
       'report-file' => array(
@@ -95,9 +95,9 @@ function drush_drupalcs($path = '') {
   // Define the extensions; allow overriding.
   $extensions = drush_get_option('extensions');
   if (!$extensions) {
-    $extensions = _drupalcs_extensions(drush_get_option('mode'));
+    $extensions = implode(',', _drupalcs_extensions(drush_get_option('mode')));
   }
-  $command .= ' --extensions=' . implode(',', $extensions);
+  $command .= ' --extensions=' . $extensions;
 
   // Optionally define the report format.
   $report = drush_get_option('report');

@@ -723,6 +723,7 @@ $x = $y == $z ? 23 :42;
 $x = $y == $z ? 23  : 42;
 $x = $y == $z ? 23  :  42;
 $x = $y == $z ? 23 :'foo';
+$x = $y == $z ? : 42;
 
 // Watchdog messages should not use t().
 watchdog('mymodule', t('Log message here.'));
@@ -755,8 +756,15 @@ function test24() {
  *  @return bool
  *   Description.
  */
-function test24() {
+function test25() {
   return TRUE;
+}
+
+class FooBar2 {
+  /**
+   * Function body should be on a line by itself, same for the closing brace.
+   */
+  public function test26() {print 'x';}
 }
 
 // Security issue: http://drupal.org/node/750148
@@ -782,5 +790,9 @@ try {
 
 // Function name aliases should not be used.
 $x = join($glue, $pieces);
+
+// Empty strings passed to t() are wrong.
+t('');
+t("");
 
 ?>

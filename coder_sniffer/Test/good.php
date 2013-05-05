@@ -187,6 +187,12 @@ switch ($condition) {
     $i;
     break;
 
+  // Blank line after the case statement is allowed.
+  case 3:
+
+    $i;
+    break;
+
   default:
     $i;
 }
@@ -560,6 +566,7 @@ preg_match('@.+@i', 'subject');
 preg_match('@.+@imsuxADSUXJ', 'subject');
 preg_filter('@.+@i', 'replacement', 'subject');
 preg_replace('@.+@i', 'replacement', 'subject');
+preg_match("/test(\d+)/is", 'subject');
 
 interface MyWellNamedInterface {
 }
@@ -571,3 +578,5 @@ try {
 catch (Exception $e) {
   scream();
 }
+
+$result = $x ?: FALSE;
