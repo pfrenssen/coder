@@ -67,9 +67,11 @@ class DrupalPractice_Sniffs_General_ClassNameSniff implements PHP_CodeSniffer_Sn
         // Underscores are omitted in class names. Also convert all characters
         // to lower case to compare them later.
         $classPrefix = strtolower(str_replace('_', '', $moduleName));
+        // Views classes might have underscores in the name, which is also fine.
+        $viewsPrefix = strtolower($moduleName);
         $name        = strtolower($name);
 
-        if (strpos($name, $classPrefix) !== 0) {
+        if (strpos($name, $classPrefix) !== 0 && strpos($name, $viewsPrefix) !== 0) {
             $warning = '%s name must be prefixed with the project name "%s" (omitting underscores)';
             $errorData = array(ucfirst($tokens[$stackPtr]['content']), $moduleName);
             $phpcsFile->addWarning($warning, $className, 'ClassPrefix', $errorData);
