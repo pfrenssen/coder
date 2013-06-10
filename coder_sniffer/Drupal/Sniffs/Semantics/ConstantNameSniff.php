@@ -75,12 +75,12 @@ class Drupal_Sniffs_Semantics_ConstantNameSniff extends Drupal_Sniffs_Semantics_
         // Remove the quotes around the string litral.
         $constant = substr($tokens[$argument['start']]['content'], 1, -1);
         if (strpos($constant, $expectedStart) !== 0) {
-            $error = 'All constants defined by a module must be prefixed with the module\'s name, expected "%s" but found "%s"';
+            $warning = 'All constants defined by a module must be prefixed with the module\'s name, expected "%s" but found "%s"';
             $data  = array(
                       $expectedStart."_$constant",
                       $constant,
                      );
-            $phpcsFile->addError($error, $stackPtr, 'ConstantStart', $data);
+            $phpcsFile->addWarning($warning, $stackPtr, 'ConstantStart', $data);
         }
 
     }//end processFunctionCall()
