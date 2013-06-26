@@ -60,22 +60,26 @@ class DrupalPractice_Sniffs_General_OptionsTSniff implements PHP_CodeSniffer_Sni
             return;
         }
 
+        // We only search within the #optzions array.
+        $arrayToken = $phpcsFile->findNext(T_ARRAY, ($stackPtr + 1));
+        $statementEnd = $tokens[$arrayToken]['parenthesis_closer'];
+
         // Go through the array by examining stuff after "=>".
-        $arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($stackPtr + 1), null, false, null, true);
+        $arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($stackPtr + 1), $statementEnd, false, null, true);
         while ($arrow !== false) {
-            $arrayValue = $phpcsFile->findNext(T_WHITESPACE, ($arrow + 1), null, true);
+            $arrayValue = $phpcsFile->findNext(T_WHITESPACE, ($arrow + 1), $statementEnd, true);
             // We are only interested in string literals.
             if ($tokens[$arrayValue]['code'] === T_CONSTANT_ENCAPSED_STRING) {
                 // We need to make sure that the string is the one and only part
                 // of the array value.
-                $afterValue = $phpcsFile->findNext(T_WHITESPACE, ($arrayValue + 1), null, true);
+                $afterValue = $phpcsFile->findNext(T_WHITESPACE, ($arrayValue + 1), $statementEnd, true);
                 if ($tokens[$afterValue]['code'] === T_COMMA || $tokens[$afterValue]['code'] === T_CLOSE_PARENTHESIS) {
                     $warning = '#options values usually have to run through t() for translation';
                     $phpcsFile->addWarning($warning, $arrayValue, 'TforValue');
                 }
             }
 
-            $arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($arrow + 1), null, false, null, true);
+            $arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($arrow + 1), $statementEnd, false, null, true);
         }
 
     }//end process()
