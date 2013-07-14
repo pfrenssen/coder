@@ -287,14 +287,16 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             $phpcsFile->addError($error, ($commentStart + 1), 'ShortStartSpace');
         }
 
-        if (preg_match('|[A-Z]|', $testShort[0]) === 0) {
-            $error = 'Function comment short description must start with a capital letter';
-            $phpcsFile->addError($error, ($commentStart + 1), 'ShortNotCapital');
-        }
+        if ($testShort !== '{@inheritdoc}') {
+            if (preg_match('|[A-Z]|', $testShort[0]) === 0) {
+                $error = 'Function comment short description must start with a capital letter';
+                $phpcsFile->addError($error, ($commentStart + 1), 'ShortNotCapital');
+            }
 
-        if ($lastChar !== '.') {
-            $error = 'Function comment short description must end with a full stop';
-            $phpcsFile->addError($error, ($commentStart + 1), 'ShortFullStop');
+            if ($lastChar !== '.') {
+                $error = 'Function comment short description must end with a full stop';
+                $phpcsFile->addError($error, ($commentStart + 1), 'ShortFullStop');
+            }
         }
 
     }//end process()

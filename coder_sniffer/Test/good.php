@@ -580,3 +580,18 @@ catch (Exception $e) {
 }
 
 $result = $x ?: FALSE;
+
+class Foo implements FooInterface {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function test() {}
+
+  /**
+   * {@inheritdoc}
+   *
+   * Some additional documentation here.
+   */
+  public function test2() {}
+}
