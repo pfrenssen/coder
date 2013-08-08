@@ -2,4 +2,12 @@
 <ruleset name="DrupalPractice">
  <description>Drupal best practice checks</description>
  <rule ref="Drupal.Semantics.FunctionCall" />
+ <rule ref="DrupalPractice.CodeAnalysis.VariableAnalysis">
+  <properties>
+   <property name="allowUnusedFunctionParameters" value="1" />
+  </properties>
+ </rule>
+ <rule ref="DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable">
+  <severity>0</severity>
+ </rule>
 </ruleset>
