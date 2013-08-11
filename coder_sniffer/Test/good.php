@@ -594,4 +594,11 @@ class Foo implements FooInterface {
    * Some additional documentation here.
    */
   public function test2() {}
+
+  /**
+   * Returns the string representatuion of this object.
+   */
+  public function __toString() {
+    return 'foo';
+  }
 }
