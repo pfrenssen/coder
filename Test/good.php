@@ -19,3 +19,12 @@ $form['vocab_fieldset']['entity_view_modes'] = array(
     'effect'   => 'fade',
   ),
 );
+
+/**
+ * Ignoring the array value in a foreach loop is OK.
+ */
+function test1() {
+  foreach ($array as $key => $value) {
+    print $key;
+  }
+}

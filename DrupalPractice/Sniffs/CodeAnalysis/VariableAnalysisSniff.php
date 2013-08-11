@@ -1094,6 +1094,13 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
         }
 
         $this->markVariableAssignment($varName, $stackPtr, $currScope);
+
+        // Workaround: We want to allow foreach ($array as $key => $value) where
+        // $value is never read, so we just mark it read immediately here.
+        if ($phpcsFile->findPrevious(T_DOUBLE_ARROW, $stackPtr - 1, $openPtr) !== false) {
+            $this->markVariableRead($varName, $stackPtr, $currScope);
+        }
+
         return true;
     }
 
