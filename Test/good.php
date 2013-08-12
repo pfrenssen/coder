@@ -27,4 +27,12 @@ function test1() {
   foreach ($array as $key => $value) {
     print $key;
   }
+
+  try {
+    print 'foo';
+  }
+  catch (Exception $e) {
+    // $e is unused here, which is fine.
+    print 'error';
+  }
 }
