@@ -19,11 +19,13 @@ $form['vocab_fieldset']['entity_view_modes'] = array(
     'effect'   => 'fade',
   ),
 );
+print_r($form);
 
 /**
  * Ignoring the array value in a foreach loop is OK.
  */
 function test1() {
+  $array = array(1, 2);
   foreach ($array as $key => $value) {
     print $key;
   }
@@ -35,4 +37,8 @@ function test1() {
     // $e is unused here, which is fine.
     print 'error';
   }
+
+  // Initializing an array on the fly is allowed.
+  $items['foo'] = 'bar';
+  return $items;
 }

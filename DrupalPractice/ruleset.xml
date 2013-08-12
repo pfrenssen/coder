@@ -8,7 +8,4 @@
    <property name="allowUnusedCaughtExceptions" value="1" />
   </properties>
  </rule>
- <rule ref="DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable">
-  <severity>0</severity>
- </rule>
 </ruleset>

@@ -608,6 +608,11 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
             if ($tokens[$nextPtr]['code'] === T_EQUAL) {
                 return $nextPtr;
             }
+            // Special handling for initializing arrays on the fly, which is
+            // also an assignment.
+            if ($tokens[$nextPtr]['code'] === T_OPEN_SQUARE_BRACKET) {
+                return $this->isNextThingAnAssign($phpcsFile, $tokens[$nextPtr]['bracket_closer']);
+            }
         }
         return false;
     }
