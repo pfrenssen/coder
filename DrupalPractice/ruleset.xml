@@ -8,4 +8,8 @@
    <property name="allowUnusedCaughtExceptions" value="1" />
   </properties>
  </rule>
+ <rule ref="DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable">
+  <!-- Do not run this sniff on template files. -->
+  <exclude-pattern>*.tpl.php</exclude-pattern>
+ </rule>
 </ruleset>
