@@ -957,6 +957,15 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
         if (($writtenPtr = $this->findWhereAssignExecuted($phpcsFile, $assignPtr)) === false) {
             $writtenPtr = $stackPtr;  // I dunno
         }
+
+        // Check for the ampersand '&' after the assignment, which means this
+        // variable is taken by reference.
+        $refPtr = $phpcsFile->findNext(T_WHITESPACE, $assignPtr + 1, null, true);
+        if ($tokens[$refPtr]['code'] === T_BITWISE_AND) {
+            $varInfo = $this->getVariableInfo($varName, $currScope);
+            $varInfo->passByReference = true;
+        }
+
         $this->markVariableAssignment($varName, $writtenPtr, $currScope);
         return true;
     }

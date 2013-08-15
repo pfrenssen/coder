@@ -42,3 +42,11 @@ function test1() {
   $items['foo'] = 'bar';
   return $items;
 }
+
+/**
+ * Variables that are used by reference are allowed to not be read.
+ */
+function test2() {
+  $list = &some_other_function();
+  $list = array();
+}
