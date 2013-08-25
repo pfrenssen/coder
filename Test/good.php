@@ -55,7 +55,7 @@ function test2() {
  * Variables that are used by reference are allowed to not be read.
  */
 function test3(&$variables, $hook) {
-  foreach ($variables['items'] as $item) {
+  foreach ($variables['items'] as &$item) {
     $item['image'] = 'foo';
   }
 }
