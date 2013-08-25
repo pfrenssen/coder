@@ -50,3 +50,12 @@ function test2() {
   $list = &some_other_function();
   $list = array();
 }
+
+/**
+ * Variables that are used by reference are allowed to not be read.
+ */
+function test3(&$variables, $hook) {
+  foreach ($variables['items'] as $item) {
+    $item['image'] = 'foo';
+  }
+}

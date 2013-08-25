@@ -1115,6 +1115,15 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
             $this->markVariableRead($varName, $stackPtr, $currScope);
         }
 
+        // Foreach variables that are read as references like
+        // foreach ($array as &$value) should not throw unused variable errors.
+        if (($refPtr = $phpcsFile->findPrevious(T_WHITESPACE, $stackPtr - 1, null, true)) !== false
+            && $tokens[$refPtr]['code'] === T_BITWISE_AND
+        ) {
+            $varInfo = $this->getVariableInfo($varName, $currScope);
+            $varInfo->passByReference = true;
+        }
+
         return true;
     }
 
