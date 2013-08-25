@@ -1,0 +1,24 @@
+{
+    "name": "klausi/drupalpractice",
+    "type": "library",
+    "description": "DrupalPractice sniffer - Uses PHP_CodeSniffer to find common errors that new Drupal developers make in their modules",
+    "keywords": ["phpcs", "standards"],
+    "license": "GPL-2.0+",
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "drupal/coder",
+                "version": "2",
+                "dist": {
+                    "url": "http://ftp.drupal.org/files/projects/coder-7.x-2.x-dev.zip",
+                    "type": "zip"
+                }
+            }
+        }
+    ],
+    "require": {
+        "squizlabs/php_codesniffer": ">=1.4.6",
+        "drupal/coder": "~2"
+    }
+}
