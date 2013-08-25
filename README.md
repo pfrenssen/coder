@@ -4,9 +4,7 @@ drupalpractice
 DrupalPractice sniffer - Uses [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
 to find common errors that new Drupal developers make in their modules.
 
-Please report bugs in the [drupalpractice issue queue on drupal.org](https://drupal.org/project/issues/drupalpractice).
-
-Please use Github pull requests to contribute patches.
+Please use Github pull requests to contribute patches and the issue queue on Github to report problems.
 
 Installation
 ------------
