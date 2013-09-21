@@ -43,7 +43,7 @@ function coder_review_requirements($phase) {
   $requirements['coder_review-sniffer'] = array(
     'title' => t('Coder Review'),
     'value' => empty($missing) ? $t('PHP_CodeSniffer installed.') : $t('PHP_CodeSniffer not installed.'),
-    'description' => $t('Coder review uses <a href="!php-url">PHP_CodeSniffer</a> to perform better code review checks; Code_Sniffer is not a requirement, but it is helpful. Use "<a href="!drush-url">drush</a> install-coder-sniffer" to help install.', array('!php-url' => 'http://pear.php.net/package/PHP_CodeSniffer', '!drush-url' => 'http://drupal.org/project/drush')),
+    'description' => $t('Coder review uses <a href="!php-url">PHP_CodeSniffer</a> to perform better code review checks; Code_Sniffer is not a requirement, but it is helpful. Use "<a href="!drush-url">drush</a> install-php-code-sniffer" to help install.', array('!php-url' => 'http://pear.php.net/package/PHP_CodeSniffer', '!drush-url' => 'http://drupal.org/project/drush')),
     'severity' => empty($missing) ? REQUIREMENT_OK : REQUIREMENT_WARNING,
   );
 
