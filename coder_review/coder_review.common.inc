@@ -1595,6 +1595,7 @@ function _cache_set($cid, $data, $bin = 'default') {
  * @see drupal_substr()
  */
 function _substr($text, $start, $length = NULL) {
+print "substr($text, $start, $length) :\n- length:***" . substr($text, $start, $length) . "***\n- noleng:***" . substr($text, $start) . "***\n";
   return function_exists('drupal_substr') ? drupal_substr($text, $start, $length) : substr($text, $start, $length);
 }
 
