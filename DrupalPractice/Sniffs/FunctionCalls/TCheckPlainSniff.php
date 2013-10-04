@@ -10,8 +10,8 @@
  */
 
 /**
- * Check that "@" and "%" placeholders in t() are not escaped twice with
- * check_plain().
+ * Check that "@" and "%" placeholders in t()/watchdog() are not escaped twice
+ * with check_plain().
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -28,7 +28,10 @@ class DrupalPractice_Sniffs_FunctionCalls_TCheckPlainSniff extends Drupal_Sniffs
      */
     public function registerFunctionNames()
     {
-        return array('t');
+        return array(
+                't',
+                'watchdog',
+               );
 
     }//end registerFunctionNames()
 
@@ -57,8 +60,13 @@ class DrupalPractice_Sniffs_FunctionCalls_TCheckPlainSniff extends Drupal_Sniffs
         $closeBracket,
         Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
     ) {
-        $tokens   = $phpcsFile->getTokens();
-        $argument = $sniff->getArgument(2);
+        $tokens = $phpcsFile->getTokens();
+        if ($tokens[$stackPtr]['content'] === 't') {
+            $argument = $sniff->getArgument(2);
+        } else {
+            // For watchdog() the placeholders are in the third argument.
+            $argument = $sniff->getArgument(3);
+        }
 
         if ($argument === false) {
             return;
@@ -69,9 +77,9 @@ class DrupalPractice_Sniffs_FunctionCalls_TCheckPlainSniff extends Drupal_Sniffs
         }
 
         $checkPlain = $argument['start'];
-        while ($checkPlain = $phpcsFile->findNext(T_STRING, $checkPlain + 1, $tokens[$argument['start']]['parenthesis_closer'])) {
+        while ($checkPlain = $phpcsFile->findNext(T_STRING, ($checkPlain + 1), $tokens[$argument['start']]['parenthesis_closer'])) {
             if ($tokens[$checkPlain]['content'] === 'check_plain') {
-                $warning = 'The extra check_plain() is not necessary for t() placeholders, "@" and "%" will automatically run check_plain()';
+                $warning = 'The extra check_plain() is not necessary for placeholders, "@" and "%" will automatically run check_plain()';
                 $phpcsFile->addWarning($warning, $checkPlain, 'CheckPlain');
             }
         }
