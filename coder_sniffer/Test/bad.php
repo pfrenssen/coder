@@ -436,6 +436,8 @@ t("This is a \"fancy\" string.");
 t('Your user name: ' . $user_name);
 // Empty t() calls are not allowed.
 t();
+// The masage must not begin or end with white spaces.
+$text = t('Number of attempts: ') . $number;
 
 // require_once should be a statement.
 require_once('somefile.php');

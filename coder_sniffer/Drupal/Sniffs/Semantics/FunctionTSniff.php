@@ -79,6 +79,12 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
             return;
         }
 
+        $message = substr($tokens[$argument['start']]['content'], 1, -1);
+        if ($message !== trim($message)) {
+            $warning = 'Translatable strings must not begin or end with white spaces, use placeholders with t() for variables';
+            $phpcsFile->addWarning($warning, $argument['start'], 'WhiteSpace');
+        }
+
         $concatFound = $phpcsFile->findNext(T_STRING_CONCAT, $argument['start'], $argument['end']);
         if ($concatFound !== false) {
             $error = 'Concatenating translatable strings is not allowed, use placeholders instead and only one string literal';
