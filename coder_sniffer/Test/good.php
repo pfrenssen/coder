@@ -602,3 +602,6 @@ class Foo implements FooInterface {
     return 'foo';
   }
 }
+
+t('Some long mulit-line 
+  text is weird, but allowed.');
