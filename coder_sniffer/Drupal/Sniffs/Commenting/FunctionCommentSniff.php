@@ -279,7 +279,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         $testShort = trim($short);
         $lastChar  = $testShort[(strlen($testShort) - 1)];
         if (substr_count($testShort, $phpcsFile->eolChar) !== 0) {
-            $error = 'Function comment short description must be on a single line';
+            $error = 'Function comment short description must be on a single line, further text should be a separate paragraph';
             $phpcsFile->addError($error, ($commentStart + 1), 'ShortSingleLine');
         }
 
