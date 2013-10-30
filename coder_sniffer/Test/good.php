@@ -24,7 +24,7 @@ $foo = 'bar';
 define('FOO_BAR', 5);
 
 // Global variable names.
-global $user, $is_https, $_mymodule_myvar;
+global $argc, $argv, $user, $is_https, $_mymodule_myvar;
 
 /*
  * Multiline comment
