@@ -1008,7 +1008,6 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
         $currScope
     ) {
         $tokens = $phpcsFile->getTokens();
-        $token  = $tokens[$stackPtr];
 
         // Are we a global declaration?
         // Search backwards for first token that isn't whitespace, comma or variable.
@@ -1021,6 +1020,10 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
 
         // It's a global declaration.
         $this->markVariableDeclaration($varName, 'global', null, $stackPtr, $currScope);
+        // Also mark this variable as being a reference, so that we don't get
+        // unused variable warnings if it is never read.
+        $varInfo = $this->getVariableInfo($varName, $currScope);
+        $varInfo->passByReference = true;
         return true;
     }
 

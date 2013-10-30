@@ -59,3 +59,14 @@ function test3(&$variables, $hook) {
     $item['image'] = 'foo';
   }
 }
+
+/**
+ * Global variables that are used in ifs should not be flagged as unused.
+ */
+function test4() {
+  global $user;
+  $x = 5;
+  if ($x == 5) {
+    $user = 123;
+  }
+}
