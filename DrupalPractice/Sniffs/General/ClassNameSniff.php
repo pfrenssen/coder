@@ -53,7 +53,7 @@ class DrupalPractice_Sniffs_General_ClassNameSniff implements PHP_CodeSniffer_Sn
         if ($namespace !== false) {
             return;
         }
-        
+
         $moduleName = DrupalPractice_Project::getName($phpcsFile);
         if ($moduleName === false) {
             return;
@@ -63,7 +63,7 @@ class DrupalPractice_Sniffs_General_ClassNameSniff implements PHP_CodeSniffer_Sn
 
         $className = $phpcsFile->findNext(T_STRING, $stackPtr);
         $name      = trim($tokens[$className]['content']);
-        
+
         // Underscores are omitted in class names. Also convert all characters
         // to lower case to compare them later.
         $classPrefix = strtolower(str_replace('_', '', $moduleName));
@@ -72,8 +72,14 @@ class DrupalPractice_Sniffs_General_ClassNameSniff implements PHP_CodeSniffer_Sn
         $name        = strtolower($name);
 
         if (strpos($name, $classPrefix) !== 0 && strpos($name, $viewsPrefix) !== 0) {
-            $warning = '%s name must be prefixed with the project name "%s" (omitting underscores)';
-            $errorData = array(ucfirst($tokens[$stackPtr]['content']), $moduleName);
+            $warning   = '%s name must be prefixed with the project name "%s"';
+            $nameParts = explode('_', $moduleName);
+            $camelName = '';
+            foreach ($nameParts as &$part) {
+                $camelName .= ucfirst($part);
+            }
+
+            $errorData = array(ucfirst($tokens[$stackPtr]['content']), $camelName);
             $phpcsFile->addWarning($warning, $className, 'ClassPrefix', $errorData);
         }
 
