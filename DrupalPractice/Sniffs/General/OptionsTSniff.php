@@ -43,7 +43,7 @@ class DrupalPractice_Sniffs_General_OptionsTSniff implements PHP_CodeSniffer_Sni
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        // Look for the sting "#options".
+        // Look for the string "#options".
         $tokens = $phpcsFile->getTokens();
         if ($tokens[$stackPtr]['content'] !== '"#options"' && $tokens[$stackPtr]['content'] !== "'#options'") {
             return;
@@ -60,7 +60,7 @@ class DrupalPractice_Sniffs_General_OptionsTSniff implements PHP_CodeSniffer_Sni
             return;
         }
 
-        // We only search within the #optzions array.
+        // We only search within the #options array.
         $arrayToken = $phpcsFile->findNext(T_ARRAY, ($stackPtr + 1));
         $statementEnd = $tokens[$arrayToken]['parenthesis_closer'];
 

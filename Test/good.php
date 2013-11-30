@@ -10,6 +10,7 @@ $form['vocab_fieldset']['entity_view_modes'] = array(
   '#prefix'   => '<div id="entity_view_modes_div">',
   '#suffix'   => '</div>',
   '#title'    => t('View Mode'),
+  '#description' => '<p>' . t('test description') . '</p>',
   '#required' => 1,
   '#options'  => array(),
   '#ajax' => array(
