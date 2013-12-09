@@ -67,6 +67,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                                'integer' => 'int',
                                'str' => 'string',
                                'stdClass' => 'object',
+                               'number' => 'int',
                               );
 
 
