@@ -27,7 +27,10 @@ class DrupalPractice_Sniffs_General_LanguageNoneSniff implements PHP_CodeSniffer
      */
     public function register()
     {
-        return array(T_OPEN_SQUARE_BRACKET);
+        return array(
+                T_OPEN_SQUARE_BRACKET,
+                T_OPEN_SHORT_ARRAY,
+               );
 
     }//end register()
 
