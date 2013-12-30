@@ -216,14 +216,9 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 
         // Check if hook implementation doc is formated correctly.
         if (preg_match('/^[\s]*Implement[^\n]+?hook_[^\n]+/i', $comment->getShortComment(), $matches)) {
-            $formattingIssue = 0;
-            if (!strstr($matches[0], 'Implements ')) {
-                $formattingIssue++;
-            }
-            if (!preg_match('/ hook_[a-zA-Z0-9_]+\(\)( for [a-z0-9_]+(\(\)|\.tpl\.php))?\.$/', $matches[0])) {
-                $formattingIssue++;
-            }
-            if ($formattingIssue) {
+            if (!strstr($matches[0], 'Implements ') || strstr($matches[0], 'Implements of')
+                || !preg_match('/ hook_[a-zA-Z0-9_]+\(\)( for [a-z0-9_]+(\(\)|\.tpl\.php))?\.$/', $matches[0])
+            ) {
                 $phpcsFile->addWarning('Format should be "* Implements hook_foo().", "* Implements hook_foo_BAR_ID_bar() for xyz_bar().", or "* Implements hook_foo_BAR_ID_bar() for xyz_bar.tpl.php.".', $commentStart + 1);
             } else {
                 // Check that a hook implementation does not duplicate @param and

@@ -464,6 +464,13 @@ function mymodule_menu() {
 }
 
 /**
+ * Implements of hook_boing().
+ */
+function mymodule_boing() {
+  return array();
+}
+
+/**
  * Implementation hook_foo_BAR_ID_bar() for some_type_bar().
  *
  * Extended "Implements" syntax for hooks.
