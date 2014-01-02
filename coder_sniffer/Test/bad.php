@@ -769,6 +769,16 @@ function test25() {
   return TRUE;
 }
 
+/**
+ * Void returns are not allowed.
+ *
+ * @return void
+ *   Description.
+ */
+function test26() {
+
+}
+
 class FooBar2 {
   /**
    * Function body should be on a line by itself, same for the closing brace.

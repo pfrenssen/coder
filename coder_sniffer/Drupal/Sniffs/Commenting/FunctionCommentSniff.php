@@ -383,6 +383,11 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $this->currentFile->addError($error, $errorPos, 'InvalidReturnType', $data);
                 }
 
+                if (strtolower($return->getValue()) === 'void') {
+                    $error = 'If there is no return value for a function, there must not be a @return tag.';
+                    $this->currentFile->addError($error, $errorPos, 'VoidReturn');
+                }
+
                 if (isset($this->invalidTypes[$return->getValue()]) === true) {
                     $error = 'Invalid @return data type, expected %s but found %s';
                     $data = array($this->invalidTypes[$return->getValue()], $return->getValue());
