@@ -253,6 +253,7 @@ do {
  * @see example_reference()
  * @see Example::exampleMethod()
  * @see http://drupal.org
+ * @see http://example.com/see/documentation/is/allowed/to/exceed/eighty/characters
  */
 function foo_bar($field1, $field2, $field3 = NULL, &$field4 = NULL) {
   $system["description"] = t("This module inserts funny text into posts randomly.");
