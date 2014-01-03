@@ -296,7 +296,10 @@ $var = foo(
  */
 class Bar {
 
-  // Public properties don't have a prefix.
+  // Private properties have no prefix.
+  private $secret = 1;
+
+  // Protected properties also don't have a prefix.
   protected $foo = 1;
 
   // Longer properties use camelCase naming.
