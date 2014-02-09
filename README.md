@@ -29,4 +29,4 @@ Running PHPUnit tests
 Use [composer install](https://getcomposer.org) to get all required dependencies
 first. Then execute
 
-    vendor/bin/phpunit
+    ./vendor/bin/phpunit
