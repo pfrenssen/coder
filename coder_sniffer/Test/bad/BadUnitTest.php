@@ -66,7 +66,7 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                        );
             case 'bad.php':
                 return array(
-                        1 => 2,
+                        2 => 1,
                         3 => 1,
                         5 => 1,
                         7 => 1,
