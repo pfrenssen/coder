@@ -539,6 +539,13 @@ function mymodule_foo_bar() {
 }
 
 /**
+ * Implements drush_hook_foo_bar().
+ */
+function drush_mymodule_foo_bar() {
+
+}
+
+/**
  * Not documenting all parameters is allowed.
  *
  * @param Node $node

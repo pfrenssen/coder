@@ -1,4 +1,4 @@
-<?
+<?php
 
 #Discouraged comment style
 
@@ -777,6 +777,15 @@ function test25() {
  */
 function test26() {
 
+}
+
+/**
+ * Debugging functions are discouraged.
+ */
+function test27() {
+  $var = array(1, 2, 3);
+  dsm($var);
+  dpm($var);
 }
 
 class FooBar2 {
