@@ -34,7 +34,7 @@ class Drupal_GenericUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList()
+    public function getWarningList($testFile)
     {
         return array();
 
