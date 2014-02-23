@@ -323,7 +323,7 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
      *
      * @return array(int => int)
      */
-    protected abstract function getErrorList();
+    protected abstract function getErrorList($testFile);
 
 
     /**

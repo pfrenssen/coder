@@ -18,7 +18,7 @@ class Drupal_GoodUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList()
+    public function getErrorList($testFile)
     {
         return array();
 
