@@ -261,6 +261,16 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
             $expectedErrors   = $problems['expected_errors'];
             $expectedWarnings = $problems['expected_warnings'];
 
+
+            // Uncomment the following generate line error pairs for the bad unit
+            // test.
+            /*if ($numErrors) {
+                print "$line => " . $numErrors . ",\n";
+            }
+            if ($numWarnings) {
+                print "$line => " . $numWarnings . ",\n";
+            }*/
+
             $errors      = '';
             $foundString = '';
 
@@ -334,7 +344,7 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
      *
      * @return array(int => int)
      */
-    protected abstract function getWarningList();
+    protected abstract function getWarningList($testFile);
 
 }//end class
 
