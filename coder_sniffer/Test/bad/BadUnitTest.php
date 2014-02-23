@@ -417,17 +417,20 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                         823 => 1,
                         824 => 1,
                        );
-        }
+        }//end switch
+
         return array();
 
     }//end getWarningList()
+
 
     /**
      * Returns a list of test files that should be checked.
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles() {
+    protected function getTestFiles()
+    {
         $dir = dirname(__FILE__);
         $di  = new DirectoryIterator($dir);
 
@@ -441,17 +444,21 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
         // Get them in order.
         sort($testFiles);
         return $testFiles;
-    }
+
+    }//end getTestFiles()
+
 
     /**
      * Returns a list of sniff codes that should be checked in this test.
      *
      * @return array The list of sniff codes.
      */
-    protected function getSniffCodes() {
+    protected function getSniffCodes()
+    {
         // We want to test all sniffs defined in the standard.
         return array();
-    }
+
+    }//end getSniffCodes()
 
 
 }//end class
