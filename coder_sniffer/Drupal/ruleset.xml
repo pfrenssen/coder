@@ -137,6 +137,7 @@
  <rule ref="Squiz.Arrays.ArrayBracketSpacing" />
 
  <rule ref="Squiz.Classes.LowercaseClassKeywords" />
+ <rule ref="Squiz.Commenting.DocCommentAlignment" />
  <rule ref="Squiz.Commenting.PostStatementComment" />
  <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration" />
  <!-- Disable some error messages that we already cover. -->

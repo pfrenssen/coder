@@ -26,6 +26,7 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+        define('PHP_CODESNIFFER_IN_TESTS', true);
         if (self::$phpcs === null) {
             self::$phpcs = new PHP_CodeSniffer();
         }
@@ -57,7 +58,7 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
         $testFiles = $this->getTestFiles();
         $sniffCodes = $this->getSniffCodes();
 
-        self::$phpcs->process(array(), 'coder_sniffer/Drupal', $sniffCodes);
+        self::$phpcs->initStandard('coder_sniffer/Drupal', $sniffCodes);
 
         $failureMessages = array();
         foreach ($testFiles as $testFile) {
@@ -69,7 +70,17 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
 
             $failures        = $this->generateFailureMessages($phpcsFile);
             $failureMessages = array_merge($failureMessages, $failures);
-        }//end foreach
+
+            if ($phpcsFile->getFixableCount() > 0) {
+                // Attempt to fix the errors.
+                $phpcsFile->fixer->fixFile();
+                $fixable = $phpcsFile->getFixableCount();
+                if ($fixable > 0) {
+                    $filename = basename($testFile);
+                    $failureMessages[] = "Failed to fix $fixable fixable violations in $filename";
+                }
+            }
+        }//end foreach()
 
         if (empty($failureMessages) === false) {
             $this->fail(implode(PHP_EOL, $failureMessages));
@@ -182,7 +193,7 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
                 }
 
                 $allProblems[$line]['found_errors'] = array_merge($foundErrorsTemp, $errorsTemp);
-            }
+            }//end foreach
 
             if (isset($expectedErrors[$line]) === true) {
                 $allProblems[$line]['expected_errors'] = $expectedErrors[$line];

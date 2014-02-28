@@ -20,7 +20,7 @@ class Drupal_Sniffs_Commenting_FileCommentUnitTest extends CoderSniffUnitTest
                        );
             case 'FileCommentUnitTest.1.inc':
                 return array(
-                        2 => 1,
+                        3 => 1,
                        );
         }
 
