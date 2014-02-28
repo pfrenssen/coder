@@ -40,6 +40,23 @@
   <exclude-pattern>*.tpl.php</exclude-pattern>
  </rule>
 
+ <rule ref="Generic.Commenting.DocComment" />
+ <!-- Disable some error messages that Drupal does differently. -->
+ <rule ref="Generic.Commenting.DocComment.MissingShort">
+  <severity>0</severity>
+ </rule>
+ <rule ref="Generic.Commenting.DocComment.MissingShort">
+  <severity>0</severity>
+ </rule>
+ <rule ref="Generic.Commenting.DocComment.SpacingBeforeTags">
+  <severity>0</severity>
+ </rule>
+ <rule ref="Generic.Commenting.DocComment.ParamNotFirst">
+  <severity>0</severity>
+ </rule>
+ <rule ref="Generic.Commenting.DocComment.ShortNotCapital">
+  <severity>0</severity>
+ </rule>
  <rule ref="Generic.Formatting.SpaceAfterCast" />
  <rule ref="Generic.Functions.FunctionCallArgumentSpacing" />
  <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie" />
