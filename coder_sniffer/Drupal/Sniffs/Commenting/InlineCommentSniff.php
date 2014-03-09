@@ -89,7 +89,11 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                        T_PROPERTY,
                       );
 
-            if (in_array($tokens[$nextToken]['code'], $ignore) === true) {
+            // Also ignore all doc blocks defined in the outer scope (no scope
+            // conditions are set).
+            if (in_array($tokens[$nextToken]['code'], $ignore) === true
+                || empty($tokens[$stackPtr]['conditions']) === true
+            ) {
                 return;
             } else {
                 if ($phpcsFile->tokenizerType === 'JS') {
