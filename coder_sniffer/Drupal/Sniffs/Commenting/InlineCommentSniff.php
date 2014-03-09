@@ -221,9 +221,16 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             return;
         }
 
-        if (preg_match('|\p{Lu}|u', $commentText[0]) === 0) {
-            $error = 'Inline comments must start with a capital letter';
-            $phpcsFile->addError($error, $topComment, 'NotCapital');
+        if (preg_match('|\p{Lu}|u', $commentText[0]) === 0 && $commentText[0] !== '@') {
+            $words = preg_split('/\s+/', $commentText);
+            // Allow special lower cased words that contain non-alpha characters
+            // (function references, machine names with underscores etc.).
+            $matches = array();
+            preg_match('/[a-z]+/', $words[0], $matches);
+            if (isset($matches[0]) && $matches[0] === $words[0]) {
+                $error = 'Inline comments must start with a capital letter';
+                $phpcsFile->addError($error, $topComment, 'NotCapital');
+            }
         }
 
         $commentCloser   = $commentText[(strlen($commentText) - 1)];
@@ -233,7 +240,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                             'or question marks' => '?',
                            );
 
-        if (in_array($commentCloser, $acceptedClosers) === false) {
+        if (in_array($commentCloser, $acceptedClosers) === false && $commentText[0] !== '@') {
             $error = 'Inline comments must end in %s';
             $ender = '';
             foreach ($acceptedClosers as $closerName => $symbol) {
