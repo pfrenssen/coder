@@ -197,9 +197,6 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         }
                     }//end if
                 }//end if
-            } else {
-                $error = 'Missing @return tag in function comment';
-                $phpcsFile->addError($error, $tokens[$commentStart]['comment_closer'], 'MissingReturn');
             }//end if
         } else {
             // No return tag for constructor and destructor.
@@ -601,6 +598,11 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         // Report missing comments.
         $diff = array_diff($realNames, $foundParams);
         foreach ($diff as $neededParam) {
+            // Allow parameters passed by reference to be documented with "&" and
+            // without it.
+            if ($neededParam{0} === '&' && in_array(substr($neededParam, 1), $foundParams)) {
+                continue;
+            }
             $error = 'Doc comment for parameter "%s" missing';
             $data  = array($neededParam);
             $phpcsFile->addError($error, $commentStart, 'MissingParamTag', $data);
