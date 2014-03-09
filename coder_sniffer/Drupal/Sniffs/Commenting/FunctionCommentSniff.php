@@ -488,7 +488,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             $foundParams[] = $param['var'];
 
             // Check number of spaces after the type.
-            $spaces = ($maxType - strlen($param['type']) + 1);
+            $spaces = 1;
             if ($param['type_space'] !== $spaces) {
                 $error = 'Expected %s spaces after parameter type; %s found';
                 $data  = array(
@@ -535,7 +535,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $realName = '&'.$realName;
                 }
 
-                if ($realName !== $param['var']) {
+                if ($realName !== $param['var'] && $realParams[$pos]['name'] !== $param['var']) {
                     $code = 'ParamNameNoMatch';
                     $data = array(
                              $param['var'],
