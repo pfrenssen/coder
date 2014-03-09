@@ -26,7 +26,9 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        define('PHP_CODESNIFFER_IN_TESTS', true);
+        if (!defined('PHP_CODESNIFFER_IN_TESTS')) {
+            define('PHP_CODESNIFFER_IN_TESTS', true);
+        }
         if (self::$phpcs === null) {
             self::$phpcs = new PHP_CodeSniffer();
         }
