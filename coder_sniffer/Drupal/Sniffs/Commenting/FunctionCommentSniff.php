@@ -21,6 +21,39 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 {
 
     /**
+     * A map of invalid data types to valid ones for param and return documentation.
+     *
+     * @var array
+     */
+    protected $invalidTypes = array(
+                               'Array' => 'array',
+                               'boolean' => 'bool',
+                               'Boolean' => 'bool',
+                               'integer' => 'int',
+                               'str' => 'string',
+                               'stdClass' => 'object',
+                               'number' => 'int',
+                               'String' => 'string',
+                              );
+
+    /**
+     * An array of variable types for param/var we will check.
+     *
+     * @var array(string)
+     */
+    public $allowedTypes = array(
+                            'array',
+                            'bool',
+                            'float',
+                            'int',
+                            'mixed',
+                            'object',
+                            'string',
+                            'resource',
+                            'callable',
+                           );
+
+    /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array
@@ -318,6 +351,11 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $maxType = $typeLen;
                 }
 
+                if (isset($matches[4]) === true) {
+                    $error = 'Parameter comment must be on the next line';
+                    $phpcsFile->addError($error, ($tag + 2), 'ParamCommentNewLine');
+                }
+
                 if (isset($matches[2]) === true) {
                     $var    = $matches[2];
                     $varLen = strlen($var);
@@ -325,38 +363,29 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         $maxVar = $varLen;
                     }
 
-                    if (isset($matches[4]) === true) {
-                        $varSpace       = strlen($matches[3]);
-                        $comment        = $matches[4];
-                        $commentLines[] = array(
-                                           'comment' => $comment,
-                                           'token'   => ($tag + 2),
-                                           'indent'  => $varSpace,
-                                          );
-
-                        // Any strings until the next tag belong to this comment.
-                        if (isset($tokens[$commentStart]['comment_tags'][($pos + 1)]) === true) {
-                            $end = $tokens[$commentStart]['comment_tags'][($pos + 1)];
-                        } else {
-                            $end = $tokens[$commentStart]['comment_closer'];
-                        }
-
-                        for ($i = ($tag + 3); $i < $end; $i++) {
-                            if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
-                                $indent = 0;
-                                if ($tokens[($i - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
-                                    $indent = strlen($tokens[($i - 1)]['content']);
-                                }
-
-                                $comment       .= ' '.$tokens[$i]['content'];
-                                $commentLines[] = array(
-                                                   'comment' => $tokens[$i]['content'],
-                                                   'token'   => $i,
-                                                   'indent'  => $indent,
-                                                  );
-                            }
-                        }
+                    // Any strings until the next tag belong to this comment.
+                    if (isset($tokens[$commentStart]['comment_tags'][($pos + 1)]) === true) {
+                        $end = $tokens[$commentStart]['comment_tags'][($pos + 1)];
                     } else {
+                        $end = $tokens[$commentStart]['comment_closer'];
+                    }
+
+                    for ($i = ($tag + 3); $i < $end; $i++) {
+                        if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
+                            $indent = 0;
+                            if ($tokens[($i - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
+                                $indent = strlen($tokens[($i - 1)]['content']);
+                            }
+
+                            $comment       .= ' '.$tokens[$i]['content'];
+                            $commentLines[] = array(
+                                               'comment' => $tokens[$i]['content'],
+                                               'token'   => $i,
+                                               'indent'  => $indent,
+                                              );
+                        }
+                    }
+                    if ($comment == '') {
                         $error = 'Missing parameter comment';
                         $phpcsFile->addError($error, $tag, 'MissingParamComment');
                         $commentLines[] = array('comment' => '');
@@ -393,7 +422,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             // Check the param type value.
             $typeNames = explode('|', $param['type']);
             foreach ($typeNames as $typeName) {
-                $suggestedName = PHP_CodeSniffer::suggestType($typeName);
+                $suggestedName = $this->suggestType($typeName);
                 if ($typeName !== $suggestedName) {
                     $error = 'Expected "%s" but found "%s" for parameter type';
                     $data  = array(
@@ -417,7 +446,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         $suggestedTypeHint = 'array';
                     } else if (strpos($suggestedName, 'callable') !== false) {
                         $suggestedTypeHint = 'callable';
-                    } else if (in_array($typeName, PHP_CodeSniffer::$allowedTypes) === false) {
+                    } else if (in_array($typeName, $this->allowedTypes) === false) {
                         $suggestedTypeHint = $suggestedName;
                     }
                     if ($suggestedTypeHint !== '' && isset($realParams[$pos]) === true) {
@@ -533,47 +562,8 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 continue;
             }
 
-            // Check number of spaces after the var name.
-            $spaces = ($maxVar - strlen($param['var']) + 1);
-            if ($param['var_space'] !== $spaces) {
-                $error = 'Expected %s spaces after parameter name; %s found';
-                $data  = array(
-                          $spaces,
-                          $param['var_space'],
-                         );
-
-                $fix = $phpcsFile->addFixableError($error, $param['tag'], 'SpacingAfterParamName', $data);
-                if ($fix === true && $phpcsFile->fixer->enabled === true) {
-                    $phpcsFile->fixer->beginChangeset();
-
-                    $content  = $param['type'];
-                    $content .= str_repeat(' ', $param['type_space']);
-                    $content .= $param['var'];
-                    $content .= str_repeat(' ', $spaces);
-                    $content .= $param['commentLines'][0]['comment'];
-                    $phpcsFile->fixer->replaceToken(($param['tag'] + 2), $content);
-
-                    // Fix up the indent of additional comment lines.
-                    foreach ($param['commentLines'] as $lineNum => $line) {
-                        if ($lineNum === 0
-                            || $param['commentLines'][$lineNum]['indent'] === 0
-                        ) {
-                            continue;
-                        }
-
-                        $newIndent = ($param['commentLines'][$lineNum]['indent'] + $spaces - $param['var_space']);
-                        $phpcsFile->fixer->replaceToken(
-                            ($param['commentLines'][$lineNum]['token'] - 1),
-                            str_repeat(' ', $newIndent)
-                        );
-                    }
-
-                    $phpcsFile->fixer->endChangeset();
-                }//end if
-            }//end if
-
             // Param comments must start with a capital letter and end with the full stop.
-            $firstChar = $param['comment']{0};
+            $firstChar = $param['commentLines'][0]['comment'];
             if (preg_match('|\p{Lu}|u', $firstChar) === 0) {
                 $error = 'Parameter comment must start with a capital letter';
                 $phpcsFile->addError($error, $param['tag'], 'ParamCommentNotCapital');
@@ -609,6 +599,21 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         }
 
     }//end processParams()
+
+    /**
+     * Returns a valid variable type for param/var tag.
+     *
+     * @param string $type The variable type to process.
+     *
+     * @return string
+     */
+    protected function suggestType($type)
+    {
+        if (isset($this->invalidTypes[$type])) {
+            return $this->invalidTypes[$type];
+        }
+        return $type;
+    }
 
 
 }//end class
