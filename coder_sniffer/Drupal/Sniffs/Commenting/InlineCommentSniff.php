@@ -167,7 +167,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             $spaceCount++;
         }
 
-        if ($spaceCount === 0) {
+        if ($spaceCount === 0 && strlen($comment) > 2) {
             $error = 'No space before comment text; expected "// %s" but found "%s"';
             $data  = array(
                       substr($comment, 2),

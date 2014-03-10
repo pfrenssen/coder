@@ -390,7 +390,8 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         $phpcsFile->addError($error, $tag, 'MissingParamComment');
                         $commentLines[] = array('comment' => '');
                     }//end if
-                } else {
+                // Allow the "..." @param doc for a variable number of parameters.
+                } elseif ($tokens[($tag + 2)]['content'] !== '...') {
                     $error = 'Missing parameter name';
                     $phpcsFile->addError($error, $tag, 'MissingParamName');
                 }//end if
