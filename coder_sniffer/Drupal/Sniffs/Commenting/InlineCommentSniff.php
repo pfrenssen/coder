@@ -176,17 +176,6 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             $phpcsFile->addError($error, $stackPtr, 'NoSpaceBefore', $data);
         }
 
-        if ($spaceCount > 1) {
-            $error = '%s spaces found before inline comment line; use block comment if you need indentation';
-            $data  = array(
-                      $spaceCount,
-                      substr($comment, (2 + $spaceCount)),
-                      $comment,
-                     );
-            $phpcsFile->addError($error, $stackPtr, 'SpacingBefore', $data);
-        }
-
-
         // The below section determines if a comment block is correctly capitalised,
         // and ends in a full-stop. It will find the last comment in a block, and
         // work its way up.
@@ -219,6 +208,16 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             $error = 'Blank comments are not allowed';
             $phpcsFile->addError($error, $stackPtr, 'Empty');
             return;
+        }
+
+        if ($spaceCount > 1 && $commentText[0] !== '@') {
+            $error = '%s spaces found before inline comment line; use block comment if you need indentation';
+            $data  = array(
+                      $spaceCount,
+                      substr($comment, (2 + $spaceCount)),
+                      $comment,
+                     );
+            $phpcsFile->addError($error, $stackPtr, 'SpacingBefore', $data);
         }
 
         if (preg_match('|\p{Lu}|u', $commentText[0]) === 0 && $commentText[0] !== '@') {
