@@ -414,6 +414,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         $realParams  = $phpcsFile->getMethodParameters($stackPtr);
         $foundParams = array();
 
+        $checkPos = 0;
         foreach ($params as $pos => $param) {
             // If the type is empty, the whole line is empty.
             if ($param['type'] === '') {
@@ -528,15 +529,24 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             }//end if
 
             // Make sure the param name is correct.
-            if (isset($realParams[$pos]) === true) {
-                $realName = $realParams[$pos]['name'];
+            $matched = false;
+            // Parameter documentation can be ommitted for some parameters, so
+            // we have to search the rest for a match.
+            while (isset($realParams[($checkPos)]) === true) {
+                $realName = $realParams[$checkPos]['name'];
 
-                // Append ampersand to name if passing by reference.
-                if ($realParams[$pos]['pass_by_reference'] === true) {
-                    $realName = '&'.$realName;
+                if ($realName === $param['var'] || ($realParams[$checkPos]['pass_by_reference'] === true
+                    && ('&'.$realName) === $param['var'])
+                ) {
+                    $matched = true;
+                    break;
                 }
 
-                if ($realName !== $param['var'] && $realParams[$pos]['name'] !== $param['var']) {
+                $checkPos++;
+            }
+
+            if ($matched === false) {
+                if ($checkPos >= $pos) {
                     $code = 'ParamNameNoMatch';
                     $data = array(
                              $param['var'],
@@ -552,12 +562,17 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $error .= 'actual variable name %s';
 
                     $phpcsFile->addError($error, $param['tag'], $code, $data);
-                }
-            } else if (substr($param['var'], -4) !== ',...') {
-                // We must have an extra parameter comment.
-                $error = 'Superfluous parameter comment';
-                $phpcsFile->addError($error, $param['tag'], 'ExtraParamComment');
+                    // Reset the parameter position to check for following
+                    // parameters.
+                    $checkPos = ($pos - 1);
+                } else if (substr($param['var'], -4) !== ',...') {
+                    // We must have an extra parameter comment.
+                    $error = 'Superfluous parameter comment';
+                    $phpcsFile->addError($error, $param['tag'], 'ExtraParamComment');
+                }//end if
             }//end if
+
+            $checkPos++;
 
             if ($param['comment'] === '') {
                 continue;
