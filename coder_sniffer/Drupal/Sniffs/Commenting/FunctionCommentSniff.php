@@ -577,28 +577,6 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             }
         }//end foreach
 
-        $realNames = array();
-        foreach ($realParams as $realParam) {
-            if ($realParam['pass_by_reference'] === true) {
-                $realParam['name'] = '&'.$realParam['name'];
-            }
-
-            $realNames[] = $realParam['name'];
-        }
-
-        // Report missing comments.
-        $diff = array_diff($realNames, $foundParams);
-        foreach ($diff as $neededParam) {
-            // Allow parameters passed by reference to be documented with "&" and
-            // without it.
-            if ($neededParam{0} === '&' && in_array(substr($neededParam, 1), $foundParams)) {
-                continue;
-            }
-            $error = 'Doc comment for parameter "%s" missing';
-            $data  = array($neededParam);
-            $phpcsFile->addError($error, $commentStart, 'MissingParamTag', $data);
-        }
-
     }//end processParams()
 
     /**
