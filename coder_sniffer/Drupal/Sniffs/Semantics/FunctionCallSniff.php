@@ -241,7 +241,7 @@ class Drupal_Sniffs_Semantics_FunctionCallSniff implements PHP_CodeSniffer_Sniff
     {
         $funtionNames = $listener->registerFunctionNames();
         foreach ($funtionNames as $name) {
-            self::$listeners[$name][] = $listener;
+            self::$listeners[$name][get_class($listener)] = $listener;
         }
 
     }//end registerListener()
