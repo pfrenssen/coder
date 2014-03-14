@@ -356,44 +356,52 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $phpcsFile->addError($error, ($tag + 2), 'ParamCommentNewLine');
                 }
 
-                if (isset($matches[2]) === true) {
-                    $var    = $matches[2];
-                    $varLen = strlen($var);
-                    if ($varLen > $maxVar) {
-                        $maxVar = $varLen;
-                    }
+                $var    = isset($matches[2]) ? $matches[2] : '';
+                $varLen = strlen($var);
+                if ($varLen > $maxVar) {
+                    $maxVar = $varLen;
+                }
 
-                    // Any strings until the next tag belong to this comment.
-                    if (isset($tokens[$commentStart]['comment_tags'][($pos + 1)]) === true) {
-                        $end = $tokens[$commentStart]['comment_tags'][($pos + 1)];
-                    } else {
-                        $end = $tokens[$commentStart]['comment_closer'];
-                    }
+                // Any strings until the next tag belong to this comment.
+                if (isset($tokens[$commentStart]['comment_tags'][($pos + 1)]) === true) {
+                    $end = $tokens[$commentStart]['comment_tags'][($pos + 1)];
+                } else {
+                    $end = $tokens[$commentStart]['comment_closer'];
+                }
 
-                    for ($i = ($tag + 3); $i < $end; $i++) {
-                        if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
-                            $indent = 0;
-                            if ($tokens[($i - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
-                                $indent = strlen($tokens[($i - 1)]['content']);
-                            }
+                for ($i = ($tag + 3); $i < $end; $i++) {
+                    if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
+                        $indent = 0;
+                        if ($tokens[($i - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
+                            $indent = strlen($tokens[($i - 1)]['content']);
+                        }
 
-                            $comment       .= ' '.$tokens[$i]['content'];
-                            $commentLines[] = array(
-                                               'comment' => $tokens[$i]['content'],
-                                               'token'   => $i,
-                                               'indent'  => $indent,
-                                              );
+                        $comment       .= ' '.$tokens[$i]['content'];
+                        $commentLines[] = array(
+                                           'comment' => $tokens[$i]['content'],
+                                           'token'   => $i,
+                                           'indent'  => $indent,
+                                          );
+                        if ($indent < 3) {
+                            $error = 'Parameter comment indentation must be 3 spaces, found %s spaces';
+                            $phpcsFile->addError($error, $i, 'ParamCommentIndentation', array($indent));
                         }
                     }
-                    if ($comment == '') {
-                        $error = 'Missing parameter comment';
-                        $phpcsFile->addError($error, $tag, 'MissingParamComment');
-                        $commentLines[] = array('comment' => '');
-                    }//end if
+                }
+                if ($comment == '') {
+                    $error = 'Missing parameter comment';
+                    $phpcsFile->addError($error, $tag, 'MissingParamComment');
+                    $commentLines[] = array('comment' => '');
+                }//end if
                 // Allow the "..." @param doc for a variable number of parameters.
-                } elseif ($tokens[($tag + 2)]['content'] !== '...') {
-                    $error = 'Missing parameter name';
-                    $phpcsFile->addError($error, $tag, 'MissingParamName');
+                if (isset($matches[2]) === false && $tokens[($tag + 2)]['content'] !== '...') {
+                    if ($tokens[($tag + 2)]['content'][0] === '$' || $tokens[($tag + 2)]['content'][0] === '&') {
+                        $error = 'Missing parameter type';
+                        $phpcsFile->addError($error, $tag, 'MissingParamType');
+                    } else {
+                        $error = 'Missing parameter name';
+                        $phpcsFile->addError($error, $tag, 'MissingParamName');
+                    }
                 }//end if
             } else {
                 $error = 'Missing parameter type';
