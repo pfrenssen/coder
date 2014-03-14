@@ -421,6 +421,27 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 continue;
             }
 
+            if ($param['var'] === '') {
+                continue;
+            }
+
+            // Make sure the param name is correct.
+            $matched = false;
+            // Parameter documentation can be ommitted for some parameters, so
+            // we have to search the rest for a match.
+            while (isset($realParams[($checkPos)]) === true) {
+                $realName = $realParams[$checkPos]['name'];
+
+                if ($realName === $param['var'] || ($realParams[$checkPos]['pass_by_reference'] === true
+                    && ('&'.$realName) === $param['var'])
+                ) {
+                    $matched = true;
+                    break;
+                }
+
+                $checkPos++;
+            }
+
             // Check the param type value.
             $typeNames = explode('|', $param['type']);
             foreach ($typeNames as $typeName) {
@@ -451,8 +472,8 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     } else if (in_array($typeName, $this->allowedTypes) === false) {
                         $suggestedTypeHint = $suggestedName;
                     }
-                    if ($suggestedTypeHint !== '' && isset($realParams[$pos]) === true) {
-                        $typeHint = $realParams[$pos]['type_hint'];
+                    if ($suggestedTypeHint !== '' && isset($realParams[$checkPos]) === true) {
+                        $typeHint = $realParams[$checkPos]['type_hint'];
                         if ($typeHint === '') {
                             $error = 'Type hint "%s" missing for %s';
                             $data  = array(
@@ -469,8 +490,8 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                                      );
                             $phpcsFile->addError($error, $stackPtr, 'IncorrectTypeHint', $data);
                         }
-                    } else if ($suggestedTypeHint === '' && isset($realParams[$pos]) === true) {
-                        $typeHint = $realParams[$pos]['type_hint'];
+                    } else if ($suggestedTypeHint === '' && isset($realParams[$checkPos]) === true) {
+                        $typeHint = $realParams[$checkPos]['type_hint'];
                         if ($typeHint !== '') {
                             $error = 'Unknown type hint "%s" found for %s';
                             $data  = array(
@@ -482,10 +503,6 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     }//end if
                 }//end if
             }//end foreach
-
-            if ($param['var'] === '') {
-                continue;
-            }
 
             $foundParams[] = $param['var'];
 
@@ -527,23 +544,6 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $phpcsFile->fixer->endChangeset();
                 }//end if
             }//end if
-
-            // Make sure the param name is correct.
-            $matched = false;
-            // Parameter documentation can be ommitted for some parameters, so
-            // we have to search the rest for a match.
-            while (isset($realParams[($checkPos)]) === true) {
-                $realName = $realParams[$checkPos]['name'];
-
-                if ($realName === $param['var'] || ($realParams[$checkPos]['pass_by_reference'] === true
-                    && ('&'.$realName) === $param['var'])
-                ) {
-                    $matched = true;
-                    break;
-                }
-
-                $checkPos++;
-            }
 
             if ($matched === false) {
                 if ($checkPos >= $pos) {
