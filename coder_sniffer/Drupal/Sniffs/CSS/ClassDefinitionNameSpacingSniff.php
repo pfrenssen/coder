@@ -54,15 +54,20 @@ class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        // Find the first blank line before this openning brace, unless we get
+        // Do not check nested style definitions as, for example, in @media style rules.
+        $nested = $phpcsFile->findNext(T_OPEN_CURLY_BRACKET, ($stackPtr + 1), $tokens[$stackPtr]['bracket_closer']);
+        if ($nested !== false) {
+            return;
+        }
+
+        // Find the first blank line before this opening brace, unless we get
         // to another style definition, comment or the start of the file.
         $endTokens = array(
-                      T_CLOSE_CURLY_BRACKET,
                       T_OPEN_CURLY_BRACKET,
-                      T_COMMENT,
-                      T_DOC_COMMENT,
+                      T_CLOSE_CURLY_BRACKET,
                       T_OPEN_TAG,
                      );
+        $endTokens = array_merge($endTokens, PHP_CodeSniffer_Tokens::$commentTokens);
 
         $foundContent = false;
         $currentLine  = $tokens[$stackPtr]['line'];
@@ -120,5 +125,3 @@ class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniff
 
 
 }//end class
-
-?>
