@@ -291,7 +291,7 @@ $var = foo(
 );
 
 /**
- * Class declaration
+ * Class declaration.
  *
  * Classes always have a multiline comment
  */

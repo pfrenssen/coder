@@ -130,6 +130,12 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             $phpcsFile->addError($error, $short, 'ShortNotCapital');
         }
 
+        $lastChar = substr($shortContent, -1);
+        if ($lastChar !== '.' && $shortContent !== '{@inheritdoc}') {
+            $error = 'Doc comment short description must end with a full stop';
+            $phpcsFile->addError($error, $short, 'ShortFullStop');
+        }
+
         $long = $phpcsFile->findNext($empty, ($shortEnd + 1), ($commentEnd - 1), true);
         if ($long === false) {
             return;
@@ -236,18 +242,15 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
 
             // Now check paddings.
             foreach ($paddings as $tag => $padding) {
-                $required = ($maxLength - strlen($tokens[$tag]['content']) + 1);
-
-                if ($padding !== $required) {
-                    $error = 'Tag value indented incorrectly; expected %s spaces but found %s';
+                if ($padding !== 1) {
+                    $error = 'Tag value indented incorrectly; expected 1 space but found %s';
                     $data  = array(
-                              $required,
                               $padding,
                              );
 
                     $fix = $phpcsFile->addFixableError($error, ($tag + 1), 'TagValueIndent', $data);
                     if ($fix === true && $phpcsFile->fixer->enabled === true) {
-                        $phpcsFile->fixer->replaceToken(($tag + 1), str_repeat(' ', $required));
+                        $phpcsFile->fixer->replaceToken(($tag + 1), ' ');
                     }
                 }
             }
