@@ -220,8 +220,8 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             $phpcsFile->addError($error, $stackPtr, 'SpacingBefore', $data);
         }
 
+        $words = preg_split('/\s+/', $commentText);
         if (preg_match('|\p{Lu}|u', $commentText[0]) === 0 && $commentText[0] !== '@') {
-            $words = preg_split('/\s+/', $commentText);
             // Allow special lower cased words that contain non-alpha characters
             // (function references, machine names with underscores etc.).
             $matches = array();
@@ -240,15 +240,27 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                            );
 
         if (in_array($commentCloser, $acceptedClosers) === false && $commentText[0] !== '@') {
-            $error = 'Inline comments must end in %s';
-            $ender = '';
-            foreach ($acceptedClosers as $closerName => $symbol) {
-                $ender .= ' '.$closerName.',';
-            }
+            // Allow @tag style comments without punctuation
+            if ($commentText[0] !== '@') {
+                // Allow special last words like URLs or function references
+                // without punctuation.
+                $lastWord = $words[count($words) - 1];
+                $matches  = array();
+                preg_match('/((\()?[$a-zA-Z]+\)|([$a-zA-Z]+))/', $lastWord,
+                    $matches);
+                if (isset($matches[0]) === true && $matches[0] === $lastWord) {
+                    $error = 'Inline comments must end in %s';
+                    $ender = '';
+                    foreach ($acceptedClosers as $closerName => $symbol) {
+                        $ender .= $closerName.', ';
+                    }
 
-            $ender = trim($ender, ' ,');
-            $data  = array($ender);
-            $phpcsFile->addError($error, $stackPtr, 'InvalidEndChar', $data);
+                    $ender = rtrim($ender, ', ');
+                    $data  = array($ender);
+                    $phpcsFile->addError($error, $stackPtr, 'InvalidEndChar',
+                        $data);
+                }
+            }
         }
 
         // Finally, the line below the last comment cannot be empty.
@@ -264,7 +276,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
         }
 
         $error = 'There must be no blank line following an inline comment';
-        $phpcsFile->addError($error, $stackPtr, 'SpacingAfter');
+        $phpcsFile->addWarning($error, $stackPtr, 'SpacingAfter');
 
     }//end process()
 
