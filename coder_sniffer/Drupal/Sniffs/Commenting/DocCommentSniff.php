@@ -82,6 +82,11 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             }
         }
 
+        if ($tokens[$commentEnd]['content'] !== '*/') {
+            $error = 'Wrong function doc comment end; expected "*/", found "%s"';
+            $phpcsFile->addError($error, $commentEnd, 'WrongEnd', array($tokens[$commentEnd]['content']));
+        }
+
         // Check for additional blank lines at the end of the comment.
         $prev = $phpcsFile->findPrevious($empty, ($commentEnd - 1), $stackPtr, true);
         if ($tokens[$prev]['line'] !== ($tokens[$commentEnd]['line'] - 1)) {
@@ -108,6 +113,11 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
         if ($tokens[$short]['line'] !== ($tokens[$stackPtr]['line'] + 1) && !isset($fileShort)) {
             $error = 'Doc comment short description must be on the first line';
             $phpcsFile->addError($error, $short, 'SpacingBeforeShort');
+        }
+
+        if ($tokens[($short - 1)]['content'] !== ' ') {
+            $error = 'Function comment short description must start with exactly one space';
+            $phpcsFile->addError($error, $short, 'ShortStartSpace');
         }
 
         // Account for the fact that a short description might cover

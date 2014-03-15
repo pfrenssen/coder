@@ -35,6 +35,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                                'stdClass' => 'object',
                                'number' => 'int',
                                'String' => 'string',
+                               'type' => 'string or int or object...',
                               );
 
     /**
@@ -198,32 +199,9 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         $phpcsFile->addError($error, $return, '$InReturnType');
                     }
 
-                    // If the return type is void, make sure there is
-                    // no return statement in the function.
                     if ($content === 'void') {
-                        if (isset($tokens[$stackPtr]['scope_closer']) === true) {
-                            $endToken = $tokens[$stackPtr]['scope_closer'];
-                            for ($returnToken = $stackPtr; $returnToken < $endToken; $returnToken++) {
-                                if ($tokens[$returnToken]['code'] === T_CLOSURE) {
-                                    $returnToken = $tokens[$returnToken]['scope_closer'];
-                                    continue;
-                                }
-
-                                if ($tokens[$returnToken]['code'] === T_RETURN) {
-                                    break;
-                                }
-                            }
-
-                            if ($returnToken !== $endToken) {
-                                // If the function is not returning anything, just
-                                // exiting, then there is no problem.
-                                $semicolon = $phpcsFile->findNext(T_WHITESPACE, ($returnToken + 1), null, true);
-                                if ($tokens[$semicolon]['code'] !== T_SEMICOLON) {
-                                    $error = 'Function return type is void, but function contains return statement';
-                                    $phpcsFile->addError($error, $return, 'InvalidReturnVoid');
-                                }
-                            }
-                        }//end if
+                        $error = 'If there is no return value for a function, there must not be a @return tag.';
+                        $phpcsFile->addError($error, $return, 'VoidReturn');
                     } else if ($content !== 'mixed') {
                         // If return type is not void, there needs to be a return statement
                         // somewhere in the function that returns something.
