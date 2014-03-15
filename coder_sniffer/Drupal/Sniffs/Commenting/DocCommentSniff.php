@@ -123,6 +123,9 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                     break;
                 }
             }
+            if ($tokens[$i]['code'] === T_DOC_COMMENT_TAG) {
+                break;
+            }
         }
 
         if (preg_match('|\p{Lu}|u', $shortContent[0]) === 0 && $shortContent !== '{@inheritdoc}') {
@@ -137,7 +140,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
         }
 
         if ($tokens[$short]['line'] !== $tokens[$shortEnd]['line']) {
-            $error = 'Function comment short description must be on a single line, further text should be a separate paragraph';
+            $error = 'Doc comment short description must be on a single line, further text should be a separate paragraph';
             $phpcsFile->addError($error, $shortEnd, 'ShortSingleLine');
         }
 
