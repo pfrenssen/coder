@@ -27,6 +27,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
      */
     protected $invalidTypes = array(
                                'Array' => 'array',
+                               'array()' => 'array',
                                'boolean' => 'bool',
                                'Boolean' => 'bool',
                                'integer' => 'int',
@@ -113,6 +114,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         $this->processReturn($phpcsFile, $stackPtr, $commentStart);
         $this->processThrows($phpcsFile, $stackPtr, $commentStart);
         $this->processParams($phpcsFile, $stackPtr, $commentStart);
+        $this->processSees($phpcsFile, $stackPtr, $commentStart);
 
     }//end process()
 
@@ -224,7 +226,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                             $endToken    = $tokens[$stackPtr]['scope_closer'];
                             $returnToken = $phpcsFile->findNext(T_RETURN, $stackPtr, $endToken);
                             if ($returnToken === false) {
-                                $error = 'Function return type is not void, but function has no return statement';
+                                $error = '@return doc comment specified, but function has no return statement';
                                 $phpcsFile->addError($error, $return, 'InvalidNoReturn');
                             } else {
                                 $semicolon = $phpcsFile->findNext(T_WHITESPACE, ($returnToken + 1), null, true);
@@ -258,9 +260,8 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     }
                 }
                 if ($comment == '') {
-                    $error = 'Missing return comment';
-                    $phpcsFile->addError($error, $tag, 'MissingReturnComment');
-                    $commentLines[] = array('comment' => '');
+                    $error = 'Return comment must be on the next line';
+                    $phpcsFile->addError($error, $return, 'MissingReturnComment');
                 }//end if
             }//end if
         } else {
@@ -633,6 +634,42 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         }//end foreach
 
     }//end processParams()
+
+
+    /**
+     * Process the function "see" comments.
+     *
+     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
+     * @param int                  $stackPtr     The position of the current token
+     *                                           in the stack passed in $tokens.
+     * @param int                  $commentStart The position in the stack where the comment started.
+     *
+     * @return void
+     */
+    protected function processSees(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $commentStart)
+    {
+        $tokens = $phpcsFile->getTokens();
+        foreach ($tokens[$commentStart]['comment_tags'] as $tag) {
+            if ($tokens[$tag]['content'] !== '@see') {
+                continue;
+            }
+
+            if ($tokens[($tag + 2)]['code'] === T_DOC_COMMENT_STRING) {
+                $comment = $tokens[($tag + 2)]['content'];
+                if (strpos($comment, ' ') !== false) {
+                    $error = 'The @see reference should not contain any additional text';
+                    $phpcsFile->addError($error, $tag, 'SeeAdditionalText');
+                    continue;
+                }
+                if (preg_match('/[\.!\?]$/', $comment) === 1) {
+                    $error = 'Trailing punctuation for @see references is not allowed.';
+                    $phpcsFile->addError($error, $tag, 'SeePunctuation');
+                }
+            }
+        }
+
+    }//end processSees()
+
 
     /**
      * Returns a valid variable type for param/var tag.
