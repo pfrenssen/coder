@@ -145,7 +145,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         $methodName      = strtolower(ltrim($methodName, '_'));
 
         $return = null;
-        foreach ($tokens[$commentStart]['comment_tags'] as $tag) {
+        foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
             if ($tokens[$tag]['content'] === '@return') {
                 if ($return !== null) {
                     $error = 'Only 1 @return tag is allowed in a function comment';
@@ -154,6 +154,12 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 }
 
                 $return = $tag;
+                // Any strings until the next tag belong to this comment.
+                if (isset($tokens[$commentStart]['comment_tags'][($pos + 1)]) === true) {
+                    $end = $tokens[$commentStart]['comment_tags'][($pos + 1)];
+                } else {
+                    $end = $tokens[$commentStart]['comment_closer'];
+                }
             }
         }
 
@@ -229,6 +235,32 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                             }
                         }
                     }//end if
+                }//end if
+
+                $comment = '';
+                for ($i = ($return + 3); $i < $end; $i++) {
+                    if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
+                        $indent = 0;
+                        if ($tokens[($i - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
+                            $indent = strlen($tokens[($i - 1)]['content']);
+                        }
+
+                        $comment       .= ' '.$tokens[$i]['content'];
+                        $commentLines[] = array(
+                                           'comment' => $tokens[$i]['content'],
+                                           'token'   => $i,
+                                           'indent'  => $indent,
+                                          );
+                        if ($indent < 3) {
+                            $error = 'Return comment indentation must be 3 spaces, found %s spaces';
+                            $phpcsFile->addError($error, $i, 'ReturnCommentIndentation', array($indent));
+                        }
+                    }
+                }
+                if ($comment == '') {
+                    $error = 'Missing return comment';
+                    $phpcsFile->addError($error, $tag, 'MissingReturnComment');
+                    $commentLines[] = array('comment' => '');
                 }//end if
             }//end if
         } else {
