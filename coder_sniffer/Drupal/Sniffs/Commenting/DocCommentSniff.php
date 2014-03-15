@@ -136,6 +136,11 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             $phpcsFile->addError($error, $short, 'ShortFullStop');
         }
 
+        if ($tokens[$short]['line'] !== $tokens[$shortEnd]['line']) {
+            $error = 'Function comment short description must be on a single line, further text should be a separate paragraph';
+            $phpcsFile->addError($error, $shortEnd, 'ShortSingleLine');
+        }
+
         $long = $phpcsFile->findNext($empty, ($shortEnd + 1), ($commentEnd - 1), true);
         if ($long === false) {
             return;

@@ -174,7 +174,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $typeNames      = explode('|', $content);
                     $suggestedNames = array();
                     foreach ($typeNames as $i => $typeName) {
-                        $suggestedName = PHP_CodeSniffer::suggestType($typeName);
+                        $suggestedName = $this->suggestType($typeName);
                         if (in_array($suggestedName, $suggestedNames) === false) {
                             $suggestedNames[] = $suggestedName;
                         }
