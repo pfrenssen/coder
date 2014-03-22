@@ -41,16 +41,17 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
     /**
      * Checks if a line is too long.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile   The file being scanned.
-     * @param int                  $stackPtr    The token at the end of the line.
-     * @param string               $lineContent The content of the line.
+     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param array                $tokens    The token stack.
+     * @param int                  $stackPtr  The first token on the next line.
      *
      * @return void
      */
-    protected function checkLineLength(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $lineContent)
+    protected function checkLineLength(PHP_CodeSniffer_File $phpcsFile, $tokens, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT || $tokens[$stackPtr]['code'] === T_COMMENT) {
+        if (isset(PHP_CodeSniffer_Tokens::$commentTokens[$tokens[$stackPtr - 1]['code']]) === true) {
+            $start = $phpcsFile->findFirstOnLine(PHP_CodeSniffer_Tokens::$commentTokens, $stackPtr - 1);
+            $lineContent = $phpcsFile->getTokensAsString($start, ($stackPtr - $start - 1));
             if (preg_match('/^[[:space:]]*(\/\*)?\*[[:space:]]*@link.*@endlink[[:space:]]*/', $lineContent) === 1) {
                 // Allow @link documentation to exceed the 80 character limit.
                 return;
@@ -61,7 +62,7 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
                 return;
             }
 
-            parent::checkLineLength($phpcsFile, $stackPtr, $lineContent);
+            parent::checkLineLength($phpcsFile, $tokens, $stackPtr);
         }
 
     }//end checkLineLength()
