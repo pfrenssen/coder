@@ -213,7 +213,6 @@
  <rule ref="Squiz.Scope.MethodScope" />
  <rule ref="Squiz.WhiteSpace.LanguageConstructSpacing" />
  <rule ref="Squiz.WhiteSpace.SemicolonSpacing" />
- <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace" />
 
  <!-- Ignore various version control directories. -->
  <exclude-pattern>*/.git/*</exclude-pattern>
