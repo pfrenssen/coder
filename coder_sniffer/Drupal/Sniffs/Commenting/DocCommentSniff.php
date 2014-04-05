@@ -137,6 +137,8 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                 break;
             }
         }
+        // Remove any trailing white spaces which are detected by other sniffs.
+        $shortContent = trim($shortContent);
 
         if (preg_match('|\p{Lu}|u', $shortContent[0]) === 0 && $shortContent !== '{@inheritdoc}') {
             $error = 'Doc comment short description must start with a capital letter';
