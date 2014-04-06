@@ -1,4 +1,0 @@
-name = Coder Upgrade Test Example
-description = Example module used to test Coder Upgrade
-package = Development
-core = 8.x
