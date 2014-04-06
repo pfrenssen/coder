@@ -34,12 +34,27 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
     /**
      * Does the indent need to be exactly right.
      *
-     * If TRUE, indent needs to be exactly $ident spaces. If FALSE,
-     * indent needs to be at least $ident spaces (but can be more).
+     * If TRUE, indent needs to be exactly $indent spaces. If FALSE,
+     * indent needs to be at least $indent spaces (but can be more).
      *
      * @var bool
      */
     public $exact = true;
+
+    /**
+     * List of tokens not needing to be checked for indentation.
+     *
+     * Useful to allow Sniffs based on this to easily ignore/skip some
+     * tokens from verification. For example, inline html sections
+     * or php open/close tags can escape from here and have their own
+     * rules elsewhere.
+     *
+     * @var array
+     */
+    public $ignoreIndentationTokens = array(
+                                       T_DOC_COMMENT_STAR,
+                                       T_DOC_COMMENT_CLOSE_TAG,
+                                      );
 
     /**
      * Any scope openers that should not cause an indent.
@@ -47,6 +62,17 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
      * @var array(int)
      */
     protected $nonIndentingScopes = array();
+
+    /**
+     * Stores the indent of the last PHP open tag we found.
+     *
+     * This value is used to calculate the expected indent of top level structures
+     * so we don't assume they are always at column 1. If PHP code is embedded inside
+     * HTML (etc.) code, then the starting column for that code may not be column 1.
+     *
+     * @var int
+     */
+    private $_openTagIndent = 0;
 
 
     /**
@@ -56,7 +82,9 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
      */
     public function register()
     {
-        return PHP_CodeSniffer_Tokens::$scopeOpeners;
+        $tokens   = PHP_CodeSniffer_Tokens::$scopeOpeners;
+        $tokens[] = T_OPEN_TAG;
+        return $tokens;
 
     }//end register()
 
@@ -73,6 +101,16 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
+
+        // We only want to record the indent of open tags, not process them.
+        if ($tokens[$stackPtr]['code'] == T_OPEN_TAG) {
+            if (empty($tokens[$stackPtr]['conditions']) === true) {
+                // Only record top-level PHP tags.
+                $this->_openTagIndent = ($tokens[$stackPtr]['column'] - 1);
+            }
+
+            return;
+        }
 
         // If this is an inline condition (ie. there is no scope opener), then
         // return, as this is not a new scope.
@@ -98,7 +136,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
         $firstToken = $stackPtr;
         for ($i = $stackPtr; $i >= 0; $i--) {
             // Record the first code token on the line.
-            if (in_array($tokens[$i]['code'], PHP_CodeSniffer_Tokens::$emptyTokens) === false) {
+            if (isset(PHP_CodeSniffer_Tokens::$emptyTokens[$tokens[$i]['code']]) === false) {
                 $firstToken = $i;
             }
 
@@ -107,6 +145,9 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 break;
             }
         }
+
+        $scopeOpener = $tokens[$stackPtr]['scope_opener'];
+        $scopeCloser = $tokens[$stackPtr]['scope_closer'];
 
         // Based on the conditions that surround this token, determine the
         // indent that we expect this current content to be.
@@ -119,16 +160,50 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
         if ($tokens[$firstToken]['code'] !== T_CLOSURE
             && $tokens[$firstToken]['column'] !== $expectedIndent
         ) {
-            $error = 'Line indented incorrectly; expected %s spaces, found %s';
-            $data  = array(
-                      ($expectedIndent - 1),
-                      ($tokens[$firstToken]['column'] - 1),
-                     );
-            $phpcsFile->addError($error, $stackPtr, 'Incorrect', $data);
-        }
+            // If the scope opener is a closure but it is not the first token on the
+            // line, then the first token may be a variable or array index as so
+            // should not require exact indentation unless the exact member var
+            // is set to TRUE.
+            $exact = true;
+            if ($tokens[$stackPtr]['code'] === T_CLOSURE) {
+                $exact = $this->exact;
+            }
 
-        $scopeOpener = $tokens[$stackPtr]['scope_opener'];
-        $scopeCloser = $tokens[$stackPtr]['scope_closer'];
+            if ($exact === true || $tokens[$firstToken]['column'] < $expectedIndent) {
+                $error = 'Line indented incorrectly; expected %s spaces, found %s';
+                $data  = array(
+                          ($expectedIndent - 1),
+                          ($tokens[$firstToken]['column'] - 1),
+                         );
+
+                $fix = $phpcsFile->addFixableError($error, $stackPtr, 'Incorrect', $data);
+                if ($fix === true && $phpcsFile->fixer->enabled === true) {
+                    $diff = ($expectedIndent - $tokens[$firstToken]['column']);
+                    if ($diff > 0) {
+                        $phpcsFile->fixer->addContentBefore($firstToken, str_repeat(' ', $diff));
+                    } else {
+                        // We need to remove some padding, but we'll do it for all lines
+                        // until the end of this code block if the exact flag is not on
+                        // or else the rest of the block will look out of place, but
+                        // not cause any errors to be generated. But do not change the
+                        // indent of the closing brace as other sniffs check this.
+                        $phpcsFile->fixer->beginChangeset();
+                        $phpcsFile->fixer->substrToken(($firstToken - 1), 0, $diff);
+                        if ($this->exact === false) {
+                            for ($i = $firstToken; $i < ($scopeCloser - 1); $i++) {
+                                if ($tokens[$i]['code'] === T_WHITESPACE
+                                    && $tokens[$i]['column'] === 1
+                                ) {
+                                    $phpcsFile->fixer->substrToken($i, 0, $diff);
+                                }
+                            }
+                        }
+
+                        $phpcsFile->fixer->endChangeset();
+                    }//end if
+                }//end if
+            }//end if
+        }//end if
 
         // Some scopes are expected not to have indents.
         if (in_array($tokens[$firstToken]['code'], $this->nonIndentingScopes) === false) {
@@ -147,7 +222,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
 
             // If this token is another scope, skip it as it will be handled by
             // another call to this sniff.
-            if (in_array($tokens[$i]['code'], PHP_CodeSniffer_Tokens::$scopeOpeners) === true) {
+            if (isset(PHP_CodeSniffer_Tokens::$scopeOpeners[$tokens[$i]['code']]) === true) {
                 if (isset($tokens[$i]['scope_opener']) === true) {
                     $i = $tokens[$i]['scope_closer'];
 
@@ -168,8 +243,9 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                     if ($nextToken !== false) {
                         $i = $nextToken;
                     }
-                }
+                }//end if
 
+                $newline = false;
                 continue;
             }//end if
 
@@ -196,7 +272,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 $newline = true;
             }
 
-            if ($newline === true && $tokens[$i]['code'] !== T_WHITESPACE) {
+            if ($newline === true && $tokens[$i]['code'] !== T_WHITESPACE && $tokens[$i]['code'] !== T_DOC_COMMENT_WHITESPACE) {
                 // If we started a newline and we find a token that is not
                 // whitespace, then this must be the first token on the line that
                 // must be indented.
@@ -204,6 +280,13 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 $firstToken = $i;
 
                 $column = $tokens[$firstToken]['column'];
+
+                // Ignore the token for indentation if it's in the ignore list.
+                if (in_array($tokens[$firstToken]['code'], $this->ignoreIndentationTokens)
+                    || in_array($tokens[$firstToken]['type'], $this->ignoreIndentationTokens)
+                ) {
+                    continue;
+                }
 
                 // Special case for non-PHP code.
                 if ($tokens[$firstToken]['code'] === T_INLINE_HTML) {
@@ -220,8 +303,8 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 // Check to see if this constant string spans multiple lines.
                 // If so, then make sure that the strings on lines other than the
                 // first line are indented appropriately, based on their whitespace.
-                if (in_array($tokens[$firstToken]['code'], PHP_CodeSniffer_Tokens::$stringTokens) === true) {
-                    if (in_array($tokens[($firstToken - 1)]['code'], PHP_CodeSniffer_Tokens::$stringTokens) === true) {
+                if (isset(PHP_CodeSniffer_Tokens::$stringTokens[$tokens[$firstToken]['code']]) === true) {
+                    if (isset(PHP_CodeSniffer_Tokens::$stringTokens[$tokens[($firstToken - 1)]['code']]) === true) {
                         // If we find a string that directly follows another string
                         // then its just a string that spans multiple lines, so we
                         // don't need to check for indenting.
@@ -229,9 +312,9 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                     }
                 }
 
-                // This is a special condition for T_DOC_COMMENT and C-style
-                // comments, which contain whitespace between each line.
-                if (in_array($tokens[$firstToken]['code'], PHP_CodeSniffer_Tokens::$commentTokens) === true) {
+                // This is a special condition for C-style comments, which
+                // contain whitespace between each line.
+                if ($tokens[$firstToken]['code'] === T_COMMENT) {
                     $content = trim($tokens[$firstToken]['content']);
                     if (preg_match('|^/\*|', $content) !== 0) {
                         // Check to see if the end of the comment is on the same line
@@ -250,7 +333,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                             continue;
                         }
 
-                        $contentLength = strlen($tokens[$firstToken]['content']);
+                        $contentLength        = strlen($tokens[$firstToken]['content']);
                         $trimmedContentLength
                             = strlen(ltrim($tokens[$firstToken]['content']));
 
@@ -259,8 +342,11 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                             $commentOpen = false;
                         }
 
-                        // Comments starting with a star have an extra whitespace.
-                        if ($content{0} === '*' && $column > $indent) {
+                        // We are in a comment, so the indent does not have to
+                        // be exact. The important thing is that the comment opens
+                        // at the correct column and nothing sits closer to the left
+                        // than that opening column.
+                        if ($column > $indent) {
                             continue;
                         }
                     }//end if
@@ -278,24 +364,32 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                     }
                 }
 
-                // The token at the start of the line, needs to have its' column
+                // The token at the start of the line, needs to have its column
                 // greater than the relative indent we set above. If it is less,
                 // an error should be shown.
-                if ($column !== $indent) {
-                    if ($this->exact === true || $column < $indent) {
-                        $type  = 'IncorrectExact';
-                        $error = 'Line indented incorrectly; expected ';
-                        if ($this->exact === false) {
-                            $error .= 'at least ';
-                            $type   = 'Incorrect';
-                        }
+                if ($column !== $indent
+                    && ($this->exact === true || $column < $indent)
+                ) {
+                    $type  = 'IncorrectExact';
+                    $error = 'Line indented incorrectly; expected ';
+                    if ($this->exact === false) {
+                        $error .= 'at least ';
+                        $type   = 'Incorrect';
+                    }
 
-                        $error .= '%s spaces, found %s';
-                        $data = array(
-                                  ($indent - 1),
-                                  ($column - 1),
-                                );
-                        $phpcsFile->addError($error, $firstToken, $type, $data);
+                    $error .= '%s spaces, found %s';
+                    $data   = array(
+                               ($indent - 1),
+                               ($column - 1),
+                              );
+
+                    $fix = $phpcsFile->addFixableError($error, $firstToken, $type, $data);
+                    if ($fix === true && $phpcsFile->fixer->enabled === true) {
+                        if (($indent - $column) > 0) {
+                            $phpcsFile->fixer->addContentBefore($firstToken, str_repeat(' ', ($indent - $column)));
+                        } else {
+                            $phpcsFile->fixer->replaceToken($firstToken - 1, substr($tokens[($firstToken - 1)]['content'], 0, $indent - $column));
+                        }
                     }
                 }//end if
             }//end if
@@ -335,7 +429,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 // carefully in another sniff.
                 return $tokens[$stackPtr]['column'];
             } else {
-                return 1;
+                return ($this->_openTagIndent + 1);
             }
         }
 
@@ -343,21 +437,36 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
 
         $tokenConditions = $tokens[$stackPtr]['conditions'];
         foreach ($tokenConditions as $id => $condition) {
-            // If it's an indenting scope ie. it's not in our array of
-            // scopes that don't indent, increase indent.
-            if (in_array($condition, $this->nonIndentingScopes) === false) {
-                if ($condition === T_CLOSURE && $inParenthesis === true) {
-                    // Closures cause problems with indents when they are
-                    // used as function arguments because the code inside them
-                    // is not technically inside the function yet, so the indent
-                    // is always off by one. So instead, use the
-                    // indent of the closure as the base value.
-                    $indent = ($tokens[$id]['column'] - 1);
+            // If it's not an indenting scope i.e., it's in our array of
+            // scopes that don't indent, skip it.
+            if (in_array($condition, $this->nonIndentingScopes) === true) {
+                continue;
+            }
+
+            if ($condition === T_CLOSURE && $inParenthesis === true) {
+                // Closures cause problems with indents when they are
+                // used as function arguments because the code inside them
+                // is not technically inside the function yet, so the indent
+                // is always off by one. So instead, use the
+                // indent of the closure as the base value.
+                $lastContent = $id;
+                for ($i = ($id - 1); $i > 0; $i--) {
+                    if ($tokens[$i]['line'] !== $tokens[$id]['line']) {
+                        // Changed lines, so the last content we saw is what
+                        // we want.
+                        break;
+                    }
+
+                    if (in_array($tokens[$i]['code'], PHP_CodeSniffer_Tokens::$emptyTokens) === false) {
+                        $lastContent = $i;
+                    }
                 }
 
-                $indent += $this->indent;
-            }
-        }
+                $indent = ($tokens[$lastContent]['column'] - 1);
+            }//end if
+
+            $indent += $this->indent;
+        }//end foreach
 
         // Increase by 1 to indiciate that the code should start at a specific column.
         // E.g., code indented 4 spaces should start at column 5.
@@ -368,5 +477,3 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
 
 
 }//end class
-
-?>
