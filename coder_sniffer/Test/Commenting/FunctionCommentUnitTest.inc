@@ -5,7 +5,9 @@
  *
  * @param string $x
  *   Comment does not end with full stop
+ * @param string $y
+ *   comment does not start with a capital letter.
  */
-function foo($x) {
+function foo($x, $y) {
 
 }

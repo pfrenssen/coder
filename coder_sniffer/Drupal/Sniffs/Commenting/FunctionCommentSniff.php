@@ -606,7 +606,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             $firstChar = $param['commentLines'][0]['comment'];
             if (preg_match('|\p{Lu}|u', $firstChar) === 0) {
                 $error = 'Parameter comment must start with a capital letter';
-                $phpcsFile->addError($error, $param['tag'], 'ParamCommentNotCapital');
+                $phpcsFile->addError($error, $param['commentLines'][0]['token'], 'ParamCommentNotCapital');
             }
 
             $lastChar = substr($param['comment'], -1);
