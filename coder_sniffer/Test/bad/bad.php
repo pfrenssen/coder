@@ -823,4 +823,11 @@ $x = join($glue, $pieces);
 t('');
 t("");
 
+/**
+ * Doc comment with a white space at the end. 
+ */
+function test28() {
+
+}
+
 ?>

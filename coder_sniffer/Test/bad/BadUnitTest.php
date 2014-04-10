@@ -357,7 +357,8 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                         809 => 2,
                         815 => 1,
                         820 => 1,
-                        826 => 2,
+                        827 => 1,
+                        833 => 2,
                        );
             case 'bad.tpl.php':
                 return array(
