@@ -15,6 +15,8 @@
  *   - sub item2
  */
 
+use Drupal\very_long_module_name_i_am_inventing_here_trololololo\SuperManager;
+
 // Singleline comment before a code line.
 $foo = 'bar';
 
@@ -422,7 +424,7 @@ t('x');
  * end!
  */
 t('x');
-// @see http://example.com
+// @see http://example.com/with/a/very/long/link/that/is/longer/than/80/characters
 t('x');
 // @see my_function()
 t('x');
@@ -623,3 +625,15 @@ $test = array_walk($fragments, function(&$item) {
     $item = '%';
   }
 });
+
+/**
+ * Doc tags are allowed to exceed 80 characters.
+ *
+ * @param \Drupal\very_long_module_name_i_am_inventing_here_trololololo\SuperManager $x
+ *   The super duper manager comment goes here.
+ * @param \Traversable $y
+ *   Some PHP core class/interface.
+ */
+function test2(SuperManager $x, \Traversable $y) {
+
+}

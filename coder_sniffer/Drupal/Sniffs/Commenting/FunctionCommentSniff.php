@@ -506,13 +506,19 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                                      );
                             $phpcsFile->addError($error, $stackPtr, 'TypeHintMissing', $data);
                         } else if ($typeHint !== $suggestedTypeHint) {
-                            $error = 'Expected type hint "%s"; found "%s" for %s';
-                            $data  = array(
-                                      $suggestedTypeHint,
-                                      $typeHint,
-                                      $param['var'],
-                                     );
-                            $phpcsFile->addError($error, $stackPtr, 'IncorrectTypeHint', $data);
+                            // The type hint could be fully namespaced, so we check
+                            // for the part after the last "\".
+                            $name_parts = explode('\\', $suggestedTypeHint);
+                            $last_part = end($name_parts);
+                            if ($last_part !== $typeHint) {
+                                $error = 'Expected type hint "%s"; found "%s" for %s';
+                                $data  = array(
+                                          $last_part,
+                                          $typeHint,
+                                          $param['var'],
+                                         );
+                                $phpcsFile->addError($error, $stackPtr, 'IncorrectTypeHint', $data);
+                            }
                         }
                     } else if ($suggestedTypeHint === '' && isset($realParams[$checkPos]) === true) {
                         $typeHint = $realParams[$checkPos]['type_hint'];
