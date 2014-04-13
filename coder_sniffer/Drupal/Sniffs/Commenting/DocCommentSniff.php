@@ -72,6 +72,11 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             return;
         }
 
+        // Ignore doc blocks in functions, this is handled by InlineCommentSniff.
+        if (!empty($tokens[$stackPtr]['conditions']) && end($tokens[$stackPtr]['conditions']) === T_FUNCTION) {
+            return;
+        }
+
         // The first line of the comment should just be the /** code.
         if ($tokens[$short]['line'] === $tokens[$stackPtr]['line']) {
             $error = 'The open comment tag must be the only content on the line';

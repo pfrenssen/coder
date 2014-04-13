@@ -121,8 +121,14 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                 }
 
                 if ($tokens[$stackPtr]['content'] === '/**') {
-                    $error = 'Inline doc block comments are not allowed; use "/* Comment */" or "// Comment" instead';
-                    $phpcsFile->addError($error, $stackPtr, 'DocBlock');
+                    // The only exception to inline doc blocks is the /** @var */
+                    // declaration.
+                    $content = $phpcsFile->getTokensAsString($stackPtr, $tokens[$stackPtr]['comment_closer'] - $stackPtr + 1);
+                    if (preg_match('#^/\*\* @var [a-zA-Z_\\\\]+ \$[a-zA-Z_]+ \*/$#', $content) !== 1) {
+                        $error = 'Inline doc block comments are not allowed; use "/* Comment */" or "// Comment" instead';
+                        $phpcsFile->addError($error, $stackPtr, 'DocBlock');
+                        return;
+                    }
                 }
             }//end if
         }//end if

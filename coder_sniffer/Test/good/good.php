@@ -599,7 +599,11 @@ class Foo implements FooInterface {
   /**
    * {@inheritdoc}
    */
-  public function test() {}
+  public function test() {
+    /** @var \Drupal\node\NodeInterface $node */
+    $node = $this->entity;
+    return $node;
+  }
 
   /**
    * {@inheritdoc}
