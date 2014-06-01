@@ -31,8 +31,6 @@ abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
         }
         if (self::$phpcs === null) {
             self::$phpcs = new PHP_CodeSniffer();
-            // Register the "Drupal" standard which is used by DrupalPractice.
-            self::$phpcs->setConfigData('installed_paths', __DIR__ . '/../vendor/drupal/coder/coder_sniffer', true);
         }
 
     }//end setUp()
