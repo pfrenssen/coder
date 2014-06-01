@@ -194,7 +194,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         $phpcsFile->addError($error, $return, 'InvalidReturn', $data);
                     }
 
-                    if ($content[0] === '$') {
+                    if ($content[0] === '$' && $content !== '$this') {
                         $error = '@return data type must not contain "$"';
                         $phpcsFile->addError($error, $return, '$InReturnType');
                     }

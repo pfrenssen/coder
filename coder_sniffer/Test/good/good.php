@@ -613,6 +613,16 @@ class Foo implements FooInterface {
   public function test2() {}
 
   /**
+   * Return docs are allowed to use $this.
+   *
+   * @return $this
+   *   This object for chaining method calls.
+   */
+  public function test3() {
+    return $this;
+  }
+
+  /**
    * Returns the string representatuion of this object.
    */
   public function __toString() {
