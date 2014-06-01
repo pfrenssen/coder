@@ -534,7 +534,14 @@ function mymodule_foo_some_type_bar() {
 /**
  * Implements hook_foo_bar() for foo_bar.tpl.php.
  */
-function mymodule_foo_bar() {
+function mymodule_foo_bar_phptemplate() {
+
+}
+
+/**
+ * Implements hook_foo_bar() for foo-bar.html.twig.
+ */
+function mymodule_foo_bar_twig() {
 
 }
 
