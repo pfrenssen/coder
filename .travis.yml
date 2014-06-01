@@ -5,5 +5,4 @@ php:
   - 5.3
 before_script:
   - composer install
-  - cp -r ./vendor/drupal/coder/coder_sniffer/Drupal ./vendor/squizlabs/php_codesniffer/CodeSniffer/Standards
-script: ./vendor/bin/phpunit && ./vendor/squizlabs/php_codesniffer/scripts/phpcs --standard=./DrupalPractice Test/good.php
+script: ./vendor/bin/phpunit
