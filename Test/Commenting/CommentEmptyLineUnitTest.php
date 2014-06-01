@@ -21,7 +21,7 @@ class DrupalPractice_Sniffs_Commenting_CommentEmptyLineUnitTest extends Abstract
      *
      * @return array(int => int)
      */
-    public function getErrorList()
+    protected function getErrorList($testFile)
     {
         return array();
 
@@ -36,7 +36,7 @@ class DrupalPractice_Sniffs_Commenting_CommentEmptyLineUnitTest extends Abstract
      *
      * @return array(int => int)
      */
-    public function getWarningList()
+    protected function getWarningList($testFile)
     {
         return array(3 => 1);
 

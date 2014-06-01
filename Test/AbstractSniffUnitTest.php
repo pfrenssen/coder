@@ -26,6 +26,9 @@ abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+        if (!defined('PHP_CODESNIFFER_IN_TESTS')) {
+            define('PHP_CODESNIFFER_IN_TESTS', true);
+        }
         if (self::$phpcs === null) {
             self::$phpcs = new PHP_CodeSniffer();
             // Register the "Drupal" standard which is used by DrupalPractice.
@@ -46,12 +49,8 @@ abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
 
     }//end shouldSkipTest()
 
-
     /**
      * Tests the extending classes Sniff class.
-     *
-     * @return void
-     * @throws PHPUnit_Framework_Error
      */
     public final function testSniff()
     {
@@ -60,15 +59,48 @@ abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
             $this->markTestSkipped();
         }
 
+        $testFiles = $this->getTestFiles();
+        $sniffCodes = $this->getSniffCodes();
+
+        self::$phpcs->initStandard('DrupalPractice', $sniffCodes);
+
+        $failureMessages = array();
+        foreach ($testFiles as $testFile) {
+            try {
+                $phpcsFile = self::$phpcs->processFile($testFile);
+            } catch (Exception $e) {
+                $this->fail('An unexpected exception has been caught: '.$e->getMessage());
+            }
+
+            $failures        = $this->generateFailureMessages($phpcsFile);
+            $failureMessages = array_merge($failureMessages, $failures);
+
+            if ($phpcsFile->getFixableCount() > 0) {
+                // Attempt to fix the errors.
+                $phpcsFile->fixer->fixFile();
+                $fixable = $phpcsFile->getFixableCount();
+                if ($fixable > 0) {
+                    $filename = basename($testFile);
+                    $failureMessages[] = "Failed to fix $fixable fixable violations in $filename";
+                }
+            }
+        }//end foreach()
+
+        if (empty($failureMessages) === false) {
+            $this->fail(implode(PHP_EOL, $failureMessages));
+        }
+
+    }//end testSniff()
+
+    /**
+     * Returns a list of test files that should be checked.
+     *
+     * @return array The list of test files.
+     */
+    protected function getTestFiles() {
         // The basis for determining file locations.
         $basename = substr(get_class($this), 0, -8);
-
-        // The name of the coding standard we are testing.
-        $standardName = 'DrupalPractice';
-
-        // The code of the sniff we are testing.
-        $parts     = explode('_', $basename);
-        $sniffCode = $parts[0].'.'.$parts[2].'.'.$parts[3];
+        $parts    = explode('_', $basename);
 
         // The name of the dummy file we are testing.
         $testFileBase = dirname(__FILE__).DIRECTORY_SEPARATOR.$parts[2].DIRECTORY_SEPARATOR.$parts[3].'UnitTest.';
@@ -91,28 +123,22 @@ abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
 
         // Get them in order.
         sort($testFiles);
+        return $testFiles;
+    }
 
-        self::$phpcs->process(array(), $standardName, array($sniffCode));
-        self::$phpcs->setIgnorePatterns(array());
+    /**
+     * Returns a list of sniff codes that should be checked in this test.
+     *
+     * @return array The list of sniff codes.
+     */
+    protected function getSniffCodes() {
+        // The basis for determining file locations.
+        $basename = substr(get_class($this), 0, -8);
 
-        $failureMessages = array();
-        foreach ($testFiles as $testFile) {
-            try {
-                $phpcsFile = self::$phpcs->processFile($testFile);
-            } catch (Exception $e) {
-                $this->fail('An unexpected exception has been caught: '.$e->getMessage());
-            }
-
-            $failures        = $this->generateFailureMessages($phpcsFile);
-            $failureMessages = array_merge($failureMessages, $failures);
-        }//end foreach
-
-        if (empty($failureMessages) === false) {
-            $this->fail(implode(PHP_EOL, $failureMessages));
-        }
-
-    }//end testSniff()
-
+        // The code of the sniff we are testing.
+        $parts     = explode('_', $basename);
+        return array($parts[0].'.'.$parts[2].'.'.$parts[3]);
+    }
 
     /**
      * Generate a list of test failures for a given sniffed file.
@@ -171,7 +197,7 @@ abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
                 }
 
                 $allProblems[$line]['found_errors'] = array_merge($foundErrorsTemp, $errorsTemp);
-            }
+            }//end foreach
 
             if (isset($expectedErrors[$line]) === true) {
                 $allProblems[$line]['expected_errors'] = $expectedErrors[$line];
@@ -250,6 +276,16 @@ abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
             $expectedErrors   = $problems['expected_errors'];
             $expectedWarnings = $problems['expected_warnings'];
 
+
+            // Uncomment the following generate line error pairs for the bad unit
+            // test.
+            /*if ($numErrors) {
+                print "$line => " . $numErrors . ",\n";
+            }
+            if ($numWarnings) {
+                print "$line => " . $numWarnings . ",\n";
+            }*/
+
             $errors      = '';
             $foundString = '';
 
@@ -312,7 +348,7 @@ abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
      *
      * @return array(int => int)
      */
-    protected abstract function getErrorList();
+    protected abstract function getErrorList($testFile);
 
 
     /**
@@ -323,8 +359,7 @@ abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
      *
      * @return array(int => int)
      */
-    protected abstract function getWarningList();
-
+    protected abstract function getWarningList($testFile);
 
 }//end class
 
