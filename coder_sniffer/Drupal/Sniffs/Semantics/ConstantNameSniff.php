@@ -44,9 +44,6 @@ class Drupal_Sniffs_Semantics_ConstantNameSniff extends Drupal_Sniffs_Semantics_
      *   The position of the opening parenthesis in the stack.
      * @param int $closeBracket
      *   The position of the closing parenthesis in the stack.
-     * @param Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
-     *   Can be used to retreive the function's arguments with the getArgument()
-     *   method.
      *
      * @return void
      */
@@ -54,8 +51,7 @@ class Drupal_Sniffs_Semantics_ConstantNameSniff extends Drupal_Sniffs_Semantics_
         PHP_CodeSniffer_File $phpcsFile,
         $stackPtr,
         $openBracket,
-        $closeBracket,
-        Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
+        $closeBracket
     ) {
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -6));
         // Only check in *.module files.
@@ -64,7 +60,7 @@ class Drupal_Sniffs_Semantics_ConstantNameSniff extends Drupal_Sniffs_Semantics_
         }
 
         $tokens   = $phpcsFile->getTokens();
-        $argument = $sniff->getArgument(1);
+        $argument = $this->getArgument(1);
         if ($tokens[$argument['start']]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
             // Not a string literal, so this is some obscure constant that we ignore.
             return;
