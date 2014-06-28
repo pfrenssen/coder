@@ -44,9 +44,6 @@ class DrupalPractice_Sniffs_FunctionCalls_CurlSslVerifierSniff extends Drupal_Sn
      *   The position of the opening parenthesis in the stack.
      * @param int $closeBracket
      *   The position of the closing parenthesis in the stack.
-     * @param Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
-     *   Can be used to retreive the function's arguments with the getArgument()
-     *   method.
      *
      * @return void
      */
@@ -54,11 +51,10 @@ class DrupalPractice_Sniffs_FunctionCalls_CurlSslVerifierSniff extends Drupal_Sn
         PHP_CodeSniffer_File $phpcsFile,
         $stackPtr,
         $openBracket,
-        $closeBracket,
-        Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
+        $closeBracket
     ) {
         $tokens = $phpcsFile->getTokens();
-        $option = $sniff->getArgument(2);
+        $option = $this->getArgument(2);
         if ($tokens[$option['start']]['content'] !== 'CURLOPT_SSL_VERIFYPEER') {
             return;
         }

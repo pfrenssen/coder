@@ -4,15 +4,15 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "68f58d14bddddb39f66ae9dcd4b24a75",
+    "hash": "21403438f6dbff9480a9c8dacc6a888e",
     "packages": [
         {
             "name": "drupal/coder",
-            "version": "8.2.0-alpha1",
+            "version": "dev-8.x-2.x",
             "source": {
                 "type": "git",
                 "url": "http://git.drupal.org/project/coder.git",
-                "reference": "6c1bca66bea25e80a56f29840f6bf41da99b1fe6"
+                "reference": "a9483d390221269cc0b3b9d11b3780c0a025b1b2"
             },
             "require": {
                 "php": ">=5.2.0",
@@ -33,7 +33,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2014-03-22 10:34:59"
+            "time": "2014-06-28 15:33:45"
         },
         {
             "name": "squizlabs/php_codesniffer",
@@ -532,7 +532,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "squizlabs/php_codesniffer": 20,
-        "drupal/coder": 15
+        "drupal/coder": 20
     },
     "platform": [
 

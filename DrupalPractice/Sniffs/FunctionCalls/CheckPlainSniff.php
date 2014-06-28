@@ -43,9 +43,6 @@ class DrupalPractice_Sniffs_FunctionCalls_CheckPlainSniff extends Drupal_Sniffs_
      *   The position of the opening parenthesis in the stack.
      * @param int $closeBracket
      *   The position of the closing parenthesis in the stack.
-     * @param Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
-     *   Can be used to retreive the function's arguments with the getArgument()
-     *   method.
      *
      * @return void
      */
@@ -53,11 +50,10 @@ class DrupalPractice_Sniffs_FunctionCalls_CheckPlainSniff extends Drupal_Sniffs_
         PHP_CodeSniffer_File $phpcsFile,
         $stackPtr,
         $openBracket,
-        $closeBracket,
-        Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
+        $closeBracket
     ) {
         $tokens = $phpcsFile->getTokens();
-        $argument = $sniff->getArgument(1);
+        $argument = $this->getArgument(1);
         if ($argument['start'] === $argument['end'] && $tokens[$argument['start']]['code'] ===  T_CONSTANT_ENCAPSED_STRING) {
             $warning = 'Do not use check_plain() on string literals, because they cannot contain user provided text';
             $phpcsFile->addWarning($warning, $argument['start'], 'CheckPlainLiteral');

@@ -16,7 +16,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Sniffs_FunctionCalls_ThemeSniff extends Drupal_Sniffs_Semantics_FunctionCallSniff
+class DrupalPractice_Sniffs_FunctionCalls_ThemeSniff extends Drupal_Sniffs_Semantics_FunctionCall
 {
 
     /**

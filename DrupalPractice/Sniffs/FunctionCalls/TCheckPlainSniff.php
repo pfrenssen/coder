@@ -47,9 +47,6 @@ class DrupalPractice_Sniffs_FunctionCalls_TCheckPlainSniff extends Drupal_Sniffs
      *   The position of the opening parenthesis in the stack.
      * @param int $closeBracket
      *   The position of the closing parenthesis in the stack.
-     * @param Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
-     *   Can be used to retreive the function's arguments with the getArgument()
-     *   method.
      *
      * @return void
      */
@@ -57,15 +54,14 @@ class DrupalPractice_Sniffs_FunctionCalls_TCheckPlainSniff extends Drupal_Sniffs
         PHP_CodeSniffer_File $phpcsFile,
         $stackPtr,
         $openBracket,
-        $closeBracket,
-        Drupal_Sniffs_Semantics_FunctionCallSniff $sniff
+        $closeBracket
     ) {
         $tokens = $phpcsFile->getTokens();
         if ($tokens[$stackPtr]['content'] === 't') {
-            $argument = $sniff->getArgument(2);
+            $argument = $this->getArgument(2);
         } else {
             // For watchdog() the placeholders are in the third argument.
-            $argument = $sniff->getArgument(3);
+            $argument = $this->getArgument(3);
         }
 
         if ($argument === false) {
