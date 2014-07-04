@@ -635,6 +635,15 @@ class Foo implements FooInterface {
   public function __toString() {
     return 'foo';
   }
+
+  /**
+   * Omitting the comment when returning $this is allowed.
+   *
+   * @return $this
+   */
+  public function test4() {
+    return $this;
+  }
 }
 
 t('Some long mulit-line 

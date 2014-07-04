@@ -166,15 +166,16 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             }
         }
 
+        $type = null;
         if ($isSpecialMethod === false && $methodName !== $className) {
             if ($return !== null) {
-                $content = $tokens[($return + 2)]['content'];
-                if (empty($content) === true || $tokens[($return + 2)]['code'] !== T_DOC_COMMENT_STRING) {
+                $type = $tokens[($return + 2)]['content'];
+                if (empty($type) === true || $tokens[($return + 2)]['code'] !== T_DOC_COMMENT_STRING) {
                     $error = 'Return type missing for @return tag in function comment';
                     $phpcsFile->addError($error, $return, 'MissingReturnType');
                 } else {
                     // Check return type (can be multiple, separated by '|').
-                    $typeNames      = explode('|', $content);
+                    $typeNames      = explode('|', $type);
                     $suggestedNames = array();
                     foreach ($typeNames as $i => $typeName) {
                         $suggestedName = $this->suggestType($typeName);
@@ -184,25 +185,25 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     }
 
                     $suggestedType = implode('|', $suggestedNames);
-                    if ($content !== $suggestedType) {
+                    if ($type !== $suggestedType) {
                         $error = 'Function return type "%s" is invalid';
                         $error = 'Expected "%s" but found "%s" for function return type';
                         $data  = array(
                                   $suggestedType,
-                                  $content,
+                                  $type,
                                  );
                         $phpcsFile->addError($error, $return, 'InvalidReturn', $data);
                     }
 
-                    if ($content[0] === '$' && $content !== '$this') {
+                    if ($type[0] === '$' && $type !== '$this') {
                         $error = '@return data type must not contain "$"';
                         $phpcsFile->addError($error, $return, '$InReturnType');
                     }
 
-                    if ($content === 'void') {
+                    if ($type === 'void') {
                         $error = 'If there is no return value for a function, there must not be a @return tag.';
                         $phpcsFile->addError($error, $return, 'VoidReturn');
-                    } else if ($content !== 'mixed') {
+                    } else if ($type !== 'mixed') {
                         // If return type is not void, there needs to be a return statement
                         // somewhere in the function that returns something.
                         if (isset($tokens[$stackPtr]['scope_closer']) === true) {
@@ -242,7 +243,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         }
                     }
                 }
-                if ($comment == '') {
+                if ($comment === '' && $type !== '$this') {
                     $error = 'Return comment must be on the next line';
                     $phpcsFile->addError($error, $return, 'MissingReturnComment');
                 }//end if
