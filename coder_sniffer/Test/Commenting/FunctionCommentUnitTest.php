@@ -16,6 +16,11 @@ class Drupal_Sniffs_Commenting_FunctionCommentUnitTest extends CoderSniffUnitTes
         return array(
                 7 => 1,
                 9 => 1,
+                18 => 1,
+                28 => 1,
+                38 => 1,
+                48 => 1,
+                57 => 1,
                );
 
     }//end getErrorList()

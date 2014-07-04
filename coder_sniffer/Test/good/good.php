@@ -658,3 +658,13 @@ $test = array_walk($fragments, function(&$item) {
 function test2(SuperManager $x, \Traversable $y) {
 
 }
+
+/**
+ * Test comment.
+ *
+ * @throws \Drupal\locale\StringStorageException
+ *   The exception description is here and should not cause an error.
+ */
+function test4() {
+
+}

@@ -278,23 +278,9 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 continue;
             }
 
-            $exception = null;
-            $comment   = null;
-            if ($tokens[($tag + 2)]['code'] === T_DOC_COMMENT_STRING) {
-                $matches = array();
-                preg_match('/([^\s]+)(?:\s+(.*))?/', $tokens[($tag + 2)]['content'], $matches);
-                $exception = $matches[1];
-                if (isset($matches[2]) === true) {
-                    $comment = $matches[2];
-                }
-            }
-
-            if ($exception === null) {
-                $error = 'Exception type and comment missing for @throws tag in function comment';
+            if ($tokens[($tag + 2)]['code'] !== T_DOC_COMMENT_STRING) {
+                $error = 'Exception type missing for @throws tag in function comment';
                 $phpcsFile->addError($error, $tag, 'InvalidThrows');
-            } else if ($comment === null) {
-                $error = 'Comment missing for @throws tag in function comment';
-                $phpcsFile->addError($error, $tag, 'EmptyThrows');
             } else {
                 // Any strings until the next tag belong to this comment.
                 if (isset($tokens[$commentStart]['comment_tags'][($pos + 1)]) === true) {
@@ -303,23 +289,44 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $end = $tokens[$commentStart]['comment_closer'];
                 }
 
+                $comment   = '';
+                $commentStart = null;
                 for ($i = ($tag + 3); $i < $end; $i++) {
                     if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
-                        $comment .= ' '.$tokens[$i]['content'];
+                        if ($commentStart === null) {
+                            $commentStart = $i;
+                        }
+                        $indent = 0;
+                        if ($tokens[($i - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
+                            $indent = strlen($tokens[($i - 1)]['content']);
+                        }
+
+                        $comment       .= ' '.$tokens[$i]['content'];
+                        if ($indent < 3) {
+                            $error = 'Throws comment indentation must be 3 spaces, found %s spaces';
+                            $phpcsFile->addError($error, $i, 'TrhowsCommentIndentation', array($indent));
+                        }
                     }
+                }
+                $comment = trim($comment);
+
+                if ($comment === '') {
+                    $error = 'Comment missing or not on the next line for @throws tag in function comment';
+                    $phpcsFile->addError($error, $tag, 'EmptyThrows');
+                    return;
                 }
 
                 // Starts with a capital letter and ends with a fullstop.
                 $firstChar = $comment{0};
                 if (strtoupper($firstChar) !== $firstChar) {
                     $error = '@throws tag comment must start with a capital letter';
-                    $phpcsFile->addError($error, ($tag + 2), 'ThrowsNotCapital');
+                    $phpcsFile->addError($error, $commentStart, 'ThrowsNotCapital');
                 }
 
                 $lastChar = substr($comment, -1);
                 if ($lastChar !== '.') {
                     $error = '@throws tag comment must end with a full stop';
-                    $phpcsFile->addError($error, ($tag + 2), 'ThrowsNoFullStop');
+                    $phpcsFile->addError($error, $commentStart, 'ThrowsNoFullStop');
                 }
             }//end if
         }//end foreach
