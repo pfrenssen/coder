@@ -677,3 +677,17 @@ function test2(SuperManager $x, \Traversable $y) {
 function test4() {
 
 }
+
+/**
+ * Test chained method indentation which should not throw errors.
+ */
+function test5() {
+  $mock->expects($this->any())
+    ->method('findTranslation')
+    ->will($this->returnCallback(function ($argument) use ($translations) {
+      if (isset($translations[$argument['language']][$argument['source']])) {
+        return (object) array('translation' => $translations[$argument['language']][$argument['source']]);
+      }
+      return TRUE;
+    }));
+}

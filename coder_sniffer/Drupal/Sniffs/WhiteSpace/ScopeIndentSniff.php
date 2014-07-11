@@ -468,6 +468,12 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
             $indent += $this->indent;
         }//end foreach
 
+        // If the line starts with "->" we assume this is an indented chained method
+        // invocation, so we add one level of indentation.
+        if ($tokens[$stackPtr]['code'] === T_OBJECT_OPERATOR) {
+            $indent += $this->indent;
+        }
+
         // Increase by 1 to indiciate that the code should start at a specific column.
         // E.g., code indented 4 spaces should start at column 5.
         $indent++;
