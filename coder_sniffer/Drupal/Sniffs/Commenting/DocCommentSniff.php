@@ -73,7 +73,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
         }
 
         // Ignore doc blocks in functions, this is handled by InlineCommentSniff.
-        if (!empty($tokens[$stackPtr]['conditions']) && end($tokens[$stackPtr]['conditions']) === T_FUNCTION) {
+        if (!empty($tokens[$stackPtr]['conditions']) && in_array(T_FUNCTION, $tokens[$stackPtr]['conditions'])) {
             return;
         }
 

@@ -644,6 +644,32 @@ class Foo implements FooInterface {
   public function test4() {
     return $this;
   }
+
+  /**
+   * Loads multiple string objects.
+   *
+   * @param array $conditions
+   *   Any of the conditions used by dbStringSelect().
+   * @param array $options
+   *   Any of the options used by dbStringSelect().
+   * @param string $class
+   *   Class name to use for fetching returned objects.
+   *
+   * @return \Drupal\locale\StringInterface[]
+   *   Array of objects of the class requested.
+   */
+  protected function dbStringLoad(array $conditions, array $options, $class) {
+    $strings = array();
+    $result = $this->dbStringSelect($conditions, $options)->execute();
+    foreach ($result as $item) {
+      /** @var \Drupal\locale\StringInterface $string */
+      $string = new $class($item);
+      $string->setStorage($this);
+      $strings[] = $string;
+    }
+    return $strings;
+  }
+
 }
 
 t('Some long mulit-line 
