@@ -107,6 +107,11 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             }
         }
 
+        // Do not check defgroup sections, they have no short description.
+        if (in_array($tokens[$short]['content'], array('@defgroup', '@addtogroup', '@}'))) {
+            return;
+        }
+
         // Check for a comment description.
         if ($tokens[$short]['code'] !== T_DOC_COMMENT_STRING) {
             $error = 'Missing short description in doc comment';
