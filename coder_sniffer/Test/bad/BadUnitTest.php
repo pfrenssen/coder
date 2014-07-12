@@ -28,7 +28,7 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                         3 => 1,
                         4 => 1,
                         5 => 1,
-                        6 => 2,
+                        // 6 => 2, @todo Enable this check once https://pear.php.net/bugs/bug.php?id=20346 is fixed.
                         7 => 1,
                         8 => 1,
                         9 => 1,
