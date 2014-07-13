@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "21403438f6dbff9480a9c8dacc6a888e",
+    "hash": "0fc74d57e6ba96f569176ced65e2a63b",
     "packages": [
         {
             "name": "drupal/coder",
@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "http://git.drupal.org/project/coder.git",
-                "reference": "a9483d390221269cc0b3b9d11b3780c0a025b1b2"
+                "reference": "6b2e2c5e1fac5b679ea909aec8779160195f91ad"
             },
             "require": {
                 "php": ">=5.2.0",
@@ -33,7 +33,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2014-06-28 15:33:45"
+            "time": "2014-07-12 15:07:32"
         },
         {
             "name": "squizlabs/php_codesniffer",
@@ -41,12 +41,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "ac6b0e747034db11f70bceb71fac14a79e185ddd"
+                "reference": "1b1aa4ad3eeec2c64e410c522060d0cd5a77e215"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/ac6b0e747034db11f70bceb71fac14a79e185ddd",
-                "reference": "ac6b0e747034db11f70bceb71fac14a79e185ddd",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/1b1aa4ad3eeec2c64e410c522060d0cd5a77e215",
+                "reference": "1b1aa4ad3eeec2c64e410c522060d0cd5a77e215",
                 "shasum": ""
             },
             "require": {
@@ -106,7 +106,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2014-06-24 05:24:17"
+            "time": "2014-07-11 04:24:56"
         }
     ],
     "packages-dev": [
@@ -478,17 +478,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.5.0",
+            "version": "v2.5.1",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "b4b09c68ec2f2727574544ef0173684281a5033c"
+                "reference": "1057e87364c0b38b50f5695fc9df9dd189036bec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/b4b09c68ec2f2727574544ef0173684281a5033c",
-                "reference": "b4b09c68ec2f2727574544ef0173684281a5033c",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/1057e87364c0b38b50f5695fc9df9dd189036bec",
+                "reference": "1057e87364c0b38b50f5695fc9df9dd189036bec",
                 "shasum": ""
             },
             "require": {
@@ -523,7 +523,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2014-05-16 14:25:18"
+            "time": "2014-07-08 12:21:33"
         }
     ],
     "aliases": [
