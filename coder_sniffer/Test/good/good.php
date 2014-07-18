@@ -670,6 +670,15 @@ class Foo implements FooInterface {
     return $strings;
   }
 
+  /**
+   * Short array syntax is allowed.
+   */
+  public function getConfiguration() {
+    return [
+      'id' => $this->getPluginId(),
+    ] + $this->configuration;
+  }
+
 }
 
 t('Some long mulit-line 
