@@ -66,7 +66,7 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
 
             // Code examples between @code and @endcode are allowed to exceed 80
             // characters.
-            if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT_WHITESPACE) {
+            if (isset($tokens[$stackPtr]) === true && $tokens[$stackPtr]['code'] === T_DOC_COMMENT_WHITESPACE) {
                 $tag = $phpcsFile->findPrevious(array(T_DOC_COMMENT_TAG, T_DOC_COMMENT_OPEN_TAG), $stackPtr - 1);
                 if ($tokens[$tag]['content'] === '@code') {
                     return;
