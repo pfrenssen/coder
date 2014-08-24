@@ -59,7 +59,7 @@ class DrupalPractice_Sniffs_FunctionCalls_CurlSslVerifierSniff extends Drupal_Sn
             return;
         }
 
-        $value = $sniff->getArgument(3);
+        $value = $this->getArgument(3);
         if ($tokens[$value['start']]['content'] === 'FALSE' || $tokens[$value['start']]['content'] === '0') {
             $warning = 'Potential security problem: SSL peer verification must not be disabled';
             $phpcsFile->addWarning($warning, $value['start'], 'SslPeerVerificationDisabled');
