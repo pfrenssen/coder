@@ -507,12 +507,20 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     if ($suggestedTypeHint !== '' && isset($realParams[$checkPos]) === true) {
                         $typeHint = $realParams[$checkPos]['type_hint'];
                         if ($typeHint === '') {
-                            $error = 'Type hint "%s" missing for %s';
-                            $data  = array(
-                                      $suggestedTypeHint,
-                                      $param['var'],
-                                     );
-                            $phpcsFile->addError($error, $stackPtr, 'TypeHintMissing', $data);
+                            // Array special case: if there is a default value for an
+                            // array parameter then people may want to omit the type
+                            // hint.
+                            if (isset($realParams[$checkPos]['default']) === false
+                                || (strpos($realParams[$checkPos]['default'], 'array(') === false
+                                    && strpos($realParams[$checkPos]['default'], '[') === false)
+                            ) {
+                                $error = 'Type hint "%s" missing for %s';
+                                $data  = array(
+                                          $suggestedTypeHint,
+                                          $param['var'],
+                                         );
+                                $phpcsFile->addError($error, $stackPtr, 'TypeHintMissing', $data);
+                            }
                         } else if ($typeHint !== $suggestedTypeHint) {
                             // The type hint could be fully namespaced, so we check
                             // for the part after the last "\".

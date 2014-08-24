@@ -679,6 +679,16 @@ class Foo implements FooInterface {
     ] + $this->configuration;
   }
 
+  /**
+   * Array type hints for optional parameters can be omitted.
+   *
+   * @param \Drupal\Core\Plugin\Context\ContextInterface[] $contexts
+   *   Description goes here.
+   */
+  public function test5($contexts = []) {
+    return 'test5';
+  }
+
 }
 
 t('Some long mulit-line 
