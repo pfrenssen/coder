@@ -736,3 +736,13 @@ function test5() {
       return TRUE;
     }));
 }
+
+/**
+ * Array syntax with brackets is allowed in type hints.
+ *
+ * @param string[] $names
+ *   An indexed array of names.
+ */
+function test6(array $names) {
+
+}

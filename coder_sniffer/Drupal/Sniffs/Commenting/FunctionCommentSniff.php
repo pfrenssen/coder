@@ -501,6 +501,8 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         $suggestedTypeHint = 'array';
                     } else if (strpos($suggestedName, 'callable') !== false) {
                         $suggestedTypeHint = 'callable';
+                    } else if (substr($suggestedName, -2) === '[]') {
+                        $suggestedTypeHint = 'array';
                     } else if (in_array($typeName, $this->allowedTypes) === false) {
                         $suggestedTypeHint = $suggestedName;
                     }
