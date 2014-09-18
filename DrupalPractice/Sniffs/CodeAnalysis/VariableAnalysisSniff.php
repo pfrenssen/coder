@@ -645,7 +645,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
             return $closePtr;
         }
 
-        if ($closePtr < $semicolonPtr) {
+        if ($closePtr !== false && $closePtr < $semicolonPtr) {
             return $closePtr;
         }
 
