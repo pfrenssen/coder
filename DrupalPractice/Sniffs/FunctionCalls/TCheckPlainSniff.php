@@ -75,8 +75,13 @@ class DrupalPractice_Sniffs_FunctionCalls_TCheckPlainSniff extends Drupal_Sniffs
         $checkPlain = $argument['start'];
         while ($checkPlain = $phpcsFile->findNext(T_STRING, ($checkPlain + 1), $tokens[$argument['start']]['parenthesis_closer'])) {
             if ($tokens[$checkPlain]['content'] === 'check_plain') {
-                $warning = 'The extra check_plain() is not necessary for placeholders, "@" and "%" will automatically run check_plain()';
-                $phpcsFile->addWarning($warning, $checkPlain, 'CheckPlain');
+                // The check_plain() could be embedded with string concatenation,
+                // which we want to allow.
+                $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($checkPlain - 1), $argument['start'], true);
+                if ($previous === false || $tokens[$previous]['code'] !== T_STRING_CONCAT) {
+                    $warning = 'The extra check_plain() is not necessary for placeholders, "@" and "%" will automatically run check_plain()';
+                    $phpcsFile->addWarning($warning, $checkPlain, 'CheckPlain');
+                }
             }
         }
 
