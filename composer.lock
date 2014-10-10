@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "2592f8c676571595bb01d687d03efe9c41b64f6d"
+                "reference": "9777f8c07492c7a00b23c8463eff23dc155066e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/2592f8c676571595bb01d687d03efe9c41b64f6d",
-                "reference": "2592f8c676571595bb01d687d03efe9c41b64f6d",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/9777f8c07492c7a00b23c8463eff23dc155066e8",
+                "reference": "9777f8c07492c7a00b23c8463eff23dc155066e8",
                 "shasum": ""
             },
             "require": {
@@ -77,7 +77,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2014-09-24 05:11:28"
+            "time": "2014-10-10 02:29:20"
         }
     ],
     "packages-dev": [
@@ -449,17 +449,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.5.4",
+            "version": "v2.5.5",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "01a7695bcfb013d0a15c6757e15aae120342986f"
+                "reference": "b1dbc53593b98c2d694ebf383660ac9134d30b96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/01a7695bcfb013d0a15c6757e15aae120342986f",
-                "reference": "01a7695bcfb013d0a15c6757e15aae120342986f",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/b1dbc53593b98c2d694ebf383660ac9134d30b96",
+                "reference": "b1dbc53593b98c2d694ebf383660ac9134d30b96",
                 "shasum": ""
             },
             "require": {
@@ -492,12 +492,10 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2014-08-31 03:22:04"
+            "time": "2014-09-22 09:14:18"
         }
     ],
-    "aliases": [
-
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "squizlabs/php_codesniffer": 20
@@ -506,7 +504,5 @@
     "platform": {
         "php": ">=5.2.0"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }
