@@ -457,6 +457,8 @@ t('x');
 // List is closed, normal indentation here. Now comes a paragraph empty line.
 //
 // And here continues the long comment.
+// Now some UTF-8 characters that do not exceed 80 characters.
+// Hà Nội là thủ đô, đồng thời là thành phố đứng đầu Việt Nam về diện tích tự.
 t('x');
 
 /**

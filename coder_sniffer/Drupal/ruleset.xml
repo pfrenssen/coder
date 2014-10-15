@@ -2,6 +2,8 @@
 <!-- See http://pear.php.net/manual/en/package.php.php-codesniffer.annotated-ruleset.php -->
 <ruleset name="Drupal">
  <description>Drupal coding standard</description>
+ <!-- All Drupal code files must be UTF-8 encoded and we treat them as such. -->
+ <arg name="encoding" value="utf8"/>
 
  <rule ref="Internal.NoCodeFound">
   <!-- Usually there is no code in txt or info files, so we suppress warnings about

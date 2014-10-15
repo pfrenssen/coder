@@ -30,7 +30,7 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
             define('PHP_CODESNIFFER_IN_TESTS', true);
         }
         if (self::$phpcs === null) {
-            self::$phpcs = new PHP_CodeSniffer();
+            self::$phpcs = new PHP_CodeSniffer(0, 0, 'utf-8');
         }
 
     }//end setUp()
