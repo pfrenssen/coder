@@ -68,8 +68,12 @@ class DrupalPractice_Sniffs_General_OptionsTSniff implements PHP_CodeSniffer_Sni
         $arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($stackPtr + 1), $statementEnd, false, null, true);
         while ($arrow !== false) {
             $arrayValue = $phpcsFile->findNext(T_WHITESPACE, ($arrow + 1), $statementEnd, true);
-            // We are only interested in string literals.
-            if ($tokens[$arrayValue]['code'] === T_CONSTANT_ENCAPSED_STRING) {
+            // We are only interested in string literals that are not numbers
+            // and more than 3 characters long.
+            if ($tokens[$arrayValue]['code'] === T_CONSTANT_ENCAPSED_STRING
+                && !is_numeric(substr($tokens[$arrayValue]['content'], 1, -1))
+                && strlen($tokens[$arrayValue]['content']) > 5
+            ) {
                 // We need to make sure that the string is the one and only part
                 // of the array value.
                 $afterValue = $phpcsFile->findNext(T_WHITESPACE, ($arrayValue + 1), $statementEnd, true);

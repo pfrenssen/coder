@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "http://git.drupal.org/project/coder.git",
-                "reference": "db8321e44fc9f77265796a58bcdd12f8f23c753c"
+                "reference": "9aaa6f8777585b48377f30a96e5a8fb3ed3f7e02"
             },
             "require": {
                 "php": ">=5.2.0",
@@ -33,7 +33,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2014-08-24 20:24:32"
+            "time": "2014-10-15 22:07:03"
         },
         {
             "name": "squizlabs/php_codesniffer",
@@ -41,12 +41,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "c41af17e42282165d8a68fb7bf0fbcf1f06b9212"
+                "reference": "995d6e97f79b5f15631e2082ee6eb80279d114f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/c41af17e42282165d8a68fb7bf0fbcf1f06b9212",
-                "reference": "c41af17e42282165d8a68fb7bf0fbcf1f06b9212",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/995d6e97f79b5f15631e2082ee6eb80279d114f2",
+                "reference": "995d6e97f79b5f15631e2082ee6eb80279d114f2",
                 "shasum": ""
             },
             "require": {
@@ -106,7 +106,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2014-09-16 23:28:43"
+            "time": "2014-10-15 23:54:48"
         }
     ],
     "packages-dev": [
@@ -356,16 +356,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "3.7.37",
+            "version": "3.7.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "ae6cefd7cc84586a5ef27e04bae11ee940ec63dc"
+                "reference": "38709dc22d519a3d1be46849868aa2ddf822bcf6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/ae6cefd7cc84586a5ef27e04bae11ee940ec63dc",
-                "reference": "ae6cefd7cc84586a5ef27e04bae11ee940ec63dc",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/38709dc22d519a3d1be46849868aa2ddf822bcf6",
+                "reference": "38709dc22d519a3d1be46849868aa2ddf822bcf6",
                 "shasum": ""
             },
             "require": {
@@ -425,7 +425,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-04-30 12:24:19"
+            "time": "2014-10-17 09:04:17"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -478,17 +478,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.5.4",
+            "version": "v2.5.5",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "01a7695bcfb013d0a15c6757e15aae120342986f"
+                "reference": "b1dbc53593b98c2d694ebf383660ac9134d30b96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/01a7695bcfb013d0a15c6757e15aae120342986f",
-                "reference": "01a7695bcfb013d0a15c6757e15aae120342986f",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/b1dbc53593b98c2d694ebf383660ac9134d30b96",
+                "reference": "b1dbc53593b98c2d694ebf383660ac9134d30b96",
                 "shasum": ""
             },
             "require": {
@@ -521,22 +521,16 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2014-08-31 03:22:04"
+            "time": "2014-09-22 09:14:18"
         }
     ],
-    "aliases": [
-
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "squizlabs/php_codesniffer": 20,
         "drupal/coder": 20
     },
     "prefer-stable": false,
-    "platform": [
-
-    ],
-    "platform-dev": [
-
-    ]
+    "platform": [],
+    "platform-dev": []
 }
