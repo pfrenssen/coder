@@ -45,6 +45,7 @@ class Drupal_Sniffs_Functions_DiscouragedFunctionsSniff extends Generic_Sniffs_P
                                      'kdevel_print_object' => null,
                                      'kpr'                 => null,
                                      'kprint_r'            => null,
+                                     'sdpm'                => null,
                                     );
 
     /**
