@@ -4,13 +4,3 @@ package = Development
 core = 7.x
 dependencies[] = coder
 configure = admin/config/development/coder/review
-
-files[] = tests/coder_review_test_case.tinc
-files[] = tests/coder_review_6x.test
-files[] = tests/coder_review_7x.test
-files[] = tests/coder_review_comment.test
-files[] = tests/coder_review_i18n.test
-files[] = tests/coder_review_security.test
-files[] = tests/coder_review_sql.test
-files[] = tests/coder_review_style.test
-files[] = tests/coder_review_sniffer.test
