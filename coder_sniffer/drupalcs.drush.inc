@@ -23,19 +23,19 @@ function drupalcs_drush_command() {
         'description' => dt('Comma delimited list of file extensions to scan. The default is @default', array(
           '@default' => implode(',', _drupalcs_extensions()),
         )),
-        'example-value' => dt('php,module'),
+        'example-value' => 'php,module',
       ),
       'mode' => array(
         'description' => dt('Specify the name of the set of file extensions to scan if no extensions are specified. Options are: default, extended.'),
-        'example-value' => dt('extended'),
+        'example-value' => 'extended',
       ),
       'report' => array(
         'description' => dt('Specify the report format. Options are: full, xml, checkstyle, csv, emacs, source, summary, svnblame, gitblame or hgblame.'),
-        'example-value' => dt('xml'),
+        'example-value' => 'xml',
       ),
       'report-file' => array(
         'description' => dt('Write the report to the specified file path.'),
-        'example-value' => dt('/var/log/snifflog.xml'),
+        'example-value' => '/var/log/snifflog.xml',
       ),
     ),
   );
