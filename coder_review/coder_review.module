@@ -549,7 +549,7 @@ function coder_review_page_form_submit($form, &$form_state) {
 function coder_review_page_form($form, &$form_state, $arg = '') {
   // Bootstrap enough to run.
   if (!function_exists('_coder_review_reviews')) {
-    require_once realpath(__DIR__) . '/coder_review.common.inc';
+    require_once 'coder_review.common.inc';
   }
 
   if (isset($form_state['storage'])) {
