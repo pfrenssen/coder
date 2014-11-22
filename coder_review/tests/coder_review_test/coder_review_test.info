@@ -2,4 +2,3 @@ name = Coder Review Test
 package = Coder
 core = 7.x
 hidden = TRUE
-files[] = coder_review_test.module
