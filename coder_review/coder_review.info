@@ -3,6 +3,7 @@ description = "Developer module" which reviews your code identifying coding styl
 package = Development
 core = 7.x
 dependencies[] = coder
+configure = admin/config/development/coder/review
 
 files[] = tests/coder_review_test_case.tinc
 files[] = tests/coder_review_6x.test
