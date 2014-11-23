@@ -136,6 +136,9 @@
  <rule ref="Squiz.Arrays.ArrayDeclaration.ValueNotAligned">
   <severity>0</severity>
  </rule>
+ <rule ref="Squiz.Arrays.ArrayDeclaration.ValueNoNewline">
+  <severity>0</severity>
+ </rule>
 
  <rule ref="Squiz.Arrays.ArrayBracketSpacing" />
 
