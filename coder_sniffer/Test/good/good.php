@@ -748,3 +748,5 @@ function test5() {
 function test6(array $names) {
 
 }
+
+list(,, $bundle) = entity_extract_ids('node', $entity);

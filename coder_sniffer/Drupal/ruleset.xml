@@ -44,7 +44,12 @@
  </rule>
 
  <rule ref="Generic.Formatting.SpaceAfterCast" />
+
  <rule ref="Generic.Functions.FunctionCallArgumentSpacing" />
+ <rule ref="Generic.Functions.FunctionCallArgumentSpacing.NoSpaceAfterComma">
+  <severity>0</severity>
+ </rule>
+
  <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie" />
  <rule ref="Generic.NamingConventions.ConstructorName" />
  <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
@@ -211,6 +216,9 @@
   <properties>
    <property name="equalsSpacing" value="1"/>
   </properties>
+ </rule>
+ <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing.NoSpaceBeforeArg">
+  <severity>0</severity>
  </rule>
 
  <rule ref="Squiz.PHP.LowercasePHPFunctions" />
