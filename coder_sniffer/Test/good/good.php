@@ -633,3 +633,8 @@ class Foo implements FooInterface {
 
 t('Some long mulit-line 
   text is weird, but allowed.');
+
+l("<i class='icon icon-industrial-building'></i>", 'node/add/job', array(
+  'attributes' => array('title' => t('add job')),
+  'html'       => TRUE,
+));
