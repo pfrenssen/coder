@@ -597,8 +597,7 @@ preg_match("/test(\d+)/is", 'subject');
 /**
  * Interfaces must have a comment block.
  */
-interface MyWellNamedInterface {
-}
+interface MyWellNamedInterface {}
 
 // Correctly formed try/catch block.
 try {

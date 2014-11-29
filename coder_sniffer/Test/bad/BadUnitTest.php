@@ -275,7 +275,7 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                         411 => 2,
                         417 => 1,
                         418 => 2,
-                        424 => 3,
+                        424 => 2,
                         426 => 2,
                         428 => 1,
                         436 => 1,
