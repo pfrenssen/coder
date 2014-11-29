@@ -776,3 +776,9 @@ l("<i class='icon icon-industrial-building'></i>", 'node/add/job', array(
 function test7($x) {
 
 }
+
+/**
+ * @coversDefaultClass \Drupal\rules\Plugin\Condition\ListContains
+ * @group rules_conditions
+ */
+class ListContainsTest extends RulesIntegrationTestBase {}

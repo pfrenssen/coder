@@ -107,8 +107,9 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             }
         }
 
-        // Do not check defgroup sections, they have no short description.
-        if (in_array($tokens[$short]['content'], array('@defgroup', '@addtogroup', '@}'))) {
+        // Do not check defgroup sections, they have no short description. Also don't
+        // check PHPUnit tests doc blocks because they might not have a description.
+        if (in_array($tokens[$short]['content'], array('@defgroup', '@addtogroup', '@}', '@coversDefaultClass'))) {
             return;
         }
 
