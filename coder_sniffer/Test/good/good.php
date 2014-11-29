@@ -352,10 +352,14 @@ $i . 'test';
 $i . $i;
 $i . NULL;
 
-// It is allowed to have the closing "}" on the same line if the class is empty.
+/**
+ * It is allowed to have the closing "}" on the same line if the class is empty.
+ */
 class MyException extends Exception {}
 
-// Nice alignment is allowed for assignments.
+/**
+ * Nice alignment is allowed for assignments.
+ */
 class MyExampleLog {
   const INFO      = 0;
   const WARNING   = 1;
@@ -590,6 +594,9 @@ preg_filter('@.+@i', 'replacement', 'subject');
 preg_replace('@.+@i', 'replacement', 'subject');
 preg_match("/test(\d+)/is", 'subject');
 
+/**
+ * Interfaces must have a comment block.
+ */
 interface MyWellNamedInterface {
 }
 
@@ -603,6 +610,9 @@ catch (Exception $e) {
 
 $result = $x ?: FALSE;
 
+/**
+ * All classes need to have a docblock.
+ */
 class Foo implements FooInterface {
 
   /**
