@@ -286,8 +286,11 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             }
         }//end foreach
 
-        // If there is a param group, it needs to be first.
-        if ($paramGroupid !== null && $paramGroupid !== 0 && $tokens[$tokens[$commentStart]['comment_tags'][0]]['content'] !== '@code') {
+        // If there is a param group, it needs to be first; with the exception of
+        // @code and @todo tags.
+        if ($paramGroupid !== null && $paramGroupid !== 0
+            && in_array($tokens[$tokens[$commentStart]['comment_tags'][0]]['content'], array('@code', '@todo')) === false
+        ) {
             $error = 'Paramater tags must be defined first in a doc commment';
             $phpcsFile->addError($error, $tagGroups[$paramGroupid][0], 'ParamNotFirst');
         }
