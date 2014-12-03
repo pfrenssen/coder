@@ -121,11 +121,6 @@
  <rule ref="Squiz.Arrays.ArrayDeclaration.KeyNotAligned">
   <severity>0</severity>
  </rule>
- <!-- Typo in error message identifier, we keep this for backwards compatibility.
-  @todo Remove this once PHPCS 1.5 or higher has been released. -->
- <rule ref="Squiz.Arrays.ArrayDeclaration.MulitLineNotAllowed">
-  <severity>0</severity>
- </rule>
  <rule ref="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed">
   <severity>0</severity>
  </rule>
