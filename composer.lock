@@ -4,20 +4,20 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "00e48f50de229801b0266c78ec0533cc",
+    "hash": "12c20781f08cbe385a6fe7efa2d5b624",
     "packages": [
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "dev-phpcs-fixer",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "676e90b8ccfddf89b9bf72e9b01072c4b3342b94"
+                "reference": "5b63fd3fe960e2020770c845e04254e5ca2b722a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/676e90b8ccfddf89b9bf72e9b01072c4b3342b94",
-                "reference": "676e90b8ccfddf89b9bf72e9b01072c4b3342b94",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/5b63fd3fe960e2020770c845e04254e5ca2b722a",
+                "reference": "5b63fd3fe960e2020770c845e04254e5ca2b722a",
                 "shasum": ""
             },
             "require": {
@@ -77,7 +77,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2014-12-02 22:52:08"
+            "time": "2014-12-05 00:14:12"
         }
     ],
     "packages-dev": [
@@ -497,9 +497,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "squizlabs/php_codesniffer": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "platform": {
         "php": ">=5.2.0"
