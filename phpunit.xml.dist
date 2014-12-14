@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="coder_sniffer/Test/phpunit-bootstrap.php" colors="true">
+<phpunit bootstrap="coder_sniffer/Drupal/Test/phpunit-bootstrap.php" colors="true">
   <testsuites>
     <testsuite name="Coder Sniffer Unit Test Suite">
-      <directory>./coder_sniffer/Test/*</directory>
+      <directory>./coder_sniffer/Drupal/Test/*</directory>
     </testsuite>
   </testsuites>
   <!-- Filter for coverage reports. -->
