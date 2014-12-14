@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * Implements hook_init().
+ */
+function test_init() {
+  drupal_add_css('somefile.css');
+}
