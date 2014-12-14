@@ -60,7 +60,11 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
         $testFiles = $this->getTestFiles();
         $sniffCodes = $this->getSniffCodes();
 
-        self::$phpcs->initStandard('coder_sniffer/Drupal', $sniffCodes);
+        // Determine the standard to be used from the class name.
+        $class_name_parts = explode('_', get_class($this));
+        $standard = $class_name_parts[0];
+
+        self::$phpcs->initStandard("coder_sniffer/$standard", $sniffCodes);
 
         $failureMessages = array();
         foreach ($testFiles as $testFile) {
@@ -96,12 +100,9 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
      * @return array The list of test files.
      */
     protected function getTestFiles() {
-        // The basis for determining file locations.
-        $basename = substr(get_class($this), 0, -8);
-        $parts    = explode('_', $basename);
-
-        // The name of the dummy file we are testing.
-        $testFileBase = dirname(__FILE__).DIRECTORY_SEPARATOR.$parts[2].DIRECTORY_SEPARATOR.$parts[3].'UnitTest.';
+        $rc = new ReflectionClass(get_class($this));
+        // Cut off the "php" file extension of the test class file.
+        $testFileBase = substr($rc->getFileName(), 0, -3);
 
         // Get a list of all test files to check. These will have the same base
         // name but different extensions. We ignore the .php file as it is the class.

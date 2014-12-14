@@ -2,8 +2,11 @@
 
 <phpunit bootstrap="coder_sniffer/Drupal/Test/phpunit-bootstrap.php" colors="true">
   <testsuites>
-    <testsuite name="Coder Sniffer Unit Test Suite">
-      <directory>./coder_sniffer/Drupal/Test/*</directory>
+    <testsuite name="Coder Sniffer Drupal Test Suite">
+      <directory>coder_sniffer/Drupal/Test</directory>
+    </testsuite>
+    <testsuite name="Coder Sniffer DrupalPractice Test Suite">
+      <directory>coder_sniffer/DrupalPractice/Test</directory>
     </testsuite>
   </testsuites>
   <!-- Filter for coverage reports. -->

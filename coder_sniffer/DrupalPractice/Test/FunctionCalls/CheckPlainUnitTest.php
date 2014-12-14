@@ -9,7 +9,7 @@
  * A sniff unit test checks a .inc file for expected violations of a single
  * coding standard. Expected errors and warnings are stored in this class.
  */
-class DrupalPractice_Sniffs_FunctionCalls_CheckPlainUnitTest extends AbstractSniffUnitTest
+class DrupalPractice_Sniffs_FunctionCalls_CheckPlainUnitTest extends CoderSniffUnitTest
 {
 
 

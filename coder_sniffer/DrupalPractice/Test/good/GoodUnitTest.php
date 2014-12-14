@@ -6,7 +6,7 @@
 /**
  * Unit test class for all good files that must not throw errors/warnings.
  */
-class DrupalPractice_GoodUnitTest extends AbstractSniffUnitTest
+class DrupalPractice_GoodUnitTest extends CoderSniffUnitTest
 {
 
 

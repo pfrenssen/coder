@@ -1,6 +1,6 @@
 <?php
 
-class DrupalPractice_Sniffs_Commenting_AuthorTagUnitTest extends AbstractSniffUnitTest
+class DrupalPractice_Sniffs_Commenting_AuthorTagUnitTest extends CoderSniffUnitTest
 {
 
 
