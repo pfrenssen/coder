@@ -5,7 +5,7 @@
     "keywords": ["phpcs", "standards"],
     "license": "GPL-2.0+",
     "require": {
-        "squizlabs/php_codesniffer": "2.0.*@dev",
+        "squizlabs/php_codesniffer": ">=2",
         "drupal/coder": "dev-8.x-2.x"
     },
     "require-dev": {
