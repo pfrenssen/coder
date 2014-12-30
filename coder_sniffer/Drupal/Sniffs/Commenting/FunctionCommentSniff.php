@@ -461,6 +461,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             $matched = false;
             // Parameter documentation can be ommitted for some parameters, so
             // we have to search the rest for a match.
+            $realName = '<undefined>';
             while (isset($realParams[($checkPos)]) === true) {
                 $realName = $realParams[$checkPos]['name'];
 

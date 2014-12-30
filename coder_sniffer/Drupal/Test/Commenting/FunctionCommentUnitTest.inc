@@ -59,3 +59,13 @@ function test4() {
 function test5() {
 
 }
+
+/**
+ * Some description.
+ *
+ * @param string $foo
+ *   Some parameter that does not exist.
+ */
+function test6() {
+
+}
