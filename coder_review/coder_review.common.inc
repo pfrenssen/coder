@@ -383,7 +383,10 @@ function _coder_review_read_and_parse_file(array &$coder_args) {
     $coder_args['#include_extensions'],
     array('module', 'theme')
   );
-  $ext = in_array($pathinfo['extension'], $allowed_extensions) ? 'php' : $pathinfo['extension'];
+
+  // If the file extension is any of the allowed extensions (other than 'js')
+  // then set $ext to 'php', otherwise use the actual extension.
+  $ext = in_array($pathinfo['extension'], array_diff($allowed_extensions, array('js'))) ? 'php' : $pathinfo['extension'];
 
   /* The use of variables with 'php' in them ($in_php, $in_all_php, $php_lines,
    * etc.) is misleading. All references to such should be renamed 'code'
@@ -624,7 +627,9 @@ function _coder_review_read_and_parse_file(array &$coder_args) {
 
             case '\'':
             case '"':
-              if ($content[$pos - 1] != '\\') {
+              // If the previous char is a backslash then we have not found the
+              // ending-quote as this one is internal to the string. Keep going.
+              if ($pos == 0 || $content[$pos - 1] != '\\') {
                 $this_php_lines .= $char;
                 $in_quote = $char;
                 if ($this_quote_sep) {
