@@ -40,6 +40,7 @@ function coder_review_drush_command() {
       'empty' => 'Show or hide results that are empty, valid options are 0|no|off, on by default.',
       'ignore' => 'Enable or disable Ignore handling, valid options are 0|no|off, on by default.',
       'ignorename' => 'Enable display of ignore "rule names", helpful when adding ignores.',
+      'ignores-pass' => 'Ignores will not cause a failing shell exit code.',
       'xml' => 'Output results as xml.',
       'checkstyle' => 'Output results in Checkstyle xml format.',
       'git' => 'Install this coder command as a .git pre-commit hook',
@@ -676,6 +677,11 @@ function theme_drush_coder_review_warning(array $variables) {
  *   An array of summary statistics about warnings and errors.
  */
 function coder_review_print_drush_messages(array $summary) {
+  // if --ignores-pass is set then ignores should not be summed and counted
+  // against a shell exit code
+  if (drush_get_option('ignores-pass') && isset($summary['sums']['ignored'])) {
+    unset($summary['sums']['ignored']);
+  }
   // Count the number of warnings/errors.
   $sum = array_sum($summary['sums']);
   _coder_review_exit($sum ? 0 : 1);
