@@ -3,7 +3,7 @@
   
   font-size:0.9em; /* There should be a space after the colon. */
     margin: 0.5em; /* Indentation error. */
-  /* background: ; /* Empty style definitions are not allowed. @todo Enable this again once https://pear.php.net/bugs/bug.php?id=20346 is fixed. */
+  background: ; /* Empty style definitions are not allowed. */
   font-weight normal; /* Missing colon. */
   font-family: helvetica, sans-serif /* Mising semicolon. */
   padding-left: 2em ; /* Space before semicolon. */
