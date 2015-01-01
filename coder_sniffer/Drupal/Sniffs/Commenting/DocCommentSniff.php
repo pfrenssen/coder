@@ -205,6 +205,9 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
         $tagGroups    = array();
         $groupid      = 0;
         $paramGroupid = null;
+        $currentTag   = null;
+        $previousTag  = null;
+        $isNewGroup   = null;
         foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
             if ($pos > 0) {
                 $prev = $phpcsFile->findPrevious(
@@ -217,12 +220,14 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                     $prev = $tokens[$commentStart]['comment_tags'][($pos - 1)];
                 }
 
-                if ($tokens[$prev]['line'] !== ($tokens[$tag]['line'] - 1)) {
+                $isNewGroup = $tokens[$prev]['line'] !== ($tokens[$tag]['line'] - 1);
+                if ($isNewGroup) {
                     $groupid++;
                 }
             }
 
-            if ($tokens[$tag]['content'] === '@param') {
+            $currentTag = $tokens[$tag]['content'];
+            if ($currentTag === '@param') {
                 if (($paramGroupid === null
                     && empty($tagGroups[$groupid]) === false)
                     || ($paramGroupid !== null
@@ -235,11 +240,18 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                 if ($paramGroupid === null) {
                     $paramGroupid = $groupid;
                 }
-            } else if ($groupid === $paramGroupid) {
-                $error = 'Tag cannot be grouped with paramater tags in a doc comment';
-                $phpcsFile->addError($error, $tag, 'NonParamGroup');
+            // Every new tag section should be separated by a blank line.
+            // Exclude @endcode and @endlink.
+            } else if (
+                $isNewGroup === false
+                && !in_array($currentTag, array('@endcode', '@endlink'))
+                && $previousTag !== $currentTag
+            ) {
+                $error = 'Separate the %s and %s sections by a blank line.';
+                $phpcsFile->addError($error, $tag, 'TagGroupSpacing', array($previousTag, $currentTag));
             }//end if
 
+            $previousTag = $currentTag;
             $tagGroups[$groupid][] = $tag;
         }//end foreach
 

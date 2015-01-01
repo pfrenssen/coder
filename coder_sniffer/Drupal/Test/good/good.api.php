@@ -111,6 +111,7 @@
  *   Project data as returned by update_get_projects().
  *
  * @see locale_translation_project_list()
+ *
  * @ingroup interface_translation_properties
  */
 function hook_locale_translation_projects_alter(array &$projects) {
