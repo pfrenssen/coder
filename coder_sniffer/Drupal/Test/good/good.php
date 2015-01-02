@@ -782,3 +782,5 @@ function test7($x) {
  * @group rules_conditions
  */
 class ListContainsTest extends RulesIntegrationTestBase {}
+
+$x = 'Some markup text with allowed HTML5 <br> tag';

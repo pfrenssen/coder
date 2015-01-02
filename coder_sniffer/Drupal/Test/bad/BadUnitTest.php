@@ -328,7 +328,6 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                         714 => 1,
                         716 => 1,
                         717 => 1,
-                        719 => 1,
                         721 => 1,
                         724 => 1,
                         725 => 1,
@@ -366,7 +365,6 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                 return array(
                         11 => 2,
                         15 => 2,
-                        19 => 1,
                        );
         }
         return array();
