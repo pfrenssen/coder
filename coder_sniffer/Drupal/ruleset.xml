@@ -199,6 +199,10 @@
   <severity>0</severity>
  </rule>
 
+ <rule ref="Squiz.CSS.ClassDefinitionClosingBraceSpace" />
+ <rule ref="Squiz.CSS.ClassDefinitionClosingBraceSpace.SpacingAfterClose">
+  <severity>0</severity>
+ </rule>
  <rule ref="Squiz.CSS.ColonSpacing" />
  <rule ref="Squiz.CSS.DisallowMultipleStyleDefinitions" />
  <rule ref="Squiz.CSS.EmptyClassDefinition" />
