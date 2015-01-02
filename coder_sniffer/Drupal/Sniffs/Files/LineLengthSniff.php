@@ -72,6 +72,13 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
                     return;
                 }
             }
+
+            // Drupal 8 annotations can have long translatable descriptions and we
+            // allow them to exceed 80 characters.
+            if ($tokens[$stackPtr - 2]['code'] === T_DOC_COMMENT_STRING && strpos($tokens[$stackPtr - 2]['content'], '@Translation(') !== false) {
+                return;
+            }
+
             parent::checkLineLength($phpcsFile, $tokens, $stackPtr);
         }
 
