@@ -9,3 +9,5 @@
 // - now follows a sub-list:
 //    - should be only 2 additional spaces.
 //   - this one is correct.
+
+test();
