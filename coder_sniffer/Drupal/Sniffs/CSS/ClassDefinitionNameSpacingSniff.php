@@ -81,17 +81,23 @@ class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniff
                 && strpos($tokens[($i + 1)]['content'], $phpcsFile->eolChar) === false
             ) {
                 $error = 'Multiple selectors should each be on a single line';
-                $phpcsFile->addError($error, ($i + 1), 'MultipleSelectors');
+                $fix = $phpcsFile->addFixableError($error, ($i + 1), 'MultipleSelectors');
+                if ($fix === true) {
+                    $phpcsFile->fixer->addNewline($i);
+                }
             }
 
             // Selectors must be on the same line.
             if ($tokens[$i]['code'] === T_WHITESPACE
                 && strpos($tokens[$i]['content'], $phpcsFile->eolChar) !== false
-                && in_array($tokens[($i - 1)]['code'], $endTokens) === false
-                && in_array($tokens[($i - 1)]['code'], array(T_WHITESPACE, T_COMMA)) == false
+                && isset($endTokens[$tokens[($i - 1)]['code']]) === false
+                && in_array($tokens[($i - 1)]['code'], array(T_WHITESPACE, T_COMMA)) === false
             ) {
                 $error = 'Selectors must be on a single line';
-                $phpcsFile->addError($error, $i, 'SeletorSingleLine');
+                $fix = $phpcsFile->addFixableError($error, $i, 'SeletorSingleLine');
+                if ($fix === true) {
+                    $phpcsFile->fixer->replaceToken($i, str_replace($phpcsFile->eolChar, ' ', $tokens[$i]['content']));
+                }
             }
 
 
@@ -112,7 +118,10 @@ class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniff
                     && isset($endTokens[$tokens[$prev]['code']]) === false
                 ) {
                     $error = 'Blank lines are not allowed between class names';
-                    $phpcsFile->addError($error, ($i + 1), 'BlankLinesFound');
+                    $fix = $phpcsFile->addFixableError($error, ($i + 1), 'BlankLinesFound');
+                    if ($fix === true) {
+                        $phpcsFile->fixer->replaceToken(($i + 1), '');
+                    }
                 }
 
                 break;
