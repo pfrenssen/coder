@@ -36,7 +36,6 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                         16 => 1,
                         17 => 1,
                         21 => 1,
-                        25 => 1,
                         26 => 1,
                         27 => 1,
                         31 => 1,
