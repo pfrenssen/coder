@@ -25,7 +25,7 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                 return array(
                         1 => 1,
                         2 => 1,
-                        3 => 1,
+                        3 => 2,
                         4 => 1,
                         5 => 1,
                         6 => 2,
@@ -37,6 +37,7 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                         17 => 1,
                         21 => 1,
                         25 => 1,
+                        26 => 1,
                         27 => 1,
                         31 => 1,
                         36 => 1,
