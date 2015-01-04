@@ -390,13 +390,8 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
             case 'bad.php':
                 return array(
                         14 => 1,
-                        135 => 1,
                         139 => 1,
-                        141 => 1,
-                        142 => 2,
-                        143 => 1,
-                        144 => 2,
-                        151 => 2,
+                        151 => 1,
                         156 => 1,
                         193 => 1,
                         202 => 1,

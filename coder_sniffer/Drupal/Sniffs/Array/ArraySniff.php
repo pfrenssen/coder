@@ -67,12 +67,12 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
         if ($tokens[$lastItem]['code'] !== T_COMMA && $isInlineArray === false
             && $tokens[($lastItem + 1)]['code'] !== T_CLOSE_PARENTHESIS
         ) {
-            $phpcsFile->addWarning('A comma should follow the last multiline array item. Found: '.$tokens[$lastItem]['content'], $lastItem);
+            $data = array($tokens[$lastItem]['content']);
+            $fix = $phpcsFile->addFixableWarning('A comma should follow the last multiline array item. Found: %s', $lastItem, 'CommaLastItem', $data);
+            if ($fix === true) {
+                $phpcsFile->fixer->addContent($lastItem, ',');
+            }
             return;
-        }
-
-        if ($tokens[$lastItem]['code'] === T_COMMA && $isInlineArray === true) {
-            $phpcsFile->addWarning('Last item of an inline array must not be followed by a comma', $lastItem);
         }
 
         if ($isInlineArray === true) {
