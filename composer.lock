@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a7c3fefdc83f4ff192e30e27ca9d2d3c",
+    "hash": "18201f2d787ca668ed918da443bc6467",
     "packages": [
         {
             "name": "squizlabs/php_codesniffer",
