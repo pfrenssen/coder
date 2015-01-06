@@ -638,3 +638,5 @@ l("<i class='icon icon-industrial-building'></i>", 'node/add/job', array(
   'attributes' => array('title' => t('add job')),
   'html'       => TRUE,
 ));
+
+$x = 'Some markup text with allowed HTML5 <br> tag';
