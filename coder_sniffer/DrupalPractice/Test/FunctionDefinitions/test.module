@@ -6,3 +6,10 @@
 function test_init() {
   drupal_add_css('somefile.css');
 }
+
+/**
+ * Implements hook_page_build().
+ */
+function test_page_build($page) {
+  drupal_add_css('somefile.css');
+}

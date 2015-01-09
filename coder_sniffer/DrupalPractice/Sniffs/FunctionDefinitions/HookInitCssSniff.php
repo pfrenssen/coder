@@ -46,7 +46,7 @@ class DrupalPractice_Sniffs_FunctionDefinitions_HookInitCssSniff extends Drupal_
 
         $fileName = substr(basename($phpcsFile->getFilename()), 0, -7);
         $tokens   = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['content'] !== ($fileName.'_init')) {
+        if ($tokens[$stackPtr]['content'] !== ($fileName.'_init') && $tokens[$stackPtr]['content'] !== ($fileName.'_page_build')) {
             return;
         }
 
@@ -67,8 +67,13 @@ class DrupalPractice_Sniffs_FunctionDefinitions_HookInitCssSniff extends Drupal_
                 if ($opener !== false
                     && $tokens[$opener]['code'] === T_OPEN_PARENTHESIS
                 ) {
-                    $warning = 'Do not use %s() in hook_init(), move it to your page/form callback or use hook_page_build() instead';
-                    $phpcsFile->addWarning($warning, $string, 'AddFunctionFound', array($tokens[$string]['content']));
+                    if ($tokens[$stackPtr]['content'] === ($fileName.'_init')) {
+                        $warning = 'Do not use %s() in hook_init(), move it to your page/form callback or use hook_page_build() instead';
+                        $phpcsFile->addWarning($warning, $string, 'AddFunctionFound', array($tokens[$string]['content']));
+                    } else {
+                        $warning = 'Do not use %s() in hook_page_build(), use #attached on the $page render array instead';
+                        $phpcsFile->addWarning($warning, $string, 'AddFunctionFoundPageBuild', array($tokens[$string]['content']));
+                    }
                 }
             }
 

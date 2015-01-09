@@ -35,7 +35,10 @@ class DrupalPractice_Sniffs_FunctionDefinitions_HookInitCssUnitTest extends Code
      */
     public function getWarningList($testFile)
     {
-        return array(7 => 1);
+        return array(
+                7 => 1,
+                14 => 1,
+               );
 
     }//end getWarningList()
 
