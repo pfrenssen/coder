@@ -97,3 +97,15 @@
 .profile__picture {
   float: right; /* LTR */
 }
+
+@media screen and (max-width: 1152px) {
+  #wrapper {
+    max-width: 960px;
+  }
+  #top-area .column:last-child {
+    margin-right: 0;
+  }
+  #copyright {
+    padding: 0 10px;
+  }
+}

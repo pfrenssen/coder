@@ -204,6 +204,9 @@
   <severity>0</severity>
  </rule>
  <rule ref="Squiz.CSS.ClassDefinitionOpeningBraceSpace" />
+ <rule ref="Squiz.CSS.ClassDefinitionOpeningBraceSpace.AfterNesting">
+  <severity>0</severity>
+ </rule>
  <rule ref="Squiz.CSS.ColonSpacing" />
  <rule ref="Squiz.CSS.DisallowMultipleStyleDefinitions" />
  <rule ref="Squiz.CSS.EmptyClassDefinition" />
