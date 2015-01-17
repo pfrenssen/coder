@@ -161,8 +161,12 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
 
             // Skip lines in nested structures.
             $innerNesting = end($tokens[$newLineStart]['nested_parenthesis']);
+            // Skip lines that are part of a multi-line string.
+            $isMultiLineString = $tokens[$newLineStart - 1]['code'] === T_CONSTANT_ENCAPSED_STRING
+                && substr($tokens[$newLineStart - 1]['content'], -1) === $phpcsFile->eolChar;
             if ($innerNesting === $tokens[$stackPtr]['parenthesis_closer']
                 && $tokens[$newLineStart]['column'] !== ($firstLineColumn + 2)
+                && $isMultiLineString === false
             ) {
                 $error = 'Array indentation error, expected %s spaces but found %s';
                 $data  = array(

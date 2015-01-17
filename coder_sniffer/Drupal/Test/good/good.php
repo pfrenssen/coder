@@ -154,6 +154,19 @@ $query = db_query("
   )
 );
 
+// Array with multi-line constant string in it.
+$array = array(
+  'name' => 'example_a',
+  'title' => 'Example A',
+  'xml' => '
+<foo>
+  <bar>
+    123456789 123456789 123456789 123456789 123456789 123456789 123456789
+    123456789 123456789 123456789 123456789 123456789 123456789 123456789
+  </bar>
+</foo>',
+);
+
 // Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1', 'two' => '2');
 foreach ($a as $key => $value) {
