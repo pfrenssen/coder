@@ -76,6 +76,11 @@ $x = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
 $x = $test ? -1 : 1;
 $x = $test ? 1 : -1;
 
+// Operators on new lines are allowed.
+$x = (CRM_Foo_Bar::singleton()->checkWhizBang($option1, $option2))
+  ? $something . $notes['baz']
+  : $notes['quux'] . $something_else;
+
 // Casting has a space.
 (int) $i;
 
