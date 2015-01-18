@@ -342,6 +342,7 @@ class Bar {
   protected function barMethod() {
 
   }
+
 }
 
 /**
@@ -395,6 +396,7 @@ class MyExampleLog {
   protected function protectedTest() {
 
   }
+
 }
 
 /**
