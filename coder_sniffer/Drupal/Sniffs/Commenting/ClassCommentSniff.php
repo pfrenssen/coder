@@ -60,7 +60,10 @@ class Drupal_Sniffs_Commenting_ClassCommentSniff implements PHP_CodeSniffer_Snif
         if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             && $tokens[$commentEnd]['code'] !== T_COMMENT
         ) {
-            $phpcsFile->addError('Missing %s doc comment', $stackPtr, 'Missing', array($name));
+            $fix = $phpcsFile->addFixableError('Missing %s doc comment', $stackPtr, 'Missing', array($name));
+            if ($fix === true) {
+                $phpcsFile->fixer->addContent($commentEnd, "\n/**\n *\n */");
+            }
             return;
         }
 
@@ -70,7 +73,7 @@ class Drupal_Sniffs_Commenting_ClassCommentSniff implements PHP_CodeSniffer_Snif
         if ($tokens[$commentEnd]['code'] === T_DOC_COMMENT_CLOSE_TAG) {
             $start = ($tokens[$commentEnd]['comment_opener'] - 1);
         } else {
-            $start = $phpcsFile->findPrevious(T_COMMENT, ($commentEnd - 1), null, true);
+            $start = $commentEnd - 1;
         }
 
         $prev = $phpcsFile->findPrevious(T_WHITESPACE, $start, null, true);
@@ -79,19 +82,41 @@ class Drupal_Sniffs_Commenting_ClassCommentSniff implements PHP_CodeSniffer_Snif
             if ($prevOpen === false) {
                 // This is a comment directly after the first open tag,
                 // so probably a file comment.
-                $phpcsFile->addError('Missing %s doc comment', $stackPtr, 'Missing', array($name));
+                $fix = $phpcsFile->addFixableError('Missing %s doc comment', $stackPtr, 'Missing', array($name));
+                if ($fix === true) {
+                    $phpcsFile->fixer->addContent($commentEnd, "\n/**\n *\n */");
+                }
                 return;
             }
         }
 
         if ($tokens[$commentEnd]['code'] === T_COMMENT) {
-            $phpcsFile->addError('You must use "/**" style comments for a %s comment', $stackPtr, 'WrongStyle', array($name));
+            $fix = $phpcsFile->addFixableError('You must use "/**" style comments for a %s comment', $stackPtr, 'WrongStyle', array($name));
+            if ($fix === true) {
+                // Convert the comment into a doc comment.
+                $phpcsFile->fixer->beginChangeset();
+                $comment = '';
+                for ($i = $commentEnd; $tokens[$i]['code'] === T_COMMENT; $i--) {
+                    $comment = ' *'.ltrim($tokens[$i]['content'], '/* ').$comment;
+                    $phpcsFile->fixer->replaceToken($i, '');
+                }
+                $phpcsFile->fixer->replaceToken($commentEnd, "/**\n".rtrim($comment, "*/\n")."\n */");
+                $phpcsFile->fixer->endChangeset();
+            }
             return;
         }
 
         if ($tokens[$commentEnd]['line'] !== ($tokens[$stackPtr]['line'] - 1)) {
-            $error = 'There must be no blank lines after the %s comment';
-            $phpcsFile->addError($error, $commentEnd, 'SpacingAfter', array($name));
+            $error = 'There must be exactly one newline after the %s comment';
+            $fix = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter', array($name));
+            if ($fix === true) {
+                $phpcsFile->fixer->beginChangeset();
+                for ($i = $commentEnd + 1; $tokens[$i]['code'] === T_WHITESPACE && $i < $stackPtr; $i++) {
+                    $phpcsFile->fixer->replaceToken($i, '');
+                }
+                $phpcsFile->fixer->addContent($commentEnd, "\n");
+                $phpcsFile->fixer->endChangeset();
+            }
         }
 
     }//end process()
