@@ -243,6 +243,21 @@ function foo() {
 
     case 2:
       return 6;
+
+    case 3:
+      return array(
+        'whiz',
+        'bang',
+      );
+
+    case 4:
+      return helper_func(
+        'whiz',
+        'bang'
+      );
+
+    default:
+      throw new Exception();
   }
 }
 
