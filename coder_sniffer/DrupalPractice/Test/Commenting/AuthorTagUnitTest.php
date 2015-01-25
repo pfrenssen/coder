@@ -29,7 +29,10 @@ class DrupalPractice_Sniffs_Commenting_AuthorTagUnitTest extends CoderSniffUnitT
      */
     protected function getWarningList($testFile)
     {
-        return array(7 => 1);
+        return array(
+                7 => 1,
+                13 => 1,
+               );
 
     }//end getWarningList()
 

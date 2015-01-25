@@ -46,7 +46,7 @@ class DrupalPractice_Sniffs_Commenting_AuthorTagSniff implements PHP_CodeSniffer
         $tokens = $phpcsFile->getTokens();
 
         $content = $tokens[$stackPtr]['content'];
-        if ($content === '@author') {
+        if ($content === '@author' || $content === '@author:') {
             $warning = '@author tags are not usually used in Drupal, because over time multiple contributors will touch the code anyway';
             $phpcsFile->addWarning($warning, $stackPtr, 'AuthorFound');
         }
@@ -55,5 +55,3 @@ class DrupalPractice_Sniffs_Commenting_AuthorTagSniff implements PHP_CodeSniffer
 
 
 }//end class
-
-?>
