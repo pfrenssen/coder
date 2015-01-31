@@ -300,7 +300,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                     || ($paramGroupid !== null
                     && $paramGroupid !== $groupid)
                 ) {
-                    $error = 'Paramater tags must be grouped together in a doc commment';
+                    $error = 'Parameter tags must be grouped together in a doc comment';
                     $phpcsFile->addError($error, $tag, 'ParamGroup');
                 }
 
@@ -385,7 +385,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
         if ($paramGroupid !== null && $paramGroupid !== 0
             && in_array($tokens[$tokens[$commentStart]['comment_tags'][0]]['content'], array('@code', '@todo')) === false
         ) {
-            $error = 'Paramater tags must be defined first in a doc commment';
+            $error = 'Parameter tags must be defined first in a doc comment';
             $phpcsFile->addError($error, $tagGroups[$paramGroupid][0], 'ParamNotFirst');
         }
 
