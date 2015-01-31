@@ -158,7 +158,16 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
 
         if ($tokens[($short - 1)]['content'] !== ' ') {
             $error = 'Function comment short description must start with exactly one space';
-            $phpcsFile->addError($error, $short, 'ShortStartSpace');
+            $fix = $phpcsFile->addFixableError($error, $short, 'ShortStartSpace');
+            if ($fix === true) {
+                if ($tokens[($short - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
+                    $phpcsFile->fixer->replaceToken($short - 1, ' ');
+                }
+                else {
+                    $phpcsFile->fixer->addContent($short - 1, ' ');
+                }
+            }
+
         }
 
         // Account for the fact that a short description might cover
