@@ -192,13 +192,19 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
 
         if (preg_match('|\p{Lu}|u', $shortContent[0]) === 0 && $shortContent !== '{@inheritdoc}') {
             $error = 'Doc comment short description must start with a capital letter';
-            $phpcsFile->addError($error, $short, 'ShortNotCapital');
+            $fix = $phpcsFile->addFixableError($error, $short, 'ShortNotCapital');
+            if ($fix === true) {
+                $phpcsFile->fixer->replaceToken($short, ucfirst($tokens[$short]['content']));
+            }
         }
 
         $lastChar = substr($shortContent, -1);
         if ($lastChar !== '.' && $shortContent !== '{@inheritdoc}') {
             $error = 'Doc comment short description must end with a full stop';
-            $phpcsFile->addError($error, $short, 'ShortFullStop');
+            $fix = $phpcsFile->addFixableError($error, $shortEnd, 'ShortFullStop');
+            if ($fix === true) {
+                $phpcsFile->fixer->addContent($shortEnd, '.');
+            }
         }
 
         if ($tokens[$short]['line'] !== $tokens[$shortEnd]['line']) {

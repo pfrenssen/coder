@@ -31,3 +31,10 @@ function test7($param) {
 function test8() {
 
 }
+
+/**
+ * Starting lower case and no dot at the end.
+ */
+function test9() {
+
+}
