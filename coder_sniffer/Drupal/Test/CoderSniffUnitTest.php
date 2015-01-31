@@ -47,8 +47,12 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
 
     }//end shouldSkipTest()
 
+
     /**
      * Tests the extending classes Sniff class.
+     *
+     * @return void
+     * @throws PHPUnit_Framework_Error
      */
     public final function testSniff()
     {
@@ -68,7 +72,11 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
 
         $failureMessages = array();
         foreach ($testFiles as $testFile) {
+            $filename = basename($testFile);
+
             try {
+                $cliValues = $this->getCliValues($filename);
+                self::$phpcs->cli->setCommandLineValues($cliValues);
                 $phpcsFile = self::$phpcs->processFile($testFile);
             } catch (Exception $e) {
                 $this->fail('An unexpected exception has been caught: '.$e->getMessage());
@@ -82,11 +90,21 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
                 $phpcsFile->fixer->fixFile();
                 $fixable = $phpcsFile->getFixableCount();
                 if ($fixable > 0) {
-                    $filename = basename($testFile);
                     $failureMessages[] = "Failed to fix $fixable fixable violations in $filename";
                 }
+
+                // Check for a .fixed file to check for accuracy of fixes.
+                $fixedFile = $testFile.'.fixed';
+                if (file_exists($fixedFile) === true) {
+                    $diff = $phpcsFile->fixer->generateDiff($fixedFile);
+                    if (trim($diff) !== '') {
+                        $filename          = basename($testFile);
+                        $fixedFilename     = basename($fixedFile);
+                        $failureMessages[] = "Fixed version of $filename does not match expected version in $fixedFilename; the diff is\n$diff";
+                    }
+                }
             }
-        }//end foreach()
+        }//end foreach
 
         if (empty($failureMessages) === false) {
             $this->fail(implode(PHP_EOL, $failureMessages));
@@ -96,7 +114,7 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
 
     /**
      * Returns a list of test files that should be checked.
-     * 
+     *
      * @return array The list of test files.
      */
     protected function getTestFiles() {
@@ -114,7 +132,7 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
         foreach ($di as $file) {
             $path = $file->getPathname();
             if (substr($path, 0, strlen($testFileBase)) === $testFileBase) {
-                if ($path !== $testFileBase.'php') {
+                if ($path !== $testFileBase.'php' && substr($path, -5) !== 'fixed') {
                     $testFiles[] = $path;
                 }
             }
@@ -165,10 +183,10 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
         }
 
         /*
-         We merge errors and warnings together to make it easier
-         to iterate over them and produce the errors string. In this way,
-         we can report on errors and warnings in the same line even though
-         it's not really structured to allow that.
+            We merge errors and warnings together to make it easier
+            to iterate over them and produce the errors string. In this way,
+            we can report on errors and warnings in the same line even though
+            it's not really structured to allow that.
         */
 
         $allProblems     = array();
@@ -192,7 +210,7 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
 
                 $errorsTemp = array();
                 foreach ($errors as $foundError) {
-                    $errorsTemp[] = $foundError['message'];
+                    $errorsTemp[] = $foundError['message'].' ('.$foundError['source'].')';
                 }
 
                 $allProblems[$line]['found_errors'] = array_merge($foundErrorsTemp, $errorsTemp);
@@ -238,11 +256,11 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
 
                 $warningsTemp = array();
                 foreach ($warnings as $warning) {
-                    $warningsTemp[] = $warning['message'];
+                    $warningsTemp[] = $warning['message'].' ('.$warning['source'].')';
                 }
 
                 $allProblems[$line]['found_warnings'] = array_merge($foundWarningsTemp, $warningsTemp);
-            }
+            }//end foreach
 
             if (isset($expectedWarnings[$line]) === true) {
                 $allProblems[$line]['expected_warnings'] = $expectedWarnings[$line];
@@ -340,6 +358,20 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
 
 
     /**
+     * Get a list of CLI values to set before the file is tested.
+     *
+     * @param string $filename The name of the file being tested.
+     *
+     * @return array
+     */
+    public function getCliValues($filename)
+    {
+        return array();
+
+    }//end getCliValues()
+
+
+    /**
      * Returns the lines where errors should occur.
      *
      * The key of the array should represent the line number and the value
@@ -360,6 +392,5 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
      */
     protected abstract function getWarningList($testFile);
 
-}//end class
 
-?>
+}//end class
