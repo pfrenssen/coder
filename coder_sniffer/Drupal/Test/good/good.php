@@ -172,6 +172,15 @@ $array = array(
 </foo>',
 );
 
+// Indentation: multi line function call with array and fuction closer on the
+// same line.
+$result = example_fetch_data($id,
+  array(
+    'include_detail' => TRUE,
+    'quiet' => TRUE,
+  ));
+some_function();
+
 // Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1', 'two' => '2');
 foreach ($a as $key => $value) {
