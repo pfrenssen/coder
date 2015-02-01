@@ -38,3 +38,12 @@ function test8() {
 function test9() {
 
 }
+
+/**
+ * Short description ok.
+ *
+ * long description starting lower case.
+ */
+function test10() {
+
+}

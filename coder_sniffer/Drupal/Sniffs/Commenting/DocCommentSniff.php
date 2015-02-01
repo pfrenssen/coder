@@ -239,7 +239,10 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
 
             if (preg_match('|\p{Lu}|u', $tokens[$long]['content'][0]) === 0) {
                 $error = 'Doc comment long description must start with a capital letter';
-                $phpcsFile->addError($error, $long, 'LongNotCapital');
+                $fix = $phpcsFile->addFixableError($error, $long, 'LongNotCapital');
+                if ($fix === true) {
+                    $phpcsFile->fixer->replaceToken($long, ucfirst($tokens[$long]['content']));
+                }
             }
         }//end if
 
