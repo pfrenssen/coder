@@ -15,6 +15,7 @@ class Drupal_Sniffs_Commenting_DocCommentStarUnitTest extends CoderSniffUnitTest
     {
         return array(
                 4 => 1,
+                11 => 1,
                );
 
     }//end getErrorList()

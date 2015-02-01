@@ -45,21 +45,34 @@ class Drupal_Sniffs_Commenting_DocCommentStarSniff implements PHP_CodeSniffer_Sn
     {
         $tokens = $phpcsFile->getTokens();
 
-        $lastLineCorrect = $tokens[$stackPtr]['line'];
-        for ($i = $stackPtr + 1; $i < $tokens[$stackPtr]['comment_closer'] - 1; $i++) {
-            if ($tokens[$i]['line'] === $lastLineCorrect) {
+        $lastLineChecked = $tokens[$stackPtr]['line'];
+        for ($i = ($stackPtr + 1); $i < ($tokens[$stackPtr]['comment_closer'] - 1); $i++) {
+            // We are only interested in the beginning of the line.
+            if ($tokens[$i]['line'] === $lastLineChecked) {
                 continue;
             }
+
+            // The first token on the line must be a whitespace followed by a star.
             if ($tokens[$i]['code'] === T_DOC_COMMENT_WHITESPACE) {
-                if ($tokens[$i + 1]['code'] !== T_DOC_COMMENT_STAR) {
+                if ($tokens[($i + 1)]['code'] !== T_DOC_COMMENT_STAR) {
                     $error = 'Doc comment star missing';
-                    $fix = $phpcsFile->addFixableError($error, $i, 'StarMissing');
+                    $fix   = $phpcsFile->addFixableError($error, $i, 'StarMissing');
                     if ($fix === true) {
                         $phpcsFile->fixer->replaceToken($i, str_repeat(' ', $tokens[$stackPtr]['column']).'* ');
                     }
                 }
+            } else if ($tokens[$i]['code'] !== T_DOC_COMMENT_STAR) {
+                $error = 'Doc comment star missing';
+                $fix   = $phpcsFile->addFixableError($error, $i, 'StarMissing');
+                if ($fix === true) {
+                    $phpcsFile->fixer->addContentBefore($i, str_repeat(' ', $tokens[$stackPtr]['column']).'* ');
+                }
             }
-            $lastLineCorrect = $tokens[$i]['line'];
-        }
-    }
-}
+
+            $lastLineChecked = $tokens[$i]['line'];
+        }//end for
+
+    }//end process()
+
+
+}//end class
