@@ -29,10 +29,6 @@
   <!-- Do not run this sniff on template files. -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
  </rule>
- <rule ref="Drupal.Formatting.DisallowCloseTag">
-  <!-- Do not run this sniff on template files. -->
-  <exclude-pattern>*.tpl.php</exclude-pattern>
- </rule>
  <rule ref="Drupal.WhiteSpace.ScopeClosingBrace">
   <!-- Do not run this sniff on template files. -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
@@ -234,6 +230,11 @@
  <rule ref="Squiz.WhiteSpace.LanguageConstructSpacing" />
  <rule ref="Squiz.WhiteSpace.SemicolonSpacing" />
  <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace" />
+
+ <rule ref="Zend.Files.ClosingTag">
+  <!-- Do not run this sniff on template files. -->
+  <exclude-pattern>*.tpl.php</exclude-pattern>
+ </rule>
 
  <!-- Ignore various version control directories. -->
  <exclude-pattern>*/.git/*</exclude-pattern>
