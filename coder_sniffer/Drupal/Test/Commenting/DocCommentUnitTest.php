@@ -24,6 +24,7 @@ class Drupal_Sniffs_Commenting_DocCommentUnitTest extends CoderSniffUnitTest
             29 => 1,
             36 => 2,
             45 => 1,
+            57 => 1,
         );
 
     }//end getErrorList()

@@ -324,7 +324,10 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                 && $previousTag !== $currentTag
             ) {
                 $error = 'Separate the %s and %s sections by a blank line.';
-                $phpcsFile->addError($error, $tag, 'TagGroupSpacing', array($previousTag, $currentTag));
+                $fix = $phpcsFile->addFixableError($error, $tag, 'TagGroupSpacing', array($previousTag, $currentTag));
+                if ($fix === true) {
+                    $phpcsFile->fixer->replaceToken($tag - 1, "\n".str_repeat(' ', $tokens[$tag]['column'] - 3).'* ');
+                }
             }//end if
 
             $previousTag = $currentTag;

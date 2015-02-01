@@ -9,13 +9,19 @@
  *
  * @param string $param
  *   Something incredibly useful.
+ *
  * @return bool
  *   Returns FALSE.
+ *
  * @throws Exception
  *   Thrown when $param is TRUE.
+ *
  * @ingroup sniffer
+ *
  * @deprecated
+ *
  * @see some_function()
+ *
  * @todo Fix coding standards.
  */
 function test7($param) {
@@ -46,4 +52,17 @@ function test9() {
  */
 function test10() {
 
+}
+
+class Test {
+
+  /**
+   * No newline between tag groups.
+   *
+   * @see some_function()
+   *
+   * @todo Fix coding standards.
+   */
+  public function test() {
+  }
 }

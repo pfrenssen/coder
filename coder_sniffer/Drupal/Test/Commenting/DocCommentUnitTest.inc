@@ -47,3 +47,15 @@ function test9() {
 function test10() {
 
 }
+
+class Test {
+
+  /**
+   * No newline between tag groups.
+   *
+   * @see some_function()
+   * @todo Fix coding standards.
+   */
+  public function test() {
+  }
+}
