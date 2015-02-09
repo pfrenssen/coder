@@ -193,22 +193,16 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
             // to at least the same level as where they were opened (but can be more).
             if ($checkToken !== null
                 && $tokens[$checkToken]['code'] === T_CLOSE_PARENTHESIS
+                // Don't check this in nested parenthesis as that can cause false
+                // positive indentation levels.
+                && empty($tokens[$checkToken]['nested_parenthesis']) === true
             ) {
                 if ($this->_debug === true) {
                     $line = $tokens[$i]['line'];
                     echo "Closing parenthesis found on line $line".PHP_EOL;
                 }
 
-                // Make sure that we consider the last closing parenthesis on this
-                // line.
-                $endParenthesis = $checkToken;
-                for ($index = $checkToken + 1; $tokens[$index]['line'] === $tokens[$checkToken]['line']; $index++) {
-                    if ($tokens[$index]['code'] === T_CLOSE_PARENTHESIS) {
-                        $endParenthesis = $index;
-                    }
-                }
-
-                $first       = $phpcsFile->findFirstOnLine(T_WHITESPACE, $tokens[$endParenthesis]['parenthesis_opener'], true);
+                $first       = $phpcsFile->findFirstOnLine(T_WHITESPACE, $tokens[$checkToken]['parenthesis_opener'], true);
                 $checkIndent = ($tokens[$first]['column'] - 1);
                 if (isset($adjustments[$first]) === true) {
                     $checkIndent += $adjustments[$first];

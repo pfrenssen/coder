@@ -181,6 +181,15 @@ $result = example_fetch_data($id,
   ));
 some_function();
 
+// Indentation: multi line function call with array and closing brace on the
+// same line.
+watchdog('example', 'Some warning %code for %id',
+  array(
+    '%code' => $code,
+    '%doi' => $id,
+  ),
+  WATCHDOG_WARNING);
+
 // Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1', 'two' => '2');
 foreach ($a as $key => $value) {
