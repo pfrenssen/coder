@@ -113,6 +113,10 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
      */
     public function register()
     {
+        if (defined('PHP_CODESNIFFER_IN_TESTS') === true) {
+            $this->_debug = false;
+        }
+
         return array(T_OPEN_TAG);
 
     }//end register()
@@ -169,6 +173,11 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
         $this->tabIndent = (bool) $this->tabIndent;
 
         for ($i = ($stackPtr + 1); $i < $phpcsFile->numTokens; $i++) {
+            if ($i === false) {
+                // Something has gone very wrong; maybe a parse error.
+                break;
+            }
+
             $checkToken  = null;
             $checkIndent = null;
             $exact       = $this->exact;
@@ -189,8 +198,8 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 }
             }
 
-            // Special case for closing parenthesis, which should just be indented
-            // to at least the same level as where they were opened (but can be more).
+            // Closing parenthesis should just be indented to at least
+            // the same level as where they were opened (but can be more).
             if ($checkToken !== null
                 && $tokens[$checkToken]['code'] === T_CLOSE_PARENTHESIS
                 // Don't check this in nested parenthesis as that can cause false
@@ -226,6 +235,8 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                     }
 
                     $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $prev, true);
+                    $prev  = $phpcsFile->findStartOfStatement($first);
+                    $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $prev, true);
                     if ($this->_debug === true) {
                         $line = $tokens[$first]['line'];
                         $type = $tokens[$first]['type'];
@@ -236,6 +247,65 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 // Don't force current indent to divisible because there could be custom
                 // rules in place between parenthesis, such as with arrays.
                 $currentIndent = ($tokens[$first]['column'] - 1);
+                if (isset($adjustments[$first]) === true) {
+                    $currentIndent += $adjustments[$first];
+                }
+
+                if ($this->_debug === true) {
+                    echo "\t=> checking indent of $checkIndent; main indent set to $currentIndent".PHP_EOL;
+                }
+            }//end if
+
+            // Closing parenthesis should just be indented to at least
+            // the same level as where they were opened (but can be more).
+            if ($checkToken !== null
+                && $tokens[$checkToken]['code'] === T_CLOSE_SHORT_ARRAY
+            ) {
+                if ($this->_debug === true) {
+                    $line = $tokens[$i]['line'];
+                    echo "Closing short array bracket found on line $line".PHP_EOL;
+                }
+
+                $first       = $phpcsFile->findFirstOnLine(T_WHITESPACE, $tokens[$checkToken]['bracket_opener'], true);
+                $checkIndent = ($tokens[$first]['column'] - 1);
+                if (isset($adjustments[$first]) === true) {
+                    $checkIndent += $adjustments[$first];
+                }
+
+                $exact = false;
+
+                if ($this->_debug === true) {
+                    $line = $tokens[$first]['line'];
+                    $type = $tokens[$first]['type'];
+                    echo "\t* first token on line $line is $type *".PHP_EOL;
+                }
+
+                $prev = $phpcsFile->findStartOfStatement($first);
+                if ($prev !== $first) {
+                    // This is not the start of the statement.
+                    if ($this->_debug === true) {
+                        $line = $tokens[$prev]['line'];
+                        $type = $tokens[$prev]['type'];
+                        echo "\t* previous is $type on line $line *".PHP_EOL;
+                    }
+
+                    $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $prev, true);
+                    $prev  = $phpcsFile->findStartOfStatement($first);
+                    $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $prev, true);
+                    if ($this->_debug === true) {
+                        $line = $tokens[$first]['line'];
+                        $type = $tokens[$first]['type'];
+                        echo "\t* amended first token is $type on line $line *".PHP_EOL;
+                    }
+                }
+
+                // Don't force current indent to be divisible because there could be custom
+                // rules in place for arrays.
+                $currentIndent = ($tokens[$first]['column'] - 1);
+                if (isset($adjustments[$first]) === true) {
+                    $currentIndent += $adjustments[$first];
+                }
+
                 if ($this->_debug === true) {
                     echo "\t=> checking indent of $checkIndent; main indent set to $currentIndent".PHP_EOL;
                 }
@@ -243,13 +313,19 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
 
             // Adjust lines within scopes while auto-fixing.
             if ($checkToken !== null
-                && isset($tokens[$checkToken]['conditions']) === true
-                && empty($tokens[$checkToken]['conditions']) === false
                 && $exact === false
+                && (empty($tokens[$checkToken]['conditions']) === false
+                || (isset($tokens[$checkToken]['scope_opener']) === true
+                && $tokens[$checkToken]['scope_opener'] === $checkToken))
             ) {
+                if (empty($tokens[$checkToken]['conditions']) === false) {
                 end($tokens[$checkToken]['conditions']);
                 $condition = key($tokens[$checkToken]['conditions']);
-                $first     = $phpcsFile->findFirstOnLine(T_WHITESPACE, $condition, true);
+                } else {
+                    $condition = $tokens[$checkToken]['scope_condition'];
+                }
+
+                $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $condition, true);
 
                 if (isset($adjustments[$first]) === true
                     && (($adjustments[$first] < 0 && $tokenIndent > $currentIndent)
@@ -275,7 +351,20 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                         $phpcsFile->fixer->replaceToken(($checkToken - 1), $padding);
                     }
 
+                    if ($this->_debug === true) {
+                        $length = strlen($padding);
+                        $line   = $tokens[$checkToken]['line'];
+                        $type   = $tokens[$checkToken]['type'];
+                        echo "Indent adjusted to $length for $type on line $line".PHP_EOL;
+                    }
+
                     $adjustments[$checkToken] = $adjustments[$first];
+
+                    if ($this->_debug === true) {
+                        $line = $tokens[$checkToken]['line'];
+                        $type = $tokens[$checkToken]['type'];
+                        echo "\t=> Add adjustment of ".$adjustments[$checkToken]." for token $checkToken ($type) on line $line".PHP_EOL;
+                    }
                 }//end if
             }//end if
 
@@ -561,7 +650,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 }
 
                 $fix = $phpcsFile->addFixableError($error, $checkToken, $type, $data);
-                if ($fix === true) {
+                if ($fix === true || $this->_debug === true) {
                     $padding = '';
                     if ($this->tabIndent === true) {
                         $numTabs = floor($checkIndent / $this->_tabWidth);
@@ -582,6 +671,11 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
 
                     if ($accepted === true) {
                         $adjustments[$checkToken] = ($checkIndent - $tokenIndent);
+                        if ($this->_debug === true) {
+                            $line = $tokens[$checkToken]['line'];
+                            $type = $tokens[$checkToken]['type'];
+                            echo "\t=> Add adjustment of ".$adjustments[$checkToken]." for token $checkToken ($type) on line $line".PHP_EOL;
+                        }
                     }
                 }//end if
             }//end if
@@ -777,6 +871,9 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
 
                 $first         = $phpcsFile->findFirstOnLine(T_WHITESPACE, $i, true);
                 $currentIndent = (($tokens[$first]['column'] - 1) + $this->indent);
+                if (isset($adjustments[$first]) === true) {
+                    $currentIndent += $adjustments[$first];
+                }
 
                 // Make sure it is divisible by our expected indent.
                 $currentIndent = (int) (ceil($currentIndent / $this->indent) * $this->indent);
@@ -926,7 +1023,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
         }//end for
 
         // Don't process the rest of the file.
-        return ($phpcsFile->numTokens - 1);
+        return $phpcsFile->numTokens;
 
     }//end process()
 
