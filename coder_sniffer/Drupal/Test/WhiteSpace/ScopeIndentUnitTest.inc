@@ -1,0 +1,8 @@
+<?php
+
+// Test correct indenting of trait conflict resolution.
+class MyClass {
+  use MyTrait {
+     myTraitMethod as renamedTraitMethod;
+  }
+}
