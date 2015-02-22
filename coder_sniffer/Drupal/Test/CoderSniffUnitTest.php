@@ -85,23 +85,21 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
             $failures        = $this->generateFailureMessages($phpcsFile);
             $failureMessages = array_merge($failureMessages, $failures);
 
-            if ($phpcsFile->getFixableCount() > 0) {
-                // Attempt to fix the errors.
-                $phpcsFile->fixer->fixFile();
-                $fixable = $phpcsFile->getFixableCount();
-                if ($fixable > 0) {
-                    $failureMessages[] = "Failed to fix $fixable fixable violations in $filename";
-                }
+            // Attempt to fix the errors.
+            $phpcsFile->fixer->fixFile();
+            $fixable = $phpcsFile->getFixableCount();
+            if ($fixable > 0) {
+                $failureMessages[] = "Failed to fix $fixable fixable violations in $filename";
+            }
 
-                // Check for a .fixed file to check for accuracy of fixes.
-                $fixedFile = $testFile.'.fixed';
-                if (file_exists($fixedFile) === true) {
-                    $diff = $phpcsFile->fixer->generateDiff($fixedFile);
-                    if (trim($diff) !== '') {
-                        $filename          = basename($testFile);
-                        $fixedFilename     = basename($fixedFile);
-                        $failureMessages[] = "Fixed version of $filename does not match expected version in $fixedFilename; the diff is\n$diff";
-                    }
+            // Check for a .fixed file to check for accuracy of fixes.
+            $fixedFile = $testFile.'.fixed';
+            if (file_exists($fixedFile) === true) {
+                $diff = $phpcsFile->fixer->generateDiff($fixedFile);
+                if (trim($diff) !== '') {
+                    $filename          = basename($testFile);
+                    $fixedFilename     = basename($fixedFile);
+                    $failureMessages[] = "Fixed version of $filename does not match expected version in $fixedFilename; the diff is\n$diff";
                 }
             }
         }//end foreach
