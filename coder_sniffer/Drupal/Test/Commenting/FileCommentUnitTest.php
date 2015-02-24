@@ -22,6 +22,14 @@ class Drupal_Sniffs_Commenting_FileCommentUnitTest extends CoderSniffUnitTest
                 return array(
                         3 => 1,
                        );
+            case 'FileCommentUnitTest.2.inc':
+                return array(
+                        4 => 1,
+                       );
+            case 'FileCommentUnitTest.3.inc':
+                return array(
+                        4 => 1,
+                       );
         }
 
     }//end getErrorList()
@@ -43,5 +51,3 @@ class Drupal_Sniffs_Commenting_FileCommentUnitTest extends CoderSniffUnitTest
 
 
 }//end class
-
-?>
