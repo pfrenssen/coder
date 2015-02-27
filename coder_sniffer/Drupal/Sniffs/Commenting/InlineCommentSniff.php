@@ -185,6 +185,8 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
         $nextComment = $phpcsFile->findNext(array(T_COMMENT), ($stackPtr + 1), null, false);
         if (($nextComment !== false)
             && (($tokens[$nextComment]['line']) === ($tokens[$stackPtr]['line'] + 1))
+            // A tag such as @todo means a separate comment block.
+            && strpos(trim(substr($tokens[$nextComment]['content'], 2)), '@') !== 0
         ) {
             return;
         }

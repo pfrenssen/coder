@@ -471,7 +471,7 @@ t('Link to Drupal\'s <a href="@url">admin pages</a>.', array('@url' => url('admi
 // Test inline comment style.
 // Comment one.
 t('x');
-// Comment two
+// Comment two.
 // @todo this is valid!
 t('x');
 // Goes on?
