@@ -57,7 +57,10 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
                 return;
             }
             if ($tokens[($stackPtr - 1)]['code'] === T_COMMENT
-                && preg_match('/^[[:space:]]*\/\/ @.+/', $tokens[($stackPtr - 1)]['content']) === 1
+                && (preg_match('/^[[:space:]]*\/\/ @.+/', $tokens[($stackPtr - 1)]['content']) === 1
+                // Allow anything that does not contain spaces (like URLs) to be
+                // longer.
+                || strpos(trim($tokens[($stackPtr - 1)]['content'], "/ \n"), ' ') === false)
             ) {
                 // Allow @link and @see documentation to exceed the 80 character
                 // limit.

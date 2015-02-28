@@ -483,6 +483,8 @@ t('x');
 t('x');
 // @see http://example.com/with/a/very/long/link/that/is/longer/than/80/characters
 t('x');
+// http://example.com/with/a/very/long/link/that/is/longer/than/80/characters/really
+t('x');
 // @see my_function()
 t('x');
 // t() refers to a function name and should not be capitalized.
