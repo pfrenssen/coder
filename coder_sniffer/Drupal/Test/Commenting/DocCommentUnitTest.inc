@@ -59,3 +59,12 @@ class Test {
   public function test() {
   }
 }
+
+/**
+ * Short description.
+ *
+ * Long description without full stop
+ */
+function test11() {
+
+}

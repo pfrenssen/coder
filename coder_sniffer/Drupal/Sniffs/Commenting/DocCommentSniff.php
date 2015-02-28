@@ -244,6 +244,33 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                     $phpcsFile->fixer->replaceToken($long, ucfirst($tokens[$long]['content']));
                 }
             }
+
+            // Account for the fact that a description might cover multiple lines.
+            $longContent = $tokens[$long]['content'];
+            $longEnd     = $long;
+            for ($i = ($long + 1); $i < $commentEnd; $i++) {
+                if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
+                    if ($tokens[$i]['line'] === ($tokens[$longEnd]['line'] + 1)) {
+                        $longContent .= $tokens[$i]['content'];
+                        $longEnd      = $i;
+                    } else {
+                        break;
+                    }
+                }
+                if ($tokens[$i]['code'] === T_DOC_COMMENT_TAG) {
+                    break;
+                }
+            }
+            // Remove any trailing white spaces which are detected by other sniffs.
+            $longContent = trim($longContent);
+
+            if (preg_match('/[a-zA-Z]$/', $longContent) === 1) {
+                $error = 'Doc comment long description must end with a full stop';
+                $fix = $phpcsFile->addFixableError($error, $longEnd, 'LongFullStop');
+                if ($fix === true) {
+                    $phpcsFile->fixer->addContent($longEnd, '.');
+                }
+            }
         }//end if
 
         if (empty($tokens[$commentStart]['comment_tags']) === true) {

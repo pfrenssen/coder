@@ -346,7 +346,7 @@ $var = foo(
 /**
  * Class declaration.
  *
- * Classes always have a multiline comment
+ * Classes always have a multiline comment.
  */
 class Bar {
 
