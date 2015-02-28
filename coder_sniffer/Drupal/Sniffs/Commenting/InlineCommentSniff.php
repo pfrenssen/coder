@@ -128,7 +128,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             if ($tokens[$stackPtr]['content'] === '/**') {
                 // The only exception to inline doc blocks is the /** @var */
                 // declaration.
-                $content = $phpcsFile->getTokensAsString($stackPtr, $tokens[$stackPtr]['comment_closer'] - $stackPtr + 1);
+                $content = $phpcsFile->getTokensAsString($stackPtr, ($tokens[$stackPtr]['comment_closer'] - $stackPtr + 1));
                 if (preg_match('#^/\*\* @var [a-zA-Z_\\\\]+ \$[a-zA-Z_]+ \*/$#', $content) !== 1) {
                     $error = 'Inline doc block comments are not allowed; use "/* Comment */" or "// Comment" instead';
                     $phpcsFile->addError($error, $stackPtr, 'DocBlock');
@@ -243,7 +243,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
         if (in_array($commentCloser, $acceptedClosers) === false && $commentText[0] !== '@') {
             // Allow special last words like URLs or function references
             // without punctuation.
-            $lastWord = $words[count($words) - 1];
+            $lastWord = $words[(count($words) - 1)];
             $matches  = array();
             preg_match('/((\()?[$a-zA-Z]+\)|([$a-zA-Z]+))/', $lastWord, $matches);
             if (isset($matches[0]) === true && $matches[0] === $lastWord) {
@@ -255,9 +255,13 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
 
                 $ender = trim($ender, ' ,');
                 $data  = array($ender);
-                $phpcsFile->addError($error, $stackPtr, 'InvalidEndChar', $data);
+                $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'InvalidEndChar', $data);
+                if ($fix === true) {
+                    $newContent = preg_replace('/(\s+)$/', '.$1', $tokens[$stackPtr]['content']);
+                    $phpcsFile->fixer->replaceToken($stackPtr, $newContent);
+                }
             }
-        }
+        }//end if
 
         // Finally, the line below the last comment cannot be empty if this inline
         // comment is on a line by itself.
@@ -273,12 +277,13 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             }
 
             $warning = 'There must be no blank line following an inline comment';
-            $fix   = $phpcsFile->addFixableWarning($warning, $stackPtr, 'SpacingAfter');
+            $fix     = $phpcsFile->addFixableWarning($warning, $stackPtr, 'SpacingAfter');
             if ($fix === true) {
                 $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
-                if ($next === ($phpcsFile->numTokens -1)) {
+                if ($next === ($phpcsFile->numTokens - 1)) {
                     return;
                 }
+
                 $phpcsFile->fixer->beginChangeset();
                 for ($i = ($stackPtr + 1); $i < $next; $i++) {
                     if ($tokens[$i]['line'] === $tokens[$next]['line']) {
@@ -379,7 +384,10 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
 
                 if ($spaceCount > $prevSpaceCount && $prevSpaceCount > 0) {
                     // A previous comment could be a list item or @todo.
-                    $indentationStarters = array('-', '@todo');
+                    $indentationStarters = array(
+                                            '-',
+                                            '@todo',
+                                           );
                     $words = preg_split('/\s+/', $prevCommentText);
                     if (in_array($words[1], $indentationStarters) === true) {
                         if ($spaceCount !== ($prevSpaceCount + 2)) {
