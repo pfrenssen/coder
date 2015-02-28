@@ -71,12 +71,15 @@ class Drupal_Sniffs_WhiteSpace_OpenBracketSpacingSniff implements PHP_CodeSniffe
             && strpos($tokens[($stackPtr + 1)]['content'], $phpcsFile->eolChar) === false
         ) {
             $error = 'There should be no white space after an opening "%s"';
-            $phpcsFile->addError(
+            $fix = $phpcsFile->addFixableError(
                 $error,
                 ($stackPtr + 1),
                 'OpeningWhitespace',
                 array($tokens[$stackPtr]['content'])
             );
+            if ($fix === true) {
+                $phpcsFile->fixer->replaceToken(($stackPtr + 1), '');
+            }
         }
 
     }//end process()
