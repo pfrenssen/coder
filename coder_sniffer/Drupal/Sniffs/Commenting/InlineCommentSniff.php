@@ -350,7 +350,15 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
         $tokens     = $phpcsFile->getTokens();
         $comment    = rtrim($tokens[$stackPtr]['content']);
         $spaceCount = 0;
-        for ($i = 2; $i < strlen($comment); $i++) {
+        $tabFound   = false;
+
+        $commentLength = strlen($comment);
+        for ($i = 2; $i < $commentLength; $i++) {
+            if ($comment[$i] === "\t") {
+                $tabFound = true;
+                break;
+            }
+
             if ($comment[$i] !== ' ') {
                 break;
             }
@@ -358,13 +366,26 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             $spaceCount++;
         }
 
-        if ($spaceCount === 0 && strlen($comment) > 2) {
-            $error = 'No space before comment text; expected "// %s" but found "%s"';
+        $fix = false;
+        if ($tabFound === true) {
+            $error = 'Tab found before comment text; expected "// %s" but found "%s"';
+            $data  = array(
+                      ltrim(substr($comment, 2)),
+                      $comment,
+                     );
+            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'TabBefore', $data);
+        } else if ($spaceCount === 0 && strlen($comment) > 2) {
+            $error = 'No space found before comment text; expected "// %s" but found "%s"';
             $data  = array(
                       substr($comment, 2),
                       $comment,
                      );
-            $phpcsFile->addError($error, $stackPtr, 'NoSpaceBefore', $data);
+            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'NoSpaceBefore', $data);
+        }//end if
+
+        if ($fix === true) {
+            $newComment = '// '.ltrim($tokens[$stackPtr]['content'], "/\t ");
+            $phpcsFile->fixer->replaceToken($stackPtr, $newComment);
         }
 
         if ($spaceCount > 1) {

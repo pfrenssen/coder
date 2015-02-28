@@ -1,6 +1,6 @@
 <?php
 
-//Inline comments need to be prefixed by a space after the //.
+// Inline comments need to be prefixed by a space after the //.
 // But there should be only one space.
 //  Not more.
 // Now follows a list:
