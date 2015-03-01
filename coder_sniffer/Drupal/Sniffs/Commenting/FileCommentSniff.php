@@ -67,7 +67,19 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
         $commentStart = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
 
         if ($tokens[$commentStart]['code'] === T_COMMENT) {
-            $phpcsFile->addError('You must use "/**" style comments for a file comment', $commentStart, 'WrongStyle');
+            $fix = $phpcsFile->addFixableError('You must use "/**" style comments for a file comment', $commentStart, 'WrongStyle');
+            if ($fix === true) {
+                $content = $tokens[$commentStart]['content'];
+
+                // Just turn the /* ... */ style comment into a /** ... */ style
+                // comment.
+                if (strpos($content, '/*') === 0) {
+                    $phpcsFile->fixer->replaceToken($commentStart, str_replace('/*', '/**', $content));
+                } else {
+                    $content = trim(ltrim($tokens[$commentStart]['content'], '/# '));
+                    $phpcsFile->fixer->replaceToken($commentStart, "/**\n * @file\n * $content\n */\n");
+                }
+            }
             return ($phpcsFile->numTokens + 1);
         } else if ($commentStart === false || $tokens[$commentStart]['code'] !== T_DOC_COMMENT_OPEN_TAG) {
             $fix = $phpcsFile->addFixableError('Missing file doc comment', $stackPtr, 'Missing');

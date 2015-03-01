@@ -1,6 +1,9 @@
 <?php
 
-// Test correct indenting of trait conflict resolution.
+/**
+ * @file
+ * Test correct indenting of trait conflict resolution.
+ */
 /**
  *
  */

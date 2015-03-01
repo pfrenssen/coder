@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Example inline comments.
+ */
+
 // Inline comments need to be prefixed by a space after the //.
 // But there should be only one space.
 //  Not more.

@@ -14,11 +14,11 @@ class Drupal_Sniffs_Commenting_InlineCommentUnitTest extends CoderSniffUnitTest
     public function getErrorList($testFile)
     {
         return array(
-                3 => 1,
-                5 => 1,
                 8 => 1,
                 10 => 1,
+                13 => 1,
                 15 => 1,
+                20 => 1,
                );
 
     }//end getErrorList()
@@ -35,7 +35,7 @@ class Drupal_Sniffs_Commenting_InlineCommentUnitTest extends CoderSniffUnitTest
     public function getWarningList($testFile)
     {
         return array(
-                11 => 1,
+                16 => 1,
                );
 
     }//end getWarningList()
