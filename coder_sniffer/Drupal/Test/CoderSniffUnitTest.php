@@ -68,10 +68,9 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
         $class_name_parts = explode('_', get_class($this));
         $standard = $class_name_parts[0];
 
-        self::$phpcs->initStandard("coder_sniffer/$standard", $sniffCodes);
-
         $failureMessages = array();
         foreach ($testFiles as $testFile) {
+            self::$phpcs->initStandard("coder_sniffer/$standard", $sniffCodes);
             $filename = basename($testFile);
 
             try {
@@ -86,6 +85,11 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
             $failureMessages = array_merge($failureMessages, $failures);
 
             // Attempt to fix the errors.
+            // Re-initialize the standard to use all sniffs for the fixer.
+            self::$phpcs->initStandard("coder_sniffer/$standard");
+            self::$phpcs->cli->setCommandLineValues($cliValues);
+            $phpcsFile = self::$phpcs->processFile($testFile);
+
             $phpcsFile->fixer->fixFile();
             $fixable = $phpcsFile->getFixableCount();
             if ($fixable > 0) {

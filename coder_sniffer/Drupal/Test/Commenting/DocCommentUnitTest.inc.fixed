@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This doc comment ends in a dot, but has some white space after it. 
+ * This doc comment ends in a dot, but has some white space after it.
  */
 
 /**
@@ -53,7 +53,9 @@ function test9() {
 function test10() {
 
 }
-
+/**
+ *
+ */
 class Test {
 
   /**
@@ -65,6 +67,7 @@ class Test {
    */
   public function test() {
   }
+
 }
 
 /**
