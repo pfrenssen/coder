@@ -117,9 +117,10 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
 
         // The short description of @file comments is one line below.
         if ($tokens[$short]['code'] === T_DOC_COMMENT_TAG && $tokens[$short]['content'] == '@file') {
-            $fileShort = $phpcsFile->findNext($empty, ($short + 1), $commentEnd, true);
-            if ($fileShort !== false) {
-                $short = $fileShort;
+            $next = $phpcsFile->findNext($empty, ($short + 1), $commentEnd, true);
+            if ($next !== false) {
+                $fileShort = $short;
+                $short = $next;
             }
         }
 
@@ -136,14 +137,16 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             return;
         }
 
+        $start = isset($fileShort) === true ? $fileShort : $stackPtr;
+
         // No extra newline before short description.
-        if ($tokens[$short]['line'] !== ($tokens[$stackPtr]['line'] + 1) && !isset($fileShort)) {
+        if ($tokens[$short]['line'] !== ($tokens[$start]['line'] + 1)) {
             $error = 'Doc comment short description must be on the first line';
             $fix   = $phpcsFile->addFixableError($error, $short, 'SpacingBeforeShort');
             if ($fix === true) {
                 $phpcsFile->fixer->beginChangeset();
-                for ($i = $stackPtr; $i < $short; $i++) {
-                    if ($tokens[$i]['line'] === $tokens[$stackPtr]['line']) {
+                for ($i = $start; $i < $short; $i++) {
+                    if ($tokens[$i]['line'] === $tokens[$start]['line']) {
                         continue;
                     } else if ($tokens[$i]['line'] === $tokens[$short]['line']) {
                         break;

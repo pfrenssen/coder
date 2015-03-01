@@ -96,18 +96,50 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
         }
 
         $commentEnd = $tokens[$commentStart]['comment_closer'];
+        $fileTag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($commentStart + 1), $commentEnd, false, '@file');
+        $next = $phpcsFile->findNext(T_WHITESPACE, ($commentEnd + 1), null, true);
+
+        // If there is no @file tag and the next line is a function or class
+        // definition then the file docblock is mising.
+        if ($fileTag === false
+            && $tokens[$next]['line'] === ($tokens[$commentEnd]['line'] + 1)
+            && in_array($tokens[$next]['code'], array(T_FUNCTION, T_CLASS, T_INTERFACE, T_TRAIT))
+        ) {
+            $fix = $phpcsFile->addFixableError('Missing file doc comment', $stackPtr, 'Missing');
+            if ($fix === true) {
+                // Only PHP has a real opening tag, additional newline at the
+                // beginning here.
+                if ($phpcsFile->tokenizerType === 'PHP') {
+                    $phpcsFile->fixer->addContent($stackPtr, "\n/**\n * @file\n */\n");
+                } else {
+                    $phpcsFile->fixer->addContent($stackPtr, "/**\n * @file\n */\n");
+                }
+            }
+            return ($phpcsFile->numTokens + 1);
+        }
+
+        if ($fileTag === false || $tokens[$fileTag]['line'] !== ($tokens[$commentStart]['line'] + 1)) {
+            $second_line = $phpcsFile->findNext(array(T_DOC_COMMENT_STAR, T_DOC_COMMENT_CLOSE_TAG), ($commentStart + 1), $commentEnd);
+            $fix = $phpcsFile->addFixableError('The second line in the file doc comment must be "@file"', $second_line, 'FileTag');
+            if ($fix === true) {
+                if ($fileTag === false) {
+                    $phpcsFile->fixer->addContent($commentStart, "\n * @file");
+                } else {
+                    // Delete the @file tag at its current position and insert one
+                    // after the beginning of the comment.
+                    $phpcsFile->fixer->beginChangeset();
+                    $phpcsFile->fixer->addContent($commentStart, "\n * @file");
+                    $phpcsFile->fixer->replaceToken($fileTag, '');
+                    $phpcsFile->fixer->endChangeset();
+                }
+            }
+            return ($phpcsFile->numTokens + 1);
+        }
 
         // Exactly one blank line after the file comment.
-        $next = $phpcsFile->findNext(T_WHITESPACE, ($commentEnd + 1), null, true);
         if ($tokens[$next]['line'] !== ($tokens[$commentEnd]['line'] + 2) && $tokens[$next]['line'] > $tokens[$commentEnd]['line']) {
             $error = 'There must be exactly one blank line after the file comment';
             $phpcsFile->addError($error, $commentEnd, 'SpacingAfterComment');
-        }
-
-        $fileTag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($commentStart + 1));
-        if ($fileTag === false || $tokens[$fileTag]['content'] !== '@file' || $tokens[$fileTag]['line'] !== ($tokens[$commentStart]['line'] + 1)) {
-            $second_line = $phpcsFile->findNext(array(T_DOC_COMMENT_STAR, T_DOC_COMMENT_CLOSE_TAG), ($commentStart + 1), $commentEnd);
-            $phpcsFile->addError('The second line in the file doc comment must be "@file"', $second_line, 'FileTag');
         }
 
         // Ignore the rest of the file.
