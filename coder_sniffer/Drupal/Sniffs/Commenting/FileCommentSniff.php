@@ -70,7 +70,16 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
             $phpcsFile->addError('You must use "/**" style comments for a file comment', $commentStart, 'WrongStyle');
             return ($phpcsFile->numTokens + 1);
         } else if ($commentStart === false || $tokens[$commentStart]['code'] !== T_DOC_COMMENT_OPEN_TAG) {
-            $phpcsFile->addError('Missing file doc comment', $stackPtr, 'Missing');
+            $fix = $phpcsFile->addFixableError('Missing file doc comment', $stackPtr, 'Missing');
+            if ($fix === true) {
+                // Only PHP has a real opening tag, additional newline at the
+                // beginning here.
+                if ($phpcsFile->tokenizerType === 'PHP') {
+                    $phpcsFile->fixer->addContent($stackPtr, "\n/**\n * @file\n */\n");
+                } else {
+                    $phpcsFile->fixer->addContent($stackPtr, "/**\n * @file\n */\n");
+                }
+            }
             return ($phpcsFile->numTokens + 1);
         }
 
