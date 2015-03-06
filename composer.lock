@@ -4,20 +4,20 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c7b4178ebc53452da3e08fe503c6cbfa",
+    "hash": "76bb8dc6d220a63e0561e3f2526e9c7c",
     "packages": [
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "dev-master",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "ee286884c203bd618fccc3354aa703352fb0a0fb"
+                "reference": "5046b0e01c416fc2b06df961d0673c85bcdc896c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/ee286884c203bd618fccc3354aa703352fb0a0fb",
-                "reference": "ee286884c203bd618fccc3354aa703352fb0a0fb",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/5046b0e01c416fc2b06df961d0673c85bcdc896c",
+                "reference": "5046b0e01c416fc2b06df961d0673c85bcdc896c",
                 "shasum": ""
             },
             "require": {
@@ -30,6 +30,11 @@
                 "scripts/phpcbf"
             ],
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
             "autoload": {
                 "classmap": [
                     "CodeSniffer.php",
@@ -73,7 +78,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2015-02-16 23:28:28"
+            "time": "2015-03-04 02:07:03"
         }
     ],
     "packages-dev": [
@@ -1031,9 +1036,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "squizlabs/php_codesniffer": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
