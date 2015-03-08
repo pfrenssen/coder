@@ -223,7 +223,7 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
     $form['coder_what']['coder_file_list'] = array(
       '#type' => 'textarea',
       '#title' => _t('List of files'),
-      '#description' => _t('List each relative file path on a separate line.'),
+      '#description' => _t('List each relative file path on a separate line without a / at the start. For example: %example_path', array('%example_path' => drupal_get_path('module', 'coder') . '/coder.module')),
       '#default_value' => $settings['coder_file_list'],
     );
     $form['coder_files'] = array(
@@ -252,10 +252,12 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
     $form['coder_what']['coder_patch_link'] = array(
       '#type' => 'textfield',
       '#title' => _t('Link to patch'),
+      '#size' => 150,
       '#default_value' => $settings['coder_patch_link'],
+      '#description' => _t('The path should be relative to the drupal home directory, without a / at the start, for example: %example_path', array('%example_path' => drupal_get_path('module', 'coder') . '/name-of-file.patch')),
       '#weight' => -3,
     );
-    $form['coder_what']['coder_patch_help'] = array(
+    $form['coder_what']['coder_patch_or'] = array(
       '#markup' => '<p>' . _t('Or') . '</p>',
       '#weight' => -2,
     );
@@ -265,6 +267,7 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
       '#rows' => 20,
       '#weight' => -1,
       '#default_value' => $settings['coder_patch_text'],
+      '#description' => _t('Paste the contents of the patch file here.'),
       '#attributes' => array('wrap' => 'OFF'),
     );
     $form['coder_patches'] = array(
