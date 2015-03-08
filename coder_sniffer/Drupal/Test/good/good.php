@@ -675,6 +675,8 @@ class Foo implements FooInterface {
   public function test() {
     /** @var \Drupal\node\NodeInterface $node */
     $node = $this->entity;
+    /** @var \Drupal\node\NodeInterface[] $nodes */
+    $nodes = foo();
     return $node;
   }
 
