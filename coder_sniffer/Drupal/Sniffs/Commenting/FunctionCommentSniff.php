@@ -26,16 +26,16 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
      * @var array
      */
     protected $invalidTypes = array(
-                               'Array' => 'array',
-                               'array()' => 'array',
-                               'boolean' => 'bool',
-                               'Boolean' => 'bool',
-                               'integer' => 'int',
-                               'str' => 'string',
+                               'Array'    => 'array',
+                               'array()'  => 'array',
+                               'boolean'  => 'bool',
+                               'Boolean'  => 'bool',
+                               'integer'  => 'int',
+                               'str'      => 'string',
                                'stdClass' => 'object',
-                               'number' => 'int',
-                               'String' => 'string',
-                               'type' => 'string or int or object...',
+                               'number'   => 'int',
+                               'String'   => 'string',
+                               'type'     => 'string or int or object...',
                               );
 
     /**
@@ -54,6 +54,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                             'resource',
                             'callable',
                            );
+
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -86,12 +87,30 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             && $tokens[$commentEnd]['code'] !== T_COMMENT
         ) {
-            $phpcsFile->addError('Missing function doc comment', $stackPtr, 'Missing');
+            $fix = $phpcsFile->addFixableError('Missing function doc comment', $stackPtr, 'Missing');
+            if ($fix === true) {
+                $before = $phpcsFile->findNext(T_WHITESPACE, ($commentEnd + 1), ($stackPtr + 1), true);
+                $phpcsFile->fixer->addContentBefore($before, "/**\n *\n */\n");
+            }
+
             return;
         }
 
         if ($tokens[$commentEnd]['code'] === T_COMMENT) {
-            $phpcsFile->addError('You must use "/**" style comments for a function comment', $stackPtr, 'WrongStyle');
+            $fix = $phpcsFile->addError('You must use "/**" style comments for a function comment', $stackPtr, 'WrongStyle');
+            if ($fix === true) {
+                // Convert the comment into a doc comment.
+                $phpcsFile->fixer->beginChangeset();
+                $comment = '';
+                for ($i = $commentEnd; $tokens[$i]['code'] === T_COMMENT; $i--) {
+                    $comment = ' *'.ltrim($tokens[$i]['content'], '/* ').$comment;
+                    $phpcsFile->fixer->replaceToken($i, '');
+                }
+
+                $phpcsFile->fixer->replaceToken($commentEnd, "/**\n".rtrim($comment, "*/\n")."\n */\n");
+                $phpcsFile->fixer->endChangeset();
+            }
+
             return;
         }
 
@@ -243,6 +262,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         }
                     }
                 }
+
                 if ($comment === '' && $type !== '$this') {
                     $error = 'Return comment must be on the next line';
                     $phpcsFile->addError($error, $return, 'MissingReturnComment');
@@ -290,25 +310,27 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $end = $tokens[$commentStart]['comment_closer'];
                 }
 
-                $comment   = '';
+                $comment      = '';
                 $commentStart = null;
                 for ($i = ($tag + 3); $i < $end; $i++) {
                     if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
                         if ($commentStart === null) {
                             $commentStart = $i;
                         }
+
                         $indent = 0;
                         if ($tokens[($i - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
                             $indent = strlen($tokens[($i - 1)]['content']);
                         }
 
-                        $comment       .= ' '.$tokens[$i]['content'];
+                        $comment .= ' '.$tokens[$i]['content'];
                         if ($indent < 3) {
                             $error = 'Throws comment indentation must be 3 spaces, found %s spaces';
                             $phpcsFile->addError($error, $i, 'TrhowsCommentIndentation', array($indent));
                         }
                     }
                 }
+
                 $comment = trim($comment);
 
                 if ($comment === '') {
@@ -412,6 +434,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         }
                     }
                 }
+
                 if ($comment == '') {
                     $error = 'Missing parameter comment';
                     $phpcsFile->addError($error, $tag, 'MissingParamComment');
@@ -507,6 +530,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     } else if (in_array($typeName, $this->allowedTypes) === false) {
                         $suggestedTypeHint = $suggestedName;
                     }
+
                     if ($suggestedTypeHint !== '' && isset($realParams[$checkPos]) === true) {
                         $typeHint = $realParams[$checkPos]['type_hint'];
                         if ($typeHint === '') {
@@ -515,7 +539,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                             // hint.
                             if (isset($realParams[$checkPos]['default']) === false
                                 || (strpos($realParams[$checkPos]['default'], 'array(') === false
-                                    && strpos($realParams[$checkPos]['default'], '[') === false)
+                                && strpos($realParams[$checkPos]['default'], '[') === false)
                             ) {
                                 $error = 'Type hint "%s" missing for %s';
                                 $data  = array(
@@ -528,7 +552,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                             // The type hint could be fully namespaced, so we check
                             // for the part after the last "\".
                             $name_parts = explode('\\', $suggestedTypeHint);
-                            $last_part = end($name_parts);
+                            $last_part  = end($name_parts);
                             if ($last_part !== $typeHint) {
                                 $error = 'Expected type hint "%s"; found "%s" for %s';
                                 $data  = array(
@@ -538,7 +562,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                                          );
                                 $phpcsFile->addError($error, $stackPtr, 'IncorrectTypeHint', $data);
                             }
-                        }
+                        }//end if
                     } else if ($suggestedTypeHint === '' && isset($realParams[$checkPos]) === true) {
                         $typeHint = $realParams[$checkPos]['type_hint'];
                         if ($typeHint !== '') {
@@ -636,7 +660,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 
             $lastChar = substr($param['comment'], -1);
             if ($lastChar !== '.') {
-                $error = 'Parameter comment must end with a full stop';
+                $error    = 'Parameter comment must end with a full stop';
                 $lastLine = end($param['commentLines']);
                 $phpcsFile->addError($error, $lastLine['token'], 'ParamCommentFullStop');
             }
@@ -670,6 +694,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $phpcsFile->addError($error, $tag, 'SeeAdditionalText');
                     continue;
                 }
+
                 if (preg_match('/[\.!\?]$/', $comment) === 1) {
                     $error = 'Trailing punctuation for @see references is not allowed.';
                     $phpcsFile->addError($error, $tag, 'SeePunctuation');
@@ -692,8 +717,10 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         if (isset($this->invalidTypes[$type])) {
             return $this->invalidTypes[$type];
         }
+
         return $type;
-    }
+
+    }//end suggestType()
 
 
 }//end class

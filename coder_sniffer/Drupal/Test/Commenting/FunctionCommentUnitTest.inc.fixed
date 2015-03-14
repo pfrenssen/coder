@@ -73,3 +73,31 @@ function test5() {
 function test6() {
 
 }
+
+/**
+ *
+ */
+function test7() {
+  // Missing function doc here.
+}
+
+/**
+ * Test methods.
+ */
+class Test {
+
+  /**
+   *
+   */
+  public function undocumented() {
+
+  }
+
+  /**
+   * This should be a doc comment.
+   */
+  public function wrong() {
+
+  }
+
+}
