@@ -19,3 +19,6 @@ test();
 
 // Something missing full stop
 // @todo Comment after it.
+some_function();
+
+// should start with a capital letter.

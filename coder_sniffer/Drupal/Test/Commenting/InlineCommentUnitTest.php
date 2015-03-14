@@ -19,6 +19,7 @@ class Drupal_Sniffs_Commenting_InlineCommentUnitTest extends CoderSniffUnitTest
                 13 => 1,
                 15 => 1,
                 20 => 1,
+                24 => 1,
                );
 
     }//end getErrorList()

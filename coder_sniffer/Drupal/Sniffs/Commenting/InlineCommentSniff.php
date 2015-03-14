@@ -228,7 +228,11 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             preg_match('/[a-z]+/', $words[0], $matches);
             if (isset($matches[0]) && $matches[0] === $words[0]) {
                 $error = 'Inline comments must start with a capital letter';
-                $phpcsFile->addError($error, $topComment, 'NotCapital');
+                $fix   = $phpcsFile->addFixableError($error, $topComment, 'NotCapital');
+                if ($fix === true) {
+                    $newComment = preg_replace("/$words[0]/", ucfirst($words[0]), $tokens[$topComment]['content'], 1);
+                    $phpcsFile->fixer->replaceToken($topComment, $newComment);
+                }
             }
         }
 
