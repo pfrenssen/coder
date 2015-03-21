@@ -195,7 +195,11 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
         // Remove any trailing white spaces which are detected by other sniffs.
         $shortContent = trim($shortContent);
 
-        if (preg_match('|\p{Lu}|u', $shortContent[0]) === 0 && $shortContent !== '{@inheritdoc}') {
+        if (preg_match('|\p{Lu}|u', $shortContent[0]) === 0 && $shortContent !== '{@inheritdoc}'
+            // Ignore Features module export files that just use the file name as
+            // comment.
+            && $shortContent !== basename($phpcsFile->getFilename())
+        ) {
             $error = 'Doc comment short description must start with a capital letter';
             $fix = $phpcsFile->addFixableError($error, $short, 'ShortNotCapital');
             if ($fix === true) {
@@ -204,7 +208,11 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
         }
 
         $lastChar = substr($shortContent, -1);
-        if ($lastChar !== '.' && $shortContent !== '{@inheritdoc}') {
+        if ($lastChar !== '.' && $shortContent !== '{@inheritdoc}'
+            // Ignore Features module export files that just use the file name as
+            // comment.
+            && $shortContent !== basename($phpcsFile->getFilename())
+        ) {
             $error = 'Doc comment short description must end with a full stop';
             $fix = $phpcsFile->addFixableError($error, $shortEnd, 'ShortFullStop');
             if ($fix === true) {
