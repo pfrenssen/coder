@@ -89,3 +89,12 @@ class Test {
   }
 
 }
+
+/**
+ * Some comment.
+ *
+ * @param int $x Description should be on the next line.
+ */
+function test8($x) {
+
+}

@@ -399,7 +399,13 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 
                 if (isset($matches[4]) === true) {
                     $error = 'Parameter comment must be on the next line';
-                    $phpcsFile->addError($error, ($tag + 2), 'ParamCommentNewLine');
+                    $fix = $phpcsFile->addFixableError($error, ($tag + 2), 'ParamCommentNewLine');
+                    if ($fix === true) {
+                        $parts = $matches;
+                        unset($parts[0]);
+                        $parts[3] = "\n *   ";
+                        $phpcsFile->fixer->replaceToken(($tag + 2), implode('', $parts));
+                    }
                 }
 
                 $var    = isset($matches[2]) ? $matches[2] : '';
@@ -430,7 +436,10 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                                           );
                         if ($indent < 3) {
                             $error = 'Parameter comment indentation must be 3 spaces, found %s spaces';
-                            $phpcsFile->addError($error, $i, 'ParamCommentIndentation', array($indent));
+                            $fix = $phpcsFile->addFixableError($error, $i, 'ParamCommentIndentation', array($indent));
+                            if ($fix === true) {
+                                $phpcsFile->fixer->replaceToken(($i - 1), '   ');
+                            }
                         }
                     }
                 }
