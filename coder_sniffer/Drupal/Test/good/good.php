@@ -886,3 +886,16 @@ function test8($x) {
 function test9() {
 
 }
+
+/**
+ * Link tags in the long description before param tags are allowed.
+ *
+ * Visit also:
+ * @link https://www.drupal.org/node/323101 Strings at well-known places: built-in menus, .. @endlink.
+ *
+ * @param string $title
+ *   The untranslated title of the menu item.
+ */
+function test10($title) {
+
+}
