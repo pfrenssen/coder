@@ -120,7 +120,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             $next = $phpcsFile->findNext($empty, ($short + 1), $commentEnd, true);
             if ($next !== false) {
                 $fileShort = $short;
-                $short = $next;
+                $short     = $next;
             }
         }
 
@@ -163,16 +163,15 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             && strpos($tokens[($short - 1)]['content'], $phpcsFile->eolChar) === false
         ) {
             $error = 'Function comment short description must start with exactly one space';
-            $fix = $phpcsFile->addFixableError($error, $short, 'ShortStartSpace');
+            $fix   = $phpcsFile->addFixableError($error, $short, 'ShortStartSpace');
             if ($fix === true) {
                 if ($tokens[($short - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
-                    $phpcsFile->fixer->replaceToken($short - 1, ' ');
+                    $phpcsFile->fixer->replaceToken(($short - 1), ' ');
                 }
                 else {
-                    $phpcsFile->fixer->addContent($short - 1, ' ');
+                    $phpcsFile->fixer->addContent(($short - 1), ' ');
                 }
             }
-
         }
 
         // Account for the fact that a short description might cover
@@ -188,10 +187,12 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                     break;
                 }
             }
+
             if ($tokens[$i]['code'] === T_DOC_COMMENT_TAG) {
                 break;
             }
         }
+
         // Remove any trailing white spaces which are detected by other sniffs.
         $shortContent = trim($shortContent);
 
@@ -201,7 +202,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             && $shortContent !== basename($phpcsFile->getFilename())
         ) {
             $error = 'Doc comment short description must start with a capital letter';
-            $fix = $phpcsFile->addFixableError($error, $short, 'ShortNotCapital');
+            $fix   = $phpcsFile->addFixableError($error, $short, 'ShortNotCapital');
             if ($fix === true) {
                 $phpcsFile->fixer->replaceToken($short, ucfirst($tokens[$short]['content']));
             }
@@ -214,7 +215,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             && $shortContent !== basename($phpcsFile->getFilename())
         ) {
             $error = 'Doc comment short description must end with a full stop';
-            $fix = $phpcsFile->addFixableError($error, $shortEnd, 'ShortFullStop');
+            $fix   = $phpcsFile->addFixableError($error, $shortEnd, 'ShortFullStop');
             if ($fix === true) {
                 $phpcsFile->fixer->addContent($shortEnd, '.');
             }
@@ -252,7 +253,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
 
             if (preg_match('|\p{Lu}|u', $tokens[$long]['content'][0]) === 0) {
                 $error = 'Doc comment long description must start with a capital letter';
-                $fix = $phpcsFile->addFixableError($error, $long, 'LongNotCapital');
+                $fix   = $phpcsFile->addFixableError($error, $long, 'LongNotCapital');
                 if ($fix === true) {
                     $phpcsFile->fixer->replaceToken($long, ucfirst($tokens[$long]['content']));
                 }
@@ -263,23 +264,33 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             $longEnd     = $long;
             for ($i = ($long + 1); $i < $commentEnd; $i++) {
                 if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
-                    if ($tokens[$i]['line'] === ($tokens[$longEnd]['line'] + 1)) {
+                    if ($tokens[$i]['line'] <= ($tokens[$longEnd]['line'] + 1)) {
                         $longContent .= $tokens[$i]['content'];
                         $longEnd      = $i;
                     } else {
                         break;
                     }
                 }
+
                 if ($tokens[$i]['code'] === T_DOC_COMMENT_TAG) {
-                    break;
+                    if ($tokens[$i]['line'] <= ($tokens[$longEnd]['line'] + 1)
+                        // Allow link tags within the long comment itself.
+                        && ($tokens[$i]['content'] === '@link' || $tokens[$i]['content'] === '@endlink')
+                    ) {
+                        $longContent .= $tokens[$i]['content'];
+                        $longEnd      = $i;
+                    } else {
+                        break;
+                    }
                 }
-            }
+            }//end for
+
             // Remove any trailing white spaces which are detected by other sniffs.
             $longContent = trim($longContent);
 
             if (preg_match('/[a-zA-Z]$/', $longContent) === 1) {
                 $error = 'Doc comment long description must end with a full stop';
-                $fix = $phpcsFile->addFixableError($error, $longEnd, 'LongFullStop');
+                $fix   = $phpcsFile->addFixableError($error, $longEnd, 'LongFullStop');
                 if ($fix === true) {
                     $phpcsFile->fixer->addContent($longEnd, '.');
                 }
@@ -293,9 +304,10 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
 
         $firstTag = $tokens[$commentStart]['comment_tags'][0];
         $prev     = $phpcsFile->findPrevious($empty, ($firstTag - 1), $stackPtr, true);
-        // This does not apply to @file and @code tags.
+        // This does not apply to @file, @code, @link and @endlink tags.
         if ($tokens[$firstTag]['line'] !== ($tokens[$prev]['line'] + 2)
-            && !isset($fileShort) && $tokens[$firstTag]['content'] !== '@code'
+            && !isset($fileShort)
+            && in_array($tokens[$firstTag]['content'], array('@code', '@link', '@endlink')) === false
         ) {
             $error = 'There must be exactly one blank line before the tags in a doc comment';
             $fix   = $phpcsFile->addFixableError($error, $firstTag, 'SpacingBeforeTags');
@@ -356,21 +368,21 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                 if ($paramGroupid === null) {
                     $paramGroupid = $groupid;
                 }
-            // Every new tag section should be separated by a blank line.
-            // Exclude @endcode and @endlink.
-            } else if (
-                $isNewGroup === false
+
+                // Every new tag section should be separated by a blank line.
+                // Exclude @endcode and @endlink.
+            } else if ($isNewGroup === false
                 && !in_array($currentTag, array('@endcode', '@endlink'))
                 && $previousTag !== $currentTag
             ) {
                 $error = 'Separate the %s and %s sections by a blank line.';
-                $fix = $phpcsFile->addFixableError($error, $tag, 'TagGroupSpacing', array($previousTag, $currentTag));
+                $fix   = $phpcsFile->addFixableError($error, $tag, 'TagGroupSpacing', array($previousTag, $currentTag));
                 if ($fix === true) {
-                    $phpcsFile->fixer->replaceToken($tag - 1, "\n".str_repeat(' ', $tokens[$tag]['column'] - 3).'* ');
+                    $phpcsFile->fixer->replaceToken(($tag - 1), "\n".str_repeat(' ', ($tokens[$tag]['column'] - 3)).'* ');
                 }
             }//end if
 
-            $previousTag = $currentTag;
+            $previousTag           = $currentTag;
             $tagGroups[$groupid][] = $tag;
         }//end foreach
 
@@ -420,9 +432,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             foreach ($paddings as $tag => $padding) {
                 if ($padding !== 1) {
                     $error = 'Tag value indented incorrectly; expected 1 space but found %s';
-                    $data  = array(
-                              $padding,
-                             );
+                    $data  = array($padding);
 
                     $fix = $phpcsFile->addFixableError($error, ($tag + 1), 'TagValueIndent', $data);
                     if ($fix === true) {

@@ -875,3 +875,14 @@ class AliasDelete extends RulesActionBase implements ContainerFactoryPluginInter
 function test8($x) {
 
 }
+
+/**
+ * Make sure that link tags are allowed in long descriptions.
+ *
+ * For forcing it to a boolean TRUE or FALSE please use
+ * @link MenuItem::forceAccessCallbackTRUE @endlink() or
+ * @link MenuItem::forceAccessCallbackFALSE @endlink() as you see fit.
+ */
+function test9() {
+
+}
