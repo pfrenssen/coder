@@ -208,7 +208,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
         }
 
         $lastChar = substr($shortContent, -1);
-        if ($lastChar !== '.' && $shortContent !== '{@inheritdoc}'
+        if (in_array($lastChar, array('.', '!', '?')) === false && $shortContent !== '{@inheritdoc}'
             // Ignore Features module export files that just use the file name as
             // comment.
             && $shortContent !== basename($phpcsFile->getFilename())

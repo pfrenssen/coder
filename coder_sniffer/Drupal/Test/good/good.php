@@ -860,3 +860,18 @@ $x = 'Some markup text with allowed HTML5 <br> tag';
  * )
  */
 class AliasDelete extends RulesActionBase implements ContainerFactoryPluginInterface {}
+
+/**
+ * Some comment with exclamation mark!
+ *
+ * And the long description!
+ *
+ * @param int $x
+ *   Exclamation mark allowed!
+ *
+ * @throws MyException
+ *   Exclamation mark allowed!
+ */
+function test8($x) {
+
+}

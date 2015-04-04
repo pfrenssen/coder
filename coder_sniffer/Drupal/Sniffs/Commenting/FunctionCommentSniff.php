@@ -347,7 +347,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 }
 
                 $lastChar = substr($comment, -1);
-                if ($lastChar !== '.') {
+                if (in_array($lastChar, array('.', '!', '?')) === false) {
                     $error = '@throws tag comment must end with a full stop';
                     $phpcsFile->addError($error, $commentStart, 'ThrowsNoFullStop');
                 }
@@ -668,7 +668,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             }
 
             $lastChar = substr($param['comment'], -1);
-            if ($lastChar !== '.') {
+            if (in_array($lastChar, array('.', '!', '?')) === false) {
                 $error    = 'Parameter comment must end with a full stop';
                 $lastLine = end($param['commentLines']);
                 $phpcsFile->addError($error, $lastLine['token'], 'ParamCommentFullStop');
