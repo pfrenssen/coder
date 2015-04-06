@@ -137,3 +137,15 @@ function test9($foo) {
 function test10($foo) {
 
 }
+
+/**
+ * A function may throw multiple exceptions.
+ *
+ * @throws \Exception
+ *   Thrown when something bad happens.
+ * @throws \InvalidArgumentException
+ *   Thrown when an argument is invalid.
+ */
+function test11() {
+
+}

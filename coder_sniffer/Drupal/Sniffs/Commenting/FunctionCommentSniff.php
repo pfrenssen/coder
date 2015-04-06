@@ -293,7 +293,6 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
     {
         $tokens = $phpcsFile->getTokens();
 
-        $throws = array();
         foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
             if ($tokens[$tag]['content'] !== '@throws') {
                 continue;
@@ -310,12 +309,12 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $end = $tokens[$commentStart]['comment_closer'];
                 }
 
-                $comment      = '';
-                $commentStart = null;
+                $comment    = '';
+                $throwStart = null;
                 for ($i = ($tag + 3); $i < $end; $i++) {
                     if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
-                        if ($commentStart === null) {
-                            $commentStart = $i;
+                        if ($throwStart === null) {
+                            $throwStart = $i;
                         }
 
                         $indent = 0;
@@ -343,13 +342,13 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 $firstChar = $comment{0};
                 if (strtoupper($firstChar) !== $firstChar) {
                     $error = '@throws tag comment must start with a capital letter';
-                    $phpcsFile->addError($error, $commentStart, 'ThrowsNotCapital');
+                    $phpcsFile->addError($error, $throwStart, 'ThrowsNotCapital');
                 }
 
                 $lastChar = substr($comment, -1);
                 if (in_array($lastChar, array('.', '!', '?')) === false) {
                     $error = '@throws tag comment must end with a full stop';
-                    $phpcsFile->addError($error, $commentStart, 'ThrowsNoFullStop');
+                    $phpcsFile->addError($error, $throwStart, 'ThrowsNoFullStop');
                 }
             }//end if
         }//end foreach
