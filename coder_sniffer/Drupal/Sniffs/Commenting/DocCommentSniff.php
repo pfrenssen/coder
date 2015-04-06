@@ -370,9 +370,9 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                 }
 
                 // Every new tag section should be separated by a blank line.
-                // Exclude @endcode and @endlink.
+                // Exclude @code and @link.
             } else if ($isNewGroup === false
-                && !in_array($currentTag, array('@endcode', '@endlink'))
+                && !in_array($currentTag, array('@code', '@endcode', '@link', '@endlink'))
                 && $previousTag !== $currentTag
             ) {
                 $error = 'Separate the %s and %s sections by a blank line.';
