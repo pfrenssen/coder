@@ -398,6 +398,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 }
 
                 if (isset($matches[4]) === true) {
+                    $comment = $matches[4];
                     $error = 'Parameter comment must be on the next line';
                     $fix = $phpcsFile->addFixableError($error, ($tag + 2), 'ParamCommentNewLine');
                     if ($fix === true) {
@@ -523,8 +524,6 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         $content  = $suggestedName;
                         $content .= str_repeat(' ', $param['type_space']);
                         $content .= $param['var'];
-                        $content .= str_repeat(' ', $param['var_space']);
-                        $content .= $param['commentLines'][0]['comment'];
                         $phpcsFile->fixer->replaceToken(($param['tag'] + 2), $content);
                     }
                 } else if (count($typeNames) === 1) {
@@ -661,7 +660,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             }
 
             // Param comments must start with a capital letter and end with the full stop.
-            $firstChar = $param['commentLines'][0]['comment'];
+            $firstChar = isset($param['commentLines'][0]['comment']) ? $param['commentLines'][0]['comment'] : $param['comment'];
             if (preg_match('|\p{Lu}|u', $firstChar) === 0) {
                 $error = 'Parameter comment must start with a capital letter';
                 $phpcsFile->addError($error, $param['commentLines'][0]['token'], 'ParamCommentNotCapital');

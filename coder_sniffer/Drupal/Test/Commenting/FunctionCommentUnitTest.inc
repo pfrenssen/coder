@@ -98,3 +98,28 @@ class Test {
 function test8($x) {
 
 }
+
+/**
+ * Default implementation of a menu item (without a page or form controller).
+ *
+ * UML:
+ * @link http://drupal7demo.webel.com.au/node/1017 DefaultMenuItem @endlink.
+ *
+ * @param integer $foo
+ *   Test.
+ */
+function test9($foo) {
+
+}
+
+/**
+ * Default implementation of a menu item (without a page or form controller).
+ *
+ * UML:
+ * @link http://drupal7demo.webel.com.au/node/1017 DefaultMenuItem @endlink.
+ *
+ * @param integer $foo Test.
+ */
+function test10($foo) {
+
+}
