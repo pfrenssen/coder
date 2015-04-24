@@ -180,7 +180,14 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
 
             $checkToken  = null;
             $checkIndent = null;
-            $exact       = $this->exact;
+
+            $exact = (bool) $this->exact;
+            if ($exact === true && isset($tokens[$i]['nested_parenthesis']) === true) {
+                // Don't check indents exactly between parenthesis as they
+                // tend to have custom rules, such as with multi-line function calls
+                // and control structure conditions.
+                $exact = false;
+            }
 
             // Detect line changes and figure out where the indent is.
             if ($tokens[$i]['column'] === 1) {
@@ -319,8 +326,8 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 && $tokens[$checkToken]['scope_opener'] === $checkToken))
             ) {
                 if (empty($tokens[$checkToken]['conditions']) === false) {
-                end($tokens[$checkToken]['conditions']);
-                $condition = key($tokens[$checkToken]['conditions']);
+                    end($tokens[$checkToken]['conditions']);
+                    $condition = key($tokens[$checkToken]['conditions']);
                 } else {
                     $condition = $tokens[$checkToken]['scope_condition'];
                 }
@@ -401,14 +408,24 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                     array_pop($openScopes);
                 }
 
-                $first         = $phpcsFile->findFirstOnLine(T_WHITESPACE, $tokens[$scopeCloser]['scope_condition'], true);
+                // JS object scopes don't have a scope_condition property, so we need
+                // to look at bracket_opener instead.
+                if (isset($tokens[$scopeCloser]['scope_condition']) === true) {
+                    $firstLine = $tokens[$scopeCloser]['scope_condition'];
+                } else if (isset($tokens[$scopeCloser]['bracket_opener']) === true) {
+                    $firstLine = $tokens[$scopeCloser]['bracket_opener'];
+                }
+                $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $firstLine, true);
+
                 $currentIndent = ($tokens[$first]['column'] - 1);
                 if (isset($adjustments[$first]) === true) {
                     $currentIndent += $adjustments[$first];
                 }
 
                 // Make sure it is divisible by our expected indent.
-                $currentIndent = (int) (ceil($currentIndent / $this->indent) * $this->indent);
+                if ($tokens[$firstLine]['code'] !== T_CLOSURE) {
+                    $currentIndent = (int) (ceil($currentIndent / $this->indent) * $this->indent);
+                }
 
                 if ($this->_debug === true) {
                     echo "\t=> indent set to $currentIndent".PHP_EOL;
@@ -801,7 +818,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 }
 
                 // Make sure it is divisible by our expected indent.
-                $currentIndent = (int) (ceil($currentIndent / $this->indent) * $this->indent);
+                $currentIndent = (int) (floor($currentIndent / $this->indent) * $this->indent);
                 $i = $tokens[$i]['scope_opener'];
 
                 if ($this->_debug === true) {
