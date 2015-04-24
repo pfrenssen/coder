@@ -1,7 +1,9 @@
 # Coder
 
-Coder is a library for automated Drupal code reviews. It defines rules for
-[PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
+[![Build Status](https://travis-ci.org/klausi/coder.svg?branch=8.x-2.x)](https://travis-ci.org/klausi/coder)
+
+Coder is a library for automated Drupal code reviews and coding standard fixes. It
+defines rules for [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
 
 Built-in support for:
 - "Drupal": Coding Standards https://www.drupal.org/coding-standards
