@@ -12,40 +12,48 @@ Online documentation: https://drupal.org/node/1419980
 
 ## Installation
 
-You will want to use the most recent Coder 8.x-2.x dev code. Edit your
-~/.composer/composer.json file and add the minimum stability setting to dev:
-
+First, make sure Composer is installed correctly:
 ```
-{
-    "minimum-stability": "dev"
-}
+which composer
 ```
 
-Then install Coder 8.x-2.x (dev version):
+If you get composer not found or similar, follow Composer's installation
+instructions.
 
+Install Coder (8.x-2.x) in your global Composer directory in your home directory
+(~/.composer):
 ```
-composer global require drupal/coder:dev-8.x-2.x
+composer global require drupal/coder
+```
+
+Make the phpcs and phpcbf commands globally available:
+```
+sudo ln -s ~/.composer/vendor/bin/phpcs /usr/local/bin
+sudo ln -s ~/.composer/vendor/bin/phpcbf /usr/local/bin
+```
+(Alternatively you can add those to your $PATH variable in ~/.profile.)
+
+Register the Drupal and DrupalPractice Standard with PHPCS:
+```
+phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
 ```
 
 
 ## Usage
 
-Drupal coding standards:
+Check Drupal coding standards
 ```
-~/.composer/vendor/bin/phpcs --standard=/home/klausi/.composer/vendor/drupal/coder/coder_sniffer/Drupal /path/to/example.module
-```
-
-DrupalPractice:
-```
-~/.composer/vendor/bin/phpcs --standard=/home/klausi/.composer/vendor/drupal/coder/coder_sniffer/DrupalPractice /path/to/example.module
+phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme /file/to/drupal/example_module
 ```
 
-Replace /home/klausi with the full path to your home directory. Of course that
-command is annoyingly long, so you can setup a shell alias in your ~/.bashrc or
-~/-zshrc:
-
+Check Drupal best practices
 ```
-alias drupalcs="~/.composer/vendor/bin/phpcs --standard=/home/klausi/.composer/vendor/drupal/coder/coder_sniffer/Drupal --extensions='php,module,inc,install,test,profile,theme,js,css,info,txt'"
+phpcs --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme /file/to/drupal/example_module
+```
+
+Automatically fix coding standards
+```
+phpcbf --standard=Drupal --extensions=php,module,inc,install,test,profile,theme /file/to/drupal/example_module
 ```
 
 
