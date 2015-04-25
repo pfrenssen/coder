@@ -135,3 +135,13 @@ function test10($foo) {
 function test11() {
 
 }
+
+/**
+ * Update or set users expiration time
+ *
+ * @param object $user
+ * @param int $timespan (seconds)
+ */
+function test12($user, $timespan) {
+
+}

@@ -398,8 +398,8 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 
                 if (isset($matches[4]) === true) {
                     $comment = $matches[4];
-                    $error = 'Parameter comment must be on the next line';
-                    $fix = $phpcsFile->addFixableError($error, ($tag + 2), 'ParamCommentNewLine');
+                    $error   = 'Parameter comment must be on the next line';
+                    $fix     = $phpcsFile->addFixableError($error, ($tag + 2), 'ParamCommentNewLine');
                     if ($fix === true) {
                         $parts = $matches;
                         unset($parts[0]);
@@ -436,13 +436,13 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                                           );
                         if ($indent < 3) {
                             $error = 'Parameter comment indentation must be 3 spaces, found %s spaces';
-                            $fix = $phpcsFile->addFixableError($error, $i, 'ParamCommentIndentation', array($indent));
+                            $fix   = $phpcsFile->addFixableError($error, $i, 'ParamCommentIndentation', array($indent));
                             if ($fix === true) {
                                 $phpcsFile->fixer->replaceToken(($i - 1), '   ');
                             }
                         }
                     }
-                }
+                }//end for
 
                 if ($comment == '') {
                     $error = 'Missing parameter comment';
@@ -661,15 +661,22 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             // Param comments must start with a capital letter and end with the full stop.
             $firstChar = isset($param['commentLines'][0]['comment']) ? $param['commentLines'][0]['comment'] : $param['comment'];
             if (preg_match('|\p{Lu}|u', $firstChar) === 0) {
-                $error = 'Parameter comment must start with a capital letter';
-                $phpcsFile->addError($error, $param['commentLines'][0]['token'], 'ParamCommentNotCapital');
+                $error        = 'Parameter comment must start with a capital letter';
+                $commentToken = isset($param['commentLines'][0]['token']) ? $param['commentLines'][0]['token'] : $param['tag'];
+                $phpcsFile->addError($error, $commentToken, 'ParamCommentNotCapital');
             }
 
             $lastChar = substr($param['comment'], -1);
             if (in_array($lastChar, array('.', '!', '?')) === false) {
-                $error    = 'Parameter comment must end with a full stop';
-                $lastLine = end($param['commentLines']);
-                $phpcsFile->addError($error, $lastLine['token'], 'ParamCommentFullStop');
+                $error = 'Parameter comment must end with a full stop';
+                if (empty($param['commentLines'])) {
+                    $commentToken = $param['tag'];
+                } else {
+                    $lastLine     = end($param['commentLines']);
+                    $commentToken = $lastLine['token'];
+                }
+
+                $phpcsFile->addError($error, $commentToken, 'ParamCommentFullStop');
             }
         }//end foreach
 
