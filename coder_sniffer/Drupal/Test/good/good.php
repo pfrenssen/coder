@@ -899,3 +899,13 @@ function test9() {
 function test10($title) {
 
 }
+
+/**
+ * Some description.
+ *
+ * @todo Here is a very long link that exceeds 80 charaters on the next line:
+ *   http://example.com/test/long/link/with/stuff/here/making/it/even/longer/now/so/that/it/shows
+ */
+function test11() {
+
+}
