@@ -145,3 +145,23 @@ function test11() {
 function test12($user, $timespan) {
 
 }
+
+/**
+ * Update or set users expiration time.
+ *
+ * @param object $user
+ *   Object type hint in comment without real type hint is allowed.
+ */
+function test13($user) {
+
+}
+
+/**
+ * Update or set users expiration time.
+ *
+ * @param object $user
+ *   Object stdClass type hint is allowed for object.
+ */
+function test14(stdClass $user) {
+
+}

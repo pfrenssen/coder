@@ -534,6 +534,8 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         $suggestedTypeHint = 'callable';
                     } else if (substr($suggestedName, -2) === '[]') {
                         $suggestedTypeHint = 'array';
+                    } else if ($suggestedName === 'object') {
+                        $suggestedTypeHint = '';
                     } else if (in_array($typeName, $this->allowedTypes) === false) {
                         $suggestedTypeHint = $suggestedName;
                     }
@@ -572,7 +574,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         }//end if
                     } else if ($suggestedTypeHint === '' && isset($realParams[$checkPos]) === true) {
                         $typeHint = $realParams[$checkPos]['type_hint'];
-                        if ($typeHint !== '') {
+                        if ($typeHint !== '' && $typeHint !== 'stdClass') {
                             $error = 'Unknown type hint "%s" found for %s';
                             $data  = array(
                                       $typeHint,
