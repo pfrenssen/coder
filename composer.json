@@ -1,6 +1,6 @@
 {
     "name": "drupal/coder",
-    "type": "library",
+    "type": "drupal-module",
     "description": "Coder is a library and a module to review Drupal code.",
     "homepage": "https://drupal.org/project/coder",
     "support": {
