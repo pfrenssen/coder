@@ -417,7 +417,11 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                     if (in_array($words[1], $indentationStarters) === true) {
                         if ($spaceCount !== ($prevSpaceCount + 2)) {
                             $error = 'Comment indentation error after %s element, expected %s spaces';
-                            $phpcsFile->addError($error, $stackPtr, 'SpacingBefore', array($words[1], $prevSpaceCount + 2));
+                            $fix = $phpcsFile->addFixableError($error, $stackPtr, 'SpacingBefore', array($words[1], $prevSpaceCount + 2));
+                            if ($fix === true) {
+                                $newComment = '//'.  str_repeat(' ', $prevSpaceCount + 2).ltrim($tokens[$stackPtr]['content'], "/\t ");
+                                $phpcsFile->fixer->replaceToken($stackPtr, $newComment);
+                            }
                         }
                     } else {
                         $error = 'Comment indentation error, expected only %s spaces';
