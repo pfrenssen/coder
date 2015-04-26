@@ -22,3 +22,6 @@ test();
 some_function();
 
 // should start with a capital letter.
+test();
+
+//  2 spaces instead of one.
