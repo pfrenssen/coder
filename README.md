@@ -85,3 +85,13 @@ Then execute the tests:
 ```
 ./vendor/bin/phpunit
 ```
+
+
+## Maintainers
+Klaus Purer, https://www.drupal.org/u/klausi
+
+
+## Credits
+
+Greg Sherwood and Squiz Pty Ltd, many sniffs are modified copies of their original
+work on [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer).
