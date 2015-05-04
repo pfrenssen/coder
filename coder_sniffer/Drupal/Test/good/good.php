@@ -677,6 +677,8 @@ class Foo implements FooInterface {
     $node = $this->entity;
     /** @var \Drupal\node\NodeInterface[] $nodes */
     $nodes = foo();
+    /** @var \Drupal\node\NodeInterface|\PHPUnit_Framework_MockObject_MockObject $node_mock */
+    $node_mock = mock_node();
     return $node;
   }
 
