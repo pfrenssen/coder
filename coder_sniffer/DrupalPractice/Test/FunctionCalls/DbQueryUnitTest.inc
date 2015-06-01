@@ -14,3 +14,5 @@ function testmodule_install() {
     WHERE type = 'module' AND
           name = 'node'");
 }
+
+db_query("TRUNCATE TABLE {node}");

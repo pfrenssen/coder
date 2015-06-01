@@ -43,6 +43,7 @@ class DrupalPractice_Sniffs_FunctionCalls_DbQueryUnitTest extends CoderSniffUnit
                     4 => 1,
                     5 => 1,
                     12 => 1,
+                    18 => 1,
                     );
 
     }//end getWarningList()

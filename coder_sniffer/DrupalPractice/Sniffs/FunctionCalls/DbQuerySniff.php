@@ -65,9 +65,11 @@ class DrupalPractice_Sniffs_FunctionCalls_DbQuerySniff extends Drupal_Sniffs_Sem
 
             // Remove quote and white space from the beginning.
             $query_start = trim(substr($tokens[$start]['content'], 1));
-            $query_start = substr($query_start, 0, 6);
+            // Just look at the first word.
+            $parts = explode(' ', $query_start);
+            $query_start = $parts[0];
 
-            if (in_array(strtoupper($query_start), array('INSERT', 'UPDATE', 'DELETE')) === true) {
+            if (in_array(strtoupper($query_start), array('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE')) === true) {
                 $warning = 'Do not use %s queries with db_query(), use %s instead';
                 $phpcsFile->addWarning($warning, $start, 'DbQuery', array($query_start, 'db_' . strtolower($query_start) . '()'));
             }
