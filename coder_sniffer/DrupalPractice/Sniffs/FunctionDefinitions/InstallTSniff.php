@@ -1,6 +1,6 @@
 <?php
 /**
- * Drupal_Sniffs_Semantics_InstallTSniff.
+ * DrupalPractice_Sniffs_FunctionCalls_InstallTSniff.
  *
  * PHP version 5
  *
@@ -16,7 +16,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Semantics_InstallTSniff extends Drupal_Sniffs_Semantics_FunctionDefinition
+class DrupalPractice_Sniffs_FunctionDefinitions_InstallTSniff extends Drupal_Sniffs_Semantics_FunctionDefinition
 {
 
 
@@ -44,6 +44,11 @@ class Drupal_Sniffs_Semantics_InstallTSniff extends Drupal_Sniffs_Semantics_Func
         if ($tokens[$stackPtr]['content'] !== ($fileName.'_install')
             && $tokens[$stackPtr]['content'] !== ($fileName.'_requirements')
         ) {
+            return;
+        }
+
+        // This check only applies to Drupal 7, not Drupal 8.
+        if (DrupalPractice_Project::getCoreVersion($phpcsFile) !== '7.x') {
             return;
         }
 
@@ -80,5 +85,3 @@ class Drupal_Sniffs_Semantics_InstallTSniff extends Drupal_Sniffs_Semantics_Func
 
 
 }//end class
-
-?>

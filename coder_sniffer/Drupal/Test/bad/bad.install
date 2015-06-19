@@ -46,14 +46,6 @@ function bad_schema() {
 }
 
 /**
- * Implements hook_requirements().
- */
-function bad_requirements() {
-  // t() should not be used directly.
-  $message = t('Message');
-}
-
-/**
  * Empty hook_install() is not allowed.
  */
 function bad_install() {

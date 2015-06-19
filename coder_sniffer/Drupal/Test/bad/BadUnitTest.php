@@ -51,9 +51,8 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                 return array(
                         13 => 1,
                         16 => 1,
-                        53 => 1,
-                        59 => 1,
-                        66 => 1,
+                        51 => 1,
+                        58 => 1,
                        );
             case 'bad.module':
                 return array(
