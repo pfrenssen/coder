@@ -1,0 +1,4 @@
+; core appears twice here.
+core = 7.x
+name = Test
+core = 7.x
