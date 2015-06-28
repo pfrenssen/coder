@@ -76,6 +76,18 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
             return;
         }
 
+        $concatAfter = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($closeBracket + 1), null, true, null, true);
+        if ($concatAfter !== false && $tokens[$concatAfter]['code'] === T_STRING_CONCAT) {
+            $stringAfter = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($concatAfter + 1), null, true, null, true);
+            if ($stringAfter !== false
+                && $tokens[$stringAfter]['code'] === T_CONSTANT_ENCAPSED_STRING
+                && strpos($tokens[$stringAfter]['content'], '<') === false
+            ) {
+                $warning = 'Do not concatenate strings to translatable strings, they should be part of the t() argument and you should use placeholders';
+                $phpcsFile->addWarning($warning, $stringAfter, 'ConcatString');
+            }
+        }
+
         $lastChar = substr($string, -1);
         if ($lastChar === '"' || $lastChar === "'") {
             $message = substr($string, 1, -1);
