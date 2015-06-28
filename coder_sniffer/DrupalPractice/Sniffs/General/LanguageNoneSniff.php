@@ -56,5 +56,3 @@ class DrupalPractice_Sniffs_General_LanguageNoneSniff implements PHP_CodeSniffer
 
 
 }//end class
-
-?>

@@ -49,13 +49,14 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
      */
     protected function checkLineLength(PHP_CodeSniffer_File $phpcsFile, $tokens, $stackPtr)
     {
-        if (isset(PHP_CodeSniffer_Tokens::$commentTokens[$tokens[$stackPtr - 1]['code']]) === true) {
-            $doc_comment_tag = $phpcsFile->findFirstOnLine(T_DOC_COMMENT_TAG, $stackPtr - 1);
+        if (isset(PHP_CodeSniffer_Tokens::$commentTokens[$tokens[($stackPtr - 1)]['code']]) === true) {
+            $doc_comment_tag = $phpcsFile->findFirstOnLine(T_DOC_COMMENT_TAG, ($stackPtr - 1));
             if ($doc_comment_tag !== false) {
                 // Allow doc comment tags such as long @param tags to exceed the 80
                 // character limit.
                 return;
             }
+
             if ($tokens[($stackPtr - 1)]['code'] === T_COMMENT
                 && (preg_match('/^[[:space:]]*\/\/ @.+/', $tokens[($stackPtr - 1)]['content']) === 1
                 // Allow anything that does not contain spaces (like URLs) to be
@@ -70,7 +71,7 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
             // Code examples between @code and @endcode are allowed to exceed 80
             // characters.
             if (isset($tokens[$stackPtr]) === true && $tokens[$stackPtr]['code'] === T_DOC_COMMENT_WHITESPACE) {
-                $tag = $phpcsFile->findPrevious(array(T_DOC_COMMENT_TAG, T_DOC_COMMENT_OPEN_TAG), $stackPtr - 1);
+                $tag = $phpcsFile->findPrevious(array(T_DOC_COMMENT_TAG, T_DOC_COMMENT_OPEN_TAG), ($stackPtr - 1));
                 if ($tokens[$tag]['content'] === '@code') {
                     return;
                 }
@@ -78,17 +79,17 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
 
             // Drupal 8 annotations can have long translatable descriptions and we
             // allow them to exceed 80 characters.
-            if ($tokens[$stackPtr - 2]['code'] === T_DOC_COMMENT_STRING
-                && (strpos($tokens[$stackPtr - 2]['content'], '@Translation(') !== false
+            if ($tokens[($stackPtr - 2)]['code'] === T_DOC_COMMENT_STRING
+                && (strpos($tokens[($stackPtr - 2)]['content'], '@Translation(') !== false
                 // Also allow anything without whitespace (like URLs) to exceed 80
                 // characters.
-                || strpos($tokens[$stackPtr - 2]['content'], ' ') === false)
+                || strpos($tokens[($stackPtr - 2)]['content'], ' ') === false)
             ) {
                 return;
             }
 
             parent::checkLineLength($phpcsFile, $tokens, $stackPtr);
-        }
+        }//end if
 
     }//end checkLineLength()
 
@@ -118,5 +119,3 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
 
 
 }//end class
-
-?>

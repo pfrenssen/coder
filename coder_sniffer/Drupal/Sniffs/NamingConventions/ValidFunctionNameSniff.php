@@ -100,8 +100,11 @@ class Drupal_Sniffs_NamingConventions_ValidFunctionNameSniff extends Generic_Sni
 
         if ($functionName !== strtolower($functionName)) {
             $expected = strtolower(preg_replace('/([^_])([A-Z])/', '$1_$2', $functionName));
-            $error = 'Invalid function name, expected %s but found %s';
-            $data = array($expected, $functionName);
+            $error    = 'Invalid function name, expected %s but found %s';
+            $data     = array(
+                         $expected,
+                         $functionName,
+                        );
             $phpcsFile->addError($error, $stackPtr, 'InvalidName', $data);
         }
 
@@ -109,5 +112,3 @@ class Drupal_Sniffs_NamingConventions_ValidFunctionNameSniff extends Generic_Sni
 
 
 }//end class
-
-?>

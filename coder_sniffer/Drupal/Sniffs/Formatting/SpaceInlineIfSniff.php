@@ -43,7 +43,7 @@ class Drupal_Sniffs_Formatting_SpaceInlineIfSniff implements PHP_CodeSniffer_Sni
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        $tokens   = $phpcsFile->getTokens();
+        $tokens = $phpcsFile->getTokens();
 
         // Handle the short ternary operator (?:) introduced in PHP 5.3.
         $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);

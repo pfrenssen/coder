@@ -69,6 +69,5 @@ class DrupalPractice_Sniffs_Commenting_CommentEmptyLineSniff implements PHP_Code
 
     }//end process()
 
-}//end class
 
-?>
+}//end class

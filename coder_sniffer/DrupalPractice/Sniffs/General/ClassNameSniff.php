@@ -79,7 +79,10 @@ class DrupalPractice_Sniffs_General_ClassNameSniff implements PHP_CodeSniffer_Sn
                 $camelName .= ucfirst($part);
             }
 
-            $errorData = array(ucfirst($tokens[$stackPtr]['content']), $camelName);
+            $errorData = array(
+                          ucfirst($tokens[$stackPtr]['content']),
+                          $camelName,
+                         );
             $phpcsFile->addWarning($warning, $className, 'ClassPrefix', $errorData);
         }
 
@@ -87,5 +90,3 @@ class DrupalPractice_Sniffs_General_ClassNameSniff implements PHP_CodeSniffer_Sn
 
 
 }//end class
-
-?>

@@ -22,7 +22,7 @@ class DrupalPractice_Project
 
     /**
      * Determines the project short name a file might be associated with.
-     * 
+     *
      * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
      *
      * @return string|false Returns the project machine name or false if it could not
@@ -49,6 +49,7 @@ class DrupalPractice_Project
         if ($infoFile === false) {
             return false;
         }
+
         $pathParts = pathinfo($infoFile);
         $cache[$phpcsFile->getFilename()] = $pathParts['filename'];
         return $pathParts['filename'];
@@ -82,6 +83,7 @@ class DrupalPractice_Project
             if (empty($infoFiles) === true) {
                 $infoFiles = glob("$dir/*.info");
             }
+
             // Go one directory up if we do not find an info file here.
             $dir = dirname($dir);
         } while (empty($infoFiles) && $dir != dirname($dir));
@@ -97,7 +99,8 @@ class DrupalPractice_Project
         $infoFile = $infoFiles[0];
         $cache[$phpcsFile->getFilename()] = $infoFile;
         return $infoFile;
-    }
+
+    }//end getInfoFile()
 
 
     /**
@@ -124,6 +127,7 @@ class DrupalPractice_Project
         if ($infoFile === false) {
             return false;
         }
+
         $pathParts = pathinfo($infoFile);
 
         // Drupal 6 and 7 use the .info file extension.
@@ -138,6 +142,7 @@ class DrupalPractice_Project
             // for now.
             return '8.x';
         }
+
     }//end getCoreVersion()
 
 

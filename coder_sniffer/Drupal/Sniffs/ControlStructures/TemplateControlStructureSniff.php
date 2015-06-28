@@ -72,5 +72,3 @@ class Drupal_Sniffs_ControlStructures_TemplateControlStructureSniff implements P
 
 
 }//end class
-
-?>

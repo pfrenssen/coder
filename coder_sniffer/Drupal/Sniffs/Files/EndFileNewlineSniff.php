@@ -50,7 +50,6 @@ class Drupal_Sniffs_Files_EndFileNewlineSniff implements PHP_CodeSniffer_Sniff
     }//end register()
 
 
-
     /**
      * Processes this sniff, when one of its tokens is encountered.
      *
@@ -63,7 +62,7 @@ class Drupal_Sniffs_Files_EndFileNewlineSniff implements PHP_CodeSniffer_Sniff
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         // Skip to the end of the file.
-        $tokens    = $phpcsFile->getTokens();
+        $tokens = $phpcsFile->getTokens();
         if ($phpcsFile->tokenizerType === 'PHP') {
             $lastToken = ($phpcsFile->numTokens - 1);
         } else {

@@ -115,6 +115,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer
                     $phpcsFile->fixer->addNewlineBefore($scopeEnd);
                 }
             }
+
             return;
         }
 

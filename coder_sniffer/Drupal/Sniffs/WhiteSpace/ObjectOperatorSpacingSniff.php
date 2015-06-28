@@ -70,7 +70,7 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorSpacingSniff implements PHP_CodeSni
         $phpcsFile->recordMetric($stackPtr, 'Spacing before object operator', $before);
         $phpcsFile->recordMetric($stackPtr, 'Spacing after object operator', $after);
 
-        $prevToken = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, $stackPtr - 1, null, true);
+        $prevToken = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
         // Line breaks are allowed before an object operator.
         if ($before !== 0 && $tokens[$stackPtr]['line'] === $tokens[$prevToken]['line']) {
             $error = 'Space found before object operator';

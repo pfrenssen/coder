@@ -80,6 +80,7 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
                     $phpcsFile->fixer->replaceToken($commentStart, "/**\n * @file\n * $content\n */\n");
                 }
             }
+
             return ($phpcsFile->numTokens + 1);
         } else if ($commentStart === false || $tokens[$commentStart]['code'] !== T_DOC_COMMENT_OPEN_TAG) {
             $fix = $phpcsFile->addFixableError('Missing file doc comment', $stackPtr, 'Missing');
@@ -92,12 +93,13 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
                     $phpcsFile->fixer->addContent($stackPtr, "/**\n * @file\n */\n");
                 }
             }
+
             return ($phpcsFile->numTokens + 1);
-        }
+        }//end if
 
         $commentEnd = $tokens[$commentStart]['comment_closer'];
-        $fileTag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($commentStart + 1), $commentEnd, false, '@file');
-        $next = $phpcsFile->findNext(T_WHITESPACE, ($commentEnd + 1), null, true);
+        $fileTag    = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($commentStart + 1), $commentEnd, false, '@file');
+        $next       = $phpcsFile->findNext(T_WHITESPACE, ($commentEnd + 1), null, true);
 
         // If there is no @file tag and the next line is a function or class
         // definition then the file docblock is mising.
@@ -115,12 +117,13 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
                     $phpcsFile->fixer->addContent($stackPtr, "/**\n * @file\n */\n");
                 }
             }
+
             return ($phpcsFile->numTokens + 1);
         }
 
         if ($fileTag === false || $tokens[$fileTag]['line'] !== ($tokens[$commentStart]['line'] + 1)) {
             $second_line = $phpcsFile->findNext(array(T_DOC_COMMENT_STAR, T_DOC_COMMENT_CLOSE_TAG), ($commentStart + 1), $commentEnd);
-            $fix = $phpcsFile->addFixableError('The second line in the file doc comment must be "@file"', $second_line, 'FileTag');
+            $fix         = $phpcsFile->addFixableError('The second line in the file doc comment must be "@file"', $second_line, 'FileTag');
             if ($fix === true) {
                 if ($fileTag === false) {
                     $phpcsFile->fixer->addContent($commentStart, "\n * @file");
@@ -133,6 +136,7 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
                     $phpcsFile->fixer->endChangeset();
                 }
             }
+
             return ($phpcsFile->numTokens + 1);
         }
 

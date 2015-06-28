@@ -56,10 +56,11 @@ class Drupal_Sniffs_WhiteSpace_CommaSniff implements PHP_CodeSniffer_Sniff
             && $tokens[($stackPtr + 1)]['code'] !== T_CLOSE_PARENTHESIS
         ) {
             $error = 'Expected one space after the comma, 0 found';
-            $fix = $phpcsFile->addFixableError($error, $stackPtr, 'NoSpace');
+            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'NoSpace');
             if ($fix === true) {
                 $phpcsFile->fixer->addContent($stackPtr, ' ');
             }
+
             return;
         }
 
@@ -69,7 +70,7 @@ class Drupal_Sniffs_WhiteSpace_CommaSniff implements PHP_CodeSniffer_Sniff
             && $tokens[($stackPtr + 1)]['content'] !== ' '
         ) {
             $error = 'Expected one space after the comma, %s found';
-            $fix = $phpcsFile->addFixableError($error, $stackPtr, 'TooManySpaces', array(strlen($tokens[($stackPtr + 1)]['content'])));
+            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'TooManySpaces', array(strlen($tokens[($stackPtr + 1)]['content'])));
             if ($fix === true) {
                 $phpcsFile->fixer->replaceToken(($stackPtr + 1), ' ');
             }

@@ -61,7 +61,7 @@ class DrupalPractice_Sniffs_General_OptionsTSniff implements PHP_CodeSniffer_Sni
         }
 
         // We only search within the #options array.
-        $arrayToken = $phpcsFile->findNext(T_ARRAY, ($stackPtr + 1));
+        $arrayToken   = $phpcsFile->findNext(T_ARRAY, ($stackPtr + 1));
         $statementEnd = $tokens[$arrayToken]['parenthesis_closer'];
 
         // Go through the array by examining stuff after "=>".
@@ -90,5 +90,3 @@ class DrupalPractice_Sniffs_General_OptionsTSniff implements PHP_CodeSniffer_Sni
 
 
 }//end class
-
-?>

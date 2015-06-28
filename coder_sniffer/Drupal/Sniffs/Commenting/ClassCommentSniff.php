@@ -64,6 +64,7 @@ class Drupal_Sniffs_Commenting_ClassCommentSniff implements PHP_CodeSniffer_Snif
             if ($fix === true) {
                 $phpcsFile->fixer->addContent($commentEnd, "\n/**\n *\n */");
             }
+
             return;
         }
 
@@ -73,7 +74,7 @@ class Drupal_Sniffs_Commenting_ClassCommentSniff implements PHP_CodeSniffer_Snif
         if ($tokens[$commentEnd]['code'] === T_DOC_COMMENT_CLOSE_TAG) {
             $start = ($tokens[$commentEnd]['comment_opener'] - 1);
         } else {
-            $start = $commentEnd - 1;
+            $start = ($commentEnd - 1);
         }
 
         $prev = $phpcsFile->findPrevious(T_WHITESPACE, $start, null, true);
@@ -86,6 +87,7 @@ class Drupal_Sniffs_Commenting_ClassCommentSniff implements PHP_CodeSniffer_Snif
                 if ($fix === true) {
                     $phpcsFile->fixer->addContent($commentEnd, "\n/**\n *\n */");
                 }
+
                 return;
             }
         }
@@ -100,20 +102,23 @@ class Drupal_Sniffs_Commenting_ClassCommentSniff implements PHP_CodeSniffer_Snif
                     $comment = ' *'.ltrim($tokens[$i]['content'], '/* ').$comment;
                     $phpcsFile->fixer->replaceToken($i, '');
                 }
+
                 $phpcsFile->fixer->replaceToken($commentEnd, "/**\n".rtrim($comment, "*/\n")."\n */");
                 $phpcsFile->fixer->endChangeset();
             }
+
             return;
         }
 
         if ($tokens[$commentEnd]['line'] !== ($tokens[$stackPtr]['line'] - 1)) {
             $error = 'There must be exactly one newline after the %s comment';
-            $fix = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter', array($name));
+            $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter', array($name));
             if ($fix === true) {
                 $phpcsFile->fixer->beginChangeset();
-                for ($i = $commentEnd + 1; $tokens[$i]['code'] === T_WHITESPACE && $i < $stackPtr; $i++) {
+                for ($i = ($commentEnd + 1); $tokens[$i]['code'] === T_WHITESPACE && $i < $stackPtr; $i++) {
                     $phpcsFile->fixer->replaceToken($i, '');
                 }
+
                 $phpcsFile->fixer->addContent($commentEnd, "\n");
                 $phpcsFile->fixer->endChangeset();
             }

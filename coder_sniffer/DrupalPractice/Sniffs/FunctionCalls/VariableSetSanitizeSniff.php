@@ -38,11 +38,11 @@ class DrupalPractice_Sniffs_FunctionCalls_VariableSetSanitizeSniff extends Drupa
      *
      * @param PHP_CodeSniffer_File $phpcsFile
      *   The file being scanned.
-     * @param int $stackPtr
+     * @param int                  $stackPtr
      *   The position of the function call in the stack.
-     * @param int $openBracket
+     * @param int                  $openBracket
      *   The position of the opening parenthesis in the stack.
-     * @param int $closeBracket
+     * @param int                  $closeBracket
      *   The position of the closing parenthesis in the stack.
      *
      * @return void
@@ -56,13 +56,16 @@ class DrupalPractice_Sniffs_FunctionCalls_VariableSetSanitizeSniff extends Drupa
         $tokens = $phpcsFile->getTokens();
 
         $argument = $this->getArgument(2);
-        if ($argument !== false && in_array($tokens[$argument['start']]['content'], array(
-            'check_markup',
-            'check_plain',
-            'check_url',
-            'filter_xss',
-            'filter_xss_admin',
-        )) === true) {
+        if ($argument !== false && in_array(
+            $tokens[$argument['start']]['content'],
+            array(
+             'check_markup',
+             'check_plain',
+             'check_url',
+             'filter_xss',
+             'filter_xss_admin',
+            )
+        ) === true) {
             $warning = 'Do not use the %s() sanitization function when writing values to the database, use it on output to HTML instead';
             $data    = array($tokens[$argument['start']]['content']);
             $phpcsFile->addWarning($warning, $argument['start'], 'VariableSet', $data);

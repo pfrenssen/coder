@@ -62,5 +62,3 @@ class DrupalPractice_Sniffs_FunctionCalls_ThemeSniff extends Drupal_Sniffs_Seman
 
 
 }//end class
-
-?>

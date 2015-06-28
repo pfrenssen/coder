@@ -113,5 +113,3 @@ class Drupal_Sniffs_NamingConventions_ValidVariableNameSniff
 
 
 }//end class
-
-?>

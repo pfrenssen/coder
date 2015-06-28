@@ -55,5 +55,3 @@ class DrupalPractice_Sniffs_General_FormStateInputSniff implements PHP_CodeSniff
 
 
 }//end class
-
-?>

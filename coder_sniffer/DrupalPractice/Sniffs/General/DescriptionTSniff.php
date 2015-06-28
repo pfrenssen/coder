@@ -73,5 +73,3 @@ class DrupalPractice_Sniffs_General_DescriptionTSniff implements PHP_CodeSniffer
 
 
 }//end class
-
-?>

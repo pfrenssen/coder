@@ -37,11 +37,11 @@ class DrupalPractice_Sniffs_FunctionCalls_DbQuerySniff extends Drupal_Sniffs_Sem
      *
      * @param PHP_CodeSniffer_File $phpcsFile
      *   The file being scanned.
-     * @param int $stackPtr
+     * @param int                  $stackPtr
      *   The position of the function call in the stack.
-     * @param int $openBracket
+     * @param int                  $openBracket
      *   The position of the opening parenthesis in the stack.
-     * @param int $closeBracket
+     * @param int                  $closeBracket
      *   The position of the closing parenthesis in the stack.
      *
      * @return void
@@ -57,21 +57,20 @@ class DrupalPractice_Sniffs_FunctionCalls_DbQuerySniff extends Drupal_Sniffs_Sem
             return;
         }
 
-        $tokens = $phpcsFile->getTokens();
+        $tokens   = $phpcsFile->getTokens();
         $argument = $this->getArgument(1);
 
         $query_start = '';
         for ($start = $argument['start']; $tokens[$start]['code'] === T_CONSTANT_ENCAPSED_STRING && empty($query_start) === true; $start++) {
-
             // Remove quote and white space from the beginning.
             $query_start = trim(substr($tokens[$start]['content'], 1));
             // Just look at the first word.
-            $parts = explode(' ', $query_start);
+            $parts       = explode(' ', $query_start);
             $query_start = $parts[0];
 
             if (in_array(strtoupper($query_start), array('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE')) === true) {
                 $warning = 'Do not use %s queries with db_query(), use %s instead';
-                $phpcsFile->addWarning($warning, $start, 'DbQuery', array($query_start, 'db_' . strtolower($query_start) . '()'));
+                $phpcsFile->addWarning($warning, $start, 'DbQuery', array($query_start, 'db_'.strtolower($query_start).'()'));
             }
         }
 

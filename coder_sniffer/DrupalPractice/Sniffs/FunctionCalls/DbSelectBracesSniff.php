@@ -37,11 +37,11 @@ class DrupalPractice_Sniffs_FunctionCalls_DbSelectBracesSniff extends Drupal_Sni
      *
      * @param PHP_CodeSniffer_File $phpcsFile
      *   The file being scanned.
-     * @param int $stackPtr
+     * @param int                  $stackPtr
      *   The position of the function call in the stack.
-     * @param int $openBracket
+     * @param int                  $openBracket
      *   The position of the opening parenthesis in the stack.
-     * @param int $closeBracket
+     * @param int                  $closeBracket
      *   The position of the closing parenthesis in the stack.
      *
      * @return void
@@ -52,7 +52,7 @@ class DrupalPractice_Sniffs_FunctionCalls_DbSelectBracesSniff extends Drupal_Sni
         $openBracket,
         $closeBracket
     ) {
-        $tokens = $phpcsFile->getTokens();
+        $tokens   = $phpcsFile->getTokens();
         $argument = $this->getArgument(1);
 
         if ($argument !== false && $tokens[$argument['start']]['code'] === T_CONSTANT_ENCAPSED_STRING
@@ -60,7 +60,6 @@ class DrupalPractice_Sniffs_FunctionCalls_DbSelectBracesSniff extends Drupal_Sni
         ) {
             $warning = 'Do not use {} curly brackets in db_select() table names';
             $phpcsFile->addWarning($warning, $argument['start'], 'DbSelectBrace');
-
         }
 
     }//end processFunctionCall()

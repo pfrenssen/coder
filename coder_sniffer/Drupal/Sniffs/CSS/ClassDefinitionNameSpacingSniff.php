@@ -81,7 +81,7 @@ class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniff
                 && strpos($tokens[($i + 1)]['content'], $phpcsFile->eolChar) === false
             ) {
                 $error = 'Multiple selectors should each be on a single line';
-                $fix = $phpcsFile->addFixableError($error, ($i + 1), 'MultipleSelectors');
+                $fix   = $phpcsFile->addFixableError($error, ($i + 1), 'MultipleSelectors');
                 if ($fix === true) {
                     $phpcsFile->fixer->addNewline($i);
                 }
@@ -94,12 +94,11 @@ class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniff
                 && in_array($tokens[($i - 1)]['code'], array(T_WHITESPACE, T_COMMA)) === false
             ) {
                 $error = 'Selectors must be on a single line';
-                $fix = $phpcsFile->addFixableError($error, $i, 'SeletorSingleLine');
+                $fix   = $phpcsFile->addFixableError($error, $i, 'SeletorSingleLine');
                 if ($fix === true) {
                     $phpcsFile->fixer->replaceToken($i, str_replace($phpcsFile->eolChar, ' ', $tokens[$i]['content']));
                 }
             }
-
 
             if ($tokens[$i]['line'] === $currentLine) {
                 if ($tokens[$i]['code'] !== T_WHITESPACE) {
@@ -118,7 +117,7 @@ class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniff
                     && isset($endTokens[$tokens[$prev]['code']]) === false
                 ) {
                     $error = 'Blank lines are not allowed between class names';
-                    $fix = $phpcsFile->addFixableError($error, ($i + 1), 'BlankLinesFound');
+                    $fix   = $phpcsFile->addFixableError($error, ($i + 1), 'BlankLinesFound');
                     if ($fix === true) {
                         $phpcsFile->fixer->replaceToken(($i + 1), '');
                     }

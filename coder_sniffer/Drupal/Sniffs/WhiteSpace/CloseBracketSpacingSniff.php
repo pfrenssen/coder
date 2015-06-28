@@ -72,14 +72,14 @@ class Drupal_Sniffs_WhiteSpace_CloseBracketSpacingSniff implements PHP_CodeSniff
             $before = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
             if ($before !== false && $tokens[$stackPtr]['line'] === $tokens[$before]['line']) {
                 $error = 'There should be no white space before a closing "%s"';
-                $fix = $phpcsFile->addFixableError(
+                $fix   = $phpcsFile->addFixableError(
                     $error,
                     ($stackPtr - 1),
                     'ClosingWhitespace',
                     array($tokens[$stackPtr]['content'])
                 );
                 if ($fix === true) {
-                    $phpcsFile->fixer->replaceToken($stackPtr - 1, '');
+                    $phpcsFile->fixer->replaceToken(($stackPtr - 1), '');
                 }
             }
         }

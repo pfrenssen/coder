@@ -82,5 +82,3 @@ class Drupal_Sniffs_InfoFiles_RequiredSniff implements PHP_CodeSniffer_Sniff
 
 
 }//end class
-
-?>
