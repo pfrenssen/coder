@@ -44,16 +44,15 @@ class Drupal_Sniffs_InfoFiles_RequiredSniff implements PHP_CodeSniffer_Sniff
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
+        // Only run this sniff once per info file.
+        $end = (count($phpcsFile->getTokens()) + 1);
+
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -4));
         if ($fileExtension !== 'info') {
-            return;
+            return $end;
         }
 
         $tokens = $phpcsFile->getTokens();
-        // Only run this sniff once per info file.
-        if ($tokens[$stackPtr]['line'] !== 1) {
-            return;
-        }
 
         $contents = file_get_contents($phpcsFile->getFilename());
         $info     = Drupal_Sniffs_InfoFiles_ClassFilesSniff::drupalParseInfoFormat($contents);
@@ -77,6 +76,8 @@ class Drupal_Sniffs_InfoFiles_RequiredSniff implements PHP_CodeSniffer_Sniff
             $ptr   = Drupal_Sniffs_InfoFiles_ClassFilesSniff::getPtr('php', $info['php'], $phpcsFile);
             $phpcsFile->addError($error, $ptr, 'D7PHPVersion');
         }
+
+        return $end;
 
     }//end process()
 
