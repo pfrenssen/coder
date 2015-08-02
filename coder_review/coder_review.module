@@ -223,7 +223,7 @@ function _coder_review_settings_form(array $settings, &$system, &$files) {
     $form['coder_what']['coder_file_list'] = array(
       '#type' => 'textarea',
       '#title' => _t('List of files'),
-      '#description' => _t('List each relative file path on a separate line without a / at the start. For example: %example_path', array('%example_path' => drupal_get_path('module', 'coder') . '/coder.module')),
+      '#description' => _t('List each relative file path on a separate line without a / at the start. For example: %example_path', array('%example_path' => 'sites/all/modules/contrib/coder/coder.module')),
       '#default_value' => $settings['coder_file_list'],
     );
     $form['coder_files'] = array(
