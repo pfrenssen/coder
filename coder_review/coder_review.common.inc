@@ -450,7 +450,9 @@ function _coder_review_read_and_parse_file(array &$coder_args) {
     for ($pos = 0; $pos < $content_length; ++$pos) {
       // Get the current character.
       $char = $content[$pos];
-      if ($char == "\n") {
+      // Look ahead to the next character, to cater for \r\n  line ends.
+      $next_char = isset($content[$pos+1]) ? $content[$pos+1] : '';
+      if ($char == "\n" || $char . $next_char == "\r\n") {
         // End C++ style comments on newline.
         if ($in_comment === '/' || $in_comment === '#') {
           $in_comment = 0;
@@ -510,6 +512,10 @@ function _coder_review_read_and_parse_file(array &$coder_args) {
           }
         }
 
+        // Increment $pos by an extra one if the newline was indicated by the
+        // two-character CRLF 'carriage return line feed'.
+        $pos += ($char . $next_char == "\r\n");
+
         // Save this line and start a new line.
         ++$lineno;
         $this_all_lines = '';
@@ -525,6 +531,7 @@ function _coder_review_read_and_parse_file(array &$coder_args) {
         $beginning_of_line = 1;
         continue;
       }
+
       if ($this_all_lines != '') {
         $beginning_of_line = 0;
       }
