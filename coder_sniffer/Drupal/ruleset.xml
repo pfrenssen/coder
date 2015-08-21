@@ -241,8 +241,8 @@
  </rule>
 
  <!-- Ignore various version control directories. -->
- <exclude-pattern>*/.git/*</exclude-pattern>
- <exclude-pattern>*/.svn/*</exclude-pattern>
- <exclude-pattern>*/.hg/*</exclude-pattern>
- <exclude-pattern>*/.bzr/*</exclude-pattern>
+ <exclude-pattern>*/\.git/*</exclude-pattern>
+ <exclude-pattern>*/\.svn/*</exclude-pattern>
+ <exclude-pattern>*/\.hg/*</exclude-pattern>
+ <exclude-pattern>*/\.bzr/*</exclude-pattern>
 </ruleset>
