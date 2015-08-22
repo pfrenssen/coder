@@ -10,7 +10,7 @@
  */
 
 /**
- * Checks that there are no undocumented open access callabck in hook_menu().
+ * Checks that there are no undocumented open access callbacks in hook_menu().
  *
  * @category PHP
  * @package  PHP_CodeSniffer
