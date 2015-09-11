@@ -68,6 +68,12 @@ class Drupal_Sniffs_Semantics_FunctionWatchdogSniff extends Drupal_Sniffs_Semant
             $phpcsFile->addError($error, $argument['start'], 'WatchdogT');
         }
 
+        $concatFound = $phpcsFile->findNext(T_STRING_CONCAT, $argument['start'], $argument['end']);
+        if ($concatFound !== false) {
+            $error = 'Concatenating translatable strings is not allowed, use placeholders instead and only one string literal';
+            $phpcsFile->addError($error, $concatFound, 'Concat');
+        }
+
     }//end processFunctionCall()
 
 
