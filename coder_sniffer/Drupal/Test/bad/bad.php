@@ -259,15 +259,15 @@ switch ($condition){
     $i;
 }
 
-// Missing space after "do"
+// Missing space after "do".
 do{
   $i;
 } while ($condition);
-// Missing space before "while"
+// Missing space before "while".
 do {
   $i;
 }while ($condition);
-// Missing space after "while"
+// Missing space after "while".
 do {
   $i;
 } while($condition);

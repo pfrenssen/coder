@@ -240,6 +240,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
         $acceptedClosers = array(
                             'full-stops'        => '.',
                             'exclamation marks' => '!',
+                            'colons'            => ':',
                             'or question marks' => '?',
                            );
 
@@ -249,8 +250,11 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             // without punctuation.
             $lastWord = $words[(count($words) - 1)];
             $matches  = array();
-            preg_match('/((\()?[$a-zA-Z]+\)|([$a-zA-Z]+))/', $lastWord, $matches);
-            if (isset($matches[0]) === true && $matches[0] === $lastWord) {
+            preg_match('/https?:\/\/.+/', $lastWord, $matches);
+            $isUrl = isset($matches[0]) === true;
+            preg_match('/[$a-zA-Z_]+\([$a-zA-Z_]+\)/', $lastWord, $matches);
+            $isFunction = isset($matches[0]) === true;
+            if (!$isUrl && !$isFunction) {
                 $error = 'Inline comments must end in %s';
                 $ender = '';
                 foreach ($acceptedClosers as $closerName => $symbol) {

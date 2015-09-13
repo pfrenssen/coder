@@ -9,7 +9,7 @@
  */
 function good_schema() {
   $schema['good'] = array(
-    // Example (partial) specification for table "node"
+    // Example (partial) specification for table "node".
     'description' => 'The base table for nodes.',
     'fields' => array(
       'nid' => array(

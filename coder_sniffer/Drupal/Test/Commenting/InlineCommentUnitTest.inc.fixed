@@ -23,4 +23,20 @@ some_function();
 // Should start with a capital letter.
 test();
 
+// A longer comment that spans over multiple lines but correctly ends with a
+// period is obviously allowed.
+test();
+
+// Comments ending with a URL are not required to end with a period, see
+// https://www.drupal.org/coding-standards
+test();
+
+// Comments ending with a function reference don't need to end with a period
+// some_function_call($some_variable)
+test();
+
+// Comments should end in a period, even if the last word contains any symbols
+// that are non-alphanumerical.
+test();
+
 // 2 spaces instead of one.
