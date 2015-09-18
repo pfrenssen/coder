@@ -35,6 +35,10 @@ test();
 // some_function_call($some_variable)
 test();
 
+// Comments ending with a function reference don't need to end with a period
+// a_function_call_without_arguments()
+test();
+
 // Comments should end in a period, even if the last word contains any symbols
 // that are non-alphanumerical.
 test();

@@ -252,7 +252,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             $matches  = array();
             preg_match('/https?:\/\/.+/', $lastWord, $matches);
             $isUrl = isset($matches[0]) === true;
-            preg_match('/[$a-zA-Z_]+\([$a-zA-Z_]+\)/', $lastWord, $matches);
+            preg_match('/[$a-zA-Z_]+\([$a-zA-Z_]*\)/', $lastWord, $matches);
             $isFunction = isset($matches[0]) === true;
             if (!$isUrl && !$isFunction) {
                 $error = 'Inline comments must end in %s';
