@@ -165,3 +165,13 @@ function test13($user) {
 function test14(stdClass $user) {
 
 }
+
+/**
+ * Array parameter type mismatch.
+ *
+ * @param array $foo
+ *   Comment here.
+ */
+function test15(Test $foo) {
+
+}

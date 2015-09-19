@@ -911,3 +911,14 @@ function test10($title) {
 function test11() {
 
 }
+
+/**
+ * Description here.
+ *
+ * @param array $array_param
+ *   We document here that the parameter is an array, but we don't use an array
+ *   type hint in the function signature which is allowed.
+ */
+function test12($array_param) {
+
+}
