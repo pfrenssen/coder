@@ -105,6 +105,26 @@ $a = array('1', '2',
     ),
   ),
 );
+// Short array syntax.
+$a = [];
+$a = ['1', '2', '3'];
+$a = [
+  '1',
+  '2',
+  '3',
+];
+$a = ['1', '2', ['3']];
+$a = ['1', '2',
+  [
+    'one',
+    'two',
+    'three',
+    [
+      'key' => $value,
+      'title' => 'test',
+    ],
+  ],
+];
 
 // Array indentation.
 $x = array(
@@ -119,6 +139,18 @@ $x = array(
     ),
   ),
 );
+$x = [
+  'foo' => 'bar',
+  'fi' => long_function_call('hsdfsdmfsldkfnmdflkngdfngfg',
+    'fghfghfghfghfgh', $z),
+  'a' => 'b',
+  'foo' => [
+    'blu' => 1,
+    'f' => x(1) + [
+      'h' => 'x',
+    ],
+  ],
+];
 
 // Arrays in function calls.
 foo(
@@ -138,6 +170,11 @@ $a = array(
   'weight'   => 2,
   'callback' => 3,
 );
+$a = [
+  'title'    => 1,
+  'weight'   => 2,
+  'callback' => 3,
+];
 
 // Arrays with multi line strings.
 $query = db_query("
@@ -148,6 +185,14 @@ $query = db_query("
     ':to_date' => $to_date,
   )
 );
+$query = db_query("
+  SELECT * FROM {foobar} WHERE nid IN (1, 2, 3)
+  AND date BETWEEN '%s' AND '%s'
+  ", [
+    ':from_date' => $from_date,
+    ':to_date' => $to_date,
+  ]
+);
 
 // Array with multi line comments.
 $query = db_query("
@@ -157,6 +202,14 @@ $query = db_query("
     ':from_date' => $from_date,
     ':to_date' => $to_date,
   )
+);
+$query = db_query("
+  SELECT * FROM {foobar} WHERE nid IN (1, 2, 3)
+  AND date BETWEEN '%s' AND '%s'", /* comment
+  in here */ [
+    ':from_date' => $from_date,
+    ':to_date' => $to_date,
+  ]
 );
 
 // Array with multi-line constant string in it.
@@ -171,6 +224,17 @@ $array = array(
   </bar>
 </foo>',
 );
+$array = [
+  'name' => 'example_a',
+  'title' => 'Example A',
+  'xml' => '
+<foo>
+  <bar>
+    123456789 123456789 123456789 123456789 123456789 123456789 123456789
+    123456789 123456789 123456789 123456789 123456789 123456789 123456789
+  </bar>
+</foo>',
+];
 
 // Indentation: multi line function call with array and fuction closer on the
 // same line.
