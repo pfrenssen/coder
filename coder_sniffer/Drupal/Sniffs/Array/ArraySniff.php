@@ -31,7 +31,10 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
      */
     public function register()
     {
-        return array(T_ARRAY);
+        return array(
+                T_ARRAY,
+                T_OPEN_SHORT_ARRAY,
+               );
 
     }//end register()
 
@@ -47,25 +50,35 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        $tokens   = $phpcsFile->getTokens();
+        $tokens = $phpcsFile->getTokens();
+
+        // Support long and short syntax.
+        $parenthesis_opener = 'parenthesis_opener';
+        $parenthesis_closer = 'parenthesis_closer';
+        if ($tokens[$stackPtr]['code'] === T_OPEN_SHORT_ARRAY) {
+            $parenthesis_opener = 'bracket_opener';
+            $parenthesis_closer = 'bracket_closer';
+        }
+
         $lastItem = $phpcsFile->findPrevious(
             PHP_CodeSniffer_Tokens::$emptyTokens,
-            ($tokens[$stackPtr]['parenthesis_closer'] - 1),
+            ($tokens[$stackPtr][$parenthesis_closer] - 1),
             $stackPtr,
             true
         );
 
         // Empty array.
-        if ($lastItem === $tokens[$stackPtr]['parenthesis_opener']) {
+        if ($lastItem === $tokens[$stackPtr][$parenthesis_opener]) {
             return;
         }
 
         // Inline array.
-        $isInlineArray = $tokens[$tokens[$stackPtr]['parenthesis_opener']]['line'] == $tokens[$tokens[$stackPtr]['parenthesis_closer']]['line'];
+        $isInlineArray = $tokens[$tokens[$stackPtr][$parenthesis_opener]]['line'] === $tokens[$tokens[$stackPtr][$parenthesis_closer]]['line'];
 
         // Check if the last item in a multiline array has a "closing" comma.
         if ($tokens[$lastItem]['code'] !== T_COMMA && $isInlineArray === false
             && $tokens[($lastItem + 1)]['code'] !== T_CLOSE_PARENTHESIS
+            && $tokens[($lastItem + 1)]['code'] !== T_CLOSE_SHORT_ARRAY
         ) {
             $data = array($tokens[$lastItem]['content']);
             $fix  = $phpcsFile->addFixableWarning('A comma should follow the last multiline array item. Found: %s', $lastItem, 'CommaLastItem', $data);
@@ -79,10 +92,10 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
         if ($isInlineArray === true) {
             // Check if this array contains at least 3 elements and exceeds the 80
             // character line length.
-            if ($tokens[$tokens[$stackPtr]['parenthesis_closer']]['column'] > 80) {
-                $comma1 = $phpcsFile->findNext(T_COMMA, ($stackPtr + 1), $tokens[$stackPtr]['parenthesis_closer']);
+            if ($tokens[$tokens[$stackPtr][$parenthesis_closer]]['column'] > 80) {
+                $comma1 = $phpcsFile->findNext(T_COMMA, ($stackPtr + 1), $tokens[$stackPtr][$parenthesis_closer]);
                 if ($comma1 !== false) {
-                    $comma2 = $phpcsFile->findNext(T_COMMA, ($comma1 + 1), $tokens[$stackPtr]['parenthesis_closer']);
+                    $comma2 = $phpcsFile->findNext(T_COMMA, ($comma1 + 1), $tokens[$stackPtr][$parenthesis_closer]);
                     if ($comma2 !== false) {
                         $error = 'If the line declaring an array spans longer than 80 characters, each element should be broken into its own line';
                         $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration');
@@ -128,22 +141,36 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
 
         $lineStart = $stackPtr;
         // Iterate over all lines of this array.
-        while ($lineStart < $tokens[$stackPtr]['parenthesis_closer']) {
+        while ($lineStart < $tokens[$stackPtr][$parenthesis_closer]) {
             // Find next line start.
             $newLineStart = $lineStart;
-            while ($tokens[$newLineStart]['line'] == $tokens[$lineStart]['line']) {
+            $current_line = $tokens[$newLineStart]['line'];
+            while ($current_line == $tokens[$newLineStart]['line']) {
                 $newLineStart = $phpcsFile->findNext(
                     PHP_CodeSniffer_Tokens::$emptyTokens,
                     ($newLineStart + 1),
-                    ($tokens[$stackPtr]['parenthesis_closer'] + 1),
+                    ($tokens[$stackPtr][$parenthesis_closer] + 1),
                     true
                 );
+
+                // Skip nested arrays, they are checked in a next run.
+                if ($newLineStart !== false && $tokens[$newLineStart]['code'] === T_OPEN_SHORT_ARRAY) {
+                    // Skip the whole line.
+                    $current_line++;
+                    $newLineStart = $phpcsFile->findNext(
+                        PHP_CodeSniffer_Tokens::$emptyTokens,
+                        ($tokens[$newLineStart][$parenthesis_closer] + 2),
+                        ($tokens[$stackPtr][$parenthesis_closer] + 1),
+                        true
+                    );
+                }
+
                 if ($newLineStart === false) {
                     break 2;
                 }
-            }
+            }//end while
 
-            if ($newLineStart === $tokens[$stackPtr]['parenthesis_closer']) {
+            if ($newLineStart === $tokens[$stackPtr][$parenthesis_closer]) {
                 // End of the array reached.
                 if ($tokens[$newLineStart]['column'] !== $firstLineColumn) {
                     $error = 'Array closing indentation error, expected %s spaces but found %s';
@@ -152,7 +179,7 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                               $tokens[$newLineStart]['column'] - 1,
                              );
                     $fix   = $phpcsFile->addFixableError($error, $newLineStart, 'ArrayClosingIndentation', $data);
-                    if ($fix == true) {
+                    if ($fix === true) {
                         $phpcsFile->fixer->replaceToken(($newLineStart - 1), str_repeat(' ', ($firstLineColumn - 1)));
                     }
                 }
@@ -161,14 +188,32 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
             }
 
             // Skip lines in nested structures.
-            $innerNesting = end($tokens[$newLineStart]['nested_parenthesis']);
-            // Skip lines that are part of a multi-line string.
-            $isMultiLineString = $tokens[($newLineStart - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
-                && substr($tokens[($newLineStart - 1)]['content'], -1) === $phpcsFile->eolChar;
-            if ($innerNesting === $tokens[$stackPtr]['parenthesis_closer']
-                && $tokens[$newLineStart]['column'] !== ($firstLineColumn + 2)
-                && $isMultiLineString === false
-            ) {
+            // Long array syntax.
+            if (isset($tokens[$newLineStart]['nested_parenthesis']) === true) {
+                $innerNesting = end($tokens[$newLineStart]['nested_parenthesis']);
+                // Skip lines that are part of a multi-line string.
+                $isMultiLineString = $tokens[($newLineStart - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
+                    && substr($tokens[($newLineStart - 1)]['content'], -1) === $phpcsFile->eolChar;
+                if ($innerNesting === $tokens[$stackPtr][$parenthesis_closer]
+                    && $tokens[$newLineStart]['column'] !== ($firstLineColumn + 2)
+                    && $isMultiLineString === false
+                ) {
+                    $error = 'Array indentation error, expected %s spaces but found %s';
+                    $data  = array(
+                              $firstLineColumn + 1,
+                              $tokens[$newLineStart]['column'] - 1,
+                             );
+                    $fix   = $phpcsFile->addFixableError($error, $newLineStart, 'ArrayIndentation', $data);
+                    if ($fix === true) {
+                        if ($tokens[$newLineStart]['column'] === 1) {
+                            $phpcsFile->fixer->addContentBefore($newLineStart, str_repeat(' ', ($firstLineColumn + 1)));
+                        } else {
+                            $phpcsFile->fixer->replaceToken(($newLineStart - 1), str_repeat(' ', ($firstLineColumn + 1)));
+                        }
+                    }
+                }
+            } else if (($tokens[$newLineStart]['column'] - 1) !== ($firstLineColumn + 1)) {
+                // Short array syntax.
                 $error = 'Array indentation error, expected %s spaces but found %s';
                 $data  = array(
                           $firstLineColumn + 1,
@@ -182,7 +227,7 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                         $phpcsFile->fixer->replaceToken(($newLineStart - 1), str_repeat(' ', ($firstLineColumn + 1)));
                     }
                 }
-            }
+            }//end if
 
             $lineStart = $newLineStart;
         }//end while
