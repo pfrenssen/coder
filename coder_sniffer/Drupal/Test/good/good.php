@@ -573,6 +573,9 @@ t('x');
 t('x');
 // @see my_function()
 t('x');
+// Some text here, then a reference.
+// @see \Drupal\rules\Entity\ReactionRuleStorage
+t('x');
 // t() refers to a function name and should not be capitalized.
 t('x');
 // rules_admin is a fancy machine name word with underscores and should not be

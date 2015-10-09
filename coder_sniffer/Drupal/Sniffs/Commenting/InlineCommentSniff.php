@@ -179,6 +179,12 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
         // Verify the indentation of this comment line.
         $this->processIndentation($phpcsFile, $stackPtr);
 
+        // If the current line starts with a tag such as "@see" then the trailing dot
+        // rules and upper case start rules don't apply.
+        if (strpos(trim(substr($tokens[$stackPtr]['content'], 2)), '@') === 0) {
+            return;
+        }
+
         // The below section determines if a comment block is correctly capitalised,
         // and ends in a full-stop. It will find the last comment in a block, and
         // work its way up.
