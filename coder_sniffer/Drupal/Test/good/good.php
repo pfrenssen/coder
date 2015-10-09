@@ -163,6 +163,16 @@ foo(
     ),
   )
 );
+foo(
+  [
+    'value' => 0,
+    'description' => t('xyz @url',
+      [
+        '@url' => 'http://example.com',
+      ]
+    ),
+  ]
+);
 
 // Pretty array layout.
 $a = array(
@@ -244,6 +254,12 @@ $result = example_fetch_data($id,
     'quiet' => TRUE,
   ));
 some_function();
+$result = example_fetch_data($id,
+  [
+    'include_detail' => TRUE,
+    'quiet' => TRUE,
+  ]);
+some_function();
 
 // Indentation: multi line function call with array and closing brace on the
 // same line.
@@ -252,6 +268,12 @@ watchdog('example', 'Some warning %code for %id',
     '%code' => $code,
     '%doi' => $id,
   ),
+  WATCHDOG_WARNING);
+watchdog('example', 'Some warning %code for %id',
+  [
+    '%code' => $code,
+    '%doi' => $id,
+  ],
   WATCHDOG_WARNING);
 
 // Item assignment operators must be prefixed and followed by a space.
