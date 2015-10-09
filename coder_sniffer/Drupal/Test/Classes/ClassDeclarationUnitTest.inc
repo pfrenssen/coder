@@ -11,3 +11,25 @@
 class Test extends OtherClass{
 
 }
+
+namespace FirstNamespace{
+  /**
+   * FirstClass for the test.
+   */
+  class FirstClass{
+
+  }
+}
+
+namespace SecondNamespace{
+  /**
+   * SecondClass for the test.
+   */
+  class SecondClass{
+
+  }
+}
+
+namespace {
+  // Global namespace.
+}

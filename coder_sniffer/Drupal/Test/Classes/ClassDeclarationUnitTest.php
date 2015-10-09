@@ -16,6 +16,8 @@ class Drupal_Sniffs_Classes_ClassDeclarationUnitTest extends CoderSniffUnitTest
     {
         return array(
                 11 => 1,
+                19 => 1,
+                28 => 1,
                );
 
     }//end getErrorList()
