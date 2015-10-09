@@ -105,7 +105,11 @@ class Drupal_Sniffs_Classes_ClassDeclarationSniff extends PSR2_Sniffs_Classes_Cl
             $data  = array($length);
             $fix   = $phpcsFile->addFixableError($error, $openingBrace, 'SpaceBeforeBrace', $data);
             if ($fix === true) {
-                $phpcsFile->fixer->replaceToken(($openingBrace - 1), ' ');
+                if ($length === 0) {
+                    $phpcsFile->fixer->replaceToken(($openingBrace), ' {');
+                } else {
+                    $phpcsFile->fixer->replaceToken(($openingBrace - 1), ' ');
+                }
             }
         }
 
