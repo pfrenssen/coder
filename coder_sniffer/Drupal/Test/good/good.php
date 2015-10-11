@@ -276,6 +276,11 @@ watchdog('example', 'Some warning %code for %id',
   ],
   WATCHDOG_WARNING);
 
+// Nested short array syntax.
+$x = [
+  'label' => x(['test' => 'bar']),
+];
+
 // Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1', 'two' => '2');
 foreach ($a as $key => $value) {

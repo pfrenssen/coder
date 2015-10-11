@@ -145,7 +145,7 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
             // Find next line start.
             $newLineStart = $lineStart;
             $current_line = $tokens[$newLineStart]['line'];
-            while ($current_line == $tokens[$newLineStart]['line']) {
+            while ($current_line >= $tokens[$newLineStart]['line']) {
                 $newLineStart = $phpcsFile->findNext(
                     PHP_CodeSniffer_Tokens::$emptyTokens,
                     ($newLineStart + 1),
@@ -153,8 +153,12 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                     true
                 );
 
+                if ($newLineStart === false) {
+                    break 2;
+                }
+
                 // Skip nested arrays, they are checked in a next run.
-                if ($newLineStart !== false && $tokens[$newLineStart]['code'] === T_OPEN_SHORT_ARRAY) {
+                if ($tokens[$newLineStart]['code'] === T_OPEN_SHORT_ARRAY) {
                     // Skip the whole line.
                     $current_line++;
                     $newLineStart = $phpcsFile->findNext(
@@ -165,9 +169,6 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                     );
                 }
 
-                if ($newLineStart === false) {
-                    break 2;
-                }
             }//end while
 
             if ($newLineStart === $tokens[$stackPtr][$parenthesis_closer]) {
