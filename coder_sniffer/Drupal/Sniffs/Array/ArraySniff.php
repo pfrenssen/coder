@@ -107,18 +107,6 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
             return;
         }
 
-        // Special case: Opening two multi line structures in one line is ugly.
-        if (isset($tokens[$stackPtr]['nested_parenthesis']) === true) {
-            end($tokens[$stackPtr]['nested_parenthesis']);
-            $outerNesting = key($tokens[$stackPtr]['nested_parenthesis']);
-            if ($tokens[$outerNesting]['line'] === $tokens[$stackPtr]['line']) {
-                // We could throw a warning here that the start of the array
-                // definition should be on a new line by itself, but we just ignore
-                // it for now as this is not defined as standard.
-                return;
-            }
-        }
-
         // Find the first token on this line.
         $firstLineColumn = $tokens[$stackPtr]['column'];
         for ($i = $stackPtr; $i >= 0; $i--) {
@@ -157,16 +145,18 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                     break 2;
                 }
 
-                // Skip nested arrays, they are checked in a next run.
+                // Long array syntax: Skip nested arrays, they are checked in a next
+                // run.
+                if ($tokens[$newLineStart]['code'] === T_ARRAY) {
+                    $newLineStart = $tokens[$newLineStart]['parenthesis_closer'];
+                    $current_line = $tokens[$newLineStart]['line'];
+                }
+
+                // Short array syntax: Skip nested arrays, they are checked in a next
+                // run.
                 if ($tokens[$newLineStart]['code'] === T_OPEN_SHORT_ARRAY) {
-                    // Skip the whole line.
-                    $current_line++;
-                    $newLineStart = $phpcsFile->findNext(
-                        PHP_CodeSniffer_Tokens::$emptyTokens,
-                        ($tokens[$newLineStart][$parenthesis_closer] + 2),
-                        ($tokens[$stackPtr][$parenthesis_closer] + 1),
-                        true
-                    );
+                    $newLineStart = $tokens[$newLineStart]['bracket_closer'];
+                    $current_line = $tokens[$newLineStart]['line'];
                 }
 
             }//end while
@@ -188,6 +178,13 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                 break;
             }
 
+            $expectedColumn = $firstLineColumn + 2;
+            // If the line starts with "->" then we assume an additional level of
+            // indentation.
+            if ($tokens[$newLineStart]['code'] === T_OBJECT_OPERATOR) {
+                $expectedColumn += 2;
+            }
+
             // Skip lines in nested structures.
             // Long array syntax.
             if (isset($tokens[$newLineStart]['nested_parenthesis']) === true) {
@@ -196,24 +193,24 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                 $isMultiLineString = $tokens[($newLineStart - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
                     && substr($tokens[($newLineStart - 1)]['content'], -1) === $phpcsFile->eolChar;
                 if ($innerNesting === $tokens[$stackPtr][$parenthesis_closer]
-                    && $tokens[$newLineStart]['column'] !== ($firstLineColumn + 2)
+                    && $tokens[$newLineStart]['column'] !== $expectedColumn
                     && $isMultiLineString === false
                 ) {
                     $error = 'Array indentation error, expected %s spaces but found %s';
                     $data  = array(
-                              $firstLineColumn + 1,
+                              $expectedColumn - 1,
                               $tokens[$newLineStart]['column'] - 1,
                              );
                     $fix   = $phpcsFile->addFixableError($error, $newLineStart, 'ArrayIndentation', $data);
                     if ($fix === true) {
                         if ($tokens[$newLineStart]['column'] === 1) {
-                            $phpcsFile->fixer->addContentBefore($newLineStart, str_repeat(' ', ($firstLineColumn + 1)));
+                            $phpcsFile->fixer->addContentBefore($newLineStart, str_repeat(' ', ($expectedColumn - 1)));
                         } else {
-                            $phpcsFile->fixer->replaceToken(($newLineStart - 1), str_repeat(' ', ($firstLineColumn + 1)));
+                            $phpcsFile->fixer->replaceToken(($newLineStart - 1), str_repeat(' ', ($expectedColumn - 1)));
                         }
                     }
                 }
-            } else if (($tokens[$newLineStart]['column'] - 1) !== ($firstLineColumn + 1)) {
+            } else if ($tokens[$newLineStart]['column'] !== $expectedColumn) {
                 // Short array syntax.
                 // Skip lines that are part of a multi-line string.
                 $isMultiLineString = $tokens[($newLineStart - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
@@ -221,15 +218,15 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                 if ($isMultiLineString === false) {
                     $error = 'Array indentation error, expected %s spaces but found %s';
                     $data  = array(
-                              $firstLineColumn + 1,
+                              $expectedColumn - 1,
                               $tokens[$newLineStart]['column'] - 1,
                              );
                     $fix   = $phpcsFile->addFixableError($error, $newLineStart, 'ArrayIndentation', $data);
                     if ($fix === true) {
                         if ($tokens[$newLineStart]['column'] === 1) {
-                            $phpcsFile->fixer->addContentBefore($newLineStart, str_repeat(' ', ($firstLineColumn + 1)));
+                            $phpcsFile->fixer->addContentBefore($newLineStart, str_repeat(' ', ($expectedColumn - 1)));
                         } else {
-                            $phpcsFile->fixer->replaceToken(($newLineStart - 1), str_repeat(' ', ($firstLineColumn + 1)));
+                            $phpcsFile->fixer->replaceToken(($newLineStart - 1), str_repeat(' ', ($expectedColumn - 1)));
                         }
                     }
                 }

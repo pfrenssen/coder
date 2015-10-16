@@ -281,6 +281,56 @@ $x = [
   'label' => x(['test' => 'bar']),
 ];
 
+// Nested arrays with object operators.
+$derivatives["entity:$entity_type_id"] = array(
+  'label' => t('Create @entity_type path alias', array('@entity_type' => $entity_type->getLowercaseLabel())),
+  'category' => t('Path'),
+  'entity_type_id' => $entity_type_id,
+  'context' => array(
+    'entity' => ContextDefinition::create("entity:$entity_type_id")
+      ->setLabel($entity_type->getLabel())
+      ->setRequired(TRUE)
+      ->setDescription(t('The @entity_type for which to create a path alias.', array('@entity_type' => $entity_type->getLowercaseLabel()))),
+    'alias' => ContextDefinition::create('string')
+      ->setLabel(t('Path alias'))
+      ->setRequired(TRUE)
+      ->setDescription(t("Specify an alternative path by which the content can be accessed. For example, 'about' for an about page. Use a relative path and do not add a trailing slash.")),
+  ),
+  'provides' => array(),
+) + $base_plugin_definition;
+
+$derivatives["entity:$entity_type_id"] = [
+  'label' => t('Create @entity_type path alias', ['@entity_type' => $entity_type->getLowercaseLabel()]),
+  'category' => t('Path'),
+  'entity_type_id' => $entity_type_id,
+  'context' => [
+    'entity' => ContextDefinition::create("entity:$entity_type_id")
+      ->setLabel($entity_type->getLabel())
+      ->setRequired(TRUE)
+      ->setDescription(t('The @entity_type for which to create a path alias.', ['@entity_type' => $entity_type->getLowercaseLabel()])),
+    'alias' => ContextDefinition::create('string')
+      ->setLabel(t('Path alias'))
+      ->setRequired(TRUE)
+      ->setDescription(t("Specify an alternative path by which the content can be accessed. For example, 'about' for an about page. Use a relative path and do not add a trailing slash.")),
+  ],
+  'provides' => [],
+] + $base_plugin_definition;
+
+$test = array(
+  'columns' => $columns,
+  'indexes' => array(),
+  'foreign keys' => array(
+    'format' => array(
+      'table' => 'filter_format',
+      'columns' => array('format' => 'format'),
+    ),
+    'file_managed' => array(
+      'table' => 'file_managed',
+      'columns' => array('fid' => 'carousel_image'),
+    ),
+  ),
+);
+
 // Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1', 'two' => '2');
 foreach ($a as $key => $value) {

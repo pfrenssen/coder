@@ -16,6 +16,9 @@ class Drupal_Sniffs_Array_ArrayUnitTest extends CoderSniffUnitTest
         return array(
             13 => 1,
             33 => 1,
+            83 => 1,
+            88 => 1,
+            92 => 1,
         );
 
     }//end getErrorList()
@@ -39,6 +42,8 @@ class Drupal_Sniffs_Array_ArrayUnitTest extends CoderSniffUnitTest
             37 => 1,
             42 => 1,
             44 => 1,
+            59 => 1,
+            76 => 1,
         );
 
     }//end getWarningList()

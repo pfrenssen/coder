@@ -224,10 +224,6 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 // positive indentation levels.
                 && empty($tokens[$checkToken]['nested_parenthesis']) === true
                 && isset($tokens[$checkToken]['parenthesis_opener']) === true)
-                || ($tokens[$i]['code'] === T_CLOSE_PARENTHESIS
-                && isset($tokens[$i]['parenthesis_opener']) === true
-                && isset($tokens[$i]['parenthesis_owner']) === true
-                && $tokens[$tokens[$i]['parenthesis_owner']]['code'] === T_ARRAY)
             ) {
                 if ($checkToken !== null) {
                     $parenCloser = $checkToken;
