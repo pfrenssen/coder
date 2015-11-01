@@ -1109,4 +1109,11 @@ function test12($array_param) {
  */
 class ReactionRule extends ConfigEntityBase {
 
+  /**
+   * Config entities are allowed to have property names with underscores.
+   *
+   * @var string
+   */
+  protected $expression_id;
+
 }
