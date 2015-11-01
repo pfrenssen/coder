@@ -85,7 +85,10 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
                 // characters.
                 || strpos($tokens[($stackPtr - 2)]['content'], ' ') === false
                 // Allow long "Contains ..." comments in @file doc blocks.
-                || preg_match('/^Contains [a-zA-Z\\\\.]+$/', $tokens[($stackPtr - 2)]['content']) === 1)
+                || preg_match('/^Contains [a-zA-Z\\\\.]+$/', $tokens[($stackPtr - 2)]['content']) === 1
+                // Allow long paths or namespaces in annotations such as
+                // "list_builder" = "Drupal\rules\Entity\Controller\RulesReactionListBuilder",
+                || preg_match('#= ("|\')\S+[\\\\/]\S+("|\'),*$#', $tokens[($stackPtr - 2)]['content']) === 1)
             ) {
                 return;
             }
