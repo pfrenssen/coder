@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\random\bunny\hat\long\namingspace\wtf\still\going\strong\LongNamespace.php.
+ * Contains \Drupal\random\bunny_hat\long\namingspace\wtf\still\going\strong\LongNamespace.php.
  */
 
-namespace Drupal\random\bunny\hat\long\namingspace\wtf\still\going\strong;
+namespace Drupal\random\bunny_hat\long\namingspace\wtf\still\going\strong;
 
 /**
  * Some fluffy comment about the class.
