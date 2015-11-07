@@ -202,9 +202,15 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             && $shortContent !== basename($phpcsFile->getFilename())
         ) {
             $error = 'Doc comment short description must start with a capital letter';
-            $fix   = $phpcsFile->addFixableError($error, $short, 'ShortNotCapital');
-            if ($fix === true) {
-                $phpcsFile->fixer->replaceToken($short, ucfirst($tokens[$short]['content']));
+            // If we cannot capitalize the first character then we don't have a
+            // fixable error.
+            if ($tokens[$short]['content'] === ucfirst($tokens[$short]['content'])) {
+                $phpcsFile->addError($error, $short, 'ShortNotCapital');
+            } else {
+                $fix = $phpcsFile->addFixableError($error, $short, 'ShortNotCapital');
+                if ($fix === true) {
+                    $phpcsFile->fixer->replaceToken($short, ucfirst($tokens[$short]['content']));
+                }
             }
         }
 
