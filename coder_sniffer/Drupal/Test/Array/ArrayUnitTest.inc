@@ -91,3 +91,12 @@ $a = ['1', '2', [
 $a = array(
 'x' => 'y',
 );
+
+$backend->expects($this->exactly(1))
+  ->method('get')
+  ->will($this->onConsecutiveCalls(
+    (object) array('data' => array('hook' => array(
+      'module_handler_test' => array(),
+      'module_handler_test_missing' => array(),
+    )))
+  ));
