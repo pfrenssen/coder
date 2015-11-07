@@ -97,7 +97,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         }
 
         if ($tokens[$commentEnd]['code'] === T_COMMENT) {
-            $fix = $phpcsFile->addError('You must use "/**" style comments for a function comment', $stackPtr, 'WrongStyle');
+            $fix = $phpcsFile->addFixableError('You must use "/**" style comments for a function comment', $stackPtr, 'WrongStyle');
             if ($fix === true) {
                 // Convert the comment into a doc comment.
                 $phpcsFile->fixer->beginChangeset();
@@ -116,7 +116,10 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 
         if ($tokens[$commentEnd]['line'] !== ($tokens[$stackPtr]['line'] - 1)) {
             $error = 'There must be no blank lines after the function comment';
-            $phpcsFile->addError($error, $commentEnd, 'SpacingAfter');
+            $fix = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter');
+            if ($fix === true) {
+                $phpcsFile->fixer->replaceToken($commentEnd + 1, '');
+            }
         }
 
         $commentStart = $tokens[$commentEnd]['comment_opener'];

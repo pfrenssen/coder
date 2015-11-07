@@ -175,3 +175,10 @@ function test14(stdClass $user) {
 function test15(Test $foo) {
 
 }
+
+/*
+ * This should be converted into a doc comment.
+ */
+function test16() {
+
+}
