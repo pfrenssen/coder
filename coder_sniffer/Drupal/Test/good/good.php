@@ -58,6 +58,8 @@ $i--;
 --$i;
 $i++;
 ++$i;
+$x = $success ? $context['results']['success']++ : $context['results']['error']++;
+$x = $success ? foo()++ : bar()++;
 $i = -1;
 array('i' => -1);
 $i = (1 == -1);

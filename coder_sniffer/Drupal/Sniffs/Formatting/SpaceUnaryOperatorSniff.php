@@ -56,8 +56,15 @@ class Drupal_Sniffs_Formatting_SpaceUnaryOperatorSniff implements PHP_CodeSniffe
 
         // Check decrement / increment.
         if ($tokens[$stackPtr]['code'] === T_DEC || $tokens[$stackPtr]['code'] === T_INC) {
-            $modifyLeft = substr($tokens[($stackPtr - 1)]['content'], 0, 1) === '$' ||
-                          $tokens[($stackPtr + 1)]['content'] === ';';
+            $previous   = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+            $modifyLeft = in_array(
+                $tokens[$previous]['code'],
+                array(
+                 T_VARIABLE,
+                 T_CLOSE_SQUARE_BRACKET,
+                 T_CLOSE_PARENTHESIS,
+                )
+            );
 
             if ($modifyLeft === true && $tokens[($stackPtr - 1)]['code'] === T_WHITESPACE) {
                 $error = 'There must not be a single space before a unary operator statement';
