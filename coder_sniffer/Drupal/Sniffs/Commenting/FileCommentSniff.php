@@ -71,9 +71,14 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
             if ($fix === true) {
                 $content = $tokens[$commentStart]['content'];
 
+                // If the comment starts with something like "/**+" then we just
+                // insert a space after the stars.
+                if (strpos($content, '/**') === 0) {
+                    $phpcsFile->fixer->replaceToken($commentStart, str_replace('/**', '/** ', $content));
+                }
                 // Just turn the /* ... */ style comment into a /** ... */ style
                 // comment.
-                if (strpos($content, '/*') === 0) {
+                else if (strpos($content, '/*') === 0) {
                     $phpcsFile->fixer->replaceToken($commentStart, str_replace('/*', '/**', $content));
                 } else {
                     $content = trim(ltrim($tokens[$commentStart]['content'], '/# '));
