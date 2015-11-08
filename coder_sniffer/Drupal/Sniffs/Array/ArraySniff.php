@@ -189,37 +189,15 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                 $expectedColumn += 2;
             }
 
-            // Skip lines in nested structures.
-            // Long array syntax.
-            if (isset($tokens[$newLineStart]['nested_parenthesis']) === true) {
-                $innerNesting = end($tokens[$newLineStart]['nested_parenthesis']);
+            if ($tokens[$newLineStart]['column'] !== $expectedColumn) {
+                // Skip lines in nested structures such as a function call within an
+                // array, no defined coding standard for those.
+                $innerNesting = empty($tokens[$newLineStart]['nested_parenthesis']) === false
+                    && end($tokens[$newLineStart]['nested_parenthesis']) < $tokens[$stackPtr][$parenthesis_closer];
                 // Skip lines that are part of a multi-line string.
                 $isMultiLineString = $tokens[($newLineStart - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
                     && substr($tokens[($newLineStart - 1)]['content'], -1) === $phpcsFile->eolChar;
-                if ($innerNesting === $tokens[$stackPtr][$parenthesis_closer]
-                    && $tokens[$newLineStart]['column'] !== $expectedColumn
-                    && $isMultiLineString === false
-                ) {
-                    $error = 'Array indentation error, expected %s spaces but found %s';
-                    $data  = array(
-                              $expectedColumn - 1,
-                              $tokens[$newLineStart]['column'] - 1,
-                             );
-                    $fix   = $phpcsFile->addFixableError($error, $newLineStart, 'ArrayIndentation', $data);
-                    if ($fix === true) {
-                        if ($tokens[$newLineStart]['column'] === 1) {
-                            $phpcsFile->fixer->addContentBefore($newLineStart, str_repeat(' ', ($expectedColumn - 1)));
-                        } else {
-                            $phpcsFile->fixer->replaceToken(($newLineStart - 1), str_repeat(' ', ($expectedColumn - 1)));
-                        }
-                    }
-                }
-            } else if ($tokens[$newLineStart]['column'] !== $expectedColumn) {
-                // Short array syntax.
-                // Skip lines that are part of a multi-line string.
-                $isMultiLineString = $tokens[($newLineStart - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
-                    && substr($tokens[($newLineStart - 1)]['content'], -1) === $phpcsFile->eolChar;
-                if ($isMultiLineString === false) {
+                if ($innerNesting === false && $isMultiLineString === false) {
                     $error = 'Array indentation error, expected %s spaces but found %s';
                     $data  = array(
                               $expectedColumn - 1,

@@ -100,3 +100,12 @@ $backend->expects($this->exactly(1))
       'module_handler_test_missing' => array(),
     )))
   ));
+
+$backend->expects($this->exactly(1))
+  ->method('get')
+  ->will($this->onConsecutiveCalls(
+    (object) ['data' => ['hook' => [
+      'module_handler_test' => [],
+      'module_handler_test_missing' => [],
+    ]]]
+  ));

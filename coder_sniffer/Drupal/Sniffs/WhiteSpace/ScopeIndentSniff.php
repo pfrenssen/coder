@@ -316,9 +316,13 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
 
             // Closing short array bracket should just be indented to at least
             // the same level as where it was opened (but can be more).
-            if ($tokens[$i]['code'] === T_CLOSE_SHORT_ARRAY
+            if (($tokens[$i]['code'] === T_CLOSE_SHORT_ARRAY
+                // Don't check this in nested parenthesis as that can cause false
+                // positive indentation levels.
+                && empty($tokens[$i]['nested_parenthesis']) === true)
                 || ($checkToken !== null
-                && $tokens[$checkToken]['code'] === T_CLOSE_SHORT_ARRAY)
+                && $tokens[$checkToken]['code'] === T_CLOSE_SHORT_ARRAY
+                && empty($tokens[$checkToken]['nested_parenthesis']) === true)
             ) {
                 if ($checkToken !== null) {
                     $arrayCloser = $checkToken;
