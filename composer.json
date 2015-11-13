@@ -11,7 +11,7 @@
     "license": "GPL-2.0+",
     "require": {
         "php": ">=5.2.0",
-        "squizlabs/php_codesniffer": ">=2.3.4"
+        "squizlabs/php_codesniffer": "dev-master#139fe39bea7"
     },
     "require-dev": {
         "phpunit/phpunit": ">=3.7 <5.0"
