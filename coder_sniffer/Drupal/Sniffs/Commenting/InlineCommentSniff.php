@@ -447,7 +447,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                          );
                 $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'SpacingBefore', $data);
                 if ($fix === true) {
-                    $phpcsFile->fixer->replaceToken($stackPtr, '// '.substr($comment, (2 + $spaceCount)));
+                    $phpcsFile->fixer->replaceToken($stackPtr, '// '.substr($comment, (2 + $spaceCount)).$phpcsFile->eolChar);
                 }
             }//end if
         }//end if

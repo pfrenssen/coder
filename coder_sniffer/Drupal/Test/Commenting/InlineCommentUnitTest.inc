@@ -45,3 +45,20 @@ test();
 test();
 
 //  2 spaces instead of one.
+test();
+
+/**
+ * Test function.
+ */
+function example_custom_block_view($delta = '') {
+  // This example is adapted from node.module.
+  $block = array();
+
+  switch ($delta) {
+    case 'my_block':
+      //    $block['subject'] = t('custom twitter feed');
+      $block['content'] = test();;
+      break;
+  }
+  return $block;
+}
