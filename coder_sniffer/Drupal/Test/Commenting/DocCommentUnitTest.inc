@@ -68,3 +68,12 @@ class Test {
 function test11() {
 
 }
+
+/**
+ * Long description will start with a number below.
+ *
+ * 64KB ought to be enough for anybody.
+ */
+function test12() {
+
+}
