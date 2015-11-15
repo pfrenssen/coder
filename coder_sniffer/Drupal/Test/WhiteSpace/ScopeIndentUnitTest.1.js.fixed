@@ -4,7 +4,8 @@
 jQuery(document).ready(function () {
 
     if (jQuery('.imgGallery').length > 0 || jQuery('.featuresBox').length > 0) {
-    var controller = jQuery.superscrollorama();}
+    var controller = jQuery.superscrollorama();
+    }
 
          var a2 = jQuery('.imgGallery .rowImages a');
     for (var i = 0; i < a2.length; i++) {
@@ -28,4 +29,4 @@ jQuery(document).ready(function () {
             ease:Quad.easeInOut}));
     }
 
- });
+});
