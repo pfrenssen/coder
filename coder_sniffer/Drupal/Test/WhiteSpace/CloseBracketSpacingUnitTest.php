@@ -15,6 +15,7 @@ class Drupal_Sniffs_WhiteSpace_CloseBracketSpacingUnitTest extends CoderSniffUni
     {
         return array(
                 3 => 1,
+                7 => 1,
                );
 
     }//end getErrorList()
