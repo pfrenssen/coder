@@ -144,6 +144,8 @@ class Drupal_Sniffs_Classes_ClassDeclarationSniff extends PSR2_Sniffs_Classes_Cl
         $prevContent = $phpcsFile->findPrevious(T_WHITESPACE, ($closeBrace - 1), null, true);
         if ($prevContent !== $tokens[$stackPtr]['scope_opener']
             && $tokens[$prevContent]['line'] !== ($tokens[$closeBrace]['line'] - 2)
+            // If the class only contains a comment no extra line is needed.
+            && isset(PHP_CodeSniffer_Tokens::$commentTokens[$tokens[$prevContent]['code']]) === false
         ) {
             $error = 'The closing brace for the %s must have an empty line before it';
             $data  = array($tokens[$stackPtr]['content']);

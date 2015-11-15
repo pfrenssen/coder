@@ -33,3 +33,10 @@ namespace SecondNamespace{
 namespace {
   // Global namespace.
 }
+
+/**
+ * Testing an empty class body with comment.
+ */
+class ThirdClass {
+  // No-op.
+}
