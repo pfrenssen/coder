@@ -125,7 +125,8 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                 return;
             }
 
-            if ($tokens[$stackPtr]['content'] === '/**') {
+            // Inline doc blocks are allowed in JSDoc.
+            if ($tokens[$stackPtr]['content'] === '/**' && $phpcsFile->tokenizerType !== 'JS') {
                 // The only exception to inline doc blocks is the /** @var */
                 // declaration.
                 $content = $phpcsFile->getTokensAsString($stackPtr, ($tokens[$stackPtr]['comment_closer'] - $stackPtr + 1));
