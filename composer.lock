@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1b69ccb46a7c94da3b0d66898a8462c9",
-    "content-hash": "2bae2816351c0242fb44ce8d6ffe3c43",
+    "hash": "441a4e42ade90e47b5147e9808ed0b54",
+    "content-hash": "efdc7d9ef0bd71e5001ec76c3d1f266b",
     "packages": [
         {
             "name": "squizlabs/php_codesniffer",
@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "139fe39bea7"
+                "reference": "9f195e43b9efebf6f57c81c38b4c7bf5c8ae409f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/63d98702c42aef8babf7e85eba40d464cfaa48d7",
-                "reference": "139fe39bea7",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/9f195e43b9efebf6f57c81c38b4c7bf5c8ae409f",
+                "reference": "9f195e43b9efebf6f57c81c38b4c7bf5c8ae409f",
                 "shasum": ""
             },
             "require": {
@@ -83,7 +83,7 @@
                 "wiki": "https://github.com/squizlabs/PHP_CodeSniffer/wiki",
                 "source": "https://github.com/squizlabs/PHP_CodeSniffer"
             },
-            "time": "2015-11-09 01:40:53"
+            "time": "2015-11-16 02:17:41"
         }
     ],
     "packages-dev": [

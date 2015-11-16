@@ -333,6 +333,13 @@ $test = array(
   ),
 );
 
+// Arrays by reference in arrays.
+$x = array('foo');
+$y = array(&$x);
+
+$x = ['foo'];
+$y = [&$x];
+
 // Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1', 'two' => '2');
 foreach ($a as $key => $value) {
