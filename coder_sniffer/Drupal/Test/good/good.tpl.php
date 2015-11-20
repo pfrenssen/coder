@@ -27,3 +27,8 @@
 </div>
 <br />
 <?php print $foo; ?>
+  <?php print l($app['icon'], $app['site_url'], array(
+          'html' => TRUE,
+          'attributes' => array('target' => '_blank'),
+        )
+  ) ?>

@@ -110,6 +110,12 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
         // Find the first token on this line.
         $firstLineColumn = $tokens[$stackPtr]['column'];
         for ($i = $stackPtr; $i >= 0; $i--) {
+            // If there is a PHP open tag then this must be a template file where we
+            // don't check indentation.
+            if ($tokens[$i]['code'] === T_OPEN_TAG) {
+                return;
+            }
+
             // Record the first code token on the line.
             if ($tokens[$i]['code'] !== T_WHITESPACE) {
                 $firstLineColumn = $tokens[$i]['column'];
