@@ -63,6 +63,7 @@ class Drupal_Sniffs_Formatting_SpaceUnaryOperatorSniff implements PHP_CodeSniffe
                  T_VARIABLE,
                  T_CLOSE_SQUARE_BRACKET,
                  T_CLOSE_PARENTHESIS,
+                 T_STRING,
                 )
             );
 

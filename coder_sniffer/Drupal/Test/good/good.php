@@ -526,6 +526,16 @@ class Bar {
 
   }
 
+  /**
+   * Test the ++ and -- operator.
+   */
+  public function incDecTest() {
+    $this->foo++;
+    $this->foo--;
+    --$this->foo;
+    ++$this->foo;
+  }
+
 }
 
 /**
