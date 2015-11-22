@@ -701,12 +701,8 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 || ($tokenIndent < $checkIndent && $exact === false))
             ) {
                 if ($tokenIndent > $checkIndent) {
-                    // Ignore code between paranthesis (multi line function calls or
-                    // arrays) and multi line statements.
-                    if (empty($tokens[$checkToken]['nested_parenthesis']) === false) {
-                        continue;
-                    }
 
+                    // Ignore multi line statements.
                     $before = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($checkToken - 1), null, true);
                     if ($before !== false && in_array($tokens[$before]['code'], array(T_SEMICOLON, T_CLOSE_CURLY_BRACKET, T_OPEN_CURLY_BRACKET)) === false) {
                         continue;
