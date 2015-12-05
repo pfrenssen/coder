@@ -646,7 +646,7 @@ function theme_drush_coder_review_warning(array $variables) {
       );
       $attr['severity'] = $checkstyle_levels[$variables['severity_name']];
     }
-    return '<error ' . drupal_attributes($attr) . ' />';
+    return '<error ' . _coder_review_drupal_attributes($attr) . ' />';
   }
 
   // Return warning as text output, formatted for the drush screen.
@@ -715,6 +715,21 @@ function coder_review_print_drush_messages(array $summary) {
  */
 function _coder_review_drush_output($output) {
   return html_entity_decode(strip_tags($output));
+}
+
+/**
+ * Replaces default drupal drupal_attributes() for not bootstrapped usage.
+ */
+function _coder_review_drupal_attributes(array $attributes = array()) {
+  if (function_exists('drupal_attributes')) {
+    return drupal_attributes($attributes);
+  }
+
+  foreach ($attributes as $attribute => &$data) {
+    $data = implode(' ', (array) $data);
+    $data = $attribute . '="' . htmlspecialchars($data, ENT_QUOTES, 'UTF-8') . '"';
+  }
+  return $attributes ? ' ' . implode(' ', $attributes) : '';
 }
 
 /**
