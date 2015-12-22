@@ -879,6 +879,15 @@ class Foo implements FooInterface {
   }
 
   /**
+   * Omitting the comment when returning static is allowed.
+   *
+   * @return static
+   */
+  public function test41() {
+    return new static();
+  }
+
+  /**
    * Loads multiple string objects.
    *
    * @param array $conditions
