@@ -336,8 +336,10 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 $comment = trim($comment);
 
                 if ($comment === '') {
-                    $error = 'Comment missing or not on the next line for @throws tag in function comment';
-                    $phpcsFile->addError($error, $tag, 'EmptyThrows');
+                    if (str_word_count($tokens[($tag + 2)]['content'], 0, '\\') > 1) {
+                        $error = '@throws comment must be on the next line';
+                        $phpcsFile->addError($error, $tag, 'ThrowsComment');
+                    }
                     return;
                 }
 

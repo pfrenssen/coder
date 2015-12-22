@@ -931,6 +931,15 @@ class Foo implements FooInterface {
     return 'test5';
   }
 
+  /**
+   * Not documenting a "throws" tag is allowed.
+   *
+   * @throws Exception
+   */
+  public function test6() {
+    throw new Exception();
+  }
+
 }
 
 t('Some long mulit-line 

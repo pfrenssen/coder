@@ -13,7 +13,7 @@ function foo($x, $y) {
 }
 
 /**
- * Missing exception description in the throws tag.
+ * Missing exception description in the throws tag, which is OK.
  *
  * @throws \Drupal\locale\StringStorageException
  */
