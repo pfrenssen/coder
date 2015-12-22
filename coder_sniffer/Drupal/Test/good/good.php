@@ -1087,6 +1087,24 @@ function test12($array_param) {
 }
 
 /**
+ * Paramter docs with a long nested list.
+ *
+ * @param string $a
+ *   Lists are usually preceded by a line ending in a colon:
+ *   - Item in the list.
+ *   - Another item.
+ *     - key: Sub-list with keys, first item.
+ *     - key2: (optional) Second item with a key.
+ *   - Back to the outer list. Sometimes list items are quite long, in which
+ *     case you can wrap the text like this.
+ *   - Last item in the outer list.
+ *   Text that is outside of the list continues here.
+ */
+function test13($a) {
+
+}
+
+/**
  * Example annotation that exceeds 80 characters several times, but is valid.
  *
  * @ConfigEntityType(
