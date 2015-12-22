@@ -10,8 +10,6 @@ php:
 
 matrix:
   allow_failures:
-    # PHP 7 testing is disabled for now because it is unstable
-    - php: 7
     # We cannot use hhvm-nightly since that does not work in Travis CI's old
     # Ubuntu 12.04.
     - php: hhvm
