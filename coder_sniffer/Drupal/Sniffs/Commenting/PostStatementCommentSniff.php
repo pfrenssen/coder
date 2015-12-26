@@ -82,6 +82,10 @@ class Drupal_Sniffs_Commenting_PostStatementCommentSniff implements PHP_CodeSnif
         $error = 'Comments may not appear after statements';
         $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'Found');
         if ($fix === true) {
+            if ($tokens[$lastContent]['code'] === T_OPEN_TAG) {
+                $phpcsFile->fixer->addNewlineBefore($stackPtr);
+                return;
+            }
             $lineStart = $stackPtr;
             while ($tokens[$lineStart]['line'] === $tokens[$stackPtr]['line']
                 && $tokens[$lineStart]['code'] !== T_OPEN_TAG

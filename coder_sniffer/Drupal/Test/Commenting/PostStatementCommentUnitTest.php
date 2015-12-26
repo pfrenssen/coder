@@ -19,8 +19,10 @@ class Drupal_Sniffs_Commenting_PostStatementCommentUnitTest extends CoderSniffUn
                         3 => 1,
                         7 => 1,
                        );
-            default:
+            case 'PostStatementCommentUnitTest.1.inc':
                 return array(1 => 1);
+            case 'PostStatementCommentUnitTest.2.inc':
+                return array(6 => 1);
         }
 
     }//end getErrorList()
