@@ -842,6 +842,10 @@ class Foo implements FooInterface {
     $nodes = foo();
     /** @var \Drupal\node\NodeInterface|\PHPUnit_Framework_MockObject_MockObject $node_mock */
     $node_mock = mock_node();
+    /** @var \Drupal\SomeInterface4You $thing */
+    $thing = thing();
+    /** @var \Drupal\SomeInterface4You $test2 */
+    $test2 = test2();
     return $node;
   }
 
