@@ -77,7 +77,7 @@ class Drupal_Sniffs_Formatting_SpaceUnaryOperatorSniff implements PHP_CodeSniffe
                 return;
             }
 
-            if ($modifyLeft === false && substr($tokens[($stackPtr + 1)]['content'], 0, 1) !== '$') {
+            if ($modifyLeft === false && $tokens[($stackPtr + 1)]['code'] === T_WHITESPACE) {
                 $error = 'A unary operator statement must not be followed by a single space';
                 $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'IncDecRight');
                 if ($fix === true) {

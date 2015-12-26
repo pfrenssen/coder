@@ -1172,3 +1172,20 @@ class ReactionRule extends ConfigEntityBase {
   protected $expression_id;
 
 }
+
+/**
+ * Test class.
+ */
+class OperatorTest {
+
+  protected static $seenIds;
+
+  /**
+   * Test method.
+   */
+  public function test() {
+    $id = $id . '--' . ++static::$seenIds[$id];
+    return $id;
+  }
+
+}
