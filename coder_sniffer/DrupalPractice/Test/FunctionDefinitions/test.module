@@ -26,3 +26,15 @@ function test_menu() {
   );
   return $items;
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function test_form_node_form_alter(&$form, &$form_state, $form_id) {
+  $enabled_menus = variable_get('menu_options_' . $form['#node']->type, array('main-menu'));
+
+  // Skip if there's no enabled menus available.
+  if (empty($enabled_menus)) {
+    return;
+  }
+}
