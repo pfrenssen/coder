@@ -795,7 +795,7 @@ class FooBar2 {
   public function test26() {print 'x';}
 }
 
-// Security issue: http://drupal.org/node/750148
+// Security issue: https://www.drupal.org/node/750148
 preg_match('/.+/e', 'subject');
 preg_match('/.+/iemesuexADSUeXJ', 'subject');
 preg_filter('/.+/imsuexADSUXJ', 'replacement', 'subject');

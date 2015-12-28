@@ -9,7 +9,7 @@ Built-in support for:
 - "Drupal": Coding Standards https://www.drupal.org/coding-standards
 - "DrupalPractice": Best practices for Drupal module development
 
-Online documentation: https://drupal.org/node/1419980
+Online documentation: https://www.drupal.org/node/1419980
 
 
 ## Installation
@@ -65,11 +65,11 @@ Drupal Code Sniffer can be used with various editors.
 
 Editors:
 
-* Eclipse: http://drupal.org/node/1420004
-* Komodo: http://drupal.org/node/1419996
-* Netbeans: http://drupal.org/node/1420008
-* Sublime Text: http://drupal.org/node/1419996
-* vim: http://drupal.org/node/1419996
+* Eclipse: https://www.drupal.org/node/1420004
+* Komodo: https://www.drupal.org/node/1419996
+* Netbeans: https://www.drupal.org/node/1420008
+* Sublime Text: https://www.drupal.org/node/1419996
+* vim: https://www.drupal.org/node/1419996
 
 
 ## Automated Testing (PHPUnit)

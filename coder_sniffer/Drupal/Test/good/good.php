@@ -455,7 +455,7 @@ do {
  *
  * @see example_reference()
  * @see Example::exampleMethod()
- * @see http://drupal.org
+ * @see https://www.drupal.org
  * @see http://example.com/see/documentation/is/allowed/to/exceed/eighty/characters
  */
 function foo_bar($field1, $field2, $field3 = NULL, &$field4 = NULL) {
@@ -800,7 +800,7 @@ watchdog('mymodule', 'Log message here.');
 // "=" oeprator.
 $batch =& batch_get();
 
-// Security issue: http://drupal.org/node/750148
+// Security issue: https://www.drupal.org/node/750148
 preg_match('/.+/i', 'subject');
 preg_match('/.+/imsuxADSUXJ', 'subject');
 preg_filter('/.+/i', 'replacement', 'subject');

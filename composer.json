@@ -2,10 +2,10 @@
     "name": "drupal/coder",
     "type": "library",
     "description": "Coder is a library to review Drupal code.",
-    "homepage": "https://drupal.org/project/coder",
+    "homepage": "https://www.drupal.org/project/coder",
     "support": {
-        "issues": "https://drupal.org/project/issues/coder",
-        "source": "https://drupal.org/project/coder"
+        "issues": "https://www.drupal.org/project/issues/coder",
+        "source": "https://www.drupal.org/project/coder"
     },
     "keywords": ["phpcs", "standards", "code review"],
     "license": "GPL-2.0+",
