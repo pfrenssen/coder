@@ -55,6 +55,15 @@ class Drupal_Sniffs_InfoFiles_AutoAddedKeysSniff implements PHP_CodeSniffer_Snif
             // Drupal 8 style info.yml file.
             $contents = file_get_contents($phpcsFile->getFilename());
             try {
+                // Installations via Composer: make sure that we autoload the YAML
+                // dependency.
+                // @todo: Remove this once PHPCS does that, see
+                // https://github.com/squizlabs/PHP_CodeSniffer/pull/833
+                if (file_exists($a = dirname(__FILE__).'/../../../../../../autoload.php') === true) {
+                    include_once $a;
+                } else if (file_exists($a = dirname(__FILE__).'/../../../../vendor/autoload.php') === true) {
+                    include_once $a;
+                }
                 $info = \Symfony\Component\Yaml\Yaml::parse($contents);
             } catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
                 // If the YAML is invalid we ignore this file.
