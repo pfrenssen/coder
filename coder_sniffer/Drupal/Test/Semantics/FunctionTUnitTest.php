@@ -29,7 +29,10 @@ class Drupal_Sniffs_Semantics_FunctionTUnitTest extends CoderSniffUnitTest
      */
     public function getWarningList($testFile)
     {
-        return array(4 => 1);
+        return array(
+                4 => 1,
+                12 => 1,
+               );
 
     }//end getWarningList()
 

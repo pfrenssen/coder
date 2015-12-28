@@ -54,6 +54,13 @@ abstract class Drupal_Sniffs_Semantics_FunctionCall implements PHP_CodeSniffer_S
      */
     protected $arguments;
 
+    /**
+     * Whether method invocations with the same function name should be processed,
+     * too.
+     *
+     * @var bool
+     */
+    protected $includeMethodCalls = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -137,12 +144,12 @@ abstract class Drupal_Sniffs_Semantics_FunctionCall implements PHP_CodeSniffer_S
             return false;
         }
 
-        if ($tokens[$previous]['code'] === T_OBJECT_OPERATOR) {
+        if ($tokens[$previous]['code'] === T_OBJECT_OPERATOR && $this->includeMethodCalls === false) {
             // It's a method invocation, not a function call.
             return false;
         }
 
-        if ($tokens[$previous]['code'] === T_DOUBLE_COLON) {
+        if ($tokens[$previous]['code'] === T_DOUBLE_COLON && $this->includeMethodCalls === false) {
             // It's a static method invocation, not a function call.
             return false;
         }

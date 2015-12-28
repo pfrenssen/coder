@@ -20,6 +20,12 @@
 class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_FunctionCall
 {
 
+    /**
+     * We also want to catch $this->t() calls in Drupal 8.
+     *
+     * @var bool
+     */
+    protected $includeMethodCalls = true;
 
     /**
      * Returns an array of function names this test wants to listen for.
