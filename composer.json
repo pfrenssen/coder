@@ -10,7 +10,7 @@
     "keywords": ["phpcs", "standards", "code review"],
     "license": "GPL-2.0+",
     "require": {
-        "php": ">=5.2.0",
+        "php": ">=5.4.0",
         "squizlabs/php_codesniffer": ">=2.4.0",
         "symfony/yaml": "<3.0.0"
     },
