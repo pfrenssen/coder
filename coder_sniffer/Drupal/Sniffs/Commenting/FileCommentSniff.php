@@ -116,7 +116,7 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
         // definition then the file docblock is mising.
         if ($fileTag === false
             && $tokens[$next]['line'] === ($tokens[$commentEnd]['line'] + 1)
-            && in_array($tokens[$next]['code'], array(T_FUNCTION, T_CLASS, T_INTERFACE, T_TRAIT))
+            && in_array($tokens[$next]['code'], array(T_FUNCTION, T_CLASS, T_INTERFACE, T_TRAIT)) === true
         ) {
             $fix = $phpcsFile->addFixableError('Missing file doc comment', $stackPtr, 'Missing');
             if ($fix === true) {
@@ -154,7 +154,18 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
         // Exactly one blank line after the file comment.
         if ($tokens[$next]['line'] !== ($tokens[$commentEnd]['line'] + 2) && $tokens[$next]['line'] > $tokens[$commentEnd]['line']) {
             $error = 'There must be exactly one blank line after the file comment';
-            $phpcsFile->addError($error, $commentEnd, 'SpacingAfterComment');
+            $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfterComment');
+            if ($fix === true) {
+                $phpcsFile->fixer->beginChangeset();
+                $uselessLine = ($commentEnd + 1);
+                while ($uselessLine < $next) {
+                    $phpcsFile->fixer->replaceToken($uselessLine, '');
+                    $uselessLine++;
+                }
+
+                $phpcsFile->fixer->addContent($commentEnd, "\n\n");
+                $phpcsFile->fixer->endChangeset();
+            }
         }
 
         // Ignore the rest of the file.

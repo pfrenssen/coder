@@ -1,6 +1,7 @@
 /**
  * @file
  */
+
 jQuery(document).ready(function () {
 
   if (jQuery('.imgGallery').length > 0 || jQuery('.featuresBox').length > 0) {
