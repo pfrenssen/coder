@@ -152,7 +152,10 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
         }
 
         // Exactly one blank line after the file comment.
-        if ($tokens[$next]['line'] !== ($tokens[$commentEnd]['line'] + 2) && $tokens[$next]['line'] > $tokens[$commentEnd]['line']) {
+        if ($tokens[$next]['line'] !== ($tokens[$commentEnd]['line'] + 2)
+            && $tokens[$next]['line'] > $tokens[$commentEnd]['line']
+            && $tokens[$next]['code'] !== T_CLOSE_TAG
+        ) {
             $error = 'There must be exactly one blank line after the file comment';
             $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfterComment');
             if ($fix === true) {
@@ -164,6 +167,28 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
                 }
 
                 $phpcsFile->fixer->addContent($commentEnd, "\n\n");
+                $phpcsFile->fixer->endChangeset();
+            }
+
+            return ($phpcsFile->numTokens + 1);
+        }
+
+        // Template file: no blank line after the file comment.
+        if ($tokens[$next]['line'] !== ($tokens[$commentEnd]['line'] + 1)
+            && $tokens[$next]['line'] > $tokens[$commentEnd]['line']
+            && $tokens[$next]['code'] === T_CLOSE_TAG
+        ) {
+            $error = 'There must be no blank line after the file comment in a template';
+            $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'TeamplateSpacingAfterComment');
+            if ($fix === true) {
+                $phpcsFile->fixer->beginChangeset();
+                $uselessLine = ($commentEnd + 1);
+                while ($uselessLine < $next) {
+                    $phpcsFile->fixer->replaceToken($uselessLine, '');
+                    $uselessLine++;
+                }
+
+                $phpcsFile->fixer->addContent($commentEnd, "\n");
                 $phpcsFile->fixer->endChangeset();
             }
         }
