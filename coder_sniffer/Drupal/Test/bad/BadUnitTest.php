@@ -429,7 +429,7 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
 
         foreach ($di as $file) {
             $path = $file->getPathname();
-            if ($path !== __FILE__ && $file->isFile()) {
+            if ($path !== __FILE__ && $file->isFile() && preg_match('/\.fixed$/', $path) !== 1) {
                 $testFiles[] = $path;
             }
         }
