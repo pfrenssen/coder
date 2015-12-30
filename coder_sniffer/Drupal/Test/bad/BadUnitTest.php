@@ -341,6 +341,7 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                         735 => 1,
                         738 => 1,
                         741 => 1,
+                        744 => 1,
                         750 => 1,
                         756 => 1,
                         765 => 1,
