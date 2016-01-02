@@ -16,6 +16,7 @@
  */
 
 use Drupal\very_long_module_name_i_am_inventing_here_trololololo\SuperManager;
+use \Drupal\some_module\ExampleClass as AliasedExampleClass;
 
 // Singleline comment before a code line.
 $foo = 'bar';
@@ -1123,6 +1124,16 @@ function test12($array_param) {
  *   Text that is outside of the list continues here.
  */
 function test13($a) {
+
+}
+
+/**
+ * Using an alias type hint but the fully qualified name in the docs.
+ *
+ * @param \Drupal\some_module\ExampleClass $a
+ *   Example parameter.
+ */
+function test14(AliasedExampleClass $a) {
 
 }
 

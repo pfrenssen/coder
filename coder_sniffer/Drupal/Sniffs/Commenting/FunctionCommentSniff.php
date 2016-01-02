@@ -116,9 +116,9 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 
         if ($tokens[$commentEnd]['line'] !== ($tokens[$stackPtr]['line'] - 1)) {
             $error = 'There must be no blank lines after the function comment';
-            $fix = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter');
+            $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter');
             if ($fix === true) {
-                $phpcsFile->fixer->replaceToken($commentEnd + 1, '');
+                $phpcsFile->fixer->replaceToken(($commentEnd + 1), '');
             }
         }
 
@@ -340,6 +340,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         $error = '@throws comment must be on the next line';
                         $phpcsFile->addError($error, $tag, 'ThrowsComment');
                     }
+
                     return;
                 }
 
@@ -560,7 +561,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                             // for the part after the last "\".
                             $name_parts = explode('\\', $suggestedTypeHint);
                             $last_part  = end($name_parts);
-                            if ($last_part !== $typeHint) {
+                            if ($last_part !== $typeHint && $this->isAliasedType($typeHint, $suggestedTypeHint, $phpcsFile) === false) {
                                 $error = 'Expected type hint "%s"; found "%s" for %s';
                                 $data  = array(
                                           $last_part,
@@ -735,6 +736,75 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         return $type;
 
     }//end suggestType()
+
+
+    /**
+     * Checks if a used type hint is an alias defined by a "use" statement.
+     *
+     * @param string               $typeHint          The type hint used.
+     * @param string               $suggestedTypeHint The fully qualified type to
+     *                                                check against.
+     * @param PHP_CodeSniffer_File $phpcsFile         The file being checked.
+     *
+     * @return boolean
+     */
+    protected function isAliasedType($typeHint, $suggestedTypeHint, PHP_CodeSniffer_File $phpcsFile)
+    {
+        $tokens = $phpcsFile->getTokens();
+
+        // Iterate over all "use" statements in the file.
+        $usePtr = 0;
+        while ($usePtr !== false) {
+            $usePtr = $phpcsFile->findNext(T_USE, ($usePtr + 1));
+            if ($usePtr === false) {
+                return false;
+            }
+
+            // Only check use statements in the global scope.
+            if (empty($tokens[$usePtr]['conditions']) === false) {
+                continue;
+            }
+
+            // Now comes the original class name, possibly with namespace
+            // backslashes.
+            $originalClass = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($usePtr + 1), null, true);
+            if ($originalClass === false || ($tokens[$originalClass]['code'] !== T_STRING
+                && $tokens[$originalClass]['code'] !== T_NS_SEPARATOR)
+            ) {
+                continue;
+            }
+
+            $originalClassName = '';
+            while (in_array($tokens[$originalClass]['code'], array(T_STRING, T_NS_SEPARATOR)) === true) {
+                $originalClassName .= $tokens[$originalClass]['content'];
+                $originalClass++;
+            }
+
+            if (ltrim($originalClassName, '\\') !== ltrim($suggestedTypeHint, '\\')) {
+                continue;
+            }
+
+            // Now comes the "as" keyword signaling an alias name for the class.
+            $asPtr = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($originalClass + 1), null, true);
+            if ($asPtr === false || $tokens[$asPtr]['code'] !== T_AS) {
+                continue;
+            }
+
+            // Now comes the name the class is aliased to.
+            $aliasPtr = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($asPtr + 1), null, true);
+            if ($aliasPtr === false || $tokens[$aliasPtr]['code'] !== T_STRING
+                || $tokens[$aliasPtr]['content'] !== $typeHint
+            ) {
+                continue;
+            }
+
+            // We found a use statement that aliases the used type hint!
+            return true;
+        }//end while
+
+        return false;
+
+    }//end isAliasedType()
 
 
 }//end class
