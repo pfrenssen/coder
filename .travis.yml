@@ -17,6 +17,9 @@ matrix:
   fast_finish: true
 
 before_script:
+  # Remove the lock file so that composer picks versions that are compatible
+  # with the PHP version in this test.
+  - rm composer.lock
   - composer install
 
 script:
