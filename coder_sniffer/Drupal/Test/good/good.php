@@ -341,6 +341,24 @@ $y = array(&$x);
 $x = ['foo'];
 $y = [&$x];
 
+// Multi-line function call with array and anonymous function.
+multiline_call(Inspector::assertAllCallable([
+  'strchr',
+  [$x, 'callMe'],
+  ['test', 'callMeStatic'],
+  function() {
+    return TRUE;
+  },
+]));
+multiline_call(Inspector::assertAllCallable(array(
+  'strchr',
+  array($x, 'callMe'),
+  array('test', 'callMeStatic'),
+  function() {
+    return TRUE;
+  },
+)));
+
 // Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1', 'two' => '2');
 foreach ($a as $key => $value) {

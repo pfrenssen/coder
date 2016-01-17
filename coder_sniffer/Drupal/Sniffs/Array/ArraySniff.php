@@ -131,7 +131,7 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
             if ($tokens[$i]['column'] === 1) {
                 break;
             }
-        }
+        }//end for
 
         $lineStart = $stackPtr;
         // Iterate over all lines of this array.
@@ -165,6 +165,12 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                     $current_line = $tokens[$newLineStart]['line'];
                 }
 
+                // Nested structures such as closures: skip those, they are checked
+                // in other sniffs. If the conditions of a token are different it
+                // means that it is in a different nesting level.
+                if ($tokens[$newLineStart]['conditions'] !== $tokens[$stackPtr]['conditions']) {
+                    $current_line++;
+                }
             }//end while
 
             if ($newLineStart === $tokens[$stackPtr][$parenthesis_closer]) {
@@ -188,7 +194,7 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                 break;
             }
 
-            $expectedColumn = $firstLineColumn + 2;
+            $expectedColumn = ($firstLineColumn + 2);
             // If the line starts with "->" then we assume an additional level of
             // indentation.
             if ($tokens[$newLineStart]['code'] === T_OBJECT_OPERATOR) {
