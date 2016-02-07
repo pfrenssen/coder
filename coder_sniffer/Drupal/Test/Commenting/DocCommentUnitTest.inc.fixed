@@ -88,3 +88,22 @@ function test11() {
 function test12() {
 
 }
+
+/**
+ * Creates an organisation with data provided in a table.
+ *
+ * Table format:
+ * @codingStandardsIgnoreStart
+ * | name              | chairman         | founder                 | founding year | motto                                  |
+ * | City Watch        | Sir Samuel Vimes | King Veltrick I         | 1561 UC       | Fabricati Diem, Pvncti Agvnt Celeriter |
+ * | Assassin's Guild  | Lord Downey      | Sir Gyles de Munforte   | 1512 AM       | Nil Mortifi, Sine Lvcre                |
+ * | Unseen University | Mustrum Ridcully | Alberto Malich the Wise | 1281 AM       | Nvnc Id Vides, Nvnc Ne Vides           |
+ * @codingStandardsIgnoreEnd
+ *
+ * @param TableNode $organisation_table
+ *   The organisation data.
+ *
+ * @Given (the following )organisations:
+ */
+public function givenOrganisations(TableNode $organisation_table) {
+}

@@ -459,7 +459,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
         // If there is a param group, it needs to be first; with the exception of
         // @code, @todo and link tags.
         if ($paramGroupid !== null && $paramGroupid !== 0
-            && in_array($tokens[$tokens[$commentStart]['comment_tags'][0]]['content'], array('@code', '@todo', '@link', '@endlink')) === false
+            && in_array($tokens[$tokens[$commentStart]['comment_tags'][0]]['content'], array('@code', '@todo', '@link', '@endlink', '@codingStandardsIgnoreStart')) === false
             // In JSDoc we can have many other valid tags like @function or
             // @constructor before the param tags.
             && $phpcsFile->tokenizerType !== 'JS'
