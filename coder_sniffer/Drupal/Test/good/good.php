@@ -359,6 +359,27 @@ multiline_call(Inspector::assertAllCallable(array(
   },
 )));
 
+// Nested array indentation with closures.
+$options = array(
+  'value' => array(
+    'Callback' => array(
+      'callback' => function ($value, ExecutionContextInterface $context) {
+        TheaterItem::theaterValidate($value, $context);
+      },
+    ),
+  ),
+);
+
+$options = array(
+  'value' => [
+    'Callback' => array(
+      'callback' => function ($value, ExecutionContextInterface $context) {
+        TheaterItem::theaterValidate($value, $context);
+      },
+    ),
+  ],
+);
+
 // Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1', 'two' => '2');
 foreach ($a as $key => $value) {

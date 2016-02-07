@@ -735,6 +735,16 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                     }
                 }
 
+                // Skip array closing indentation errors, this is handled by the
+                // ArraySniff.
+                if (($tokens[$checkToken]['code'] === T_CLOSE_PARENTHESIS
+                    && isset($tokens[$checkToken]['parenthesis_owner']) === true
+                    && $tokens[$tokens[$checkToken]['parenthesis_owner']]['code'] === T_ARRAY)
+                    || $tokens[$checkToken]['code'] === T_CLOSE_SHORT_ARRAY
+                ) {
+                    continue;
+                }
+
                 $type  = 'IncorrectExact';
                 $error = 'Line indented incorrectly; expected ';
                 if ($exact === false) {
