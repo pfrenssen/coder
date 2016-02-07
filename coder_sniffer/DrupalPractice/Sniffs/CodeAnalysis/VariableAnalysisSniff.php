@@ -862,7 +862,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
                     return $scopePtr;
                 }
 
-                if (($scopeCode === T_CLASS) || ($scopeCode === T_INTERFACE)) {
+                if (($scopeCode === T_CLASS) || ($scopeCode === T_INTERFACE) || ($scopeCode === T_TRAIT)) {
                     $in_class = true;
                 }
             }
@@ -1206,7 +1206,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
                 return false;
             }
 
-            if ($scopeCode === T_CLASS) {
+            if ($scopeCode === T_CLASS || $scopeCode === T_TRAIT) {
                 return true;
             }
         }
@@ -1300,7 +1300,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
                         return true;
                     }
 
-                    if ($scopeCode === T_CLASS) {
+                    if ($scopeCode === T_CLASS || $scopeCode === T_TRAIT) {
                         return true;
                     }
                 }

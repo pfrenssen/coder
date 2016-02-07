@@ -71,3 +71,54 @@ function test4() {
     $user = 123;
   }
 }
+
+/**
+ * A trait containing helper methods for language handling.
+ */
+trait LangcodeTrait {
+
+  /**
+   * Name of language.
+   *
+   * @var string
+   */
+  protected $langcode;
+
+  /**
+   * A fully-populated language object.
+   *
+   * @var \Drupal\core\Language\LanguageInterface|null
+   */
+  protected $lang;
+
+  /**
+   * Select language.
+   *
+   * @param string $langcode
+   *   Language code.
+   *
+   * @return $this
+   *   Current instance.
+   */
+  public function setLangcode($langcode) {
+    $this->langcode = $langcode;
+    $this->lang = \Drupal::languageManager()->getLanguage($this->langcode);
+    return $this;
+  }
+
+  /**
+   * Get code of currently active language.
+   *
+   * @return string
+   *   Language code.
+   */
+  public function getLangcode() {
+    if (!isset($this->langcode)) {
+      $lang = \Drupal::languageManager()->getCurrentLanguage();
+      $this->setLangcode($lang->getId());
+    }
+
+    return $this->langcode;
+  }
+
+}
