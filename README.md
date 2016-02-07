@@ -28,12 +28,11 @@ Install Coder (8.x-2.x) in your global Composer directory in your home directory
 composer global require drupal/coder
 ```
 
-Make the phpcs and phpcbf commands globally available:
+To make the phpcs and phpcbf commands available globally, add the composer bin path
+to your $PATH variable in ~/.profile, ~/.bashrc or ~/.zshrc:
 ```
-sudo ln -s ~/.composer/vendor/bin/phpcs /usr/local/bin
-sudo ln -s ~/.composer/vendor/bin/phpcbf /usr/local/bin
+export PATH="$PATH:$HOME/.composer/vendor/bin"
 ```
-(Alternatively you can add those to your $PATH variable in ~/.profile.)
 
 Register the Drupal and DrupalPractice Standard with PHPCS:
 ```
