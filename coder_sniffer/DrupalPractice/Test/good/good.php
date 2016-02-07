@@ -122,3 +122,21 @@ trait LangcodeTrait {
   }
 
 }
+
+/**
+ * Testing closures.
+ */
+class ClosureTest extends TestCase {
+
+  /**
+   * Use $this in a closure, which should be a defined variable.
+   */
+  public function getEntities($limit) {
+    // Create an array of dummy entities.
+    $entities = array_map(function () {
+      return $this->prophesize(EntityInterface::class)->reveal();
+    }, range(1, $limit));
+    return $entities;
+  }
+
+}

@@ -1200,11 +1200,6 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
         }
 
         foreach (array_reverse($token['conditions'], true) as $scopePtr => $scopeCode) {
-            // $this within a closure is invalid
-            // Note: have to fetch code from $tokens, T_CLOSURE isn't set for conditions codes.
-            if ($tokens[$scopePtr]['code'] === T_CLOSURE) {
-                return false;
-            }
 
             if ($scopeCode === T_CLASS || $scopeCode === T_TRAIT) {
                 return true;
