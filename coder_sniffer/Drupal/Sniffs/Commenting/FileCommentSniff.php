@@ -66,6 +66,40 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
         $tokens       = $phpcsFile->getTokens();
         $commentStart = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
 
+        // Files containing exactly one namespaced class, interface or trait must not
+        // have a file doc block.
+        $oopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT], $stackPtr);
+        if ($oopKeyword !== false && $phpcsFile->findNext([T_NAMESPACE], $stackPtr) !== false) {
+            // Check if the file contains multiple classes/interfaces/traits - then a
+            // file doc block is allowed.
+            $secondOopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT], ($oopKeyword + 1));
+            // Classes, interfaces and traits should not have an @file doc
+            // block.
+            if (($tokens[$commentStart]['code'] === T_DOC_COMMENT_OPEN_TAG
+                || $tokens[$commentStart]['code'] === T_COMMENT)
+                && $secondOopKeyword === false
+            ) {
+                $fix = $phpcsFile->addFixableError('Namespaced classes, interfaces and traits should not begin with a file doc comment', $commentStart, 'NamespaceNoFileDoc');
+                if ($fix === true) {
+                    $phpcsFile->fixer->beginChangeset();
+
+                    for ($i = $commentStart; $i <= ($tokens[$commentStart]['comment_closer'] + 1); $i++) {
+                        $phpcsFile->fixer->replaceToken($i, '');
+                    }
+
+                    // If, after removing the comment, there are two new lines
+                    // remove them.
+                    if ($tokens[($commentStart - 1)]['content'] === "\n" && $tokens[$i]['content'] === "\n") {
+                        $phpcsFile->fixer->replaceToken($i, '');
+                    }
+
+                    $phpcsFile->fixer->endChangeset();
+                }
+            }
+
+            return ($phpcsFile->numTokens + 1);
+        }//end if
+
         if ($tokens[$commentStart]['code'] === T_COMMENT) {
             $fix = $phpcsFile->addFixableError('You must use "/**" style comments for a file comment', $commentStart, 'WrongStyle');
             if ($fix === true) {
@@ -116,7 +150,7 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
         // definition then the file docblock is mising.
         if ($fileTag === false
             && $tokens[$next]['line'] === ($tokens[$commentEnd]['line'] + 1)
-            && in_array($tokens[$next]['code'], array(T_FUNCTION, T_CLASS, T_INTERFACE, T_TRAIT)) === true
+            && in_array($tokens[$next]['code'], array(T_FUNCTION)) === true
         ) {
             $fix = $phpcsFile->addFixableError('Missing file doc comment', $stackPtr, 'Missing');
             if ($fix === true) {
