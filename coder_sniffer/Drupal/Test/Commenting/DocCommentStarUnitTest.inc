@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Test broken stars in comments.
+ */
+
+/**
  Star missing here.
  */
 function test1() {

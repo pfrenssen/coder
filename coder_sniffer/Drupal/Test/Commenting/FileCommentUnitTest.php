@@ -58,6 +58,10 @@ class Drupal_Sniffs_Commenting_FileCommentUnitTest extends CoderSniffUnitTest
                 return array(
                     3 => 1,
                 );
+            case 'FileCommentUnitTest.11.inc':
+                return array(
+                    4 => 1,
+                );
         }
 
     }//end getErrorList()

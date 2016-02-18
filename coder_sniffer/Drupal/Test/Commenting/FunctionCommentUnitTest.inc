@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Some function comment tests.
+ */
+
+/**
  * Test.
  *
  * @param string $x

@@ -96,6 +96,22 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             return;
         }
 
+        // If the comment is the first comment in the file then this is a file
+        // comment, not a function comment.
+        $fileComment = $phpcsFile->findNext(T_WHITESPACE, 1, null, true);
+        if ($fileComment === $commentEnd
+            || ($tokens[$commentEnd]['code'] === T_DOC_COMMENT_CLOSE_TAG
+            && $tokens[$commentEnd]['comment_opener'] === $fileComment)
+        ) {
+            $fix = $phpcsFile->addFixableError('Missing function doc comment, only found file comment', $stackPtr, 'MissingFile');
+            if ($fix === true) {
+                $before = $phpcsFile->findNext(T_WHITESPACE, ($commentEnd + 1), ($stackPtr + 1), true);
+                $phpcsFile->fixer->addContentBefore($before, "/**\n *\n */\n");
+            }
+
+            return;
+        }
+
         if ($tokens[$commentEnd]['code'] === T_COMMENT) {
             $fix = $phpcsFile->addFixableError('You must use "/**" style comments for a function comment', $stackPtr, 'WrongStyle');
             if ($fix === true) {
