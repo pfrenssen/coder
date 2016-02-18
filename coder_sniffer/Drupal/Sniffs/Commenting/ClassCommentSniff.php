@@ -10,8 +10,8 @@
  */
 
 /**
- * Checks that comment doc blocks exist on classes and interfaces. Largely copied
- * from Squiz_Sniffs_Commenting_ClassCommentSniff.
+ * Checks that comment doc blocks exist on classes, interfaces and traits. Largely
+ * copied from Squiz_Sniffs_Commenting_ClassCommentSniff.
  *
  * @category  PHP
  * @package   PHP_CodeSniffer
@@ -35,6 +35,7 @@ class Drupal_Sniffs_Commenting_ClassCommentSniff implements PHP_CodeSniffer_Snif
         return array(
                 T_CLASS,
                 T_INTERFACE,
+                T_TRAIT,
                );
 
     }//end register()
