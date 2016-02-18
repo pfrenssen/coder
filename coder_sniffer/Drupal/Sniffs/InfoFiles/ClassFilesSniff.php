@@ -70,7 +70,9 @@ class Drupal_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeSniffer_Sniff
                 // a class or interface definition.
                 $searchTokens = token_get_all(file_get_contents($fileName));
                 foreach ($searchTokens as $token) {
-                    if (is_array($token) === true && ($token[0] === T_CLASS || $token[0] === T_INTERFACE)) {
+                    if (is_array($token) === true
+                        && in_array($token[0], array(T_CLASS, T_INTERFACE, T_TRAIT)) === true
+                    ) {
                         continue 2;
                     }
                 }
