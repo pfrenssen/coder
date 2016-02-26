@@ -10,6 +10,7 @@ use Test\AnotherTrait;
 use Thing\SomeName as OtherName;
 use Thing\DifferentName as UsedOtherName;
 use Another\UnusedUse;
+use Example\MyUrlHelper;
 
 /**
  * Bla.
@@ -29,6 +30,13 @@ class Pum {
    * Description.
    */
   protected function test2(\Thing\NotUsed $x) {
+
+  }
+
+  /**
+   * PHP is not case sensitive.
+   */
+  protected function test3(MyURLHelper $x) {
 
   }
 

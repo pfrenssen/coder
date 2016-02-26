@@ -75,27 +75,33 @@ class Drupal_Sniffs_Classes_UnusedUseStatementSniff implements PHP_CodeSniffer_S
             return;
         }
 
-        $classUsed = $phpcsFile->findNext(T_STRING, ($classPtr + 1), null, false, $tokens[$classPtr]['content']);
+        // Search where the class name is used. PHP treats class names case
+        // insensitive, that's why we cannot search for the exact class name string
+        // and need to iterate over all T_STRING tokens in the file.
+        $classUsed      = $phpcsFile->findNext(T_STRING, ($classPtr + 1));
+        $lowerClassName = strtolower($tokens[$classPtr]['content']);
 
         while ($classUsed !== false) {
-            $beforeUsage = $phpcsFile->findPrevious(
-                PHP_CodeSniffer_Tokens::$emptyTokens,
-                ($classUsed - 1),
-                null,
-                true
-            );
-            // If a backslash is used before the class name then this is some other
-            // use statement.
-            if ($tokens[$beforeUsage]['code'] !== T_USE && $tokens[$beforeUsage]['code'] !== T_NS_SEPARATOR) {
-                return;
+            if (strtolower($tokens[$classUsed]['content']) === $lowerClassName) {
+                $beforeUsage = $phpcsFile->findPrevious(
+                    PHP_CodeSniffer_Tokens::$emptyTokens,
+                    ($classUsed - 1),
+                    null,
+                    true
+                );
+                // If a backslash is used before the class name then this is some other
+                // use statement.
+                if ($tokens[$beforeUsage]['code'] !== T_USE && $tokens[$beforeUsage]['code'] !== T_NS_SEPARATOR) {
+                    return;
+                }
+
+                // Trait use statement within a class.
+                if ($tokens[$beforeUsage]['code'] === T_USE && empty($tokens[$beforeUsage]['conditions']) === false) {
+                    return;
+                }
             }
 
-            // Trait use statement within a class.
-            if ($tokens[$beforeUsage]['code'] === T_USE && empty($tokens[$beforeUsage]['conditions']) === false) {
-                return;
-            }
-
-            $classUsed = $phpcsFile->findNext(T_STRING, ($classUsed + 1), null, false, $tokens[$classPtr]['content']);
+            $classUsed = $phpcsFile->findNext(T_STRING, ($classUsed + 1));
         }//end while
 
         $warning = 'Unused use statement';
