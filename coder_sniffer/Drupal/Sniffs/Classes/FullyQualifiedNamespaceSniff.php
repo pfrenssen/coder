@@ -68,6 +68,13 @@ class Drupal_Sniffs_Classes_FullyQualifiedNamespaceSniff implements PHP_CodeSnif
             return $phpcsFile->findNext([T_STRING, T_NS_SEPARATOR], ($stackPtr + 1), null, true);
         }
 
+        // If this is a namespaced function call then ignore this because use
+        // statements for functions are not possible in PHP 5.5 and lower.
+        $after = $phpcsFile->findNext([T_STRING, T_NS_SEPARATOR, T_WHITESPACE], $stackPtr, null, true);
+        if ($tokens[$after]['code'] === T_OPEN_PARENTHESIS && $tokens[$before]['code'] !== T_NEW) {
+            return ($after + 1);
+        }
+
         $error = 'Namespaced classes/interfaces/traits should be referenced with use statements';
         $phpcsFile->addError($error, $stackPtr, 'UseStatementMissing');
 
