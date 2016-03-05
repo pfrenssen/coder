@@ -1254,3 +1254,7 @@ $default_config = [
   ],
   'handler' => $stack,
 ];
+
+// camelCase and snake_case variables are allowed.
+$snake_case = 1;
+$camelCase = 1;

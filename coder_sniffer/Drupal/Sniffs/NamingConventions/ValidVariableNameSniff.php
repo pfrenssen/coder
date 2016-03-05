@@ -111,9 +111,9 @@ class Drupal_Sniffs_NamingConventions_ValidVariableNameSniff
             return;
         }
 
-        if (preg_match('/[A-Z]/', $varName)) {
-            $error = "Variable \"$varName\" is camel caps format. do not use mixed case (camelCase), use lower case and _";
-            $phpcsFile->addError($error, $stackPtr);
+        if (preg_match('/^[A-Z]/', $varName) === 1) {
+            $error = "Variable \"$varName\" starts with a capital letter, but only \$lowerCamelCase or \$snake_case is allowed";
+            $phpcsFile->addError($error, $stackPtr, 'LowerStart');
         }
 
     }//end processVariable()
