@@ -63,14 +63,6 @@ class Drupal_Sniffs_Classes_UnusedUseStatementSniff implements PHP_CodeSniffer_S
             true
         );
 
-        // Seek along the statement to get the last part, which is the
-        // class/interface name.
-        while (isset($tokens[($classPtr + 1)]) === true
-            && in_array($tokens[($classPtr + 1)]['code'], array(T_STRING, T_NS_SEPARATOR)) === true
-        ) {
-            $classPtr++;
-        }
-
         if ($tokens[$classPtr]['code'] !== T_STRING) {
             return;
         }
