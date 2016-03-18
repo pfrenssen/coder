@@ -1,5 +1,7 @@
 <?php
 
+namespace MyNamespace\Depth;
+
 use Foo\Bar;
 use Bar\Fail;
 use Test\Bar\Thing;
@@ -11,6 +13,8 @@ use Thing\SomeName as OtherName;
 use Thing\DifferentName as UsedOtherName;
 use Another\UnusedUse;
 use Example\MyUrlHelper;
+use MyNamespace\Depth\UnusedSameNamespace;
+use /* I like weird comment placements */ MyNamespace\Depth\AnotherUnusedSameNamespace /* Oh yes I do */;
 
 /**
  * Bla.
@@ -37,6 +41,13 @@ class Pum {
    * PHP is not case sensitive.
    */
   protected function test3(MyURLHelper $x) {
+
+  }
+
+  /**
+   * Don't need to use classes in the same namespace.
+   */
+  protected function test4(UnusedSameNamespace $x, AnotherUnusedSameNamespace $y) {
 
   }
 

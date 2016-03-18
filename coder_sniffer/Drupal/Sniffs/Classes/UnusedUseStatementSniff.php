@@ -73,6 +73,39 @@ class Drupal_Sniffs_Classes_UnusedUseStatementSniff implements PHP_CodeSniffer_S
         $classUsed      = $phpcsFile->findNext(T_STRING, ($classPtr + 1));
         $lowerClassName = strtolower($tokens[$classPtr]['content']);
 
+        // Check if the referenced class is in the same namespace as the current
+        // file. If it is then the use statement is not necessary.
+        $namespacePtr = $phpcsFile->findPrevious([T_NAMESPACE], $stackPtr);
+        if ($namespacePtr !== false) {
+            $nsEnd     = $phpcsFile->findNext(
+                [
+                 T_NS_SEPARATOR,
+                 T_STRING,
+                 T_WHITESPACE,
+                ],
+                ($namespacePtr + 1),
+                null,
+                true
+            );
+            $namespace = trim($phpcsFile->getTokensAsString(($namespacePtr + 1), ($nsEnd - $namespacePtr - 1)));
+
+            $useNamespacePtr = $phpcsFile->findNext([T_STRING], ($stackPtr + 1));
+            $useNamespaceEnd = $phpcsFile->findNext(
+                [
+                 T_NS_SEPARATOR,
+                 T_STRING,
+                ],
+                ($useNamespacePtr + 1),
+                null,
+                true
+            );
+            $use_namespace   = rtrim($phpcsFile->getTokensAsString($useNamespacePtr, ($useNamespaceEnd - $useNamespacePtr - 1)), '\\');
+
+            if (strcasecmp($namespace, $use_namespace) === 0) {
+                $classUsed = false;
+            }
+        }//end if
+
         while ($classUsed !== false) {
             if (strtolower($tokens[$classUsed]['content']) === $lowerClassName) {
                 $beforeUsage = $phpcsFile->findPrevious(

@@ -1,8 +1,6 @@
 <?php
 
-/**
- * @file
- */
+namespace MyNamespace\Depth;
 
 use Thing\Fail\ActuallyUsed;
 use Test\TraitTest;
@@ -34,6 +32,13 @@ class Pum {
    * PHP is not case sensitive.
    */
   protected function test3(MyURLHelper $x) {
+
+  }
+
+  /**
+   * Don't need to use classes in the same namespace.
+   */
+  protected function test4(UnusedSameNamespace $x, AnotherUnusedSameNamespace $y) {
 
   }
 
