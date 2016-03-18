@@ -205,6 +205,7 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
                               T_INLINE_THEN         => true,
                               T_INLINE_ELSE         => true,
                               T_CASE                => true,
+                              T_OPEN_SHORT_ARRAY    => true,
                              );
 
             if (isset($invalidTokens[$tokens[$prev]['code']]) === true) {

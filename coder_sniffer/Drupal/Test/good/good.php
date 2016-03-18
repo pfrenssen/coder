@@ -71,6 +71,8 @@ $x->{$i} + 1;
 REQUEST_TIME + 42;
 !$x;
 !($x + $y);
+array(-1, -2, -3);
+[-1, -2, -3];
 
 // Operator line break for long lines.
 $x = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
