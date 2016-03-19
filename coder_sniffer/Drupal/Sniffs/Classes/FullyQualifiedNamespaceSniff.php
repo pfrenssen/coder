@@ -76,7 +76,66 @@ class Drupal_Sniffs_Classes_FullyQualifiedNamespaceSniff implements PHP_CodeSnif
         }
 
         $error = 'Namespaced classes/interfaces/traits should be referenced with use statements';
-        $phpcsFile->addError($error, $stackPtr, 'UseStatementMissing');
+        $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'UseStatementMissing');
+
+        if ($fix === true) {
+            $fullName = $phpcsFile->getTokensAsString(($before + 1), ($after - 1 - $before));
+            $fullName = trim($fullName, '\ ');
+
+            $phpcsFile->fixer->beginChangeset();
+
+            // Replace the fully qualified name with the local name.
+            for ($i = ($before + 1); $i < $after; $i++) {
+                if ($tokens[$i]['code'] !== T_WHITESPACE) {
+                    $phpcsFile->fixer->replaceToken($i, '');
+                }
+            }
+
+            $parts     = explode('\\', $fullName);
+            $className = end($parts);
+            $phpcsFile->fixer->addContentBefore(($after - 1), $className);
+
+            // Check if there is a use statement already for this class and
+            // namespace.
+            $alreadyUsed  = false;
+            $useStatement = $phpcsFile->findNext(T_USE, 0);
+            while ($useStatement !== false && empty($tokens[$useStatement]['conditions']) === true) {
+                $useEnd   = $phpcsFile->findEndOfStatement($useStatement);
+                $classRef = trim($phpcsFile->getTokensAsString(($useStatement + 1), ($useEnd - 1 - $useStatement)));
+                if (strcasecmp($classRef, $fullName) === 0) {
+                    $alreadyUsed = true;
+                    break;
+                }
+
+                $useStatement = $phpcsFile->findNext(T_USE, ($useEnd + 1));
+            }
+
+            // @todo Check if the name is already in use - then we need to alias it.
+            // Insert use statement at the beginning of the file if it is not there
+            // already. Also check if another sniff (for example
+            // UnusedUseStatementSniff) has already deleted the use statement, then
+            // we need to add it back.
+            if ($alreadyUsed === false
+                || $phpcsFile->fixer->getTokenContent($useStatement) !== $tokens[$useStatement]['content']
+            ) {
+                // Check if there is a group of use statements and add it there.
+                $useStatement = $phpcsFile->findNext(T_USE, 0);
+                if ($useStatement !== false && empty($tokens[$useStatement]['conditions']) === true) {
+                    $phpcsFile->fixer->addContentBefore($useStatement, "use $fullName;\n");
+                } else {
+                    // Check if there is an @file comment.
+                    $beginning   = 0;
+                    $fileComment = $phpcsFile->findNext(T_WHITESPACE, ($beginning + 1), null, true);
+                    if ($tokens[$fileComment]['code'] === T_DOC_COMMENT_OPEN_TAG) {
+                        $beginning = $tokens[$fileComment]['comment_closer'];
+                    }
+
+                    $phpcsFile->fixer->addContent($beginning, "use $fullName;\n");
+                }
+            }
+
+            $phpcsFile->fixer->endChangeset();
+        }//end if
 
         // Continue after this class reference so that errors for this are not
         // flagged multiple times.

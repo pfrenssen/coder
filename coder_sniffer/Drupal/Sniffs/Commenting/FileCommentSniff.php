@@ -187,8 +187,7 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 
         // Exactly one blank line after the file comment.
         if ($tokens[$next]['line'] !== ($tokens[$commentEnd]['line'] + 2)
-            && $tokens[$next]['line'] > $tokens[$commentEnd]['line']
-            && $tokens[$next]['code'] !== T_CLOSE_TAG
+            && $next !== false && $tokens[$next]['code'] !== T_CLOSE_TAG
         ) {
             $error = 'There must be exactly one blank line after the file comment';
             $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfterComment');

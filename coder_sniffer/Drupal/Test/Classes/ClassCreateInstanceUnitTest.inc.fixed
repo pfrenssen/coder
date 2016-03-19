@@ -4,6 +4,9 @@
  * @file
  */
 
+use Vendor\DateTools\DateInterval;
+use Vendor\DateTools;
+
 $x = array(new Foo(), array());
 $y = new Foo();
 $z = new $class;
@@ -13,6 +16,6 @@ $obj1 = new DateTime();
 $obj1 = new \DateTime();
 $obj2 = $obj1->add(new \DateTime());
 $obj2 = $obj1->add(new Vendor());
-$obj2 = $obj1->add(new Vendor\DateTools());
-$obj2 = $obj1->add(new Vendor\DateTools\DateInterval());
-$obj2 = $obj1->add(new \Vendor\DateTools\DateInterval());
+$obj2 = $obj1->add(new DateTools());
+$obj2 = $obj1->add(new DateInterval());
+$obj2 = $obj1->add(new DateInterval());
