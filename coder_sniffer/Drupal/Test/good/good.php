@@ -782,7 +782,6 @@ function hook_foobar() {
 
 }
 
-
 /**
  * Implements hook_foo().
  *

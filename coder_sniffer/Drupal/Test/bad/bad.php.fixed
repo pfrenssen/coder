@@ -414,6 +414,7 @@ $i . C_TEST;
  *
  */
 class FunctionTest {
+
   /**
    *
    */
@@ -813,10 +814,12 @@ function test27() {
   dsm($var);
   dpm($var);
 }
+
 /**
  *
  */
 class FooBar2 {
+
   /**
    * Function body should be on a line by itself, same for the closing brace.
    */
