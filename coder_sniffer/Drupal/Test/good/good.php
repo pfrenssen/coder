@@ -1259,3 +1259,17 @@ $default_config = [
 // camelCase and snake_case variables are allowed.
 $snake_case = 1;
 $camelCase = 1;
+
+// It should be possible to use a parenthesis in a comment without having the
+// InlineCommentSniff complain. (About the the last character of the line.)
+$comment = 'fine';
+
+/**
+ * Comments ending with parentheses.
+ *
+ * It should be possible to use a parenthesis in a comment without having the
+ * DocCommentSniff complain. (About the the last character of the line.)
+ */
+function test15() {
+
+}

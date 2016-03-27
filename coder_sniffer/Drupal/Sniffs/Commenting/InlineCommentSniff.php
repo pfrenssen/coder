@@ -248,7 +248,8 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                             'full-stops'        => '.',
                             'exclamation marks' => '!',
                             'colons'            => ':',
-                            'or question marks' => '?',
+                            'question marks'    => '?',
+                            'or closing parentheses' => ')',
                            );
 
         // Allow @tag style comments without punctuation.
