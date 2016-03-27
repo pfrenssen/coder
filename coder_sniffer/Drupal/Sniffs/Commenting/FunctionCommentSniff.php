@@ -283,7 +283,12 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 }
 
                 if ($comment === '' && $type !== '$this' && $type !== 'static') {
-                    $error = 'Return comment must be on the next line';
+                    if (strpos($type, ' ') !== false) {
+                        $error = 'Description for the @return value must be on the next line';
+                    } else {
+                        $error = 'Description for the @return value is missing';
+                    }
+
                     $phpcsFile->addError($error, $return, 'MissingReturnComment');
                 }//end if
             }//end if
