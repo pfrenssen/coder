@@ -10,8 +10,8 @@
  */
 
 /**
- * Overrides Squiz_Sniffs_WhiteSpace_OperatorSpacingSniff to allow newlines before
- * and after operators.
+ * Overrides Squiz_Sniffs_WhiteSpace_OperatorSpacingSniff to allow the plus operator
+ * on numbers like "$i = +1;".
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -29,6 +29,13 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
                                    'PHP',
                                    'JS',
                                   );
+
+    /**
+     * Allow newlines instead of spaces.
+     *
+     * @var boolean
+     */
+    public $ignoreNewlines = true;
 
 
     /**
@@ -120,15 +127,15 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
                 $phpcsFile->recordMetric($stackPtr, 'Space before operator', 0);
             } else {
                 if ($tokens[($stackPtr - 2)]['line'] !== $tokens[$stackPtr]['line']) {
-                    // We allow newlines before operators, so consider this as one
-                    // valid space.
-                    $found = 1;
+                    $found = 'newline';
                 } else {
                     $found = $tokens[($stackPtr - 1)]['length'];
                 }
 
                 $phpcsFile->recordMetric($stackPtr, 'Space before operator', $found);
-                if ($found !== 1) {
+                if ($found !== 1
+                    && ($found !== 'newline' || $this->ignoreNewlines === false)
+                ) {
                     $error = 'Expected 1 space before "&" operator; %s found';
                     $data  = array($found);
                     $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'SpacingBeforeAmp', $data);
@@ -149,15 +156,15 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
                 $phpcsFile->recordMetric($stackPtr, 'Space after operator', 0);
             } else {
                 if ($tokens[($stackPtr + 2)]['line'] !== $tokens[$stackPtr]['line']) {
-                    // We allow newlines after operators, so consider this as one
-                    // valid space.
-                    $found = 1;
+                    $found = 'newline';
                 } else {
                     $found = $tokens[($stackPtr + 1)]['length'];
                 }
 
                 $phpcsFile->recordMetric($stackPtr, 'Space after operator', $found);
-                if ($found !== 1) {
+                if ($found !== 1
+                    && ($found !== 'newline' || $this->ignoreNewlines === false)
+                ) {
                     $error = 'Expected 1 space after "&" operator; %s found';
                     $data  = array($found);
                     $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'SpacingAfterAmp', $data);
@@ -189,6 +196,11 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
                 return;
             }
 
+            if (isset(PHP_CodeSniffer_Tokens::$booleanOperators[$tokens[$prev]['code']]) === true) {
+                // Just trying to compare a negative value; eg. ($var || -1 === $b).
+                return;
+            }
+
             if (isset(PHP_CodeSniffer_Tokens::$assignmentTokens[$tokens[$prev]['code']]) === true) {
                 // Just trying to assign a negative value; eg. ($var = -1).
                 return;
@@ -200,12 +212,12 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
                               T_COMMA               => true,
                               T_OPEN_PARENTHESIS    => true,
                               T_OPEN_SQUARE_BRACKET => true,
+                              T_OPEN_SHORT_ARRAY    => true,
                               T_DOUBLE_ARROW        => true,
                               T_COLON               => true,
                               T_INLINE_THEN         => true,
                               T_INLINE_ELSE         => true,
                               T_CASE                => true,
-                              T_OPEN_SHORT_ARRAY    => true,
                              );
 
             if (isset($invalidTokens[$tokens[$prev]['code']]) === true) {
@@ -228,15 +240,15 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
             // Don't throw an error for assignments, because other standards allow
             // multiple spaces there to align multiple assignments.
             if ($tokens[($stackPtr - 2)]['line'] !== $tokens[$stackPtr]['line']) {
-                // We allow newlines before operators, so consider this as one valid
-                // space.
-                $found = 1;
+                $found = 'newline';
             } else {
                 $found = $tokens[($stackPtr - 1)]['length'];
             }
 
             $phpcsFile->recordMetric($stackPtr, 'Space before operator', $found);
-            if ($found !== 1) {
+            if ($found !== 1
+                && ($found !== 'newline' || $this->ignoreNewlines === false)
+            ) {
                 $error = 'Expected 1 space before "%s"; %s found';
                 $data  = array(
                           $operator,
@@ -244,10 +256,24 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
                          );
                 $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'SpacingBefore', $data);
                 if ($fix === true) {
+                    $phpcsFile->fixer->beginChangeset();
+                    if ($found === 'newline') {
+                        $i = ($stackPtr - 2);
+                        while ($tokens[$i]['code'] === T_WHITESPACE) {
+                            $phpcsFile->fixer->replaceToken($i, '');
+                            $i--;
+                        }
+                    }
+
                     $phpcsFile->fixer->replaceToken(($stackPtr - 1), ' ');
+                    $phpcsFile->fixer->endChangeset();
                 }
-            }
+            }//end if
         }//end if
+
+        if (isset($tokens[($stackPtr + 1)]) === false) {
+            return;
+        }
 
         if ($tokens[($stackPtr + 1)]['code'] !== T_WHITESPACE) {
             $error = "Expected 1 space after \"$operator\"; 0 found";
@@ -258,16 +284,18 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
 
             $phpcsFile->recordMetric($stackPtr, 'Space after operator', 0);
         } else {
-            if ($tokens[($stackPtr + 2)]['line'] !== $tokens[$stackPtr]['line']) {
-                // We allow newlines after operators, so consider this as one valid
-                // space.
-                $found = 1;
+            if (isset($tokens[($stackPtr + 2)]) === true
+                && $tokens[($stackPtr + 2)]['line'] !== $tokens[$stackPtr]['line']
+            ) {
+                $found = 'newline';
             } else {
                 $found = $tokens[($stackPtr + 1)]['length'];
             }
 
             $phpcsFile->recordMetric($stackPtr, 'Space after operator', $found);
-            if ($found !== 1) {
+            if ($found !== 1
+                && ($found !== 'newline' || $this->ignoreNewlines === false)
+            ) {
                 $error = 'Expected 1 space after "%s"; %s found';
                 $data  = array(
                           $operator,
