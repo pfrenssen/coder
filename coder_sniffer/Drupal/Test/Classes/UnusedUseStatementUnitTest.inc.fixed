@@ -7,6 +7,7 @@ use Thing\Fail\ActuallyUsed;
 use Test\TraitTest;
 use Thing\DifferentName as UsedOtherName;
 use Example\MyUrlHelper;
+use MyNamespace\Depth\SomeClass as CoreSomeClass;
 
 /**
  * Bla.
@@ -40,6 +41,13 @@ class Pum {
    * Don't need to use classes in the same namespace.
    */
   protected function test4(UnusedSameNamespace $x, AnotherUnusedSameNamespace $y) {
+
+  }
+
+  /**
+   * Renamed class from same namespace.
+   */
+  protected function test5(CoreSomeClass $x) {
 
   }
 

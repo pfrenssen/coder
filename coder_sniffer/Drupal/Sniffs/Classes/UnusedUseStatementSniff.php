@@ -76,7 +76,11 @@ class Drupal_Sniffs_Classes_UnusedUseStatementSniff implements PHP_CodeSniffer_S
         // Check if the referenced class is in the same namespace as the current
         // file. If it is then the use statement is not necessary.
         $namespacePtr = $phpcsFile->findPrevious([T_NAMESPACE], $stackPtr);
-        if ($namespacePtr !== false) {
+        // Check if the use statement does aliasing with the "as" keyword. Aliasing
+        // is allowed even in the same namespace.
+        $aliasUsed = $phpcsFile->findPrevious(T_AS, ($classPtr - 1), $stackPtr);
+
+        if ($namespacePtr !== false && $aliasUsed === false) {
             $nsEnd     = $phpcsFile->findNext(
                 [
                  T_NS_SEPARATOR,

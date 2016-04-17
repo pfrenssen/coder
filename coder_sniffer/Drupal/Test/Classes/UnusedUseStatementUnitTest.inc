@@ -15,6 +15,7 @@ use Another\UnusedUse;
 use Example\MyUrlHelper;
 use MyNamespace\Depth\UnusedSameNamespace;
 use /* I like weird comment placements */ MyNamespace\Depth\AnotherUnusedSameNamespace /* Oh yes I do */;
+use MyNamespace\Depth\SomeClass as CoreSomeClass;
 
 /**
  * Bla.
@@ -48,6 +49,13 @@ class Pum {
    * Don't need to use classes in the same namespace.
    */
   protected function test4(UnusedSameNamespace $x, AnotherUnusedSameNamespace $y) {
+
+  }
+
+  /**
+   * Renamed class from same namespace.
+   */
+  protected function test5(CoreSomeClass $x) {
 
   }
 
