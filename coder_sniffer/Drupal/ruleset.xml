@@ -26,10 +26,6 @@
   <!-- Do not run this sniff on template files. -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
  </rule>
- <rule ref="Drupal.WhiteSpace.ScopeClosingBrace">
-  <!-- Do not run this sniff on template files. -->
-  <exclude-pattern>*.tpl.php</exclude-pattern>
- </rule>
  <rule ref="Drupal.WhiteSpace.ScopeIndent">
   <!-- Do not run this sniff on template files, as the indentation might follow
   the HTML -->
