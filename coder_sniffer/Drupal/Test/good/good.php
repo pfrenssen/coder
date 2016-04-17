@@ -348,7 +348,7 @@ multiline_call(Inspector::assertAllCallable([
   'strchr',
   [$x, 'callMe'],
   ['test', 'callMeStatic'],
-  function() {
+  function () {
     return TRUE;
   },
 ]));
@@ -356,7 +356,7 @@ multiline_call(Inspector::assertAllCallable(array(
   'strchr',
   array($x, 'callMe'),
   array('test', 'callMeStatic'),
-  function() {
+  function () {
     return TRUE;
   },
 )));
@@ -991,7 +991,7 @@ t('Some long mulit-line
   text is weird, but allowed.');
 
 // Anonymous functions should not throw indentation errors here.
-$test = array_walk($fragments, function(&$item) {
+$test = array_walk($fragments, function (&$item) {
   if (strpos($item, '%') === 0) {
     $item = '%';
   }

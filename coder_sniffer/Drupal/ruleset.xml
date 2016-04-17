@@ -230,6 +230,14 @@
   <severity>0</severity>
  </rule>
 
+ <rule ref="Squiz.Functions.MultiLineFunctionDeclaration" />
+ <rule ref="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine">
+  <severity>0</severity>
+ </rule>
+ <rule ref="Squiz.Functions.MultiLineFunctionDeclaration.ContentAfterBrace">
+  <severity>0</severity>
+ </rule>
+
  <rule ref="Squiz.PHP.LowercasePHPFunctions" />
  <rule ref="Squiz.PHP.NonExecutableCode" />
  <rule ref="Squiz.Scope.MethodScope" />

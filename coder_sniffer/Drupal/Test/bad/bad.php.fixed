@@ -693,14 +693,14 @@ function test17($x, $y) {
 /**
  * Too much space after the function keyword.
  */
-function  test18() {
+function test18() {
 
 }
 
 /**
  * Space before opening parenthesis is not allowed.
  */
-function test19 () {
+function test19() {
 
 }
 

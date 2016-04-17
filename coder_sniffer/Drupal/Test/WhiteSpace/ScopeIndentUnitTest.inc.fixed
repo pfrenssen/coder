@@ -15,7 +15,7 @@ class MyClass {
 
 }
 
-setTimeout(function() {
+setTimeout(function () {
   $timer = parseInt($target, 10);
   if (timer > 0) {
     $target--;
