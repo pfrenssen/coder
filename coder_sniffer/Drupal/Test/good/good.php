@@ -1273,3 +1273,9 @@ $comment = 'fine';
 function test15() {
 
 }
+
+$access =
+  $account->hasPermission('translate configuration') &&
+  $mapper->hasSchema() &&
+  $mapper->hasTranslatable() &&
+  $source_language_access;
