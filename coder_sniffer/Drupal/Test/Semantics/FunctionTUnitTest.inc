@@ -12,4 +12,12 @@ class Test {
     return $this->t('This string should avoid backslashes for \'');
   }
 
+  public function doSomethingElse() {
+    return new TranslatableMarkup('Do not ' . 'concatenate');
+  }
+
+  public function doSomethingMore() {
+    return new TranslationWrapper(' Do not start with a space');
+  }
+
 }

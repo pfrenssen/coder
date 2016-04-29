@@ -34,7 +34,7 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
      */
     public function registerFunctionNames()
     {
-        return array('t');
+        return array('t', 'TranslatableMarkup', 'TranslationWrapper');
 
     }//end registerFunctionNames()
 
