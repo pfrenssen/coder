@@ -979,9 +979,22 @@ class Foo implements FooInterface {
   /**
    * Not documenting a "throws" tag is allowed.
    *
+   * This should not fail for errors with underscores in names as well.
+   * The second version of this test with error name with underscores
+   * is added below.
+   *
    * @throws Exception
    */
   public function test6() {
+    throw new Exception();
+  }
+
+  /**
+   * Repeat of above test with error name with underscores.
+   *
+   * @throws \Twig_Error_Syntax
+   */
+  public function test7() {
     throw new Exception();
   }
 
