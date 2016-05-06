@@ -624,7 +624,7 @@ function test10($x) {
  * @return bool This description should be on the next line.
  *
  * @see Too much space here
- * @see my_function().
+ * @see my_function()
  * @see foo_bar() and here some not allowed text.
  */
 function test11($x, $y, $z, $a, $b) {

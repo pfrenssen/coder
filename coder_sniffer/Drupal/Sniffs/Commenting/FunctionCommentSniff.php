@@ -733,10 +733,16 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 
                 if (preg_match('/[\.!\?]$/', $comment) === 1) {
                     $error = 'Trailing punctuation for @see references is not allowed.';
-                    $phpcsFile->addError($error, $tag, 'SeePunctuation');
+                    $fix   = $phpcsFile->addFixableError($error, $tag, 'SeePunctuation');
+                    if ($fix === true) {
+                        // Replace the last character from the comment which is
+                        // already tested to be a punctuation.
+                        $content = substr($comment, 0, -1);
+                        $phpcsFile->fixer->replaceToken(($tag + 2), $content);
+                    }//end if
                 }
             }
-        }
+        }//end foreach
 
     }//end processSees()
 
