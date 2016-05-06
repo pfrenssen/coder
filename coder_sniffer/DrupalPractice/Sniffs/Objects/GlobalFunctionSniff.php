@@ -1,6 +1,6 @@
 <?php
 /**
- * DrupalPractice_Sniffs_Objects_GlobalDrupalSniff.
+ * DrupalPractice_Sniffs_Objects_GlobalFunctionSniff.
  *
  * PHP version 5
  *
@@ -10,25 +10,21 @@
  */
 
 /**
- * Checks that \Drupal::service() and friends is not used in forms or controllers.
+ * Checks that gloabl functions like t() are not used in forms or controllers.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Sniffs_Objects_GlobalDrupalSniff implements PHP_CodeSniffer_Sniff
+class DrupalPractice_Sniffs_Objects_GlobalFunctionSniff implements PHP_CodeSniffer_Sniff
 {
 
     /**
-     * List of base classes where \Drupal should not be used in an extending class.
+     * List of global functions that should not be called.
      *
      * @var string[]
      */
-    public static $baseClasses = array(
-                              'BlockBase',
-                              'ControllerBase',
-                              'FormBase',
-                             );
+    protected $functions = array('t' => '$this->t()');
 
 
     /**
@@ -56,14 +52,10 @@ class DrupalPractice_Sniffs_Objects_GlobalDrupalSniff implements PHP_CodeSniffer
     {
         $tokens = $phpcsFile->getTokens();
 
-        // We are only interested in Drupal:: static method calls, not in the global
-        // scope.
-        if ($tokens[$stackPtr]['content'] !== 'Drupal'
-            || $tokens[($stackPtr + 1)]['code'] !== T_DOUBLE_COLON
-            || isset($tokens[($stackPtr + 2)]) === false
-            || $tokens[($stackPtr + 2)]['code'] !== T_STRING
-            || isset($tokens[($stackPtr + 3)]) === false
-            || $tokens[($stackPtr + 3)]['code'] !== T_OPEN_PARENTHESIS
+        // We are only interested in function calls, not in the global scope.
+        if (isset($this->functions[$tokens[$stackPtr]['content']]) === false
+            || isset($tokens[($stackPtr + 1)]) === false
+            || $tokens[($stackPtr + 1)]['code'] !== T_OPEN_PARENTHESIS
             || empty($tokens[$stackPtr]['conditions']) === true
         ) {
             return;
@@ -79,13 +71,17 @@ class DrupalPractice_Sniffs_Objects_GlobalDrupalSniff implements PHP_CodeSniffer
 
         $extendsNamePtr = $phpcsFile->findNext(T_STRING, ($extendsPtr + 1), $tokens[$classPtr]['scope_opener']);
 
-        if ($extendsNamePtr === false || in_array($tokens[$extendsNamePtr]['content'], static::$baseClasses) === false
+        if ($extendsNamePtr === false || in_array($tokens[$extendsNamePtr]['content'], DrupalPractice_Sniffs_Objects_GlobalDrupalSniff::$baseClasses) === false
         ) {
             return;
         }
 
-        $warning = '\Drupal calls should be avoided in classes, use dependency injection instead';
-        $phpcsFile->addWarning($warning, $stackPtr, 'GlobalDrupal');
+        $warning = '%s() calls should be avoided in classes, use dependency injection and %s instead';
+        $data    = array(
+                    $tokens[$stackPtr]['content'],
+                    $this->functions[$tokens[$stackPtr]['content']],
+                   );
+        $phpcsFile->addWarning($warning, $stackPtr, 'GlobalFunction', $data);
 
     }//end process()
 
