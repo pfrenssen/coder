@@ -27,6 +27,7 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
      */
     protected $includeMethodCalls = true;
 
+
     /**
      * Returns an array of function names this test wants to listen for.
      *
@@ -34,7 +35,11 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
      */
     public function registerFunctionNames()
     {
-        return array('t', 'TranslatableMarkup', 'TranslationWrapper');
+        return array(
+                't',
+                'TranslatableMarkup',
+                'TranslationWrapper',
+               );
 
     }//end registerFunctionNames()
 
@@ -87,7 +92,7 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
             $stringAfter = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($concatAfter + 1), null, true, null, true);
             if ($stringAfter !== false
                 && $tokens[$stringAfter]['code'] === T_CONSTANT_ENCAPSED_STRING
-                && strpos($tokens[$stringAfter]['content'], '<') === false
+                && $this->checkConcatString($tokens[$stringAfter]['content']) === false
             ) {
                 $warning = 'Do not concatenate strings to translatable strings, they should be part of the t() argument and you should use placeholders';
                 $phpcsFile->addWarning($warning, $stringAfter, 'ConcatString');
@@ -127,6 +132,35 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
         }
 
     }//end processFunctionCall()
+
+
+    /**
+     * Checks if a string can be concatenated with a translatable string.
+     *
+     * @param string $string
+     *   The string that is concatenated to a t() call.
+     *
+     * @return bool
+     *   TRUE if the string is allowed to be concatenated with a translatable
+     *   string, FALSE if not.
+     */
+    protected function checkConcatString($string)
+    {
+        // Remove spaces, html and single quotes from the original string.
+        $string = str_replace("'", "", $string);
+        $string = trim(strip_tags($string));
+
+        if ($string === '') {
+            return true;
+        }
+
+        if (in_array($string, ['(', ')', '[', ']', '-', '<', '>', '«', '»'], true)) {
+            return true;
+        }
+
+        return false;
+
+    }//end checkConcatString()
 
 
 }//end class

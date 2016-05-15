@@ -15,7 +15,7 @@ class Drupal_Sniffs_Semantics_FunctionTUnitTest extends CoderSniffUnitTest
     public function getErrorList($testFile)
     {
         return array(
-                16 => 1,
+                29 => 1,
                );
 
     }//end getErrorList()
@@ -33,9 +33,11 @@ class Drupal_Sniffs_Semantics_FunctionTUnitTest extends CoderSniffUnitTest
     {
         return array(
                 4 => 1,
-                12 => 1,
-                16 => 1,
+                17 => 1,
                 20 => 1,
+                25 => 1,
+                29 => 1,
+                33 => 1,
                );
 
     }//end getWarningList()

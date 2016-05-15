@@ -725,6 +725,13 @@ t('x');
 // Hà Nội là thủ đô, đồng thời là thành phố đứng đầu Việt Nam về diện tích tự.
 t('x');
 
+// Concatenating some symbols is fine.
+$x = '(' . t('Test') . ')';
+$x = '[' . t('Test') . ']';
+$x = '- ' . t('Test') . ' -';
+$x = '<' . t('Test') . '>';
+$x = '«' . t('Test') . '»';
+
 /**
  * Doc block with some code tags.
  *
