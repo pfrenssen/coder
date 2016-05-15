@@ -1289,8 +1289,11 @@ $comment = 'fine';
  *
  * It should be possible to use a parenthesis in a comment without having the
  * DocCommentSniff complain. (About the the last character of the line.)
+ *
+ * @param string $foo
+ *   A parameter comment is also allowed to end (with parenthesis)
  */
-function test15() {
+function test15($foo) {
 
 }
 

@@ -689,7 +689,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             }
 
             $lastChar = substr($param['comment'], -1);
-            if (in_array($lastChar, array('.', '!', '?')) === false) {
+            if (in_array($lastChar, array('.', '!', '?', ')')) === false) {
                 $error = 'Parameter comment must end with a full stop';
                 if (empty($param['commentLines'])) {
                     $commentToken = $param['tag'];

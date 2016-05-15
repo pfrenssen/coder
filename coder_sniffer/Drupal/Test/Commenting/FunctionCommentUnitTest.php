@@ -28,7 +28,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentUnitTest extends CoderSniffUnitTes
                 113 => 1,
                 126 => 2,
                 147 => 1,
-                148 => 3,
+                148 => 2,
                 180 => 1,
                 187 => 1,
                );
