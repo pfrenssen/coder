@@ -198,3 +198,34 @@ function test15(Test $foo) {
 function test16() {
 
 }
+
+/**
+ * Return comment indentation should be three spaces.
+ *
+ * @return string
+ *   This is not indented correctly.
+ */
+function test17() {
+  return '1';
+}
+
+/**
+ * Return comment indentation should be three spaces.
+ *
+ * @return string
+ *   This is not indented correctly.
+ */
+function test18() {
+  return '1';
+}
+
+/**
+ * Return comment indentation should be three spaces.
+ *
+ * @return string
+ *   This is not indented correctly. Continues on the next line because this is a
+ *   really long sentence.
+ */
+function test19() {
+  return '1';
+}

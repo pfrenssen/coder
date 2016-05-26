@@ -319,7 +319,7 @@ if (TRUE) {
  *   Doxygen style comments
  *
  * @return
- *  Doxygen style comments
+ *   Doxygen style comments
  */
 function foo($field1, $field2, $field3 = NULL) {
   $system["description"] = t("This module inserts funny text into posts randomly.");

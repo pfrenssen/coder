@@ -277,7 +277,10 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                                           );
                         if ($indent < 3) {
                             $error = 'Return comment indentation must be 3 spaces, found %s spaces';
-                            $phpcsFile->addError($error, $i, 'ReturnCommentIndentation', array($indent));
+                            $fix   = $phpcsFile->addFixableError($error, $i, 'ReturnCommentIndentation', array($indent));
+                            if ($fix === true) {
+                                $phpcsFile->fixer->replaceToken(($i - 1), '   ');
+                            }
                         }
                     }
                 }
