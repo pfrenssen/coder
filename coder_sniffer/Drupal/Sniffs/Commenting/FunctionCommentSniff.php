@@ -283,7 +283,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                             }
                         }
                     }
-                }
+                }//end for
 
                 if ($comment === '' && $type !== '$this' && $type !== 'static') {
                     if (strpos($type, ' ') !== false) {
@@ -695,13 +695,17 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             if (in_array($lastChar, array('.', '!', '?', ')')) === false) {
                 $error = 'Parameter comment must end with a full stop';
                 if (empty($param['commentLines'])) {
-                    $commentToken = $param['tag'];
+                    $commentToken = ($param['tag'] + 2);
                 } else {
                     $lastLine     = end($param['commentLines']);
                     $commentToken = $lastLine['token'];
                 }
 
-                $phpcsFile->addError($error, $commentToken, 'ParamCommentFullStop');
+                $fix = $phpcsFile->addFixableError($error, $commentToken, 'ParamCommentFullStop');
+                if ($fix === true) {
+                    // Add a full stop as the last character of the comment.
+                    $phpcsFile->fixer->addContent($commentToken, '.');
+                }
             }
         }//end foreach
 

@@ -9,7 +9,7 @@
  * Test.
  *
  * @param string $x
- *   Comment does not end with full stop
+ *   Comment does not end with full stop.
  * @param string $y
  *   comment does not start with a capital letter.
  */
