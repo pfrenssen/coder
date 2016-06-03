@@ -218,3 +218,11 @@ function test18() {
 function test19() {
   return '1';
 }
+
+/**
+ * Multiple errors in @param line.
+ *
+ * @param   string    $arg1 This should be in next line and needs period
+ */
+function test20($arg1) {
+}
