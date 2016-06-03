@@ -12,3 +12,5 @@ $obj2 = $obj1->add(new Vendor);
 $obj2 = $obj1->add(new Vendor\DateTools);
 $obj2 = $obj1->add(new Vendor\DateTools\DateInterval);
 $obj2 = $obj1->add(new \Vendor\DateTools\DateInterval);
+
+$bar = new $foo[$x + 1][$y + 1];

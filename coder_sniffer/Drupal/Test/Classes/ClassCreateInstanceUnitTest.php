@@ -26,6 +26,7 @@ class Drupal_Sniffs_Classes_ClassCreateInstanceUnitTest extends CoderSniffUnitTe
                 12 => 1,
                 13 => 1,
                 14 => 1,
+                16 => 1,
                );
 
     }//end getErrorList()

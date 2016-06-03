@@ -55,9 +55,15 @@ class Drupal_Sniffs_Classes_ClassCreateInstanceSniff implements PHP_CodeSniffer_
         if ($nextParenthesis === false || isset($tokens[$nextParenthesis]['parenthesis_owner']) === true) {
             $error       = 'Calling class constructors must always include parentheses';
             $constructor = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true, null, true);
-            // We can only invoke the fixer if we know this is a static constructor
-            // function call.
-            if ($tokens[$constructor]['code'] === T_STRING || $tokens[$constructor]['code'] === T_NS_SEPARATOR) {
+            // We can invoke the fixer if we know this is a static constructor
+            // function call or constructor calls with namespaces, example
+            // "new \DOMDocument;" or constructor with class names in variables
+            // "new $controller;".
+            if ($tokens[$constructor]['code'] === T_STRING
+                || $tokens[$constructor]['code'] === T_NS_SEPARATOR
+                || ($tokens[$constructor]['code'] === T_VARIABLE
+                && $tokens[($constructor + 1)]['code'] === T_SEMICOLON)
+            ) {
                 // Scan to the end of possible string\namespace parts.
                 $nextConstructorPart = $constructor;
                 while (true) {
@@ -82,6 +88,23 @@ class Drupal_Sniffs_Classes_ClassCreateInstanceSniff implements PHP_CodeSniffer_
                 $fix = $phpcsFile->addFixableError($error, $constructor, 'ParenthesisMissing');
                 if ($fix === true) {
                     $phpcsFile->fixer->addContent($constructor, '()');
+                }
+
+                // We can invoke the fixer if we know this is a
+                // constructor call with class names in an array
+                // example "new $controller[$i];".
+            } else if ($tokens[$constructor]['code'] === T_VARIABLE
+                && $tokens[($constructor + 1)]['code'] === T_OPEN_SQUARE_BRACKET
+            ) {
+                // Scan to the end of possible multilevel arrays.
+                $nextConstructorPart = $constructor;
+                do {
+                    $nextConstructorPart = $tokens[($nextConstructorPart + 1)]['bracket_closer'];
+                } while ($tokens[($nextConstructorPart + 1)]['code'] === T_OPEN_SQUARE_BRACKET);
+
+                $fix = $phpcsFile->addFixableError($error, $nextConstructorPart, 'ParenthesisMissing');
+                if ($fix === true) {
+                    $phpcsFile->fixer->addContent($nextConstructorPart, '()');
                 }
             } else {
                 $phpcsFile->addError($error, $stackPtr, 'ParenthesisMissing');

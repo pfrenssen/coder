@@ -9,8 +9,8 @@ use Vendor\DateTools;
 
 $x = array(new Foo(), array());
 $y = new Foo();
-$z = new $class;
-$bar = new $foo[$x + 1];
+$z = new $class();
+$bar = new $foo[$x + 1]();
 
 $obj1 = new DateTime();
 $obj1 = new \DateTime();
@@ -19,3 +19,5 @@ $obj2 = $obj1->add(new Vendor());
 $obj2 = $obj1->add(new DateTools());
 $obj2 = $obj1->add(new DateInterval());
 $obj2 = $obj1->add(new DateInterval());
+
+$bar = new $foo[$x + 1][$y + 1]();
