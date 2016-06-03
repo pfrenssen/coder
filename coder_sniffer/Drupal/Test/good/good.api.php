@@ -124,5 +124,19 @@ function hook_locale_translation_projects_alter(array &$projects) {
 }
 
 /**
+ * Act on entities of a specific type when loaded.
+ *
+ * @param array $entities
+ *   The entities keyed by entity ID.
+ *
+ * @ingroup entity_crud
+ */
+function hook_ENTITY_TYPE_load($entities) {
+  foreach ($entities as $entity) {
+    $entity->foo = mymodule_add_something($entity);
+  }
+}
+
+/**
  * @} End of "addtogroup hooks".
  */

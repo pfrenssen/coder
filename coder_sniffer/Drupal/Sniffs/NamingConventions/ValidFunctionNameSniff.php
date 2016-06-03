@@ -98,6 +98,14 @@ class Drupal_Sniffs_NamingConventions_ValidFunctionNameSniff extends Generic_Sni
             return;
         }
 
+        $isApiFile     = substr($phpcsFile->getFilename(), -8) === '.api.php';
+        $isHookExample = substr($functionName, 0, 5) === 'hook_';
+        if ($isApiFile === true && $isHookExample === true) {
+            // Ignore for examaple hook_ENTITY_TYPE_insert() functions in .api.php
+            // files.
+            return;
+        }
+
         if ($functionName !== strtolower($functionName)) {
             $expected = strtolower(preg_replace('/([^_])([A-Z])/', '$1_$2', $functionName));
             $error    = 'Invalid function name, expected %s but found %s';
