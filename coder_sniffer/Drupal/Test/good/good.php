@@ -1297,6 +1297,19 @@ function test15($foo) {
 
 }
 
+/**
+ * Variable arguments with type declared.
+ *
+ * Variable arguments with type declared should not result in an error
+ * when no named argument is given in the param definition.
+ *
+ * @param string ...
+ *   Variable number of string arguments.
+ */
+function test16() {
+
+}
+
 $access =
   $account->hasPermission('translate configuration') &&
   $mapper->hasSchema() &&

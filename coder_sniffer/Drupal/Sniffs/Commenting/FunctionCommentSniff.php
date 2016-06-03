@@ -479,9 +479,21 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $phpcsFile->addError($error, $tag, 'MissingParamComment');
                     $commentLines[] = array('comment' => '');
                 }//end if
+                $variableArguments = false;
                 // Allow the "..." @param doc for a variable number of parameters.
-                if (isset($matches[2]) === false && $tokens[($tag + 2)]['content'] !== '...') {
-                    if ($tokens[($tag + 2)]['content'][0] === '$' || $tokens[($tag + 2)]['content'][0] === '&') {
+                // This could happen with type defined as @param array ... or
+                // without type defined as @param ...
+                if ($tokens[($tag + 2)]['content'] === '...'
+                    || (substr($tokens[($tag + 2)]['content'], -3) === '...'
+                    && count(explode(' ', $tokens[($tag + 2)]['content'])) === 2)
+                ) {
+                    $variableArguments = true;
+                }
+
+                if (isset($matches[2]) === false && $variableArguments === false) {
+                    if ($tokens[($tag + 2)]['content'][0] === '$'
+                        || $tokens[($tag + 2)]['content'][0] === '&'
+                    ) {
                         $error = 'Missing parameter type';
                         $phpcsFile->addError($error, $tag, 'MissingParamType');
                     } else {
