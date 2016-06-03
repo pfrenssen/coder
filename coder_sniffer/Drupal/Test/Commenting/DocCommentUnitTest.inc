@@ -5,7 +5,7 @@
  */
 
 /**
- *  Separate different-type sections by a blank line.
+ *  Separate @param, @return, @throws sections by a blank line.
  *
  * @param string $param
  *   Something incredibly useful.
@@ -51,7 +51,7 @@ function test10() {
 class Test {
 
   /**
-   * No newline between tag groups.
+   * No newline required between tag groups except @param, @return, @throws.
    *
    * @see some_function()
    * @todo Fix coding standards.

@@ -383,10 +383,11 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                     $paramGroupid = $groupid;
                 }
 
-                // Every new tag section should be separated by a blank line.
-                // Exclude @code and @link.
+                // The @param, @return and @throws tag sections should be
+                // separated by a blank line both before and after these sections.
             } else if ($isNewGroup === false
-                && !in_array($currentTag, array('@code', '@endcode', '@link', '@endlink'))
+                && (in_array($currentTag, array('@param', '@return', '@throws')) === true
+                || in_array($previousTag, array('@param', '@return', '@throws')) === true)
                 && $previousTag !== $currentTag
             ) {
                 $error = 'Separate the %s and %s sections by a blank line.';

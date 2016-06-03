@@ -20,13 +20,9 @@ class Drupal_Sniffs_Commenting_DocCommentUnitTest extends CoderSniffUnitTest
                     12 => 1,
                     14 => 1,
                     16 => 1,
-                    17 => 1,
-                    18 => 1,
-                    19 => 1,
                     29 => 1,
                     36 => 2,
                     45 => 1,
-                    57 => 1,
                     66 => 1,
                 );
             default:
