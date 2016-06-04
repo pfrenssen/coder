@@ -226,3 +226,16 @@ function test19() {
  */
 function test20($arg1) {
 }
+
+/**
+ * Testing fix of incorrect param types.
+ *
+ * @param Array $arg1
+ *   The parameter type is not valid.
+ * @param integer|bool $arg2
+ *   One of the parameter types listed is not valid.
+ * @param integer|boolean|Array $arg3
+ *   All of the parameter types listed are not valid.
+ */
+function test21($arg1, $arg2, $arg3) {
+}

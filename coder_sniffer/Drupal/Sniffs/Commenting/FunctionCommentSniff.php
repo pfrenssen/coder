@@ -549,77 +549,91 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 $checkPos++;
             }
 
-            // Check the param type value.
-            $typeNames = explode('|', $param['type']);
-            foreach ($typeNames as $typeName) {
+            // Check the param type value. This could also be multiple parameter
+            // types separated by '|'.
+            $typeNames      = explode('|', $param['type']);
+            $suggestedNames = array();
+            foreach ($typeNames as $i => $typeName) {
+                $suggestedNames[] = $this->suggestType($typeName);
+            }
+
+            $suggestedType = implode('|', $suggestedNames);
+            if ($param['type'] !== $suggestedType) {
+                $error = 'Expected "%s" but found "%s" for parameter type';
+                $data  = array(
+                          $suggestedType,
+                          $param['type'],
+                         );
+                $fix   = $phpcsFile->addFixableError($error, $param['tag'], 'IncorrectParamVarName', $data);
+                if ($fix === true && $phpcsFile->fixer->enabled === true) {
+                    $content  = $suggestedType;
+                    $content .= str_repeat(' ', $param['type_space']);
+                    $content .= $param['var'];
+                    $phpcsFile->fixer->replaceToken(($param['tag'] + 2), $content);
+                }
+            }
+
+            if (count($typeNames) === 1) {
+                $typeName      = $param['type'];
                 $suggestedName = $this->suggestType($typeName);
-                if ($typeName !== $suggestedName) {
-                    $error = 'Expected "%s" but found "%s" for parameter type';
-                    $data  = array(
-                              $suggestedName,
-                              $typeName,
-                             );
+            }
 
-                    $fix = $phpcsFile->addFixableError($error, $param['tag'], 'IncorrectParamVarName', $data);
-                    if ($fix === true && $phpcsFile->fixer->enabled === true) {
-                        $content  = $suggestedName;
-                        $content .= str_repeat(' ', $param['type_space']);
-                        $content .= $param['var'];
-                        $phpcsFile->fixer->replaceToken(($param['tag'] + 2), $content);
-                    }
-                } else if (count($typeNames) === 1) {
-                    // Check type hint for array and custom type.
+            // This runs only if there is only one type name and the type name
+            // is not one of the disallowed type names.
+            if (count($typeNames) === 1 && $typeName === $suggestedName) {
+                // Check type hint for array and custom type.
+                $suggestedTypeHint = '';
+                if (strpos($suggestedName, 'array') !== false) {
+                    $suggestedTypeHint = 'array';
+                } else if (strpos($suggestedName, 'callable') !== false) {
+                    $suggestedTypeHint = 'callable';
+                } else if (substr($suggestedName, -2) === '[]') {
+                    $suggestedTypeHint = 'array';
+                } else if ($suggestedName === 'object') {
                     $suggestedTypeHint = '';
-                    if (strpos($suggestedName, 'array') !== false) {
-                        $suggestedTypeHint = 'array';
-                    } else if (strpos($suggestedName, 'callable') !== false) {
-                        $suggestedTypeHint = 'callable';
-                    } else if (substr($suggestedName, -2) === '[]') {
-                        $suggestedTypeHint = 'array';
-                    } else if ($suggestedName === 'object') {
-                        $suggestedTypeHint = '';
-                    } else if (in_array($typeName, $this->allowedTypes) === false) {
-                        $suggestedTypeHint = $suggestedName;
-                    }
+                } else if (in_array($typeName, $this->allowedTypes) === false) {
+                    $suggestedTypeHint = $suggestedName;
+                }
 
-                    if ($suggestedTypeHint !== '' && isset($realParams[$checkPos]) === true) {
-                        $typeHint = $realParams[$checkPos]['type_hint'];
-                        // Array type hints are allowed to be omitted.
-                        if ($typeHint === '' && $suggestedTypeHint !== 'array') {
-                            $error = 'Type hint "%s" missing for %s';
+                if ($suggestedTypeHint !== '' && isset($realParams[$checkPos]) === true) {
+                    $typeHint = $realParams[$checkPos]['type_hint'];
+                    // Array type hints are allowed to be omitted.
+                    if ($typeHint === '' && $suggestedTypeHint !== 'array') {
+                        $error = 'Type hint "%s" missing for %s';
+                        $data  = array(
+                                  $suggestedTypeHint,
+                                  $param['var'],
+                                 );
+                        $phpcsFile->addError($error, $stackPtr, 'TypeHintMissing', $data);
+                    } else if ($typeHint !== $suggestedTypeHint && $typeHint !== '') {
+                        // The type hint could be fully namespaced, so we check
+                        // for the part after the last "\".
+                        $name_parts = explode('\\', $suggestedTypeHint);
+                        $last_part  = end($name_parts);
+                        if ($last_part !== $typeHint && $this->isAliasedType($typeHint, $suggestedTypeHint, $phpcsFile) === false) {
+                            $error = 'Expected type hint "%s"; found "%s" for %s';
                             $data  = array(
-                                      $suggestedTypeHint,
-                                      $param['var'],
-                                     );
-                            $phpcsFile->addError($error, $stackPtr, 'TypeHintMissing', $data);
-                        } else if ($typeHint !== $suggestedTypeHint && $typeHint !== '') {
-                            // The type hint could be fully namespaced, so we check
-                            // for the part after the last "\".
-                            $name_parts = explode('\\', $suggestedTypeHint);
-                            $last_part  = end($name_parts);
-                            if ($last_part !== $typeHint && $this->isAliasedType($typeHint, $suggestedTypeHint, $phpcsFile) === false) {
-                                $error = 'Expected type hint "%s"; found "%s" for %s';
-                                $data  = array(
-                                          $last_part,
-                                          $typeHint,
-                                          $param['var'],
-                                         );
-                                $phpcsFile->addError($error, $stackPtr, 'IncorrectTypeHint', $data);
-                            }
-                        }//end if
-                    } else if ($suggestedTypeHint === '' && isset($realParams[$checkPos]) === true) {
-                        $typeHint = $realParams[$checkPos]['type_hint'];
-                        if ($typeHint !== '' && $typeHint !== 'stdClass') {
-                            $error = 'Unknown type hint "%s" found for %s';
-                            $data  = array(
+                                      $last_part,
                                       $typeHint,
                                       $param['var'],
                                      );
-                            $phpcsFile->addError($error, $stackPtr, 'InvalidTypeHint', $data);
+                            $phpcsFile->addError($error, $stackPtr, 'IncorrectTypeHint', $data);
                         }
                     }//end if
+                } else if ($suggestedTypeHint === ''
+                    && isset($realParams[$checkPos]) === true
+                ) {
+                    $typeHint = $realParams[$checkPos]['type_hint'];
+                    if ($typeHint !== '' && $typeHint !== 'stdClass') {
+                        $error = 'Unknown type hint "%s" found for %s';
+                        $data  = array(
+                                  $typeHint,
+                                  $param['var'],
+                                 );
+                        $phpcsFile->addError($error, $stackPtr, 'InvalidTypeHint', $data);
+                    }
                 }//end if
-            }//end foreach
+            }//end if
 
             $foundParams[] = $param['var'];
 
