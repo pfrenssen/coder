@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<ruleset name="drupal_coder">
+  <description>The coding standard for coder_sniffer.</description>
+
+  <file>coder_sniffer</file>
+
+  <exclude-pattern>*/Test/*</exclude-pattern>
+
+  <rule ref="PHPCS" />
+
+  <rule ref="PEAR.Commenting.FileComment">
+    <exclude name="PEAR.Commenting.FileComment.MissingAuthorTag"/>
+    <exclude name="PEAR.Commenting.FileComment.MissingLicenseTag"/>
+  </rule>
+  <rule ref="PEAR.Commenting.ClassComment">
+    <exclude name="PEAR.Commenting.ClassComment.MissingAuthorTag"/>
+    <exclude name="PEAR.Commenting.ClassComment.MissingLicenseTag"/>
+  </rule>
+  <rule ref="Generic.Files.LineLength">
+    <exclude name="Generic.Files.LineLength.TooLong"/>
+  </rule>
+
+</ruleset>
