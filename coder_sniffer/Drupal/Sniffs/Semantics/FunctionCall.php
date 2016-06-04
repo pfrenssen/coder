@@ -62,6 +62,7 @@ abstract class Drupal_Sniffs_Semantics_FunctionCall implements PHP_CodeSniffer_S
      */
     protected $includeMethodCalls = false;
 
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *

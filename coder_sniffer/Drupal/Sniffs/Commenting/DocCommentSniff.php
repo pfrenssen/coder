@@ -138,6 +138,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             if ($phpcsFile->tokenizerType === 'JS') {
                 return;
             }
+
             $error = 'Missing short description in doc comment';
             $phpcsFile->addError($error, $stackPtr, 'MissingShort');
             return;

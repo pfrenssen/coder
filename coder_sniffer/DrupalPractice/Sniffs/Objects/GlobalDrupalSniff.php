@@ -25,10 +25,10 @@ class DrupalPractice_Sniffs_Objects_GlobalDrupalSniff implements PHP_CodeSniffer
      * @var string[]
      */
     public static $baseClasses = array(
-                              'BlockBase',
-                              'ControllerBase',
-                              'FormBase',
-                             );
+                                  'BlockBase',
+                                  'ControllerBase',
+                                  'FormBase',
+                                 );
 
 
     /**

@@ -245,10 +245,10 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
 
         $commentCloser   = $commentText[(strlen($commentText) - 1)];
         $acceptedClosers = array(
-                            'full-stops'        => '.',
-                            'exclamation marks' => '!',
-                            'colons'            => ':',
-                            'question marks'    => '?',
+                            'full-stops'             => '.',
+                            'exclamation marks'      => '!',
+                            'colons'                 => ':',
+                            'question marks'         => '?',
                             'or closing parentheses' => ')',
                            );
 
