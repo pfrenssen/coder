@@ -13,29 +13,11 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentUnitTest extends CoderSniffUnitTest
      */
     public function getErrorList($testFile)
     {
-        switch ($testFile) {
-            case 'ScopeIndentUnitTest.1.js':
-                return array(
-                        3 => 1,
-                        6 => 1,
-                        10 => 1,
-                        11 => 1,
-                        12 => 1,
-                        13 => 1,
-                        18 => 1,
-                        21 => 1,
-                        22 => 1,
-                        23 => 1,
-                        24 => 1,
-                        27 => 1,
-                       );
-            default:
-                return array(
-                        6 => 1,
-                        18 => 1,
-                        20 => 1,
-                       );
-        }
+        return array(
+                6 => 1,
+                18 => 1,
+                20 => 1,
+               );
 
     }//end getErrorList()
 
