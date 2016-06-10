@@ -17,6 +17,8 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentUnitTest extends CoderSniffUnitTest
                 6 => 1,
                 18 => 1,
                 20 => 1,
+                32 => 1,
+                34 => 1,
                );
 
     }//end getErrorList()

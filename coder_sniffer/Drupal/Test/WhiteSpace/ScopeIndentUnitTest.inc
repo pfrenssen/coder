@@ -20,3 +20,20 @@ setTimeout(function() {
        }
   }
 }, 300);
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function example_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+
+  $element = array();
+  switch ($display['type']) {
+    case 'example_schema_format':
+            foreach ($items as $delta => $item) {
+        $element[$delta]['#markup'] = theme('example_formatter_default', $item);
+            }
+      break;
+  }
+  return $element;
+
+}
