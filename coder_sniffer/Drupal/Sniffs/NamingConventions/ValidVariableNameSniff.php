@@ -51,7 +51,7 @@ class Drupal_Sniffs_NamingConventions_ValidVariableNameSniff
         // Check if the class extends another class and get the name of the class
         // that is extended.
         if (empty($tokens[$stackPtr]['conditions']) === false) {
-            $classPtr = key($tokens[$stackPtr]['conditions']);
+            $classPtr   = key($tokens[$stackPtr]['conditions']);
             $extendsPtr = $phpcsFile->findNext(T_EXTENDS, ($classPtr + 1), $tokens[$classPtr]['scope_opener']);
             if ($extendsPtr !== false) {
                 $extendsNamePtr = $phpcsFile->findNext(T_STRING, ($extendsPtr + 1), $tokens[$classPtr]['scope_opener']);

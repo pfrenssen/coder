@@ -19,5 +19,9 @@
   <rule ref="Generic.Files.LineLength">
     <exclude name="Generic.Files.LineLength.TooLong"/>
   </rule>
+  <rule ref="Generic.Commenting.Todo">
+    <exclude name="Generic.Commenting.Todo.TaskFound"/>
+    <exclude name="Generic.Commenting.Todo.CommentFound"/>
+  </rule>
 
 </ruleset>
