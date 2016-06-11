@@ -36,6 +36,12 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                                'number'   => 'int',
                                'String'   => 'string',
                                'type'     => 'string or int or object...',
+                               'NULL'     => 'null',
+                               'FALSE'    => 'false',
+                               'TRUE'     => 'true',
+                               'Bool'     => 'bool',
+                               'Int'      => 'int',
+                               'Integer'  => 'int',
                               );
 
     /**

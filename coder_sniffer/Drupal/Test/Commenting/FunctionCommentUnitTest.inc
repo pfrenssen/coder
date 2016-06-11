@@ -239,3 +239,22 @@ function test20($arg1) {
  */
 function test21($arg1, $arg2, $arg3) {
 }
+
+/**
+ * Test for allowed param var types.
+ *
+ * @param array|bool|float|int|mixed|object|string|resource|callable $arg1
+ *   All of the above types are valid.
+ * @param Array|boolean|integer|str|stdClass|NULL $arg2
+ *   All of the above types are invalid.
+ * @param array()|Boolean|number|String $arg3
+ *   All of the above types are invalid.
+ * @param type $arg4
+ *   All of the above types are invalid.
+ * @param FALSE|TRUE|Int $arg5
+ *   All of the above types are invalid.
+ * @param Bool|Integer $arg6
+ *   All of the above types are invalid.
+ */
+function test22($arg1, $arg2, $arg3, $arg4, $arg5, $arg6) {
+}

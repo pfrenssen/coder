@@ -39,6 +39,11 @@ class Drupal_Sniffs_Commenting_FunctionCommentUnitTest extends CoderSniffUnitTes
                 233 => 1,
                 235 => 1,
                 237 => 1,
+                248 => 1,
+                250 => 1,
+                252 => 1,
+                254 => 1,
+                256 => 1,
                );
 
     }//end getErrorList()
