@@ -31,8 +31,9 @@ class ScopeInfo
 
     function __construct($currScope)
     {
+        // TODO: extract opener/closer.
         $this->owner = $currScope;
-        // TODO: extract opener/closer
+
     }//end __construct()
 
 
@@ -607,9 +608,11 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
         $tokens = $phpcsFile->getTokens();
         $token  = $tokens[$stackPtr];
 
+        // Debug code.
         // if ($token['content'] == '$param') {
         // echo "Found token on line {$token['line']}.\n" . print_r($token, true);
         // }
+        // End: Debug code.
         if ($this->currentFile !== $phpcsFile) {
             $this->currentFile = $phpcsFile;
         }
@@ -656,9 +659,9 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
     }//end scopeKey()
 
 
-    // Warning: this is an autovivifying get
-
-
+    /**
+     * Warning: this is an autovivifying get.
+     */
     function getScopeInfo($currScope, $autoCreate = true)
     {
         $scopeKey = $this->scopeKey($currScope);
@@ -917,9 +920,9 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
         // Write should be recorded at the next statement to ensure we treat
         // the assign as happening after the RHS execution.
         // eg: $var = $var + 1; -> RHS could still be undef.
-        // However, if we're within a bracketed expression, we take place at
-        // the closing bracket, if that's first.
+        // However, if we're within a bracketed expression,
         // eg: echo (($var = 12) && ($var == 12));
+        // we take place at the closing bracket, if that's first.
         $semicolonPtr = $phpcsFile->findNext(T_SEMICOLON, ($stackPtr + 1), null, false, null, true);
         $closePtr     = false;
         if (($openPtr = $this->findContainingBrackets($phpcsFile, $stackPtr)) !== false) {
@@ -930,7 +933,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
 
         if ($semicolonPtr === false) {
             if ($closePtr === false) {
-                // TODO: panic
+                // TODO: panic.
                 return $stackPtr;
             }
 
@@ -995,15 +998,15 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
         $tokens = $phpcsFile->getTokens();
 
         // Slight hack: also allow this to find args for array constructor.
-        // TODO: probably should refactor into three functions: arg-finding and bracket-finding
+        // TODO: probably should refactor into three functions: arg-finding and bracket-finding.
         if (($tokens[$stackPtr]['code'] !== T_STRING) && ($tokens[$stackPtr]['code'] !== T_ARRAY)) {
-            // Assume $stackPtr is something within the brackets, find our function call
+            // Assume $stackPtr is something within the brackets, find our function call.
             if (($stackPtr = $this->findFunctionCall($phpcsFile, $stackPtr)) === false) {
                 return false;
             }
         }
 
-        // $stackPtr is the function name, find our brackets after it
+        // $stackPtr is the function name, find our brackets after it.
         $openPtr = $phpcsFile->findNext(
             T_WHITESPACE,
             ($stackPtr + 1),
@@ -1079,7 +1082,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
             && (($tokens[$functionPtr]['code'] === T_FUNCTION)
             || ($tokens[$functionPtr]['code'] === T_CLOSURE))
         ) {
-            // TODO: typeHint
+            // TODO: typeHint.
             $this->markVariableDeclaration($varName, 'param', null, $stackPtr, $functionPtr);
             // Are we pass-by-reference?
             $referencePtr = $phpcsFile->findPrevious(
@@ -1200,7 +1203,6 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
         }
 
         foreach (array_reverse($token['conditions'], true) as $scopePtr => $scopeCode) {
-
             if ($scopeCode === T_CLASS || $scopeCode === T_TRAIT) {
                 return true;
             }
@@ -1332,7 +1334,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
         // Plain ol' assignment. Simpl(ish).
         if (($writtenPtr = $this->findWhereAssignExecuted($phpcsFile, $assignPtr)) === false) {
             $writtenPtr = $stackPtr;
-            // I dunno
+            // I dunno.
         }
 
         // Check for the ampersand '&' after the assignment, which means this
@@ -1473,9 +1475,11 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
             true
         );
         if (($staticPtr === false) || ($tokens[$staticPtr]['code'] !== T_STATIC)) {
+            // Debug code.
             // if ($varName == 'static4') {
             // echo "Failing token:\n" . print_r($tokens[$staticPtr], true);
             // }
+            // End: Debug code.
             return false;
         }
 
@@ -1654,9 +1658,10 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
         PHP_CodeSniffer_File $phpcsFile,
         $stackPtr
     ) {
+        // TODO: don't care for now.
         $tokens = $phpcsFile->getTokens();
         $token  = $tokens[$stackPtr];
-        // TODO: don't care for now
+
     }//end processMemberVar()
 
 
@@ -1681,6 +1686,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
             return;
         }
 
+        // Debug code.
         // static $dump_token = false;
         // if ($varName == 'property') {
         // $dump_token = true;

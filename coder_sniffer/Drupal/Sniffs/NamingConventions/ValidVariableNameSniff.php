@@ -130,6 +130,7 @@ class Drupal_Sniffs_NamingConventions_ValidVariableNameSniff
     protected function processVariableInString(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         // We don't care about variables in strings.
+        return;
 
     }//end processVariableInString()
 
