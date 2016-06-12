@@ -233,7 +233,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             // (function references, machine names with underscores etc.).
             $matches = array();
             preg_match('/[a-z]+/', $words[0], $matches);
-            if (isset($matches[0]) && $matches[0] === $words[0]) {
+            if (isset($matches[0]) === true && $matches[0] === $words[0]) {
                 $error = 'Inline comments must start with a capital letter';
                 $fix   = $phpcsFile->addFixableError($error, $topComment, 'NotCapital');
                 if ($fix === true) {
@@ -262,7 +262,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             $isUrl = isset($matches[0]) === true;
             preg_match('/[$a-zA-Z_]+\([$a-zA-Z_]*\)/', $lastWord, $matches);
             $isFunction = isset($matches[0]) === true;
-            if (!$isUrl && !$isFunction) {
+            if ($isUrl === false && $isFunction === false) {
                 $error = 'Inline comments must end in %s';
                 $ender = '';
                 foreach ($acceptedClosers as $closerName => $symbol) {

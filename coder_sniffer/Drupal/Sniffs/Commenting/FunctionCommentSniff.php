@@ -480,7 +480,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     }
                 }//end for
 
-                if ($comment == '') {
+                if ($comment === '') {
                     $error = 'Missing parameter comment';
                     $phpcsFile->addError($error, $tag, 'MissingParamComment');
                     $commentLines[] = array('comment' => '');
@@ -727,7 +727,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             $lastChar = substr($param['comment'], -1);
             if (in_array($lastChar, array('.', '!', '?', ')')) === false) {
                 $error = 'Parameter comment must end with a full stop';
-                if (empty($param['commentLines'])) {
+                if (empty($param['commentLines']) === true) {
                     $commentToken = ($param['tag'] + 2);
                 } else {
                     $lastLine     = end($param['commentLines']);
@@ -796,7 +796,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
      */
     protected function suggestType($type)
     {
-        if (isset($this->invalidTypes[$type])) {
+        if (isset($this->invalidTypes[$type]) === true) {
             return $this->invalidTypes[$type];
         }
 

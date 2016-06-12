@@ -74,7 +74,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
         }
 
         // Ignore doc blocks in functions, this is handled by InlineCommentSniff.
-        if (!empty($tokens[$stackPtr]['conditions']) && in_array(T_FUNCTION, $tokens[$stackPtr]['conditions'])) {
+        if (empty($tokens[$stackPtr]['conditions']) === false && in_array(T_FUNCTION, $tokens[$stackPtr]['conditions']) === true) {
             return;
         }
 
@@ -117,7 +117,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
         }
 
         // The short description of @file comments is one line below.
-        if ($tokens[$short]['code'] === T_DOC_COMMENT_TAG && $tokens[$short]['content'] == '@file') {
+        if ($tokens[$short]['code'] === T_DOC_COMMENT_TAG && $tokens[$short]['content'] === '@file') {
             $next = $phpcsFile->findNext($empty, ($short + 1), $commentEnd, true);
             if ($next !== false) {
                 $fileShort = $short;
@@ -127,7 +127,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
 
         // Do not check defgroup sections, they have no short description. Also don't
         // check PHPUnit tests doc blocks because they might not have a description.
-        if (in_array($tokens[$short]['content'], array('@defgroup', '@addtogroup', '@}', '@coversDefaultClass'))) {
+        if (in_array($tokens[$short]['content'], array('@defgroup', '@addtogroup', '@}', '@coversDefaultClass')) === true) {
             return;
         }
 
@@ -321,7 +321,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
         $prev     = $phpcsFile->findPrevious($empty, ($firstTag - 1), $stackPtr, true);
         // This does not apply to @file, @code, @link and @endlink tags.
         if ($tokens[$firstTag]['line'] !== ($tokens[$prev]['line'] + 2)
-            && !isset($fileShort)
+            && isset($fileShort) === false
             && in_array($tokens[$firstTag]['content'], array('@code', '@link', '@endlink')) === false
         ) {
             $error = 'There must be exactly one blank line before the tags in a doc comment';
@@ -364,7 +364,7 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                 }
 
                 $isNewGroup = $tokens[$prev]['line'] !== ($tokens[$tag]['line'] - 1);
-                if ($isNewGroup) {
+                if ($isNewGroup === true) {
                     $groupid++;
                 }
             }

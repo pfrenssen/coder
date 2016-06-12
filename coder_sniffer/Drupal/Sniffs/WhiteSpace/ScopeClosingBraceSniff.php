@@ -124,8 +124,8 @@ class Drupal_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer
             // Only allow empty classes and methods.
             if (($tokens[$tokens[$scopeEnd]['scope_condition']]['code'] !== T_CLASS
                 && $tokens[$tokens[$scopeEnd]['scope_condition']]['code'] !== T_INTERFACE
-                && !in_array(T_CLASS, $tokens[$scopeEnd]['conditions'])
-                && !in_array(T_INTERFACE, $tokens[$scopeEnd]['conditions']))
+                && in_array(T_CLASS, $tokens[$scopeEnd]['conditions']) === false
+                && in_array(T_INTERFACE, $tokens[$scopeEnd]['conditions']) === false)
                 || $tokens[$lastContent]['code'] !== T_OPEN_CURLY_BRACKET
             ) {
                 $error = 'Closing brace must be on a line by itself';

@@ -86,7 +86,7 @@ class DrupalPractice_Project
 
             // Go one directory up if we do not find an info file here.
             $dir = dirname($dir);
-        } while (empty($infoFiles) && $dir != dirname($dir));
+        } while (empty($infoFiles) === true && $dir !== dirname($dir));
 
         // No info file found, so we give up.
         if (empty($infoFiles) === true) {
@@ -133,7 +133,7 @@ class DrupalPractice_Project
         // Drupal 6 and 7 use the .info file extension.
         if ($pathParts['extension'] === 'info') {
             $info_settings = Drupal_Sniffs_InfoFiles_ClassFilesSniff::drupalParseInfoFormat(file_get_contents($infoFile));
-            if (isset($info_settings['core'])) {
+            if (isset($info_settings['core']) === true) {
                 return $info_settings['core'];
             }
         } else {

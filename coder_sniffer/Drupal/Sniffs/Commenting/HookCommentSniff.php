@@ -87,9 +87,9 @@ class Drupal_Sniffs_Commenting_HookCommentSniff implements PHP_CodeSniffer_Sniff
         }
 
         // Check if hook implementation doc is formated correctly.
-        if (preg_match('/^[\s]*Implement[^\n]+?hook_[^\n]+/i', $shortContent, $matches)) {
-            if (!strstr($matches[0], 'Implements ') || strstr($matches[0], 'Implements of')
-                || !preg_match('/ (drush_)?hook_[a-zA-Z0-9_]+\(\)( for [a-z0-9_-]+(\(\)|\.tpl\.php|\.html.twig))?\.$/', $matches[0])
+        if (preg_match('/^[\s]*Implement[^\n]+?hook_[^\n]+/i', $shortContent, $matches) === 1) {
+            if (strstr($matches[0], 'Implements ') === false || strstr($matches[0], 'Implements of') !== false
+                || preg_match('/ (drush_)?hook_[a-zA-Z0-9_]+\(\)( for [a-z0-9_-]+(\(\)|\.tpl\.php|\.html.twig))?\.$/', $matches[0]) !== 1
             ) {
                 $phpcsFile->addWarning('Format should be "* Implements hook_foo().", "* Implements hook_foo_BAR_ID_bar() for xyz_bar().",, "* Implements hook_foo_BAR_ID_bar() for xyz-bar.html.twig.", or "* Implements hook_foo_BAR_ID_bar() for xyz-bar.tpl.php.".', $short);
             } else {

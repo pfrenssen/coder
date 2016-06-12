@@ -73,7 +73,7 @@ class DrupalPractice_Sniffs_FunctionCalls_TCheckPlainSniff extends Drupal_Sniffs
         }
 
         $checkPlain = $argument['start'];
-        while ($checkPlain = $phpcsFile->findNext(T_STRING, ($checkPlain + 1), $tokens[$argument['start']]['parenthesis_closer'])) {
+        while (($checkPlain = $phpcsFile->findNext(T_STRING, ($checkPlain + 1), $tokens[$argument['start']]['parenthesis_closer'])) !== false) {
             if ($tokens[$checkPlain]['content'] === 'check_plain') {
                 // The check_plain() could be embedded with string concatenation,
                 // which we want to allow.

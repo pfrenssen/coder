@@ -140,12 +140,12 @@ class Drupal_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeSniffer_Sniff
             $data,
             $matches,
             PREG_SET_ORDER
-        )) {
+        ) !== false) {
             foreach ($matches as $match) {
                 // Fetch the key and value string.
                 $i = 0;
                 foreach (array('key', 'value1', 'value2', 'value3') as $var) {
-                    $$var = isset($match[++$i]) ? $match[$i] : '';
+                    $$var = (isset($match[++$i]) === true) ? $match[$i] : '';
                 }
 
                 $value = stripslashes(substr($value1, 1, -1)).stripslashes(substr($value2, 1, -1)).$value3;
@@ -157,11 +157,11 @@ class Drupal_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeSniffer_Sniff
 
                 // Create nested arrays.
                 foreach ($keys as $key) {
-                    if ($key == '') {
+                    if ($key === '') {
                         $key = count($parent);
                     }
 
-                    if (!isset($parent[$key]) || !is_array($parent[$key])) {
+                    if (isset($parent[$key]) === false || is_array($parent[$key]) === false) {
                         $parent[$key] = array();
                     }
 
@@ -169,12 +169,12 @@ class Drupal_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeSniffer_Sniff
                 }
 
                 // Handle PHP constants.
-                if (isset($constants[$value])) {
+                if (isset($constants[$value]) === true) {
                     $value = $constants[$value];
                 }
 
                 // Insert actual value.
-                if ($last == '') {
+                if ($last === '') {
                     $last = count($parent);
                 }
 
