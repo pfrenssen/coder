@@ -3,8 +3,8 @@
  <description>Drupal best practice checks</description>
  <rule ref="DrupalPractice.CodeAnalysis.VariableAnalysis">
   <properties>
-   <property name="allowUnusedFunctionParameters" value="1" />
-   <property name="allowUnusedCaughtExceptions" value="1" />
+   <property name="allowUnusedFunctionParameters" value="true" />
+   <property name="allowUnusedCaughtExceptions" value="true" />
   </properties>
  </rule>
  <rule ref="DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable">
