@@ -1334,3 +1334,15 @@ function test16($arg) {
   }
   return 1;
 }
+
+/**
+ * Ignore indentation of multi-line function declarations.
+ */
+function test17(ConfigFactoryInterface $config_factory,
+                EntityTypeManagerInterface $entity_type_manager,
+                CacheTagsInvalidatorInterface $cache_invalidator,
+                ModuleHandlerInterface $module_handler,
+                EntityFieldManagerInterface $entity_field_manager,
+                EntityTypeBundleInfoInterface $entity_type_bundle_info) {
+  return 0;
+}
