@@ -258,3 +258,36 @@ function test21($arg1, $arg2, $arg3) {
  */
 function test22($arg1, $arg2, $arg3, $arg4, $arg5, $arg6) {
 }
+
+/**
+ * Void returns allowed when null is given in @return.
+ *
+ * When null is a potential return value it should be allowed to have return
+ * statements with void return as well.
+ *
+ * @return bool|null
+ *   This implies that the return value can be NULL, a boolean, or empty.
+ */
+function test23() {
+  if (1 == 2) {
+    return;
+  }
+  return TRUE;
+}
+
+/**
+ * Even when null is given in @return there must be at least 1 valid return.
+ *
+ * When null is a potential return value it should be allowed to have return
+ * statements with void return. This does not mean that all returns can be void.
+ * There must be at least one non-void return.
+ *
+ * @return bool|null
+ *   This implies that the return value can be NULL, a boolean, or empty.
+ */
+function test24() {
+  if (1 == 2) {
+    return;
+  }
+  return;
+}

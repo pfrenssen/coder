@@ -221,7 +221,17 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     // Check return type (can be multiple, separated by '|').
                     $typeNames      = explode('|', $type);
                     $suggestedNames = array();
+                    $hasNull        = false;
+                    $hasMultiple    = false;
+                    if (count($typeNames) > 0) {
+                        $hasMultiple = true;
+                    }
+
                     foreach ($typeNames as $i => $typeName) {
+                        if (strtolower($typeName) === 'null') {
+                            $hasNull = true;
+                        }
+
                         $suggestedName = $this->suggestType($typeName);
                         if (in_array($suggestedName, $suggestedNames) === false) {
                             $suggestedNames[] = $suggestedName;
@@ -251,19 +261,42 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         // If return type is not void, there needs to be a return statement
                         // somewhere in the function that returns something.
                         if (isset($tokens[$stackPtr]['scope_closer']) === true) {
-                            $endToken    = $tokens[$stackPtr]['scope_closer'];
-                            $returnToken = $phpcsFile->findNext(T_RETURN, $stackPtr, $endToken);
-                            if ($returnToken === false) {
-                                $error = '@return doc comment specified, but function has no return statement';
-                                $phpcsFile->addError($error, $return, 'InvalidNoReturn');
-                            } else {
-                                $semicolon = $phpcsFile->findNext(T_WHITESPACE, ($returnToken + 1), null, true);
-                                if ($tokens[$semicolon]['code'] === T_SEMICOLON) {
-                                    $error = 'Function return type is not void, but function is returning void here';
-                                    $phpcsFile->addError($error, $returnToken, 'InvalidReturnNotVoid');
-                                }
+                            $endToken           = $tokens[$stackPtr]['scope_closer'];
+                            $foundReturnToken   = false;
+                            $searchStart        = $stackPtr;
+                            $foundNonVoidReturn = false;
+                            do {
+                                $returnToken = $phpcsFile->findNext(T_RETURN, $searchStart, $endToken);
+                                if ($returnToken === false && $foundReturnToken === false) {
+                                    $error = '@return doc comment specified, but function has no return statement';
+                                    $phpcsFile->addError($error, $return, 'InvalidNoReturn');
+                                } else {
+                                    // Check for return token as the last loop after the last return
+                                    // in the function will enter this else condition
+                                    // but without the returnToken.
+                                    if ($returnToken !== false) {
+                                        $foundReturnToken = true;
+                                        $semicolon        = $phpcsFile->findNext(T_WHITESPACE, ($returnToken + 1), null, true);
+                                        if ($tokens[$semicolon]['code'] === T_SEMICOLON) {
+                                            // Void return is allowed if the @return type has null in it.
+                                            if ($hasNull === false) {
+                                                $error = 'Function return type is not void, but function is returning void here';
+                                                $phpcsFile->addError($error, $returnToken, 'InvalidReturnNotVoid');
+                                            }
+                                        } else {
+                                            $foundNonVoidReturn = true;
+                                        }//end if
+
+                                        $searchStart = ($returnToken + 1);
+                                    }//end if
+                                }//end if
+                            } while ($returnToken !== false);
+
+                            if ($foundNonVoidReturn === false && $foundReturnToken === true) {
+                                $error = 'Function return type is not void, but function does not have a non-void return statement';
+                                $phpcsFile->addError($error, $return, 'InvalidReturnNotVoid');
                             }
-                        }
+                        }//end if
                     }//end if
                 }//end if
 

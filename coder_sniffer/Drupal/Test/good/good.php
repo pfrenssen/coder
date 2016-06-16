@@ -1315,3 +1315,22 @@ $access =
   $mapper->hasSchema() &&
   $mapper->hasTranslatable() &&
   $source_language_access;
+
+/**
+ * Return with optional null and function with some void returns.
+ *
+ * When a function has an optional null as a return value then it should not
+ * result in an error when there is a void return in the function.
+ *
+ * @param string $arg
+ *   An argument.
+ *
+ * @return int|null
+ *   Return has an optional null.
+ */
+function test16($arg) {
+  if ($arg === 1) {
+    return;
+  }
+  return 1;
+}
