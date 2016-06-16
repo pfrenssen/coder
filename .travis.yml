@@ -8,14 +8,6 @@ php:
   - 7
   - hhvm
 
-matrix:
-  allow_failures:
-    # We cannot use hhvm-nightly since that does not work in Travis CI's old
-    # Ubuntu 12.04.
-    - php: hhvm
-  # Don't wait for the allowed failures to build.
-  fast_finish: true
-
 before_script:
   # We don't have a composer.lock file because we always want to test with
   # latest dependencies.
@@ -23,3 +15,4 @@ before_script:
 
 script:
   - ./vendor/bin/phpunit
+  - ./vendor/bin/phpcs
