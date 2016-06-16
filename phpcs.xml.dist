@@ -8,11 +8,14 @@
 
   <rule ref="PHPCS" />
 
+  <!-- The following sniffs are disabled because we don't want them -->
   <rule ref="PEAR.Commenting.FileComment">
     <exclude name="PEAR.Commenting.FileComment.MissingAuthorTag"/>
     <exclude name="PEAR.Commenting.FileComment.MissingLicenseTag"/>
+    <exclude name="PEAR.Commenting.FileComment.MissingVersion"/>
   </rule>
   <rule ref="PEAR.Commenting.ClassComment">
+    <exclude name="PEAR.Commenting.ClassComment.CategoryTagOrder"/>
     <exclude name="PEAR.Commenting.ClassComment.MissingAuthorTag"/>
     <exclude name="PEAR.Commenting.ClassComment.MissingLicenseTag"/>
   </rule>
@@ -22,6 +25,15 @@
   <rule ref="Generic.Commenting.Todo">
     <exclude name="Generic.Commenting.Todo.TaskFound"/>
     <exclude name="Generic.Commenting.Todo.CommentFound"/>
+  </rule>
+
+  <!-- The following sniffs are disabled because Coder is not compliant yet, see
+    https://www.drupal.org/node/2734539 -->
+  <rule ref="PEAR.Commenting.FunctionComment">
+    <exclude name="PEAR.Commenting.FunctionComment.Missing"/>
+    <exclude name="PEAR.Commenting.FunctionComment.MissingParamComment"/>
+    <exclude name="PEAR.Commenting.FunctionComment.MissingParamTag"/>
+    <exclude name="PEAR.Commenting.FunctionComment.MissingReturn"/>
   </rule>
 
 </ruleset>

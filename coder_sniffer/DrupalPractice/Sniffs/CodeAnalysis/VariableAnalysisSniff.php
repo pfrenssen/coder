@@ -675,7 +675,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
             }
 
             $this->_scopes[$scopeKey] = new ScopeInfo($currScope);
-            }
+        }
 
         return $this->_scopes[$scopeKey];
 

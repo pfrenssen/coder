@@ -6,7 +6,6 @@
  *
  * @category PHP
  * @package  PHP_CodeSniffer
- * @author   Klaus Purer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -18,7 +17,6 @@
  *
  * @category PHP
  * @package  PHP_CodeSniffer
- * @author   Klaus Purer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class Drupal_Sniffs_Files_TxtFileLineLengthSniff implements PHP_CodeSniffer_Sniff
