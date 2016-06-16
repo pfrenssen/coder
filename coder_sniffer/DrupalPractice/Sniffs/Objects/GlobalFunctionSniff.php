@@ -52,12 +52,20 @@ class DrupalPractice_Sniffs_Objects_GlobalFunctionSniff implements PHP_CodeSniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        // We are only interested in function calls, not in the global scope.
+        // We are only interested in function calls, which are not in the global
+        // scope.
         if (isset($this->functions[$tokens[$stackPtr]['content']]) === false
             || isset($tokens[($stackPtr + 1)]) === false
             || $tokens[($stackPtr + 1)]['code'] !== T_OPEN_PARENTHESIS
             || empty($tokens[$stackPtr]['conditions']) === true
         ) {
+            return;
+        }
+
+        // If there is an object operator before the call then this is a method
+        // invocation, not a function call.
+        $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
+        if ($tokens[$previous]['code'] === T_OBJECT_OPERATOR) {
             return;
         }
 
