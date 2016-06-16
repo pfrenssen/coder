@@ -144,7 +144,11 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             return;
         }
 
-        $start = isset($fileShort) === true ? $fileShort : $stackPtr;
+        if (isset($fileShort) === true) {
+            $start = $fileShort;
+        } else {
+            $start = $stackPtr;
+        }
 
         // No extra newline before short description.
         if ($tokens[$short]['line'] !== ($tokens[$start]['line'] + 1)) {

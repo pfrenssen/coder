@@ -145,7 +145,11 @@ class Drupal_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeSniffer_Sniff
                 // Fetch the key and value string.
                 $i = 0;
                 foreach (array('key', 'value1', 'value2', 'value3') as $var) {
-                    $$var = (isset($match[++$i]) === true) ? $match[$i] : '';
+                    if (isset($match[++$i]) === true) {
+                        $$var = $match[$i];
+                    } else {
+                        $$var = '';
+                    }
                 }
 
                 $value = stripslashes(substr($value1, 1, -1)).stripslashes(substr($value2, 1, -1)).$value3;

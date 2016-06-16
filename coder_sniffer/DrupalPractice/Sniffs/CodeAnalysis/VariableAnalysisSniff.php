@@ -654,7 +654,11 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
             $currScope = 'file';
         }
 
-        return ((isset($this->currentFile) === true) ? $this->currentFile->getFilename() : 'unknown file').':'.$currScope;
+        if (isset($this->currentFile) === true) {
+            return ($this->currentFile->getFilename()).':'.$currScope;
+        } else {
+            return ('unknown file').':'.$currScope;
+        }
 
     }//end scopeKey()
 

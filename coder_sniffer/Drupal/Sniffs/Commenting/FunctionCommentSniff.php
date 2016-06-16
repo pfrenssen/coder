@@ -477,7 +477,12 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     }
                 }
 
-                $var    = isset($matches[2]) ? $matches[2] : '';
+                if (isset($matches[2]) === true) {
+                    $var = $matches[2];
+                } else {
+                    $var = '';
+                }
+
                 $varLen = strlen($var);
                 if ($varLen > $maxVar) {
                     $maxVar = $varLen;
@@ -750,10 +755,20 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             }
 
             // Param comments must start with a capital letter and end with the full stop.
-            $firstChar = isset($param['commentLines'][0]['comment']) ? $param['commentLines'][0]['comment'] : $param['comment'];
+            if (isset($param['commentLines'][0]['comment']) === true) {
+                $firstChar = $param['commentLines'][0]['comment'];
+            } else {
+                $firstChar = $param['comment'];
+            }
+
             if (preg_match('|\p{Lu}|u', $firstChar) === 0) {
-                $error        = 'Parameter comment must start with a capital letter';
-                $commentToken = isset($param['commentLines'][0]['token']) ? $param['commentLines'][0]['token'] : $param['tag'];
+                $error = 'Parameter comment must start with a capital letter';
+                if (isset($param['commentLines'][0]['token']) === true) {
+                    $commentToken = $param['commentLines'][0]['token'];
+                } else {
+                    $commentToken = $param['tag'];
+                }
+
                 $phpcsFile->addError($error, $commentToken, 'ParamCommentNotCapital');
             }
 
