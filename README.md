@@ -71,7 +71,7 @@ Editors:
 * vim: https://www.drupal.org/node/1419996
 
 
-## Automated Testing (PHPUnit)
+## Automated Testing (PHPUnit + PHPCS)
 
 Coder Sniffer comes with a PHPUnit test suite to make sure the sniffs work correctly.
 Use Composer to install the dependencies:
@@ -84,6 +84,21 @@ Then execute the tests:
 ```
 ./vendor/bin/phpunit
 ```
+
+Then execute the coding standards checker on Coder itself:
+```
+./vendor/bin/phpcs
+```
+
+
+## Contributing
+
+1. Make sure an issue exists at https://www.drupal.org/project/issues/coder
+2. Create a [pull request](https://help.github.com/articles/using-pull-requests/) against https://github.com/klausi/coder
+3. Post a link to the pull request to the issue on drupal.org and set the issue to
+   "needs review"
+
+Thank you!
 
 
 ## Maintainers
