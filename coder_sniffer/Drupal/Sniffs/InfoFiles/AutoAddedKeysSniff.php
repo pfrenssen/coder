@@ -65,18 +65,18 @@ class Drupal_Sniffs_InfoFiles_AutoAddedKeysSniff implements PHP_CodeSniffer_Snif
         }
 
         if (isset($info['project']) === true) {
-            $warning = 'Remove "project" form the info file, it will be added by drupal.org packaging automatically';
+            $warning = 'Remove "project" from the info file, it will be added by drupal.org packaging automatically';
             $phpcsFile->addWarning($warning, $stackPtr, 'Project');
         }
 
         if (isset($info['timestamp']) === true) {
-            $warning = 'Remove "timestamp" form the info file, it will be added by drupal.org packaging automatically';
+            $warning = 'Remove "timestamp" from the info file, it will be added by drupal.org packaging automatically';
             $phpcsFile->addWarning($warning, $stackPtr, 'Timestamp');
         }
 
         // "version" is special: we want to allow it in core, but not anywhere else.
         if (isset($info['version']) === true && strpos($phpcsFile->getFilename(), '/core/') === false) {
-            $warning = 'Remove "version" form the info file, it will be added by drupal.org packaging automatically';
+            $warning = 'Remove "version" from the info file, it will be added by drupal.org packaging automatically';
             $phpcsFile->addWarning($warning, $stackPtr, 'Version');
         }
 
