@@ -25,7 +25,6 @@ class Drupal_Sniffs_Commenting_PostStatementCommentSniff implements PHP_CodeSnif
      */
     public $supportedTokenizers = array(
                                    'PHP',
-                                   'JS',
                                   );
 
 
