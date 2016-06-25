@@ -666,6 +666,9 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
     /**
      * Warning: this is an autovivifying get.
      *
+     * @param string|false $currScope
+     * @param bool         $autoCreate
+     *
      * @return ScopeInfo
      */
     function getScopeInfo($currScope, $autoCreate = true)

@@ -106,6 +106,9 @@ class DrupalPractice_Project
     /**
      * Helper method to sort array values by string length with usort().
      *
+     * @param string $a
+     * @param string $b
+     *
      * @return int
      */
     public static function compareLength($a, $b)
