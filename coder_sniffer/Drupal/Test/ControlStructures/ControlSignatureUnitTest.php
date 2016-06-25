@@ -16,19 +16,10 @@ class Drupal_Sniffs_ControlStructures_ControlSignatureUnitTest extends CoderSnif
      */
     public function getErrorList($testFile)
     {
-        switch ($testFile) {
-            case 'ControlSignatureUnitTest.js':
-                return array(
-                          1 => 1,
-                          4 => 1,
-                          6 => 3,
-                       );
-            case 'ControlSignatureUnitTest.inc':
-                return array(
-                          6 => 1,
-                          8 => 1,
-                       );
-        }
+        return array(
+                  6 => 1,
+                  8 => 1,
+               );
 
     }//end getErrorList()
 

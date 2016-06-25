@@ -11,6 +11,10 @@ Built-in support for:
 
 Online documentation: https://www.drupal.org/node/1419980
 
+Note that Javascript support has been removed. To check and fix Javascript files
+please use [ESLint](http://eslint.org/) and see the
+[Drupal ESLint](https://www.drupal.org/node/1955232) documentation.
+
 
 ## Installation
 
