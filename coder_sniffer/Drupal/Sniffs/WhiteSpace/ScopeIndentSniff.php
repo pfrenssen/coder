@@ -31,7 +31,6 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
      */
     public $supportedTokenizers = array(
                                    'PHP',
-                                   'JS',
                                   );
 
     /**
