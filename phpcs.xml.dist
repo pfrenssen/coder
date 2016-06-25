@@ -33,7 +33,6 @@
     <exclude name="PEAR.Commenting.FunctionComment.Missing"/>
     <exclude name="PEAR.Commenting.FunctionComment.MissingParamComment"/>
     <exclude name="PEAR.Commenting.FunctionComment.MissingParamTag"/>
-    <exclude name="PEAR.Commenting.FunctionComment.MissingReturn"/>
   </rule>
 
 </ruleset>
