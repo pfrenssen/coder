@@ -109,6 +109,7 @@
  <rule ref="PEAR.Functions.ValidDefaultValue" />
 
  <rule ref="PSR2.Classes.PropertyDeclaration" />
+ <rule ref="PSR2.Namespaces.NamespaceDeclaration" />
  <rule ref="PSR2.Namespaces.UseDeclaration" />
 
  <rule ref="Squiz.Arrays.ArrayDeclaration" />
