@@ -49,6 +49,7 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                        );
             case 'bad.install':
                 return array(
+                        1 => 1,
                         13 => 1,
                         16 => 1,
                         51 => 1,
@@ -56,6 +57,7 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
                        );
             case 'bad.module':
                 return array(
+                        1 => 1,
                         12 => 1,
                         19 => 1,
                         26 => 1,
