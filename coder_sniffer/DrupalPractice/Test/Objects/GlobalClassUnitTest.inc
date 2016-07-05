@@ -9,6 +9,7 @@ class TestForm extends FormBase {
   }
 
   public static function something() {
+    // Global classes are allowed in static methods.
     return NodeType::load('article');
   }
 

@@ -69,6 +69,13 @@ class DrupalPractice_Sniffs_Objects_GlobalFunctionSniff implements PHP_CodeSniff
             return;
         }
 
+        // Check that this statement is not in a static function.
+        foreach ($tokens[$stackPtr]['conditions'] as $conditionPtr => $conditionCode) {
+            if ($conditionCode === T_FUNCTION && $phpcsFile->getMethodProperties($conditionPtr)['is_static'] === true) {
+                return;
+            }
+        }
+
         // Check if the class extends another class and get the name of the class
         // that is extended.
         $classPtr   = key($tokens[$stackPtr]['conditions']);

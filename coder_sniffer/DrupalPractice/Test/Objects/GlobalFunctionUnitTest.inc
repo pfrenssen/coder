@@ -7,4 +7,9 @@ class TestForm extends FormBase {
     $form['another'] = $this->t('test');
   }
 
+  public static function example() {
+    // t() calls are allowed in static methods.
+    return t('Example text');
+  }
+
 }

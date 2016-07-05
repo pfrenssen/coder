@@ -8,4 +8,9 @@ class TestForm extends FormBase {
     $version = \Drupal::VERSION;
   }
 
+  public static function example() {
+    // \Drupal calls are allowed in static methods.
+    return \Drupal::service('foobar')->result();
+  }
+
 }
