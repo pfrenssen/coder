@@ -291,3 +291,13 @@ function test24() {
   }
   return;
 }
+
+/**
+ * The shorthand array syntax should not be used as a return type.
+ *
+ * @return []
+ *   The array.
+ */
+function test25() {
+  return [];
+}

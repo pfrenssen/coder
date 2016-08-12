@@ -28,6 +28,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
     protected $invalidTypes = array(
                                'Array'    => 'array',
                                'array()'  => 'array',
+                               '[]'       => 'array',
                                'boolean'  => 'bool',
                                'Boolean'  => 'bool',
                                'integer'  => 'int',
@@ -240,13 +241,16 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 
                     $suggestedType = implode('|', $suggestedNames);
                     if ($type !== $suggestedType) {
-                        $error = 'Function return type "%s" is invalid';
                         $error = 'Expected "%s" but found "%s" for function return type';
                         $data  = array(
                                   $suggestedType,
                                   $type,
                                  );
-                        $phpcsFile->addError($error, $return, 'InvalidReturn', $data);
+                        $fix   = $phpcsFile->addFixableError($error, $return, 'InvalidReturn', $data);
+                        if ($fix === true && $phpcsFile->fixer->enabled === true) {
+                            $content = $suggestedType;
+                            $phpcsFile->fixer->replaceToken(($return + 2), $content);
+                        }
                     }
 
                     if ($type[0] === '$' && $type !== '$this') {

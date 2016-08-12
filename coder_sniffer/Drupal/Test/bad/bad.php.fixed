@@ -570,7 +570,7 @@ function test7() {
 /**
  * Param tags must come first.
  *
- * @return array()
+ * @return array
  *
  * @param int $x
  *   A number.
