@@ -177,7 +177,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer
             }
         }//end if
 
-        if ($fix === true && $phpcsFile->fixer->enabled === true) {
+        if ($fix === true) {
             $spaces = str_repeat(' ', $expectedIndent);
             if ($braceIndent === 0) {
                 $phpcsFile->fixer->addContentBefore($lineStart, $spaces);

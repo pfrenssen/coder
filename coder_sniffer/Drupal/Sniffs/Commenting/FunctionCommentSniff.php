@@ -247,7 +247,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                                   $type,
                                  );
                         $fix   = $phpcsFile->addFixableError($error, $return, 'InvalidReturn', $data);
-                        if ($fix === true && $phpcsFile->fixer->enabled === true) {
+                        if ($fix === true) {
                             $content = $suggestedType;
                             $phpcsFile->fixer->replaceToken(($return + 2), $content);
                         }
@@ -613,7 +613,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                           $param['type'],
                          );
                 $fix   = $phpcsFile->addFixableError($error, $param['tag'], 'IncorrectParamVarName', $data);
-                if ($fix === true && $phpcsFile->fixer->enabled === true) {
+                if ($fix === true) {
                     $content  = $suggestedType;
                     $content .= str_repeat(' ', $param['type_space']);
                     $content .= $param['var'];
@@ -695,7 +695,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                          );
 
                 $fix = $phpcsFile->addFixableError($error, $param['tag'], 'SpacingAfterParamType', $data);
-                if ($fix === true && $phpcsFile->fixer->enabled === true) {
+                if ($fix === true) {
                     $phpcsFile->fixer->beginChangeset();
 
                     $content  = $param['type'];
