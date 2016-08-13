@@ -301,3 +301,16 @@ function test24() {
 function test25() {
   return [];
 }
+
+/**
+ * Type declarations should not have any illegal characters.
+ *
+ * @param \Ille*al $var
+ *   This asterisk does not belong here.
+ *
+ * @return \Some/Namespace
+ *   This should not have a forward slash.
+ */
+function test26($var) {
+  return '';
+}
