@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ */
+
+/**
+ *
+ */
+trait TestTrait {
+
+  /**
+   * Function visibility is missing here.
+   */
+  public function foo() {
+
+  }
+
+}

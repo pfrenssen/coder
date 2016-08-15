@@ -256,7 +256,6 @@
 
  <rule ref="Squiz.PHP.LowercasePHPFunctions" />
  <rule ref="Squiz.PHP.NonExecutableCode" />
- <rule ref="Squiz.Scope.MethodScope" />
  <rule ref="Squiz.Strings.ConcatenationSpacing">
   <properties>
    <property name="spacing" value="1"/>
