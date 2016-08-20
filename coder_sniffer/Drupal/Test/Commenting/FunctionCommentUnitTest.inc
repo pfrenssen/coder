@@ -314,3 +314,16 @@ function test25() {
 function test26($var) {
   return '';
 }
+
+/**
+ * Data types with spaces.
+ *
+ * @param string or int $x
+ *   Data types should not contain spaces.
+ *
+ * @return int or bool
+ *   Same spaces in data type here.
+ */
+function test27($x) {
+  return 0;
+}

@@ -603,7 +603,11 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             }
 
             $suggestedType = implode('|', $suggestedNames);
-            if ($param['type'] !== $suggestedType) {
+            if (preg_match('/\s/', $param['type']) === 1) {
+                $error = 'Parameter type "%s" must not contain spaces';
+                $data  = array($param['type']);
+                $phpcsFile->addError($error, $param['tag'], 'ParamTypeSpaces', $data);
+            } else if ($param['type'] !== $suggestedType) {
                 $error = 'Expected "%s" but found "%s" for parameter type';
                 $data  = array(
                           $suggestedType,
