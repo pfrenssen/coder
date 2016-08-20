@@ -235,7 +235,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                             $hasNull = true;
                         }
 
-                        $suggestedName = $this->suggestType($typeName);
+                        $suggestedName = static::suggestType($typeName);
                         if (in_array($suggestedName, $suggestedNames) === false) {
                             $suggestedNames[] = $suggestedName;
                         }
@@ -253,22 +253,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                             $content = $suggestedType;
                             $phpcsFile->fixer->replaceToken(($return + 2), $content);
                         }
-                    } else if (preg_match('/^[^\s]*?([^a-zA-Z_$\s\\\[\]|\x7f-\xff])[^\s]*?\s*?/', $type, $matches) === 1) {
-                        // If the return type consists of multiple words it
-                        // probably means that the documentation has been placed
-                        // inline. This case is already covered by
-                        // 'MissingReturnComment'.
-                        // Note also that '$' is also an illegal character, but
-                        // it is already covered by the '$InReturnType' sniff.
-                        $error = '@return data type contains illegal character "%s"';
-                        $data  = array($matches[0]);
-                        $phpcsFile->addError($error, $return, 'InvalidCharacterInReturnType', $data);
                     }//end if
-
-                    if ($type[0] === '$' && $type !== '$this') {
-                        $error = '@return data type must not contain "$"';
-                        $phpcsFile->addError($error, $return, '$InReturnType');
-                    }
 
                     if ($type === 'void') {
                         $error = 'If there is no return value for a function, there must not be a @return tag.';
@@ -614,7 +599,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             $typeNames      = explode('|', $param['type']);
             $suggestedNames = array();
             foreach ($typeNames as $i => $typeName) {
-                $suggestedNames[] = $this->suggestType($typeName);
+                $suggestedNames[] = static::suggestType($typeName);
             }
 
             $suggestedType = implode('|', $suggestedNames);
@@ -631,15 +616,11 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $content .= $param['var'];
                     $phpcsFile->fixer->replaceToken(($param['tag'] + 2), $content);
                 }
-            } else if (preg_match('/[^a-zA-Z_\\\[\]|\x7f-\xff]/', $param['type'], $matches) === 1) {
-                $error = 'Parameter type contains illegal character "%s"';
-                $data  = array($matches[0]);
-                $phpcsFile->addError($error, $param['tag'], 'InvalidCharacterInParamType', $data);
             }
 
             if (count($typeNames) === 1) {
                 $typeName      = $param['type'];
-                $suggestedName = $this->suggestType($typeName);
+                $suggestedName = static::suggestType($typeName);
             }
 
             // This runs only if there is only one type name and the type name
@@ -872,7 +853,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             return $type;
         }
 
-        $type = preg_replace('/[^a-zA-Z_$\s\\\[\]]/', '', $type);
+        $type = preg_replace('/[^a-zA-Z_\\\[\]]/', '', $type);
 
         return $type;
 

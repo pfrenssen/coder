@@ -660,7 +660,7 @@ function test14() {
 /**
  * Return data type documentation must not be the variable name.
  *
- * @return $foo
+ * @return foo
  *   Description bla.
  */
 function test15() {
