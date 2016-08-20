@@ -25,25 +25,25 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
      *
      * @var array
      */
-    protected $invalidTypes = array(
-                               'Array'    => 'array',
-                               'array()'  => 'array',
-                               '[]'       => 'array',
-                               'boolean'  => 'bool',
-                               'Boolean'  => 'bool',
-                               'integer'  => 'int',
-                               'str'      => 'string',
-                               'stdClass' => 'object',
-                               'number'   => 'int',
-                               'String'   => 'string',
-                               'type'     => 'string or int or object...',
-                               'NULL'     => 'null',
-                               'FALSE'    => 'false',
-                               'TRUE'     => 'true',
-                               'Bool'     => 'bool',
-                               'Int'      => 'int',
-                               'Integer'  => 'int',
-                              );
+    public static $invalidTypes = array(
+                                   'Array'    => 'array',
+                                   'array()'  => 'array',
+                                   '[]'       => 'array',
+                                   'boolean'  => 'bool',
+                                   'Boolean'  => 'bool',
+                                   'integer'  => 'int',
+                                   'str'      => 'string',
+                                   'stdClass' => 'object',
+                                   'number'   => 'int',
+                                   'String'   => 'string',
+                                   'type'     => 'mixed',
+                                   'NULL'     => 'null',
+                                   'FALSE'    => 'false',
+                                   'TRUE'     => 'true',
+                                   'Bool'     => 'bool',
+                                   'Int'      => 'int',
+                                   'Integer'  => 'int',
+                                  );
 
     /**
      * An array of variable types for param/var we will check.
@@ -214,7 +214,9 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         $type = null;
         if ($isSpecialMethod === false && $methodName !== $className) {
             if ($return !== null) {
-                $type = $tokens[($return + 2)]['content'];
+                // Just consider the first word as the data type in case there is a
+                // description sentence on the same line already.
+                $type = strtok($tokens[($return + 2)]['content'], ' ');
                 if (empty($type) === true || $tokens[($return + 2)]['code'] !== T_DOC_COMMENT_STRING) {
                     $error = 'Return type missing for @return tag in function comment';
                     $phpcsFile->addError($error, $return, 'MissingReturnType');
@@ -860,11 +862,17 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
      *
      * @return string
      */
-    protected function suggestType($type)
+    public static function suggestType($type)
     {
-        if (isset($this->invalidTypes[$type]) === true) {
-            return $this->invalidTypes[$type];
+        if (isset(static::$invalidTypes[$type]) === true) {
+            return static::$invalidTypes[$type];
         }
+
+        if ($type === '$this') {
+            return $type;
+        }
+
+        $type = preg_replace('/[^a-zA-Z_$\s\\\[\]]/', '', $type);
 
         return $type;
 

@@ -261,7 +261,7 @@ function test21($arg1, $arg2, $arg3) {
  *   All of the above types are invalid.
  * @param array|bool|int|string $arg3
  *   All of the above types are invalid.
- * @param string or int or object... $arg4
+ * @param mixed $arg4
  *   All of the above types are invalid.
  * @param false|true|int $arg5
  *   All of the above types are invalid.
@@ -317,10 +317,10 @@ function test25() {
 /**
  * Type declarations should not have any illegal characters.
  *
- * @param \Ille*al $var
+ * @param \Illeal $var
  *   This asterisk does not belong here.
  *
- * @return \Some/Namespace
+ * @return \SomeNamespace
  *   This should not have a forward slash.
  */
 function test26($var) {

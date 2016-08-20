@@ -542,16 +542,32 @@ $var = foo(
  */
 class Bar {
 
-  // Private properties have no prefix.
+  /**
+   * Private properties have no prefix.
+   *
+   * @var int
+   */
   private $secret = 1;
 
-  // Protected properties also don't have a prefix.
+  /**
+   * Protected properties also don't have a prefix.
+   *
+   * @var int
+   */
   protected $foo = 1;
 
-  // Longer properties use camelCase naming.
+  /**
+   * Longer properties use camelCase naming.
+   *
+   * @var int
+   */
   public $barProperty = 1;
 
-  // Public static variables use camelCase, too.
+  /**
+   * Public static variables use camelCase, too.
+   *
+   * @var string
+   */
   public static $basePath = NULL;
 
   /**

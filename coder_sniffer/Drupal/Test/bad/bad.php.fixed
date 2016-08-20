@@ -678,7 +678,7 @@ function test16() {
 /**
  * Invalid data types.
  *
- * @param string or int or object... $x
+ * @param mixed $x
  *   Description here.
  * @param bool $y
  *   Description here.
