@@ -125,20 +125,21 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSnif
                         $foundIndent = 0;
                     }
 
-                    // @todo we have not established a coding standard for this,
-                    // disabled for now.
-                    // /*
-                    // if ($foundIndent !== ($requiredIndent-2)) {
-                    // $error = "Object operator not indented correctly; expected $requiredIndent spaces but found $foundIndent";
-                    // $phpcsFile->addError($error, $next);
-                    // }*/.
+                    if ($foundIndent !== $requiredIndent) {
+                        $error = 'Object operator not indented correctly; expected %s spaces but found %s';
+                        $data  = array(
+                                  $requiredIndent,
+                                  $foundIndent,
+                                 );
+                        $phpcsFile->addError($error, $next, 'Indent', $data);
+                    }
                 }
 
-                // It cant be the last thing on the line either.
+                // It can't be the last thing on the line either.
                 $content = $phpcsFile->findNext(T_WHITESPACE, ($next + 1), null, true);
                 if ($tokens[$content]['line'] !== $tokens[$next]['line']) {
                     $error = 'Object operator must be at the start of the line, not the end';
-                    $phpcsFile->addError($error, $next);
+                    $phpcsFile->addError($error, $next, 'LineStart');
                 }
             }//end if
 

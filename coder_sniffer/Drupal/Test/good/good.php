@@ -704,18 +704,18 @@ function test3() {
   // Uses the Rules API as example.
   $rule = rule();
   $rule->condition('rules_test_condition_true')
-       ->condition('rules_test_condition_true')
-       ->condition(rules_or()
-         // Inline test comment that continues on a
-         // second line.
-         ->condition(rules_condition('rules_test_condition_true')->negate())
-         ->condition('rules_test_condition_false')
-         ->condition(rules_and()
-           ->condition('rules_test_condition_false')
-           ->condition('rules_test_condition_true')
-           ->negate()
-         )
-       );
+    ->condition('rules_test_condition_true')
+    ->condition(rules_or()
+      // Inline test comment that continues on a
+      // second line.
+      ->condition(rules_condition('rules_test_condition_true')->negate())
+      ->condition('rules_test_condition_false')
+      ->condition(rules_and()
+        ->condition('rules_test_condition_false')
+        ->condition('rules_test_condition_true')
+        ->negate()
+      )
+    );
 }
 
 // Test usages of t().
