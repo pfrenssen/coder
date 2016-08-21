@@ -214,13 +214,11 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         $type = null;
         if ($isSpecialMethod === false && $methodName !== $className) {
             if ($return !== null) {
-                // Just consider the first word as the data type in case there is a
-                // description sentence on the same line already.
-                $type = strtok($tokens[($return + 2)]['content'], ' ');
+                $type = trim($tokens[($return + 2)]['content']);
                 if (empty($type) === true || $tokens[($return + 2)]['code'] !== T_DOC_COMMENT_STRING) {
                     $error = 'Return type missing for @return tag in function comment';
                     $phpcsFile->addError($error, $return, 'MissingReturnType');
-                } else {
+                } else if (strpos($type, ' ') === false){
                     // Check return type (can be multiple, separated by '|').
                     $typeNames      = explode('|', $type);
                     $suggestedNames = array();
@@ -333,6 +331,10 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     }
 
                     $phpcsFile->addError($error, $return, 'MissingReturnComment');
+                } else if (strpos($type, ' ') !== false) {
+                    $error = 'Return type "%s" must not contain spaces';
+                    $data  = array($type);
+                    $phpcsFile->addError($error, $return, 'ReturnTypeSpaces', $data);
                 }//end if
             }//end if
         } else {
