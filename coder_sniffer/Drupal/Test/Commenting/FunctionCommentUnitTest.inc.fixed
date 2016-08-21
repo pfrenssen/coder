@@ -339,3 +339,25 @@ function test26($var) {
 function test27($x) {
   return 0;
 }
+
+/**
+ * Return docs should not contain variable names.
+ *
+ * @return string
+ *   The profile.
+ */
+function test28() {
+  $profile = 'x';
+  return $profile;
+}
+
+/**
+ * Not fixable return comment.
+ *
+ * @return string $profile more confusing text here.
+ *   The profile.
+ */
+function test29() {
+  $profile = 'x';
+  return $profile;
+}

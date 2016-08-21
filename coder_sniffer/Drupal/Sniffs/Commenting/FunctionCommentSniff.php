@@ -218,7 +218,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 if (empty($type) === true || $tokens[($return + 2)]['code'] !== T_DOC_COMMENT_STRING) {
                     $error = 'Return type missing for @return tag in function comment';
                     $phpcsFile->addError($error, $return, 'MissingReturnType');
-                } else if (strpos($type, ' ') === false){
+                } else if (strpos($type, ' ') === false) {
                     // Check return type (can be multiple, separated by '|').
                     $typeNames      = explode('|', $type);
                     $suggestedNames = array();
@@ -332,9 +332,18 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 
                     $phpcsFile->addError($error, $return, 'MissingReturnComment');
                 } else if (strpos($type, ' ') !== false) {
-                    $error = 'Return type "%s" must not contain spaces';
-                    $data  = array($type);
-                    $phpcsFile->addError($error, $return, 'ReturnTypeSpaces', $data);
+                    if (preg_match('/^([^\s]+)[\s]+(\$[^\s]+)[\s]*$/', $type, $matches) === 1) {
+                        $error = 'Return type must not contain variable name "%s"';
+                        $data  = array($matches[2]);
+                        $fix   = $phpcsFile->addFixableError($error, ($return + 2), 'ReturnVarName', $data);
+                        if ($fix === true) {
+                            $phpcsFile->fixer->replaceToken(($return + 2), $matches[1]);
+                        }
+                    } else {
+                        $error = 'Return type "%s" must not contain spaces';
+                        $data  = array($type);
+                        $phpcsFile->addError($error, $return, 'ReturnTypeSpaces', $data);
+                    }
                 }//end if
             }//end if
         } else {
