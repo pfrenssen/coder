@@ -60,6 +60,12 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
             $parenthesis_closer = 'bracket_closer';
         }
 
+        // Sanity check: this can sometimes be NULL if the array was not correctly
+        // parsed.
+        if ($tokens[$stackPtr][$parenthesis_closer] === null) {
+            return;
+        }
+
         $lastItem = $phpcsFile->findPrevious(
             PHP_CodeSniffer_Tokens::$emptyTokens,
             ($tokens[$stackPtr][$parenthesis_closer] - 1),
@@ -79,6 +85,7 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
         if ($tokens[$lastItem]['code'] !== T_COMMA && $isInlineArray === false
             && $tokens[($lastItem + 1)]['code'] !== T_CLOSE_PARENTHESIS
             && $tokens[($lastItem + 1)]['code'] !== T_CLOSE_SHORT_ARRAY
+            && isset(PHP_CodeSniffer_Tokens::$heredocTokens[$tokens[$lastItem]['code']]) === false
         ) {
             $data = array($tokens[$lastItem]['content']);
             $fix  = $phpcsFile->addFixableWarning('A comma should follow the last multiline array item. Found: %s', $lastItem, 'CommaLastItem', $data);
@@ -209,7 +216,9 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                 // Skip lines that are part of a multi-line string.
                 $isMultiLineString = $tokens[($newLineStart - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
                     && substr($tokens[($newLineStart - 1)]['content'], -1) === $phpcsFile->eolChar;
-                if ($innerNesting === false && $isMultiLineString === false) {
+                // Skip NOWDOC or HEREDOC lines.
+                $nowDoc = isset(PHP_CodeSniffer_Tokens::$heredocTokens[$tokens[$newLineStart]['code']]);
+                if ($innerNesting === false && $isMultiLineString === false && $nowDoc === false) {
                     $error = 'Array indentation error, expected %s spaces but found %s';
                     $data  = array(
                               $expectedColumn - 1,

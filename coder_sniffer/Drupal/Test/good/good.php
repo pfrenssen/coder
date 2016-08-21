@@ -382,6 +382,44 @@ $options = array(
   ],
 );
 
+$test = array(
+  'original' => '$no_index_value_scalar = TRUE;',
+  'settings' => array(
+    'no_index_value_foo' => array(
+      'foo' => array(
+        'value' => (object) array(
+          'value' => NULL,
+          'required' => TRUE,
+          'comment' => 'comment',
+        ),
+      ),
+    ),
+  ),
+  'expected' => <<<'EXPECTED'
+$no_index_value_scalar = TRUE;
+$no_index_value_foo['foo']['value'] = NULL; // comment
+EXPECTED
+);
+
+$test = array(
+  'original' => '$no_index_value_scalar = TRUE;',
+  'settings' => array(
+    'no_index_value_foo' => array(
+      'foo' => array(
+        'value' => (object) array(
+          'value' => NULL,
+          'required' => TRUE,
+          'comment' => 'comment',
+        ),
+      ),
+    ),
+  ),
+  'expected' => <<<EXPECTED
+abc
+def
+EXPECTED
+);
+
 // Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1', 'two' => '2');
 foreach ($a as $key => $value) {
