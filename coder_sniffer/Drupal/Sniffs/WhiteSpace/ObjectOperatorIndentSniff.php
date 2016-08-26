@@ -76,9 +76,10 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSnif
             return;
         }
 
-        // Determine correct indent.
-        for ($i = ($stackPtr - 1); $i >= 0; $i--) {
-            if ($tokens[$i]['line'] !== $tokens[$stackPtr]['line']) {
+        // Determine correct indent of the line where the object variable is
+        // located.
+        for ($i = ($prev - 1); $i >= 0; $i--) {
+            if ($tokens[$i]['line'] !== $tokens[$prev]['line']) {
                 $i++;
                 break;
             }
@@ -102,9 +103,12 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSnif
             $origConditions = $tokens[$stackPtr]['conditions'];
         }
 
+        // Start with the first operator, it might already be on a new line.
+        $next = $stackPtr;
+
         // Check indentation of each object operator in the chain.
         while ($next !== false) {
-            // Make sure it is in the same scope, otherwise dont check indent.
+            // Make sure it is in the same scope, otherwise don't check indent.
             $brackets = null;
             if (isset($tokens[$next]['nested_parenthesis']) === true) {
                 $brackets = $tokens[$next]['nested_parenthesis'];
@@ -116,7 +120,7 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSnif
             }
 
             if ($origBrackets === $brackets && $origConditions === $conditions) {
-                // Make sure it starts a line, otherwise dont check indent.
+                // Make sure it starts a line, otherwise don't check indent.
                 $indent = $tokens[($next - 1)];
                 if ($indent['code'] === T_WHITESPACE) {
                     if ($indent['line'] === $tokens[$next]['line']) {
@@ -131,7 +135,10 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSnif
                                   $requiredIndent,
                                   $foundIndent,
                                  );
-                        $phpcsFile->addError($error, $next, 'Indent', $data);
+                        $fix   = $phpcsFile->addFixableError($error, $next, 'Indent', $data);
+                        if ($fix === true) {
+                            $phpcsFile->fixer->replaceToken(($next - 1), str_repeat(' ', $requiredIndent));
+                        }
                     }
                 }
 
@@ -139,7 +146,14 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSnif
                 $content = $phpcsFile->findNext(T_WHITESPACE, ($next + 1), null, true);
                 if ($tokens[$content]['line'] !== $tokens[$next]['line']) {
                     $error = 'Object operator must be at the start of the line, not the end';
-                    $phpcsFile->addError($error, $next, 'LineStart');
+                    $fix   = $phpcsFile->addFixableError($error, $next, 'LineStart');
+                    if ($fix === true) {
+                        for ($i = ($next + 1); $i < $content ; $i++) {
+                            $phpcsFile->fixer->replaceToken($i, '');
+                        }
+
+                        $phpcsFile->fixer->addContentBefore($next, "\n".str_repeat(' ', $requiredIndent));
+                    }
                 }
             }//end if
 
