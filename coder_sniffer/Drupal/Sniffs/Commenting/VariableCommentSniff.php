@@ -97,8 +97,16 @@ class Drupal_Sniffs_Commenting_VariableCommentSniff extends PHP_CodeSniffer_Stan
             return;
         }
 
-        $varType       = $tokens[($foundVar + 2)]['content'];
-        $suggestedType = Drupal_Sniffs_Commenting_FunctionCommentSniff::suggestType($varType);
+        $varType = $tokens[($foundVar + 2)]['content'];
+
+        // There may be multiple types separated by pipes.
+        $suggestedTypes = array();
+        foreach (explode('|', $varType) as $type) {
+            $suggestedTypes[] = Drupal_Sniffs_Commenting_FunctionCommentSniff::suggestType($type);
+        }
+
+        $suggestedType = implode('|', $suggestedTypes);
+
         if ($varType !== $suggestedType) {
             $error = 'Expected "%s" but found "%s" for @var tag in member variable comment';
             $data  = array(

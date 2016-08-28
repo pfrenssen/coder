@@ -17,4 +17,18 @@ class Test {
    */
   protected $localeStorage;
 
+  /**
+   * Multiple type declarations can be declared, separated by pipes.
+   *
+   * @var \Drupal\Core\Entity\EntityInterface|null
+   */
+  protected $entity;
+
+  /**
+   * Test for some common misspellings.
+   *
+   * @var Boolean|stdClass|NULL|FALSE|TRUE|[]
+   */
+  protected $someVar;
+
 }
