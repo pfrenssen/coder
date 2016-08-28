@@ -55,119 +55,103 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSnif
     {
         $tokens = $phpcsFile->getTokens();
 
-        // Make sure this is the first object operator in a chain of them.
-        $prev = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-        if ($prev === false || $tokens[$prev]['code'] !== T_VARIABLE) {
+        // Check that there is only whitespace before the object operator and there
+        // is nothing else on the line.
+        if ($tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE || $tokens[($stackPtr - 1)]['column'] !== 1) {
             return;
         }
 
-        // Make sure this is a chained call.
-        $next = $phpcsFile->findNext(
-            T_OBJECT_OPERATOR,
-            ($stackPtr + 1),
-            null,
-            false,
-            null,
-            true
-        );
+        $previousLine = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 2), null, true, null, true);
 
-        if ($next === false) {
-            // Not a chained call.
+        if ($previousLine === false) {
             return;
         }
 
-        // Determine correct indent of the line where the object variable is
-        // located.
-        for ($i = ($prev - 1); $i >= 0; $i--) {
-            if ($tokens[$i]['line'] !== $tokens[$prev]['line']) {
-                $i++;
-                break;
+        // Check if the line before is in the same scope and go back if necessary.
+        $scopeDiff = array($previousLine => $previousLine);
+        while (empty($scopeDiff) === false) {
+            // Find the first non whitespace character on the previous line.
+            $startOfLine      = $this->findStartOfline($phpcsFile, $previousLine);
+            $startParenthesis = array();
+            if (isset($tokens[$startOfLine]['nested_parenthesis']) === true) {
+                $startParenthesis = $tokens[$startOfLine]['nested_parenthesis'];
+            }
+
+            $operatorParenthesis = array();
+            if (isset($tokens[$stackPtr]['nested_parenthesis']) === true) {
+                $operatorParenthesis = $tokens[$stackPtr]['nested_parenthesis'];
+            }
+
+            $scopeDiff = array_diff_assoc($startParenthesis, $operatorParenthesis);
+            if (empty($scopeDiff) === false) {
+                $previousLine = key($scopeDiff);
             }
         }
 
-        $requiredIndent = 0;
-        if ($i >= 0 && $tokens[$i]['code'] === T_WHITESPACE) {
-            $requiredIndent = strlen($tokens[$i]['content']);
+        // Closing parenthesis can be indented in several ways, so rather use the
+        // line that opended the parenthesis.
+        if ($tokens[$startOfLine]['code'] === T_CLOSE_PARENTHESIS) {
+            $startOfLine = $this->findStartOfline($phpcsFile, $tokens[$startOfLine]['parenthesis_opener']);
         }
 
-        $requiredIndent += 2;
-
-        // Determine the scope of the original object operator.
-        $origBrackets = null;
-        if (isset($tokens[$stackPtr]['nested_parenthesis']) === true) {
-            $origBrackets = $tokens[$stackPtr]['nested_parenthesis'];
-        }
-
-        $origConditions = null;
-        if (isset($tokens[$stackPtr]['conditions']) === true) {
-            $origConditions = $tokens[$stackPtr]['conditions'];
-        }
-
-        // Start with the first operator, it might already be on a new line.
-        $next = $stackPtr;
-
-        // Check indentation of each object operator in the chain.
-        while ($next !== false) {
-            // Make sure it is in the same scope, otherwise don't check indent.
-            $brackets = null;
-            if (isset($tokens[$next]['nested_parenthesis']) === true) {
-                $brackets = $tokens[$next]['nested_parenthesis'];
+        if ($tokens[$startOfLine]['code'] === T_OBJECT_OPERATOR) {
+            // If there is some wrapping in function calls then there should be an
+            // additional level of indentation.
+            if (isset($tokens[$stackPtr]['nested_parenthesis']) === true
+                && (empty($tokens[$startOfLine]['nested_parenthesis']) === true
+                || $tokens[$startOfLine]['nested_parenthesis'] !== $tokens[$stackPtr]['nested_parenthesis'])
+            ) {
+                $additionalIndent = 2;
+            } else {
+                $additionalIndent = 0;
             }
+        } else {
+            $additionalIndent = 2;
+        }
 
-            $conditions = null;
-            if (isset($tokens[$next]['conditions']) === true) {
-                $conditions = $tokens[$next]['conditions'];
+        if ($tokens[$stackPtr]['column'] !== ($tokens[$startOfLine]['column'] + $additionalIndent)) {
+            $error          = 'Object operator not indented correctly; expected %s spaces but found %s';
+            $expectedIndent = ($tokens[$startOfLine]['column'] + $additionalIndent - 1);
+            $data           = array(
+                               $expectedIndent,
+                               $tokens[$stackPtr]['column'] - 1,
+                              );
+            $fix            = $phpcsFile->addFixableError($error, $stackPtr, 'Indent', $data);
+
+            if ($fix === true) {
+                $phpcsFile->fixer->replaceToken(($stackPtr - 1), str_repeat(' ', $expectedIndent));
             }
-
-            if ($origBrackets === $brackets && $origConditions === $conditions) {
-                // Make sure it starts a line, otherwise don't check indent.
-                $indent = $tokens[($next - 1)];
-                if ($indent['code'] === T_WHITESPACE) {
-                    if ($indent['line'] === $tokens[$next]['line']) {
-                        $foundIndent = strlen($indent['content']);
-                    } else {
-                        $foundIndent = 0;
-                    }
-
-                    if ($foundIndent !== $requiredIndent) {
-                        $error = 'Object operator not indented correctly; expected %s spaces but found %s';
-                        $data  = array(
-                                  $requiredIndent,
-                                  $foundIndent,
-                                 );
-                        $fix   = $phpcsFile->addFixableError($error, $next, 'Indent', $data);
-                        if ($fix === true) {
-                            $phpcsFile->fixer->replaceToken(($next - 1), str_repeat(' ', $requiredIndent));
-                        }
-                    }
-                }
-
-                // It can't be the last thing on the line either.
-                $content = $phpcsFile->findNext(T_WHITESPACE, ($next + 1), null, true);
-                if ($tokens[$content]['line'] !== $tokens[$next]['line']) {
-                    $error = 'Object operator must be at the start of the line, not the end';
-                    $fix   = $phpcsFile->addFixableError($error, $next, 'LineStart');
-                    if ($fix === true) {
-                        for ($i = ($next + 1); $i < $content ; $i++) {
-                            $phpcsFile->fixer->replaceToken($i, '');
-                        }
-
-                        $phpcsFile->fixer->addContentBefore($next, "\n".str_repeat(' ', $requiredIndent));
-                    }
-                }
-            }//end if
-
-            $next = $phpcsFile->findNext(
-                T_OBJECT_OPERATOR,
-                ($next + 1),
-                null,
-                false,
-                null,
-                true
-            );
-        }//end while
+        }
 
     }//end process()
+
+
+    /**
+     * Returns the first non whitespace token on the line.
+     *
+     * @param PHP_CodeSniffer_File $phpcsFile All the tokens found in the document.
+     * @param int                  $stackPtr  The position of the current token
+     *                                        in the stack passed in $tokens.
+     *
+     * @return int
+     */
+    protected function findStartOfline(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    {
+        $tokens = $phpcsFile->getTokens();
+
+        // Find the first non whitespace character on the previous line.
+        $startOfLine = $stackPtr;
+        while ($tokens[($startOfLine - 1)]['line'] === $tokens[$startOfLine]['line']) {
+            $startOfLine--;
+        }
+
+        if ($tokens[$startOfLine]['code'] === T_WHITESPACE) {
+            $startOfLine++;
+        }
+
+        return $startOfLine;
+
+    }//end findStartOfline()
 
 
 }//end class

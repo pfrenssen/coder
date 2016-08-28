@@ -1,6 +1,6 @@
 <?php
 
-class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentUnitTest extends CoderSniffUnitTest
+class Drupal_Sniffs_WhiteSpace_ObjectOperatorSpacingUnitTest extends CoderSniffUnitTest
 {
 
     /**
@@ -14,10 +14,8 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentUnitTest extends CoderSniffUn
     public function getErrorList($testFile)
     {
         return array(
-                24 => 1,
-                26 => 1,
-                28 => 1,
-                30 => 1,
+                9 => 1,
+                10 => 1,
                );
 
     }//end getErrorList()

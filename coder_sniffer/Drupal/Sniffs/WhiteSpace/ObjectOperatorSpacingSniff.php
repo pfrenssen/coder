@@ -84,7 +84,16 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorSpacingSniff implements PHP_CodeSni
             $error = 'Space found after object operator';
             $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'After');
             if ($fix === true) {
-                $phpcsFile->fixer->replaceToken(($stackPtr + 1), '');
+                if ($after === 'newline') {
+                    // Delete the operator on this line and insert it before the
+                    // token on the next line.
+                    $phpcsFile->fixer->beginChangeset();
+                    $phpcsFile->fixer->replaceToken($stackPtr, '');
+                    $phpcsFile->fixer->addContentBefore(($stackPtr + 2), '->');
+                    $phpcsFile->fixer->endChangeset();
+                } else {
+                    $phpcsFile->fixer->replaceToken(($stackPtr + 1), '');
+                }
             }
         }
 

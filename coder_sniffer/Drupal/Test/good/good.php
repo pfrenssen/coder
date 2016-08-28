@@ -1400,3 +1400,52 @@ function test17(ConfigFactoryInterface $config_factory,
                 EntityTypeBundleInfoInterface $entity_type_bundle_info) {
   return 0;
 }
+
+/**
+ * Object operator indentation is fine like this.
+ */
+function is_table_empty($table_name, $database) {
+  return !$database->schema()->tableExists($table_name) ||
+    !$database->select($table_name)
+      ->countQuery()
+      ->range(0, 1)
+      ->execute()
+      ->fetchField();
+}
+
+/**
+ * Another example of correct object operator indentation.
+ */
+function test18($key, $value, $connection) {
+  $connection->merge('foo')
+    ->keys(array(
+      'name' => $key,
+      'collection' => 'collection',
+    ))
+    ->fields(array('value' => $value))
+    ->execute();
+}
+
+// Correct object operator indentation.
+ContentLanguageSettings::create([
+  'target_entity_type_id' => 'entity_test',
+  'target_bundle' => 'some_bundle',
+])->setLanguageAlterable(TRUE)
+  ->setDefaultLangcode('authors_default')
+  ->save();
+
+/**
+ * Another example of correct operator indentation.
+ */
+function test19($link, $parents, $connection) {
+  return $connection
+    ->insert('book')
+    ->fields(array(
+      'nid' => $link['nid'],
+      'bid' => $link['bid'],
+      'pid' => $link['pid'],
+      'weight' => $link['weight'],
+    ) + $parents
+    )
+    ->execute();
+}
