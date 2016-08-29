@@ -31,4 +31,11 @@ class Test {
    */
   protected $someVar;
 
+  /**
+   * A variable name should not follow the type declaration.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface $user
+   */
+  protected $user;
+
 }

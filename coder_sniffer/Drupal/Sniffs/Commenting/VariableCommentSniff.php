@@ -107,17 +107,29 @@ class Drupal_Sniffs_Commenting_VariableCommentSniff extends PHP_CodeSniffer_Stan
 
         $suggestedType = implode('|', $suggestedTypes);
 
-        if ($varType !== $suggestedType) {
+        // Detect and auto-fix the common mistake that the variable name is
+        // appended to the type declaration.
+        $matches = array();
+        if (preg_match('/^([^\s]+)(\s+\$.+)$/', $varType, $matches) === 1) {
+            $error = 'Do not append variable name "%s" to the type declaration in a member variable comment';
+            $data  = array(
+                      trim($matches[2]),
+                     );
+            $fix   = $phpcsFile->addFixableError($error, ($foundVar + 2), 'InlineVariableName', $data);
+            if ($fix === true) {
+                $phpcsFile->fixer->replaceToken(($foundVar + 2), $matches[1]);
+            }
+        } else if ($varType !== $suggestedType) {
             $error = 'Expected "%s" but found "%s" for @var tag in member variable comment';
             $data  = array(
                       $suggestedType,
                       $varType,
                      );
-            $fix   = $phpcsFile->addError($error, ($foundVar + 2), 'IncorrectVarType', $data);
+            $fix   = $phpcsFile->addFixableError($error, ($foundVar + 2), 'IncorrectVarType', $data);
             if ($fix === true) {
                 $phpcsFile->fixer->replaceToken(($foundVar + 2), $suggestedType);
             }
-        }
+        }//end if
 
     }//end processMemberVar()
 
