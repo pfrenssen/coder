@@ -11,6 +11,7 @@
     "license": "GPL-2.0+",
     "require": {
         "php": ">=5.4.0",
+        "ext-mbstring": "*",
         "squizlabs/php_codesniffer": ">=2.7.0",
         "symfony/yaml": ">=2.0.0"
     },
