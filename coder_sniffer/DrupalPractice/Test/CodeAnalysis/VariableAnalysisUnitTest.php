@@ -38,6 +38,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisUnitTest extends CoderS
         return array(
                 4 => 1,
                 8 => 1,
+                17 => 1,
                );
 
     }//end getWarningList()

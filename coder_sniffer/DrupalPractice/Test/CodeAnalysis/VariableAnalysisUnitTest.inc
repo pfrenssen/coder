@@ -12,3 +12,12 @@ function test2($text, $data = array(), array $options = array()) {
     return $text_tokens;
   }
 }
+
+function test3() {
+  global $test;
+  $x = 5;
+  if ($x == 5) {
+    $x = 123;
+  }
+  return $x;
+}
