@@ -62,6 +62,7 @@ class VariableInfo
     public $firstInitialized;
     public $firstRead;
     public $ignoreUnused = false;
+    public $lastAssignment;
 
     static $scopeTypeDescriptions = array(
                                      'local'  => 'variable',
@@ -716,6 +717,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
         }
 
         if (isset($varInfo->firstInitialized) === true && ($varInfo->firstInitialized <= $stackPtr)) {
+            $varInfo->lastAssignment = $stackPtr;
             return;
         }
 
@@ -1956,7 +1958,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
                 continue;
             }
 
-            if (($varInfo->passByReference === true) && (isset($varInfo->firstInitialized) === true)) {
+            if (($varInfo->passByReference === true) && (isset($varInfo->lastAssignment) === true || $varInfo->scopeType === 'global')) {
                 // If we're pass-by-reference then it's a common pattern to
                 // use the variable to return data to the caller, so any
                 // assignment also counts as "variable use" for the purposes
