@@ -26,6 +26,7 @@ class DrupalPractice_Sniffs_Objects_GlobalDrupalSniff implements PHP_CodeSniffer
      */
     public static $baseClasses = array(
                                   'BlockBase',
+                                  'ConfigFormBase',
                                   'ControllerBase',
                                   'FormBase',
                                   'EntityForm',
