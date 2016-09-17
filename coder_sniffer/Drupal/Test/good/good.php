@@ -608,6 +608,11 @@ class Bar {
   public static $basePath = NULL;
 
   /**
+   * {@inheritdoc}
+   */
+  protected $modules = ['node', 'user'];
+
+  /**
    * Enter description here ...
    */
   public function foo() {

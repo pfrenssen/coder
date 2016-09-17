@@ -57,6 +57,11 @@ class Drupal_Sniffs_Commenting_VariableCommentSniff extends PHP_CodeSniffer_Stan
 
         $commentStart = $tokens[$commentEnd]['comment_opener'];
 
+        $commentContent = $phpcsFile->getTokensAsString($commentStart, ($commentEnd - $commentStart));
+        if (strpos($commentContent, '{@inheritdoc}') !== false) {
+            return;
+        }
+
         $foundVar = null;
         foreach ($tokens[$commentStart]['comment_tags'] as $tag) {
             if ($tokens[$tag]['content'] === '@var') {
