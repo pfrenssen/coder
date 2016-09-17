@@ -1453,3 +1453,15 @@ function test20($link, $parents, $connection) {
     )
     ->execute();
 }
+
+/**
+ * PHP 7 type hints are allowed.
+ *
+ * @param string $a
+ *   Parameter one.
+ * @param int $b
+ *   Parameter two.
+ */
+function test21(string $a, int $b) {
+
+}
