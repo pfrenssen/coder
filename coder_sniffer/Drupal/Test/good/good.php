@@ -60,7 +60,6 @@ $i--;
 $i++;
 ++$i;
 $x = $success ? $context['results']['success']++ : $context['results']['error']++;
-$x = $success ? foo()++ : bar()++;
 $i = -1;
 array('i' => -1);
 $i = (1 == -1);
@@ -1382,7 +1381,7 @@ $access =
  * @return int|null
  *   Return has an optional null.
  */
-function test16($arg) {
+function test17($arg) {
   if ($arg === 1) {
     return;
   }
@@ -1392,7 +1391,7 @@ function test16($arg) {
 /**
  * Ignore indentation of multi-line function declarations.
  */
-function test17(ConfigFactoryInterface $config_factory,
+function test18(ConfigFactoryInterface $config_factory,
                 EntityTypeManagerInterface $entity_type_manager,
                 CacheTagsInvalidatorInterface $cache_invalidator,
                 ModuleHandlerInterface $module_handler,
@@ -1416,7 +1415,7 @@ function is_table_empty($table_name, $database) {
 /**
  * Another example of correct object operator indentation.
  */
-function test18($key, $value, $connection) {
+function test19($key, $value, $connection) {
   $connection->merge('foo')
     ->keys(array(
       'name' => $key,
@@ -1437,7 +1436,7 @@ ContentLanguageSettings::create([
 /**
  * Another example of correct operator indentation.
  */
-function test19($link, $parents, $connection) {
+function test20($link, $parents, $connection) {
   return $connection
     ->insert('book')
     ->fields(array(
