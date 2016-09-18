@@ -1478,3 +1478,10 @@ function test20($link, $parents, $connection) {
 function test21(string $a, int $b) {
 
 }
+
+/**
+ * Implements hook_very_long_module_name_neverending_hook_name_that_is_a_long_cat_alter().
+ */
+function mymodule_very_long_module_name_neverending_hook_name_that_is_a_long_cat_alter() {
+
+}

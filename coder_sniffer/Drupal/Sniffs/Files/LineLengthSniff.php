@@ -91,6 +91,8 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
                 || preg_match('#= ("|\')\S+[\\\\/]\S+("|\'),*$#', $tokens[($stackPtr - 2)]['content']) === 1)
                 // Allow @link tags in lists.
                 || strpos($tokens[($stackPtr - 2)]['content'], '- @link') !== false
+                // Allow hook implementation line to exceed 80 characters.
+                || preg_match('/^Implements hook_[a-zA-Z0-9_]+\(\)/', $tokens[($stackPtr - 2)]['content']) === 1
             ) {
                 return;
             }
