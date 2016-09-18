@@ -1485,3 +1485,17 @@ function test21(string $a, int $b) {
 function mymodule_very_long_module_name_neverending_hook_name_that_is_a_long_cat_alter() {
 
 }
+
+/**
+ * @coversDefaultClass \Drupal\mymodule\Something
+ */
+class MyTest extends UnitTestBase {
+
+  /**
+   * @covers ::foo
+   */
+  public function testFoo() {
+
+  }
+
+}

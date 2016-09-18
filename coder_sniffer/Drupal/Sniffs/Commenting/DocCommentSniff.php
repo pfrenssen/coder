@@ -139,6 +139,12 @@ class Drupal_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                 return;
             }
 
+            // PHPUnit test methods are allowed to skip the short description and
+            // only provide an @covers annotation.
+            if ($tokens[$short]['content'] === '@covers') {
+                return;
+            }
+
             $error = 'Missing short description in doc comment';
             $phpcsFile->addError($error, $stackPtr, 'MissingShort');
             return;
