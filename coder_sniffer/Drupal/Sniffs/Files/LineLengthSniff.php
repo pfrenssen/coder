@@ -89,6 +89,8 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
                 // Allow long paths or namespaces in annotations such as
                 // "list_builder" = "Drupal\rules\Entity\Controller\RulesReactionListBuilder".
                 || preg_match('#= ("|\')\S+[\\\\/]\S+("|\'),*$#', $tokens[($stackPtr - 2)]['content']) === 1)
+                // Allow @link tags in lists.
+                || strpos($tokens[($stackPtr - 2)]['content'], '- @link') !== false
             ) {
                 return;
             }

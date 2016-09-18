@@ -781,6 +781,12 @@ t('x');
 // And here continues the long comment.
 // Now some UTF-8 characters that do not exceed 80 characters.
 // Hà Nội là thủ đô, đồng thời là thành phố đứng đầu Việt Nam về diện tích tự.
+//
+// Further information:
+// - @link https://api.drupal.org/api/drupal/groups/8 All topics @endlink
+// - @link https://www.drupal.org/project/examples Examples project (sample modules) @endlink
+// - @link https://www.drupal.org/list-changes API change notices @endlink
+// - @link https://www.drupal.org/developing/api/8 Drupal 8 API longer references @endlink
 t('x');
 
 // Concatenating some symbols is fine.
@@ -1198,6 +1204,13 @@ function test9() {
  *
  * Visit also:
  * @link https://www.drupal.org/node/323101 Strings at well-known places: built-in menus, .. @endlink.
+ *
+ * @section more_info Further information
+ *
+ * - @link https://api.drupal.org/api/drupal/groups/8 All topics @endlink
+ * - @link https://www.drupal.org/project/examples Examples project (sample modules) @endlink
+ * - @link https://www.drupal.org/list-changes API change notices @endlink
+ * - @link https://www.drupal.org/developing/api/8 Drupal 8 API longer references @endlink
  *
  * @param string $title
  *   The untranslated title of the menu item.

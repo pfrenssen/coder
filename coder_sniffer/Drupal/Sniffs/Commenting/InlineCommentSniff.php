@@ -262,7 +262,11 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             $isUrl = isset($matches[0]) === true;
             preg_match('/[$a-zA-Z_]+\([$a-zA-Z_]*\)/', $lastWord, $matches);
             $isFunction = isset($matches[0]) === true;
-            if ($isUrl === false && $isFunction === false) {
+
+            // Also allow closing tags like @endlink or @endcode.
+            $isEndTag = $lastWord[0] === '@';
+
+            if ($isUrl === false && $isFunction === false && $isEndTag === false) {
                 $error = 'Inline comments must end in %s';
                 $ender = '';
                 foreach ($acceptedClosers as $closerName => $symbol) {
