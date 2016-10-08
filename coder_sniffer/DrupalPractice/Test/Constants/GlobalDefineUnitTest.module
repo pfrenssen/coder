@@ -1,0 +1,3 @@
+<?php
+
+define('MYMODULE_FOO', 1);
