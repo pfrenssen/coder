@@ -1,3 +1,15 @@
 <?php
 
 define('MYMODULE_FOO', 1);
+
+/**
+ * Some comment.
+ */
+define('MYMODULE_FOO2', 2);
+
+/**
+ * This should not throw a warning because the constant is deprecated.
+ *
+ * @deprecated in Drupal 8.1.x.
+ */
+define('MYMODULE_FOO3', 3);

@@ -64,6 +64,20 @@ class DrupalPractice_Sniffs_Constants_GlobalDefineSniff extends Drupal_Sniffs_Se
             return;
         }
 
+        // Allow constants if they are deprecated.
+        $commentEnd = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
+        if ($commentEnd !== null && $tokens[$commentEnd]['code'] === T_DOC_COMMENT_CLOSE_TAG) {
+            // Go through all comment tags and check if one is @deprecated.
+            $commentTag = $commentEnd;
+            while ($commentTag !== null && $commentTag > $tokens[$commentEnd]['comment_opener']) {
+                if ($tokens[$commentTag]['content'] === '@deprecated') {
+                    return;
+                }
+
+                $commentTag = $phpcsFile->findPrevious(T_DOC_COMMENT_TAG, ($commentTag - 1), $tokens[$commentEnd]['comment_opener']);
+            }
+        }
+
         $warning = 'Global constants should not be used, move it to a class or interface';
         $phpcsFile->addWarning($warning, $stackPtr, 'GlobalConstant');
 

@@ -35,7 +35,10 @@ class DrupalPractice_Sniffs_Constants_GlobalDefineUnitTest extends CoderSniffUni
      */
     protected function getWarningList($testFile)
     {
-        return array(3 => 1);
+        return array(
+                3 => 1,
+                8 => 1,
+               );
 
     }//end getWarningList()
 
