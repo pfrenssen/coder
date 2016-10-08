@@ -1,6 +1,6 @@
 <?php
 /**
- * DrupalPractice_Sniffs_General_GlobalConstantSniff
+ * DrupalPractice_Sniffs_Constants_GlobalConstantSniff
  *
  * PHP version 5
  *
@@ -16,7 +16,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Sniffs_General_GlobalConstantSniff implements PHP_CodeSniffer_Sniff
+class DrupalPractice_Sniffs_Constants_GlobalConstantSniff implements PHP_CodeSniffer_Sniff
 {
 
 

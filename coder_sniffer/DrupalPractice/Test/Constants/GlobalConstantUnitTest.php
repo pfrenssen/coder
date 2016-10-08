@@ -6,7 +6,7 @@
  * A sniff unit test checks a .inc file for expected violations of a single
  * coding standard. Expected errors and warnings are stored in this class.
  */
-class DrupalPractice_Sniffs_General_GlobalConstantUnitTest extends CoderSniffUnitTest
+class DrupalPractice_Sniffs_Constants_GlobalConstantUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -38,18 +38,6 @@ class DrupalPractice_Sniffs_General_GlobalConstantUnitTest extends CoderSniffUni
         return array(3 => 1);
 
     }//end getWarningList()
-
-
-    /**
-     * Returns a list of test files that should be checked.
-     *
-     * @return array The list of test files.
-     */
-    protected function getTestFiles()
-    {
-        return [__DIR__ . '/GlobalConstantUnitTest/GlobalConstantUnitTest.inc'];
-
-    }//end getTestFiles()
 
 
 }//end class
