@@ -131,7 +131,7 @@ function hook_locale_translation_projects_alter(array &$projects) {
  *
  * @ingroup entity_crud
  */
-function hook_ENTITY_TYPE_load($entities) {
+function hook_ENTITY_TYPE_load(array $entities) {
   foreach ($entities as $entity) {
     $entity->foo = mymodule_add_something($entity);
   }

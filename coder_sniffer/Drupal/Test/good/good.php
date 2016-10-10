@@ -1038,16 +1038,6 @@ class Foo implements FooInterface {
   }
 
   /**
-   * Array type hints for optional parameters can be omitted.
-   *
-   * @param \Drupal\Core\Plugin\Context\ContextInterface[] $contexts
-   *   Description goes here.
-   */
-  public function test5($contexts = []) {
-    return 'test5';
-  }
-
-  /**
    * Not documenting a "throws" tag is allowed.
    *
    * This should not fail for errors with underscores in names as well.
@@ -1226,17 +1216,6 @@ function test10($title) {
  *   http://example.com/test/long/link/with/stuff/here/making/it/even/longer/now/so/that/it/shows
  */
 function test11() {
-
-}
-
-/**
- * Description here.
- *
- * @param array $array_param
- *   We document here that the parameter is an array, but we don't use an array
- *   type hint in the function signature which is allowed.
- */
-function test12($array_param) {
 
 }
 
