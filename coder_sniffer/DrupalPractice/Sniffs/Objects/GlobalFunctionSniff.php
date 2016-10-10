@@ -78,16 +78,10 @@ class DrupalPractice_Sniffs_Objects_GlobalFunctionSniff implements PHP_CodeSniff
 
         // Check if the class extends another class and get the name of the class
         // that is extended.
-        $classPtr   = key($tokens[$stackPtr]['conditions']);
-        $extendsPtr = $phpcsFile->findNext(T_EXTENDS, ($classPtr + 1), $tokens[$classPtr]['scope_opener']);
-        if ($extendsPtr === false) {
-            return;
-        }
+        $classPtr    = key($tokens[$stackPtr]['conditions']);
+        $extendsName = $phpcsFile->findExtendedClassName($classPtr);
 
-        $extendsNamePtr = $phpcsFile->findNext(T_STRING, ($extendsPtr + 1), $tokens[$classPtr]['scope_opener']);
-
-        if ($extendsNamePtr === false || in_array($tokens[$extendsNamePtr]['content'], DrupalPractice_Sniffs_Objects_GlobalDrupalSniff::$baseClasses) === false
-        ) {
+        if ($extendsName === false || in_array($extendsName, DrupalPractice_Sniffs_Objects_GlobalDrupalSniff::$baseClasses) === false) {
             return;
         }
 
