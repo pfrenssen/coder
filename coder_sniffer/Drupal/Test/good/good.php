@@ -1299,6 +1299,20 @@ class ReactionRule extends ConfigEntityBase {
 }
 
 /**
+ * Underscores are allowed in properties of config entity classes.
+ */
+class NodeType extends ConfigEntityBundleBase {
+
+  /**
+   * Default value of the 'Create new revision' checkbox of this node type.
+   *
+   * @var bool
+   */
+  protected $new_revision = TRUE;
+
+}
+
+/**
  * Test class.
  */
 class OperatorTest {

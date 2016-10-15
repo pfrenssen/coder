@@ -58,7 +58,7 @@ class Drupal_Sniffs_NamingConventions_ValidVariableNameSniff
             // their class property names. If a class extends something like
             // ConfigEntityBase then we consider it a config entity class and allow
             // underscores.
-            if ($extendsName !== false && strpos($extendsName, 'ConfigEntityBase') !== false) {
+            if ($extendsName !== false && strpos($extendsName, 'ConfigEntity') !== false) {
                 return;
             }
         }
