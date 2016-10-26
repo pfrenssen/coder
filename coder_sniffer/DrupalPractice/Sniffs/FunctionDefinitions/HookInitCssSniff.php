@@ -68,10 +68,10 @@ class DrupalPractice_Sniffs_FunctionDefinitions_HookInitCssSniff extends Drupal_
                     && $tokens[$opener]['code'] === T_OPEN_PARENTHESIS
                 ) {
                     if ($tokens[$stackPtr]['content'] === ($fileName.'_init')) {
-                        $warning = 'Do not use %s() in hook_init(), move it to your page/form callback or use hook_page_build() instead';
+                        $warning = 'Do not use %s() in hook_init(), use #attached for CSS and JS in your page/form callback or in hook_page_build() instead';
                         $phpcsFile->addWarning($warning, $string, 'AddFunctionFound', array($tokens[$string]['content']));
                     } else {
-                        $warning = 'Do not use %s() in hook_page_build(), use #attached on the $page render array instead';
+                        $warning = 'Do not use %s() in hook_page_build(), use #attached for CSS and JS on the $page render array instead';
                         $phpcsFile->addWarning($warning, $string, 'AddFunctionFoundPageBuild', array($tokens[$string]['content']));
                     }
                 }
