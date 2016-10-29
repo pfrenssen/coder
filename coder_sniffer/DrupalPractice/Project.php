@@ -2,8 +2,6 @@
 /**
  * DrupalPractice_Project
  *
- * PHP version 5
- *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
@@ -106,8 +104,8 @@ class DrupalPractice_Project
     /**
      * Helper method to sort array values by string length with usort().
      *
-     * @param string $a
-     * @param string $b
+     * @param string $a First string.
+     * @param string $b Second string.
      *
      * @return int
      */
