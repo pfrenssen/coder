@@ -2,8 +2,6 @@
 /**
  * This file is part of the VariableAnalysis addon for PHP_CodeSniffer.
  *
- * PHP version 5
- *
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Sam Graham <php-codesniffer-variableanalysis BLAHBLAH illusori.co.uk>

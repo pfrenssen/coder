@@ -2,8 +2,6 @@
 /**
  * Drupal_Sniffs_Files_EndFileNewlineSniff.
  *
- * PHP version 5
- *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer

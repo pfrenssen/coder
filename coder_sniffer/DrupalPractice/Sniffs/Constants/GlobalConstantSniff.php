@@ -2,8 +2,6 @@
 /**
  * DrupalPractice_Sniffs_Constants_GlobalConstantSniff
  *
- * PHP version 5
- *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer

@@ -2,8 +2,6 @@
 /**
  * PEAR_Sniffs_Functions_FunctionDeclarationSniff.
  *
- * PHP version 5
- *
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>

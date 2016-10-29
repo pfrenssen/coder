@@ -2,8 +2,6 @@
 /**
  * Verifies that class/interface/trait methods have scope modifiers.
  *
- * PHP version 5
- *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer

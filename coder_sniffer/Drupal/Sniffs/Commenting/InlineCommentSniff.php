@@ -2,8 +2,6 @@
 /**
  * PHP_CodeSniffer_Sniffs_Drupal_Commenting_InlineCommentSniff.
  *
- * PHP version 5
- *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer

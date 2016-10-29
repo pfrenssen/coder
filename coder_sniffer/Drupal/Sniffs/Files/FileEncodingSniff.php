@@ -2,8 +2,6 @@
 /**
  * Drupal_Sniffs_Files_FileEncodingSniff.
  *
- * PHP version 5
- *
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Klaus Purer <klaus.purer@mail.com>

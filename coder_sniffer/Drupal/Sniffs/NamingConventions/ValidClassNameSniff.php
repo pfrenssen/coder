@@ -2,8 +2,6 @@
 /**
  * Drupal_Sniffs_NamingConventions_ValidClassNameSniff.
  *
- * PHP version 5
- *
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>

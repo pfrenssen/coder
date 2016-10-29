@@ -2,8 +2,6 @@
 /**
  * Drupal_Sniffs_Commenting_DocCommentStarSniff
  *
- * PHP version 5
- *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer

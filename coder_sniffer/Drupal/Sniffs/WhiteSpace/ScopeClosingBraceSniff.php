@@ -2,8 +2,6 @@
 /**
  * Drupal_Sniffs_Whitespace_ScopeClosingBraceSniff.
  *
- * PHP version 5
- *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://Drupal.php.net/package/PHP_CodeSniffer
