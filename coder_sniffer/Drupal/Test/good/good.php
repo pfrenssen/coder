@@ -891,6 +891,13 @@ function drush_mymodule_foo_bar() {
 }
 
 /**
+ * Implements hook_foo_bar() for blocks.
+ */
+function mymodule_foo_bar_block() {
+
+}
+
+/**
  * Not documenting all parameters is allowed.
  *
  * @param Node $node
