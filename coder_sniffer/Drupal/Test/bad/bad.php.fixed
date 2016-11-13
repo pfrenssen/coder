@@ -365,19 +365,29 @@ $var = foo(
  * Curly brace has to be on the same line.
  */
 class Bar {
-  // Private properties must not have a prefix.
+  /**
+   * Private properties must not have a prefix.
+   */
   private $_secret = 1;
 
-  // Public properties must not have a prefix.
+  /**
+   * Public properties must not have a prefix.
+   */
   protected $_foo = 1;
 
-  // Public properties must not have a prefix.
+  /**
+   * Public properties must not have a prefix.
+   */
   public $_bar = 1;
 
-  // Public static variables use camelCase.
+  /**
+   * Public static variables use camelCase.
+   */
   public static $base_path = NULL;
 
-  // "var" keyword must no be used.
+  /**
+ * "var" keyword must no be used.
+ */
   var $x = 5;
 
 }

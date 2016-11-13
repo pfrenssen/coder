@@ -38,4 +38,10 @@ class Test {
    */
   protected $user;
 
+  // A doc comment should be used here.
+  protected $wrongCommentStyle;
+
+  // Wrong style with var keyword.
+  var $varStyle;
+
 }

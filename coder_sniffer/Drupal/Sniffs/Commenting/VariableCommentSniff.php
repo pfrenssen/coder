@@ -43,7 +43,20 @@ class Drupal_Sniffs_Commenting_VariableCommentSniff extends PHP_CodeSniffer_Stan
         }
 
         if ($tokens[$commentEnd]['code'] === T_COMMENT) {
-            $phpcsFile->addError('You must use "/**" style comments for a member variable comment', $stackPtr, 'WrongStyle');
+            $fix = $phpcsFile->addFixableError('You must use "/**" style comments for a member variable comment', $stackPtr, 'WrongStyle');
+            if ($fix === true) {
+                // Convert the comment into a doc comment.
+                $phpcsFile->fixer->beginChangeset();
+                $comment = '';
+                for ($i = $commentEnd; $tokens[$i]['code'] === T_COMMENT; $i--) {
+                    $comment = ' *'.ltrim($tokens[$i]['content'], '/* ').$comment;
+                    $phpcsFile->fixer->replaceToken($i, '');
+                }
+
+                $phpcsFile->fixer->replaceToken($commentEnd, "/**\n".rtrim($comment, "*/\n")."\n */\n");
+                $phpcsFile->fixer->endChangeset();
+            }
+
             return;
         } else if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG) {
             return;
@@ -53,7 +66,7 @@ class Drupal_Sniffs_Commenting_VariableCommentSniff extends PHP_CodeSniffer_Stan
             if ($commentFor !== $stackPtr) {
                 return;
             }
-        }
+        }//end if
 
         $commentStart = $tokens[$commentEnd]['comment_opener'];
 
