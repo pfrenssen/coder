@@ -85,6 +85,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                        T_ABSTRACT,
                        T_CONST,
                        T_PROPERTY,
+                       T_VAR,
                       );
 
             // Also ignore all doc blocks defined in the outer scope (no scope

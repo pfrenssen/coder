@@ -62,3 +62,15 @@ function example_custom_block_view($delta = '') {
   }
   return $block;
 }
+
+/**
+ * Test class with properties.
+ */
+class Test {
+
+  /**
+   * Wrong style with var keyword, but the doc block is fine.
+   */
+  var $varStyle;
+
+}
