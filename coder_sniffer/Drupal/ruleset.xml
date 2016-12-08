@@ -151,7 +151,6 @@
 
  <rule ref="Squiz.Arrays.ArrayBracketSpacing" />
 
- <rule ref="Squiz.Commenting.DocCommentAlignment" />
  <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration" />
  <!-- Disable some error messages that we already cover. -->
  <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration.AsNotLower">

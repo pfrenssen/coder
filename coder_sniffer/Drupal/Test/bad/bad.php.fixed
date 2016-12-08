@@ -386,8 +386,8 @@ class Bar {
   public static $base_path = NULL;
 
   /**
- * "var" keyword must no be used.
- */
+   * "var" keyword must no be used.
+   */
   var $x = 5;
 
 }

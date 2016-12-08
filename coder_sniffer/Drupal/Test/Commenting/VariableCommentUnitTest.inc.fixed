@@ -44,8 +44,8 @@ class Test {
   protected $wrongCommentStyle;
 
   /**
- * Wrong style with var keyword.
- */
+   * Wrong style with var keyword.
+   */
   var $varStyle;
 
 }
