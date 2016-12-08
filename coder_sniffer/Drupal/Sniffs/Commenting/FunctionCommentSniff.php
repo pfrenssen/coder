@@ -862,7 +862,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             return $type;
         }
 
-        $type = preg_replace('/[^a-zA-Z_\\\[\]]/', '', $type);
+        $type = preg_replace('/[^a-zA-Z0-9_\\\[\]]/', '', $type);
 
         return $type;
 

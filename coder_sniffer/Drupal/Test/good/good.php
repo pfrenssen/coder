@@ -1499,3 +1499,13 @@ class MyTest extends UnitTestBase {
   }
 
 }
+
+/**
+ * Numbers in types are allowed.
+ *
+ * @param \Drupal\x123_module\MyInterface $a
+ *   Parameter type with numbers in it.
+ */
+function test22(MyInterface $a) {
+
+}
