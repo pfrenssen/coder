@@ -33,6 +33,11 @@ abstract class CoderSniffUnitTest extends PHPUnit_Framework_TestCase
             self::$phpcs = new PHP_CodeSniffer(0, 0, 'utf-8');
         }
 
+        // Make sure our sniffs are known by setting the additional installed paths.
+        $GLOBALS['PHP_CODESNIFFER_CONFIG_DATA'] = [
+          'installed_paths' => dirname(dirname(__DIR__)),
+        ];
+
     }//end setUp()
 
 
