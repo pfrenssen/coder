@@ -548,13 +548,13 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
      *  Allows exceptions in a catch block to be unused without provoking unused-var warning.
      *  Set generic.codeanalysis.variableanalysis.allowUnusedCaughtExceptions to a true value.
      */
-    public $allowUnusedCaughtExceptions = false;
+    public $allowUnusedCaughtExceptions = true;
 
     /**
      *  Allow function parameters to be unused without provoking unused-var warning.
      *  Set generic.codeanalysis.variableanalysis.allowUnusedFunctionParameters to a true value.
      */
-    public $allowUnusedFunctionParameters = false;
+    public $allowUnusedFunctionParameters = true;
 
     /**
      *  A list of names of placeholder variables that you want to ignore from
