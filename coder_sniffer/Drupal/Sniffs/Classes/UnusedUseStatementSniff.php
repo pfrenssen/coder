@@ -134,7 +134,7 @@ class Drupal_Sniffs_Classes_UnusedUseStatementSniff implements PHP_CodeSniffer_S
                 }
             }//end if
 
-            $classUsed = $phpcsFile->findNext(T_STRING, ($classUsed + 1));
+            $classUsed = $phpcsFile->findNext([T_STRING, T_RETURN_TYPE], ($classUsed + 1));
         }//end while
 
         $warning = 'Unused use statement';

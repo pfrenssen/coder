@@ -1518,5 +1518,5 @@ function test22(MyInterface $a) {
  *   What we return.
  */
 function test23(): TestReturnType {
-  return new TestReturnType();
+  return foo();
 }
