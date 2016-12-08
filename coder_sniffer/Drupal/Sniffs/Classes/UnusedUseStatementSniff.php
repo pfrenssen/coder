@@ -110,6 +110,12 @@ class Drupal_Sniffs_Classes_UnusedUseStatementSniff implements PHP_CodeSniffer_S
 
         while ($classUsed !== false) {
             if (strtolower($tokens[$classUsed]['content']) === $lowerClassName) {
+                // If the name is used in a PHP 7 function return type declaration
+                // stop.
+                if ($tokens[$classUsed]['code'] === T_RETURN_TYPE) {
+                    return;
+                }
+
                 $beforeUsage = $phpcsFile->findPrevious(
                     PHP_CodeSniffer_Tokens::$emptyTokens,
                     ($classUsed - 1),
@@ -126,7 +132,7 @@ class Drupal_Sniffs_Classes_UnusedUseStatementSniff implements PHP_CodeSniffer_S
                 if ($tokens[$beforeUsage]['code'] === T_USE && empty($tokens[$beforeUsage]['conditions']) === false) {
                     return;
                 }
-            }
+            }//end if
 
             $classUsed = $phpcsFile->findNext(T_STRING, ($classUsed + 1));
         }//end while

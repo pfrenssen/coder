@@ -17,6 +17,7 @@
 
 use Drupal\very_long_module_name_i_am_inventing_here_trololololo\SuperManager;
 use \Drupal\some_module\ExampleClass as AliasedExampleClass;
+use Drupal\mymodule\TestReturnType;
 
 // Singleline comment before a code line.
 $foo = 'bar';
@@ -1508,4 +1509,14 @@ class MyTest extends UnitTestBase {
  */
 function test22(MyInterface $a) {
 
+}
+
+/**
+ * Using PHP 7 return types is allowed.
+ *
+ * @return \Drupal\mymodule\TestReturnType
+ *   What we return.
+ */
+function test23(): TestReturnType {
+  return new TestReturnType();
 }
