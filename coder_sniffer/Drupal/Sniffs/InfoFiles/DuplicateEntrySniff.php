@@ -93,7 +93,8 @@ class Drupal_Sniffs_InfoFiles_DuplicateEntrySniff implements PHP_CodeSniffer_Sni
             $data,
             $matches,
             PREG_SET_ORDER
-        ) !== false) {
+        ) !== false
+        ) {
             foreach ($matches as $match) {
                 // Fetch the key and value string.
                 $i = 0;

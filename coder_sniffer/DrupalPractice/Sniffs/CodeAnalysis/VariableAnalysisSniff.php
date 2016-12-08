@@ -1281,7 +1281,8 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
              'argv',
              'argc',
             )
-        ) === true) {
+        ) === true
+        ) {
             return true;
         }
 

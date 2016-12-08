@@ -63,7 +63,8 @@ class DrupalPractice_Sniffs_FunctionCalls_VariableSetSanitizeSniff extends Drupa
              'filter_xss',
              'filter_xss_admin',
             )
-        ) === true) {
+        ) === true
+        ) {
             $warning = 'Do not use the %s() sanitization function when writing values to the database, use it on output to HTML instead';
             $data    = array($tokens[$argument['start']]['content']);
             $phpcsFile->addWarning($warning, $argument['start'], 'VariableSet', $data);
