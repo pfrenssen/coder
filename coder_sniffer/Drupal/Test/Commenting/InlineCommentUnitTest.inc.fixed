@@ -70,6 +70,6 @@ class Test {
   /**
    * Wrong style with var keyword, but the doc block is fine.
    */
-  var $varStyle;
+  public $varStyle;
 
 }

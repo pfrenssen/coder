@@ -11,8 +11,8 @@
 class Test {
 
   /**
-   * Bad comment alignment.
+   * Bad property style.
    */
-  public $varStyle;
+  var $varStyle;
 
 }

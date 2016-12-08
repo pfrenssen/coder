@@ -46,6 +46,6 @@ class Test {
   /**
    * Wrong style with var keyword.
    */
-  var $varStyle;
+  public $varStyle;
 
 }

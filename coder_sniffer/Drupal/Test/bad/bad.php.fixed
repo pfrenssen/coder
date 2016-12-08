@@ -388,7 +388,7 @@ class Bar {
   /**
    * "var" keyword must no be used.
    */
-  var $x = 5;
+  public $x = 5;
 
 }
 
