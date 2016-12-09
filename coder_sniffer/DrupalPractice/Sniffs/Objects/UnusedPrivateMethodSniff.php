@@ -51,7 +51,8 @@ class DrupalPractice_Sniffs_Objects_UnusedPrivateMethodSniff extends PHP_CodeSni
 
         $classPtr = key($tokens[$stackPtr]['conditions']);
 
-        // Search for $this->methodCall().
+        // Search for direct $this->methodCall() or indirect callbacks [$this,
+        // 'methodCall'].
         $current = $tokens[$classPtr]['scope_opener'];
         $end     = $tokens[$classPtr]['scope_closer'];
         while (($current = $phpcsFile->findNext(T_VARIABLE, ($current + 1), $end)) !== false) {
@@ -59,24 +60,35 @@ class DrupalPractice_Sniffs_Objects_UnusedPrivateMethodSniff extends PHP_CodeSni
                 continue;
             }
 
-            $arrow = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($current + 1), null, true);
-            if ($arrow === false || $tokens[$arrow]['code'] !== T_OBJECT_OPERATOR) {
+            $next = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($current + 1), null, true);
+            if ($next === false) {
                 continue;
             }
 
-            $call = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($arrow + 1), null, true);
-            if ($call === false || $tokens[$call]['content'] !== $methodName) {
-                continue;
-            }
+            if ($tokens[$next]['code'] === T_OBJECT_OPERATOR) {
+                $call = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($next + 1), null, true);
+                if ($call === false || $tokens[$call]['content'] !== $methodName) {
+                    continue;
+                }
 
-            $parenthesis = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($call + 1), null, true);
-            if ($parenthesis === false || $tokens[$parenthesis]['code'] !== T_OPEN_PARENTHESIS) {
-                continue;
-            }
+                $parenthesis = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($call + 1), null, true);
+                if ($parenthesis === false || $tokens[$parenthesis]['code'] !== T_OPEN_PARENTHESIS) {
+                    continue;
+                }
 
-            // At this point this is a method call to the private method, so we can
-            // stop.
-            return;
+                // At this point this is a method call to the private method, so we
+                // can stop.
+                return;
+            } else if ($tokens[$next]['code'] === T_COMMA) {
+                $call = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($next + 1), null, true);
+                if ($call === false || substr($tokens[$call]['content'], 1, -1) !== $methodName) {
+                    continue;
+                }
+
+                // At this point this is likely the private method as callback on a
+                // function such as array_filter().
+                return;
+            }//end if
         }//end while
 
         $warning = 'Unused private method %s()';
