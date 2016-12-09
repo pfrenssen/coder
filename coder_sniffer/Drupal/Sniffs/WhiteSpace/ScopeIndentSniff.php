@@ -223,9 +223,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 && $tokens[$checkToken]['code'] === T_CLOSE_PARENTHESIS
                 && isset($tokens[$checkToken]['parenthesis_opener']) === true)
                 || ($tokens[$i]['code'] === T_CLOSE_PARENTHESIS
-                && isset($tokens[$i]['parenthesis_opener']) === true
-                && isset($tokens[$i]['parenthesis_owner']) === true
-                && $tokens[$tokens[$i]['parenthesis_owner']]['code'] === T_ARRAY)
+                && isset($tokens[$i]['parenthesis_opener']) === true)
             ) {
                 if ($checkToken !== null) {
                     $parenCloser = $checkToken;
@@ -283,7 +281,26 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
 
                     $exact = false;
 
-                    if ($condition > 0
+                    $lastOpenTagConditions = array_keys($tokens[$lastOpenTag]['conditions']);
+                    $lastOpenTagCondition  = array_pop($lastOpenTagConditions);
+
+                    if ($condition > 0 && $lastOpenTagCondition === $condition) {
+                        if ($this->_debug === true) {
+                            echo "\t* open tag is inside condition; using open tag *".PHP_EOL;
+                        }
+
+                        $checkIndent = ($tokens[$lastOpenTag]['column'] - 1);
+                        if (isset($adjustments[$condition]) === true) {
+                            $checkIndent += $adjustments[$condition];
+                        }
+
+                        $currentIndent = $checkIndent;
+
+                        if ($this->_debug === true) {
+                            $type = $tokens[$lastOpenTag]['type'];
+                            echo "\t=> checking indent of $checkIndent; main indent set to $currentIndent by token $lastOpenTag ($type)".PHP_EOL;
+                        }
+                    } else if ($condition > 0
                         && isset($tokens[$condition]['scope_opener']) === true
                         && isset($setIndents[$tokens[$condition]['scope_opener']]) === true
                     ) {
@@ -990,13 +1007,14 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 continue;
             }//end if
 
-            // Closures set the indent based on their own indent level.
-            if ($tokens[$i]['code'] === T_CLOSURE) {
+            // Anon classes and functions set the indent based on their own indent level.
+            if ($tokens[$i]['code'] === T_CLOSURE || $tokens[$i]['code'] === T_ANON_CLASS) {
                 $closer = $tokens[$i]['scope_closer'];
                 if ($tokens[$i]['line'] === $tokens[$closer]['line']) {
                     if ($this->_debug === true) {
+                        $type = str_replace('_', ' ', strtolower(substr($tokens[$i]['type'], 2)));
                         $line = $tokens[$i]['line'];
-                        echo "* ignoring single-line closure on line $line".PHP_EOL;
+                        echo "* ignoring single-line $type on line $line".PHP_EOL;
                     }
 
                     $i = $closer;
@@ -1004,8 +1022,9 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 }
 
                 if ($this->_debug === true) {
+                    $type = str_replace('_', ' ', strtolower(substr($tokens[$i]['type'], 2)));
                     $line = $tokens[$i]['line'];
-                    echo "Open closure on line $line".PHP_EOL;
+                    echo "Open $type on line $line".PHP_EOL;
                 }
 
                 $first         = $phpcsFile->findFirstOnLine(T_WHITESPACE, $i, true);
@@ -1106,14 +1125,16 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 continue;
             }//end if
 
-            // Closing a closure.
+            // Closing an anon class or function.
             if (isset($tokens[$i]['scope_condition']) === true
                 && $tokens[$i]['scope_closer'] === $i
-                && $tokens[$tokens[$i]['scope_condition']]['code'] === T_CLOSURE
+                && ($tokens[$tokens[$i]['scope_condition']]['code'] === T_CLOSURE
+                || $tokens[$tokens[$i]['scope_condition']]['code'] === T_ANON_CLASS)
             ) {
                 if ($this->_debug === true) {
+                    $type = str_replace('_', ' ', strtolower(substr($tokens[$tokens[$i]['scope_condition']]['type'], 2)));
                     $line = $tokens[$i]['line'];
-                    echo "Close closure on line $line".PHP_EOL;
+                    echo "Close $type on line $line".PHP_EOL;
                 }
 
                 $prev = false;
