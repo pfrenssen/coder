@@ -15,6 +15,7 @@ class Drupal_Sniffs_Formatting_MultipleStatementAlignmentUnitTest extends CoderS
     {
         return array(
                 8 => 1,
+                10 => 1,
                 11 => 1,
                 13 => 1,
                 14 => 1,
@@ -22,6 +23,7 @@ class Drupal_Sniffs_Formatting_MultipleStatementAlignmentUnitTest extends CoderS
                 17 => 1,
                 19 => 1,
                 20 => 1,
+                30 => 1,
                );
 
     }//end getErrorList()

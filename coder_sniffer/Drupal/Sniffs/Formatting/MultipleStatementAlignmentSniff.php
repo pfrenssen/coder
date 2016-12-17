@@ -184,11 +184,11 @@ class Drupal_Sniffs_Formatting_MultipleStatementAlignmentSniff extends Generic_S
             return $stackPtr;
         }
 
-        // If there is at least one assignment that uses more than one space then it
+        // If there is at least one assignment that uses more than two spaces then it
         // appears that the assignments should all be aligned right.
         $alignRight = false;
         foreach ($assignments as $assignment => $data) {
-            if ($data['found'] > 1) {
+            if ($data['found'] > 2) {
                 $alignRight = true;
                 break;
             }
