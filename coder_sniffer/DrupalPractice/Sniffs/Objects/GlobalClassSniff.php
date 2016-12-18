@@ -23,6 +23,7 @@ class DrupalPractice_Sniffs_Objects_GlobalClassSniff implements PHP_CodeSniffer_
      * @var string[]
      */
     protected $classes = array(
+                          'File',
                           'Node',
                           'NodeType',
                           'Term',
