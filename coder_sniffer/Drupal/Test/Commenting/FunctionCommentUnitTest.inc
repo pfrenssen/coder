@@ -349,3 +349,16 @@ function test29() {
   $profile = 'x';
   return $profile;
 }
+
+/**
+ * Indentation of param comment is wrong.
+ *
+ * @param string $xml_response
+ *    String returned from CreateClientProfile.
+ *
+ * @return mixed
+ *    Return fetched bookings or log error.
+ */
+function test30($xml_response) {
+
+}

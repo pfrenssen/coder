@@ -317,6 +317,17 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     }
                 }//end for
 
+                // The first line of the comment must be indented no more than 3
+                // spaces, the following lines can be more so we only check the first
+                // line.
+                if (empty($commentLines[0]['indent']) === false && $commentLines[0]['indent'] > 3) {
+                    $error = 'Return comment indentation must be 3 spaces, found %s spaces';
+                    $fix   = $phpcsFile->addFixableError($error, ($commentLines[0]['token'] - 1), 'ReturnCommentIndentation', array($commentLines[0]['indent']));
+                    if ($fix === true) {
+                        $phpcsFile->fixer->replaceToken(($commentLines[0]['token'] - 1), '   ');
+                    }
+                }
+
                 if ($comment === '' && $type !== '$this' && $type !== 'static') {
                     if (strpos($type, ' ') !== false) {
                         $error = 'Description for the @return value must be on the next line';
@@ -523,6 +534,17 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                         }
                     }
                 }//end for
+
+                // The first line of the comment must be indented no more than 3
+                // spaces, the following lines can be more so we only check the first
+                // line.
+                if (empty($commentLines[0]['indent']) === false && $commentLines[0]['indent'] > 3) {
+                    $error = 'Parameter comment indentation must be 3 spaces, found %s spaces';
+                    $fix   = $phpcsFile->addFixableError($error, ($commentLines[0]['token'] - 1), 'ParamCommentIndentation', array($commentLines[0]['indent']));
+                    if ($fix === true) {
+                        $phpcsFile->fixer->replaceToken(($commentLines[0]['token'] - 1), '   ');
+                    }
+                }
 
                 if ($comment === '') {
                     $error = 'Missing parameter comment';
