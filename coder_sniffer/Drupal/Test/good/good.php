@@ -16,7 +16,7 @@
  */
 
 use Drupal\very_long_module_name_i_am_inventing_here_trololololo\SuperManager;
-use \Drupal\some_module\ExampleClass as AliasedExampleClass;
+use Drupal\some_module\ExampleClass as AliasedExampleClass;
 use Drupal\mymodule\TestReturnType;
 
 // Singleline comment before a code line.
