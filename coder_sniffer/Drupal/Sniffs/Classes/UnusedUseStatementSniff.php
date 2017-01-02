@@ -156,8 +156,38 @@ class Drupal_Sniffs_Classes_UnusedUseStatementSniff implements PHP_CodeSniffer_S
                 $i++;
             }
 
+            // Replace @var data types in doc comments with the fully qualified class
+            // name.
+            $useNamespacePtr = $phpcsFile->findNext([T_STRING], ($stackPtr + 1));
+            $useNamespaceEnd = $phpcsFile->findNext(
+                [
+                 T_NS_SEPARATOR,
+                 T_STRING,
+                ],
+                ($useNamespacePtr + 1),
+                null,
+                true
+            );
+            $fullNamespace   = $phpcsFile->getTokensAsString($useNamespacePtr, ($useNamespaceEnd - $useNamespacePtr));
+
+            $tag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($stackPtr + 1));
+
+            while ($tag !== false) {
+                if ($tokens[$tag]['content'] === '@var'
+                    && isset($tokens[($tag + 1)]) === true
+                    && $tokens[($tag + 1)]['code'] === T_DOC_COMMENT_WHITESPACE
+                    && isset($tokens[($tag + 2)]) === true
+                    && $tokens[($tag + 2)]['code'] === T_DOC_COMMENT_STRING
+                    && $tokens[($tag + 2)]['content'] === $tokens[$classPtr]['content']
+                ) {
+                    $phpcsFile->fixer->replaceToken(($tag + 2), '\\'.$fullNamespace);
+                }
+
+                $tag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($tag + 1));
+            }
+
             $phpcsFile->fixer->endChangeset();
-        }
+        }//end if
 
     }//end process()
 

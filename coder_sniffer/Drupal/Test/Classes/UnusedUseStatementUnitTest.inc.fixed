@@ -17,6 +17,20 @@ class Pum {
   use Test\AnotherTrait;
 
   /**
+   * This data type should be fixed to be fully qualified.
+   *
+   * @var \Some\Data\VarName
+   */
+  protected $x;
+
+  /**
+   * Aliased type that is otherwise unused.
+   *
+   * @var \Some\Data\VarName2
+   */
+  protected $y;
+
+  /**
    * Description.
    */
   protected function test(ActuallyUsed $x, UsedOtherName $y) {

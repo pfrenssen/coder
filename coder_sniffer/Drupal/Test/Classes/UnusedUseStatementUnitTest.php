@@ -39,6 +39,8 @@ class Drupal_Sniffs_Classes_UnusedUseStatementUnitTest extends CoderSniffUnitTes
                 14 => 1,
                 16 => 1,
                 17 => 1,
+                19 => 1,
+                20 => 1,
                );
 
     }//end getWarningList()

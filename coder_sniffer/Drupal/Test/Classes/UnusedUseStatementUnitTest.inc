@@ -16,6 +16,8 @@ use Example\MyUrlHelper;
 use MyNamespace\Depth\UnusedSameNamespace;
 use /* I like weird comment placements */ MyNamespace\Depth\AnotherUnusedSameNamespace /* Oh yes I do */;
 use MyNamespace\Depth\SomeClass as CoreSomeClass;
+use Some\Data\VarName;
+use Some\Data\VarName2 as AliasVarName2;
 
 /**
  * Bla.
@@ -23,6 +25,20 @@ use MyNamespace\Depth\SomeClass as CoreSomeClass;
 class Pum {
   use TraitTest;
   use Test\AnotherTrait;
+
+  /**
+   * This data type should be fixed to be fully qualified.
+   *
+   * @var VarName
+   */
+  protected $x;
+
+  /**
+   * Aliased type that is otherwise unused.
+   *
+   * @var AliasVarName2
+   */
+  protected $y;
 
   /**
    * Description.
