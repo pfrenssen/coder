@@ -11,6 +11,8 @@
 /**
  * Checks that there are no undocumented open access callbacks in *.routing.yml files.
  *
+ * Also adds a warning if the permission "access administration pages" is used.
+ *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
@@ -56,6 +58,11 @@ class DrupalPractice_Sniffs_Yaml_RoutingAccessSniff implements PHP_CodeSniffer_S
         ) {
             $warning = 'Open page callback found, please add a comment before the line why there is no access restriction';
             $phpcsFile->addWarning($warning, $stackPtr, 'OpenCallback');
+        }
+
+        if (preg_match('/^[\s]+_permission: \'access administration pages\'/', $tokens[$stackPtr]['content']) === 1) {
+            $warning = 'The administration page callback should probably use "administer site configuration" - which implies the user can change something - rather than "access administration pages" which is about viewing but not changing configurations.';
+            $phpcsFile->addWarning($warning, $stackPtr, 'PermissionFound');
         }
 
     }//end process()

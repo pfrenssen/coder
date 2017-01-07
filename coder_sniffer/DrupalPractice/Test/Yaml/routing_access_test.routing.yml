@@ -18,3 +18,13 @@ example.test2:
     _access: 'TRUE'
   options:
     _maintenance_access: TRUE
+
+example.test3:
+  path: '/example3'
+  defaults:
+    _form: '\Drupal\user\Form\UserPasswordForm'
+    _title: 'Reset your password'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _maintenance_access: TRUE

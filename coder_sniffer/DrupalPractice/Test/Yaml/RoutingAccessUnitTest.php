@@ -38,7 +38,10 @@ class DrupalPractice_Sniffs_Yaml_RoutingAccessUnitTest extends CoderSniffUnitTes
      */
     protected function getWarningList($testFile)
     {
-        return array(7 => 1);
+        return array(
+                7 => 1,
+                28 => 1,
+               );
 
     }//end getWarningList()
 
