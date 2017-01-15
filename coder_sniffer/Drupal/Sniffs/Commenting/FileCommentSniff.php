@@ -145,23 +145,29 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 
         // If there is no @file tag and the next line is a function or class
         // definition then the file docblock is mising.
-        if ($fileTag === false
-            && $tokens[$next]['line'] === ($tokens[$commentEnd]['line'] + 1)
-            && in_array($tokens[$next]['code'], array(T_FUNCTION)) === true
+        if ($tokens[$next]['line'] === ($tokens[$commentEnd]['line'] + 1)
+            && $tokens[$next]['code'] === T_FUNCTION
         ) {
-            $fix = $phpcsFile->addFixableError('Missing file doc comment', $stackPtr, 'Missing');
-            if ($fix === true) {
-                // Only PHP has a real opening tag, additional newline at the
-                // beginning here.
-                if ($phpcsFile->tokenizerType === 'PHP') {
-                    $phpcsFile->fixer->addContent($stackPtr, "\n/**\n * @file\n */\n");
-                } else {
-                    $phpcsFile->fixer->addContent($stackPtr, "/**\n * @file\n */\n");
+            if ($fileTag === false) {
+                $fix = $phpcsFile->addFixableError('Missing file doc comment', $stackPtr, 'Missing');
+                if ($fix === true) {
+                    // Only PHP has a real opening tag, additional newline at the
+                    // beginning here.
+                    if ($phpcsFile->tokenizerType === 'PHP') {
+                        $phpcsFile->fixer->addContent($stackPtr, "\n/**\n * @file\n */\n");
+                    } else {
+                        $phpcsFile->fixer->addContent($stackPtr, "/**\n * @file\n */\n");
+                    }
+                }
+
+                return ($phpcsFile->numTokens + 1);
+            } else {
+                $fix = $phpcsFile->addFixableError('Missing function doc comment, only found file comment', $next, 'MissingFunctionDoc');
+                if ($fix === true) {
+                    $phpcsFile->fixer->addContentBefore(($next - 1), "/**\n *\n */\n");
                 }
             }
-
-            return ($phpcsFile->numTokens + 1);
-        }
+        }//end if
 
         if ($fileTag === false || $tokens[$fileTag]['line'] !== ($tokens[$commentStart]['line'] + 1)) {
             $second_line = $phpcsFile->findNext(array(T_DOC_COMMENT_STAR, T_DOC_COMMENT_CLOSE_TAG), ($commentStart + 1), $commentEnd);
