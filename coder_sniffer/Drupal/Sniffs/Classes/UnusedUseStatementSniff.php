@@ -178,9 +178,10 @@ class Drupal_Sniffs_Classes_UnusedUseStatementSniff implements PHP_CodeSniffer_S
                     && $tokens[($tag + 1)]['code'] === T_DOC_COMMENT_WHITESPACE
                     && isset($tokens[($tag + 2)]) === true
                     && $tokens[($tag + 2)]['code'] === T_DOC_COMMENT_STRING
-                    && $tokens[($tag + 2)]['content'] === $tokens[$classPtr]['content']
+                    && strpos($tokens[($tag + 2)]['content'], $tokens[$classPtr]['content']) === 0
                 ) {
-                    $phpcsFile->fixer->replaceToken(($tag + 2), '\\'.$fullNamespace);
+                    $replacement = '\\'.$fullNamespace.substr($tokens[($tag + 2)]['content'], strlen($tokens[$classPtr]['content']));
+                    $phpcsFile->fixer->replaceToken(($tag + 2), $replacement);
                 }
 
                 $tag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($tag + 1));

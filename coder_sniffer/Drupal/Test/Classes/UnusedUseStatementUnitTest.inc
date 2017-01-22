@@ -75,4 +75,15 @@ class Pum {
 
   }
 
+  /**
+   * Inline var declarations should also get fixed to the full namespace.
+   */
+  protected function test6($x) {
+    /** @var VarName $y */
+    $y = $x['test'];
+    /** @var AliasVarName2 $z */
+    $z = $x['test2'];
+    return $y;
+  }
+
 }
