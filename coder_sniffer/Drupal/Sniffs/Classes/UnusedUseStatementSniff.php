@@ -173,7 +173,7 @@ class Drupal_Sniffs_Classes_UnusedUseStatementSniff implements PHP_CodeSniffer_S
             $tag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($stackPtr + 1));
 
             while ($tag !== false) {
-                if ($tokens[$tag]['content'] === '@var'
+                if (($tokens[$tag]['content'] === '@var' || $tokens[$tag]['content'] === '@return')
                     && isset($tokens[($tag + 1)]) === true
                     && $tokens[($tag + 1)]['code'] === T_DOC_COMMENT_WHITESPACE
                     && isset($tokens[($tag + 2)]) === true

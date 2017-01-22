@@ -86,4 +86,17 @@ class Pum {
     return $y;
   }
 
+  /**
+   * Return declarations should also get fixed to the full namespace.
+   *
+   * @param array $x
+   *   Some array.
+   *
+   * @return VarName
+   *   The variable.
+   */
+  protected function test7($x) {
+    return $x['test'];
+  }
+
 }
