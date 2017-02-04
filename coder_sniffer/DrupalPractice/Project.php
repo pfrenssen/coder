@@ -102,6 +102,49 @@ class DrupalPractice_Project
 
 
     /**
+     * Determines the *.services.yml file in a module.
+     *
+     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     *
+     * @return string|false The Services YML file name or false if it could not
+     *   be derived.
+     */
+    public static function getServicesYmlFile(PHP_CodeSniffer_File $phpcsFile)
+    {
+        // Cache the services file per file as this might get called often.
+        static $cache;
+
+        if (isset($cache[$phpcsFile->getFilename()]) === true) {
+            return $cache[$phpcsFile->getFilename()];
+        }
+
+        $pathParts = pathinfo($phpcsFile->getFilename());
+
+        // Search for an info file.
+        $dir = $pathParts['dirname'];
+        do {
+            $ymlFiles = glob("$dir/*.services.yml");
+
+            // Go one directory up if we do not find an info file here.
+            $dir = dirname($dir);
+        } while (empty($ymlFiles) === true && $dir !== dirname($dir));
+
+        // No YML file found, so we give up.
+        if (empty($ymlFiles) === true) {
+            $cache[$phpcsFile->getFilename()] = false;
+            return false;
+        }
+
+        // Sort the YML file names and take the shortest info file.
+        usort($ymlFiles, array('DrupalPractice_Project', 'compareLength'));
+        $ymlFile = $ymlFiles[0];
+        $cache[$phpcsFile->getFilename()] = $ymlFile;
+        return $ymlFile;
+
+    }//end getServicesYmlFile()
+
+
+    /**
      * Helper method to sort array values by string length with usort().
      *
      * @param string $a First string.

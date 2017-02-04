@@ -19,6 +19,9 @@
     <exclude name="PEAR.Commenting.ClassComment.MissingAuthorTag"/>
     <exclude name="PEAR.Commenting.ClassComment.MissingLicenseTag"/>
   </rule>
+  <rule ref="PEAR.NamingConventions.ValidFunctionName">
+    <exclude name="PEAR.NamingConventions.ValidFunctionName.PrivateNoUnderscore"/>
+  </rule>
   <rule ref="Generic.Files.LineLength">
     <exclude name="Generic.Files.LineLength.TooLong"/>
   </rule>

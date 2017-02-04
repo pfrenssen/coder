@@ -1,0 +1,3 @@
+services:
+  testmodule.example:
+    class: Drupal\testmodule\ExampleService

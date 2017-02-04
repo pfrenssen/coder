@@ -29,9 +29,24 @@ class DrupalPractice_Sniffs_Objects_GlobalDrupalUnitTest extends CoderSniffUnitT
      */
     protected function getWarningList($testFile)
     {
-        return array(6 => 1);
+        switch ($testFile) {
+            case 'GlobalDrupalUnitTest.inc':
+                return array(6 => 1);
+            case 'ExampleService.php':
+                return array(14 => 1);
+        }
+        print $testFile;
 
     }//end getWarningList()
 
+
+    /**
+     * Returns a list of test files that should be checked.
+     *
+     * @return array The list of test files.
+     */
+    protected function getTestFiles() {
+        return [__DIR__.'/GlobalDrupalUnitTest.inc', __DIR__.'/src/ExampleService.php'];
+    }
 
 }//end class
