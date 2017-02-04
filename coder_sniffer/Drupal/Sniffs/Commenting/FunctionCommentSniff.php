@@ -456,7 +456,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             $commentLines = array();
             if ($tokens[($tag + 2)]['code'] === T_DOC_COMMENT_STRING) {
                 $matches = array();
-                preg_match('/([^$&]+)(?:((?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $tokens[($tag + 2)]['content'], $matches);
+                preg_match('/([^$&]*)(?:((?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $tokens[($tag + 2)]['content'], $matches);
 
                 $typeLen   = strlen($matches[1]);
                 $type      = trim($matches[1]);
@@ -546,17 +546,15 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $variableArguments = true;
                 }
 
-                if (isset($matches[2]) === false && $variableArguments === false) {
-                    if ($tokens[($tag + 2)]['content'][0] === '$'
-                        || $tokens[($tag + 2)]['content'][0] === '&'
-                    ) {
-                        $error = 'Missing parameter type';
-                        $phpcsFile->addError($error, $tag, 'MissingParamType');
-                    } else {
-                        $error = 'Missing parameter name';
-                        $phpcsFile->addError($error, $tag, 'MissingParamName');
-                    }
-                }//end if
+                if (empty($matches[1]) === true) {
+                    $error = 'Missing parameter type';
+                    $phpcsFile->addError($error, $tag, 'MissingParamType');
+                }
+
+                if (empty($matches[2]) === true && $variableArguments === false) {
+                    $error = 'Missing parameter name';
+                    $phpcsFile->addError($error, $tag, 'MissingParamName');
+                }
             } else {
                 $error = 'Missing parameter type';
                 $phpcsFile->addError($error, $tag, 'MissingParamType');
@@ -578,12 +576,14 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 
         $checkPos = 0;
         foreach ($params as $pos => $param) {
-            // If the type is empty, the whole line is empty.
-            if ($param['type'] === '') {
+            if ($param['var'] === '') {
                 continue;
             }
 
-            if ($param['var'] === '') {
+            $foundParams[] = $param['var'];
+
+            // If the type is empty, the whole line is empty.
+            if ($param['type'] === '') {
                 continue;
             }
 
@@ -695,8 +695,6 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 }//end if
             }//end if
 
-            $foundParams[] = $param['var'];
-
             // Check number of spaces after the type.
             $spaces = 1;
             if ($param['type_space'] !== $spaces) {
@@ -805,6 +803,16 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                 }
             }
         }//end foreach
+
+        if ($tokens[$stackPtr]['level'] > 0) {
+            foreach ($realParams as $realParam) {
+                $realParamKeyName = $realParam['name'];
+                if (in_array($realParamKeyName, $foundParams) === false) {
+                    $error = 'Parameter %s is not described in comment';
+                    $phpcsFile->addError($error, $commentStart, 'ParamMissingDefinition', [$realParam['name']]);
+                }
+            }
+        }
 
     }//end processParams()
 

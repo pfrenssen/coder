@@ -374,3 +374,35 @@ function test29() {
 function test30($xml_response) {
 
 }
+
+/**
+ * Class Test.
+ */
+class Test extends AbstractTest {
+
+  /**
+   * Run method with missing described variable.
+   *
+   * @param \stdClass $start
+   *   Start point.
+   *
+   * @return bool
+   *   Result
+   */
+  public function run(\stdClass $start, \stdClass $stop) {
+    return TRUE;
+  }
+
+  /**
+   * Yes.
+   *
+   * @param string $a
+   *   Yewp.
+   * @param array $b
+   *   Two.
+   */
+  public function test($a, array &$b) {
+
+  }
+
+}

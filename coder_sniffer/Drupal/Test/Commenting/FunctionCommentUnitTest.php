@@ -56,6 +56,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentUnitTest extends CoderSniffUnitTes
                         345 => 1,
                         357 => 1,
                         360 => 1,
+                        371 => 1,
                        );
             case 'FunctionCommentUnitTest.1.inc':
                 return array();
