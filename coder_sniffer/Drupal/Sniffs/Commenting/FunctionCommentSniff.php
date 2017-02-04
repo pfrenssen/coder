@@ -804,7 +804,13 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             }
         }//end foreach
 
-        if ($tokens[$stackPtr]['level'] > 0) {
+        // Missing parameters only apply to methods and not function because on
+        // functions it is allowed to leave out param comments for form constructors
+        // for example.
+        // It is also allowed to ommit pram tags completely, in which case we don't
+        // throw errors. Only throw errors if param comments exists but are
+        // incomplete on class methods.
+        if ($tokens[$stackPtr]['level'] > 0 && empty($foundParams) === false) {
             foreach ($realParams as $realParam) {
                 $realParamKeyName = $realParam['name'];
                 if (in_array($realParamKeyName, $foundParams) === false) {

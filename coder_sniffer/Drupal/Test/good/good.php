@@ -576,7 +576,7 @@ $var = foo(
 /**
  * Class declaration.
  *
- * Classes always have a multiline comment.
+ * Classes can have a multiline comment.
  */
 class Bar {
 
@@ -635,6 +635,25 @@ class Bar {
     $this->foo--;
     --$this->foo;
     ++$this->foo;
+  }
+
+  /**
+   * It is allowed to leave out param docs on methods.
+   */
+  public function noParamDocs($a, $b) {
+
+  }
+
+  /**
+   * Param comments with references are found correctly.
+   *
+   * @param string $a
+   *   Parameter one.
+   * @param array $b
+   *   Parameter two.
+   */
+  public function test($a, array &$b) {
+
   }
 
 }
