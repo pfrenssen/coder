@@ -22,7 +22,20 @@ class DrupalPractice_Sniffs_Objects_GlobalFunctionSniff implements PHP_CodeSniff
      *
      * @var string[]
      */
-    protected $functions = array('t' => '$this->t()');
+    protected $functions = array(
+                            'drupal_get_destination'   => 'the "redirect.destination" service',
+                            'drupal_render'            => 'the "renderer" service',
+                            'entity_load'              => 'the "entity_type.manager" service',
+                            'file_load'                => 'the "entity_type.manager" service',
+                            'format_date'              => 'the "date.formatter" service',
+                            'node_load'                => 'the "entity_type.manager" service',
+                            'node_type_load'           => 'the "entity_type.manager" service',
+                            't'                        => '$this->t()',
+                            'taxonomy_term_load'       => 'the "entity_type.manager" service',
+                            'taxonomy_vocabulary_load' => 'the "entity_type.manager" service',
+                            'user_load'                => 'the "entity_type.manager" service',
+                            'user_role_load'           => 'the "entity_type.manager" service',
+                           );
 
 
     /**
@@ -86,7 +99,7 @@ class DrupalPractice_Sniffs_Objects_GlobalFunctionSniff implements PHP_CodeSniff
             return;
         }
 
-        $warning = '%s() calls should be avoided in classes, use dependency injection and "%s" instead';
+        $warning = '%s() calls should be avoided in classes, use dependency injection and %s instead';
         $data    = array(
                     $tokens[$stackPtr]['content'],
                     $this->functions[$tokens[$stackPtr]['content']],
