@@ -7,6 +7,8 @@
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+use Symfony\Component\Yaml\Yaml;
+
 /**
  * Helper class to retrieve project information like module/theme name for a file.
  *
@@ -142,6 +144,70 @@ class DrupalPractice_Project
         return $ymlFile;
 
     }//end getServicesYmlFile()
+
+
+    /**
+     * Return true if the given class is a Drupal service registered in *.services.yml.
+     *
+     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                  $classPtr  The position of the class declaration
+     *                                        in the token stack.
+     *
+     * @return bool
+     */
+    public static function isServiceClass(PHP_CodeSniffer_File $phpcsFile, $classPtr)
+    {
+        // Cache the information per file as this might get called often.
+        static $cache;
+
+        if (isset($cache[$phpcsFile->getFilename()]) === true) {
+            return $cache[$phpcsFile->getFilename()];
+        }
+
+        // Get the namespace of the class if there is one.
+        $namespacePtr = $phpcsFile->findPrevious(T_NAMESPACE, ($classPtr - 1));
+        if ($namespacePtr === false) {
+            $cache[$phpcsFile->getFilename()] = false;
+            return false;
+        }
+
+        $ymlFile = static::getServicesYmlFile($phpcsFile);
+        if ($ymlFile === false) {
+            $cache[$phpcsFile->getFilename()] = false;
+            return false;
+        }
+
+        $services = Yaml::parse(file_get_contents($ymlFile));
+        if (isset($services['services']) === false) {
+            $cache[$phpcsFile->getFilename()] = false;
+            return false;
+        }
+
+        $nsEnd           = $phpcsFile->findNext(
+            [
+             T_NS_SEPARATOR,
+             T_STRING,
+             T_WHITESPACE,
+            ],
+            ($namespacePtr + 1),
+            null,
+            true
+        );
+        $namespace       = trim($phpcsFile->getTokensAsString(($namespacePtr + 1), ($nsEnd - $namespacePtr - 1)));
+        $classNameSpaced = ltrim($namespace.'\\'.$phpcsFile->getDeclarationName($classPtr), '\\');
+
+        foreach ($services['services'] as $service) {
+            if (isset($service['class']) === true
+                && $classNameSpaced === ltrim($service['class'], '\\')
+            ) {
+                $cache[$phpcsFile->getFilename()] = true;
+                return true;
+            }
+        }
+
+        return false;
+
+    }//end isServiceClass()
 
 
     /**

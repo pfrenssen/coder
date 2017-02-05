@@ -7,8 +7,6 @@
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
-use Symfony\Component\Yaml\Yaml;
-
 /**
  * Checks that \Drupal::service() and friends is not used in forms, controllers, services.
  *
@@ -86,7 +84,7 @@ class DrupalPractice_Sniffs_Objects_GlobalDrupalSniff implements PHP_CodeSniffer
         $extendsName = $phpcsFile->findExtendedClassName($classPtr);
 
         if (($extendsName === false || in_array($extendsName, static::$baseClasses) === false)
-            && $this->isServiceClass($phpcsFile, $classPtr) === false
+            && DrupalPractice_Project::isServiceClass($phpcsFile, $classPtr) === false
         ) {
             return;
         }
@@ -95,70 +93,6 @@ class DrupalPractice_Sniffs_Objects_GlobalDrupalSniff implements PHP_CodeSniffer
         $phpcsFile->addWarning($warning, $stackPtr, 'GlobalDrupal');
 
     }//end process()
-
-
-    /**
-     * Return true if the given class is a Drupal service registered in *.services.yml.
-     *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $classPtr  The position of the class declaration
-     *                                        in the token stack.
-     *
-     * @return bool
-     */
-    private function isServiceClass(PHP_CodeSniffer_File $phpcsFile, $classPtr)
-    {
-        // Cache the information per file as this might get called often.
-        static $cache;
-
-        if (isset($cache[$phpcsFile->getFilename()]) === true) {
-            return $cache[$phpcsFile->getFilename()];
-        }
-
-        // Get the namespace of the class if there is one.
-        $namespacePtr = $phpcsFile->findPrevious(T_NAMESPACE, ($classPtr - 1));
-        if ($namespacePtr === false) {
-            $cache[$phpcsFile->getFilename()] = false;
-            return false;
-        }
-
-        $ymlFile = DrupalPractice_Project::getServicesYmlFile($phpcsFile);
-        if ($ymlFile === false) {
-            $cache[$phpcsFile->getFilename()] = false;
-            return false;
-        }
-
-        $services = Yaml::parse(file_get_contents($ymlFile));
-        if (isset($services['services']) === false) {
-            $cache[$phpcsFile->getFilename()] = false;
-            return false;
-        }
-
-        $nsEnd           = $phpcsFile->findNext(
-            [
-             T_NS_SEPARATOR,
-             T_STRING,
-             T_WHITESPACE,
-            ],
-            ($namespacePtr + 1),
-            null,
-            true
-        );
-        $namespace       = trim($phpcsFile->getTokensAsString(($namespacePtr + 1), ($nsEnd - $namespacePtr - 1)));
-        $classNameSpaced = ltrim($namespace.'\\'.$phpcsFile->getDeclarationName($classPtr), '\\');
-
-        foreach ($services['services'] as $service) {
-            if (isset($service['class']) === true
-                && $classNameSpaced === ltrim($service['class'], '\\')
-            ) {
-                $cache[$phpcsFile->getFilename()] = true;
-                return true;
-            }
-        }
-
-        return false;
-
-    }//end isServiceClass()
 
 
 }//end class
