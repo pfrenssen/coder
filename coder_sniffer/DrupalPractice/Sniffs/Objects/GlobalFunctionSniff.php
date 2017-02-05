@@ -79,7 +79,10 @@ class DrupalPractice_Sniffs_Objects_GlobalFunctionSniff implements PHP_CodeSniff
         $classPtr    = key($tokens[$stackPtr]['conditions']);
         $extendsName = $phpcsFile->findExtendedClassName($classPtr);
 
-        if ($extendsName === false || in_array($extendsName, DrupalPractice_Sniffs_Objects_GlobalDrupalSniff::$baseClasses) === false) {
+        if (($extendsName === false
+            || in_array($extendsName, DrupalPractice_Sniffs_Objects_GlobalDrupalSniff::$baseClasses) === false)
+            && DrupalPractice_Project::isServiceClass($phpcsFile, $classPtr) === false
+        ) {
             return;
         }
 

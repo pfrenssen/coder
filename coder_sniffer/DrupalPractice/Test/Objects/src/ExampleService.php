@@ -23,4 +23,11 @@ class ExampleService {
     return Node::load(1);
   }
 
+  /**
+   * t() should not be used, translation service should be injected.
+   */
+  public function test3() {
+    return t('Test');
+  }
+
 }
