@@ -1,6 +1,6 @@
 <?php
 
-// This comment is flying arround.
+// This comment is flying around.
 
 foo();
 

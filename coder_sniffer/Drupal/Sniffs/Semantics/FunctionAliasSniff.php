@@ -18,7 +18,7 @@ class Drupal_Sniffs_Semantics_FunctionAliasSniff extends Drupal_Sniffs_Semantics
 {
 
     /**
-     * Holds all PHP funtion name aliases (keys) and orginals (values). See
+     * Holds all PHP function name aliases (keys) and originals (values). See
      * http://php.net/manual/en/aliases.php
      *
      * @var array

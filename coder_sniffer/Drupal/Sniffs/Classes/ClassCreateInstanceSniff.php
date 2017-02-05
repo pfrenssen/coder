@@ -45,7 +45,7 @@ class Drupal_Sniffs_Classes_ClassCreateInstanceSniff implements PHP_CodeSniffer_
     {
         $tokens = $phpcsFile->getTokens();
 
-        // Search for an opening parenthesis in the current statement untill the
+        // Search for an opening parenthesis in the current statement until the
         // next semicolon.
         $nextParenthesis = $phpcsFile->findNext(T_OPEN_PARENTHESIS, $stackPtr, null, false, null, true);
         // If there is a parenthesis owner then this is not a constructor call,

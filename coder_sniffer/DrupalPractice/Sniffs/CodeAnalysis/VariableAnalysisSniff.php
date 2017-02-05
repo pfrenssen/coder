@@ -1314,7 +1314,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisSniff implements PHP_Co
             return false;
         }
 
-        // Are we refering to self:: outside a class?
+        // Are we referring to self:: outside a class?
         // TODO: not sure this is our business or should be some other sniff.
         if (($tokens[$classNamePtr]['code'] === T_SELF)
             || ($tokens[$classNamePtr]['code'] === T_STATIC)

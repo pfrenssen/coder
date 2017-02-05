@@ -8,7 +8,7 @@
  */
 
 /**
- * Checks that gloabl functions like t() are not used in forms or controllers.
+ * Checks that global functions like t() are not used in forms or controllers.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -86,7 +86,7 @@ class DrupalPractice_Sniffs_Objects_GlobalFunctionSniff implements PHP_CodeSniff
             return;
         }
 
-        $warning = '%s() calls should be avoided in classes, use dependency injection and %s instead';
+        $warning = '%s() calls should be avoided in classes, use dependency injection and "%s" instead';
         $data    = array(
                     $tokens[$stackPtr]['content'],
                     $this->functions[$tokens[$stackPtr]['content']],

@@ -1247,7 +1247,7 @@ function test11() {
 }
 
 /**
- * Paramter docs with a long nested list.
+ * Parameter docs with a long nested list.
  *
  * @param string $a
  *   Lists are usually preceded by a line ending in a colon:

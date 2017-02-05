@@ -8,7 +8,7 @@
  */
 
 /**
- * Throws a waring if the "access adiminstration pages" string is found in
+ * Throws a warning if the "access administration pages" string is found in
  * hook_menu().
  *
  * @category PHP

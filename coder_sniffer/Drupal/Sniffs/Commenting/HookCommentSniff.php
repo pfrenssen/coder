@@ -84,7 +84,7 @@ class Drupal_Sniffs_Commenting_HookCommentSniff implements PHP_CodeSniffer_Sniff
             }
         }
 
-        // Check if hook implementation doc is formated correctly.
+        // Check if a hook implementation doc block is formatted correctly.
         if (preg_match('/^[\s]*Implement[^\n]+?hook_[^\n]+/i', $shortContent, $matches) === 1) {
             if (strstr($matches[0], 'Implements ') === false || strstr($matches[0], 'Implements of') !== false
                 || preg_match('/ (drush_)?hook_[a-zA-Z0-9_]+\(\)( for .+)?\.$/', $matches[0]) !== 1
