@@ -8,7 +8,8 @@
  */
 
 /**
- * Checks that Node::load() calls and friends are not used in forms or controllers.
+ * Checks that Node::load() calls and friends are not used in forms, controllers or
+ * services.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -81,7 +82,10 @@ class DrupalPractice_Sniffs_Objects_GlobalClassSniff implements PHP_CodeSniffer_
         $classPtr    = key($tokens[$stackPtr]['conditions']);
         $extendsName = $phpcsFile->findExtendedClassName($classPtr);
 
-        if ($extendsName === false || in_array($extendsName, DrupalPractice_Sniffs_Objects_GlobalDrupalSniff::$baseClasses) === false) {
+        if (($extendsName === false
+            || in_array($extendsName, DrupalPractice_Sniffs_Objects_GlobalDrupalSniff::$baseClasses) === false)
+            && DrupalPractice_Project::isServiceClass($phpcsFile, $classPtr) === false
+        ) {
             return;
         }
 

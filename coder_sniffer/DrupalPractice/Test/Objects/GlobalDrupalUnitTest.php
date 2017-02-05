@@ -33,9 +33,8 @@ class DrupalPractice_Sniffs_Objects_GlobalDrupalUnitTest extends CoderSniffUnitT
             case 'GlobalDrupalUnitTest.inc':
                 return array(6 => 1);
             case 'ExampleService.php':
-                return array(14 => 1);
+                return array(16 => 1);
         }
-        print $testFile;
 
     }//end getWarningList()
 
