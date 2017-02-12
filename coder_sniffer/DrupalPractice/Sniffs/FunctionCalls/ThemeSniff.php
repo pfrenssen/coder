@@ -33,11 +33,11 @@ class DrupalPractice_Sniffs_FunctionCalls_ThemeSniff extends Drupal_Sniffs_Seman
 
 
     /**
-     * Processes this test, when one of its tokens is encountered.
+     * Processes this function call.
      *
      * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param int                  $stackPtr  The position of the function call in
+     *                                        the stack.
      *
      * @return void
      */

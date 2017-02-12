@@ -32,8 +32,8 @@
 
   <!-- The following sniffs are disabled because Coder is not compliant yet, see
     https://www.drupal.org/node/2734539 -->
-  <rule ref="PEAR.Commenting.FunctionComment">
-    <exclude name="PEAR.Commenting.FunctionComment.MissingParamComment"/>
+  <rule ref="PEAR.Commenting.FunctionComment.MissingParamComment">
+    <exclude-pattern>*/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php</exclude-pattern>
   </rule>
 
 </ruleset>
