@@ -56,7 +56,15 @@ class Drupal_Sniffs_Commenting_DocCommentStarSniff implements PHP_CodeSniffer_Sn
                     $error = 'Doc comment star missing';
                     $fix   = $phpcsFile->addFixableError($error, $i, 'StarMissing');
                     if ($fix === true) {
-                        $phpcsFile->fixer->replaceToken($i, str_repeat(' ', $tokens[$stackPtr]['column']).'* ');
+                        if (strpos($tokens[$i]['content'], $phpcsFile->eolChar) !== false) {
+                            $phpcsFile->fixer->replaceToken($i, str_repeat(' ', $tokens[$stackPtr]['column'])."* \n");
+                        } else {
+                            $phpcsFile->fixer->replaceToken($i, str_repeat(' ', $tokens[$stackPtr]['column']).'* ');
+                        }
+
+                        // Ordering of lines might have changed - stop here. The
+                        // fixer will restart the sniff if there are remaining fixes.
+                        return;
                     }
                 }
             } else if ($tokens[$i]['code'] !== T_DOC_COMMENT_STAR) {
@@ -65,7 +73,7 @@ class Drupal_Sniffs_Commenting_DocCommentStarSniff implements PHP_CodeSniffer_Sn
                 if ($fix === true) {
                     $phpcsFile->fixer->addContentBefore($i, str_repeat(' ', $tokens[$stackPtr]['column']).'* ');
                 }
-            }
+            }//end if
 
             $lastLineChecked = $tokens[$i]['line'];
         }//end for

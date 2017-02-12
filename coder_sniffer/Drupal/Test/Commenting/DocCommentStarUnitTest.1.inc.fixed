@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * @file
+ * PostcodeAnywhere Interactive FindByParts (v1.00)
+ *
+ * Demo: http://www.pcapredict.com/support/webservice/postcodeanywhere/interactive/findbyparts/1/
+ */
+
+/**
+ *
+ */
+class PostcodeAnywhere_Interactive_FindByParts {
+}

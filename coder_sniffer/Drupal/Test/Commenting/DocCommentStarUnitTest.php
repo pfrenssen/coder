@@ -13,10 +13,15 @@ class Drupal_Sniffs_Commenting_DocCommentStarUnitTest extends CoderSniffUnitTest
      */
     public function getErrorList($testFile)
     {
-        return array(
-                9 => 1,
-                16 => 1,
-               );
+         switch ($testFile) {
+            case 'DocCommentStarUnitTest.inc':
+                return array(
+                        9 => 1,
+                        16 => 1,
+                       );
+            default:
+                return array();
+        }
 
     }//end getErrorList()
 
