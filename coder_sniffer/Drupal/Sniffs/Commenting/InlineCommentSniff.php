@@ -428,7 +428,8 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                                             '-',
                                             '@todo',
                                            );
-                    $words = preg_split('/\s+/', $prevCommentText);
+                    $words        = preg_split('/\s+/', $prevCommentText);
+                    $numberedList = (bool) preg_match('/^[0-9]+\./', $words[1]);
                     if (in_array($words[1], $indentationStarters) === true) {
                         if ($spaceCount !== ($prevSpaceCount + 2)) {
                             $error = 'Comment indentation error after %s element, expected %s spaces';
@@ -438,10 +439,20 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                                 $phpcsFile->fixer->replaceToken($stackPtr, $newComment);
                             }
                         }
+                    } else if ($numberedList === true) {
+                        $expectedSpaceCount = ($prevSpaceCount + strlen($words[1]) + 1);
+                        if ($spaceCount !== $expectedSpaceCount) {
+                            $error = 'Comment indentation error, expected %s spaces';
+                            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'SpacingBefore', array($expectedSpaceCount));
+                            if ($fix === true) {
+                                $newComment = '//'.str_repeat(' ', $expectedSpaceCount).ltrim($tokens[$stackPtr]['content'], "/\t ");
+                                $phpcsFile->fixer->replaceToken($stackPtr, $newComment);
+                            }
+                        }
                     } else {
                         $error = 'Comment indentation error, expected only %s spaces';
                         $phpcsFile->addError($error, $stackPtr, 'SpacingBefore', array($prevSpaceCount));
-                    }
+                    }//end if
                 }//end if
             } else {
                 $error = '%s spaces found before inline comment; expected "// %s" but found "%s"';

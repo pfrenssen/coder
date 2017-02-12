@@ -809,6 +809,14 @@ t('x');
 // - @link https://www.drupal.org/developing/api/8 Drupal 8 API longer references @endlink
 t('x');
 
+// People want to pretty-format their numbered lists, do not throw an error for
+// this:
+// 1. A link has the current path in its 'data-drupal-link-system-path'
+//    attribute.
+// 2. We are on the front page and a link has the special '<front>' value in
+//    its 'data-drupal-link-system-path' attribute.
+t('x');
+
 // Concatenating some symbols is fine.
 $x = '(' . t('Test') . ')';
 $x = '[' . t('Test') . ']';
