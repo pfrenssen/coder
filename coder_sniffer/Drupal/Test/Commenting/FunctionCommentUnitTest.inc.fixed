@@ -394,3 +394,13 @@ class Test2 extends AbstractTest {
   }
 
 }
+
+/**
+ * Comment of param is just one word, which means it is the data type.
+ *
+ * @param array $a
+ * @param array $b
+ */
+function test31($a, $b) {
+
+}

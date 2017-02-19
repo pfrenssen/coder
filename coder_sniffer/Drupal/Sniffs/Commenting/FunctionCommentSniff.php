@@ -466,7 +466,11 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $maxType = $typeLen;
                 }
 
-                if (isset($matches[4]) === true) {
+                // If there is more than one word then it is a comment that should be
+                // on the next line.
+                if (isset($matches[4]) === true && ($typeLen > 0
+                    || preg_match('/[^\s]+[\s]+[^\s]+/', $matches[4]) === 1)
+                ) {
                     $comment = $matches[4];
                     $error   = 'Parameter comment must be on the next line';
                     $fix     = $phpcsFile->addFixableError($error, ($tag + 2), 'ParamCommentNewLine');
@@ -546,9 +550,19 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $variableArguments = true;
                 }
 
-                if (empty($matches[1]) === true) {
+                if ($typeLen === 0) {
                     $error = 'Missing parameter type';
-                    $phpcsFile->addError($error, $tag, 'MissingParamType');
+                    // If there is just one word as comment at the end of the line
+                    // then this is probably the data type. Move it before the
+                    // variable name.
+                    if (isset($matches[4]) === true && preg_match('/[^\s]+[\s]+[^\s]+/', $matches[4]) === 0) {
+                        $fix = $phpcsFile->addFixableError($error, $tag, 'MissingParamType');
+                        if ($fix === true) {
+                            $phpcsFile->fixer->replaceToken(($tag + 2), $matches[4].' '.$var);
+                        }
+                    } else {
+                        $phpcsFile->addError($error, $tag, 'MissingParamType');
+                    }
                 }
 
                 if (empty($matches[2]) === true && $variableArguments === false) {
