@@ -29,6 +29,7 @@ class DrupalPractice_Sniffs_Objects_GlobalClassSniff implements PHP_CodeSniffer_
                           'NodeType',
                           'Role',
                           'Term',
+                          'User',
                          );
 
 
