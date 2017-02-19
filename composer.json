@@ -1,6 +1,6 @@
 {
     "name": "drupal/coder",
-    "type": "library",
+    "type": "phpcodesniffer-standard",
     "description": "Coder is a library to review Drupal code.",
     "homepage": "https://www.drupal.org/project/coder",
     "support": {
