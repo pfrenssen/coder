@@ -392,3 +392,18 @@ class Test2 extends AbstractTest {
 function test31($a, $b) {
 
 }
+
+class PostcodeAnywhere_Interactive_Find {
+
+   private $UserName; //The username associated with the Royal Mail license (not required for click licenses).
+   private $Data; //Holds the results of the query
+
+   function PostcodeAnywhere_Interactive_Find($Key, $SearchTerm, $PreferredLanguage, $Filter, $UserName)
+   {
+      $this->Key = $Key;
+      $this->SearchTerm = $SearchTerm;
+      $this->PreferredLanguage = $PreferredLanguage;
+      $this->Filter = $Filter;
+      $this->UserName = $UserName;
+   }
+}

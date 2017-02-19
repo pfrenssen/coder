@@ -84,9 +84,14 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         $find   = PHP_CodeSniffer_Tokens::$methodPrefixes;
         $find[] = T_WHITESPACE;
 
-        $commentEnd = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
-        if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
-            && $tokens[$commentEnd]['code'] !== T_COMMENT
+        $commentEnd       = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
+        $beforeCommentEnd = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($commentEnd - 1), null, true);
+        if (($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
+            && $tokens[$commentEnd]['code'] !== T_COMMENT)
+            || ($beforeCommentEnd !== false
+            // If there is something more on the line than just the comment then the
+            // comment does not belong to the function.
+            && $tokens[$beforeCommentEnd]['line'] === $tokens[$commentEnd]['line'])
         ) {
             $fix = $phpcsFile->addFixableError('Missing function doc comment', $stackPtr, 'Missing');
             if ($fix === true) {
