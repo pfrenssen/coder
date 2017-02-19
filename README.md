@@ -48,17 +48,17 @@ phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
 
 Check Drupal coding standards
 ```
-phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme /file/to/drupal/example_module
+phpcs --standard=Drupal /file/to/drupal/example_module
 ```
 
 Check Drupal best practices
 ```
-phpcs --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme /file/to/drupal/example_module
+phpcs --standard=DrupalPractice /file/to/drupal/example_module
 ```
 
 Automatically fix coding standards
 ```
-phpcbf --standard=Drupal --extensions=php,module,inc,install,test,profile,theme /file/to/drupal/example_module
+phpcbf --standard=Drupal /file/to/drupal/example_module
 ```
 
 
