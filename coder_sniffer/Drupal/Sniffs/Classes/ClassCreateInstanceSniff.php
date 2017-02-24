@@ -49,8 +49,12 @@ class Drupal_Sniffs_Classes_ClassCreateInstanceSniff implements PHP_CodeSniffer_
         // next semicolon.
         $nextParenthesis = $phpcsFile->findNext(T_OPEN_PARENTHESIS, $stackPtr, null, false, null, true);
         // If there is a parenthesis owner then this is not a constructor call,
-        // but rather some array or somehting else.
-        if ($nextParenthesis === false || isset($tokens[$nextParenthesis]['parenthesis_owner']) === true) {
+        // but rather some array or somehting else. There seems to be a bug in PHPCS
+        // that finds PHP 7 array return type hints as parenthesis owner, exclude
+        // that.
+        if ($nextParenthesis === false || (isset($tokens[$nextParenthesis]['parenthesis_owner']) === true
+            && $tokens[$tokens[$nextParenthesis]['parenthesis_owner']]['code'] !== T_RETURN_TYPE)
+        ) {
             $error       = 'Calling class constructors must always include parentheses';
             $constructor = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true, null, true);
             // We can invoke the fixer if we know this is a static constructor

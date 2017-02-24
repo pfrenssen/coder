@@ -1547,3 +1547,24 @@ function test22(MyInterface $a) {
 function test23(): TestReturnType {
   return foo();
 }
+
+/**
+ * Test class.
+ */
+class Test2 {
+
+  /**
+   * Using PHP 7 return type hints is fine.
+   *
+   * @return ValidatorInterface[]
+   *   The validators.
+   */
+  public function getValidators(): array {
+    return [
+      new PublishedNodesValidator(),
+      new MinimumNodesValidator($this->nrOfArticles),
+      new AccessibleOnCurrentDomainValidator($this->sectionService),
+    ];
+  }
+
+}
