@@ -823,6 +823,7 @@ $x = '[' . t('Test') . ']';
 $x = '- ' . t('Test') . ' -';
 $x = '<' . t('Test') . '>';
 $x = '«' . t('Test') . '»';
+$x = "\n" . t('Test') . "\n";
 
 /**
  * Doc block with some code tags.

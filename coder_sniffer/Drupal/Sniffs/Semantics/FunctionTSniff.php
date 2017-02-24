@@ -142,15 +142,15 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
      */
     protected function checkConcatString($string)
     {
-        // Remove spaces, html and single quotes from the original string.
-        $string = str_replace("'", "", $string);
+        // Remove outer quotes, spaces and HTML tags from the original string.
+        $string = trim($string, '"\'');
         $string = trim(strip_tags($string));
 
         if ($string === '') {
             return true;
         }
 
-        if (in_array($string, ['(', ')', '[', ']', '-', '<', '>', '«', '»'], true)) {
+        if (in_array($string, ['(', ')', '[', ']', '-', '<', '>', '«', '»', '\n'], true)) {
             return true;
         }
 
