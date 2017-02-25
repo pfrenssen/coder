@@ -32,6 +32,11 @@
  <rule ref="Drupal.Functions.FunctionDeclaration.SpaceBeforeParenthesis">
   <severity>0</severity>
  </rule>
+ <!-- Silence mmethod name underscore warning which is coverd already in
+   Drupal.NamingConventions.ValidFunctionName.ScopeNotCamelCaps. -->
+ <rule ref="Drupal.Methods.MethodDeclaration.Underscore">
+  <severity>0</severity>
+ </rule>
 
  <rule ref="Drupal.WhiteSpace.ScopeIndent">
   <!-- Do not run this sniff on template files, as the indentation might follow

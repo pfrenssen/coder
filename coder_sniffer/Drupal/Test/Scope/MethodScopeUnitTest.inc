@@ -9,4 +9,11 @@ trait TestTrait {
 
   }
 
+  /**
+   * Visibility is missing here and should be auto-fixed correctly.
+   */
+  static function bar() {
+
+  }
+
 }

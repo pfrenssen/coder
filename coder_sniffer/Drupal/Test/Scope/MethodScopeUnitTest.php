@@ -14,7 +14,10 @@ class Drupal_Sniffs_Scope_MethodScopeUnitTest extends CoderSniffUnitTest
      */
     public function getErrorList($testFile)
     {
-        return array(8 => 1);
+        return array(
+                8 => 1,
+                15 => 1,
+               );
 
     }//end getErrorList()
 
