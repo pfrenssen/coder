@@ -832,7 +832,10 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
         if ($tokens[$stackPtr]['level'] > 0 && empty($foundParams) === false) {
             foreach ($realParams as $realParam) {
                 $realParamKeyName = $realParam['name'];
-                if (in_array($realParamKeyName, $foundParams) === false) {
+                if (in_array($realParamKeyName, $foundParams) === false
+                    && ($realParam['pass_by_reference'] === true
+                    && in_array("&$realParamKeyName", $foundParams) === true) === false
+                ) {
                     $error = 'Parameter %s is not described in comment';
                     $phpcsFile->addError($error, $commentStart, 'ParamMissingDefinition', [$realParam['name']]);
                 }
