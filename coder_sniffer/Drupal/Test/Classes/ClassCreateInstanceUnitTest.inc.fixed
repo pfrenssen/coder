@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @file
- */
-
 use Vendor\DateTools\DateInterval;
 use Vendor\DateTools;
 

@@ -47,9 +47,7 @@ class Drupal_Sniffs_Commenting_FileCommentUnitTest extends CoderSniffUnitTest
                     3 => 1,
                 );
             case 'FileCommentUnitTest.8.inc':
-                return array(
-                    4 => 1,
-                );
+                return array();
             case 'FileCommentUnitTest.9.inc':
                 return array(
                     3 => 1,

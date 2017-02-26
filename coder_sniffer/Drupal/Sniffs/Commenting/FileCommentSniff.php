@@ -64,18 +64,21 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
         $tokens       = $phpcsFile->getTokens();
         $commentStart = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
 
-        // Files containing exactly one namespaced class, interface or trait must not
-        // have a file doc block.
+        // Files containing exactly one class, interface or trait are allowed to
+        // ommit a file doc block. If a namespace is used then the file comment must
+        // be omitted.
         $oopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT], $stackPtr);
-        if ($oopKeyword !== false && $phpcsFile->findNext([T_NAMESPACE], $stackPtr) !== false) {
+        if ($oopKeyword !== false) {
+            $namespace = $phpcsFile->findNext(T_NAMESPACE, $stackPtr);
             // Check if the file contains multiple classes/interfaces/traits - then a
             // file doc block is allowed.
             $secondOopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT], ($oopKeyword + 1));
-            // Classes, interfaces and traits should not have an @file doc
+            // Namespaced classes, interfaces and traits should not have an @file doc
             // block.
             if (($tokens[$commentStart]['code'] === T_DOC_COMMENT_OPEN_TAG
                 || $tokens[$commentStart]['code'] === T_COMMENT)
                 && $secondOopKeyword === false
+                && $namespace !== false
             ) {
                 $fix = $phpcsFile->addFixableError('Namespaced classes, interfaces and traits should not begin with a file doc comment', $commentStart, 'NamespaceNoFileDoc');
                 if ($fix === true) {
@@ -95,7 +98,23 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
                 }
             }
 
-            return ($phpcsFile->numTokens + 1);
+            if ($namespace !== false) {
+                return ($phpcsFile->numTokens + 1);
+            }
+
+            // Search for global functions before and after the class.
+            $function = $phpcsFile->findPrevious(T_FUNCTION, ($oopKeyword - 1));
+            if ($function === false) {
+                $function = $phpcsFile->findNext(T_FUNCTION, ($tokens[$oopKeyword]['scope_closer'] + 1));
+            }
+
+            $fileTag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($commentStart + 1), null, false, '@file');
+
+            // No other classes, no other global functions and no explicit @file tag
+            // anywhere means it is ok to skip the file comment.
+            if ($secondOopKeyword === false && $function === false && $fileTag === false) {
+                return ($phpcsFile->numTokens + 1);
+            }
         }//end if
 
         if ($tokens[$commentStart]['code'] === T_COMMENT) {
