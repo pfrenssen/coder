@@ -8,7 +8,7 @@
  */
 
 /**
- * Checks that class references do not use FQN but use stataments.
+ * Checks that class references do not use FQN but use statements.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -41,7 +41,7 @@ class Drupal_Sniffs_Classes_FullyQualifiedNamespaceSniff implements PHP_CodeSnif
      *
      * @return void|int Optionally returns a stack pointer. The sniff will not be
      *                  called again on the current file until the returned stack
-     *                  pointer is reached. Return (count($tokens) + 1) to skip
+     *                  pointer is reached. Return $phpcsFile->numTokens + 1 to skip
      *                  the rest of the file.
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
@@ -51,7 +51,7 @@ class Drupal_Sniffs_Classes_FullyQualifiedNamespaceSniff implements PHP_CodeSnif
         // Skip this sniff in *api.php files because they want to have fully
         // qualified names for documentation purposes.
         if (substr($phpcsFile->getFilename(), -8) === '.api.php') {
-            return (count($tokens) + 1);
+            return ($phpcsFile->numTokens + 1);
         }
 
         // We are only interested in a backslash embedded between strings, which

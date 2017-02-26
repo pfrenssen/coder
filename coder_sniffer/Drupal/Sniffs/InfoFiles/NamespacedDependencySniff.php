@@ -43,11 +43,10 @@ class Drupal_Sniffs_InfoFiles_NamespacedDependencySniff implements PHP_CodeSniff
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $end    = (count($tokens) + 1);
 
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -9));
         if ($fileExtension !== '.info.yml') {
-            return $end;
+            return ($phpcsFile->numTokens + 1);
         }
 
         if (preg_match('/^dependencies:/', $tokens[$stackPtr]['content']) === 0) {

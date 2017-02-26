@@ -48,18 +48,18 @@ class Drupal_Sniffs_WhiteSpace_OpenTagNewlineSniff implements PHP_CodeSniffer_Sn
 
         // Only check the very first PHP open tag in a file, ignore any others.
         if ($stackPtr !== 0) {
-            return (count($tokens) + 1);
+            return ($phpcsFile->numTokens + 1);
         }
 
         $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
 
         // If there is no furhter content in this file ignore it.
         if ($next === false) {
-            return (count($tokens) + 1);
+            return ($phpcsFile->numTokens + 1);
         }
 
         if ($tokens[$next]['line'] === 3) {
-            return (count($tokens) + 1);
+            return ($phpcsFile->numTokens + 1);
         }
 
         $error = 'The PHP open tag must be followed by exactly one blank line';
@@ -84,7 +84,7 @@ class Drupal_Sniffs_WhiteSpace_OpenTagNewlineSniff implements PHP_CodeSniffer_Sn
             $phpcsFile->fixer->endChangeset();
         }
 
-        return (count($tokens) + 1);
+        return ($phpcsFile->numTokens + 1);
 
     }//end process()
 

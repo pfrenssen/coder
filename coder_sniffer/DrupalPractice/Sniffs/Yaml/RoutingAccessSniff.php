@@ -45,11 +45,10 @@ class DrupalPractice_Sniffs_Yaml_RoutingAccessSniff implements PHP_CodeSniffer_S
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $end    = (count($tokens) + 1);
 
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -12));
         if ($fileExtension !== '.routing.yml') {
-            return $end;
+            return ($phpcsFile->numTokens + 1);
         }
 
         if (preg_match('/^[\s]+_access: \'TRUE\'/', $tokens[$stackPtr]['content']) === 1

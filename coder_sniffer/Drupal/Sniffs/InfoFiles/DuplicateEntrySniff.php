@@ -37,16 +37,14 @@ class Drupal_Sniffs_InfoFiles_DuplicateEntrySniff implements PHP_CodeSniffer_Sni
      * @param int                  $stackPtr  The position of the current token in the
      *                                        stack passed in $tokens.
      *
-     * @return void
+     * @return int
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         // Only run this sniff once per info file.
-        $end = (count($phpcsFile->getTokens()) + 1);
-
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -4));
         if ($fileExtension !== 'info') {
-            return $end;
+            return ($phpcsFile->numTokens + 1);
         }
 
         $contents   = file_get_contents($phpcsFile->getFilename());
@@ -58,7 +56,7 @@ class Drupal_Sniffs_InfoFiles_DuplicateEntrySniff implements PHP_CodeSniffer_Sni
             }
         }
 
-        return $end;
+        return ($phpcsFile->numTokens + 1);
 
     }//end process()
 
