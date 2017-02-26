@@ -1,6 +1,6 @@
 <?php
 
-class Drupal_Sniffs_InfoFiles_NamespacedDependencyUnitTest extends CoderSniffUnitTest
+class DrupalPractice_Sniffs_InfoFiles_NamespacedDependencyUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -14,11 +14,7 @@ class Drupal_Sniffs_InfoFiles_NamespacedDependencyUnitTest extends CoderSniffUni
      */
     public function getErrorList($testFile)
     {
-        return array(
-                9 => 1,
-                11 => 1,
-                13 => 1,
-               );
+        return array();
 
     }//end getErrorList()
 
@@ -33,7 +29,11 @@ class Drupal_Sniffs_InfoFiles_NamespacedDependencyUnitTest extends CoderSniffUni
      */
     public function getWarningList($testFile)
     {
-        return array();
+        return array(
+                9 => 1,
+                11 => 1,
+                13 => 1,
+               );
 
     }//end getWarningList()
 

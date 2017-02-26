@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Drupal_Sniffs_InfoFiles_NamespacedDependencySniff.
+ * DrupalPractice_Sniffs_InfoFiles_NamespacedDependencySniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -15,7 +15,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_InfoFiles_NamespacedDependencySniff implements PHP_CodeSniffer_Sniff
+class DrupalPractice_Sniffs_InfoFiles_NamespacedDependencySniff implements PHP_CodeSniffer_Sniff
 {
 
 
@@ -59,7 +59,7 @@ class Drupal_Sniffs_InfoFiles_NamespacedDependencySniff implements PHP_CodeSniff
             // Dependency line without namespace.
             if (preg_match('/^[\s]+- [^:]+[\s]*$/', $tokens[$nextLine]['content']) === 1) {
                 $error = 'All dependencies must be prefixed with the project name, for example "drupal:"';
-                $phpcsFile->addError($error, $nextLine, 'NonNamespaced');
+                $phpcsFile->addWarning($error, $nextLine, 'NonNamespaced');
             } else if (preg_match('/^[\s]+- [^:]+:[^:]+[\s]*$/', $tokens[$nextLine]['content']) === 0
                 && preg_match('/^[\s]*#.*$/', $tokens[$nextLine]['content']) === 0
             ) {
