@@ -122,7 +122,7 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
             if ($fix === true) {
                 $content = $tokens[$commentStart]['content'];
 
-                // If the comment starts with something like "/**+" then we just
+                // If the comment starts with something like "/**" then we just
                 // insert a space after the stars.
                 if (strpos($content, '/**') === 0) {
                     $phpcsFile->fixer->replaceToken($commentStart, str_replace('/**', '/** ', $content));
@@ -180,11 +180,6 @@ class Drupal_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
                 }
 
                 return ($phpcsFile->numTokens + 1);
-            } else {
-                $fix = $phpcsFile->addFixableError('Missing function doc comment, only found file comment', $next, 'MissingFunctionDoc');
-                if ($fix === true) {
-                    $phpcsFile->fixer->addContentBefore(($next - 1), "/**\n *\n */\n");
-                }
             }
         }//end if
 

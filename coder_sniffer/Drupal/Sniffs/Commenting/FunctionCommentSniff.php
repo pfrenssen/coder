@@ -120,16 +120,19 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             return;
         }
 
-        if ($tokens[$commentEnd]['line'] !== ($tokens[$stackPtr]['line'] - 1)) {
-            $error = 'There must be no blank lines after the function comment';
-            $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter');
-            if ($fix === true) {
-                $phpcsFile->fixer->replaceToken(($commentEnd + 1), '');
-            }
-        }
-
         $commentStart = $tokens[$commentEnd]['comment_opener'];
         foreach ($tokens[$commentStart]['comment_tags'] as $tag) {
+            // This is a file comment, not a function comment.
+            if ($tokens[$tag]['content'] === '@file') {
+                $fix = $phpcsFile->addFixableError('Missing function doc comment', $stackPtr, 'Missing');
+                if ($fix === true) {
+                    $before = $phpcsFile->findNext(T_WHITESPACE, ($commentEnd + 1), ($stackPtr + 1), true);
+                    $phpcsFile->fixer->addContentBefore($before, "/**\n *\n */\n");
+                }
+
+                return;
+            }
+
             if ($tokens[$tag]['content'] === '@see') {
                 // Make sure the tag isn't empty.
                 $string = $phpcsFile->findNext(T_DOC_COMMENT_STRING, $tag, $commentEnd);
@@ -137,6 +140,14 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $error = 'Content missing for @see tag in function comment';
                     $phpcsFile->addError($error, $tag, 'EmptySees');
                 }
+            }
+        }//end foreach
+
+        if ($tokens[$commentEnd]['line'] !== ($tokens[$stackPtr]['line'] - 1)) {
+            $error = 'There must be no blank lines after the function comment';
+            $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter');
+            if ($fix === true) {
+                $phpcsFile->fixer->replaceToken(($commentEnd + 1), '');
             }
         }
 

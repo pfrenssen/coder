@@ -67,6 +67,9 @@ class Drupal_Sniffs_Commenting_FunctionCommentUnitTest extends CoderSniffUnitTes
                        );
             case 'FunctionCommentUnitTest.1.inc':
                 return array();
+
+            case 'FunctionCommentUnitTest.2.inc':
+                return array(8 => 1);
         }
 
     }//end getErrorList()
