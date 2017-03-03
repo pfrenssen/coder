@@ -493,6 +493,19 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $var = '';
                 }
 
+                if (substr($var, -1) === '.') {
+                    $error = 'Doc comment parameter name "%s" must not end with a dot';
+                    $fix   = $phpcsFile->addFixableError($error, ($tag + 2), 'ParamNameDot', [$var]);
+                    if ($fix === true) {
+                        $content = $type.' '.substr($var, 0, -1);
+                        $phpcsFile->fixer->replaceToken(($tag + 2), $content);
+                    }
+
+                    // Continue with the next parameter to avoid confusing
+                    // overlapping errors further down.
+                    continue;
+                }
+
                 $varLen = strlen($var);
                 if ($varLen > $maxVar) {
                     $maxVar = $varLen;

@@ -407,3 +407,25 @@ class PostcodeAnywhere_Interactive_Find {
       $this->UserName = $UserName;
    }
 }
+
+/**
+ * There should be no dots.
+ *
+ * @param string $a.
+ *   Some comment.
+ * @param string $b.
+ *   Another comment.
+ */
+function test32($a, $b) {
+
+}
+
+/**
+ * There should be no dots and comments should be on the next line.
+ *
+ * @param string $a. Some comment.
+ * @param string $b. Another comment.
+ */
+function test33($a, $b) {
+
+}
