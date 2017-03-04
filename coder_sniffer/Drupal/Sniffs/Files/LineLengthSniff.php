@@ -56,13 +56,13 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
             }
 
             if ($tokens[($stackPtr - 1)]['code'] === T_COMMENT
+                // Allow @link and @see documentation to exceed the 80 character
+                // limit.
                 && (preg_match('/^[[:space:]]*\/\/ @.+/', $tokens[($stackPtr - 1)]['content']) === 1
                 // Allow anything that does not contain spaces (like URLs) to be
                 // longer.
                 || strpos(trim($tokens[($stackPtr - 1)]['content'], "/ \n"), ' ') === false)
             ) {
-                // Allow @link and @see documentation to exceed the 80 character
-                // limit.
                 return;
             }
 
@@ -85,8 +85,9 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
                 // Allow long "Contains ..." comments in @file doc blocks.
                 || preg_match('/^Contains [a-zA-Z_\\\\.]+$/', $tokens[($stackPtr - 2)]['content']) === 1
                 // Allow long paths or namespaces in annotations such as
-                // "list_builder" = "Drupal\rules\Entity\Controller\RulesReactionListBuilder".
-                || preg_match('#= ("|\')\S+[\\\\/]\S+("|\'),*$#', $tokens[($stackPtr - 2)]['content']) === 1)
+                // "list_builder" = "Drupal\rules\Entity\Controller\RulesReactionListBuilder"
+                // cardinality = \Drupal\webform\WebformHandlerInterface::CARDINALITY_UNLIMITED,
+                || preg_match('#= ("|\')?\S+[\\\\/]\S+("|\')?,*$#', $tokens[($stackPtr - 2)]['content']) === 1)
                 // Allow @link tags in lists.
                 || strpos($tokens[($stackPtr - 2)]['content'], '- @link') !== false
                 // Allow hook implementation line to exceed 80 characters.

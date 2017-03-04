@@ -1618,3 +1618,19 @@ class Test3 {
   }
 
 }
+
+/**
+ * Long annotation lines over 80 characters are ok.
+ *
+ * @WebformHandler(
+ *   id = "email",
+ *   label = @Translation("Email"),
+ *   category = @Translation("Notification"),
+ *   description = @Translation("Sends a webform submission via an email."),
+ *   cardinality = \Drupal\webform\WebformHandlerInterface::CARDINALITY_UNLIMITED,
+ *   results = \Drupal\webform\WebformHandlerInterface::RESULTS_PROCESSED,
+ * )
+ */
+class EmailWebformHandler extends WebformHandlerBase implements WebformHandlerMessageInterface {
+
+}
