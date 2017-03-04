@@ -86,7 +86,7 @@ class Drupal_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
                 || preg_match('/^Contains [a-zA-Z_\\\\.]+$/', $tokens[($stackPtr - 2)]['content']) === 1
                 // Allow long paths or namespaces in annotations such as
                 // "list_builder" = "Drupal\rules\Entity\Controller\RulesReactionListBuilder"
-                // cardinality = \Drupal\webform\WebformHandlerInterface::CARDINALITY_UNLIMITED,
+                // cardinality = \Drupal\webform\WebformHandlerInterface::CARDINALITY_UNLIMITED.
                 || preg_match('#= ("|\')?\S+[\\\\/]\S+("|\')?,*$#', $tokens[($stackPtr - 2)]['content']) === 1)
                 // Allow @link tags in lists.
                 || strpos($tokens[($stackPtr - 2)]['content'], '- @link') !== false
