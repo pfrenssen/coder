@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Long array syntax is not allowed in Drupal 8 code.
+ */
+
+/**
+ * Declaring a long array.
+ */
+function test() {
+  return [];
+}
