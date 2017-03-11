@@ -27,8 +27,13 @@ class DrupalPractice_Sniffs_Objects_GlobalDrupalSniff implements PHP_CodeSniffer
                                   'ConfigFormBase',
                                   'ContentEntityForm',
                                   'ControllerBase',
-                                  'FormBase',
                                   'EntityForm',
+                                  'EntityReferenceFormatterBase',
+                                  'FileFormatterBase',
+                                  'FormatterBase',
+                                  'FormBase',
+                                  'ImageFormatter',
+                                  'ImageFormatterBase',
                                   'WidgetBase',
                                  );
 
