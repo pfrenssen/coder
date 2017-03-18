@@ -51,11 +51,11 @@ class Drupal_Sniffs_Files_TxtFileLineLengthSniff implements PHP_CodeSniffer_Snif
             $content    = rtrim($tokens[$stackPtr]['content']);
             $lineLength = mb_strlen($content, 'UTF-8');
             // Lines without spaces are allowed to be longer (for example long URLs).
-            // Markdown allowed to be longer for lines
-            // - without spaces
-            // - starting with #
-            // - containing URLs (https://)
-            // - starting with | (tables)
+            // Markdown is allowed to be longer for lines
+            // - without spaces.
+            // - starting with #.
+            // - containing URLs (https://).
+            // - starting with | (tables).
             if ($lineLength > 80 && preg_match('/^([^ ]+$|#|.*https?:\/\/|\|)/', $content) === 0) {
                 $data    = array(
                             80,
