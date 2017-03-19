@@ -50,7 +50,7 @@ class DrupalPractice_Sniffs_Commenting_ExpectedExceptionSniff implements PHP_Cod
             || $content === '@expectedExceptionMessage'
             || $content === '@expectedExceptionMessageRegExp'
         ) {
-            $warning = '%s tags should not be used, use $§this->setExpectedException() or $this->expectException() instead';
+            $warning = '%s tags should not be used, use $this->setExpectedException() or $this->expectException() instead';
             $phpcsFile->addWarning($warning, $stackPtr, 'TagFound', [$content]);
         }
 
