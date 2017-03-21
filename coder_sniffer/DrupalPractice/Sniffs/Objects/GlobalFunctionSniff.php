@@ -29,6 +29,7 @@ class DrupalPractice_Sniffs_Objects_GlobalFunctionSniff implements PHP_CodeSniff
                             'file_load'                => 'the "entity_type.manager" service',
                             'format_date'              => 'the "date.formatter" service',
                             'node_load'                => 'the "entity_type.manager" service',
+                            'node_load_multiple'       => 'the "entity_type.manager" service',
                             'node_type_load'           => 'the "entity_type.manager" service',
                             't'                        => '$this->t()',
                             'taxonomy_term_load'       => 'the "entity_type.manager" service',
