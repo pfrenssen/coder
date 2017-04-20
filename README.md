@@ -1,6 +1,6 @@
 # Coder
 
-[![Build Status](https://travis-ci.org/klausi/coder.svg?branch=8.x-2.x)](https://travis-ci.org/klausi/coder)
+[![Build Status](https://travis-ci.org/pfrenssen/coder.svg?branch=8.x-2.x)](https://travis-ci.org/pfrenssen/coder)
 
 Coder is a library for automated Drupal code reviews and coding standard fixes. It
 defines rules for [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
@@ -98,7 +98,7 @@ Then execute the coding standards checker on Coder itself:
 ## Contributing
 
 1. Make sure an issue exists at https://www.drupal.org/project/issues/coder
-2. Create a [pull request](https://help.github.com/articles/using-pull-requests/) against https://github.com/klausi/coder
+2. Create a [pull request](https://help.github.com/articles/using-pull-requests/) against https://github.com/pfrenssen/coder
 3. Post a link to the pull request to the issue on drupal.org and set the issue to
    "needs review"
 
@@ -106,7 +106,7 @@ Thank you!
 
 
 ## Maintainers
-Klaus Purer, https://www.drupal.org/u/klausi
+Pieter Frenssen, https://www.drupal.org/u/pfrenssen
 
 
 ## Credits
