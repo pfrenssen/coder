@@ -81,11 +81,12 @@ Drupal Code Sniffer can be used with various editors.
 
 Editors:
 
-* Eclipse: https://www.drupal.org/node/1420004
-* Komodo: https://www.drupal.org/node/1419996
-* Netbeans: https://www.drupal.org/node/1420008
-* Sublime Text: https://www.drupal.org/node/1419996
-* vim: https://www.drupal.org/node/1419996
+- [Eclipse](https://www.drupal.org/node/1420004)
+- [Komodo](https://www.drupal.org/node/1419996)
+- [Netbeans](https://www.drupal.org/node/1420008)
+- [PhpStorm](https://www.jetbrains.com/help/phpstorm/php-code-sniffer.html)
+- [Sublime Text](https://www.drupal.org/node/1419996)
+- [Vim](https://www.drupal.org/node/1419996)
 
 
 ## Automated Testing (PHPUnit + PHPCS)
