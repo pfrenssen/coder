@@ -4,6 +4,6 @@
 /README.md export-ignore
 /coder_sniffer/Drupal/Test export-ignore
 /coder_sniffer/DrupalPractice/Test export-ignore
-/phpcs.xml.dist
-/phpunit.xml.dist
+/phpcs.xml.dist export-ignore
+/phpunit.xml.dist export-ignore
 /composer.lock export-ignore
