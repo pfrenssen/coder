@@ -19,47 +19,60 @@ please use [ESLint](http://eslint.org/) and see the
 ## Installation
 
 First, make sure Composer is installed correctly:
-```
-which composer
-```
+
+    which composer
 
 If you get composer not found or similar, follow Composer's installation
 instructions.
 
 Install Coder (8.x-2.x) in your global Composer directory in your home directory
-(~/.composer):
-```
-composer global require drupal/coder
-```
+(`~/.composer`):
 
-To make the phpcs and phpcbf commands available globally, add the composer bin path
-to your $PATH variable in ~/.profile, ~/.bashrc or ~/.zshrc:
-```
-export PATH="$PATH:$HOME/.composer/vendor/bin"
-```
+    composer global require drupal/coder
+
+To make the `phpcs` and `phpcbf` commands available globally, add the Composer
+bin path to your `$PATH` variable in `~/.profile`, `~/.bashrc` or `~/.zshrc`:
+
+    export PATH="$PATH:$HOME/.composer/vendor/bin"
 
 Register the Drupal and DrupalPractice Standard with PHPCS:
-```
-phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
-```
+
+    phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
+
+
+### Composer Installer Plugins
+
+The Coder package (>= 8.2.11) now works with Composer Installer Plugins,
+that find and register standards whenever packages are installed or updated.
+To use such a plugin within your project, follow these steps.
+
+    composer require --dev dealerdirect/phpcodesniffer-composer-installer
+    composer require --dev drupal/coder
+
+Now, you will see Drupal and DrupalPractice listed in the available PHP
+CodeSniffer standards.
+
+    vendor/bin/phpcs -i
+
+The same can be done for a Composer global installation.
+
+    composer global require dealerdirect/phpcodesniffer-composer-installer
+    composer global require drupal/coder
 
 
 ## Usage
 
 Check Drupal coding standards
-```
-phpcs --standard=Drupal /file/to/drupal/example_module
-```
+
+    phpcs --standard=Drupal /file/to/drupal/example_module
 
 Check Drupal best practices
-```
-phpcs --standard=DrupalPractice /file/to/drupal/example_module
-```
+
+    phpcs --standard=DrupalPractice /file/to/drupal/example_module
 
 Automatically fix coding standards
-```
-phpcbf --standard=Drupal /file/to/drupal/example_module
-```
+
+    phpcbf --standard=Drupal /file/to/drupal/example_module
 
 
 ## Working with Editors
@@ -68,11 +81,12 @@ Drupal Code Sniffer can be used with various editors.
 
 Editors:
 
-* Eclipse: https://www.drupal.org/node/1420004
-* Komodo: https://www.drupal.org/node/1419996
-* Netbeans: https://www.drupal.org/node/1420008
-* Sublime Text: https://www.drupal.org/node/1419996
-* vim: https://www.drupal.org/node/1419996
+- [Eclipse](https://www.drupal.org/node/1420004)
+- [Komodo](https://www.drupal.org/node/1419996)
+- [Netbeans](https://www.drupal.org/node/1420008)
+- [PhpStorm](https://www.jetbrains.com/help/phpstorm/php-code-sniffer.html)
+- [Sublime Text](https://www.drupal.org/node/1419996)
+- [Vim](https://www.drupal.org/node/1419996)
 
 
 ## Automated Testing (PHPUnit + PHPCS)
@@ -80,19 +94,15 @@ Editors:
 Coder Sniffer comes with a PHPUnit test suite to make sure the sniffs work correctly.
 Use Composer to install the dependencies:
 
-```
-composer install
-```
+    composer install
 
 Then execute the tests:
-```
-./vendor/bin/phpunit
-```
+
+    ./vendor/bin/phpunit
 
 Then execute the coding standards checker on Coder itself:
-```
-./vendor/bin/phpcs
-```
+
+    ./vendor/bin/phpcs
 
 
 ## Contributing
