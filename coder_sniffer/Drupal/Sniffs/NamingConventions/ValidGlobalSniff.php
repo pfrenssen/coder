@@ -28,6 +28,7 @@ class Drupal_Sniffs_NamingConventions_ValidGlobalSniff implements PHP_CodeSniffe
                            '$base_url',
                            '$channel',
                            '$conf',
+                           '$config',
                            '$config_directories',
                            '$cookie_domain',
                            '$databases',
