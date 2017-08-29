@@ -13,7 +13,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Make sure that the function ip_address() is used instead of
+ * Make sure that Drupal::request()->getClientIp() is used instead of
  * $_SERVER['REMOTE_ADDR'].
  *
  * @category PHP
@@ -47,9 +47,10 @@ class RemoteAddressSniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $string = $phpcsFile->getTokensAsString($stackPtr, 4);
-        if ($string === '$_SERVER["REMOTE_ADDR"]' || $string === '$_SERVER[\'REMOTE_ADDR\']') {
-            $error = 'Use the function ip_address() instead of $_SERVER[\'REMOTE_ADDR\']';
+        $string           = $phpcsFile->getTokensAsString($stackPtr, 4);
+        $startOfStatement = $phpcsFile->findStartOfStatement($stackPtr);
+        if (($string === '$_SERVER["REMOTE_ADDR"]' || $string === '$_SERVER[\'REMOTE_ADDR\']') && $stackPtr !== $startOfStatement) {
+            $error = 'Use Drupal::request()->getClientIp() instead of $_SERVER[\'REMOTE_ADDR\']';
             $phpcsFile->addError($error, $stackPtr, 'RemoteAddress');
         }
 
