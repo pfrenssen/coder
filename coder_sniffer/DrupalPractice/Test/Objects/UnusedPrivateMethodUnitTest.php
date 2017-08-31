@@ -1,6 +1,10 @@
 <?php
 
-class DrupalPractice_Sniffs_Objects_UnusedPrivateMethodUnitTest extends CoderSniffUnitTest
+namespace DrupalPractice\Sniffs\Objects;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class UnusedPrivateMethodUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -12,7 +16,7 @@ class DrupalPractice_Sniffs_Objects_UnusedPrivateMethodUnitTest extends CoderSni
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile)
+    protected function getErrorList($testFile = NULL)
     {
         return array();
 
@@ -27,7 +31,7 @@ class DrupalPractice_Sniffs_Objects_UnusedPrivateMethodUnitTest extends CoderSni
      *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile)
+    protected function getWarningList($testFile = NULL)
     {
         return array(8 => 1);
 

@@ -1,14 +1,19 @@
 <?php
 /**
- * Drupal_Sniffs_NamingConventions_ValidVariableNameSniff.
+ * \Drupal\Sniffs\NamingConventions\ValidVariableNameSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\NamingConventions;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
+
 /**
- * Drupal_Sniffs_NamingConventions_ValidVariableNameSniff.
+ * \Drupal\Sniffs\NamingConventions\ValidVariableNameSniff.
  *
  * Checks the naming of member variables.
  *
@@ -16,22 +21,20 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_NamingConventions_ValidVariableNameSniff
-
-    extends PHP_CodeSniffer_Standards_AbstractVariableSniff
+class ValidVariableNameSniff extends AbstractVariableSniff
 {
 
 
     /**
      * Processes class member variables.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    protected function processMemberVar(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processMemberVar(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -71,12 +74,12 @@ class Drupal_Sniffs_NamingConventions_ValidVariableNameSniff
     /**
      * Processes normal variables.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file where this token was found.
-     * @param int                  $stackPtr  The position where the token was found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
+     * @param int                         $stackPtr  The position where the token was found.
      *
      * @return void
      */
-    protected function processVariable(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processVariable(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -115,12 +118,12 @@ class Drupal_Sniffs_NamingConventions_ValidVariableNameSniff
     /**
      * Processes variables in double quoted strings.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file where this token was found.
-     * @param int                  $stackPtr  The position where the token was found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
+     * @param int                         $stackPtr  The position where the token was found.
      *
      * @return void
      */
-    protected function processVariableInString(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processVariableInString(File $phpcsFile, $stackPtr)
     {
         // We don't care about variables in strings.
         return;

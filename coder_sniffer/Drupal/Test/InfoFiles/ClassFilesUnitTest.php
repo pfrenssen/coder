@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_InfoFiles_ClassFilesUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\InfoFiles;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class ClassFilesUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -12,7 +16,7 @@ class Drupal_Sniffs_InfoFiles_ClassFilesUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array();
 
@@ -27,7 +31,7 @@ class Drupal_Sniffs_InfoFiles_ClassFilesUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 
@@ -38,7 +42,7 @@ class Drupal_Sniffs_InfoFiles_ClassFilesUnitTest extends CoderSniffUnitTest
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles() {
+    protected function getTestFiles($testFileBase) {
         return array(__DIR__ . '/class_files.info');
     }
 

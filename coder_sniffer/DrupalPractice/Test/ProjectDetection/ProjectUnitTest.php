@@ -1,9 +1,13 @@
 <?php
 
+namespace DrupalPractice\ProjectDetection;
+
+use DrupalPractice\Project;
+
 /**
  * Tests that project and version detection works.
  */
-class ProjectUnitTest extends PHPUnit_Framework_TestCase
+class ProjectUnitTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -34,7 +38,7 @@ class ProjectUnitTest extends PHPUnit_Framework_TestCase
           // The file does not exist, but doesn't matter for this test.
           ->will($this->returnValue(dirname(__FILE__) . '/modules/drupal6/test.php'));
 
-        $this->assertEquals(DrupalPractice_Project::getInfoFile($this->phpcsFile), dirname(__FILE__) . '/modules/drupal6/testmodule.info');
+        $this->assertEquals(Project::getInfoFile($this->phpcsFile), dirname(__FILE__) . '/modules/drupal6/testmodule.info');
     }
 
     /**
@@ -47,7 +51,7 @@ class ProjectUnitTest extends PHPUnit_Framework_TestCase
           // The file does not exist, but doesn't matter for this test.
           ->will($this->returnValue(dirname(__FILE__) . '/modules/drupal6/nested/test.php'));
 
-        $this->assertEquals(DrupalPractice_Project::getInfoFile($this->phpcsFile), dirname(__FILE__) . '/modules/drupal6/testmodule.info');
+        $this->assertEquals(Project::getInfoFile($this->phpcsFile), dirname(__FILE__) . '/modules/drupal6/testmodule.info');
     }
 
     /**
@@ -62,7 +66,7 @@ class ProjectUnitTest extends PHPUnit_Framework_TestCase
           // The file does not exist, but doesn't matter for this test.
           ->will($this->returnValue($filename));
 
-        $this->assertEquals(DrupalPractice_Project::getCoreVersion($this->phpcsFile), $core_version);
+        $this->assertEquals(Project::getCoreVersion($this->phpcsFile), $core_version);
     }
 
     /**

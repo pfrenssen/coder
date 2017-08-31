@@ -1,15 +1,24 @@
 <?php
 /**
- * Drupal_Sniffs_Whitespace_ScopeIndentSniff.
+ * \Drupal\Sniffs\WhiteSpace\ScopeIndentSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\WhiteSpace;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Config;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
- * Largely copied from Generic_Sniffs_Whitespace_ScopeIndentSniff, modified to make
- * the exact mode working with comments and multi line statements.
+ * Largely copied from
+ * \PHP_CodeSniffer\Standards\Generic\Sniffs\WhiteSpace\ScopeIndentSniff,
+ * modified to make the exact mode working with comments and multi line
+ * statements.
  *
  * Checks that control structures are structured correctly, and their content
  * is indented correctly. This sniff will throw errors if tabs are used
@@ -19,7 +28,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
+class ScopeIndentSniff implements Sniff
 {
 
     /**
@@ -120,28 +129,28 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile All the tokens found in the document.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile All the tokens found in the document.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
-        $debug = PHP_CodeSniffer::getConfigData('scope_indent_debug');
+        $debug = Config::getConfigData('scope_indent_debug');
         if ($debug !== null) {
             $this->_debug = (bool) $debug;
         }
 
         if ($this->_tabWidth === null) {
-            $cliValues = $phpcsFile->phpcs->cli->getCommandLineValues();
-            if (isset($cliValues['tabWidth']) === false || $cliValues['tabWidth'] === 0) {
+            $config = $phpcsFile->config;
+            if (isset($config->tabWidth) === false || $config->tabWidth === 0) {
                 // We have no idea how wide tabs are, so assume 4 spaces for fixing.
                 // It shouldn't really matter because indent checks elsewhere in the
                 // standard should fix things up.
                 $this->_tabWidth = 4;
             } else {
-                $this->_tabWidth = $cliValues['tabWidth'];
+                $this->_tabWidth = $config->tabWidth;
             }
         }
 
@@ -718,7 +727,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
             }//end if
 
             if ($checkToken !== null
-                && isset(PHP_CodeSniffer_Tokens::$scopeOpeners[$tokens[$checkToken]['code']]) === true
+                && isset(Tokens::$scopeOpeners[$tokens[$checkToken]['code']]) === true
                 && in_array($tokens[$checkToken]['code'], $this->nonIndentingScopes) === false
                 && isset($tokens[$checkToken]['scope_opener']) === true
             ) {
@@ -768,7 +777,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
             // Method prefix indentation has to be exact or else if will break
             // the rest of the function declaration, and potentially future ones.
             if ($checkToken !== null
-                && isset(PHP_CodeSniffer_Tokens::$methodPrefixes[$tokens[$checkToken]['code']]) === true
+                && isset(Tokens::$methodPrefixes[$tokens[$checkToken]['code']]) === true
                 && $tokens[($checkToken + 1)]['code'] !== T_DOUBLE_COLON
             ) {
                 $exact = true;
@@ -820,7 +829,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
             ) {
                 if ($tokenIndent > $checkIndent) {
                     // Ignore multi line statements.
-                    $before = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($checkToken - 1), null, true);
+                    $before = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($checkToken - 1), null, true);
                     if ($before !== false && in_array(
                         $tokens[$before]['code'],
                         array(
@@ -1065,7 +1074,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                 }
 
                 $condition = $tokens[$tokens[$i]['scope_condition']]['code'];
-                if (isset(PHP_CodeSniffer_Tokens::$scopeOpeners[$condition]) === true
+                if (isset(Tokens::$scopeOpeners[$condition]) === true
                     && in_array($condition, $this->nonIndentingScopes) === false
                 ) {
                     if ($this->_debug === true) {
@@ -1186,7 +1195,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
                         echo "\t* using parenthesis *".PHP_EOL;
                     }
 
-                    $prev      = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($parens - 1), null, true);
+                    $prev      = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($parens - 1), null, true);
                     $object    = 0;
                     $condition = 0;
                 } else if ($object > 0 && $object >= $condition) {

@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_NamingConventions_ValidFunctionNameUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\NamingConventions;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class ValidFunctionNameUnitTest extends CoderSniffUnitTest
 {
 
     /**
@@ -11,7 +15,7 @@ class Drupal_Sniffs_NamingConventions_ValidFunctionNameUnitTest extends CoderSni
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array(
                 3 => 1,
@@ -30,7 +34,7 @@ class Drupal_Sniffs_NamingConventions_ValidFunctionNameUnitTest extends CoderSni
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 

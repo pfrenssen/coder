@@ -1,11 +1,17 @@
 <?php
 /**
- * Drupal_Sniffs_Semantics_FunctionCall.
+ * \Drupal\Sniffs\Semantics\FunctionCall.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\Semantics;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Helper class to sniff for specific function calls.
@@ -14,13 +20,13 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-abstract class Drupal_Sniffs_Semantics_FunctionCall implements PHP_CodeSniffer_Sniff
+abstract class FunctionCall implements Sniff
 {
 
     /**
      * The currently processed file.
      *
-     * @var PHP_CodeSniffer_File
+     * @var \PHP_CodeSniffer\Files\File
      */
     protected $phpcsFile;
 
@@ -76,13 +82,13 @@ abstract class Drupal_Sniffs_Semantics_FunctionCall implements PHP_CodeSniffer_S
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens       = $phpcsFile->getTokens();
         $functionName = $tokens[$stackPtr]['content'];
@@ -96,7 +102,7 @@ abstract class Drupal_Sniffs_Semantics_FunctionCall implements PHP_CodeSniffer_S
         }
 
         // Find the next non-empty token.
-        $openBracket = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $openBracket = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
 
         $this->phpcsFile    = $phpcsFile;
         $this->functionCall = $stackPtr;
@@ -112,17 +118,17 @@ abstract class Drupal_Sniffs_Semantics_FunctionCall implements PHP_CodeSniffer_S
     /**
      * Checks if this is a function call.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return bool
      */
-    protected function isFunctionCall(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function isFunctionCall(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
         // Find the next non-empty token.
-        $openBracket = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $openBracket = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
 
         if ($tokens[$openBracket]['code'] !== T_OPEN_PARENTHESIS) {
             // Not a function call.
@@ -135,7 +141,7 @@ abstract class Drupal_Sniffs_Semantics_FunctionCall implements PHP_CodeSniffer_S
         }
 
         // Find the previous non-empty token.
-        $search   = PHP_CodeSniffer_Tokens::$emptyTokens;
+        $search   = Tokens::$emptyTokens;
         $search[] = T_BITWISE_AND;
         $previous = $phpcsFile->findPrevious($search, ($stackPtr - 1), null, true);
         if ($tokens[$previous]['code'] === T_FUNCTION) {
@@ -175,14 +181,14 @@ abstract class Drupal_Sniffs_Semantics_FunctionCall implements PHP_CodeSniffer_S
 
         $tokens = $this->phpcsFile->getTokens();
         // Start token of the first argument.
-        $start = $this->phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($this->openBracket + 1), null, true);
+        $start = $this->phpcsFile->findNext(Tokens::$emptyTokens, ($this->openBracket + 1), null, true);
         if ($start === $this->closeBracket) {
             // Function call has no arguments, so return false.
             return false;
         }
 
         // End token of the last argument.
-        $end           = $this->phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($this->closeBracket - 1), null, true);
+        $end           = $this->phpcsFile->findPrevious(Tokens::$emptyTokens, ($this->closeBracket - 1), null, true);
         $lastArgEnd    = $end;
         $nextSeperator = $this->openBracket;
         $counter       = 1;
@@ -196,7 +202,7 @@ abstract class Drupal_Sniffs_Semantics_FunctionCall implements PHP_CodeSniffer_S
             }
 
             // Update the end token of the current argument.
-            $end = $this->phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($nextSeperator - 1), null, true);
+            $end = $this->phpcsFile->findPrevious(Tokens::$emptyTokens, ($nextSeperator - 1), null, true);
             // Save the calculated findings for the current argument.
             $this->arguments[$counter] = array(
                                           'start' => $start,
@@ -207,7 +213,7 @@ abstract class Drupal_Sniffs_Semantics_FunctionCall implements PHP_CodeSniffer_S
             }
 
             $counter++;
-            $start = $this->phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($nextSeperator + 1), null, true);
+            $start = $this->phpcsFile->findNext(Tokens::$emptyTokens, ($nextSeperator + 1), null, true);
             $end   = $lastArgEnd;
         }//end while
 

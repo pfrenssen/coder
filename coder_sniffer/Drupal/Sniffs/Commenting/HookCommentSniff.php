@@ -7,6 +7,12 @@
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Commenting;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
  * Ensures hook comments on function are correct.
  *
@@ -14,7 +20,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Commenting_HookCommentSniff implements PHP_CodeSniffer_Sniff
+class HookCommentSniff implements Sniff
 {
 
 
@@ -33,16 +39,16 @@ class Drupal_Sniffs_Commenting_HookCommentSniff implements PHP_CodeSniffer_Sniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $find   = PHP_CodeSniffer_Tokens::$methodPrefixes;
+        $find   = Tokens::$methodPrefixes;
         $find[] = T_WHITESPACE;
 
         $commentEnd = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
@@ -89,7 +95,7 @@ class Drupal_Sniffs_Commenting_HookCommentSniff implements PHP_CodeSniffer_Sniff
             if (strstr($matches[0], 'Implements ') === false || strstr($matches[0], 'Implements of') !== false
                 || preg_match('/ (drush_)?hook_[a-zA-Z0-9_]+\(\)( for .+)?\.$/', $matches[0]) !== 1
             ) {
-                $phpcsFile->addWarning('Format should be "* Implements hook_foo().", "* Implements hook_foo_BAR_ID_bar() for xyz_bar().",, "* Implements hook_foo_BAR_ID_bar() for xyz-bar.html.twig.", "* Implements hook_foo_BAR_ID_bar() for xyz-bar.tpl.php.", or "* Implements hook_foo_BAR_ID_bar() for block templates."', $short);
+                $phpcsFile->addWarning('Format should be "* Implements hook_foo().", "* Implements hook_foo_BAR_ID_bar() for xyz_bar().",, "* Implements hook_foo_BAR_ID_bar() for xyz-bar.html.twig.", "* Implements hook_foo_BAR_ID_bar() for xyz-bar.tpl.php.", or "* Implements hook_foo_BAR_ID_bar() for block templates."', $short, 'HookCommentFormat');
             } else {
                 // Check that a hook implementation does not duplicate @param and
                 // @return documentation.

@@ -1,14 +1,20 @@
 <?php
 /**
- * Drupal_Sniffs_Array_ArraySniff.
+ * \Drupal\Sniffs\Arrays\ArraySniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Arrays;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
- * Drupal_Sniffs_Array_ArraySniff.
+ * ArraySniff.
  *
  * Checks if the array's are styled in the Drupal way.
  * - Comma after the last array element
@@ -18,7 +24,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
+class ArraySniff implements Sniff
 {
 
 
@@ -40,13 +46,13 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -65,7 +71,7 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
         }
 
         $lastItem = $phpcsFile->findPrevious(
-            PHP_CodeSniffer_Tokens::$emptyTokens,
+            Tokens::$emptyTokens,
             ($tokens[$stackPtr][$parenthesis_closer] - 1),
             $stackPtr,
             true
@@ -83,7 +89,7 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
         if ($tokens[$lastItem]['code'] !== T_COMMA && $isInlineArray === false
             && $tokens[($lastItem + 1)]['code'] !== T_CLOSE_PARENTHESIS
             && $tokens[($lastItem + 1)]['code'] !== T_CLOSE_SHORT_ARRAY
-            && isset(PHP_CodeSniffer_Tokens::$heredocTokens[$tokens[$lastItem]['code']]) === false
+            && isset(Tokens::$heredocTokens[$tokens[$lastItem]['code']]) === false
         ) {
             $data = array($tokens[$lastItem]['content']);
             $fix  = $phpcsFile->addFixableWarning('A comma should follow the last multiline array item. Found: %s', $lastItem, 'CommaLastItem', $data);
@@ -146,7 +152,7 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
             $current_line = $tokens[$newLineStart]['line'];
             while ($current_line >= $tokens[$newLineStart]['line']) {
                 $newLineStart = $phpcsFile->findNext(
-                    PHP_CodeSniffer_Tokens::$emptyTokens,
+                    Tokens::$emptyTokens,
                     ($newLineStart + 1),
                     ($tokens[$stackPtr][$parenthesis_closer] + 1),
                     true
@@ -215,7 +221,7 @@ class Drupal_Sniffs_Array_ArraySniff implements PHP_CodeSniffer_Sniff
                 $isMultiLineString = $tokens[($newLineStart - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
                     && substr($tokens[($newLineStart - 1)]['content'], -1) === $phpcsFile->eolChar;
                 // Skip NOWDOC or HEREDOC lines.
-                $nowDoc = isset(PHP_CodeSniffer_Tokens::$heredocTokens[$tokens[$newLineStart]['code']]);
+                $nowDoc = isset(Tokens::$heredocTokens[$tokens[$newLineStart]['code']]);
                 if ($innerNesting === false && $isMultiLineString === false && $nowDoc === false) {
                     $error = 'Array indentation error, expected %s spaces but found %s';
                     $data  = array(

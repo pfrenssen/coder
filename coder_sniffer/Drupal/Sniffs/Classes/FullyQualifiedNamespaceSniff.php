@@ -1,11 +1,16 @@
 <?php
 /**
- * Drupal_Sniffs_Classes_FullyQualifiedNamespaceSniff.
+ * \Drupal\Sniffs\Classes\FullyQualifiedNamespaceSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\Classes;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
  * Checks that class references do not use FQN but use statements.
@@ -14,7 +19,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Classes_FullyQualifiedNamespaceSniff implements PHP_CodeSniffer_Sniff
+class FullyQualifiedNamespaceSniff implements Sniff
 {
 
 
@@ -33,18 +38,18 @@ class Drupal_Sniffs_Classes_FullyQualifiedNamespaceSniff implements PHP_CodeSnif
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The PHP_CodeSniffer file where the
-     *                                        token was found.
-     * @param int                  $stackPtr  The position in the PHP_CodeSniffer
-     *                                        file's token stack where the token
-     *                                        was found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The PHP_CodeSniffer file where the
+     *                                               token was found.
+     * @param int                         $stackPtr  The position in the PHP_CodeSniffer
+     *                                               file's token stack where the token
+     *                                               was found.
      *
      * @return void|int Optionally returns a stack pointer. The sniff will not be
      *                  called again on the current file until the returned stack
      *                  pointer is reached. Return $phpcsFile->numTokens + 1 to skip
      *                  the rest of the file.
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 

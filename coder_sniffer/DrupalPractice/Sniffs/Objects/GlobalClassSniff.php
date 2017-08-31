@@ -1,11 +1,17 @@
 <?php
 /**
- * DrupalPractice_Sniffs_Objects_GlobalClassSniff.
+ * \DrupalPractice\Sniffs\Objects\GlobalClassSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace DrupalPractice\Sniffs\Objects;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use DrupalPractice\Project;
 
 /**
  * Checks that Node::load() calls and friends are not used in forms, controllers or
@@ -15,7 +21,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Sniffs_Objects_GlobalClassSniff implements PHP_CodeSniffer_Sniff
+class GlobalClassSniff implements Sniff
 {
 
     /**
@@ -48,13 +54,13 @@ class DrupalPractice_Sniffs_Objects_GlobalClassSniff implements PHP_CodeSniffer_
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                         in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -85,8 +91,8 @@ class DrupalPractice_Sniffs_Objects_GlobalClassSniff implements PHP_CodeSniffer_
         $extendsName = $phpcsFile->findExtendedClassName($classPtr);
 
         if (($extendsName === false
-            || in_array($extendsName, DrupalPractice_Sniffs_Objects_GlobalDrupalSniff::$baseClasses) === false)
-            && DrupalPractice_Project::isServiceClass($phpcsFile, $classPtr) === false
+            || in_array($extendsName, GlobalDrupalSniff::$baseClasses) === false)
+            && Project::isServiceClass($phpcsFile, $classPtr) === false
         ) {
             return;
         }

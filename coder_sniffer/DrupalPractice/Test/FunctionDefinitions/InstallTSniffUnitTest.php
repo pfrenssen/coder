@@ -1,12 +1,16 @@
 <?php
 
+namespace DrupalPractice\Sniffs\FunctionDefinitions;
+
+use Drupal\Test\CoderSniffUnitTest;
+
 /**
  * Unit test class for the InstallT sniff.
  *
  * A sniff unit test checks a .inc file for expected violations of a single
  * coding standard. Expected errors and warnings are stored in this class.
  */
-class DrupalPractice_Sniffs_FunctionDefinitions_InstallTUnitTest extends CoderSniffUnitTest
+class InstallTUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -18,7 +22,7 @@ class DrupalPractice_Sniffs_FunctionDefinitions_InstallTUnitTest extends CoderSn
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array(
                 12 => 1,
@@ -35,7 +39,7 @@ class DrupalPractice_Sniffs_FunctionDefinitions_InstallTUnitTest extends CoderSn
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 
@@ -46,7 +50,7 @@ class DrupalPractice_Sniffs_FunctionDefinitions_InstallTUnitTest extends CoderSn
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles() {
+    protected function getTestFiles($testFileBase) {
         return array(__DIR__ . '/test.install');
     }
 

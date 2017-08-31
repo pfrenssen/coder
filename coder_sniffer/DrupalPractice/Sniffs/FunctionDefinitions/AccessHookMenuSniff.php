@@ -1,11 +1,17 @@
 <?php
 /**
- * DrupalPractice_Sniffs_FunctionDefinitions_AccessHookMenuSniff.
+ * \DrupalPractice\Sniffs\FunctionDefinitions\AccessHookMenuSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace DrupalPractice\Sniffs\FunctionDefinitions;
+
+use PHP_CodeSniffer\Files\File;
+use Drupal\Sniffs\Semantics\FunctionDefinition;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Checks that there are no undocumented open access callbacks in hook_menu().
@@ -14,22 +20,22 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Sniffs_FunctionDefinitions_AccessHookMenuSniff extends Drupal_Sniffs_Semantics_FunctionDefinition
+class AccessHookMenuSniff extends FunctionDefinition
 {
 
 
     /**
      * Process this function definition.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile   The file being scanned.
-     * @param int                  $stackPtr    The position of the function name
-     *                                          in the stack.
-     * @param int                  $functionPtr The position of the function keyword
-     *                                          in the stack.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the function name
+     *                                                 in the stack.
+     * @param int                         $functionPtr The position of the function keyword
+     *                                                 in the stack.
      *
      * @return void
      */
-    public function processFunction(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $functionPtr)
+    public function processFunction(File $phpcsFile, $stackPtr, $functionPtr)
     {
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -6));
         // Only check in *.module files.
@@ -52,7 +58,7 @@ class DrupalPractice_Sniffs_FunctionDefinitions_AccessHookMenuSniff extends Drup
         while ($string !== false) {
             if (substr($tokens[$string]['content'], 1, -1) === 'access callback') {
                 $array_operator = $phpcsFile->findNext(
-                    PHP_CodeSniffer_Tokens::$emptyTokens,
+                    Tokens::$emptyTokens,
                     ($string + 1),
                     null,
                     true
@@ -61,7 +67,7 @@ class DrupalPractice_Sniffs_FunctionDefinitions_AccessHookMenuSniff extends Drup
                     && $tokens[$array_operator]['code'] === T_DOUBLE_ARROW
                 ) {
                     $callback = $phpcsFile->findNext(
-                        PHP_CodeSniffer_Tokens::$emptyTokens,
+                        Tokens::$emptyTokens,
                         ($array_operator + 1),
                         null,
                         true
@@ -75,7 +81,7 @@ class DrupalPractice_Sniffs_FunctionDefinitions_AccessHookMenuSniff extends Drup
                             $tokens[$functionPtr]['scope_opener'],
                             true
                         );
-                        if ($commentBefore !== false && in_array($tokens[$commentBefore]['code'], PHP_CodeSniffer_Tokens::$commentTokens) === false) {
+                        if ($commentBefore !== false && in_array($tokens[$commentBefore]['code'], Tokens::$commentTokens) === false) {
                             $warning = 'Open page callback found, please add a comment before the line why there is no access restriction';
                             $phpcsFile->addWarning($warning, $callback, 'OpenCallback');
                         }

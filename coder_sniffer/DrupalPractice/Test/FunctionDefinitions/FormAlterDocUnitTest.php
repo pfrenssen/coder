@@ -1,6 +1,10 @@
 <?php
 
-class DrupalPractice_Sniffs_FunctionDefinitions_FormAlterDocUnitTest extends CoderSniffUnitTest
+namespace DrupalPractice\Sniffs\FunctionDefinitions;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class FormAlterDocUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -12,7 +16,7 @@ class DrupalPractice_Sniffs_FunctionDefinitions_FormAlterDocUnitTest extends Cod
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array();
 
@@ -27,7 +31,7 @@ class DrupalPractice_Sniffs_FunctionDefinitions_FormAlterDocUnitTest extends Cod
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array(
                 31 => 1,
@@ -40,7 +44,7 @@ class DrupalPractice_Sniffs_FunctionDefinitions_FormAlterDocUnitTest extends Cod
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles() {
+    protected function getTestFiles($testFileBase) {
         return array(__DIR__ . '/test.module');
     }
 

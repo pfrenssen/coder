@@ -7,29 +7,37 @@
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Commenting;
+
+use Drupal\Sniffs\Commenting\FunctionCommentSniff;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
  * Parses and verifies class property doc comments.
  *
- * Laregely copied from Squiz_Sniffs_Commenting_VariableCommentSniff.
+ * Laregely copied from
+ * \PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\VariableCommentSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Commenting_VariableCommentSniff extends PHP_CodeSniffer_Standards_AbstractVariableSniff
+class VariableCommentSniff extends AbstractVariableSniff
 {
 
 
     /**
      * Called to process class member vars.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function processMemberVar(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function processMemberVar(File $phpcsFile, $stackPtr)
     {
         $tokens       = $phpcsFile->getTokens();
         $commentToken = array(
@@ -120,7 +128,7 @@ class Drupal_Sniffs_Commenting_VariableCommentSniff extends PHP_CodeSniffer_Stan
         // There may be multiple types separated by pipes.
         $suggestedTypes = array();
         foreach (explode('|', $varType) as $type) {
-            $suggestedTypes[] = Drupal_Sniffs_Commenting_FunctionCommentSniff::suggestType($type);
+            $suggestedTypes[] = FunctionCommentSniff::suggestType($type);
         }
 
         $suggestedType = implode('|', $suggestedTypes);
@@ -157,13 +165,13 @@ class Drupal_Sniffs_Commenting_VariableCommentSniff extends PHP_CodeSniffer_Stan
      *
      * Not required for this sniff.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The PHP_CodeSniffer file where this token was found.
-     * @param int                  $stackPtr  The position where the double quoted
-     *                                        string was found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The PHP_CodeSniffer file where this token was found.
+     * @param int                         $stackPtr  The position where the double quoted
+     *                                               string was found.
      *
      * @return void
      */
-    protected function processVariable(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processVariable(File $phpcsFile, $stackPtr)
     {
 
     }//end processVariable()
@@ -174,13 +182,13 @@ class Drupal_Sniffs_Commenting_VariableCommentSniff extends PHP_CodeSniffer_Stan
      *
      * Not required for this sniff.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The PHP_CodeSniffer file where this token was found.
-     * @param int                  $stackPtr  The position where the double quoted
-     *                                        string was found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The PHP_CodeSniffer file where this token was found.
+     * @param int                         $stackPtr  The position where the double quoted
+     *                                               string was found.
      *
      * @return void
      */
-    protected function processVariableInString(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processVariableInString(File $phpcsFile, $stackPtr)
     {
 
     }//end processVariableInString()

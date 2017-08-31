@@ -1,14 +1,19 @@
 <?php
 /**
- * Drupal_Sniffs_Files_TxtFileLineLengthSniff.
+ * \Drupal\Sniffs\Files\TxtFileLineLengthSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Files;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+
 /**
- * Drupal_Sniffs_Files_TxtFileLineLengthSniff.
+ * \Drupal\Sniffs\Files\TxtFileLineLengthSniff.
  *
  * Checks all lines in a *.txt or *.md file and throws warnings if they are over 80
  * characters in length.
@@ -17,7 +22,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Files_TxtFileLineLengthSniff implements PHP_CodeSniffer_Sniff
+class TxtFileLineLengthSniff implements Sniff
 {
 
 
@@ -36,13 +41,13 @@ class Drupal_Sniffs_Files_TxtFileLineLengthSniff implements PHP_CodeSniffer_Snif
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -3));
         if ($fileExtension === 'txt' || $fileExtension === '.md') {
@@ -51,11 +56,11 @@ class Drupal_Sniffs_Files_TxtFileLineLengthSniff implements PHP_CodeSniffer_Snif
             $content    = rtrim($tokens[$stackPtr]['content']);
             $lineLength = mb_strlen($content, 'UTF-8');
             // Lines without spaces are allowed to be longer (for example long URLs).
-            // Markdown is allowed to be longer for lines
-            // - without spaces.
-            // - starting with #.
-            // - containing URLs (https://).
-            // - starting with | (tables).
+           // Markdown allowed to be longer for lines
+            // - without spaces
+            // - starting with #
+            // - containing URLs (https://)
+            // - starting with | (tables)
             if ($lineLength > 80 && preg_match('/^([^ ]+$|#|.*https?:\/\/|\|)/', $content) === 0) {
                 $data    = array(
                             80,

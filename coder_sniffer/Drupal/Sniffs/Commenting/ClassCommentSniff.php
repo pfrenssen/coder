@@ -7,9 +7,15 @@
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Commenting;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
  * Checks that comment doc blocks exist on classes, interfaces and traits. Largely
- * copied from Squiz_Sniffs_Commenting_ClassCommentSniff.
+ * copied from PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\ClassCommentSniff.
  *
  * @category  PHP
  * @package   PHP_CodeSniffer
@@ -19,7 +25,7 @@
  * @version   Release: @package_version@
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Commenting_ClassCommentSniff implements PHP_CodeSniffer_Sniff
+class ClassCommentSniff implements Sniff
 {
 
 
@@ -42,16 +48,16 @@ class Drupal_Sniffs_Commenting_ClassCommentSniff implements PHP_CodeSniffer_Snif
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $find   = PHP_CodeSniffer_Tokens::$methodPrefixes;
+        $find   = Tokens::$methodPrefixes;
         $find[] = T_WHITESPACE;
         $name   = $tokens[$stackPtr]['content'];
 

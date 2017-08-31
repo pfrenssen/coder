@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_Commenting_DocCommentStarUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\Commenting;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class DocCommentStarUnitTest extends CoderSniffUnitTest
 {
 
     /**
@@ -11,7 +15,7 @@ class Drupal_Sniffs_Commenting_DocCommentStarUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
          switch ($testFile) {
             case 'DocCommentStarUnitTest.inc':
@@ -34,7 +38,7 @@ class Drupal_Sniffs_Commenting_DocCommentStarUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 

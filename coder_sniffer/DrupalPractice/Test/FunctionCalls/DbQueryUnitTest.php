@@ -3,13 +3,17 @@
  * Unit test class for the DbQuery sniff.
  */
 
+namespace DrupalPractice\Sniffs\FunctionCalls;
+
+use Drupal\Test\CoderSniffUnitTest;
+
 /**
  * Unit test class for the DbQuery sniff.
  *
  * A sniff unit test checks a .inc file for expected violations of a single
  * coding standard. Expected errors and warnings are stored in this class.
  */
-class DrupalPractice_Sniffs_FunctionCalls_DbQueryUnitTest extends CoderSniffUnitTest
+class DbQueryUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -21,7 +25,7 @@ class DrupalPractice_Sniffs_FunctionCalls_DbQueryUnitTest extends CoderSniffUnit
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile)
+    protected function getErrorList($testFile = NULL)
     {
         return array();
 
@@ -36,7 +40,7 @@ class DrupalPractice_Sniffs_FunctionCalls_DbQueryUnitTest extends CoderSniffUnit
      *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile)
+    protected function getWarningList($testFile = NULL)
     {
         return array(
                     3 => 1,

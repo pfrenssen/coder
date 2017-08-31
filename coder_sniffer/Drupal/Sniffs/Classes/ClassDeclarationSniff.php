@@ -7,6 +7,12 @@
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Classes;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\ClassDeclarationSniff as PSR2ClassDeclarationSniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
  * Class Declaration Test.
  *
@@ -16,7 +22,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Classes_ClassDeclarationSniff extends PSR2_Sniffs_Classes_ClassDeclarationSniff
+class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
 {
 
 
@@ -39,13 +45,13 @@ class Drupal_Sniffs_Classes_ClassDeclarationSniff extends PSR2_Sniffs_Classes_Cl
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param integer              $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param integer                     $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens    = $phpcsFile->getTokens();
         $errorData = array(strtolower($tokens[$stackPtr]['content']));
@@ -122,13 +128,13 @@ class Drupal_Sniffs_Classes_ClassDeclarationSniff extends PSR2_Sniffs_Classes_Cl
     /**
      * Processes the closing section of a class declaration.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function processClose(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function processClose(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -143,7 +149,7 @@ class Drupal_Sniffs_Classes_ClassDeclarationSniff extends PSR2_Sniffs_Classes_Cl
         if ($prevContent !== $tokens[$stackPtr]['scope_opener']
             && $tokens[$prevContent]['line'] !== ($tokens[$closeBrace]['line'] - 2)
             // If the class only contains a comment no extra line is needed.
-            && isset(PHP_CodeSniffer_Tokens::$commentTokens[$tokens[$prevContent]['code']]) === false
+            && isset(Tokens::$commentTokens[$tokens[$prevContent]['code']]) === false
         ) {
             $error = 'The closing brace for the %s must have an empty line before it';
             $data  = array($tokens[$stackPtr]['content']);

@@ -1,6 +1,6 @@
 <?php
 /**
- * Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff.
+ * \Drupal\Sniffs\WhiteSpace\ObjectOperatorIndentSniff.
  *
  * @category  PHP
  * @package   PHP_CodeSniffer
@@ -10,8 +10,14 @@
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\WhiteSpace;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
- * Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff.
+ * \Drupal\Sniffs\WhiteSpace\ObjectOperatorIndentSniff.
  *
  * Checks that object operators are indented 2 spaces if they are the first
  * thing on a line.
@@ -24,7 +30,7 @@
  * @version   Release: 1.2.0RC3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSniffer_Sniff
+class ObjectOperatorIndentSniff implements Sniff
 {
 
 
@@ -43,13 +49,13 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSnif
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile All the tokens found in the document.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile All the tokens found in the document.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -59,7 +65,7 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSnif
             return;
         }
 
-        $previousLine = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 2), null, true, null, true);
+        $previousLine = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 2), null, true, null, true);
 
         if ($previousLine === false) {
             return;
@@ -127,13 +133,13 @@ class Drupal_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSnif
     /**
      * Returns the first non whitespace token on the line.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile All the tokens found in the document.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile All the tokens found in the document.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return int
      */
-    protected function findStartOfline(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function findStartOfline(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 

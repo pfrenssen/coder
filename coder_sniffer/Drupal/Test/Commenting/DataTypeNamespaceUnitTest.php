@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_Commenting_DataTypeNamespaceUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\Commenting;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class DataTypeNamespaceUnitTest extends CoderSniffUnitTest
 {
 
     /**
@@ -11,7 +15,7 @@ class Drupal_Sniffs_Commenting_DataTypeNamespaceUnitTest extends CoderSniffUnitT
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array(
                 15 => 1,
@@ -30,7 +34,7 @@ class Drupal_Sniffs_Commenting_DataTypeNamespaceUnitTest extends CoderSniffUnitT
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 

@@ -1,11 +1,16 @@
 <?php
 /**
- * Drupal_Sniffs_Semantics_FunctionAliasSniff
+ * \Drupal\Sniffs\Semantics\FunctionAliasSniff
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\Semantics;
+
+use Drupal\Sniffs\Semantics\FunctionCall;
+use PHP_CodeSniffer\Files\File;
 
 /**
  * Checks that no PHP function name aliases are used.
@@ -14,7 +19,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Semantics_FunctionAliasSniff extends Drupal_Sniffs_Semantics_FunctionCall
+class FunctionAliasSniff extends FunctionCall
 {
 
     /**
@@ -191,18 +196,18 @@ class Drupal_Sniffs_Semantics_FunctionAliasSniff extends Drupal_Sniffs_Semantics
     /**
      * Processes this function call.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                  $stackPtr     The position of the function call in
-     *                                           the stack.
-     * @param int                  $openBracket  The position of the opening
-     *                                           parenthesis in the stack.
-     * @param int                  $closeBracket The position of the closing
-     *                                           parenthesis in the stack.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the function call in
+     *                                                  the stack.
+     * @param int                         $openBracket  The position of the opening
+     *                                                  parenthesis in the stack.
+     * @param int                         $closeBracket The position of the closing
+     *                                                  parenthesis in the stack.
      *
      * @return void
      */
     public function processFunctionCall(
-        PHP_CodeSniffer_File $phpcsFile,
+        File $phpcsFile,
         $stackPtr,
         $openBracket,
         $closeBracket

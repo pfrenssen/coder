@@ -1,14 +1,20 @@
 <?php
 /**
- * Drupal_Sniffs_Formatting_SpaceUnaryOperatorSniff.
+ * \Drupal\Sniffs\Formatting\SpaceUnaryOperatorSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Formatting;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
- * Drupal_Sniffs_Formatting_SpaceUnaryOperatorSniff.
+ * \PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\SpaceUnaryOperatorSniff.
  *
  * Ensures there are no spaces on increment / decrement statements or on +/- sign
  * operators or "!" boolean negators.
@@ -17,7 +23,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Formatting_SpaceUnaryOperatorSniff implements PHP_CodeSniffer_Sniff
+class SpaceUnaryOperatorSniff implements Sniff
 {
 
 
@@ -42,19 +48,19 @@ class Drupal_Sniffs_Formatting_SpaceUnaryOperatorSniff implements PHP_CodeSniffe
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
         // Check decrement / increment.
         if ($tokens[$stackPtr]['code'] === T_DEC || $tokens[$stackPtr]['code'] === T_INC) {
-            $previous   = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+            $previous   = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
             $modifyLeft = in_array(
                 $tokens[$previous]['code'],
                 array(
