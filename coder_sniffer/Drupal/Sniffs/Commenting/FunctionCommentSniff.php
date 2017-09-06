@@ -259,7 +259,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                             $searchStart        = $stackPtr;
                             $foundNonVoidReturn = false;
                             do {
-                                $returnToken = $phpcsFile->findNext(T_RETURN, $searchStart, $endToken);
+                                $returnToken = $phpcsFile->findNext(array(T_RETURN, T_YIELD), $searchStart, $endToken);
                                 if ($returnToken === false && $foundReturnToken === false) {
                                     $error = '@return doc comment specified, but function has no return statement';
                                     $phpcsFile->addError($error, $return, 'InvalidNoReturn');
