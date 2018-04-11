@@ -1,11 +1,16 @@
 <?php
 /**
- * Drupal_Sniffs_Semantics_RemoteAddressSniff.
+ * \Drupal\Sniffs\Semantics\RemoteAddressSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\Semantics;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
  * Make sure that the function ip_address() is used instead of
@@ -15,7 +20,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Semantics_RemoteAddressSniff implements PHP_CodeSniffer_Sniff
+class RemoteAddressSniff implements Sniff
 {
 
 
@@ -34,13 +39,13 @@ class Drupal_Sniffs_Semantics_RemoteAddressSniff implements PHP_CodeSniffer_Snif
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The current file being processed.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \HP_CodeSniffer\Files\File $phpcsFile The current file being processed.
+     * @param int                        $stackPtr  The position of the current token
+     *                                              in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $string = $phpcsFile->getTokensAsString($stackPtr, 4);
         if ($string === '$_SERVER["REMOTE_ADDR"]' || $string === '$_SERVER[\'REMOTE_ADDR\']') {

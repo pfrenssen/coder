@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_Semantics_FunctionWatchdogUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\Semantics;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class FunctionWatchdogUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -12,7 +16,7 @@ class Drupal_Sniffs_Semantics_FunctionWatchdogUnitTest extends CoderSniffUnitTes
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array(3 => 1);
 
@@ -27,7 +31,7 @@ class Drupal_Sniffs_Semantics_FunctionWatchdogUnitTest extends CoderSniffUnitTes
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 

@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_Classes_FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\Classes;
+
+use Drupal\Test\CoderSniffUnitTest;;
+
+class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -12,7 +16,7 @@ class Drupal_Sniffs_Classes_FullyQualifiedNamespaceUnitTest extends CoderSniffUn
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         switch ($testFile) {
             case 'FullyQualifiedNamespaceUnitTest.inc':
@@ -34,7 +38,7 @@ class Drupal_Sniffs_Classes_FullyQualifiedNamespaceUnitTest extends CoderSniffUn
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 
@@ -46,7 +50,7 @@ class Drupal_Sniffs_Classes_FullyQualifiedNamespaceUnitTest extends CoderSniffUn
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles() {
+    protected function getTestFiles($testFileBase) {
         return [__DIR__.'/FullyQualifiedNamespaceUnitTest.inc', __DIR__.'/FullyQualifiedNamespaceUnitTest.api.php'];
     }
 

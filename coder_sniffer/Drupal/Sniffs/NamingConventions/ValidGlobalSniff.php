@@ -1,11 +1,17 @@
 <?php
 /**
- * Drupal_Sniffs_NamingConventions_ValidGlobalSniff.
+ * \Drupal\Sniffs\NamingConventions\ValidGlobalSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\NamingConventions;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Ensures that global variables start with an underscore.
@@ -14,7 +20,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_NamingConventions_ValidGlobalSniff implements PHP_CodeSniffer_Sniff
+class ValidGlobalSniff implements Sniff
 {
 
     public $coreGlobals = array(
@@ -83,19 +89,19 @@ class Drupal_Sniffs_NamingConventions_ValidGlobalSniff implements PHP_CodeSniffe
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The current file being processed.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The current file being processed.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
         $varToken = $stackPtr;
         // Find variable names until we hit a semicolon.
-        $ignore   = PHP_CodeSniffer_Tokens::$emptyTokens;
+        $ignore   = Tokens::$emptyTokens;
         $ignore[] = T_SEMICOLON;
         while (($varToken = $phpcsFile->findNext($ignore, ($varToken + 1), null, true, null, true)) !== false) {
             if ($tokens[$varToken]['code'] === T_VARIABLE

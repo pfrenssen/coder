@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_Array_ArrayUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\Arrays;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class ArrayUnitTest extends CoderSniffUnitTest
 {
 
     /**
@@ -11,7 +15,7 @@ class Drupal_Sniffs_Array_ArrayUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array(
             13 => 1,
@@ -32,7 +36,7 @@ class Drupal_Sniffs_Array_ArrayUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array(
             17 => 1,

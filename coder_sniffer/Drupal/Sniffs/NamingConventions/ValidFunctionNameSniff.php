@@ -1,38 +1,45 @@
 <?php
 /**
- * Drupal_Sniffs_NamingConventions_ValidFunctionNameSniff.
+ * \Drupal\Sniffs\NamingConventions\ValidFunctionNameSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\NamingConventions;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions\CamelCapsFunctionNameSniff;
+use PHP_CodeSniffer\Util\Common;
+
 /**
- * Drupal_Sniffs_NamingConventions_ValidFunctionNameSniff.
+ * \Drupal\Sniffs\NamingConventions\ValidFunctionNameSniff.
  *
- * Extends Generic_Sniffs_NamingConventions_CamelCapsFunctionNameSniff to also check
- * global function names outside the scope of classes and to not allow methods
- * beginning with an underscore.
+ * Extends
+ * \PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions\CamelCapsFunctionNameSniff
+ * to also check global function names outside the scope of classes and to not
+ * allow methods beginning with an underscore.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_NamingConventions_ValidFunctionNameSniff extends Generic_Sniffs_NamingConventions_CamelCapsFunctionNameSniff
+class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
 {
 
 
     /**
      * Processes the tokens within the scope.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being processed.
-     * @param int                  $stackPtr  The position where this token was
-     *                                        found.
-     * @param int                  $currScope The position of the current scope.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being processed.
+     * @param int                         $stackPtr  The position where this token was
+     *                                               found.
+     * @param int                         $currScope The position of the current scope.
      *
      * @return void
      */
-    protected function processTokenWithinScope(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $currScope)
+    protected function processTokenWithinScope(File $phpcsFile, $stackPtr, $currScope)
     {
         $methodName = $phpcsFile->getDeclarationName($stackPtr);
         if ($methodName === null) {
@@ -57,7 +64,7 @@ class Drupal_Sniffs_NamingConventions_ValidFunctionNameSniff extends Generic_Sni
         }
 
         $methodProps = $phpcsFile->getMethodProperties($stackPtr);
-        if (PHP_CodeSniffer::isCamelCaps($methodName, false, true, $this->strict) === false) {
+        if (Common::isCamelCaps($methodName, false, true, $this->strict) === false) {
             if ($methodProps['scope_specified'] === true) {
                 $error = '%s method name "%s" is not in lowerCamel format';
                 $data  = array(
@@ -82,13 +89,13 @@ class Drupal_Sniffs_NamingConventions_ValidFunctionNameSniff extends Generic_Sni
     /**
      * Processes the tokens outside the scope.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being processed.
-     * @param int                  $stackPtr  The position where this token was
-     *                                        found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being processed.
+     * @param int                         $stackPtr  The position where this token was
+     *                                               found.
      *
      * @return void
      */
-    protected function processTokenOutsideScope(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processTokenOutsideScope(File $phpcsFile, $stackPtr)
     {
         $functionName = $phpcsFile->getDeclarationName($stackPtr);
         if ($functionName === null) {

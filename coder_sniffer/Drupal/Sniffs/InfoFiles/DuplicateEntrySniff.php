@@ -1,11 +1,16 @@
 <?php
 /**
- * Drupal_Sniffs_InfoFiles_DuplicateEntrySniff.
+ * \Drupal\Sniffs\InfoFiles\DuplicateEntrySniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\InfoFiles;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
  * Make sure that entries in info files are specified only once.
@@ -14,7 +19,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_InfoFiles_DuplicateEntrySniff implements PHP_CodeSniffer_Sniff
+class DuplicateEntrySniff implements Sniff
 {
 
 
@@ -33,13 +38,13 @@ class Drupal_Sniffs_InfoFiles_DuplicateEntrySniff implements PHP_CodeSniffer_Sni
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return int
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         // Only run this sniff once per info file.
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -4));

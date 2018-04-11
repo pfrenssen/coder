@@ -1,14 +1,19 @@
 <?php
 /**
- * Drupal_Sniffs_ControlStructures_InlineControlStructureSniff.
+ * \Drupal\Sniffs\ControlStructures\InlineControlStructureSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\ControlStructures;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Standards\Generic\Sniffs\ControlStructures\InlineControlStructureSniff as GenericInlineControlStructureSniff;
+
 /**
- * Drupal_Sniffs_ControlStructures_InlineControlStructureSniff.
+ * \Drupal\Sniffs\ControlStructures\InlineControlStructureSniff.
  *
  * Verifies that inline control statements are not present. This Sniff overides
  * the generic sniff because Drupal template files may use the alternative
@@ -19,21 +24,20 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_ControlStructures_InlineControlStructureSniff
-extends Generic_Sniffs_ControlStructures_InlineControlStructureSniff
+class InlineControlStructureSniff extends GenericInlineControlStructureSniff
 {
 
 
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 

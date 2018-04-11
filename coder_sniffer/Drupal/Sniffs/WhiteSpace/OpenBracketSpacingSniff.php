@@ -1,21 +1,27 @@
 <?php
 /**
- * Drupal_Sniffs_WhiteSpace_OpenBracketSpacingSniff.
+ * \Drupal\Sniffs\WhiteSpace\OpenBracketSpacingSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\WhiteSpace;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+
 /**
  * Checks that there is no white space after an opening bracket, for "(" and "{".
- * Square Brackets are handled by Squiz_Sniffs_Arrays_ArrayBracketSpacingSniff.
+ * Square Brackets are handled by
+ * \PHP_CodeSniffer\Standards\Squiz\Sniffs\Arrays\ArrayBracketSpacingSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_WhiteSpace_OpenBracketSpacingSniff implements PHP_CodeSniffer_Sniff
+class OpenBracketSpacingSniff implements Sniff
 {
 
     /**
@@ -48,13 +54,13 @@ class Drupal_Sniffs_WhiteSpace_OpenBracketSpacingSniff implements PHP_CodeSniffe
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 

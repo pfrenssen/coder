@@ -1,11 +1,17 @@
 <?php
 /**
- * DrupalPractice_Sniffs_FunctionCalls_DefaultValueSanitizeSniff
+ * \DrupalPractice\Sniffs\FunctionCalls\DefaultValueSanitizeSniff
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace DrupalPractice\Sniffs\FunctionCalls;
+
+use PHP_CodeSniffer\Files\File;
+use Drupal\Sniffs\Semantics\FunctionCall;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Check that sanitization functions such as check_plain() are not used on Form
@@ -15,7 +21,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Sniffs_FunctionCalls_DefaultValueSanitizeSniff extends Drupal_Sniffs_Semantics_FunctionCall
+class DefaultValueSanitizeSniff extends FunctionCall
 {
 
 
@@ -40,18 +46,18 @@ class DrupalPractice_Sniffs_FunctionCalls_DefaultValueSanitizeSniff extends Drup
     /**
      * Processes this function call.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                  $stackPtr     The position of the function call in
-     *                                           the stack.
-     * @param int                  $openBracket  The position of the opening
-     *                                           parenthesis in the stack.
-     * @param int                  $closeBracket The position of the closing
-     *                                           parenthesis in the stack.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the function call in
+     *                                                  the stack.
+     * @param int                         $openBracket  The position of the opening
+     *                                                  parenthesis in the stack.
+     * @param int                         $closeBracket The position of the closing
+     *                                                  parenthesis in the stack.
      *
      * @return void
      */
     public function processFunctionCall(
-        PHP_CodeSniffer_File $phpcsFile,
+        File $phpcsFile,
         $stackPtr,
         $openBracket,
         $closeBracket
@@ -60,12 +66,12 @@ class DrupalPractice_Sniffs_FunctionCalls_DefaultValueSanitizeSniff extends Drup
 
         // We assume that the sequence '#default_value' => check_plain(...) is
         // wrong because the Form API already sanitizes #default_value.
-        $arrow = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+        $arrow = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
         if ($arrow === false || $tokens[$arrow]['code'] !== T_DOUBLE_ARROW) {
             return;
         }
 
-        $arrayKey = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($arrow - 1), null, true);
+        $arrayKey = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($arrow - 1), null, true);
         if ($arrayKey === false
             || $tokens[$arrayKey]['code'] !== T_CONSTANT_ENCAPSED_STRING
             || substr($tokens[$arrayKey]['content'], 1, -1) !== '#default_value'
