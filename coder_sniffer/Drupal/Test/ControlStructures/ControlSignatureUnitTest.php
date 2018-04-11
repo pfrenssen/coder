@@ -1,9 +1,13 @@
 <?php
 
+namespace Drupal\Sniffs\ControlStructures;
+
+use Drupal\Test\CoderSniffUnitTest;
+
 /**
- * Class Drupal_Sniffs_ControlStructures_ControlSignatureUnitTest
+ * Class ControlSignatureUnitTest
  */
-class Drupal_Sniffs_ControlStructures_ControlSignatureUnitTest extends CoderSniffUnitTest
+class ControlSignatureUnitTest extends CoderSniffUnitTest
 {
 
     /**
@@ -14,7 +18,7 @@ class Drupal_Sniffs_ControlStructures_ControlSignatureUnitTest extends CoderSnif
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array(
                   6 => 1,
@@ -32,7 +36,7 @@ class Drupal_Sniffs_ControlStructures_ControlSignatureUnitTest extends CoderSnif
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 

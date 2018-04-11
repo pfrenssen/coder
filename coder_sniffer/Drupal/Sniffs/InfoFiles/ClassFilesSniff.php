@@ -1,11 +1,16 @@
 <?php
 /**
- * Drupal_Sniffs_InfoFiles_ClassFilesSniff.
+ * \Drupal\Sniffs\InfoFiles\ClassFilesSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\InfoFiles;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
  * Checks files[] entries in info files. Only files containing classes/interfaces
@@ -15,7 +20,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeSniffer_Sniff
+class ClassFilesSniff implements Sniff
 {
 
 
@@ -34,13 +39,13 @@ class Drupal_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeSniffer_Sniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return int
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         // Only run this sniff once per info file.
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -4));
@@ -87,14 +92,14 @@ class Drupal_Sniffs_InfoFiles_ClassFilesSniff implements PHP_CodeSniffer_Sniff
     /**
      * Helper function that returns the position of the key in the info file.
      *
-     * @param string               $key      Key name to search for.
-     * @param string               $value    Corresponding value to search for.
-     * @param PHP_CodeSniffer_File $infoFile Info file to search in.
+     * @param string                      $key      Key name to search for.
+     * @param string                      $value    Corresponding value to search for.
+     * @param \PHP_CodeSniffer\Files\File $infoFile Info file to search in.
      *
      * @return int|false Returns the stack position if the file name is found, false
      *                                      otherwise.
      */
-    public static function getPtr($key, $value, PHP_CodeSniffer_File $infoFile)
+    public static function getPtr($key, $value, File $infoFile)
     {
         foreach ($infoFile->getTokens() as $ptr => $tokenInfo) {
             if (preg_match('@^[\s]*'.preg_quote($key).'[\s]*=[\s]*["\']?'.preg_quote($value).'["\']?@', $tokenInfo['content']) === 1) {

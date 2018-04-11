@@ -3,10 +3,14 @@
  * Unit test class for all good files that must not throw errors/warnings.
  */
 
+namespace DrupalPractice\good;
+
+use Drupal\Test\CoderSniffUnitTest;
+
 /**
  * Unit test class for all good files that must not throw errors/warnings.
  */
-class DrupalPractice_GoodUnitTest extends CoderSniffUnitTest
+class GoodUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -18,7 +22,7 @@ class DrupalPractice_GoodUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array();
 
@@ -33,7 +37,7 @@ class DrupalPractice_GoodUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 
@@ -44,9 +48,9 @@ class DrupalPractice_GoodUnitTest extends CoderSniffUnitTest
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles() {
+    protected function getTestFiles($testFileBase) {
         $dir = dirname(__FILE__);
-        $di  = new DirectoryIterator($dir);
+        $di  = new \DirectoryIterator($dir);
 
         foreach ($di as $file) {
             $path = $file->getPathname();
@@ -65,9 +69,9 @@ class DrupalPractice_GoodUnitTest extends CoderSniffUnitTest
      *
      * @return array The list of sniff codes.
      */
-    protected function getSniffCodes() {
+    protected function allSniffCodes() {
         // We want to test all sniffs defined in the standard.
-        return array();
+        return TRUE;
     }
 
 

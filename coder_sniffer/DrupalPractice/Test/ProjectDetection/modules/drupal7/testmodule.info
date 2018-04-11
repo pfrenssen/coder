@@ -1,6 +1,0 @@
-name = Test module
-description = Test
-package = Core
-core = 7.x
-configure = admin/structure/types
-stylesheets[all][] = node.css

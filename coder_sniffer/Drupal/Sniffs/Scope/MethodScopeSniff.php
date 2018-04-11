@@ -7,22 +7,30 @@
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Scope;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\AbstractScopeSniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
  * Verifies that class/interface/trait methods have scope modifiers.
  *
- * Laregely copied from Squiz_Sniffs_Scope_MethodScopeSniff to work on traits
- * and have a fixer.
+ * Laregely copied from
+ * \PHP_CodeSniffer\Standards\Squiz\Sniffs\Scope\MethodScopeSniff to work on
+ * traits and have a fixer.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Scope_MethodScopeSniff extends PHP_CodeSniffer_Standards_AbstractScopeSniff
+class MethodScopeSniff extends AbstractScopeSniff
 {
 
 
     /**
-     * Constructs a Squiz_Sniffs_Scope_MethodScopeSniff.
+     * Constructs a
+     * \PHP_CodeSniffer\Standards\Squiz\Sniffs\Scope\MethodScopeSniff.
      */
     public function __construct()
     {
@@ -34,13 +42,13 @@ class Drupal_Sniffs_Scope_MethodScopeSniff extends PHP_CodeSniffer_Standards_Abs
     /**
      * Processes the function tokens within the class.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file where this token was found.
-     * @param int                  $stackPtr  The position where the token was found.
-     * @param int                  $currScope The current scope opener token.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
+     * @param int                         $stackPtr  The position where the token was found.
+     * @param int                         $currScope The current scope opener token.
      *
      * @return void
      */
-    protected function processTokenWithinScope(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $currScope)
+    protected function processTokenWithinScope(File $phpcsFile, $stackPtr, $currScope)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -59,7 +67,7 @@ class Drupal_Sniffs_Scope_MethodScopeSniff extends PHP_CodeSniffer_Standards_Abs
         for ($i = ($stackPtr - 1); $i > 0; $i--) {
             if ($tokens[$i]['line'] < $tokens[$stackPtr]['line']) {
                 break;
-            } else if (isset(PHP_CodeSniffer_Tokens::$scopeModifiers[$tokens[$i]['code']]) === true) {
+            } else if (isset(Tokens::$scopeModifiers[$tokens[$i]['code']]) === true) {
                 $modifier = $i;
                 break;
             }
@@ -78,6 +86,22 @@ class Drupal_Sniffs_Scope_MethodScopeSniff extends PHP_CodeSniffer_Standards_Abs
         }
 
     }//end processTokenWithinScope()
+
+
+    /**
+     * Processes a token that is found outside the scope that this test is
+     * listening to.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
+     * @param int                         $stackPtr  The position in the stack where this
+     *                                               token was found.
+     *
+     * @return void
+     */
+    protected function processTokenOutsideScope(File $phpcsFile, $stackPtr)
+    {
+
+    }//end processTokenOutsideScope()
 
 
 }//end class

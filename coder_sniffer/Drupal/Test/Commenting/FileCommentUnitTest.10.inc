@@ -1,14 +1,7 @@
 <?php
-
 /**
  * @file
  */
-
-namespace Blah;
-
-/**
- * Bla.
- */
-trait Pum {
-
+function foo_bar($foo) {
+  return NULL;
 }

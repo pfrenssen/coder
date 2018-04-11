@@ -3,10 +3,14 @@
  * Unit test class for all bad files.
  */
 
+namespace Drupal\bad;
+
+use Drupal\Test\CoderSniffUnitTest;
+
 /**
  * Unit test class for all bad files.
  */
-class Drupal_BadUnitTest extends CoderSniffUnitTest
+class BadUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -18,7 +22,7 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         switch ($testFile) {
             case 'bad.css':
@@ -383,7 +387,7 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         switch ($testFile) {
             case 'bad.module':
@@ -429,10 +433,10 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles()
+    protected function getTestFiles($testFileBase)
     {
         $dir = dirname(__FILE__);
-        $di  = new DirectoryIterator($dir);
+        $di  = new \DirectoryIterator($dir);
 
         foreach ($di as $file) {
             $path = $file->getPathname();
@@ -453,10 +457,10 @@ class Drupal_BadUnitTest extends CoderSniffUnitTest
      *
      * @return array The list of sniff codes.
      */
-    protected function getSniffCodes()
+    protected function allSniffCodes()
     {
         // We want to test all sniffs defined in the standard.
-        return array();
+        return TRUE;
 
     }//end getSniffCodes()
 

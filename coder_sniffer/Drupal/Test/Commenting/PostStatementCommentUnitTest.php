@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_Commenting_PostStatementCommentUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\Commenting;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class PostStatementCommentUnitTest extends CoderSniffUnitTest
 {
 
     /**
@@ -11,7 +15,7 @@ class Drupal_Sniffs_Commenting_PostStatementCommentUnitTest extends CoderSniffUn
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         switch ($testFile) {
             case 'PostStatementCommentUnitTest.inc':
@@ -36,7 +40,7 @@ class Drupal_Sniffs_Commenting_PostStatementCommentUnitTest extends CoderSniffUn
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 

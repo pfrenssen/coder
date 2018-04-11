@@ -1,24 +1,31 @@
 <?php
 /**
- * PHP_CodeSniffer_Sniffs_Drupal_Commenting_InlineCommentSniff.
+ * \Drupal\Sniffs\Commenting\InlineCommentSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Commenting;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
- * PHP_CodeSniffer_Sniffs_Drupal_Commenting_InlineCommentSniff.
+ * \Drupal\Sniffs\Commenting\InlineCommentSniff.
  *
  * Checks that no perl-style comments are used. Checks that inline comments ("//")
  * have a space after //, start capitalized and end with proper punctuation.
- * Largely copied from Squiz_Sniffs_Commenting_InlineCommentSniff.
+ * Largely copied from
+ * \PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\InlineCommentSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sniff
+class InlineCommentSniff implements Sniff
 {
 
     /**
@@ -50,13 +57,13 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -65,7 +72,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
         // not allowed.
         if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT_OPEN_TAG) {
             $nextToken = $phpcsFile->findNext(
-                PHP_CodeSniffer_Tokens::$emptyTokens,
+                Tokens::$emptyTokens,
                 ($stackPtr + 1),
                 null,
                 true
@@ -99,7 +106,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             if ($phpcsFile->tokenizerType === 'JS') {
                 // We allow block comments if a function or object
                 // is being assigned to a variable.
-                $ignore    = PHP_CodeSniffer_Tokens::$emptyTokens;
+                $ignore    = Tokens::$emptyTokens;
                 $ignore[]  = T_EQUAL;
                 $ignore[]  = T_STRING;
                 $ignore[]  = T_OBJECT_OPERATOR;
@@ -114,7 +121,7 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             }
 
             $prevToken = $phpcsFile->findPrevious(
-                PHP_CodeSniffer_Tokens::$emptyTokens,
+                Tokens::$emptyTokens,
                 ($stackPtr - 1),
                 null,
                 true
@@ -322,14 +329,14 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
     /**
      * Determines if a comment line is part of an @code/@endcode example.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return boolean Returns true if the comment line is within a @code block,
      *                 false otherwise.
      */
-    protected function isInCodeExample(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function isInCodeExample(File $phpcsFile, $stackPtr)
     {
         $tokens      = $phpcsFile->getTokens();
         $prevComment = $stackPtr;
@@ -358,13 +365,13 @@ class Drupal_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
     /**
      * Checks the indentation level of the comment contents.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    protected function processIndentation(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processIndentation(File $phpcsFile, $stackPtr)
     {
         $tokens     = $phpcsFile->getTokens();
         $comment    = rtrim($tokens[$stackPtr]['content']);

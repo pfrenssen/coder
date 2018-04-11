@@ -1,11 +1,18 @@
 <?php
 /**
- * DrupalPractice_Sniffs_FunctionCalls_InstallTSniff.
+ * \DrupalPractice\Sniffs\FunctionDefinitions\InstallTSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace DrupalPractice\Sniffs\FunctionDefinitions;
+
+use PHP_CodeSniffer\Files\File;
+use Drupal\Sniffs\Semantics\FunctionDefinition;
+use DrupalPractice\Project;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Checks that t() and st() are not used in hook_install() and hook_requirements().
@@ -14,22 +21,22 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Sniffs_FunctionDefinitions_InstallTSniff extends Drupal_Sniffs_Semantics_FunctionDefinition
+class InstallTSniff extends FunctionDefinition
 {
 
 
     /**
      * Process this function definition.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile   The file being scanned.
-     * @param int                  $stackPtr    The position of the function name in the stack.
-     *                                           name in the stack.
-     * @param int                  $functionPtr The position of the function keyword in the stack.
-     *                                           keyword in the stack.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the function name
+     *                                                 in the stack.
+     * @param int                         $functionPtr The position of the function keyword
+     *                                                 in the stack.
      *
      * @return void
      */
-    public function processFunction(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $functionPtr)
+    public function processFunction(File $phpcsFile, $stackPtr, $functionPtr)
     {
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -7));
         // Only check in *.install files.
@@ -46,7 +53,7 @@ class DrupalPractice_Sniffs_FunctionDefinitions_InstallTSniff extends Drupal_Sni
         }
 
         // This check only applies to Drupal 7, not Drupal 8.
-        if (DrupalPractice_Project::getCoreVersion($phpcsFile) !== '7.x') {
+        if (Project::getCoreVersion($phpcsFile) !== '7.x') {
             return;
         }
 
@@ -59,7 +66,7 @@ class DrupalPractice_Sniffs_FunctionDefinitions_InstallTSniff extends Drupal_Sni
         while ($string !== false) {
             if ($tokens[$string]['content'] === 't' || $tokens[$string]['content'] === 'st') {
                 $opener = $phpcsFile->findNext(
-                    PHP_CodeSniffer_Tokens::$emptyTokens,
+                    Tokens::$emptyTokens,
                     ($string + 1),
                     null,
                     true

@@ -1,11 +1,17 @@
 <?php
 /**
- * Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff.
+ * \Drupal\Sniffs\WhiteSpace\OperatorSpacingSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\WhiteSpace;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Overrides Squiz_Sniffs_WhiteSpace_OperatorSpacingSniff to allow the plus operator
@@ -15,7 +21,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_Sniff
+class OperatorSpacingSniff implements Sniff
 {
 
     /**
@@ -43,9 +49,9 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
      */
     public function register()
     {
-        $comparison = PHP_CodeSniffer_Tokens::$comparisonTokens;
-        $operators  = PHP_CodeSniffer_Tokens::$operators;
-        $assignment = PHP_CodeSniffer_Tokens::$assignmentTokens;
+        $comparison = Tokens::$comparisonTokens;
+        $operators  = Tokens::$operators;
+        $assignment = Tokens::$assignmentTokens;
         $inlineIf   = array(
                        T_INLINE_THEN,
                        T_INLINE_ELSE,
@@ -61,13 +67,13 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
     /**
      * Processes this sniff, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The current file being checked.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The current file being checked.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -184,22 +190,22 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
                 return;
             }
 
-            if (isset(PHP_CodeSniffer_Tokens::$operators[$tokens[$prev]['code']]) === true) {
+            if (isset(Tokens::$operators[$tokens[$prev]['code']]) === true) {
                 // Just trying to operate on a negative value; eg. ($var * -1).
                 return;
             }
 
-            if (isset(PHP_CodeSniffer_Tokens::$comparisonTokens[$tokens[$prev]['code']]) === true) {
+            if (isset(Tokens::$comparisonTokens[$tokens[$prev]['code']]) === true) {
                 // Just trying to compare a negative value; eg. ($var === -1).
                 return;
             }
 
-            if (isset(PHP_CodeSniffer_Tokens::$booleanOperators[$tokens[$prev]['code']]) === true) {
+            if (isset(Tokens::$booleanOperators[$tokens[$prev]['code']]) === true) {
                 // Just trying to compare a negative value; eg. ($var || -1 === $b).
                 return;
             }
 
-            if (isset(PHP_CodeSniffer_Tokens::$assignmentTokens[$tokens[$prev]['code']]) === true) {
+            if (isset(Tokens::$assignmentTokens[$tokens[$prev]['code']]) === true) {
                 // Just trying to assign a negative value; eg. ($var = -1).
                 return;
             }
@@ -234,7 +240,7 @@ class Drupal_Sniffs_WhiteSpace_OperatorSpacingSniff implements PHP_CodeSniffer_S
             }
 
             $phpcsFile->recordMetric($stackPtr, 'Space before operator', 0);
-        } else if (isset(PHP_CodeSniffer_Tokens::$assignmentTokens[$tokens[$stackPtr]['code']]) === false) {
+        } else if (isset(Tokens::$assignmentTokens[$tokens[$stackPtr]['code']]) === false) {
             // Don't throw an error for assignments, because other standards allow
             // multiple spaces there to align multiple assignments.
             if ($tokens[($stackPtr - 2)]['line'] !== $tokens[$stackPtr]['line']) {

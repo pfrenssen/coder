@@ -1,17 +1,19 @@
 <?php
 /**
- * PEAR_Sniffs_Functions_FunctionDeclarationSniff.
+ * \Drupal\Sniffs\Formatting\MultiLineAssignmentSniff.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Formatting;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+
 /**
- * Drupal_Sniffs_Formatting_MultiLineAssignmentSniff.
+ * \Drupal\Sniffs\Formatting\MultiLineAssignmentSniff.
  *
  * If an assignment goes over two lines, ensure the equal sign is indented.
  *
@@ -23,7 +25,7 @@
  * @version   Release: 1.2.0RC3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Formatting_MultiLineAssignmentSniff implements PHP_CodeSniffer_Sniff
+class MultiLineAssignmentSniff implements Sniff
 {
 
 
@@ -42,13 +44,13 @@ class Drupal_Sniffs_Formatting_MultiLineAssignmentSniff implements PHP_CodeSniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -91,7 +93,7 @@ class Drupal_Sniffs_Formatting_MultiLineAssignmentSniff implements PHP_CodeSniff
         $foundIndent    = strlen($tokens[$prev]['content']);
         if ($foundIndent !== $expectedIndent) {
             $error = "Multi-line assignment not indented correctly; expected $expectedIndent spaces but found $foundIndent";
-            $phpcsFile->addError($error, $stackPtr);
+            $phpcsFile->addError($error, $stackPtr, 'MultiLineAssignmentIndent');
         }
 
     }//end process()

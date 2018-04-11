@@ -7,6 +7,12 @@
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Classes;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
  * Class create instance Test.
  *
@@ -16,7 +22,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Classes_ClassCreateInstanceSniff implements PHP_CodeSniffer_Sniff
+class ClassCreateInstanceSniff implements Sniff
 {
 
 
@@ -35,13 +41,13 @@ class Drupal_Sniffs_Classes_ClassCreateInstanceSniff implements PHP_CodeSniffer_
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -56,7 +62,7 @@ class Drupal_Sniffs_Classes_ClassCreateInstanceSniff implements PHP_CodeSniffer_
         $nextParenthesis = $phpcsFile->findNext(T_OPEN_PARENTHESIS, ($stackPtr + 1), $commaOrColon);
         if ($nextParenthesis === false) {
             $error       = 'Calling class constructors must always include parentheses';
-            $constructor = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true, null, true);
+            $constructor = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true, null, true);
             // We can invoke the fixer if we know this is a static constructor
             // function call or constructor calls with namespaces, example
             // "new \DOMDocument;" or constructor with class names in variables
@@ -70,7 +76,7 @@ class Drupal_Sniffs_Classes_ClassCreateInstanceSniff implements PHP_CodeSniffer_
                 $nextConstructorPart = $constructor;
                 while (true) {
                     $nextConstructorPart = $phpcsFile->findNext(
-                        PHP_CodeSniffer_Tokens::$emptyTokens,
+                        Tokens::$emptyTokens,
                         ($nextConstructorPart + 1),
                         null,
                         true,

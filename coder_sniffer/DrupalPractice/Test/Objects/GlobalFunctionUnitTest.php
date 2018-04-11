@@ -1,6 +1,10 @@
 <?php
 
-class DrupalPractice_Sniffs_Objects_GlobalFunctionUnitTest extends CoderSniffUnitTest
+namespace DrupalPractice\Sniffs\Objects;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class GlobalFunctionUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -12,7 +16,7 @@ class DrupalPractice_Sniffs_Objects_GlobalFunctionUnitTest extends CoderSniffUni
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile)
+    protected function getErrorList($testFile = NULL)
     {
         return array();
 
@@ -27,13 +31,15 @@ class DrupalPractice_Sniffs_Objects_GlobalFunctionUnitTest extends CoderSniffUni
      *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile)
+    protected function getWarningList($testFile = NULL)
     {
         switch ($testFile) {
             case 'GlobalFunctionUnitTest.inc':
                 return array(6 => 1);
             case 'ExampleService.php':
                 return array(30 => 1);
+            default:
+                return [];
         }
 
     }//end getWarningList()
@@ -44,7 +50,7 @@ class DrupalPractice_Sniffs_Objects_GlobalFunctionUnitTest extends CoderSniffUni
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles() {
+    protected function getTestFiles($testFileBase) {
         return [__DIR__.'/GlobalFunctionUnitTest.inc', __DIR__.'/src/ExampleService.php'];
     }
 

@@ -1,11 +1,17 @@
 <?php
 /**
- * DrupalPractice_Sniffs_Objects_UnusedPrivateMethodSniff.
+ * \DrupalPractice\Sniffs\Objects\UnusedPrivateMethodSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace DrupalPractice\Sniffs\Objects;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\AbstractScopeSniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Checks that private methods are actually used in a class.
@@ -14,7 +20,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Sniffs_Objects_UnusedPrivateMethodSniff extends PHP_CodeSniffer_Standards_AbstractScopeSniff
+class UnusedPrivateMethodSniff extends AbstractScopeSniff
 {
 
 
@@ -31,14 +37,14 @@ class DrupalPractice_Sniffs_Objects_UnusedPrivateMethodSniff extends PHP_CodeSni
     /**
      * Processes the tokens within the scope.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being processed.
-     * @param int                  $stackPtr  The position where this token was
-     *                                        found.
-     * @param int                  $currScope The position of the current scope.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being processed.
+     * @param int                         $stackPtr  The position where this token was
+     *                                               found.
+     * @param int                         $currScope The position of the current scope.
      *
      * @return void
      */
-    protected function processTokenWithinScope(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $currScope)
+    protected function processTokenWithinScope(File $phpcsFile, $stackPtr, $currScope)
     {
         // Only check private methods.
         $methodProperties = $phpcsFile->getMethodProperties($stackPtr);
@@ -60,18 +66,18 @@ class DrupalPractice_Sniffs_Objects_UnusedPrivateMethodSniff extends PHP_CodeSni
                 continue;
             }
 
-            $next = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($current + 1), null, true);
+            $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($current + 1), null, true);
             if ($next === false) {
                 continue;
             }
 
             if ($tokens[$next]['code'] === T_OBJECT_OPERATOR) {
-                $call = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($next + 1), null, true);
+                $call = $phpcsFile->findNext(Tokens::$emptyTokens, ($next + 1), null, true);
                 if ($call === false || $tokens[$call]['content'] !== $methodName) {
                     continue;
                 }
 
-                $parenthesis = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($call + 1), null, true);
+                $parenthesis = $phpcsFile->findNext(Tokens::$emptyTokens, ($call + 1), null, true);
                 if ($parenthesis === false || $tokens[$parenthesis]['code'] !== T_OPEN_PARENTHESIS) {
                     continue;
                 }
@@ -80,7 +86,7 @@ class DrupalPractice_Sniffs_Objects_UnusedPrivateMethodSniff extends PHP_CodeSni
                 // can stop.
                 return;
             } else if ($tokens[$next]['code'] === T_COMMA) {
-                $call = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($next + 1), null, true);
+                $call = $phpcsFile->findNext(Tokens::$emptyTokens, ($next + 1), null, true);
                 if ($call === false || substr($tokens[$call]['content'], 1, -1) !== $methodName) {
                     continue;
                 }
@@ -96,6 +102,21 @@ class DrupalPractice_Sniffs_Objects_UnusedPrivateMethodSniff extends PHP_CodeSni
         $phpcsFile->addWarning($warning, $stackPtr, 'UnusedMethod', $data);
 
     }//end processTokenWithinScope()
+
+
+    /**
+     * Process tokens outside of scope.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being processed.
+     * @param int                         $stackPtr  The position where this token was
+     *                                               found.
+     *
+     * @return void
+     */
+    protected function processTokenOutsideScope(File $phpcsFile, $stackPtr)
+    {
+
+    }//end processTokenOutsideScope()
 
 
 }//end class

@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_Commenting_FileCommentUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\Commenting;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class FileCommentUnitTest extends CoderSniffUnitTest
 {
 
     /**
@@ -11,7 +15,7 @@ class Drupal_Sniffs_Commenting_FileCommentUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         switch ($testFile) {
             case 'FileCommentUnitTest.inc':
@@ -36,31 +40,27 @@ class Drupal_Sniffs_Commenting_FileCommentUnitTest extends CoderSniffUnitTest
                        );
             case 'FileCommentUnitTest.5.inc':
                 return array(
-                        3 => 1,
+                        1 => 1,
                        );
             case 'FileCommentUnitTest.6.inc':
                 return array(
-                        1 => 1,
-                       );
+                    3 => 1,
+                );
             case 'FileCommentUnitTest.7.inc':
+                return array();
+            case 'FileCommentUnitTest.8.inc':
                 return array(
                     3 => 1,
                 );
-            case 'FileCommentUnitTest.8.inc':
-                return array();
             case 'FileCommentUnitTest.9.inc':
                 return array(
                     3 => 1,
                 );
             case 'FileCommentUnitTest.10.inc':
                 return array(
-                    3 => 1,
-                );
-            case 'FileCommentUnitTest.11.inc':
-                return array(
                     4 => 1,
                 );
-            case 'FileCommentUnitTest.12.inc':
+            case 'FileCommentUnitTest.11.inc':
                 return array(
                     4 => 1,
                 );
@@ -77,7 +77,7 @@ class Drupal_Sniffs_Commenting_FileCommentUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 

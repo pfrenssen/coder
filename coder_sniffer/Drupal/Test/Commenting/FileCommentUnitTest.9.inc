@@ -9,6 +9,6 @@ namespace Blah;
 /**
  * Bla.
  */
-interface Pum {
+trait Pum {
 
 }
