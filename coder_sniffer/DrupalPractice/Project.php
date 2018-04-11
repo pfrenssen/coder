@@ -1,12 +1,16 @@
 <?php
 /**
- * DrupalPractice_Project
+ * \DrupalPractice\Project
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace DrupalPractice;
+
+use PHP_CodeSniffer\Files\File;
+use \Drupal\Sniffs\InfoFiles\ClassFilesSniff;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -16,19 +20,19 @@ use Symfony\Component\Yaml\Yaml;
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Project
+class Project
 {
 
 
     /**
      * Determines the project short name a file might be associated with.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
      *
      * @return string|false Returns the project machine name or false if it could not
      *   be derived.
      */
-    public static function getName(PHP_CodeSniffer_File $phpcsFile)
+    public static function getName(File $phpcsFile)
     {
         // Cache the project name per file as this might get called often.
         static $cache;
@@ -60,12 +64,12 @@ class DrupalPractice_Project
     /**
      * Determines the info file a file might be associated with.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
      *
      * @return string|false The project info file name or false if it could not
      *   be derived.
      */
-    public static function getInfoFile(PHP_CodeSniffer_File $phpcsFile)
+    public static function getInfoFile(File $phpcsFile)
     {
         // Cache the project name per file as this might get called often.
         static $cache;
@@ -95,7 +99,7 @@ class DrupalPractice_Project
         }
 
         // Sort the info file names and take the shortest info file.
-        usort($infoFiles, array('DrupalPractice_Project', 'compareLength'));
+        usort($infoFiles, array(__NAMESPACE__.'\Project', 'compareLength'));
         $infoFile = $infoFiles[0];
         $cache[$phpcsFile->getFilename()] = $infoFile;
         return $infoFile;
@@ -106,12 +110,12 @@ class DrupalPractice_Project
     /**
      * Determines the *.services.yml file in a module.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
      *
      * @return string|false The Services YML file name or false if it could not
      *   be derived.
      */
-    public static function getServicesYmlFile(PHP_CodeSniffer_File $phpcsFile)
+    public static function getServicesYmlFile(File $phpcsFile)
     {
         // Cache the services file per file as this might get called often.
         static $cache;
@@ -138,7 +142,7 @@ class DrupalPractice_Project
         }
 
         // Sort the YML file names and take the shortest info file.
-        usort($ymlFiles, array('DrupalPractice_Project', 'compareLength'));
+        usort($ymlFiles, array(__NAMESPACE__.'\Project', 'compareLength'));
         $ymlFile = $ymlFiles[0];
         $cache[$phpcsFile->getFilename()] = $ymlFile;
         return $ymlFile;
@@ -149,13 +153,13 @@ class DrupalPractice_Project
     /**
      * Return true if the given class is a Drupal service registered in *.services.yml.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $classPtr  The position of the class declaration
-     *                                        in the token stack.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $classPtr  The position of the class declaration
+     *                                               in the token stack.
      *
      * @return bool
      */
-    public static function isServiceClass(PHP_CodeSniffer_File $phpcsFile, $classPtr)
+    public static function isServiceClass(File $phpcsFile, $classPtr)
     {
         // Cache the information per file as this might get called often.
         static $cache;
@@ -228,12 +232,12 @@ class DrupalPractice_Project
     /**
      * Determines the Drupal core version a file might be associated with.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
      *
      * @return string|false The core version string or false if it could not
      *   be derived.
      */
-    public static function getCoreVersion(PHP_CodeSniffer_File $phpcsFile)
+    public static function getCoreVersion(File $phpcsFile)
     {
         $infoFile = static::getInfoFile($phpcsFile);
         if ($infoFile === false) {
@@ -244,7 +248,7 @@ class DrupalPractice_Project
 
         // Drupal 6 and 7 use the .info file extension.
         if ($pathParts['extension'] === 'info') {
-            $info_settings = Drupal_Sniffs_InfoFiles_ClassFilesSniff::drupalParseInfoFormat(file_get_contents($infoFile));
+            $info_settings = ClassFilesSniff::drupalParseInfoFormat(file_get_contents($infoFile));
             if (isset($info_settings['core']) === true) {
                 return $info_settings['core'];
             }

@@ -1,22 +1,28 @@
 <?php
 /**
- * Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff.
+ * \Drupal\Sniffs\CSS\ClassDefinitionNameSpacingSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\CSS;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
  * Ensure there are no blank lines between the names of classes/IDs. Copied from
- * Squiz_Sniffs_CSS_ClassDefinitionNameSpacingSniff because we also check for comma
- * separated selectors on their own line.
+ * \PHP_CodeSniffer\Standards\Squiz\Sniffs\CSS\ClassDefinitionNameSpacingSniff
+ * because we also check for comma separated selectors on their own line.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniffer_Sniff
+class ClassDefinitionNameSpacingSniff implements Sniff
 {
 
     /**
@@ -42,13 +48,13 @@ class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniff
     /**
      * Processes the tokens that this sniff is interested in.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file where the token was found.
-     * @param int                  $stackPtr  The position in the stack where
-     *                                        the token was found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where the token was found.
+     * @param int                         $stackPtr  The position in the stack where
+     *                                               the token was found.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -65,7 +71,7 @@ class Drupal_Sniffs_CSS_ClassDefinitionNameSpacingSniff implements PHP_CodeSniff
                        T_CLOSE_CURLY_BRACKET => T_CLOSE_CURLY_BRACKET,
                        T_OPEN_TAG            => T_OPEN_TAG,
                       );
-        $endTokens += PHP_CodeSniffer_Tokens::$commentTokens;
+        $endTokens += Tokens::$commentTokens;
 
         $foundContent = false;
         $currentLine  = $tokens[$stackPtr]['line'];

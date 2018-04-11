@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_Classes_UseLeadingBackslashUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\Classes;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class UseLeadingBackslashUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -12,7 +16,7 @@ class Drupal_Sniffs_Classes_UseLeadingBackslashUnitTest extends CoderSniffUnitTe
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array(8 => 1);
 
@@ -27,7 +31,7 @@ class Drupal_Sniffs_Classes_UseLeadingBackslashUnitTest extends CoderSniffUnitTe
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 

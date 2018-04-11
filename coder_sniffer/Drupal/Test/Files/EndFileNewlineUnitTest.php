@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_Files_EndFileNewlineUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\Files;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class EndFileNewlineUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -12,7 +16,7 @@ class Drupal_Sniffs_Files_EndFileNewlineUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         // All the good files have no error.
         if (strpos($testFile, 'good') !== false) {
@@ -36,7 +40,7 @@ class Drupal_Sniffs_Files_EndFileNewlineUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 

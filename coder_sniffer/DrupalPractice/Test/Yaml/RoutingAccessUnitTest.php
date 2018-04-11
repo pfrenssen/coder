@@ -1,6 +1,10 @@
 <?php
 
-class DrupalPractice_Sniffs_Yaml_RoutingAccessUnitTest extends CoderSniffUnitTest
+namespace DrupalPractice\Sniffs\Yaml;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class RoutingAccessUnitTest extends CoderSniffUnitTest
 {
 
     /**
@@ -8,7 +12,7 @@ class DrupalPractice_Sniffs_Yaml_RoutingAccessUnitTest extends CoderSniffUnitTes
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles() {
+    protected function getTestFiles($testFileBase) {
         return [__DIR__.'/routing_access_test.routing.yml'];
     }
 
@@ -21,7 +25,7 @@ class DrupalPractice_Sniffs_Yaml_RoutingAccessUnitTest extends CoderSniffUnitTes
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile)
+    protected function getErrorList($testFile = NULL)
     {
         return array();
 
@@ -36,7 +40,7 @@ class DrupalPractice_Sniffs_Yaml_RoutingAccessUnitTest extends CoderSniffUnitTes
      *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile)
+    protected function getWarningList($testFile = NULL)
     {
         return array(
                 7 => 1,

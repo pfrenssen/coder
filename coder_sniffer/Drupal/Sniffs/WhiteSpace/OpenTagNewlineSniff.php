@@ -1,12 +1,16 @@
 <?php
-
 /**
- * Drupal_Sniffs_WhiteSpace_OpenTagNewlineSniff.
+ * \Drupal\Sniffs\WhiteSpace\OpenTagNewlineSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\WhiteSpace;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
  * Checks that there is exactly one newline after the PHP open tag.
@@ -15,7 +19,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_WhiteSpace_OpenTagNewlineSniff implements PHP_CodeSniffer_Sniff
+class OpenTagNewlineSniff implements Sniff
 {
 
 
@@ -34,15 +38,15 @@ class Drupal_Sniffs_WhiteSpace_OpenTagNewlineSniff implements PHP_CodeSniffer_Sn
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The PHP_CodeSniffer file where the
-     *                                        token was found.
-     * @param int                  $stackPtr  The position in the PHP_CodeSniffer
-     *                                        file's token stack where the token
-     *                                        was found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The PHP_CodeSniffer file where the
+     *                                               token was found.
+     * @param int                         $stackPtr  The position in the PHP_CodeSniffer
+     *                                               file's token stack where the token
+     *                                               was found.
      *
      * @return int End of the stack to skip the rest of the file.
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 

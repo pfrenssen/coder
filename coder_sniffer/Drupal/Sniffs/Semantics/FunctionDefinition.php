@@ -1,11 +1,17 @@
 <?php
 /**
- * Drupal_Sniffs_Semantics_FunctionDefinition.
+ * \Drupal\Sniffs\Semantics\FunctionDefinition.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\Semantics;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Helper class to sniff for function definitions.
@@ -14,7 +20,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-abstract class Drupal_Sniffs_Semantics_FunctionDefinition implements PHP_CodeSniffer_Sniff
+abstract class FunctionDefinition implements Sniff
 {
 
 
@@ -33,18 +39,18 @@ abstract class Drupal_Sniffs_Semantics_FunctionDefinition implements PHP_CodeSni
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
         // Check if this is a function definition.
         $functionPtr = $phpcsFile->findPrevious(
-            PHP_CodeSniffer_Tokens::$emptyTokens,
+            Tokens::$emptyTokens,
             ($stackPtr - 1),
             null,
             true
@@ -59,15 +65,15 @@ abstract class Drupal_Sniffs_Semantics_FunctionDefinition implements PHP_CodeSni
     /**
      * Process this function definition.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile   The file being scanned.
-     * @param int                  $stackPtr    The position of the function name in the stack.
-     *                                           name in the stack.
-     * @param int                  $functionPtr The position of the function keyword in the stack.
-     *                                           keyword in the stack.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the function name in the stack.
+     *                                                 name in the stack.
+     * @param int                         $functionPtr The position of the function keyword in the stack.
+     *                                                 keyword in the stack.
      *
      * @return void
      */
-    public abstract function processFunction(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $functionPtr);
+    public abstract function processFunction(File $phpcsFile, $stackPtr, $functionPtr);
 
 
 }//end class

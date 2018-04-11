@@ -1,21 +1,27 @@
 <?php
 /**
- * Drupal_Sniffs_Commenting_PostStatementCommentSniff.
+ * \Drupal\Sniffs\Commenting\PostStatementCommentSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Commenting;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+
 /**
- * Largely copied from Squiz_Sniffs_Commenting_PostStatementCommentSniff but we want
- * the fixer to move the comment to the previous line.
+ * Largely copied from
+ * \PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\PostStatementCommentSniff
+ * but we want the fixer to move the comment to the previous line.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Commenting_PostStatementCommentSniff implements PHP_CodeSniffer_Sniff
+class PostStatementCommentSniff implements Sniff
 {
 
     /**
@@ -41,13 +47,13 @@ class Drupal_Sniffs_Commenting_PostStatementCommentSniff implements PHP_CodeSnif
     /**
      * Processes this sniff, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 

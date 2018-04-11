@@ -1,14 +1,19 @@
 <?php
 /**
- * Drupal_Sniffs_CSS_ColourDefinitionSniff.
+ * \Drupal\Sniffs\CSS\ColourDefinitionSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\CSS;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+
 /**
- * Squiz_Sniffs_CSS_ColourDefinitionSniff.
+ * \Drupal\Sniffs\CSS\ColourDefinitionSniff.
  *
  * Ensure colours are defined in lower-case.
  *
@@ -16,7 +21,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_CSS_ColourDefinitionSniff implements PHP_CodeSniffer_Sniff
+class ColourDefinitionSniff implements Sniff
 {
 
     /**
@@ -42,13 +47,13 @@ class Drupal_Sniffs_CSS_ColourDefinitionSniff implements PHP_CodeSniffer_Sniff
     /**
      * Processes the tokens that this sniff is interested in.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file where the token was found.
-     * @param int                  $stackPtr  The position in the stack where
-     *                                        the token was found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where the token was found.
+     * @param int                         $stackPtr  The position in the stack where
+     *                                               the token was found.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
         $colour = $tokens[$stackPtr]['content'];

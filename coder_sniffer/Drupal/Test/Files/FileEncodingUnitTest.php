@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Tests_Files_FileEncodingUnitTest extends CoderSniffUnitTest
+namespace PHP_CodeSniffer\Standards\Drupal\Tests\Files;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class FileEncodingUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -14,7 +18,7 @@ class Drupal_Tests_Files_FileEncodingUnitTest extends CoderSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='')
+    public function getErrorList($testFile = NULL)
     {
         return array();
 
@@ -31,7 +35,7 @@ class Drupal_Tests_Files_FileEncodingUnitTest extends CoderSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getWarningList($testFile='')
+    public function getWarningList($testFile = NULL)
     {
         return array(
                     1 => 1,

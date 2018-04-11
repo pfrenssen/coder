@@ -1,11 +1,16 @@
 <?php
 /**
- * Drupal_Sniffs_FunctionCalls_LCheckPlainSniff
+ * \DrupalPractice\Sniffs\FunctionCalls\Drupal_Sniffs_FunctionCalls_LCheckPlainSniff
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace DrupalPractice\Sniffs\FunctionCalls;
+
+use PHP_CodeSniffer\Files\File;
+use Drupal\Sniffs\Semantics\FunctionCall;
 
 /**
  * The first argument of the l() function should not be check_plain()'ed.
@@ -14,7 +19,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Sniffs_FunctionCalls_LCheckPlainSniff extends Drupal_Sniffs_Semantics_FunctionCall
+class LCheckPlainSniff extends FunctionCall
 {
 
 
@@ -33,18 +38,18 @@ class DrupalPractice_Sniffs_FunctionCalls_LCheckPlainSniff extends Drupal_Sniffs
     /**
      * Processes this function call.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                  $stackPtr     The position of the function call in
-     *                                           the stack.
-     * @param int                  $openBracket  The position of the opening
-     *                                           parenthesis in the stack.
-     * @param int                  $closeBracket The position of the closing
-     *                                           parenthesis in the stack.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the function call in
+     *                                                  the stack.
+     * @param int                         $openBracket  The position of the opening
+     *                                                  parenthesis in the stack.
+     * @param int                         $closeBracket The position of the closing
+     *                                                  parenthesis in the stack.
      *
      * @return void
      */
     public function processFunctionCall(
-        PHP_CodeSniffer_File $phpcsFile,
+        File $phpcsFile,
         $stackPtr,
         $openBracket,
         $closeBracket

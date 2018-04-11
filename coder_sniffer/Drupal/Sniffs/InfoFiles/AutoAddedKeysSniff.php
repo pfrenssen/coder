@@ -1,11 +1,17 @@
 <?php
 /**
- * Drupal_Sniffs_InfoFiles_RequiredSniff.
+ * \Drupal\Sniffs\InfoFiles\RequiredSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\InfoFiles;
+
+use Drupal\Sniffs\InfoFiles\ClassFilesSniff;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
  * "version", "project" and "timestamp" are added automatically by drupal.org
@@ -15,7 +21,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_InfoFiles_AutoAddedKeysSniff implements PHP_CodeSniffer_Sniff
+class AutoAddedKeysSniff implements Sniff
 {
 
 
@@ -34,19 +40,19 @@ class Drupal_Sniffs_InfoFiles_AutoAddedKeysSniff implements PHP_CodeSniffer_Snif
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return int
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         // Only run this sniff once per info file.
         if (preg_match('/\.info$/', $phpcsFile->getFilename()) === 1) {
             // Drupal 7 style info file.
             $contents = file_get_contents($phpcsFile->getFilename());
-            $info     = Drupal_Sniffs_InfoFiles_ClassFilesSniff::drupalParseInfoFormat($contents);
+            $info     = ClassFilesSniff::drupalParseInfoFormat($contents);
         } else if (preg_match('/\.info\.yml$/', $phpcsFile->getFilename()) === 1) {
             // Drupal 8 style info.yml file.
             $contents = file_get_contents($phpcsFile->getFilename());
