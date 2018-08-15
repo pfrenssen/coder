@@ -156,7 +156,7 @@ class FunctionTSniff extends FunctionCall
             return true;
         }
 
-        if (in_array($string, ['(', ')', '[', ']', '-', '<', '>', '«', '»', '\n'], true)) {
+        if (in_array($string, ['(', ')', '[', ']', '-', '<', '>', '«', '»', '\n'])) {
             return true;
         }
 
