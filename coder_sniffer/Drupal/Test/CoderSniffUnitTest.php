@@ -120,6 +120,8 @@ abstract class CoderSniffUnitTest extends \PHPUnit_Framework_TestCase
     /**
      * Tests the extending classes Sniff class.
      *
+     * @preserveGlobalState disabled
+     *
      * @return void
      * @throws PHPUnit_Framework_Error
      */
