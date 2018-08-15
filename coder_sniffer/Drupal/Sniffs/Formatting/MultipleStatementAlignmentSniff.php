@@ -43,7 +43,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
      *
      * @return int
      */
-    public function checkAlignment($phpcsFile, $stackPtr)
+    public function checkAlignment($phpcsFile, $stackPtr, $end = NULL)
     {
         $tokens = $phpcsFile->getTokens();
 

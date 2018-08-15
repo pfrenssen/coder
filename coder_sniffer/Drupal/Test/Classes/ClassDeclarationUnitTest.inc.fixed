@@ -23,7 +23,6 @@ namespace FirstNamespace{
 }
 
 namespace SecondNamespace{
-
   /**
    * SecondClass for the test.
    */
