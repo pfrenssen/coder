@@ -1,11 +1,17 @@
 <?php
 /**
- * DrupalPractice_Sniffs_General_ClassNameSniff
+ * \DrupalPractice\Sniffs\General\ClassNameSniff
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace DrupalPractice\Sniffs\General;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use DrupalPractice\Project;
 
 /**
  * Checks that classes without namespaces are properly prefixed with the module
@@ -15,7 +21,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Sniffs_General_ClassNameSniff implements PHP_CodeSniffer_Sniff
+class ClassNameSniff implements Sniff
 {
 
 
@@ -37,13 +43,13 @@ class DrupalPractice_Sniffs_General_ClassNameSniff implements PHP_CodeSniffer_Sn
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The current file being processed.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the function
+     *                                               name in the stack.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         // If there is a PHP 5.3 namespace declaration in the file we return
         // immediately as classes can be named arbitrary within a namespace.
@@ -52,7 +58,7 @@ class DrupalPractice_Sniffs_General_ClassNameSniff implements PHP_CodeSniffer_Sn
             return;
         }
 
-        $moduleName = DrupalPractice_Project::getName($phpcsFile);
+        $moduleName = Project::getName($phpcsFile);
         if ($moduleName === false) {
             return;
         }

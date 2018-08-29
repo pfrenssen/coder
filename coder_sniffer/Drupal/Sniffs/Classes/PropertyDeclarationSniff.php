@@ -7,27 +7,34 @@
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Classes;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
- * Laregely copied from PSR2_Sniffs_Classes_PropertyDeclarationSniff to have a fixer
+ * Laregely copied from
+ * \PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\PropertyDeclarationSniff to have a fixer
  * for the var keyword.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Classes_PropertyDeclarationSniff extends PHP_CodeSniffer_Standards_AbstractVariableSniff
+class PropertyDeclarationSniff extends AbstractVariableSniff
 {
 
 
     /**
      * Processes the function tokens within the class.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file where this token was found.
-     * @param int                  $stackPtr  The position where the token was found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
+     * @param int                         $stackPtr  The position where the token was found.
      *
      * @return void
      */
-    protected function processMemberVar(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processMemberVar(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -40,7 +47,7 @@ class Drupal_Sniffs_Classes_PropertyDeclarationSniff extends PHP_CodeSniffer_Sta
         // Detect multiple properties defined at the same time. Throw an error
         // for this, but also only process the first property in the list so we don't
         // repeat errors.
-        $find = PHP_CodeSniffer_Tokens::$scopeModifiers;
+        $find = Tokens::$scopeModifiers;
         $find = array_merge($find, array(T_VARIABLE, T_VAR, T_SEMICOLON));
         $prev = $phpcsFile->findPrevious($find, ($stackPtr - 1));
         if ($tokens[$prev]['code'] === T_VARIABLE) {
@@ -61,7 +68,7 @@ class Drupal_Sniffs_Classes_PropertyDeclarationSniff extends PHP_CodeSniffer_Sta
             $phpcsFile->addError($error, $stackPtr, 'Multiple');
         }
 
-        $modifier = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$scopeModifiers, $stackPtr);
+        $modifier = $phpcsFile->findPrevious(Tokens::$scopeModifiers, $stackPtr);
         if (($modifier === false) || ($tokens[$modifier]['line'] !== $tokens[$stackPtr]['line'])) {
             $error = 'Visibility must be declared on property "%s"';
             $data  = array($tokens[$stackPtr]['content']);
@@ -74,12 +81,12 @@ class Drupal_Sniffs_Classes_PropertyDeclarationSniff extends PHP_CodeSniffer_Sta
     /**
      * Processes normal variables.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file where this token was found.
-     * @param int                  $stackPtr  The position where the token was found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
+     * @param int                         $stackPtr  The position where the token was found.
      *
      * @return void
      */
-    protected function processVariable(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processVariable(File $phpcsFile, $stackPtr)
     {
         /*
             We don't care about normal variables.
@@ -91,12 +98,12 @@ class Drupal_Sniffs_Classes_PropertyDeclarationSniff extends PHP_CodeSniffer_Sta
     /**
      * Processes variables in double quoted strings.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file where this token was found.
-     * @param int                  $stackPtr  The position where the token was found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
+     * @param int                         $stackPtr  The position where the token was found.
      *
      * @return void
      */
-    protected function processVariableInString(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    protected function processVariableInString(File $phpcsFile, $stackPtr)
     {
         /*
             We don't care about normal variables.

@@ -1,22 +1,28 @@
 <?php
 /**
- * Drupal_Sniffs_Formatting_MultipleStatementAlignmentSniff.
+ * \Drupal\Sniffs\Formatting\MultipleStatementAlignmentSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Formatting;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\MultipleStatementAlignmentSniff as GenericMultipleStatementAlignmentSniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
  * Checks alignment of multiple assignments.Largely copied from
- * Generic_Sniffs_Formatting_MultipleStatementAlignmentSniff but also allows multiple
- * single space assignments.
+ * \PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\MultipleStatementAlignmentSniff
+ * but also allows multiple single space assignments.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Formatting_MultipleStatementAlignmentSniff extends Generic_Sniffs_Formatting_MultipleStatementAlignmentSniff
+class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentSniff
 {
 
 
@@ -31,13 +37,15 @@ class Drupal_Sniffs_Formatting_MultipleStatementAlignmentSniff extends Generic_S
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
+     * @param int                         $end       The token where checking should end.
+     *                                               If NULL, the entire file will be checked.
      *
      * @return int
      */
-    public function checkAlignment(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function checkAlignment($phpcsFile, $stackPtr, $end=null)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -49,13 +57,13 @@ class Drupal_Sniffs_Formatting_MultipleStatementAlignmentSniff extends Generic_S
         $lastCode    = $stackPtr;
         $lastSemi    = null;
 
-        $find = PHP_CodeSniffer_Tokens::$assignmentTokens;
+        $find = Tokens::$assignmentTokens;
         unset($find[T_DOUBLE_ARROW]);
 
         for ($assign = $stackPtr; $assign < $phpcsFile->numTokens; $assign++) {
             if (isset($find[$tokens[$assign]['code']]) === false) {
                 // A blank line indicates that the assignment block has ended.
-                if (isset(PHP_CodeSniffer_tokens::$emptyTokens[$tokens[$assign]['code']]) === false) {
+                if (isset(Tokens::$emptyTokens[$tokens[$assign]['code']]) === false) {
                     if (($tokens[$assign]['line'] - $tokens[$lastCode]['line']) > 1) {
                         break;
                     }
@@ -101,7 +109,7 @@ class Drupal_Sniffs_Formatting_MultipleStatementAlignmentSniff extends Generic_S
             }//end if
 
             $var = $phpcsFile->findPrevious(
-                PHP_CodeSniffer_Tokens::$emptyTokens,
+                Tokens::$emptyTokens,
                 ($assign - 1),
                 null,
                 true

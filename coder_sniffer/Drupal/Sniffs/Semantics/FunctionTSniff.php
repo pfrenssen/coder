@@ -1,11 +1,17 @@
 <?php
 /**
- * Drupal_Sniffs_Semantics_FunctionTSniff
+ * \Drupal\Sniffs\Semantics\FunctionTSniff
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\Semantics;
+
+use Drupal\Sniffs\Semantics\FunctionCall;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Check the usage of the t() function to not escape translateable strings with back
@@ -15,7 +21,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_FunctionCall
+class FunctionTSniff extends FunctionCall
 {
 
     /**
@@ -45,18 +51,18 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
     /**
      * Processes this function call.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                  $stackPtr     The position of the function call in
-     *                                           the stack.
-     * @param int                  $openBracket  The position of the opening
-     *                                           parenthesis in the stack.
-     * @param int                  $closeBracket The position of the closing
-     *                                           parenthesis in the stack.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the function call in
+     *                                                  the stack.
+     * @param int                         $openBracket  The position of the opening
+     *                                                  parenthesis in the stack.
+     * @param int                         $closeBracket The position of the closing
+     *                                                  parenthesis in the stack.
      *
      * @return void
      */
     public function processFunctionCall(
-        PHP_CodeSniffer_File $phpcsFile,
+        File $phpcsFile,
         $stackPtr,
         $openBracket,
         $closeBracket
@@ -84,9 +90,9 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
             return;
         }
 
-        $concatAfter = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($closeBracket + 1), null, true, null, true);
+        $concatAfter = $phpcsFile->findNext(Tokens::$emptyTokens, ($closeBracket + 1), null, true, null, true);
         if ($concatAfter !== false && $tokens[$concatAfter]['code'] === T_STRING_CONCAT) {
-            $stringAfter = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($concatAfter + 1), null, true, null, true);
+            $stringAfter = $phpcsFile->findNext(Tokens::$emptyTokens, ($concatAfter + 1), null, true, null, true);
             if ($stringAfter !== false
                 && $tokens[$stringAfter]['code'] === T_CONSTANT_ENCAPSED_STRING
                 && $this->checkConcatString($tokens[$stringAfter]['content']) === false
@@ -150,8 +156,22 @@ class Drupal_Sniffs_Semantics_FunctionTSniff extends Drupal_Sniffs_Semantics_Fun
             return true;
         }
 
-        if (in_array($string, ['(', ')', '[', ']', '-', '<', '>', '«', '»', '\n'], true)) {
-            return true;
+        $allowed_items = array(
+                          '(',
+                          ')',
+                          '[',
+                          ']',
+                          '-',
+                          '<',
+                          '>',
+                          '«',
+                          '»',
+                          '\n',
+                         );
+        foreach ($allowed_items as $item) {
+            if ($item === $string) {
+                return true;
+            }
         }
 
         return false;

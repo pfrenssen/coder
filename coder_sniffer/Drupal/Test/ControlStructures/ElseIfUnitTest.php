@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_ControlStructures_ElseIfUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\ControlStructures;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class ElseIfUnitTest extends CoderSniffUnitTest
 {
 
     /**
@@ -11,7 +15,7 @@ class Drupal_Sniffs_ControlStructures_ElseIfUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array(
                 6 => 1,
@@ -29,7 +33,7 @@ class Drupal_Sniffs_ControlStructures_ElseIfUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 

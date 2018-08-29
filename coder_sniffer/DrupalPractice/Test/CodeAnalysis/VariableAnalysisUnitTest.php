@@ -1,12 +1,16 @@
 <?php
 
+namespace DrupalPractice\Sniffs\CodeAnalysis;
+
+use Drupal\Test\CoderSniffUnitTest;
+
 /**
  * Unit test class for the VariableAnalysis sniff.
  *
  * A sniff unit test checks a .inc file for expected violations of a single
  * coding standard. Expected errors and warnings are stored in this class.
  */
-class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisUnitTest extends CoderSniffUnitTest
+class VariableAnalysisUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -18,7 +22,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisUnitTest extends CoderS
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile)
+    protected function getErrorList($testFile = NULL)
     {
         return array();
 
@@ -33,7 +37,7 @@ class DrupalPractice_Sniffs_CodeAnalysis_VariableAnalysisUnitTest extends CoderS
      *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile)
+    protected function getWarningList($testFile = NULL)
     {
         return array(
                 4 => 1,

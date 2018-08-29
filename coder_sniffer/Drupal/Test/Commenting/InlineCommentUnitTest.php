@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_Commenting_InlineCommentUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\Commenting;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class InlineCommentUnitTest extends CoderSniffUnitTest
 {
 
     /**
@@ -11,7 +15,7 @@ class Drupal_Sniffs_Commenting_InlineCommentUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array(
                 8 => 1,
@@ -38,7 +42,7 @@ class Drupal_Sniffs_Commenting_InlineCommentUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array(
                 16 => 1,

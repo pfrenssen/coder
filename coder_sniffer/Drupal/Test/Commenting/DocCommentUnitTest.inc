@@ -96,3 +96,10 @@ function test12() {
  */
 public function givenOrganisations(TableNode $organisation_table) {
 }
+
+/**+
+ * This has a typo after the comment start.
+ */
+function test13() {
+
+}

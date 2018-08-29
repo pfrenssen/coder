@@ -13,7 +13,6 @@ class Test extends OtherClass {
 }
 
 namespace FirstNamespace{
-
   /**
    * FirstClass for the test.
    */
@@ -23,7 +22,6 @@ namespace FirstNamespace{
 }
 
 namespace SecondNamespace{
-
   /**
    * SecondClass for the test.
    */
@@ -33,7 +31,6 @@ namespace SecondNamespace{
 }
 
 namespace {
-
   // Global namespace.
 }
 

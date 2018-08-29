@@ -1,14 +1,21 @@
 <?php
 /**
- * Drupal_Sniffs_Commenting_EmptyCatchCommentSniff.
+ * \Drupal\Sniffs\Commenting\DocCommentAlignmentSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Commenting;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
- * Largely copied from Squiz_Sniffs_Commenting_DocCommentAlignmentSniff to also
+ * Largely copied from
+ * \PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\DocCommentAlignmentSniff to also
  * handle the "var" keyword. See
  * https://github.com/squizlabs/PHP_CodeSniffer/pull/1212
  *
@@ -16,7 +23,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Commenting_DocCommentAlignmentSniff implements PHP_CodeSniffer_Sniff
+class DocCommentAlignmentSniff implements Sniff
 {
 
 
@@ -35,18 +42,18 @@ class Drupal_Sniffs_Commenting_DocCommentAlignmentSniff implements PHP_CodeSniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                         in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
         // We are only interested in function/class/interface doc block comments.
-        $ignore = PHP_CodeSniffer_Tokens::$emptyTokens;
+        $ignore = Tokens::$emptyTokens;
         if ($phpcsFile->tokenizerType === 'JS') {
             $ignore[] = T_EQUAL;
             $ignore[] = T_STRING;
@@ -71,7 +78,7 @@ class Drupal_Sniffs_Commenting_DocCommentAlignmentSniff implements PHP_CodeSniff
 
         if (isset($ignore[$tokens[$nextToken]['code']]) === false) {
             // Could be a file comment.
-            $prevToken = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+            $prevToken = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
             if ($tokens[$prevToken]['code'] !== T_OPEN_TAG) {
                 return;
             }

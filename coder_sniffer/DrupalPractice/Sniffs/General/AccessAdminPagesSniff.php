@@ -1,11 +1,16 @@
 <?php
 /**
- * DrupalPractice_Sniffs_General_AccessAdminPagesSniff
+ * \DrupalPractice\Sniffs\General\AccessAdminPagesSniff
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace DrupalPractice\Sniffs\General;
+
+use PHP_CodeSniffer\Files\File;
+use Drupal\Sniffs\Semantics\FunctionDefinition;
 
 /**
  * Throws a warning if the "access administration pages" string is found in
@@ -15,22 +20,22 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Sniffs_General_AccessAdminPagesSniff extends Drupal_Sniffs_Semantics_FunctionDefinition
+class AccessAdminPagesSniff extends FunctionDefinition
 {
 
 
     /**
      * Process this function definition.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile   The file being scanned.
-     * @param int                  $stackPtr    The position of the function name in the stack.
-     *                                           name in the stack.
-     * @param int                  $functionPtr The position of the function keyword in the stack.
-     *                                           keyword in the stack.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the function
+     *                                                 name in the stack.
+     * @param int                         $functionPtr The position of the function
+     *                                                 keyword in the stack.
      *
      * @return void
      */
-    public function processFunction(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $functionPtr)
+    public function processFunction(File $phpcsFile, $stackPtr, $functionPtr)
     {
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -6));
         // Only check in *.module files.

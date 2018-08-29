@@ -1,11 +1,16 @@
 <?php
 /**
- * Drupal_Sniffs_Files_EndFileNewlineSniff.
+ * \Drupal\Sniffs\Files\EndFileNewlineSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\Files;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
  * Ensures the file ends with a newline character.
@@ -17,7 +22,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Files_EndFileNewlineSniff implements PHP_CodeSniffer_Sniff
+class EndFileNewlineSniff implements Sniff
 {
 
 
@@ -51,13 +56,13 @@ class Drupal_Sniffs_Files_EndFileNewlineSniff implements PHP_CodeSniffer_Sniff
     /**
      * Processes this sniff, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         // Skip to the end of the file.
         $tokens = $phpcsFile->getTokens();

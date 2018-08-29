@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_Semantics_ConstantNameUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\Semantics;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class ConstantNameUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -9,7 +13,7 @@ class Drupal_Sniffs_Semantics_ConstantNameUnitTest extends CoderSniffUnitTest
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles()
+  protected function getTestFiles($testFileBase)
     {
         $dir = dirname(__FILE__);
         return array($dir.'/constant_test.install', $dir.'/constant_test.module');
@@ -25,7 +29,7 @@ class Drupal_Sniffs_Semantics_ConstantNameUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array();
 
@@ -40,7 +44,7 @@ class Drupal_Sniffs_Semantics_ConstantNameUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array(3 => 1);
 

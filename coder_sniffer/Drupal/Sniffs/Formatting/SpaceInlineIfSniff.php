@@ -1,11 +1,16 @@
 <?php
 /**
- * Drupal_Sniffs_Formatting_SpaceInlineIfSniff.
+ * \Drupal\Sniffs\Formatting\SpaceInlineIfSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\Formatting;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
  * Checks that there is no space between "?" and ":" inline if/else statements.
@@ -14,7 +19,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Formatting_SpaceInlineIfSniff implements PHP_CodeSniffer_Sniff
+class SpaceInlineIfSniff implements Sniff
 {
 
 
@@ -33,13 +38,13 @@ class Drupal_Sniffs_Formatting_SpaceInlineIfSniff implements PHP_CodeSniffer_Sni
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 

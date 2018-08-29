@@ -1,14 +1,20 @@
 <?php
 /**
- * Drupal_Sniffs_Whitespace_ScopeClosingBraceSniff.
+ * \Drupal\Sniffs\WhiteSpace\ScopeClosingBraceSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://Drupal.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\WhiteSpace;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
- * Copied from PEAR_Sniffs_WhiteSpace_ScopeClosingBraceSniff to allow empty methods
+ * Copied from \PHP_CodeSniffer\Standards\PEAR\Sniffs\WhiteSpace\ScopeClosingBraceSniff to allow empty methods
  * and classes.
  *
  * Checks that the closing braces of scopes are aligned correctly.
@@ -17,7 +23,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer_Sniff
+class ScopeClosingBraceSniff implements Sniff
 {
 
     /**
@@ -35,7 +41,7 @@ class Drupal_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer
      */
     public function register()
     {
-        return PHP_CodeSniffer_Tokens::$scopeOpeners;
+        return Tokens::$scopeOpeners;
 
     }//end register()
 
@@ -43,13 +49,13 @@ class Drupal_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile All the tokens found in the document.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile All the tokens found in the document.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 

@@ -1,11 +1,16 @@
 <?php
 /**
- * DrupalPractice_Sniffs_General_FormStateInputSniff.
+ * \DrupalPractice\Sniffs\General\FormStateInputSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace DrupalPractice\Sniffs\General;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
  * Throws a message whenever $form_state['input'] is used. $form_state['values']
@@ -15,7 +20,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class DrupalPractice_Sniffs_General_FormStateInputSniff implements PHP_CodeSniffer_Sniff
+class FormStateInputSniff implements Sniff
 {
 
 
@@ -34,13 +39,13 @@ class DrupalPractice_Sniffs_General_FormStateInputSniff implements PHP_CodeSniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                         in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the function
+     *                                               name in the stack.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         if ($phpcsFile->getTokensAsString($stackPtr, 4) === '$form_state[\'input\']'
             || $phpcsFile->getTokensAsString($stackPtr, 4) === '$form_state["input"]'

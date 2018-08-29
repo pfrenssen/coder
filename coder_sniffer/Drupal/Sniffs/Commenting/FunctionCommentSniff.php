@@ -7,15 +7,21 @@
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
+namespace Drupal\Sniffs\Commenting;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
+
 /**
  * Parses and verifies the doc comments for functions. Largely copied from
- * Squiz_Sniffs_Commenting_FunctionCommentSniff.
+ * PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\FunctionCommentSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_Sniff
+class FunctionCommentSniff implements Sniff
 {
 
     /**
@@ -72,20 +78,20 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $find   = PHP_CodeSniffer_Tokens::$methodPrefixes;
+        $find   = Tokens::$methodPrefixes;
         $find[] = T_WHITESPACE;
 
         $commentEnd       = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
-        $beforeCommentEnd = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($commentEnd - 1), null, true);
+        $beforeCommentEnd = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($commentEnd - 1), null, true);
         if (($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             && $tokens[$commentEnd]['code'] !== T_COMMENT)
             || ($beforeCommentEnd !== false
@@ -162,14 +168,14 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
     /**
      * Process the return comment of this function comment.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                  $stackPtr     The position of the current token
-     *                                           in the stack passed in $tokens.
-     * @param int                  $commentStart The position in the stack where the comment started.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the current token
+     *                                                  in the stack passed in $tokens.
+     * @param int                         $commentStart The position in the stack where the comment started.
      *
      * @return void
      */
-    protected function processReturn(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $commentStart)
+    protected function processReturn(File $phpcsFile, $stackPtr, $commentStart)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -365,14 +371,14 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
     /**
      * Process any throw tags that this function comment has.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                  $stackPtr     The position of the current token
-     *                                           in the stack passed in $tokens.
-     * @param int                  $commentStart The position in the stack where the comment started.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the current token
+     *                                                  in the stack passed in $tokens.
+     * @param int                         $commentStart The position in the stack where the comment started.
      *
      * @return void
      */
-    protected function processThrows(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $commentStart)
+    protected function processThrows(File $phpcsFile, $stackPtr, $commentStart)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -445,14 +451,14 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
     /**
      * Process the function parameter comments.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                  $stackPtr     The position of the current token
-     *                                           in the stack passed in $tokens.
-     * @param int                  $commentStart The position in the stack where the comment started.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the current token
+     *                                                  in the stack passed in $tokens.
+     * @param int                         $commentStart The position in the stack where the comment started.
      *
      * @return void
      */
-    protected function processParams(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $commentStart)
+    protected function processParams(File $phpcsFile, $stackPtr, $commentStart)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -568,6 +574,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
                     $phpcsFile->addError($error, $tag, 'MissingParamComment');
                     $commentLines[] = array('comment' => '');
                 }//end if
+
                 $variableArguments = false;
                 // Allow the "..." @param doc for a variable number of parameters.
                 // This could happen with type defined as @param array ... or
@@ -872,14 +879,14 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
     /**
      * Process the function "see" comments.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                  $stackPtr     The position of the current token
-     *                                           in the stack passed in $tokens.
-     * @param int                  $commentStart The position in the stack where the comment started.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the current token
+     *                                                  in the stack passed in $tokens.
+     * @param int                         $commentStart The position in the stack where the comment started.
      *
      * @return void
      */
-    protected function processSees(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $commentStart)
+    protected function processSees(File $phpcsFile, $stackPtr, $commentStart)
     {
         $tokens = $phpcsFile->getTokens();
         foreach ($tokens[$commentStart]['comment_tags'] as $tag) {
@@ -938,14 +945,14 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
     /**
      * Checks if a used type hint is an alias defined by a "use" statement.
      *
-     * @param string               $typeHint          The type hint used.
-     * @param string               $suggestedTypeHint The fully qualified type to
-     *                                                check against.
-     * @param PHP_CodeSniffer_File $phpcsFile         The file being checked.
+     * @param string                      $typeHint          The type hint used.
+     * @param string                      $suggestedTypeHint The fully qualified type to
+     *                                                       check against.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile         The file being checked.
      *
      * @return boolean
      */
-    protected function isAliasedType($typeHint, $suggestedTypeHint, PHP_CodeSniffer_File $phpcsFile)
+    protected function isAliasedType($typeHint, $suggestedTypeHint, File $phpcsFile)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -964,7 +971,7 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
 
             // Now comes the original class name, possibly with namespace
             // backslashes.
-            $originalClass = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($usePtr + 1), null, true);
+            $originalClass = $phpcsFile->findNext(Tokens::$emptyTokens, ($usePtr + 1), null, true);
             if ($originalClass === false || ($tokens[$originalClass]['code'] !== T_STRING
                 && $tokens[$originalClass]['code'] !== T_NS_SEPARATOR)
             ) {
@@ -982,13 +989,13 @@ class Drupal_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_S
             }
 
             // Now comes the "as" keyword signaling an alias name for the class.
-            $asPtr = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($originalClass + 1), null, true);
+            $asPtr = $phpcsFile->findNext(Tokens::$emptyTokens, ($originalClass + 1), null, true);
             if ($asPtr === false || $tokens[$asPtr]['code'] !== T_AS) {
                 continue;
             }
 
             // Now comes the name the class is aliased to.
-            $aliasPtr = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($asPtr + 1), null, true);
+            $aliasPtr = $phpcsFile->findNext(Tokens::$emptyTokens, ($asPtr + 1), null, true);
             if ($aliasPtr === false || $tokens[$aliasPtr]['code'] !== T_STRING
                 || $tokens[$aliasPtr]['content'] !== $typeHint
             ) {

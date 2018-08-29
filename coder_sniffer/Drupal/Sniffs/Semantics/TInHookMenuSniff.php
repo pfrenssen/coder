@@ -1,11 +1,17 @@
 <?php
 /**
- * Drupal_Sniffs_Semanitcs_TInHookMenuSniff.
+ * \Drupal\Sniffs\Semantics\TInHookMenuSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\Semantics;
+
+use Drupal\Sniffs\Semantics\FunctionDefinition;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Checks that t() is not used in hook_menu().
@@ -14,22 +20,22 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Semantics_TInHookMenuSniff extends Drupal_Sniffs_Semantics_FunctionDefinition
+class TInHookMenuSniff extends FunctionDefinition
 {
 
 
     /**
      * Process this function definition.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile   The file being scanned.
-     * @param int                  $stackPtr    The position of the function name in the stack.
-     *                                           name in the stack.
-     * @param int                  $functionPtr The position of the function keyword in the stack.
-     *                                           keyword in the stack.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the function name in the stack.
+     *                                                 name in the stack.
+     * @param int                         $functionPtr The position of the function keyword in the stack.
+     *                                                 keyword in the stack.
      *
      * @return void
      */
-    public function processFunction(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $functionPtr)
+    public function processFunction(File $phpcsFile, $stackPtr, $functionPtr)
     {
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -6));
         // Only check in *.module files.
@@ -52,7 +58,7 @@ class Drupal_Sniffs_Semantics_TInHookMenuSniff extends Drupal_Sniffs_Semantics_F
         while ($string !== false) {
             if ($tokens[$string]['content'] === 't') {
                 $opener = $phpcsFile->findNext(
-                    PHP_CodeSniffer_Tokens::$emptyTokens,
+                    Tokens::$emptyTokens,
                     ($string + 1),
                     null,
                     true

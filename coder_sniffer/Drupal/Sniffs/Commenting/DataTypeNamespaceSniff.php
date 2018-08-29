@@ -1,11 +1,17 @@
 <?php
 /**
- * Drupal_Sniffs_Commenting_DataTypeNamespaceSniff.
+ * \Drupal\Sniffs\Commenting\DataTypeNamespaceSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\Commenting;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Checks that data types in param, return, var tags are fully namespaced.
@@ -14,7 +20,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Commenting_DataTypeNamespaceSniff implements PHP_CodeSniffer_Sniff
+class DataTypeNamespaceSniff implements Sniff
 {
 
 
@@ -33,13 +39,13 @@ class Drupal_Sniffs_Commenting_DataTypeNamespaceSniff implements PHP_CodeSniffer
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -55,7 +61,7 @@ class Drupal_Sniffs_Commenting_DataTypeNamespaceSniff implements PHP_CodeSniffer
         }
 
         $classPtr = $phpcsFile->findPrevious(
-            PHP_CodeSniffer_Tokens::$emptyTokens,
+            Tokens::$emptyTokens,
             ($semiColon - 1),
             null,
             true

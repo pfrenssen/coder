@@ -1,6 +1,10 @@
 <?php
 
-class Drupal_Sniffs_Array_DisallowLongArraySyntaxUnitTest extends CoderSniffUnitTest
+namespace Drupal\Sniffs\Arrays;
+
+use Drupal\Test\CoderSniffUnitTest;
+
+class DisallowLongArraySyntaxUnitTest extends CoderSniffUnitTest
 {
 
     /**
@@ -11,7 +15,7 @@ class Drupal_Sniffs_Array_DisallowLongArraySyntaxUnitTest extends CoderSniffUnit
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         switch ($testFile) {
             case 'DisallowLongArraySyntaxUnitTest.2.inc':
@@ -32,7 +36,7 @@ class Drupal_Sniffs_Array_DisallowLongArraySyntaxUnitTest extends CoderSniffUnit
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 
@@ -44,7 +48,7 @@ class Drupal_Sniffs_Array_DisallowLongArraySyntaxUnitTest extends CoderSniffUnit
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles() {
+    protected function getTestFiles($testFileBase) {
         return array(
                 __DIR__ . '/disallow_long_array_d7/DisallowLongArraySyntaxUnitTest.1.inc',
                 __DIR__ . '/disallow_long_array_d8/DisallowLongArraySyntaxUnitTest.2.inc',
