@@ -33,4 +33,5 @@ before_script:
 
 script:
   - ./vendor/bin/phpunit
-  - ./vendor/bin/phpcs
+  - ./vendor/bin/phpcs -p
+  - ./vendor/bin/phpcs -p --standard=coder_sniffer/Drupal/Test/phpcs-ruleset.xml coder_sniffer/Drupal/Test/good/ --ignore=coder_sniffer/Drupal/Test/good/GoodUnitTest.php
