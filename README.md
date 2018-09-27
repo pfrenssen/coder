@@ -116,7 +116,9 @@ Thank you!
 
 
 ## Maintainers
-Pieter Frenssen, https://www.drupal.org/u/pfrenssen
+
+- Pieter Frenssen, https://www.drupal.org/u/pfrenssen
+- Michael Welford, hhttps://www.drupal.org/user/66535
 
 
 ## Credits
