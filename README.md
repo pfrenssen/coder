@@ -25,7 +25,7 @@ First, make sure Composer is installed correctly:
 If you get composer not found or similar, follow Composer's installation
 instructions.
 
-Install Coder (8.x-2.x) in your global Composer directory in your home directory
+Install Coder (8.x-3.x) in your global Composer directory in your home directory
 (`~/.composer`):
 
     composer global require drupal/coder
