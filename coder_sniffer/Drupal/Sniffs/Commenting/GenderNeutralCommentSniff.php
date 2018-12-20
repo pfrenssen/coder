@@ -50,7 +50,7 @@ class GenderNeutralCommentSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        if ((bool) preg_match('/(^|\W)(he|she|him|his|her|hers)($|\W)/i', $tokens[$stackPtr]['content']) === true) {
+        if ((bool) preg_match('/(^|\W)(he|her|hers|him|his|she)($|\W)/i', $tokens[$stackPtr]['content']) === true) {
             $phpcsFile->addError('Unnecessarily gendered language in a comment', $stackPtr, 'GenderNeutral');
         }
 
