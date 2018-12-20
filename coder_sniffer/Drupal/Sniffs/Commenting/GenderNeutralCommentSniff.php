@@ -22,6 +22,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 class GenderNeutralCommentSniff implements Sniff
 {
 
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -49,10 +50,11 @@ class GenderNeutralCommentSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        if (preg_match('/(^|\W)(he|she|him|his|her|hers)($|\W)/i', $tokens[$stackPtr]['content'])) {
+        if ((bool) preg_match('/(^|\W)(he|she|him|his|her|hers)($|\W)/i', $tokens[$stackPtr]['content']) === true) {
             $phpcsFile->addError('Unnecessarily gendered language in a comment', $stackPtr, 'GenderNeutral');
         }
 
     }//end process()
+
 
 }//end class
