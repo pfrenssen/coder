@@ -29,4 +29,6 @@
  */
 function example() {
   // They looked at him.
+  // The sniff only checked comments not code.
+  $a = "The regex finds he, her, hers, him, his and she.";
 }
