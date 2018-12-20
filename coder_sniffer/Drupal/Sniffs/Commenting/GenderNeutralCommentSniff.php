@@ -1,38 +1,33 @@
 <?php
 /**
- * PHP_CodeSniffer_Sniffs_Drupal_Commenting_InlineCommentSniff.
- *
- * PHP version 5
+ * Parses and verifies comment language.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
+namespace Drupal\Sniffs\Commenting;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * PHP_CodeSniffer_Sniffs_Drupal_Sniffs_Commenting_GenderNeutralCommentSniff.
- *
- * Checks that gender specific language does not appear in comments.
+ * Parses and verifies that comments use gender neutral language.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class Drupal_Sniffs_Commenting_GenderNeutralCommentSniff implements PHP_CodeSniffer_Sniff
+class GenderNeutralCommentSniff implements Sniff
 {
 
-    protected $error = 'Unnecessarily gendered language in a comment';
-
     /**
-     * A list of tokenizers this sniff supports.
+     * The error message.
      *
-     * @var array
+     * @var string
      */
-    public $supportedTokenizers = array(
-                                   'PHP',
-                                   'JS',
-                                  );
-
+    protected $error = 'Unnecessarily gendered language in a comment';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -52,13 +47,13 @@ class Drupal_Sniffs_Commenting_GenderNeutralCommentSniff implements PHP_CodeSnif
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -80,18 +75,18 @@ class Drupal_Sniffs_Commenting_GenderNeutralCommentSniff implements PHP_CodeSnif
     /**
      * Checks the indentation level of the comment contents.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
-     * @param string               $comment   The comment to be checked.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
+     * @param string                      $comment   The comment to be checked.
      *
      * @return void
      */
-    protected function checkComment(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $comment) {
+    protected function checkComment(File $phpcsFile, $stackPtr, $comment) {
         if (preg_match('/(^|\W)(he|she|him|his|her|hers)($|\W)/i', $comment)) {
             $warning = 'Unnecessarily gendered language in a comment';
             $phpcsFile->addError($warning, $stackPtr, 'GenderNeutral');
         }
-    }
+    }//end checkComment()
 
 }//end class
