@@ -7,6 +7,7 @@ use Drupal\Test\CoderSniffUnitTest;
 class GenderNeutralCommentUnitTest extends CoderSniffUnitTest
 {
 
+
     /**
      * Returns the lines where errors should occur.
      *
