@@ -101,16 +101,19 @@ class ArraySniff implements Sniff
         }
 
         if ($isInlineArray === true) {
-            // Check if this array contains at least 3 elements and exceeds the 80
-            // character line length.
+            // Check if this array specifies keys, contains at least 3 elements,
+            // and exceeds the 80 character line length.
             if ($tokens[$tokens[$stackPtr][$parenthesis_closer]]['column'] > 80) {
-                $comma1 = $phpcsFile->findNext(T_COMMA, ($stackPtr + 1), $tokens[$stackPtr][$parenthesis_closer]);
-                if ($comma1 !== false) {
-                    $comma2 = $phpcsFile->findNext(T_COMMA, ($comma1 + 1), $tokens[$stackPtr][$parenthesis_closer]);
-                    if ($comma2 !== false) {
-                        $error = 'If the line declaring an array spans longer than 80 characters, each element should be broken into its own line';
-                        $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration');
-                    }
+                $doubleArrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($stackPtr + 1), $tokens[$stackPtr][$parenthesis_closer]);
+                if ($doubleArrow !== false) {
+                  $comma1 = $phpcsFile->findNext(T_COMMA, ($stackPtr + 1), $tokens[$stackPtr][$parenthesis_closer]);
+                  if ($comma1 !== false) {
+                      $comma2 = $phpcsFile->findNext(T_COMMA, ($comma1 + 1), $tokens[$stackPtr][$parenthesis_closer]);
+                      if ($comma2 !== false) {
+                          $error = 'If the line declaring an array spans longer than 80 characters, each element should be broken into its own line';
+                          $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration');
+                      }
+                  }
                 }
             }
 
