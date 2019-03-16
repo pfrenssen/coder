@@ -8,7 +8,6 @@ cache:
   directories:
     - $HOME/.composer/cache
     - vendor
-    - composer.lock
 
 matrix:
   fast_finish: true
@@ -26,10 +25,9 @@ before_install:
   - phpenv config-rm xdebug.ini || echo 'No xdebug config.'
 
 before_script:
-  # Run install in case the cached vendor directory is not present.
+  # Running composer install without a lock file will also update cached
+  # dependencies in vendor.
   - composer install
-  # Always run tests with up to date dependencies.
-  - composer update
 
 script:
   - ./vendor/bin/phpunit
