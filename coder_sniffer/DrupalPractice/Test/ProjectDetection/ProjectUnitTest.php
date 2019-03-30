@@ -3,6 +3,7 @@
 namespace DrupalPractice\ProjectDetection;
 
 use DrupalPractice\Project;
+use PHP_CodeSniffer\Files\File;
 
 /**
  * Tests that project and version detection works.
@@ -23,7 +24,7 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->phpcsFile = $this->getMockBuilder('PHP_CodeSniffer_File')
+        $this->phpcsFile = $this->getMockBuilder(File::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -33,9 +34,6 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
      */
     public function testInfoFileDetection()
     {
-				// @see https://www.drupal.org/project/coder/issues/2962880
-        $this->markTestIncomplete('This test relies on code that has been removed in PHP_CodeSniffer 3.x.');
-
         $this->phpcsFile->expects($this->any())
           ->method('getFilename')
           // The file does not exist, but doesn't matter for this test.
@@ -50,9 +48,6 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
      */
     public function testInfoFileNestedDetection()
     {
-				// @see https://www.drupal.org/project/coder/issues/2962880
-        $this->markTestIncomplete('This test relies on code that has been removed in PHP_CodeSniffer 3.x.');
-
         $this->phpcsFile->expects($this->any())
           ->method('getFilename')
           // The file does not exist, but doesn't matter for this test.
@@ -68,9 +63,6 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
      */
     public function testCoreVersion($filename, $core_version)
     {
-				// @see https://www.drupal.org/project/coder/issues/2962880
-        $this->markTestIncomplete('This test relies on code that has been removed in PHP_CodeSniffer 3.x.');
-
         $this->phpcsFile->expects($this->any())
           ->method('getFilename')
           // The file does not exist, but doesn't matter for this test.
