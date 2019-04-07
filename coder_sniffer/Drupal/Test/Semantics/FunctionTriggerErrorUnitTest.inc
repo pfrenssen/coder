@@ -14,8 +14,8 @@
 @trigger_error('\Drupal\Some\Class\Foo is deprecated in Drupal:8.5.0. Use \Drupal\Foo\Bar instead. See http://www.drupal.org/node/2908490', E_USER_DEPRECATED);
 // Alternative using __NAMESPACE__.
 @trigger_error(__NAMESPACE__ . '\Foo is deprecated in Drupal:8.5.12. It will be removed from Drupal 9.0. Use \Drupal\Foo\Bar instead. See http://www.drupal.org/node/2908490', E_USER_DEPRECATED);
-// Alternative https url.
-@trigger_error("\Drupal\Some\Class\Foo is deprecated in Drupal:8.11.0. Use \Drupal\Foo. See https://www.drupal.org/node/2908490", E_USER_DEPRECATED);
+// Alternative https url and cater for E_User_Deprecated in non-upper case.
+@trigger_error("\Drupal\Some\Class\Foo is deprecated in Drupal:8.11.0. Use \Drupal\Foo. See https://www.drupal.org/node/2908490", E_User_Deprecated);
 // Alternative syntax for contrib.
 @trigger_error('Function foo_bar() is deprecated in My_module:8.x-2.0. Use bar_baz() instead. See https://www.drupal.org/node/2908490', E_USER_DEPRECATED);
 
@@ -29,7 +29,7 @@
 // Wrong first part - nothing before 'is deprecated'.
 @trigger_error(__NAMESPACE__ . ' is deprecated in Drupal:8.5.0. It will be removed from Drupal 9.0.0. Use \Drupal\Core\Messenger\MessengerInterface::addMessage() instead. See https://www.drupal.org/node/2774931', E_USER_DEPRECATED);
 // Missing 'extra info' part.
-@trigger_error('drupal_set_message() is deprecated in Drupal:8.5.0. See https://www.drupal.org/node/2774931', E_USER_DEPRECATED);
+@trigger_error('drupal_set_message() is deprecated in Drupal:8.5.0. See https://www.drupal.org/node/2774931', E_User_Deprecated);
 // String would be OK but is in more than one part.
 @trigger_error('drupal_set_message() is deprecated in Drupal:8.5.0. ' . 'It will be removed from Drupal 9.0.0. Use \Drupal\Core\Messenger\MessengerInterface::addMessage() instead. See https://www.drupal.org/node/2774931', E_USER_DEPRECATED);
 

@@ -62,7 +62,7 @@ class FunctionTriggerErrorSniff extends FunctionCall
         }
 
         // Only check deprecation messages.
-        if ($tokens[$this->getArgument(2)['start']]['content'] !== 'E_USER_DEPRECATED') {
+        if (strcasecmp($tokens[$this->getArgument(2)['start']]['content'], 'E_USER_DEPRECATED') !== 0) {
             return;
         }
 
