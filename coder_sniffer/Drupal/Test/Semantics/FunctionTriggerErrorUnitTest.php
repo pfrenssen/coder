@@ -47,11 +47,13 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
             46 => 1,
             48 => 1,
             50 => 1,
-            54 => 1,
+            52 => 1,
             56 => 1,
             58 => 1,
             60 => 1,
             62 => 1,
+            64 => 1,
+            66 => 1,
         );
 
     }//end getWarningList()

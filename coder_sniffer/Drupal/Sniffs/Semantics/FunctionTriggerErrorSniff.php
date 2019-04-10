@@ -89,23 +89,30 @@ class FunctionTriggerErrorSniff extends FunctionCall
             $error = "The deprecation message %s does not match the standard format: %%thing%% is deprecated in %%in-version%%. %%extra-info%%. See %%cr-link%%";
             $phpcsFile->addError($error, $argument['start'], 'TriggerErrorTextLayout', array($message_text));
         } else {
-            // The text follows the basic layout. Now check the version, which
-            // should be Drupal:n.n.n or Project:n.x-n.n. All numbers can be one
-            // or two digits.
+            // The text follows the basic layout. Now check that the version
+            // matches drupal:n.n.n or project:n.x-n.n. The text must be all
+            // lower case and numbers can be one or two digits.
             $in_version = $matches[2];
-            if (preg_match('/^Drupal:\d{1,2}\.\d{1,2}\.\d{1,2}$/', $in_version) === 0
-                && preg_match('/^[A-Z][\w]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $in_version) === 0
+            if (preg_match('/^drupal:\d{1,2}\.\d{1,2}\.\d{1,2}$/', $in_version) === 0
+                && preg_match('/^[a-z\d_]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $in_version) === 0
             ) {
-                $error = "The deprecation version '%s' does not match the standard: Drupal:n.n.n or Project:n.x-n.n";
+                $error = "The deprecation version '%s' does not match the standard: drupal:n.n.n or project:n.x-n.n";
                 $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorVersion', array($in_version));
             }
 
             // Check the 'See' link.
             $cr_link = $matches[4];
-            if (preg_match('[^http(s*)://www.drupal.org/node/(\d+)$]', $cr_link) === 0
-            ) {
-                $error = "The change-record url '%s' does not match the standard: http(s)://www.drupal.org/node/n";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrl', array($cr_link));
+            // Allow for the alternative 'node' or 'project/aaa/issues' format.
+            preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $cr_link, $matches);
+            // If matches[4] is not blank it means that the url is correct but it
+            // ends with a period. As this can be a common mistake give a specific
+            // message to assist in fixing.
+            if (isset($matches[4]) === true && empty($matches[4]) === false) {
+                $error = "The 'See' url '%s' should not end with a period.";
+                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorPeriodAfterSeeUrl', array($cr_link));
+            } else if (empty($matches) === true) {
+                $error = "The 'See' url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
+                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrlFormat', array($cr_link));
             }
         }//end if
 
