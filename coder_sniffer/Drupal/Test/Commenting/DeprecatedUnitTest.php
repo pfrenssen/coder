@@ -37,6 +37,8 @@ class DeprecatedUnitTest extends CoderSniffUnitTest
         return array(
                 37 => 2,  // version x 2.
                 39 => 1,  // see url.
+                47 => 2,  // version x 2.
+                49 => 1,  // see url.
                );
 
     }//end getWarningList()

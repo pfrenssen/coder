@@ -11,7 +11,6 @@ namespace Drupal\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
-use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Ensures standard format of a @deprecated text.
@@ -92,14 +91,14 @@ class DeprecatedSniff implements Sniff
             $phpcsFile->addError($error, $stackPtr, 'IncorrectTextLayout', array($depText));
         } else {
             // The text follows the basic layout. Now check that the versions
-            // match Drupal:n.n.n or Project:n.x-n.n. The numbers can be one or
-            // two digits.
+            // match drupal:n.n.n or project:n.x-n.n. The text must be all lower
+            // case and numbers can be one or two digits.
             foreach (array('in-version' => $matches[1], 'removal-version' => $matches[2]) as $name => $version) {
-                if (preg_match('/^Drupal:\d{1,2}\.\d{1,2}\.\d{1,2}$/', $version) === 0
-                    && preg_match('/^[A-Z][\w]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $version) === 0
+                if (preg_match('/^drupal:\d{1,2}\.\d{1,2}\.\d{1,2}$/', $version) === 0
+                    && preg_match('/^\w+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $version) === 0
                 ) {
-                    $error = "The deprecation %s '%s' does not match the standard: Drupal:n.n.n or Project:n.x-n.n";
-                    $phpcsFile->addWarning($error, $stackPtr, 'VersionFormat', array($name, $version));
+                    $error = "The deprecation %s '%s' does not match the standard: drupal:n.n.n or project:n.x-n.n";
+                    $phpcsFile->addWarning($error, $stackPtr, 'DeprecatedVersionFormat', array($name, $version));
                 }
             }
         }
@@ -108,17 +107,25 @@ class DeprecatedSniff implements Sniff
         $seeTag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($stackPtr + 1), $commentEnd, false, '@see');
         if ($seeTag === false) {
             $error = 'Each @deprecated tag must have a @see tag immediately following it.';
-            $phpcsFile->addError($error, $stackPtr, 'MissingSeeTag');
+            $phpcsFile->addError($error, $stackPtr, 'DeprecatedMissingSeeTag');
             return;
         }
 
         // Check the format of the @see url.
         $string  = $phpcsFile->findNext(T_DOC_COMMENT_STRING, ($seeTag + 1), $commentEnd);
         $cr_link = $tokens[$string]['content'];
-        if (preg_match('[^http(s*)://www.drupal.org/node/(\d+)$]', $cr_link) === 0
-        ) {
-            $error = "The change-record @see url '%s' does not match the standard: http(s)://www.drupal.org/node/n";
-            $phpcsFile->addWarning($error, $seeTag, 'SeeUrl', array($cr_link));
+        // Allow for the alternative 'node' or 'project/aaa/issues' format.
+        preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $cr_link, $matches);
+        // if matches[4] is not blank it means that the url is correct but it
+        // ends with a period. As this can be a common mistake give a specific
+        // message to assist in fixing.
+        if (isset($matches[4]) && !empty($matches[4])) {
+            $error = "The @see url '%s' should not end with a period.";
+            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedPeriodAfterSeeUrl', array($cr_link));
+        }
+        elseif (empty($matches)) {
+            $error = "The @see url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
+            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedWrongSeeUrlFormat', array($cr_link));
         }
 
     }//end process()
