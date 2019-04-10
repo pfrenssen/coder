@@ -44,7 +44,7 @@ function y() {
 /**
  * This function does something.
  *
- * @Deprecated in Drupal:8.4.0 and will be removed from Drupal:9.0.0.
+ * @deprecated in My_Proj:8.x-1.8 and will be removed from my_Proj:8.x-2.
  *   Both version formats are incorrect, and the see url ends with a period.
  * @see http://www.drupal.org/node/7890.
  */

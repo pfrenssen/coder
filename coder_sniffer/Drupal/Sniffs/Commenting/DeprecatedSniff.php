@@ -95,7 +95,7 @@ class DeprecatedSniff implements Sniff
             // case and numbers can be one or two digits.
             foreach (array('in-version' => $matches[1], 'removal-version' => $matches[2]) as $name => $version) {
                 if (preg_match('/^drupal:\d{1,2}\.\d{1,2}\.\d{1,2}$/', $version) === 0
-                    && preg_match('/^\w+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $version) === 0
+                    && preg_match('/^[a-z\d_]:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $version) === 0
                 ) {
                     $error = "The deprecation %s '%s' does not match the standard: drupal:n.n.n or project:n.x-n.n";
                     $phpcsFile->addWarning($error, $stackPtr, 'DeprecatedVersionFormat', array($name, $version));
