@@ -116,14 +116,13 @@ class DeprecatedSniff implements Sniff
         $cr_link = $tokens[$string]['content'];
         // Allow for the alternative 'node' or 'project/aaa/issues' format.
         preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $cr_link, $matches);
-        // if matches[4] is not blank it means that the url is correct but it
+        // If matches[4] is not blank it means that the url is correct but it
         // ends with a period. As this can be a common mistake give a specific
         // message to assist in fixing.
-        if (isset($matches[4]) && !empty($matches[4])) {
+        if (isset($matches[4]) === true && empty($matches[4]) === false) {
             $error = "The @see url '%s' should not end with a period.";
             $phpcsFile->addWarning($error, $seeTag, 'DeprecatedPeriodAfterSeeUrl', array($cr_link));
-        }
-        elseif (empty($matches)) {
+        } else if (empty($matches) === true) {
             $error = "The @see url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
             $phpcsFile->addWarning($error, $seeTag, 'DeprecatedWrongSeeUrlFormat', array($cr_link));
         }
