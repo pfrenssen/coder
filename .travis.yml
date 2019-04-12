@@ -8,12 +8,6 @@ matrix:
     - php: 7.1
     - php: 7.2
     - php: 7.3
-    - php: nightly
-    - php: hhvm
-
-  allow_failures:
-    - php: hhvm
-    - php: nightly
 
 before_install:
   # Speed up build time by disabling Xdebug when its not needed.
