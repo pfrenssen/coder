@@ -3,7 +3,6 @@
 namespace DrupalPractice\ProjectDetection;
 
 use DrupalPractice\Project;
-use PHP_CodeSniffer\Files\File;
 
 /**
  * Tests that project and version detection works.
@@ -14,7 +13,7 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
     /**
      * The mocked file object for testing.
      *
-     * @var PHP_CodeSniffer_File|PHPUnit_Framework_MockObject_MockObject
+     * @var \PHP_CodeSniffer\Files\File|PHPUnit_Framework_MockObject_MockObject
      */
     protected $phpcsFile;
 
@@ -24,7 +23,7 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->phpcsFile = $this->getMockBuilder(File::class)
+        $this->phpcsFile = $this->getMockBuilder('\PHP_CodeSniffer\Files\File')
             ->disableOriginalConstructor()
             ->getMock();
     }
