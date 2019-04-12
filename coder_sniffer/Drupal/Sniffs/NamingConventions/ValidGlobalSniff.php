@@ -34,6 +34,7 @@ class ValidGlobalSniff implements Sniff
                            '$base_url',
                            '$channel',
                            '$conf',
+                           '$config',
                            '$config_directories',
                            '$cookie_domain',
                            '$databases',
