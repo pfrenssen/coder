@@ -1,6 +1,6 @@
 # Coder
 
-[![Build Status](https://travis-ci.org/pfrenssen/coder.svg?branch=8.x-2.x)](https://travis-ci.org/pfrenssen/coder)
+[![Build Status](https://travis-ci.org/pfrenssen/coder.svg?branch=8.x-3.x)](https://travis-ci.org/pfrenssen/coder)
 
 Coder is a library for automated Drupal code reviews and coding standard fixes. It
 defines rules for [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
@@ -25,7 +25,7 @@ First, make sure Composer is installed correctly:
 If you get composer not found or similar, follow Composer's installation
 instructions.
 
-Install Coder (8.x-2.x) in your global Composer directory in your home directory
+Install Coder (8.x-3.x) in your global Composer directory in your home directory
 (`~/.composer`):
 
     composer global require drupal/coder
@@ -81,12 +81,14 @@ Drupal Code Sniffer can be used with various editors.
 
 Editors:
 
+- [Atom](https://www.drupal.org/node/1419996)
 - [Eclipse](https://www.drupal.org/node/1420004)
 - [Komodo](https://www.drupal.org/node/1419996)
 - [Netbeans](https://www.drupal.org/node/1420008)
 - [PhpStorm](https://www.jetbrains.com/help/phpstorm/php-code-sniffer.html)
 - [Sublime Text](https://www.drupal.org/node/1419996)
 - [Vim](https://www.drupal.org/node/1419996)
+- [Visual Studio Code (VSCode)](https://www.drupal.org/node/1419996)
 
 
 ## Automated Testing (PHPUnit + PHPCS)
@@ -108,7 +110,7 @@ Then execute the coding standards checker on Coder itself:
 ## Contributing
 
 1. Make sure an issue exists at https://www.drupal.org/project/issues/coder
-2. Create a [pull request](https://help.github.com/articles/using-pull-requests/) against https://github.com/pfrenssen/coder
+2. Create a [Pull Request](https://help.github.com/articles/using-pull-requests/) against https://github.com/pfrenssen/coder
 3. Post a link to the pull request to the issue on drupal.org and set the issue to
    "needs review"
 
@@ -116,7 +118,10 @@ Thank you!
 
 
 ## Maintainers
-Pieter Frenssen, https://www.drupal.org/u/pfrenssen
+
+- Pieter Frenssen, https://www.drupal.org/u/pfrenssen
+- Michael Welford, https://www.drupal.org/u/mikejw
+- Klaus Purer, https://www.drupal.org/u/klausi
 
 
 ## Credits

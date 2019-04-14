@@ -9,7 +9,6 @@
 
 namespace Drupal\Sniffs\Semantics;
 
-use Drupal\Sniffs\Semantics\FunctionDefinition;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 

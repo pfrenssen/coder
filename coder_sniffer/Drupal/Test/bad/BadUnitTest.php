@@ -32,7 +32,7 @@ class BadUnitTest extends CoderSniffUnitTest
                         3 => 2,
                         4 => 1,
                         5 => 1,
-                        6 => 2,
+                        6 => 1,
                         7 => 1,
                         8 => 1,
                         9 => 1,
@@ -371,7 +371,8 @@ class BadUnitTest extends CoderSniffUnitTest
                         815 => 1,
                         820 => 1,
                         827 => 1,
-                        833 => 2,
+                        829 => 1,
+                        835 => 2,
                        );
         }
         return array();

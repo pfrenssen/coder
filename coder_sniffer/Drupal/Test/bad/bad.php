@@ -825,6 +825,8 @@ t("");
 
 /**
  * Doc comment with a white space at the end. 
+ *
+ * He made a gendered comment.
  */
 function test28() {
 
