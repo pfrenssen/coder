@@ -8,6 +8,9 @@
  <arg name="extensions" value="php,module,inc,install,test,profile,theme,yml"/>
 
  <autoload>../Drupal/autoload.php</autoload>
+ <!-- We use a static method from a sniff from the other standard, so we need
+ this autoload hack here. -->
+ <autoload>../Drupal/Sniffs/InfoFiles/ClassFilesSniff.php</autoload>
 
  <rule ref="Internal.NoCodeFound">
   <!-- Empty files are fine, might be used for testing. -->
