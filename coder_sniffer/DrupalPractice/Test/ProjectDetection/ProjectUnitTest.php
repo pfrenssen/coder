@@ -13,7 +13,7 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
     /**
      * The mocked file object for testing.
      *
-     * @var PHP_CodeSniffer_File|PHPUnit_Framework_MockObject_MockObject
+     * @var \PHP_CodeSniffer\Files\File|PHPUnit_Framework_MockObject_MockObject
      */
     protected $phpcsFile;
 
@@ -23,7 +23,7 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->phpcsFile = $this->getMockBuilder('PHP_CodeSniffer_File')
+        $this->phpcsFile = $this->getMockBuilder('\PHP_CodeSniffer\Files\File')
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -33,9 +33,6 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
      */
     public function testInfoFileDetection()
     {
-				// @see https://www.drupal.org/project/coder/issues/2962880
-        $this->markTestIncomplete('This test relies on code that has been removed in PHP_CodeSniffer 3.x.');
-
         $this->phpcsFile->expects($this->any())
           ->method('getFilename')
           // The file does not exist, but doesn't matter for this test.
@@ -50,9 +47,6 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
      */
     public function testInfoFileNestedDetection()
     {
-				// @see https://www.drupal.org/project/coder/issues/2962880
-        $this->markTestIncomplete('This test relies on code that has been removed in PHP_CodeSniffer 3.x.');
-
         $this->phpcsFile->expects($this->any())
           ->method('getFilename')
           // The file does not exist, but doesn't matter for this test.
@@ -68,9 +62,6 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
      */
     public function testCoreVersion($filename, $core_version)
     {
-				// @see https://www.drupal.org/project/coder/issues/2962880
-        $this->markTestIncomplete('This test relies on code that has been removed in PHP_CodeSniffer 3.x.');
-
         $this->phpcsFile->expects($this->any())
           ->method('getFilename')
           // The file does not exist, but doesn't matter for this test.
