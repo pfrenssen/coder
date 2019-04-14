@@ -111,7 +111,21 @@ class HookCommentSniff implements Sniff
                     }
                 }
             }//end if
+
+            return;
         }//end if
+
+        // Check if the doc block just repeats the function name with
+        // "Implements example_hook_name()".
+        $functionName = $phpcsFile->getDeclarationName($stackPtr);
+        if ($functionName !== null && preg_match("/^[\s]*Implements $functionName\(\)\.$/i", $shortContent) === 1) {
+            $error = 'Hook implementations must be documented with "Implements hook_example()."';
+            $fix   = $phpcsFile->addFixableError($error, $short, 'HookRepeat');
+            if ($fix === true) {
+                $newComment = preg_replace('/Implements [^_]+/', 'Implements hook', $shortContent);
+                $phpcsFile->fixer->replaceToken($short, $newComment);
+            }
+        }
 
     }//end process()
 
