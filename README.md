@@ -121,6 +121,7 @@ Thank you!
 
 - Pieter Frenssen, https://www.drupal.org/u/pfrenssen
 - Michael Welford, https://www.drupal.org/u/mikejw
+- Klaus Purer, https://www.drupal.org/u/klausi
 
 
 ## Credits
