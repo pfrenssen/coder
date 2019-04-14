@@ -30,5 +30,11 @@ before_script:
 
 script:
   - ./vendor/bin/phpunit
+  # Check that the sniffs themselves follow the PHPCS coding standard.
   - ./vendor/bin/phpcs -p
+  # Ensure that a custom standard can be invoked and the auto-loading of
+  # abstract classes works.
   - ./vendor/bin/phpcs -p --standard=coder_sniffer/Drupal/Test/phpcs-ruleset.xml coder_sniffer/Drupal/Test/good/ --ignore=coder_sniffer/Drupal/Test/good/GoodUnitTest.php
+  # Ensure that the DrupalPractice standard can be invoked standalone and the
+  # auto-loading of abstract classes works.
+  - ./vendor/bin/phpcs -p --standard=coder_sniffer/DrupalPractice coder_sniffer/Drupal/Test/good/ --ignore=coder_sniffer/Drupal/Test/good/GoodUnitTest.php
