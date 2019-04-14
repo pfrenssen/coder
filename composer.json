@@ -22,7 +22,7 @@
     "autoload": {
         "psr-0": {
             "Drupal\\": "coder_sniffer/Drupal/",
-            "DrupalPractice\\": "coder_sniffer/Drupal/"
+            "DrupalPractice\\": "coder_sniffer/DrupalPractice/"
         }
     },
     "require-dev": {
