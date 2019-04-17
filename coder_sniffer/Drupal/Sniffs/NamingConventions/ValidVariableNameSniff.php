@@ -63,22 +63,27 @@ class ValidVariableNameSniff extends AbstractVariableSniff
                 return;
             }
 
-          // Plugin annotations may have underscores in class properties.
-          // For example, see \Drupal\Core\Field\Annotation\FieldFormatter.
-          // The only class named "Plugin" in Drupal core is
-          // \Drupal\Component\Annotation\Plugin while many Views plugins
-          // extend \Drupal\views\Annotation\ViewsPluginAnnotationBase.
-          if ($extendsName !== FALSE && in_array($extendsName, [
-              'Plugin',
-              'ViewsPluginAnnotationBase',
-            ])) {
-            return;
-          }
-          $implementsNames = $phpcsFile->findImplementedInterfaceNames($classPtr);
-          if ($implementsNames !== FALSE && in_array('AnnotationInterface', $implementsNames)) {
-            return;
-          }
-        }
+            // Plugin annotations may have underscores in class properties.
+            // For example, see \Drupal\Core\Field\Annotation\FieldFormatter.
+            // The only class named "Plugin" in Drupal core is
+            // \Drupal\Component\Annotation\Plugin while many Views plugins
+            // extend \Drupal\views\Annotation\ViewsPluginAnnotationBase.
+            if ($extendsName !== true && in_array(
+                $extendsName,
+                [
+                 'Plugin',
+                 'ViewsPluginAnnotationBase',
+                ]
+            ) !== false
+            ) {
+                return;
+            }
+
+            $implementsNames = $phpcsFile->findImplementedInterfaceNames($classPtr);
+            if ($implementsNames !== true && in_array('AnnotationInterface', $implementsNames) !== false) {
+                return;
+            }
+        }//end if
 
         $error = 'Class property %s should use lowerCamel naming without underscores';
         $data  = array($tokens[$stackPtr]['content']);
