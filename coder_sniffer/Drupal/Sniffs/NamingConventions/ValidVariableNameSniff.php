@@ -68,7 +68,7 @@ class ValidVariableNameSniff extends AbstractVariableSniff
             // The only class named "Plugin" in Drupal core is
             // \Drupal\Component\Annotation\Plugin while many Views plugins
             // extend \Drupal\views\Annotation\ViewsPluginAnnotationBase.
-            if ($extendsName !== true && in_array(
+            if ($extendsName !== false && in_array(
                 $extendsName,
                 [
                  'Plugin',
@@ -80,7 +80,7 @@ class ValidVariableNameSniff extends AbstractVariableSniff
             }
 
             $implementsNames = $phpcsFile->findImplementedInterfaceNames($classPtr);
-            if ($implementsNames !== true && in_array('AnnotationInterface', $implementsNames) !== false) {
+            if ($implementsNames !== false && in_array('AnnotationInterface', $implementsNames) !== false) {
                 return;
             }
         }//end if
