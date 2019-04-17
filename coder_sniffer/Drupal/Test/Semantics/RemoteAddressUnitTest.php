@@ -1,22 +1,11 @@
 <?php
-/**
- * Unit test for Drupal.Semantics.RemoteAddress sniff.
- *
- * @category PHP
- * @package  PHP_CodeSniffer
- * @link     http://pear.php.net/package/PHP_CodeSniffer
- */
 
-/**
- * Test class for Drupal.Semantics.RemoteAddress sniff.
- *
- * @category PHP
- * @package  PHP_CodeSniffer
- * @link     http://pear.php.net/package/PHP_CodeSniffer
- */
+namespace Drupal\Sniffs\Semantics;
+
+use Drupal\Test\CoderSniffUnitTest;
+
 class Drupal_Sniffs_Semantics_RemoteAddressUnitTest extends CoderSniffUnitTest
 {
-
 
     /**
      * Returns the lines where errors should occur.
@@ -28,7 +17,7 @@ class Drupal_Sniffs_Semantics_RemoteAddressUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile)
+    public function getErrorList($testFile = NULL)
     {
         return array(
                 12 => 1,
@@ -48,7 +37,7 @@ class Drupal_Sniffs_Semantics_RemoteAddressUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile)
+    public function getWarningList($testFile = NULL)
     {
         return array();
 

@@ -718,7 +718,7 @@ $x = l('Link text', '<front>');
 
 $x = 'Some markup text with allowed HTML5 <br> tag';
 
-
+$ip = $_SERVER['REMOTE_ADDR'];
 
 // Inline if statements with ? and wrong spacing.
 $x = $y == $z? 23 : 42;
