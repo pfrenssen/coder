@@ -4,7 +4,7 @@ namespace Drupal\Sniffs\Semantics;
 
 use Drupal\Test\CoderSniffUnitTest;
 
-class Drupal_Sniffs_Semantics_RemoteAddressUnitTest extends CoderSniffUnitTest
+class RemoteAddressUnitTest extends CoderSniffUnitTest
 {
 
     /**
