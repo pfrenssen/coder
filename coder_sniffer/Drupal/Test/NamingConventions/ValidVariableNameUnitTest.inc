@@ -24,3 +24,14 @@ class TestAnnotationProperties2 extends ViewsPluginAnnotationBase {
   public $entity_type;
 
 }
+
+class TestAnnotationProperties3 implements AnnotationInterface {
+
+  /**
+   * The entity_type.
+   *
+   * @var string
+   */
+  public $entity_type;
+
+}
