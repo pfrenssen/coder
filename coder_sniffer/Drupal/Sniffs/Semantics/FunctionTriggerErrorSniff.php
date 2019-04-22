@@ -69,11 +69,11 @@ class FunctionTriggerErrorSniff extends FunctionCall
         // Get the first argument passed to trigger_error().
         $argument = $this->getArgument(1);
 
-        // Apart from an optional __NAMESPACE__ concatenated at the start of the
-        // message, the text should be in one string without any further
-        // concatenations. This means that in all cases the 'end' content will
-        // contain the message text to be checked.
-        $message_text = $tokens[$argument['end']]['content'];
+        // Extract the message text to check. Using findNext() will allow for
+        // an optional __NAMESPACE__ concatenated at the start and also cater
+        // for function calls such as sprintf() inside the message.
+        $message_position = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, $argument['start']);
+        $message_text     = $tokens[$message_position]['content'];
 
         // The standard format for @trigger_error() is:
         // %thing% is deprecated in %in-version%. %extra-info%. See %cr-link%
