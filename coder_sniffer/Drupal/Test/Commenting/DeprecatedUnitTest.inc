@@ -50,3 +50,11 @@ function y() {
  */
 function z() {
 }
+
+/**
+ * This doc block will also pass the 'Deprecated' standards checks.
+ *
+ * @deprecated in myproj:8.x-1.8 and will be removed from myproj:8.x-2.0.
+ *   This function block is OK.
+ * @see http://www.drupal.org/node/7890
+ */
