@@ -167,3 +167,12 @@ class PrivateMethodTest {
     return array_filter(array(), [$this, 'usedAsCallback']);
   }
 }
+
+class StrictSchemaEnabled {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $strictConfigSchema = TRUE;
+
+}
