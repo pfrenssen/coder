@@ -17,6 +17,8 @@ class Test {
    *
    * @return TestClass
    *   Yep.
+   *
+   * @throws TestClass
    */
   public function test1(TestClass $y) {
     return $y;

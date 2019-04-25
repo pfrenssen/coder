@@ -17,6 +17,8 @@ class Test {
    *
    * @return \Some\Namespaced\TestClass
    *   Yep.
+   *
+   * @throws \Some\Namespaced\TestClass
    */
   public function test1(TestClass $y) {
     return $y;

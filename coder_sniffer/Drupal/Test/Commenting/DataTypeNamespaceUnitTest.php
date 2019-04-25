@@ -20,7 +20,8 @@ class DataTypeNamespaceUnitTest extends CoderSniffUnitTest
         return array(
                 15 => 1,
                 18 => 1,
-                29 => 1,
+                21 => 1,
+                31 => 1,
                );
 
     }//end getErrorList()
