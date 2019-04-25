@@ -79,14 +79,9 @@ class StrictSchemaDisabledSniff extends AbstractVariableSniff
     protected function isTestClass(File $phpcsFile, $stackPtr)
     {
         // Only applies to test classes, which have Test in the name.
-        $types  = array(
-                   T_CLASS,
-                   T_TRAIT,
-                  );
-        $class  = $phpcsFile->findPrevious($types, ($stackPtr - 1));
-        $name   = $phpcsFile->findNext([T_STRING], $class);
-        $tokens = $phpcsFile->getTokens();
-
+        $tokens   = $phpcsFile->getTokens();
+        $classPtr = key($tokens[$stackPtr]['conditions']);
+        $name     = $phpcsFile->findNext([T_STRING], $classPtr);
         return strpos($tokens[$name]['content'], 'Test') !== false;
 
     }//end isTestClass()

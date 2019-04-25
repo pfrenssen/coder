@@ -21,8 +21,9 @@ class StrictSchemaDisabledUnitTest extends CoderSniffUnitTest
         return array(
             11 => 1,
             15 => 1,
-            26 => 1,
-            39 => 1,
+            25 => 1,
+            29 => 1,
+            42 => 1,
         );
 
     }//end getErrorList()
