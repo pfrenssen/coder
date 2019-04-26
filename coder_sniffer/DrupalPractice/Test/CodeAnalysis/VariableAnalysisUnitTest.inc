@@ -21,3 +21,13 @@ function test3() {
   }
   return $x;
 }
+
+function test4() {
+  return new Foo(function () {
+    $metatags = [];
+    foreach ([1, 2] as $u) {
+      $metatags[] = $u;
+    }
+    return $metatags;
+  });
+}

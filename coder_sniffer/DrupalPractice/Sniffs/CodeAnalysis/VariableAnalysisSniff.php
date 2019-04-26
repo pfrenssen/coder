@@ -1785,7 +1785,9 @@ class VariableAnalysisSniff implements Sniff
         }
 
         // Is there an 'as' token between us and the opening bracket?
-        if ($phpcsFile->findPrevious(T_AS, ($stackPtr - 1), $openPtr) === false) {
+        if (($asPtr = $phpcsFile->findPrevious(T_AS, ($stackPtr - 1), $openPtr)) === false
+            || $this->findContainingBrackets($phpcsFile, $asPtr) !== $openPtr
+        ) {
             return false;
         }
 
