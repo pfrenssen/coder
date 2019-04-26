@@ -14,7 +14,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Checks that data types in param, return, var tags are fully namespaced.
+ * Checks that data types in param, return, var, and throws tags are fully namespaced.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -90,7 +90,8 @@ class DataTypeNamespaceSniff implements Sniff
         while ($tag !== false) {
             if (($tokens[$tag]['content'] === '@var'
                 || $tokens[$tag]['content'] === '@return'
-                || $tokens[$tag]['content'] === '@param')
+                || $tokens[$tag]['content'] === '@param'
+                || $tokens[$tag]['content'] === '@throws')
                 && isset($tokens[($tag + 1)]) === true
                 && $tokens[($tag + 1)]['code'] === T_DOC_COMMENT_WHITESPACE
                 && isset($tokens[($tag + 2)]) === true
