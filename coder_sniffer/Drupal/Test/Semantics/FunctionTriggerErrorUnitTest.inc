@@ -20,6 +20,10 @@
 @trigger_error('Function foo_bar() is deprecated in my_module:8.x-2.0. Use bar_baz() instead. See https://www.drupal.org/project/my_module/issues/2908490', E_USER_DEPRECATED);
 // Cater for sprintf inside the message.
 @trigger_error(sprintf('Function %s is deprecated in drupal:8.5.0. Use foo() instead. See http://www.drupal.org/project/my_module/issues/123', $settings), E_USER_DEPRECATED);
+// Cater for concatenations in the message.
+@trigger_error(__METHOD__ . ' method is deprecated in drupal:8.4.0. Use ' . __CLASS__ . '::bundle() instead. See https://www.drupal.org/project/drupal/issues/12345', E_USER_DEPRECATED);
+// Cater for concatenation with nothing else before 'is deprecated.
+@trigger_error(__NAMESPACE__ . ' is deprecated in drupal:8.5.0. It will be removed from Drupal 9.0.0. Use \Drupal\Core\Messenger\MessengerInterface::addMessage() instead. See https://www.drupal.org/node/2774931', E_USER_DEPRECATED);
 
 // ERRORS on general layout.
 // Wrong first part - missing word.
@@ -28,12 +32,8 @@
 @trigger_error('drupal_set_message() is   deprecated in Drupal:8.5.0. It will be removed from Drupal 9.0.0. Use \Drupal\Core\Messenger\MessengerInterface::addMessage() instead. See https://www.drupal.org/node/2774931', E_USER_DEPRECATED);
 // Wrong first part - no final dot.
 @trigger_error('drupal_set_message() is deprecated in Drupal:8.5.0 Use \Drupal\Core\Messenger\MessengerInterface::addMessage() instead. See https://www.drupal.org/node/2774931', E_USER_DEPRECATED);
-// Wrong first part - nothing before 'is deprecated'.
-@trigger_error(__NAMESPACE__ . ' is deprecated in Drupal:8.5.0. It will be removed from Drupal 9.0.0. Use \Drupal\Core\Messenger\MessengerInterface::addMessage() instead. See https://www.drupal.org/node/2774931', E_USER_DEPRECATED);
 // Missing 'extra info' part.
 @trigger_error('drupal_set_message() is deprecated in Drupal:8.5.0. See https://www.drupal.org/node/2774931', E_User_Deprecated);
-// String would be OK but is in more than one part.
-@trigger_error('drupal_set_message() is deprecated in Drupal:8.5.0. ' . 'It will be removed from Drupal 9.0.0. Use \Drupal\Core\Messenger\MessengerInterface::addMessage() instead. See https://www.drupal.org/node/2774931', E_USER_DEPRECATED);
 // WARNINGS for version. Version with only one component.
 @trigger_error(__NAMESPACE__ . '\CommentTestBase is deprecated in drupal:8. Use \Drupal\Tests\comment\Functional\Views\CommentTestBase instead. See http://www.drupal.org/node/2908490', E_USER_DEPRECATED);
 // Version with only two components.
@@ -62,3 +62,5 @@
 @trigger_error(__NAMESPACE__ . '\CommentTestBase is deprecated in drupal:8.6.0. Use \Drupal\Tests\comment\Functional\Views\CommentTestBase instead. See https://www.drupal.org/node/123a', E_USER_DEPRECATED);
 // Do not want period after url.
 @trigger_error(__NAMESPACE__ . '\CommentTestBase is deprecated in drupal:8.6.0. Use \Drupal\Tests\comment\Functional\Views\CommentTestBase instead. See https://www.drupal.org/node/123.', E_USER_DEPRECATED);
+// Ensure that concatenation at end of string is checked.
+@trigger_error(__NAMESPACE__ . '\CommentTestBase is deprecated in drupal:8.6.0. Use \Drupal\Tests\comment\Functional\Views\CommentTestBase instead. See https://www.drupal.org/node/123' . __FUNCTION__ , E_USER_DEPRECATED);

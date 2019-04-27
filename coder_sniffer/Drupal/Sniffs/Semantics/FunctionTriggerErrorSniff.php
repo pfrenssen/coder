@@ -69,11 +69,32 @@ class FunctionTriggerErrorSniff extends FunctionCall
         // Get the first argument passed to trigger_error().
         $argument = $this->getArgument(1);
 
-        // Extract the message text to check. Using findNext() will allow for
-        // an optional __NAMESPACE__ concatenated at the start and also cater
-        // for function calls such as sprintf() inside the message.
-        $message_position = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, $argument['start']);
-        $message_text     = $tokens[$message_position]['content'];
+        // Extract the message text to check. If if it formed using sprintf()
+        // then find the single overall string using ->findNext.
+        if ($tokens[$argument['start']]['code'] === T_STRING
+            && strcasecmp($tokens[$argument['start']]['content'], 'sprintf') === 0
+        ) {
+            $message_position = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, $argument['start']);
+            // Remove the quotes using substr, because trim would take multiple
+            // quotes away and possibly not report a faulty message.
+            $message_text = substr($tokens[$message_position]['content'], 1, ($tokens[$message_position]['length'] - 2));
+        } else {
+            // If not sprintf() then extract and store all the items except
+            // whitespace, concatenation operators and comma. This will give all
+            // real content such as concatenated strings and constants.
+            for ($i = $argument['start']; $i <= $argument['end']; $i++) {
+                if (in_array($tokens[$i]['code'], [T_WHITESPACE, T_STRING_CONCAT, T_COMMA]) === false) {
+                    // For strings, remove the quotes using substr not trim.
+                    if ($tokens[$i]['code'] === T_CONSTANT_ENCAPSED_STRING) {
+                        $message_parts[] = substr($tokens[$i]['content'], 1, ($tokens[$i]['length'] - 2));
+                    } else {
+                        $message_parts[] = $tokens[$i]['content'];
+                    }
+                }
+            }
+
+            $message_text = implode(' ', $message_parts);
+        }//end if
 
         // The standard format for @trigger_error() is:
         // %thing% is deprecated in %in-version%. %extra-info%. See %cr-link%
@@ -81,12 +102,12 @@ class FunctionTriggerErrorSniff extends FunctionCall
         // the first '. ' is matched, as there may be more than one sentence in
         // the extra-info part.
         $matches = array();
-        preg_match('/[\'\"](.+) is deprecated in (?U)(.+)\. (.+)\. See (.+)[\'\"]/', $message_text, $matches);
+        preg_match('/(.+) is deprecated in (?U)(.+)\. (.+)\. See (.+)$/', $message_text, $matches);
 
         // There should be 5 items in $matches: 0 is full text, 1 = thing,
         // 2 = in-version, 3 = extra-info, 4 = cr-link.
         if (count($matches) !== 5) {
-            $error = "The deprecation message %s does not match the standard format: %%thing%% is deprecated in %%in-version%%. %%extra-info%%. See %%cr-link%%";
+            $error = "The deprecation message '%s' does not match the standard format: %%thing%% is deprecated in %%in-version%%. %%extra-info%%. See %%cr-link%%";
             $phpcsFile->addError($error, $argument['start'], 'TriggerErrorTextLayout', array($message_text));
         } else {
             // The text follows the basic layout. Now check that the version
