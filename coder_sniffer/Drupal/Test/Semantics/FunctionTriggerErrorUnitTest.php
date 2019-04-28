@@ -18,8 +18,6 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
     public function getErrorList($testFile = NULL)
     {
         return array(
-            26 => 1,
-            28 => 1,
             30 => 1,
             32 => 1,
             34 => 1,
@@ -54,6 +52,7 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
             60 => 1,
             62 => 1,
             64 => 1,
+            66 => 1,
         );
 
     }//end getWarningList()
