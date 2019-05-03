@@ -130,7 +130,13 @@ class UnusedUseStatementSniff implements Sniff
                 );
                 // If a backslash is used before the class name then this is some other
                 // use statement.
-                if ($tokens[$beforeUsage]['code'] !== T_USE && $tokens[$beforeUsage]['code'] !== T_NS_SEPARATOR) {
+                if ($tokens[$beforeUsage]['code'] !== T_USE
+                    && $tokens[$beforeUsage]['code'] !== T_NS_SEPARATOR
+                    // If an object operator is used then this is a method call
+                    // with the same name as the class name. Which means this is
+                    // not referring to the class.
+                    && $tokens[$beforeUsage]['code'] !== T_OBJECT_OPERATOR
+                ) {
                     return;
                 }
 
