@@ -19,6 +19,8 @@ use MyNamespace\Depth\SomeClass as CoreSomeClass;
 use Some\Data\VarName;
 use Some\Data\VarName2 as AliasVarName2;
 use Some\Data\SameAsAMethodName;
+use Some\Data\Test9;
+use Some\Data\Test10;
 
 /**
  * Bla.
@@ -105,6 +107,20 @@ class Pum {
    */
   protected function test8() {
     $this->sameAsAMethodName();
+  }
+
+  /**
+   * Method definition has same name as class name.
+   */
+  protected function test9() {
+
+  }
+
+  /**
+   * Static method calls should not be confused with class names.
+   */
+  protected function test10() {
+    Something::test10();
   }
 
 }

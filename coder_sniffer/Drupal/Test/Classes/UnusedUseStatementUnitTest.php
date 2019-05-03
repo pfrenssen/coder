@@ -46,6 +46,8 @@ class UnusedUseStatementUnitTest extends CoderSniffUnitTest
                 19 => 1,
                 20 => 1,
                 21 => 1,
+                22 => 1,
+                23 => 1,
                );
 
     }//end getWarningList()
