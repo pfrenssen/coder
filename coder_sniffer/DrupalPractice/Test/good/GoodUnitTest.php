@@ -22,9 +22,9 @@ class GoodUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getErrorList()
 
@@ -37,18 +37,20 @@ class GoodUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getWarningList()
+
 
     /**
      * Returns a list of test files that should be checked.
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles($testFileBase) {
+    protected function getTestFiles($testFileBase)
+    {
         $dir = dirname(__FILE__);
         $di  = new \DirectoryIterator($dir);
 
@@ -62,19 +64,21 @@ class GoodUnitTest extends CoderSniffUnitTest
         // Get them in order.
         sort($testFiles);
         return $testFiles;
-    }
+
+    }//end getTestFiles()
+
 
     /**
      * Returns a list of sniff codes that should be checked in this test.
      *
      * @return array The list of sniff codes.
      */
-    protected function allSniffCodes() {
+    protected function allSniffCodes()
+    {
         // We want to test all sniffs defined in the standard.
-        return TRUE;
-    }
+        return true;
+
+    }//end allSniffCodes()
 
 
 }//end class
-
-?>

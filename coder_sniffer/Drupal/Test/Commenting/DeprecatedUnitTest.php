@@ -7,6 +7,7 @@ use Drupal\Test\CoderSniffUnitTest;
 class DeprecatedUnitTest extends CoderSniffUnitTest
 {
 
+
     /**
      * Returns the lines where errors should occur.
      *
@@ -15,11 +16,12 @@ class DeprecatedUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList($testFile=null)
     {
-        return array(
-                24 => 2,  // basic layout is wrong.
-               );
+        return [
+            24 => 2,
+        // basic layout is wrong.
+        ];
 
     }//end getErrorList()
 
@@ -32,14 +34,18 @@ class DeprecatedUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList($testFile=null)
     {
-        return array(
-                37 => 2,  // version x 2.
-                39 => 1,  // see url.
-                47 => 2,  // version x 2.
-                49 => 1,  // see url.
-               );
+        return [
+            37 => 2,
+        // version x 2.
+            39 => 1,
+        // see url.
+            47 => 2,
+        // version x 2.
+            49 => 1,
+        // see url.
+        ];
 
     }//end getWarningList()
 

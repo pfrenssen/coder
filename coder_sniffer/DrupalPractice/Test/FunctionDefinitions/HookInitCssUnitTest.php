@@ -22,9 +22,9 @@ class HookInitCssUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getErrorList()
 
@@ -37,23 +37,26 @@ class HookInitCssUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList($testFile=null)
     {
-        return array(
-                7 => 1,
-                14 => 1,
-               );
+        return [
+            7  => 1,
+            14 => 1,
+        ];
 
     }//end getWarningList()
+
 
     /**
      * Returns a list of test files that should be checked.
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles($testFileBase) {
-        return array(__DIR__ . '/test.module');
-    }
+    protected function getTestFiles($testFileBase)
+    {
+        return [__DIR__.'/test.module'];
+
+    }//end getTestFiles()
 
 
 }//end class

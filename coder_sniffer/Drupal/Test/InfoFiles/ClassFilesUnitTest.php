@@ -16,9 +16,9 @@ class ClassFilesUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getErrorList()
 
@@ -31,20 +31,23 @@ class ClassFilesUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getWarningList()
+
 
     /**
      * Returns a list of test files that should be checked.
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles($testFileBase) {
-        return array(__DIR__ . '/class_files.info');
-    }
+    protected function getTestFiles($testFileBase)
+    {
+        return [__DIR__.'/class_files.info'];
+
+    }//end getTestFiles()
 
 
 }//end class

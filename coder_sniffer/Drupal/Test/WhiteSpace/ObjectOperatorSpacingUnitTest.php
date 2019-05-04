@@ -7,6 +7,7 @@ use Drupal\Test\CoderSniffUnitTest;
 class ObjectOperatorSpacingUnitTest extends CoderSniffUnitTest
 {
 
+
     /**
      * Returns the lines where errors should occur.
      *
@@ -15,12 +16,12 @@ class ObjectOperatorSpacingUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList($testFile=null)
     {
-        return array(
-                9 => 1,
-                10 => 1,
-               );
+        return [
+            9  => 1,
+            10 => 1,
+        ];
 
     }//end getErrorList()
 
@@ -33,9 +34,9 @@ class ObjectOperatorSpacingUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getWarningList()
 

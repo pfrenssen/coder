@@ -13,10 +13,13 @@ class ConstantNameUnitTest extends CoderSniffUnitTest
      *
      * @return array The list of test files.
      */
-  protected function getTestFiles($testFileBase)
+    protected function getTestFiles($testFileBase)
     {
         $dir = dirname(__FILE__);
-        return array($dir.'/constant_test.install', $dir.'/constant_test.module');
+        return [
+            $dir.'/constant_test.install',
+            $dir.'/constant_test.module',
+        ];
 
     }//end getTestFiles()
 
@@ -29,9 +32,9 @@ class ConstantNameUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getErrorList()
 
@@ -44,9 +47,9 @@ class ConstantNameUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList($testFile=null)
     {
-        return array(3 => 1);
+        return [3 => 1];
 
     }//end getWarningList()
 

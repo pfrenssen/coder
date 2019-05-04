@@ -7,6 +7,7 @@ use Drupal\Test\CoderSniffUnitTest;
 class DisallowLongArraySyntaxUnitTest extends CoderSniffUnitTest
 {
 
+
     /**
      * Returns the lines where errors should occur.
      *
@@ -15,14 +16,14 @@ class DisallowLongArraySyntaxUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList($testFile=null)
     {
         switch ($testFile) {
-            case 'DisallowLongArraySyntaxUnitTest.2.inc':
-                return array(12 => 1);
+        case 'DisallowLongArraySyntaxUnitTest.2.inc':
+            return [12 => 1];
 
-            default:
-                return array();
+        default:
+            return [];
         }
 
     }//end getErrorList()
@@ -36,9 +37,9 @@ class DisallowLongArraySyntaxUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getWarningList()
 
@@ -48,12 +49,14 @@ class DisallowLongArraySyntaxUnitTest extends CoderSniffUnitTest
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles($testFileBase) {
-        return array(
-                __DIR__ . '/disallow_long_array_d7/DisallowLongArraySyntaxUnitTest.1.inc',
-                __DIR__ . '/disallow_long_array_d8/DisallowLongArraySyntaxUnitTest.2.inc',
-               );
-    }
+    protected function getTestFiles($testFileBase)
+    {
+        return [
+            __DIR__.'/disallow_long_array_d7/DisallowLongArraySyntaxUnitTest.1.inc',
+            __DIR__.'/disallow_long_array_d8/DisallowLongArraySyntaxUnitTest.2.inc',
+        ];
+
+    }//end getTestFiles()
 
 
 }//end class

@@ -7,6 +7,7 @@ use Drupal\Test\CoderSniffUnitTest;
 class RemoteAddressUnitTest extends CoderSniffUnitTest
 {
 
+
     /**
      * Returns the lines where errors should occur.
      *
@@ -17,12 +18,12 @@ class RemoteAddressUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList($testFile=null)
     {
-        return array(
-                12 => 1,
-                19 => 1,
-               );
+        return [
+            12 => 1,
+            19 => 1,
+        ];
 
     }//end getErrorList()
 
@@ -37,9 +38,9 @@ class RemoteAddressUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getWarningList()
 

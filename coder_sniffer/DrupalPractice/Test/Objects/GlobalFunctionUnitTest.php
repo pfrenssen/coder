@@ -16,9 +16,9 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile = NULL)
+    protected function getErrorList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getErrorList()
 
@@ -31,15 +31,15 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile = NULL)
+    protected function getWarningList($testFile=null)
     {
         switch ($testFile) {
-            case 'GlobalFunctionUnitTest.inc':
-                return array(6 => 1);
-            case 'ExampleService.php':
-                return array(30 => 1);
-            default:
-                return [];
+        case 'GlobalFunctionUnitTest.inc':
+            return [6 => 1];
+        case 'ExampleService.php':
+            return [30 => 1];
+        default:
+            return [];
         }
 
     }//end getWarningList()
@@ -50,9 +50,14 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles($testFileBase) {
-        return [__DIR__.'/GlobalFunctionUnitTest.inc', __DIR__.'/src/ExampleService.php'];
-    }
+    protected function getTestFiles($testFileBase)
+    {
+        return [
+            __DIR__.'/GlobalFunctionUnitTest.inc',
+            __DIR__.'/src/ExampleService.php',
+        ];
+
+    }//end getTestFiles()
 
 
 }//end class

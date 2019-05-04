@@ -16,9 +16,9 @@ class GlobalDrupalUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile = NULL)
+    protected function getErrorList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getErrorList()
 
@@ -31,15 +31,15 @@ class GlobalDrupalUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile = NULL)
+    protected function getWarningList($testFile=null)
     {
         switch ($testFile) {
-            case 'GlobalDrupalUnitTest.inc':
-                return array(6 => 1);
-            case 'ExampleService.php':
-                return array(16 => 1);
-            default:
-                return [];
+        case 'GlobalDrupalUnitTest.inc':
+            return [6 => 1];
+        case 'ExampleService.php':
+            return [16 => 1];
+        default:
+            return [];
         }
 
     }//end getWarningList()
@@ -50,8 +50,14 @@ class GlobalDrupalUnitTest extends CoderSniffUnitTest
      *
      * @return array The list of test files.
      */
-    protected function getTestFiles($testFileBase) {
-        return [__DIR__.'/GlobalDrupalUnitTest.inc', __DIR__.'/src/ExampleService.php'];
-    }
+    protected function getTestFiles($testFileBase)
+    {
+        return [
+            __DIR__.'/GlobalDrupalUnitTest.inc',
+            __DIR__.'/src/ExampleService.php',
+        ];
+
+    }//end getTestFiles()
+
 
 }//end class

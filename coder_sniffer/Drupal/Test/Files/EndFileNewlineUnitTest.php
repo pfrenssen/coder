@@ -16,17 +16,15 @@ class EndFileNewlineUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList($testFile=null)
     {
         // All the good files have no error.
         if (strpos($testFile, 'good') !== false) {
-            return array();
+            return [];
         } else {
             // All other files have one error on line one (they have all just one
             // code line in them).
-            return array(
-                    1 => 1,
-                   );
+            return [1 => 1];
         }
 
     }//end getErrorList()
@@ -40,9 +38,9 @@ class EndFileNewlineUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getWarningList()
 

@@ -7,6 +7,7 @@ use Drupal\Test\CoderSniffUnitTest;
 class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
 {
 
+
     /**
      * Returns the lines where errors should occur.
      *
@@ -15,14 +16,14 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList($testFile=null)
     {
-        return array(
+        return [
             30 => 1,
             32 => 1,
             34 => 1,
             36 => 1,
-        );
+        ];
 
     }//end getErrorList()
 
@@ -35,9 +36,9 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList($testFile=null)
     {
-        return array(
+        return [
             38 => 1,
             40 => 1,
             42 => 1,
@@ -53,7 +54,7 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
             62 => 1,
             64 => 1,
             66 => 1,
-        );
+        ];
 
     }//end getWarningList()
 

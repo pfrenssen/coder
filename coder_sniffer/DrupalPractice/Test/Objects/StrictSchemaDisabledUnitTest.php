@@ -8,23 +8,23 @@ class StrictSchemaDisabledUnitTest extends CoderSniffUnitTest
 {
 
 
-   /**
-    * Returns the lines where errors should occur.
-    *
-    * The key of the array should represent the line number and the value
-    * should represent the number of errors that should occur on that line.
-    *
-    * @return array(int => int)
-    */
-    protected function getErrorList($testFile = NULL)
+    /**
+     * Returns the lines where errors should occur.
+     *
+     * The key of the array should represent the line number and the value
+     * should represent the number of errors that should occur on that line.
+     *
+     * @return array(int => int)
+     */
+    protected function getErrorList($testFile=null)
     {
-        return array(
+        return [
             11 => 1,
             15 => 1,
             25 => 1,
             29 => 1,
             42 => 1,
-        );
+        ];
 
     }//end getErrorList()
 
@@ -37,9 +37,9 @@ class StrictSchemaDisabledUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile = NULL)
+    protected function getWarningList($testFile=null)
     {
-        return array();
+        return [];
 
     }//end getWarningList()
 
