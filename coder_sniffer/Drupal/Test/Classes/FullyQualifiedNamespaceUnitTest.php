@@ -3,7 +3,6 @@
 namespace Drupal\Sniffs\Classes;
 
 use Drupal\Test\CoderSniffUnitTest;
-;
 
 class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
 {
