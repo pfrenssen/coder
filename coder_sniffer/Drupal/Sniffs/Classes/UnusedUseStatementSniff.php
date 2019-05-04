@@ -107,9 +107,9 @@ class UnusedUseStatementSniff implements Sniff
                 null,
                 true
             );
-            $use_namespace   = rtrim($phpcsFile->getTokensAsString($useNamespacePtr, ($useNamespaceEnd - $useNamespacePtr - 1)), '\\');
+            $useNamespace    = rtrim($phpcsFile->getTokensAsString($useNamespacePtr, ($useNamespaceEnd - $useNamespacePtr - 1)), '\\');
 
-            if (strcasecmp($namespace, $use_namespace) === 0) {
+            if (strcasecmp($namespace, $useNamespace) === 0) {
                 $classUsed = false;
             }
         }//end if

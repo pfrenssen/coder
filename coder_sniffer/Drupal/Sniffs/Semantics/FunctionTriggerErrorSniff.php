@@ -74,10 +74,10 @@ class FunctionTriggerErrorSniff extends FunctionCall
         if ($tokens[$argument['start']]['code'] === T_STRING
             && strcasecmp($tokens[$argument['start']]['content'], 'sprintf') === 0
         ) {
-            $message_position = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, $argument['start']);
+            $messagePosition = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, $argument['start']);
             // Remove the quotes using substr, because trim would take multiple
             // quotes away and possibly not report a faulty message.
-            $message_text = substr($tokens[$message_position]['content'], 1, ($tokens[$message_position]['length'] - 2));
+            $messageText = substr($tokens[$messagePosition]['content'], 1, ($tokens[$messagePosition]['length'] - 2));
         } else {
             // If not sprintf() then extract and store all the items except
             // whitespace, concatenation operators and comma. This will give all
@@ -86,14 +86,14 @@ class FunctionTriggerErrorSniff extends FunctionCall
                 if (in_array($tokens[$i]['code'], [T_WHITESPACE, T_STRING_CONCAT, T_COMMA]) === false) {
                     // For strings, remove the quotes using substr not trim.
                     if ($tokens[$i]['code'] === T_CONSTANT_ENCAPSED_STRING) {
-                        $message_parts[] = substr($tokens[$i]['content'], 1, ($tokens[$i]['length'] - 2));
+                        $messageParts[] = substr($tokens[$i]['content'], 1, ($tokens[$i]['length'] - 2));
                     } else {
-                        $message_parts[] = $tokens[$i]['content'];
+                        $messageParts[] = $tokens[$i]['content'];
                     }
                 }
             }
 
-            $message_text = implode(' ', $message_parts);
+            $messageText = implode(' ', $messageParts);
         }//end if
 
         // The standard format for @trigger_error() is:
@@ -102,38 +102,38 @@ class FunctionTriggerErrorSniff extends FunctionCall
         // the first '. ' is matched, as there may be more than one sentence in
         // the extra-info part.
         $matches = [];
-        preg_match('/(.+) is deprecated in (?U)(.+)\. (.+)\. See (.+)$/', $message_text, $matches);
+        preg_match('/(.+) is deprecated in (?U)(.+)\. (.+)\. See (.+)$/', $messageText, $matches);
 
         // There should be 5 items in $matches: 0 is full text, 1 = thing,
         // 2 = in-version, 3 = extra-info, 4 = cr-link.
         if (count($matches) !== 5) {
             $error = "The deprecation message '%s' does not match the standard format: %%thing%% is deprecated in %%in-version%%. %%extra-info%%. See %%cr-link%%";
-            $phpcsFile->addError($error, $argument['start'], 'TriggerErrorTextLayout', [$message_text]);
+            $phpcsFile->addError($error, $argument['start'], 'TriggerErrorTextLayout', [$messageText]);
         } else {
             // The text follows the basic layout. Now check that the version
             // matches drupal:n.n.n or project:n.x-n.n. The text must be all
             // lower case and numbers can be one or two digits.
-            $in_version = $matches[2];
-            if (preg_match('/^drupal:\d{1,2}\.\d{1,2}\.\d{1,2}$/', $in_version) === 0
-                && preg_match('/^[a-z\d_]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $in_version) === 0
+            $inVersion = $matches[2];
+            if (preg_match('/^drupal:\d{1,2}\.\d{1,2}\.\d{1,2}$/', $inVersion) === 0
+                && preg_match('/^[a-z\d_]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $inVersion) === 0
             ) {
                 $error = "The deprecation version '%s' does not match the standard: drupal:n.n.n or project:n.x-n.n";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorVersion', [$in_version]);
+                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorVersion', [$inVersion]);
             }
 
             // Check the 'See' link.
-            $cr_link = $matches[4];
+            $crLink = $matches[4];
             // Allow for the alternative 'node' or 'project/aaa/issues' format.
-            preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $cr_link, $matches);
+            preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $crLink, $matches);
             // If matches[4] is not blank it means that the url is correct but it
             // ends with a period. As this can be a common mistake give a specific
             // message to assist in fixing.
             if (isset($matches[4]) === true && empty($matches[4]) === false) {
                 $error = "The 'See' url '%s' should not end with a period.";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorPeriodAfterSeeUrl', [$cr_link]);
+                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorPeriodAfterSeeUrl', [$crLink]);
             } else if (empty($matches) === true) {
                 $error = "The 'See' url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrlFormat', [$cr_link]);
+                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrlFormat', [$crLink]);
             }
         }//end if
 

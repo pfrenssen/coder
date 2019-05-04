@@ -718,12 +718,12 @@ class FunctionCommentSniff implements Sniff
                     } else if ($typeHint !== $suggestedTypeHint && $typeHint !== '') {
                         // The type hint could be fully namespaced, so we check
                         // for the part after the last "\".
-                        $name_parts = explode('\\', $suggestedTypeHint);
-                        $last_part  = end($name_parts);
-                        if ($last_part !== $typeHint && $this->isAliasedType($typeHint, $suggestedTypeHint, $phpcsFile) === false) {
+                        $nameParts = explode('\\', $suggestedTypeHint);
+                        $lastPart  = end($nameParts);
+                        if ($lastPart !== $typeHint && $this->isAliasedType($typeHint, $suggestedTypeHint, $phpcsFile) === false) {
                             $error = 'Expected type hint "%s"; found "%s" for %s';
                             $data  = [
-                                $last_part,
+                                $lastPart,
                                 $typeHint,
                                 $param['var'],
                             ];

@@ -112,19 +112,19 @@ class DeprecatedSniff implements Sniff
         }
 
         // Check the format of the @see url.
-        $string  = $phpcsFile->findNext(T_DOC_COMMENT_STRING, ($seeTag + 1), $commentEnd);
-        $cr_link = $tokens[$string]['content'];
+        $string = $phpcsFile->findNext(T_DOC_COMMENT_STRING, ($seeTag + 1), $commentEnd);
+        $crLink = $tokens[$string]['content'];
         // Allow for the alternative 'node' or 'project/aaa/issues' format.
-        preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $cr_link, $matches);
+        preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $crLink, $matches);
         // If matches[4] is not blank it means that the url is correct but it
         // ends with a period. As this can be a common mistake give a specific
         // message to assist in fixing.
         if (isset($matches[4]) === true && empty($matches[4]) === false) {
             $error = "The @see url '%s' should not end with a period.";
-            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedPeriodAfterSeeUrl', [$cr_link]);
+            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedPeriodAfterSeeUrl', [$crLink]);
         } else if (empty($matches) === true) {
             $error = "The @see url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
-            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedWrongSeeUrlFormat', [$cr_link]);
+            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedWrongSeeUrlFormat', [$crLink]);
         }
 
     }//end process()

@@ -23,6 +23,11 @@ use PHP_CodeSniffer\Util\Tokens;
 class ValidGlobalSniff implements Sniff
 {
 
+    /**
+     * List of allowed Drupal core global variable names.
+     *
+     * @var array
+     */
     public $coreGlobals = [
         '$argc',
         '$argv',

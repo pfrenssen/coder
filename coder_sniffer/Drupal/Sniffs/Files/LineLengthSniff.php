@@ -54,8 +54,8 @@ class LineLengthSniff extends GenericLineLengthSniff
     protected function checkLineLength($phpcsFile, $tokens, $stackPtr)
     {
         if (isset(Tokens::$commentTokens[$tokens[($stackPtr - 1)]['code']]) === true) {
-            $doc_comment_tag = $phpcsFile->findFirstOnLine(T_DOC_COMMENT_TAG, ($stackPtr - 1));
-            if ($doc_comment_tag !== false) {
+            $docCommentTag = $phpcsFile->findFirstOnLine(T_DOC_COMMENT_TAG, ($stackPtr - 1));
+            if ($docCommentTag !== false) {
                 // Allow doc comment tags such as long @param tags to exceed the 80
                 // character limit.
                 return;

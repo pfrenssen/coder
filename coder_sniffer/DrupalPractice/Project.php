@@ -248,9 +248,9 @@ class Project
 
         // Drupal 6 and 7 use the .info file extension.
         if ($pathParts['extension'] === 'info') {
-            $info_settings = ClassFilesSniff::drupalParseInfoFormat(file_get_contents($infoFile));
-            if (isset($info_settings['core']) === true) {
-                return $info_settings['core'];
+            $infoSettings = ClassFilesSniff::drupalParseInfoFormat(file_get_contents($infoFile));
+            if (isset($infoSettings['core']) === true) {
+                return $infoSettings['core'];
             }
         } else {
             // Drupal 8 uses the .yml file extension.

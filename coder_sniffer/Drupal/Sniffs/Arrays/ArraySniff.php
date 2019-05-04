@@ -57,33 +57,33 @@ class ArraySniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         // Support long and short syntax.
-        $parenthesis_opener = 'parenthesis_opener';
-        $parenthesis_closer = 'parenthesis_closer';
+        $parenthesisOpener = 'parenthesis_opener';
+        $parenthesisCloser = 'parenthesis_closer';
         if ($tokens[$stackPtr]['code'] === T_OPEN_SHORT_ARRAY) {
-            $parenthesis_opener = 'bracket_opener';
-            $parenthesis_closer = 'bracket_closer';
+            $parenthesisOpener = 'bracket_opener';
+            $parenthesisCloser = 'bracket_closer';
         }
 
         // Sanity check: this can sometimes be NULL if the array was not correctly
         // parsed.
-        if ($tokens[$stackPtr][$parenthesis_closer] === null) {
+        if ($tokens[$stackPtr][$parenthesisCloser] === null) {
             return;
         }
 
         $lastItem = $phpcsFile->findPrevious(
             Tokens::$emptyTokens,
-            ($tokens[$stackPtr][$parenthesis_closer] - 1),
+            ($tokens[$stackPtr][$parenthesisCloser] - 1),
             $stackPtr,
             true
         );
 
         // Empty array.
-        if ($lastItem === $tokens[$stackPtr][$parenthesis_opener]) {
+        if ($lastItem === $tokens[$stackPtr][$parenthesisOpener]) {
             return;
         }
 
         // Inline array.
-        $isInlineArray = $tokens[$tokens[$stackPtr][$parenthesis_opener]]['line'] === $tokens[$tokens[$stackPtr][$parenthesis_closer]]['line'];
+        $isInlineArray = $tokens[$tokens[$stackPtr][$parenthesisOpener]]['line'] === $tokens[$tokens[$stackPtr][$parenthesisCloser]]['line'];
 
         // Check if the last item in a multiline array has a "closing" comma.
         if ($tokens[$lastItem]['code'] !== T_COMMA && $isInlineArray === false
@@ -103,10 +103,10 @@ class ArraySniff implements Sniff
         if ($isInlineArray === true) {
             // Check if this array contains at least 3 elements and exceeds the 80
             // character line length.
-            if ($tokens[$tokens[$stackPtr][$parenthesis_closer]]['column'] > 80) {
-                $comma1 = $phpcsFile->findNext(T_COMMA, ($stackPtr + 1), $tokens[$stackPtr][$parenthesis_closer]);
+            if ($tokens[$tokens[$stackPtr][$parenthesisCloser]]['column'] > 80) {
+                $comma1 = $phpcsFile->findNext(T_COMMA, ($stackPtr + 1), $tokens[$stackPtr][$parenthesisCloser]);
                 if ($comma1 !== false) {
-                    $comma2 = $phpcsFile->findNext(T_COMMA, ($comma1 + 1), $tokens[$stackPtr][$parenthesis_closer]);
+                    $comma2 = $phpcsFile->findNext(T_COMMA, ($comma1 + 1), $tokens[$stackPtr][$parenthesisCloser]);
                     if ($comma2 !== false) {
                         $error = 'If the line declaring an array spans longer than 80 characters, each element should be broken into its own line';
                         $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration');
@@ -146,15 +146,15 @@ class ArraySniff implements Sniff
 
         $lineStart = $stackPtr;
         // Iterate over all lines of this array.
-        while ($lineStart < $tokens[$stackPtr][$parenthesis_closer]) {
+        while ($lineStart < $tokens[$stackPtr][$parenthesisCloser]) {
             // Find next line start.
             $newLineStart = $lineStart;
-            $current_line = $tokens[$newLineStart]['line'];
-            while ($current_line >= $tokens[$newLineStart]['line']) {
+            $currentLine  = $tokens[$newLineStart]['line'];
+            while ($currentLine >= $tokens[$newLineStart]['line']) {
                 $newLineStart = $phpcsFile->findNext(
                     Tokens::$emptyTokens,
                     ($newLineStart + 1),
-                    ($tokens[$stackPtr][$parenthesis_closer] + 1),
+                    ($tokens[$stackPtr][$parenthesisCloser] + 1),
                     true
                 );
 
@@ -166,25 +166,25 @@ class ArraySniff implements Sniff
                 // run.
                 if ($tokens[$newLineStart]['code'] === T_ARRAY) {
                     $newLineStart = $tokens[$newLineStart]['parenthesis_closer'];
-                    $current_line = $tokens[$newLineStart]['line'];
+                    $currentLine  = $tokens[$newLineStart]['line'];
                 }
 
                 // Short array syntax: Skip nested arrays, they are checked in a next
                 // run.
                 if ($tokens[$newLineStart]['code'] === T_OPEN_SHORT_ARRAY) {
                     $newLineStart = $tokens[$newLineStart]['bracket_closer'];
-                    $current_line = $tokens[$newLineStart]['line'];
+                    $currentLine  = $tokens[$newLineStart]['line'];
                 }
 
                 // Nested structures such as closures: skip those, they are checked
                 // in other sniffs. If the conditions of a token are different it
                 // means that it is in a different nesting level.
                 if ($tokens[$newLineStart]['conditions'] !== $tokens[$stackPtr]['conditions']) {
-                    $current_line++;
+                    $currentLine++;
                 }
             }//end while
 
-            if ($newLineStart === $tokens[$stackPtr][$parenthesis_closer]) {
+            if ($newLineStart === $tokens[$stackPtr][$parenthesisCloser]) {
                 // End of the array reached.
                 if ($tokens[$newLineStart]['column'] !== $firstLineColumn) {
                     $error = 'Array closing indentation error, expected %s spaces but found %s';
@@ -216,7 +216,7 @@ class ArraySniff implements Sniff
                 // Skip lines in nested structures such as a function call within an
                 // array, no defined coding standard for those.
                 $innerNesting = empty($tokens[$newLineStart]['nested_parenthesis']) === false
-                    && end($tokens[$newLineStart]['nested_parenthesis']) < $tokens[$stackPtr][$parenthesis_closer];
+                    && end($tokens[$newLineStart]['nested_parenthesis']) < $tokens[$stackPtr][$parenthesisCloser];
                 // Skip lines that are part of a multi-line string.
                 $isMultiLineString = $tokens[($newLineStart - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
                     && substr($tokens[($newLineStart - 1)]['content'], -1) === $phpcsFile->eolChar;

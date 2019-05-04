@@ -189,8 +189,8 @@ class FileCommentSniff implements Sniff
         }//end if
 
         if ($fileTag === false || $tokens[$fileTag]['line'] !== ($tokens[$commentStart]['line'] + 1)) {
-            $second_line = $phpcsFile->findNext([T_DOC_COMMENT_STAR, T_DOC_COMMENT_CLOSE_TAG], ($commentStart + 1), $commentEnd);
-            $fix         = $phpcsFile->addFixableError('The second line in the file doc comment must be "@file"', $second_line, 'FileTag');
+            $secondLine = $phpcsFile->findNext([T_DOC_COMMENT_STAR, T_DOC_COMMENT_CLOSE_TAG], ($commentStart + 1), $commentEnd);
+            $fix        = $phpcsFile->addFixableError('The second line in the file doc comment must be "@file"', $secondLine, 'FileTag');
             if ($fix === true) {
                 if ($fileTag === false) {
                     $phpcsFile->fixer->addContent($commentStart, "\n * @file");

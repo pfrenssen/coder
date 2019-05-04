@@ -6,6 +6,12 @@
 
     <exclude-pattern>*/Test/*</exclude-pattern>
 
+    <!-- Not compliant yet, should be fixed in the future. -->
+    <exclude-pattern>coder_sniffer/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php</exclude-pattern>
+    <rule ref="PSR2.Classes.PropertyDeclaration">
+        <exclude-pattern>coder_sniffer/Drupal/Sniffs/WhiteSpace/ScopeIndentSniff.php</exclude-pattern>
+    </rule>
+
     <!-- The following comes from the 3.4.2 PHPCS ruleset.xml { -->
 
     <!-- Don't hide tokenizer exceptions -->
@@ -143,12 +149,6 @@
     <rule ref="Generic.Commenting.Todo">
         <exclude name="Generic.Commenting.Todo.TaskFound"/>
         <exclude name="Generic.Commenting.Todo.CommentFound"/>
-    </rule>
-
-    <!-- The following sniffs are disabled because Coder is not compliant yet, see
-      https://www.drupal.org/node/2734539 -->
-    <rule ref="PEAR.Commenting.FunctionComment.MissingParamComment">
-        <exclude-pattern>*/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php</exclude-pattern>
     </rule>
 
 </ruleset>

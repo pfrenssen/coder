@@ -155,7 +155,7 @@ class FunctionTSniff extends FunctionCall
             return true;
         }
 
-        $allowed_items = [
+        $allowedItems = [
             '(',
             ')',
             '[',
@@ -167,7 +167,7 @@ class FunctionTSniff extends FunctionCall
             '»',
             '\n',
         ];
-        foreach ($allowed_items as $item) {
+        foreach ($allowedItems as $item) {
             if ($item === $string) {
                 return true;
             }
