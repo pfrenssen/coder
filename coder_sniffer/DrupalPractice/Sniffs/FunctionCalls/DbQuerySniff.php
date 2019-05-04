@@ -31,7 +31,7 @@ class DbQuerySniff extends FunctionCall
      */
     public function registerFunctionNames()
     {
-        return array('db_query');
+        return ['db_query'];
 
     }//end registerFunctionNames()
 
@@ -71,9 +71,9 @@ class DbQuerySniff extends FunctionCall
             $parts       = explode(' ', $query_start);
             $query_start = $parts[0];
 
-            if (in_array(strtoupper($query_start), array('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE')) === true) {
+            if (in_array(strtoupper($query_start), ['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE']) === true) {
                 $warning = 'Do not use %s queries with db_query(), use %s instead';
-                $phpcsFile->addWarning($warning, $start, 'DbQuery', array($query_start, 'db_'.strtolower($query_start).'()'));
+                $phpcsFile->addWarning($warning, $start, 'DbQuery', [$query_start, 'db_'.strtolower($query_start).'()']);
             }
         }
 

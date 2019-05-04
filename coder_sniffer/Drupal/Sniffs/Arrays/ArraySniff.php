@@ -35,10 +35,10 @@ class ArraySniff implements Sniff
      */
     public function register()
     {
-        return array(
-                T_ARRAY,
-                T_OPEN_SHORT_ARRAY,
-               );
+        return [
+            T_ARRAY,
+            T_OPEN_SHORT_ARRAY,
+        ];
 
     }//end register()
 
@@ -91,7 +91,7 @@ class ArraySniff implements Sniff
             && $tokens[($lastItem + 1)]['code'] !== T_CLOSE_SHORT_ARRAY
             && isset(Tokens::$heredocTokens[$tokens[$lastItem]['code']]) === false
         ) {
-            $data = array($tokens[$lastItem]['content']);
+            $data = [$tokens[$lastItem]['content']];
             $fix  = $phpcsFile->addFixableWarning('A comma should follow the last multiline array item. Found: %s', $lastItem, 'CommaLastItem', $data);
             if ($fix === true) {
                 $phpcsFile->fixer->addContent($lastItem, ',');
@@ -188,10 +188,10 @@ class ArraySniff implements Sniff
                 // End of the array reached.
                 if ($tokens[$newLineStart]['column'] !== $firstLineColumn) {
                     $error = 'Array closing indentation error, expected %s spaces but found %s';
-                    $data  = array(
-                              $firstLineColumn - 1,
-                              $tokens[$newLineStart]['column'] - 1,
-                             );
+                    $data  = [
+                        ($firstLineColumn - 1),
+                        ($tokens[$newLineStart]['column'] - 1),
+                    ];
                     $fix   = $phpcsFile->addFixableError($error, $newLineStart, 'ArrayClosingIndentation', $data);
                     if ($fix === true) {
                         if ($tokens[$newLineStart]['column'] === 1) {
@@ -224,10 +224,10 @@ class ArraySniff implements Sniff
                 $nowDoc = isset(Tokens::$heredocTokens[$tokens[$newLineStart]['code']]);
                 if ($innerNesting === false && $isMultiLineString === false && $nowDoc === false) {
                     $error = 'Array indentation error, expected %s spaces but found %s';
-                    $data  = array(
-                              $expectedColumn - 1,
-                              $tokens[$newLineStart]['column'] - 1,
-                             );
+                    $data  = [
+                        ($expectedColumn - 1),
+                        ($tokens[$newLineStart]['column'] - 1),
+                    ];
                     $fix   = $phpcsFile->addFixableError($error, $newLineStart, 'ArrayIndentation', $data);
                     if ($fix === true) {
                         if ($tokens[$newLineStart]['column'] === 1) {

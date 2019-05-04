@@ -30,7 +30,7 @@ class DeprecatedSniff implements Sniff
      */
     public function register()
     {
-        return array(T_DOC_COMMENT_TAG);
+        return [T_DOC_COMMENT_TAG];
 
     }//end register()
 
@@ -82,23 +82,23 @@ class DeprecatedSniff implements Sniff
         // Use (?U) 'ungreedy' before the version so that only the text up to
         // the first '. ' is matched, as there may be more than one sentence in
         // the extra-info part.
-        $matches = array();
+        $matches = [];
         preg_match('/in (.+) and will be removed from (?U)(.+)\. (.+)$/', $depText, $matches);
         // There should be 4 items in $matches: 0 is full text, 1 = in-version,
         // 2 = removal-version, 3 = extra-info.
         if (count($matches) !== 4) {
             $error = "The deprecation text '@deprecated %s' does not match the standard format: @deprecated in %%in-version%% and will be removed from %%removal-version%%. %%extra-info%%.";
-            $phpcsFile->addError($error, $stackPtr, 'IncorrectTextLayout', array($depText));
+            $phpcsFile->addError($error, $stackPtr, 'IncorrectTextLayout', [$depText]);
         } else {
             // The text follows the basic layout. Now check that the versions
             // match drupal:n.n.n or project:n.x-n.n. The text must be all lower
             // case and numbers can be one or two digits.
-            foreach (array('in-version' => $matches[1], 'removal-version' => $matches[2]) as $name => $version) {
+            foreach (['in-version' => $matches[1], 'removal-version' => $matches[2]] as $name => $version) {
                 if (preg_match('/^drupal:\d{1,2}\.\d{1,2}\.\d{1,2}$/', $version) === 0
                     && preg_match('/^[a-z\d_]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $version) === 0
                 ) {
                     $error = "The deprecation %s '%s' does not match the standard: drupal:n.n.n or project:n.x-n.n";
-                    $phpcsFile->addWarning($error, $stackPtr, 'DeprecatedVersionFormat', array($name, $version));
+                    $phpcsFile->addWarning($error, $stackPtr, 'DeprecatedVersionFormat', [$name, $version]);
                 }
             }
         }
@@ -121,10 +121,10 @@ class DeprecatedSniff implements Sniff
         // message to assist in fixing.
         if (isset($matches[4]) === true && empty($matches[4]) === false) {
             $error = "The @see url '%s' should not end with a period.";
-            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedPeriodAfterSeeUrl', array($cr_link));
+            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedPeriodAfterSeeUrl', [$cr_link]);
         } else if (empty($matches) === true) {
             $error = "The @see url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
-            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedWrongSeeUrlFormat', array($cr_link));
+            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedWrongSeeUrlFormat', [$cr_link]);
         }
 
     }//end process()

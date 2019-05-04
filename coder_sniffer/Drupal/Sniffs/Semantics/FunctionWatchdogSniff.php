@@ -30,7 +30,7 @@ class FunctionWatchdogSniff extends FunctionCall
      */
     public function registerFunctionNames()
     {
-        return array('watchdog');
+        return ['watchdog'];
 
     }//end registerFunctionNames()
 

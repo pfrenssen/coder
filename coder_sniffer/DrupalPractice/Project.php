@@ -99,7 +99,7 @@ class Project
         }
 
         // Sort the info file names and take the shortest info file.
-        usort($infoFiles, array(__NAMESPACE__.'\Project', 'compareLength'));
+        usort($infoFiles, [__NAMESPACE__.'\Project', 'compareLength']);
         $infoFile = $infoFiles[0];
         $cache[$phpcsFile->getFilename()] = $infoFile;
         return $infoFile;
@@ -142,7 +142,7 @@ class Project
         }
 
         // Sort the YML file names and take the shortest info file.
-        usort($ymlFiles, array(__NAMESPACE__.'\Project', 'compareLength'));
+        usort($ymlFiles, [__NAMESPACE__.'\Project', 'compareLength']);
         $ymlFile = $ymlFiles[0];
         $cache[$phpcsFile->getFilename()] = $ymlFile;
         return $ymlFile;
@@ -189,9 +189,9 @@ class Project
 
         $nsEnd           = $phpcsFile->findNext(
             [
-             T_NS_SEPARATOR,
-             T_STRING,
-             T_WHITESPACE,
+                T_NS_SEPARATOR,
+                T_STRING,
+                T_WHITESPACE,
             ],
             ($namespacePtr + 1),
             null,

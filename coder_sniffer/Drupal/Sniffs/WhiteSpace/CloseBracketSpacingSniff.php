@@ -30,10 +30,10 @@ class CloseBracketSpacingSniff implements Sniff
      *
      * @var array
      */
-    public $supportedTokenizers = array(
-                                   'PHP',
-                                   'JS',
-                                  );
+    public $supportedTokenizers = [
+        'PHP',
+        'JS',
+    ];
 
 
     /**
@@ -43,11 +43,11 @@ class CloseBracketSpacingSniff implements Sniff
      */
     public function register()
     {
-        return array(
-                T_CLOSE_CURLY_BRACKET,
-                T_CLOSE_PARENTHESIS,
-                T_CLOSE_SHORT_ARRAY,
-               );
+        return [
+            T_CLOSE_CURLY_BRACKET,
+            T_CLOSE_PARENTHESIS,
+            T_CLOSE_SHORT_ARRAY,
+        ];
 
     }//end register()
 
@@ -82,7 +82,7 @@ class CloseBracketSpacingSniff implements Sniff
                     $error,
                     ($stackPtr - 1),
                     'ClosingWhitespace',
-                    array($tokens[$stackPtr]['content'])
+                    [$tokens[$stackPtr]['content']]
                 );
                 if ($fix === true) {
                     $phpcsFile->fixer->replaceToken(($stackPtr - 1), '');

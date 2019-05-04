@@ -54,7 +54,7 @@ class InstallHooksSniff extends FunctionDefinition
             || $tokens[$stackPtr]['content'] === ($fileName.'_disable')
         ) {
             $error = '%s() is an installation hook and must be declared in an install file';
-            $data  = array($tokens[$stackPtr]['content']);
+            $data  = [$tokens[$stackPtr]['content']];
             $phpcsFile->addError($error, $stackPtr, 'InstallHook', $data);
         }
 

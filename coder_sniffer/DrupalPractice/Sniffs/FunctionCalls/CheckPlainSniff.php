@@ -30,7 +30,7 @@ class CheckPlainSniff extends FunctionCall
      */
     public function registerFunctionNames()
     {
-        return array('check_plain');
+        return ['check_plain'];
 
     }//end registerFunctionNames()
 

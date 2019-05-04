@@ -27,38 +27,38 @@ class DiscouragedFunctionsSniff extends ForbiddenFunctionsSniff
      * The value is NULL if no alternative exists, i.e., the function should
      * just not be used.
      *
-     * @var array(string => string|null)
+     * @var array|null)
      */
-    public $forbiddenFunctions = array(
+    public $forbiddenFunctions = [
                                      // Devel module debugging functions.
-                                  'dargs'               => null,
-                                  'dcp'                 => null,
-                                  'dd'                  => null,
-                                  'dfb'                 => null,
-                                  'dfbt'                => null,
-                                  'dpm'                 => null,
-                                  'dpq'                 => null,
-                                  'dpr'                 => null,
-                                  'dprint_r'            => null,
-                                  'drupal_debug'        => null,
-                                  'dsm'                 => null,
-                                  'dvm'                 => null,
-                                  'dvr'                 => null,
-                                  'kdevel_print_object' => null,
-                                  'kpr'                 => null,
-                                  'kprint_r'            => null,
-                                  'sdpm'                => null,
+        'dargs'               => null,
+        'dcp'                 => null,
+        'dd'                  => null,
+        'dfb'                 => null,
+        'dfbt'                => null,
+        'dpm'                 => null,
+        'dpq'                 => null,
+        'dpr'                 => null,
+        'dprint_r'            => null,
+        'drupal_debug'        => null,
+        'dsm'                 => null,
+        'dvm'                 => null,
+        'dvr'                 => null,
+        'kdevel_print_object' => null,
+        'kpr'                 => null,
+        'kprint_r'            => null,
+        'sdpm'                => null,
                                   // Functions which are not available on all
                                   // PHP builds.
-                                  'fnmatch'             => null,
+        'fnmatch'             => null,
                                   // Functions which are a security risk.
-                                  'eval'                => null,
-                                 );
+        'eval'                => null,
+    ];
 
     /**
      * If true, an error will be thrown; otherwise a warning.
      *
-     * @var bool
+     * @var boolean
      */
     public $error = false;
 

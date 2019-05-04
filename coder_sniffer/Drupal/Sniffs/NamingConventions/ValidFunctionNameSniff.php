@@ -48,7 +48,7 @@ class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
         }
 
         $className = $phpcsFile->getDeclarationName($currScope);
-        $errorData = array($className.'::'.$methodName);
+        $errorData = [$className.'::'.$methodName];
 
         // Is this a magic method. i.e., is prefixed with "__" ?
         if (preg_match('|^__|', $methodName) !== 0) {
@@ -67,10 +67,10 @@ class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
         if (Common::isCamelCaps($methodName, false, true, $this->strict) === false) {
             if ($methodProps['scope_specified'] === true) {
                 $error = '%s method name "%s" is not in lowerCamel format';
-                $data  = array(
-                          ucfirst($methodProps['scope']),
-                          $errorData[0],
-                         );
+                $data  = [
+                    ucfirst($methodProps['scope']),
+                    $errorData[0],
+                ];
                 $phpcsFile->addError($error, $stackPtr, 'ScopeNotCamelCaps', $data);
             } else {
                 $error = 'Method name "%s" is not in lowerCamel format';
@@ -114,10 +114,10 @@ class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
         if ($functionName !== strtolower($functionName)) {
             $expected = strtolower(preg_replace('/([^_])([A-Z])/', '$1_$2', $functionName));
             $error    = 'Invalid function name, expected %s but found %s';
-            $data     = array(
-                         $expected,
-                         $functionName,
-                        );
+            $data     = [
+                $expected,
+                $functionName,
+            ];
             $phpcsFile->addError($error, $stackPtr, 'InvalidName', $data);
         }
 

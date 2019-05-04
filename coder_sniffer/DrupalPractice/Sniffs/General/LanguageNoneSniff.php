@@ -30,10 +30,10 @@ class LanguageNoneSniff implements Sniff
      */
     public function register()
     {
-        return array(
-                T_OPEN_SQUARE_BRACKET,
-                T_OPEN_SHORT_ARRAY,
-               );
+        return [
+            T_OPEN_SQUARE_BRACKET,
+            T_OPEN_SHORT_ARRAY,
+        ];
 
     }//end register()
 

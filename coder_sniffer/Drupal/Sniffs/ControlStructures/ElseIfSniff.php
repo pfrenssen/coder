@@ -30,7 +30,7 @@ class ElseIfSniff implements Sniff
      */
     public function register()
     {
-        return array(T_ELSE);
+        return [T_ELSE];
 
     }//end register()
 

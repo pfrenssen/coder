@@ -31,7 +31,7 @@ class CurlSslVerifierSniff extends FunctionCall
      */
     public function registerFunctionNames()
     {
-        return array('curl_setopt');
+        return ['curl_setopt'];
 
     }//end registerFunctionNames()
 

@@ -32,7 +32,7 @@ class ExpectedExceptionSniff implements Sniff
      */
     public function register()
     {
-        return array(T_DOC_COMMENT_TAG);
+        return [T_DOC_COMMENT_TAG];
 
     }//end register()
 

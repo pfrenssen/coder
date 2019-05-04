@@ -29,7 +29,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
     /**
      * If true, an error will be thrown; otherwise a warning.
      *
-     * @var bool
+     * @var boolean
      */
     public $error = true;
 
@@ -49,7 +49,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
     {
         $tokens = $phpcsFile->getTokens();
 
-        $assignments = array();
+        $assignments = [];
         $prevAssign  = null;
         $lastLine    = $tokens[$stackPtr]['line'];
         $maxPadding  = null;
@@ -176,13 +176,13 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
                 }
             }
 
-            $assignments[$assign] = array(
-                                     'var_end'    => $varEnd,
-                                     'assign_len' => $assignLen,
-                                     'assign_col' => $assignColumn,
-                                     'expected'   => $padding,
-                                     'found'      => $found,
-                                    );
+            $assignments[$assign] = [
+                'var_end'    => $varEnd,
+                'assign_len' => $assignLen,
+                'assign_col' => $assignColumn,
+                'expected'   => $padding,
+                'found'      => $found,
+            ];
 
             $lastLine   = $tokens[$assign]['line'];
             $prevAssign = $assign;
@@ -242,10 +242,10 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
                 $error = 'Equals sign not aligned with surrounding assignments; expected %s but found %s';
             }
 
-            $errorData = array(
-                          $expectedText,
-                          $foundText,
-                         );
+            $errorData = [
+                $expectedText,
+                $foundText,
+            ];
 
             if ($this->error === true) {
                 $fix = $phpcsFile->addFixableError($error, $assignment, $type, $errorData);

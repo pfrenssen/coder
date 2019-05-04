@@ -27,14 +27,14 @@ class ThemeSniff extends FunctionCall
      *
      * @var array
      */
-    protected $reservedFunctions = array(
-                                    'theme_get_registry',
-                                    'theme_get_setting',
-                                    'theme_render_template',
-                                    'theme_enable',
-                                    'theme_disable',
-                                    'theme_get_suggestions',
-                                   );
+    protected $reservedFunctions = [
+        'theme_get_registry',
+        'theme_get_setting',
+        'theme_render_template',
+        'theme_enable',
+        'theme_disable',
+        'theme_get_suggestions',
+    ];
 
 
     /**
@@ -59,7 +59,7 @@ class ThemeSniff extends FunctionCall
 
         $themeName = substr($functionName, 6);
         $warning   = "Do not call theme functions directly, use theme('%s', ...) instead";
-        $phpcsFile->addWarning($warning, $stackPtr, 'ThemeFunctionDirect', array($themeName));
+        $phpcsFile->addWarning($warning, $stackPtr, 'ThemeFunctionDirect', [$themeName]);
 
     }//end process()
 

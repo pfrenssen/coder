@@ -31,7 +31,7 @@ class GlobalDefineSniff extends FunctionCall
      */
     public function registerFunctionNames()
     {
-        return array('define');
+        return ['define'];
 
     }//end registerFunctionNames()
 

@@ -29,7 +29,7 @@ class FunctionTriggerErrorSniff extends FunctionCall
      */
     public function registerFunctionNames()
     {
-        return array('trigger_error');
+        return ['trigger_error'];
 
     }//end registerFunctionNames()
 
@@ -101,14 +101,14 @@ class FunctionTriggerErrorSniff extends FunctionCall
         // Use (?U) 'ungreedy' before the version so that only the text up to
         // the first '. ' is matched, as there may be more than one sentence in
         // the extra-info part.
-        $matches = array();
+        $matches = [];
         preg_match('/(.+) is deprecated in (?U)(.+)\. (.+)\. See (.+)$/', $message_text, $matches);
 
         // There should be 5 items in $matches: 0 is full text, 1 = thing,
         // 2 = in-version, 3 = extra-info, 4 = cr-link.
         if (count($matches) !== 5) {
             $error = "The deprecation message '%s' does not match the standard format: %%thing%% is deprecated in %%in-version%%. %%extra-info%%. See %%cr-link%%";
-            $phpcsFile->addError($error, $argument['start'], 'TriggerErrorTextLayout', array($message_text));
+            $phpcsFile->addError($error, $argument['start'], 'TriggerErrorTextLayout', [$message_text]);
         } else {
             // The text follows the basic layout. Now check that the version
             // matches drupal:n.n.n or project:n.x-n.n. The text must be all
@@ -118,7 +118,7 @@ class FunctionTriggerErrorSniff extends FunctionCall
                 && preg_match('/^[a-z\d_]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $in_version) === 0
             ) {
                 $error = "The deprecation version '%s' does not match the standard: drupal:n.n.n or project:n.x-n.n";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorVersion', array($in_version));
+                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorVersion', [$in_version]);
             }
 
             // Check the 'See' link.
@@ -130,10 +130,10 @@ class FunctionTriggerErrorSniff extends FunctionCall
             // message to assist in fixing.
             if (isset($matches[4]) === true && empty($matches[4]) === false) {
                 $error = "The 'See' url '%s' should not end with a period.";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorPeriodAfterSeeUrl', array($cr_link));
+                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorPeriodAfterSeeUrl', [$cr_link]);
             } else if (empty($matches) === true) {
                 $error = "The 'See' url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrlFormat', array($cr_link));
+                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrlFormat', [$cr_link]);
             }
         }//end if
 

@@ -36,12 +36,12 @@ class ScopeIndentSniff implements Sniff
      *
      * @var array
      */
-    public $supportedTokenizers = array('PHP');
+    public $supportedTokenizers = ['PHP'];
 
     /**
      * The number of spaces code should be indented.
      *
-     * @var int
+     * @var integer
      */
     public $indent = 2;
 
@@ -51,7 +51,7 @@ class ScopeIndentSniff implements Sniff
      * If TRUE, indent needs to be exactly $indent spaces. If FALSE,
      * indent needs to be at least $indent spaces (but can be more).
      *
-     * @var bool
+     * @var boolean
      */
     public $exact = true;
 
@@ -62,14 +62,14 @@ class ScopeIndentSniff implements Sniff
      * The size of each tab is important, so it should be specified
      * using the --tab-width CLI argument.
      *
-     * @var bool
+     * @var boolean
      */
     public $tabIndent = false;
 
     /**
      * The --tab-width CLI value that is being used.
      *
-     * @var int
+     * @var integer
      */
     private $_tabWidth = null;
 
@@ -83,7 +83,7 @@ class ScopeIndentSniff implements Sniff
      *
      * @var int[]
      */
-    public $ignoreIndentationTokens = array();
+    public $ignoreIndentationTokens = [];
 
     /**
      * List of tokens not needing to be checked for indentation.
@@ -93,19 +93,19 @@ class ScopeIndentSniff implements Sniff
      *
      * @var int[]
      */
-    private $_ignoreIndentationTokens = array();
+    private $_ignoreIndentationTokens = [];
 
     /**
      * Any scope openers that should not cause an indent.
      *
      * @var int[]
      */
-    protected $nonIndentingScopes = array();
+    protected $nonIndentingScopes = [];
 
     /**
      * Show debug output for this sniff.
      *
-     * @var bool
+     * @var boolean
      */
     private $_debug = false;
 
@@ -121,7 +121,7 @@ class ScopeIndentSniff implements Sniff
             $this->_debug = false;
         }
 
-        return array(T_OPEN_TAG);
+        return [T_OPEN_TAG];
 
     }//end register()
 
@@ -157,9 +157,9 @@ class ScopeIndentSniff implements Sniff
         $currentIndent = 0;
         $lastOpenTag   = $stackPtr;
         $lastCloseTag  = null;
-        $openScopes    = array();
-        $adjustments   = array();
-        $setIndents    = array();
+        $openScopes    = [];
+        $adjustments   = [];
+        $setIndents    = [];
 
         $tokens  = $phpcsFile->getTokens();
         $first   = $phpcsFile->findFirstOnLine(T_INLINE_HTML, $stackPtr);
@@ -176,7 +176,7 @@ class ScopeIndentSniff implements Sniff
         }
 
         if (empty($this->_ignoreIndentationTokens) === true) {
-            $this->_ignoreIndentationTokens = array(T_INLINE_HTML => true);
+            $this->_ignoreIndentationTokens = [T_INLINE_HTML => true];
             foreach ($this->ignoreIndentationTokens as $token) {
                 if (is_int($token) === false) {
                     if (defined($token) === false) {
@@ -832,12 +832,12 @@ class ScopeIndentSniff implements Sniff
                     $before = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($checkToken - 1), null, true);
                     if ($before !== false && in_array(
                         $tokens[$before]['code'],
-                        array(
-                         T_SEMICOLON,
-                         T_CLOSE_CURLY_BRACKET,
-                         T_OPEN_CURLY_BRACKET,
-                         T_COLON,
-                        )
+                        [
+                            T_SEMICOLON,
+                            T_CLOSE_CURLY_BRACKET,
+                            T_OPEN_CURLY_BRACKET,
+                            T_COLON,
+                        ]
                     ) === false
                     ) {
                         continue;
@@ -863,16 +863,16 @@ class ScopeIndentSniff implements Sniff
 
                 if ($this->tabIndent === true) {
                     $error .= '%s tabs, found %s';
-                    $data   = array(
-                               floor($checkIndent / $this->_tabWidth),
-                               floor($tokenIndent / $this->_tabWidth),
-                              );
+                    $data   = [
+                        floor($checkIndent / $this->_tabWidth),
+                        floor($tokenIndent / $this->_tabWidth),
+                    ];
                 } else {
                     $error .= '%s spaces, found %s';
-                    $data   = array(
-                               $checkIndent,
-                               $tokenIndent,
-                              );
+                    $data   = [
+                        $checkIndent,
+                        $tokenIndent,
+                    ];
                 }
 
                 if ($this->_debug === true) {
@@ -926,7 +926,7 @@ class ScopeIndentSniff implements Sniff
             if ($tokens[$i]['code'] === T_START_HEREDOC
                 || $tokens[$i]['code'] === T_START_NOWDOC
             ) {
-                $i = $phpcsFile->findNext(array(T_END_HEREDOC, T_END_NOWDOC), ($i + 1));
+                $i = $phpcsFile->findNext([T_END_HEREDOC, T_END_NOWDOC], ($i + 1));
                 continue;
             }
 
@@ -1217,7 +1217,7 @@ class ScopeIndentSniff implements Sniff
                 }//end if
 
                 if ($prev === false) {
-                    $prev = $phpcsFile->findPrevious(array(T_EQUAL, T_RETURN), ($tokens[$i]['scope_condition'] - 1), null, false, null, true);
+                    $prev = $phpcsFile->findPrevious([T_EQUAL, T_RETURN], ($tokens[$i]['scope_condition'] - 1), null, false, null, true);
                     if ($prev === false) {
                         $prev = $i;
                         if ($this->_debug === true) {

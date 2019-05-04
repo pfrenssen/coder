@@ -68,10 +68,10 @@ class FormAlterDocSniff extends FunctionDefinition
 
         if ($tokens[$stackPtr]['content'] !== $projectName.'_form_alter') {
             $warning = 'Doc comment indicates hook_form_alter() but function signature is "%s" instead of "%s". Did you mean hook_form_FORM_ID_alter()?';
-            $data    = array(
-                        $tokens[$stackPtr]['content'],
-                        $projectName.'_form_alter',
-                       );
+            $data    = [
+                $tokens[$stackPtr]['content'],
+                $projectName.'_form_alter',
+            ];
             $phpcsFile->addWarning($warning, $commentLine, 'Different', $data);
         }
 
