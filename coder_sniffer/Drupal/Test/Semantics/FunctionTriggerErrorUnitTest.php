@@ -17,12 +17,28 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
      */
     public function getErrorList($testFile = NULL)
     {
-        return array(
-            30 => 1,
-            32 => 1,
-            34 => 1,
-            36 => 1,
-        );
+        switch ($testFile) {
+            case 'FunctionTriggerErrorUnitTest.1.inc':
+                return array(
+                    30 => 1,
+                    32 => 1,
+                    34 => 1,
+                    36 => 1,
+                    38 => 1,
+                    40 => 1,
+                );
+            case 'FunctionTriggerErrorUnitTest.2.inc':
+                return array(
+                    29 => 1,
+                );
+            case 'FunctionTriggerErrorUnitTest.3.inc':
+                return array(
+                    14 => 1,
+                );
+            default:
+                return array(
+                );
+        }
 
     }//end getErrorList()
 
@@ -37,23 +53,29 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
      */
     public function getWarningList($testFile = NULL)
     {
-        return array(
-            38 => 1,
-            40 => 1,
-            42 => 1,
-            44 => 1,
-            46 => 1,
-            48 => 1,
-            50 => 1,
-            52 => 1,
-            54 => 1,
-            56 => 1,
-            58 => 1,
-            60 => 1,
-            62 => 1,
-            64 => 1,
-            66 => 1,
-        );
+        switch ($testFile) {
+            case 'FunctionTriggerErrorUnitTest.1.inc':
+                return array(
+                    42 => 1,
+                    44 => 1,
+                    46 => 1,
+                    48 => 1,
+                    50 => 1,
+                    52 => 1,
+                    54 => 1,
+                    56 => 1,
+                    58 => 1,
+                    60 => 1,
+                    62 => 1,
+                    64 => 1,
+                    66 => 1,
+                );
+            case 'FunctionTriggerErrorUnitTest.2.inc':
+            case 'FunctionTriggerErrorUnitTest.3.inc':
+            default:
+                return array(
+                );
+        }
 
     }//end getWarningList()
 
