@@ -35,10 +35,10 @@ class FileCommentSniff implements Sniff
      *
      * @var array
      */
-    public $supportedTokenizers = array(
-                                   'PHP',
-                                   'JS',
-                                  );
+    public $supportedTokenizers = [
+        'PHP',
+        'JS',
+    ];
 
 
     /**
@@ -48,7 +48,7 @@ class FileCommentSniff implements Sniff
      */
     public function register()
     {
-        return array(T_OPEN_TAG);
+        return [T_OPEN_TAG];
 
     }//end register()
 
@@ -189,8 +189,8 @@ class FileCommentSniff implements Sniff
         }//end if
 
         if ($fileTag === false || $tokens[$fileTag]['line'] !== ($tokens[$commentStart]['line'] + 1)) {
-            $second_line = $phpcsFile->findNext(array(T_DOC_COMMENT_STAR, T_DOC_COMMENT_CLOSE_TAG), ($commentStart + 1), $commentEnd);
-            $fix         = $phpcsFile->addFixableError('The second line in the file doc comment must be "@file"', $second_line, 'FileTag');
+            $secondLine = $phpcsFile->findNext([T_DOC_COMMENT_STAR, T_DOC_COMMENT_CLOSE_TAG], ($commentStart + 1), $commentEnd);
+            $fix        = $phpcsFile->addFixableError('The second line in the file doc comment must be "@file"', $secondLine, 'FileTag');
             if ($fix === true) {
                 if ($fileTag === false) {
                     $phpcsFile->fixer->addContent($commentStart, "\n * @file");

@@ -41,7 +41,7 @@ class ObjectOperatorIndentSniff implements Sniff
      */
     public function register()
     {
-        return array(T_OBJECT_OPERATOR);
+        return [T_OBJECT_OPERATOR];
 
     }//end register()
 
@@ -72,16 +72,16 @@ class ObjectOperatorIndentSniff implements Sniff
         }
 
         // Check if the line before is in the same scope and go back if necessary.
-        $scopeDiff = array($previousLine => $previousLine);
+        $scopeDiff = [$previousLine => $previousLine];
         while (empty($scopeDiff) === false) {
             // Find the first non whitespace character on the previous line.
             $startOfLine      = $this->findStartOfline($phpcsFile, $previousLine);
-            $startParenthesis = array();
+            $startParenthesis = [];
             if (isset($tokens[$startOfLine]['nested_parenthesis']) === true) {
                 $startParenthesis = $tokens[$startOfLine]['nested_parenthesis'];
             }
 
-            $operatorParenthesis = array();
+            $operatorParenthesis = [];
             if (isset($tokens[$stackPtr]['nested_parenthesis']) === true) {
                 $operatorParenthesis = $tokens[$stackPtr]['nested_parenthesis'];
             }
@@ -116,10 +116,10 @@ class ObjectOperatorIndentSniff implements Sniff
         if ($tokens[$stackPtr]['column'] !== ($tokens[$startOfLine]['column'] + $additionalIndent)) {
             $error          = 'Object operator not indented correctly; expected %s spaces but found %s';
             $expectedIndent = ($tokens[$startOfLine]['column'] + $additionalIndent - 1);
-            $data           = array(
-                               $expectedIndent,
-                               $tokens[$stackPtr]['column'] - 1,
-                              );
+            $data           = [
+                $expectedIndent,
+                ($tokens[$stackPtr]['column'] - 1),
+            ];
             $fix            = $phpcsFile->addFixableError($error, $stackPtr, 'Indent', $data);
 
             if ($fix === true) {

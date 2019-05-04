@@ -31,7 +31,7 @@ class DataTypeNamespaceSniff implements Sniff
      */
     public function register()
     {
-        return array(T_USE);
+        return [T_USE];
 
     }//end register()
 
@@ -76,8 +76,8 @@ class DataTypeNamespaceSniff implements Sniff
         $useNamespacePtr = $phpcsFile->findNext([T_STRING], ($stackPtr + 1));
         $useNamespaceEnd = $phpcsFile->findNext(
             [
-             T_NS_SEPARATOR,
-             T_STRING,
+                T_NS_SEPARATOR,
+                T_STRING,
             ],
             ($useNamespacePtr + 1),
             null,

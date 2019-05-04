@@ -34,13 +34,13 @@ class SpaceUnaryOperatorSniff implements Sniff
      */
     public function register()
     {
-         return array(
-                 T_DEC,
-                 T_INC,
-                 T_MINUS,
-                 T_PLUS,
-                 T_BOOLEAN_NOT,
-                );
+         return [
+             T_DEC,
+             T_INC,
+             T_MINUS,
+             T_PLUS,
+             T_BOOLEAN_NOT,
+         ];
 
     }//end register()
 
@@ -63,12 +63,12 @@ class SpaceUnaryOperatorSniff implements Sniff
             $previous   = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
             $modifyLeft = in_array(
                 $tokens[$previous]['code'],
-                array(
-                 T_VARIABLE,
-                 T_CLOSE_SQUARE_BRACKET,
-                 T_CLOSE_PARENTHESIS,
-                 T_STRING,
-                )
+                [
+                    T_VARIABLE,
+                    T_CLOSE_SQUARE_BRACKET,
+                    T_CLOSE_PARENTHESIS,
+                    T_STRING,
+                ]
             );
 
             if ($modifyLeft === true && $tokens[($stackPtr - 1)]['code'] === T_WHITESPACE) {
@@ -105,7 +105,7 @@ class SpaceUnaryOperatorSniff implements Sniff
 
         // Find the last syntax item to determine if this is an unary operator.
         $lastSyntaxItem        = $phpcsFile->findPrevious(
-            array(T_WHITESPACE),
+            [T_WHITESPACE],
             ($stackPtr - 1),
             (($tokens[$stackPtr]['column']) * -1),
             true,
@@ -114,16 +114,16 @@ class SpaceUnaryOperatorSniff implements Sniff
         );
         $operatorSuffixAllowed = in_array(
             $tokens[$lastSyntaxItem]['code'],
-            array(
-             T_LNUMBER,
-             T_DNUMBER,
-             T_CLOSE_PARENTHESIS,
-             T_CLOSE_CURLY_BRACKET,
-             T_CLOSE_SQUARE_BRACKET,
-             T_CLOSE_SHORT_ARRAY,
-             T_VARIABLE,
-             T_STRING,
-            )
+            [
+                T_LNUMBER,
+                T_DNUMBER,
+                T_CLOSE_PARENTHESIS,
+                T_CLOSE_CURLY_BRACKET,
+                T_CLOSE_SQUARE_BRACKET,
+                T_CLOSE_SHORT_ARRAY,
+                T_VARIABLE,
+                T_STRING,
+            ]
         );
 
         // Check plus / minus value assignments or comparisons.

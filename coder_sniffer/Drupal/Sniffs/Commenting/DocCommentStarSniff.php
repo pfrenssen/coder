@@ -30,7 +30,7 @@ class DocCommentStarSniff implements Sniff
      */
     public function register()
     {
-        return array(T_DOC_COMMENT_OPEN_TAG);
+        return [T_DOC_COMMENT_OPEN_TAG];
 
     }//end register()
 

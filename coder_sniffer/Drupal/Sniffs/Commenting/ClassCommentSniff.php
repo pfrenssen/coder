@@ -36,11 +36,11 @@ class ClassCommentSniff implements Sniff
      */
     public function register()
     {
-        return array(
-                T_CLASS,
-                T_INTERFACE,
-                T_TRAIT,
-               );
+        return [
+            T_CLASS,
+            T_INTERFACE,
+            T_TRAIT,
+        ];
 
     }//end register()
 
@@ -65,7 +65,7 @@ class ClassCommentSniff implements Sniff
         if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             && $tokens[$commentEnd]['code'] !== T_COMMENT
         ) {
-            $fix = $phpcsFile->addFixableError('Missing %s doc comment', $stackPtr, 'Missing', array($name));
+            $fix = $phpcsFile->addFixableError('Missing %s doc comment', $stackPtr, 'Missing', [$name]);
             if ($fix === true) {
                 $phpcsFile->fixer->addContent($commentEnd, "\n/**\n *\n */");
             }
@@ -83,7 +83,7 @@ class ClassCommentSniff implements Sniff
         $fileTag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($start + 1), $commentEnd, false, '@file');
         if ($fileTag !== false) {
             // This is a file comment.
-            $fix = $phpcsFile->addFixableError('Missing %s doc comment', $stackPtr, 'Missing', array($name));
+            $fix = $phpcsFile->addFixableError('Missing %s doc comment', $stackPtr, 'Missing', [$name]);
             if ($fix === true) {
                 $phpcsFile->fixer->addContent($commentEnd, "\n/**\n *\n */");
             }
@@ -92,7 +92,7 @@ class ClassCommentSniff implements Sniff
         }
 
         if ($tokens[$commentEnd]['code'] === T_COMMENT) {
-            $fix = $phpcsFile->addFixableError('You must use "/**" style comments for a %s comment', $stackPtr, 'WrongStyle', array($name));
+            $fix = $phpcsFile->addFixableError('You must use "/**" style comments for a %s comment', $stackPtr, 'WrongStyle', [$name]);
             if ($fix === true) {
                 // Convert the comment into a doc comment.
                 $phpcsFile->fixer->beginChangeset();
@@ -111,7 +111,7 @@ class ClassCommentSniff implements Sniff
 
         if ($tokens[$commentEnd]['line'] !== ($tokens[$stackPtr]['line'] - 1)) {
             $error = 'There must be exactly one newline after the %s comment';
-            $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter', array($name));
+            $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter', [$name]);
             if ($fix === true) {
                 $phpcsFile->fixer->beginChangeset();
                 for ($i = ($commentEnd + 1); $tokens[$i]['code'] === T_WHITESPACE && $i < $stackPtr; $i++) {

@@ -31,7 +31,7 @@ class RemoteAddressSniff implements Sniff
      */
     public function register()
     {
-        return array(T_VARIABLE);
+        return [T_VARIABLE];
 
     }//end register()
 

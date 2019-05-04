@@ -31,7 +31,7 @@ class ClassFilesSniff implements Sniff
      */
     public function register()
     {
-        return array(T_INLINE_HTML);
+        return [T_INLINE_HTML];
 
     }//end register()
 
@@ -72,7 +72,7 @@ class ClassFilesSniff implements Sniff
                 $searchTokens = token_get_all(file_get_contents($fileName));
                 foreach ($searchTokens as $token) {
                     if (is_array($token) === true
-                        && in_array($token[0], array(T_CLASS, T_INTERFACE, T_TRAIT)) === true
+                        && in_array($token[0], [T_CLASS, T_INTERFACE, T_TRAIT]) === true
                     ) {
                         continue 2;
                     }
@@ -121,7 +121,7 @@ class ClassFilesSniff implements Sniff
      */
     public static function drupalParseInfoFormat($data)
     {
-        $info      = array();
+        $info      = [];
         $constants = get_defined_constants();
 
         if (preg_match_all(
@@ -146,7 +146,7 @@ class ClassFilesSniff implements Sniff
             foreach ($matches as $match) {
                 // Fetch the key and value string.
                 $i = 0;
-                foreach (array('key', 'value1', 'value2', 'value3') as $var) {
+                foreach (['key', 'value1', 'value2', 'value3'] as $var) {
                     if (isset($match[++$i]) === true) {
                         $$var = $match[$i];
                     } else {
@@ -168,7 +168,7 @@ class ClassFilesSniff implements Sniff
                     }
 
                     if (isset($parent[$key]) === false || is_array($parent[$key]) === false) {
-                        $parent[$key] = array();
+                        $parent[$key] = [];
                     }
 
                     $parent = &$parent[$key];

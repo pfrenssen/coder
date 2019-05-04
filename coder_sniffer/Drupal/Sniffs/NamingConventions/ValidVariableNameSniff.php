@@ -71,8 +71,8 @@ class ValidVariableNameSniff extends AbstractVariableSniff
             if ($extendsName !== false && in_array(
                 $extendsName,
                 [
-                 'Plugin',
-                 'ViewsPluginAnnotationBase',
+                    'Plugin',
+                    'ViewsPluginAnnotationBase',
                 ]
             ) !== false
             ) {
@@ -86,7 +86,7 @@ class ValidVariableNameSniff extends AbstractVariableSniff
         }//end if
 
         $error = 'Class property %s should use lowerCamel naming without underscores';
-        $data  = array($tokens[$stackPtr]['content']);
+        $data  = [$tokens[$stackPtr]['content']];
         $phpcsFile->addError($error, $stackPtr, 'LowerCamelName', $data);
 
     }//end processMemberVar()
@@ -106,17 +106,17 @@ class ValidVariableNameSniff extends AbstractVariableSniff
 
         $varName = ltrim($tokens[$stackPtr]['content'], '$');
 
-        $phpReservedVars = array(
-                            '_SERVER',
-                            '_GET',
-                            '_POST',
-                            '_REQUEST',
-                            '_SESSION',
-                            '_ENV',
-                            '_COOKIE',
-                            '_FILES',
-                            'GLOBALS',
-                           );
+        $phpReservedVars = [
+            '_SERVER',
+            '_GET',
+            '_POST',
+            '_REQUEST',
+            '_SESSION',
+            '_ENV',
+            '_COOKIE',
+            '_FILES',
+            'GLOBALS',
+        ];
 
         // If it's a php reserved var, then its ok.
         if (in_array($varName, $phpReservedVars) === true) {

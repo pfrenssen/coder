@@ -32,10 +32,10 @@ class ControlSignatureSniff implements Sniff
      *
      * @var array
      */
-    public $supportedTokenizers = array(
-                                   'PHP',
-                                   'JS',
-                                  );
+    public $supportedTokenizers = [
+        'PHP',
+        'JS',
+    ];
 
 
     /**
@@ -45,18 +45,18 @@ class ControlSignatureSniff implements Sniff
      */
     public function register()
     {
-        return array(
-                T_TRY,
-                T_CATCH,
-                T_DO,
-                T_WHILE,
-                T_FOR,
-                T_IF,
-                T_FOREACH,
-                T_ELSE,
-                T_ELSEIF,
-                T_SWITCH,
-               );
+        return [
+            T_TRY,
+            T_CATCH,
+            T_DO,
+            T_WHILE,
+            T_FOR,
+            T_IF,
+            T_FOREACH,
+            T_ELSE,
+            T_ELSEIF,
+            T_SWITCH,
+        ];
 
     }//end register()
 
@@ -92,10 +92,10 @@ class ControlSignatureSniff implements Sniff
 
         if ($found !== 1) {
             $error = 'Expected 1 space after %s keyword; %s found';
-            $data  = array(
-                      strtoupper($tokens[$stackPtr]['content']),
-                      $found,
-                     );
+            $data  = [
+                strtoupper($tokens[$stackPtr]['content']),
+                $found,
+            ];
 
             $fix = $phpcsFile->addFixableError($error, $stackPtr, 'SpaceAfterKeyword', $data);
             if ($fix === true) {
@@ -123,7 +123,7 @@ class ControlSignatureSniff implements Sniff
                     $found = '"'.str_replace($phpcsFile->eolChar, '\n', $content).'"';
                 }
 
-                $fix = $phpcsFile->addFixableError($error, $closer, 'SpaceAfterCloseParenthesis', array($found));
+                $fix = $phpcsFile->addFixableError($error, $closer, 'SpaceAfterCloseParenthesis', [$found]);
                 if ($fix === true) {
                     if ($closer === ($opener - 1)) {
                         $phpcsFile->fixer->addContent($closer, ' ');
@@ -205,7 +205,7 @@ class ControlSignatureSniff implements Sniff
 
             if ($found !== 0) {
                 $error = 'Expected 0 spaces before semicolon; %s found';
-                $data  = array($found);
+                $data  = [$found];
                 $fix   = $phpcsFile->addFixableError($error, $closer, 'SpaceBeforeSemicolon', $data);
                 if ($fix === true) {
                     $phpcsFile->fixer->replaceToken(($closer + 1), '');
@@ -278,7 +278,7 @@ class ControlSignatureSniff implements Sniff
 
             if ($found !== 1) {
                 $error = 'Expected 1 space after closing brace; %s found';
-                $data  = array($found);
+                $data  = [$found];
                 $fix   = $phpcsFile->addFixableError($error, $closer, 'SpaceAfterCloseBrace', $data);
                 if ($fix === true) {
                     if ($found === 0) {

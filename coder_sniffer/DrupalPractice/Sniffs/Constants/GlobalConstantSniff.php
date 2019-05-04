@@ -31,7 +31,7 @@ class GlobalConstantSniff implements Sniff
      */
     public function register()
     {
-        return array(T_CONST);
+        return [T_CONST];
 
     }//end register()
 

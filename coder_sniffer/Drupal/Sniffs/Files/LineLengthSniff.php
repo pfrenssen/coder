@@ -27,7 +27,7 @@ class LineLengthSniff extends GenericLineLengthSniff
     /**
      * The limit that the length of a line should not exceed.
      *
-     * @var int
+     * @var integer
      */
     public $lineLimit = 80;
 
@@ -37,7 +37,7 @@ class LineLengthSniff extends GenericLineLengthSniff
      *
      * Set to zero (0) to disable.
      *
-     * @var int
+     * @var integer
      */
     public $absoluteLineLimit = 0;
 
@@ -54,8 +54,8 @@ class LineLengthSniff extends GenericLineLengthSniff
     protected function checkLineLength($phpcsFile, $tokens, $stackPtr)
     {
         if (isset(Tokens::$commentTokens[$tokens[($stackPtr - 1)]['code']]) === true) {
-            $doc_comment_tag = $phpcsFile->findFirstOnLine(T_DOC_COMMENT_TAG, ($stackPtr - 1));
-            if ($doc_comment_tag !== false) {
+            $docCommentTag = $phpcsFile->findFirstOnLine(T_DOC_COMMENT_TAG, ($stackPtr - 1));
+            if ($docCommentTag !== false) {
                 // Allow doc comment tags such as long @param tags to exceed the 80
                 // character limit.
                 return;
@@ -75,7 +75,7 @@ class LineLengthSniff extends GenericLineLengthSniff
             // Code examples between @code and @endcode are allowed to exceed 80
             // characters.
             if (isset($tokens[$stackPtr]) === true && $tokens[$stackPtr]['code'] === T_DOC_COMMENT_WHITESPACE) {
-                $tag = $phpcsFile->findPrevious(array(T_DOC_COMMENT_TAG, T_DOC_COMMENT_OPEN_TAG), ($stackPtr - 1));
+                $tag = $phpcsFile->findPrevious([T_DOC_COMMENT_TAG, T_DOC_COMMENT_OPEN_TAG], ($stackPtr - 1));
                 if ($tokens[$tag]['content'] === '@code') {
                     return;
                 }

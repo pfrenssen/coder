@@ -30,7 +30,7 @@ class InterfaceNameSniff implements Sniff
      */
     public function register()
     {
-        return array(T_INTERFACE);
+        return [T_INTERFACE];
 
     }//end register()
 

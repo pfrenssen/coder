@@ -29,21 +29,21 @@ class GlobalFunctionSniff implements Sniff
      *
      * @var string[]
      */
-    protected $functions = array(
-                            'drupal_get_destination'   => 'the "redirect.destination" service',
-                            'drupal_render'            => 'the "renderer" service',
-                            'entity_load'              => 'the "entity_type.manager" service',
-                            'file_load'                => 'the "entity_type.manager" service',
-                            'format_date'              => 'the "date.formatter" service',
-                            'node_load'                => 'the "entity_type.manager" service',
-                            'node_load_multiple'       => 'the "entity_type.manager" service',
-                            'node_type_load'           => 'the "entity_type.manager" service',
-                            't'                        => '$this->t()',
-                            'taxonomy_term_load'       => 'the "entity_type.manager" service',
-                            'taxonomy_vocabulary_load' => 'the "entity_type.manager" service',
-                            'user_load'                => 'the "entity_type.manager" service',
-                            'user_role_load'           => 'the "entity_type.manager" service',
-                           );
+    protected $functions = [
+        'drupal_get_destination'   => 'the "redirect.destination" service',
+        'drupal_render'            => 'the "renderer" service',
+        'entity_load'              => 'the "entity_type.manager" service',
+        'file_load'                => 'the "entity_type.manager" service',
+        'format_date'              => 'the "date.formatter" service',
+        'node_load'                => 'the "entity_type.manager" service',
+        'node_load_multiple'       => 'the "entity_type.manager" service',
+        'node_type_load'           => 'the "entity_type.manager" service',
+        't'                        => '$this->t()',
+        'taxonomy_term_load'       => 'the "entity_type.manager" service',
+        'taxonomy_vocabulary_load' => 'the "entity_type.manager" service',
+        'user_load'                => 'the "entity_type.manager" service',
+        'user_role_load'           => 'the "entity_type.manager" service',
+    ];
 
 
     /**
@@ -53,7 +53,7 @@ class GlobalFunctionSniff implements Sniff
      */
     public function register()
     {
-        return array(T_STRING);
+        return [T_STRING];
 
     }//end register()
 
@@ -108,10 +108,10 @@ class GlobalFunctionSniff implements Sniff
         }
 
         $warning = '%s() calls should be avoided in classes, use dependency injection and %s instead';
-        $data    = array(
-                    $tokens[$stackPtr]['content'],
-                    $this->functions[$tokens[$stackPtr]['content']],
-                   );
+        $data    = [
+            $tokens[$stackPtr]['content'],
+            $this->functions[$tokens[$stackPtr]['content']],
+        ];
         $phpcsFile->addWarning($warning, $stackPtr, 'GlobalFunction', $data);
 
     }//end process()

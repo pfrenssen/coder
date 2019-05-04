@@ -42,12 +42,12 @@ class StrictSchemaDisabledSniff extends AbstractVariableSniff
         $tokens = $phpcsFile->getTokens();
 
         if (($tokens[$stackPtr]['content'] === static::STRICT_CONFIG_SCHEMA_NAME) && ($this->isTestClass($phpcsFile, $stackPtr) === true)) {
-            $find = array(
-                     T_FALSE,
-                     T_TRUE,
-                     T_NULL,
-                     T_SEMICOLON,
-                    );
+            $find = [
+                T_FALSE,
+                T_TRUE,
+                T_NULL,
+                T_SEMICOLON,
+            ];
             $next = $phpcsFile->findNext($find, ($stackPtr + 1));
             // If this variable is being set, the only allowed value is TRUE.
             // Otherwise if FALSE or NULL, schema checking is disabled.

@@ -31,7 +31,7 @@ class DbQuerySniff extends FunctionCall
      */
     public function registerFunctionNames()
     {
-        return array('db_query');
+        return ['db_query'];
 
     }//end registerFunctionNames()
 
@@ -63,17 +63,17 @@ class DbQuerySniff extends FunctionCall
         $tokens   = $phpcsFile->getTokens();
         $argument = $this->getArgument(1);
 
-        $query_start = '';
-        for ($start = $argument['start']; $tokens[$start]['code'] === T_CONSTANT_ENCAPSED_STRING && empty($query_start) === true; $start++) {
+        $queryStart = '';
+        for ($start = $argument['start']; $tokens[$start]['code'] === T_CONSTANT_ENCAPSED_STRING && empty($queryStart) === true; $start++) {
             // Remove quote and white space from the beginning.
-            $query_start = trim(substr($tokens[$start]['content'], 1));
+            $queryStart = trim(substr($tokens[$start]['content'], 1));
             // Just look at the first word.
-            $parts       = explode(' ', $query_start);
-            $query_start = $parts[0];
+            $parts      = explode(' ', $queryStart);
+            $queryStart = $parts[0];
 
-            if (in_array(strtoupper($query_start), array('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE')) === true) {
+            if (in_array(strtoupper($queryStart), ['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE']) === true) {
                 $warning = 'Do not use %s queries with db_query(), use %s instead';
-                $phpcsFile->addWarning($warning, $start, 'DbQuery', array($query_start, 'db_'.strtolower($query_start).'()'));
+                $phpcsFile->addWarning($warning, $start, 'DbQuery', [$queryStart, 'db_'.strtolower($queryStart).'()']);
             }
         }
 

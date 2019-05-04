@@ -31,7 +31,7 @@ class HookCommentSniff implements Sniff
      */
     public function register()
     {
-        return array(T_FUNCTION);
+        return [T_FUNCTION];
 
     }//end register()
 
@@ -64,10 +64,10 @@ class HookCommentSniff implements Sniff
 
         $commentStart = $tokens[$commentEnd]['comment_opener'];
 
-        $empty = array(
-                  T_DOC_COMMENT_WHITESPACE,
-                  T_DOC_COMMENT_STAR,
-                 );
+        $empty = [
+            T_DOC_COMMENT_WHITESPACE,
+            T_DOC_COMMENT_STAR,
+        ];
 
         $short = $phpcsFile->findNext($empty, ($commentStart + 1), $commentEnd, true);
         if ($short === false) {

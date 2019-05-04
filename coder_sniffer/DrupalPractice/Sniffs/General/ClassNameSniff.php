@@ -32,10 +32,10 @@ class ClassNameSniff implements Sniff
      */
     public function register()
     {
-        return array(
-                T_CLASS,
-                T_INTERFACE,
-               );
+        return [
+            T_CLASS,
+            T_INTERFACE,
+        ];
 
     }//end register()
 
@@ -83,10 +83,10 @@ class ClassNameSniff implements Sniff
                 $camelName .= ucfirst($part);
             }
 
-            $errorData = array(
-                          ucfirst($tokens[$stackPtr]['content']),
-                          $camelName,
-                         );
+            $errorData = [
+                ucfirst($tokens[$stackPtr]['content']),
+                $camelName,
+            ];
             $phpcsFile->addWarning($warning, $className, 'ClassPrefix', $errorData);
         }
 

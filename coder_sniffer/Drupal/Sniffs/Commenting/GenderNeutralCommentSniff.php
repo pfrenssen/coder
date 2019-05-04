@@ -30,10 +30,10 @@ class GenderNeutralCommentSniff implements Sniff
      */
     public function register()
     {
-        return array(
-                T_COMMENT,
-                T_DOC_COMMENT_STRING,
-               );
+        return [
+            T_COMMENT,
+            T_DOC_COMMENT_STRING,
+        ];
 
     }//end register()
 

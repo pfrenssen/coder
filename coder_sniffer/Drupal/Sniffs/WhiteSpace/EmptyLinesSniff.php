@@ -29,11 +29,11 @@ class EmptyLinesSniff implements Sniff
      *
      * @var array
      */
-    public $supportedTokenizers = array(
-                                   'PHP',
-                                   'JS',
-                                   'CSS',
-                                  );
+    public $supportedTokenizers = [
+        'PHP',
+        'JS',
+        'CSS',
+    ];
 
 
     /**
@@ -43,7 +43,7 @@ class EmptyLinesSniff implements Sniff
      */
     public function register()
     {
-        return array(T_WHITESPACE);
+        return [T_WHITESPACE];
 
     }//end register()
 

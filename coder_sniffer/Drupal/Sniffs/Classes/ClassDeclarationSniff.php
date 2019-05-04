@@ -33,11 +33,11 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
      */
     public function register()
     {
-        return array(
-                T_CLASS,
-                T_INTERFACE,
-                T_TRAIT,
-               );
+        return [
+            T_CLASS,
+            T_INTERFACE,
+            T_TRAIT,
+        ];
 
     }//end register()
 
@@ -54,7 +54,7 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $tokens    = $phpcsFile->getTokens();
-        $errorData = array(strtolower($tokens[$stackPtr]['content']));
+        $errorData = [strtolower($tokens[$stackPtr]['content'])];
 
         if (isset($tokens[$stackPtr]['scope_opener']) === false) {
             $error = 'Possible parse error: %s missing opening or closing brace';
@@ -106,7 +106,7 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
 
         if ($length !== 1) {
             $error = 'Expected 1 space before opening brace; found %s';
-            $data  = array($length);
+            $data  = [$length];
             $fix   = $phpcsFile->addFixableError($error, $openingBrace, 'SpaceBeforeBrace', $data);
             if ($fix === true) {
                 if ($length === 0) {
@@ -152,7 +152,7 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
             && isset(Tokens::$commentTokens[$tokens[$prevContent]['code']]) === false
         ) {
             $error = 'The closing brace for the %s must have an empty line before it';
-            $data  = array($tokens[$stackPtr]['content']);
+            $data  = [$tokens[$stackPtr]['content']];
             $fix   = $phpcsFile->addFixableError($error, $closeBrace, 'CloseBraceAfterBody', $data);
 
             if ($fix === true) {
@@ -175,7 +175,7 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
         ) {
             $type  = strtolower($tokens[$stackPtr]['content']);
             $error = 'Closing %s brace must be on a line by itself';
-            $data  = array($tokens[$stackPtr]['content']);
+            $data  = [$tokens[$stackPtr]['content']];
             $phpcsFile->addError($error, $closeBrace, 'CloseBraceSameLine', $data);
         }
 

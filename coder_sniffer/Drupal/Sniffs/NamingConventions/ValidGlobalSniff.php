@@ -23,56 +23,61 @@ use PHP_CodeSniffer\Util\Tokens;
 class ValidGlobalSniff implements Sniff
 {
 
-    public $coreGlobals = array(
-                           '$argc',
-                           '$argv',
-                           '$base_insecure_url',
-                           '$base_path',
-                           '$base_root',
-                           '$base_secure_url',
-                           '$base_theme_info',
-                           '$base_url',
-                           '$channel',
-                           '$conf',
-                           '$config',
-                           '$config_directories',
-                           '$cookie_domain',
-                           '$databases',
-                           '$db_prefix',
-                           '$db_type',
-                           '$db_url',
-                           '$drupal_hash_salt',
-                           '$drupal_test_info',
-                           '$element',
-                           '$forum_topic_list_header',
-                           '$image',
-                           '$install_state',
-                           '$installed_profile',
-                           '$is_https',
-                           '$is_https_mock',
-                           '$item',
-                           '$items',
-                           '$language',
-                           '$language_content',
-                           '$language_url',
-                           '$locks',
-                           '$menu_admin',
-                           '$multibyte',
-                           '$pager_limits',
-                           '$pager_page_array',
-                           '$pager_total',
-                           '$pager_total_items',
-                           '$tag',
-                           '$theme',
-                           '$theme_engine',
-                           '$theme_info',
-                           '$theme_key',
-                           '$theme_path',
-                           '$timers',
-                           '$update_free_access',
-                           '$update_rewrite_settings',
-                           '$user',
-                          );
+    /**
+     * List of allowed Drupal core global variable names.
+     *
+     * @var array
+     */
+    public $coreGlobals = [
+        '$argc',
+        '$argv',
+        '$base_insecure_url',
+        '$base_path',
+        '$base_root',
+        '$base_secure_url',
+        '$base_theme_info',
+        '$base_url',
+        '$channel',
+        '$conf',
+        '$config',
+        '$config_directories',
+        '$cookie_domain',
+        '$databases',
+        '$db_prefix',
+        '$db_type',
+        '$db_url',
+        '$drupal_hash_salt',
+        '$drupal_test_info',
+        '$element',
+        '$forum_topic_list_header',
+        '$image',
+        '$install_state',
+        '$installed_profile',
+        '$is_https',
+        '$is_https_mock',
+        '$item',
+        '$items',
+        '$language',
+        '$language_content',
+        '$language_url',
+        '$locks',
+        '$menu_admin',
+        '$multibyte',
+        '$pager_limits',
+        '$pager_page_array',
+        '$pager_total',
+        '$pager_total_items',
+        '$tag',
+        '$theme',
+        '$theme_engine',
+        '$theme_info',
+        '$theme_key',
+        '$theme_path',
+        '$timers',
+        '$update_free_access',
+        '$update_rewrite_settings',
+        '$user',
+    ];
 
 
     /**
@@ -82,7 +87,7 @@ class ValidGlobalSniff implements Sniff
      */
     public function register()
     {
-        return array(T_GLOBAL);
+        return [T_GLOBAL];
 
     }//end register()
 

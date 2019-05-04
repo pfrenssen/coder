@@ -29,10 +29,10 @@ class OpenBracketSpacingSniff implements Sniff
      *
      * @var array
      */
-    public $supportedTokenizers = array(
-                                   'PHP',
-                                   'JS',
-                                  );
+    public $supportedTokenizers = [
+        'PHP',
+        'JS',
+    ];
 
 
     /**
@@ -42,11 +42,11 @@ class OpenBracketSpacingSniff implements Sniff
      */
     public function register()
     {
-        return array(
-                T_OPEN_CURLY_BRACKET,
-                T_OPEN_PARENTHESIS,
-                T_OPEN_SHORT_ARRAY,
-               );
+        return [
+            T_OPEN_CURLY_BRACKET,
+            T_OPEN_PARENTHESIS,
+            T_OPEN_SHORT_ARRAY,
+        ];
 
     }//end register()
 
@@ -83,7 +83,7 @@ class OpenBracketSpacingSniff implements Sniff
                 $error,
                 ($stackPtr + 1),
                 'OpeningWhitespace',
-                array($tokens[$stackPtr]['content'])
+                [$tokens[$stackPtr]['content']]
             );
             if ($fix === true) {
                 $phpcsFile->fixer->replaceToken(($stackPtr + 1), '');

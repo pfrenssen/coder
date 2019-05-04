@@ -30,7 +30,7 @@ class DuplicateEntrySniff implements Sniff
      */
     public function register()
     {
-        return array(T_INLINE_HTML);
+        return [T_INLINE_HTML];
 
     }//end register()
 
@@ -57,7 +57,7 @@ class DuplicateEntrySniff implements Sniff
         if (empty($duplicates) === false) {
             foreach ($duplicates as $duplicate) {
                 $error = 'Duplicate entry for "%s" in info file';
-                $phpcsFile->addError($error, $stackPtr, 'DuplicateEntry', array($duplicate));
+                $phpcsFile->addError($error, $stackPtr, 'DuplicateEntry', [$duplicate]);
             }
         }
 
@@ -75,8 +75,8 @@ class DuplicateEntrySniff implements Sniff
      */
     protected function findDuplicateInfoFileEntries($data)
     {
-        $info       = array();
-        $duplicates = array();
+        $info       = [];
+        $duplicates = [];
         $constants  = get_defined_constants();
 
         if (preg_match_all(
@@ -101,7 +101,7 @@ class DuplicateEntrySniff implements Sniff
             foreach ($matches as $match) {
                 // Fetch the key and value string.
                 $i = 0;
-                foreach (array('key', 'value1', 'value2', 'value3') as $var) {
+                foreach (['key', 'value1', 'value2', 'value3'] as $var) {
                     if (isset($match[++$i]) === true) {
                         $$var = $match[$i];
                     } else {
@@ -123,7 +123,7 @@ class DuplicateEntrySniff implements Sniff
                     }
 
                     if (isset($parent[$key]) === false || is_array($parent[$key]) === false) {
-                        $parent[$key] = array();
+                        $parent[$key] = [];
                     }
 
                     $parent = &$parent[$key];
