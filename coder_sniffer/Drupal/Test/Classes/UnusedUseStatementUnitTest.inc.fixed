@@ -89,4 +89,25 @@ class Pum {
     return $x['test'];
   }
 
+  /**
+   * Call a method here that has the same name as a class name.
+   */
+  protected function test8() {
+    $this->sameAsAMethodName();
+  }
+
+  /**
+   * Method definition has same name as class name.
+   */
+  protected function test9() {
+
+  }
+
+  /**
+   * Static method calls should not be confused with class names.
+   */
+  protected function test10() {
+    Something::test10();
+  }
+
 }
