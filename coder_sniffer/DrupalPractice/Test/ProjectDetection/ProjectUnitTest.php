@@ -20,6 +20,8 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function setUp()
     {
@@ -33,12 +35,13 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Tests the extending classes Sniff class.
+     *
+     * @return void
      */
     public function testInfoFileDetection()
     {
         $this->phpcsFile->expects($this->any())
             ->method('getFilename')
-          // The file does not exist, but doesn't matter for this test.
             ->will($this->returnValue(dirname(__FILE__).'/modules/drupal6/test.php'));
 
         $this->assertEquals(Project::getInfoFile($this->phpcsFile), dirname(__FILE__).'/modules/drupal6/testmodule.info');
@@ -48,12 +51,13 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Tests the extending classes Sniff class.
+     *
+     * @return void
      */
     public function testInfoFileNestedDetection()
     {
         $this->phpcsFile->expects($this->any())
             ->method('getFilename')
-          // The file does not exist, but doesn't matter for this test.
             ->will($this->returnValue(dirname(__FILE__).'/modules/drupal6/nested/test.php'));
 
         $this->assertEquals(Project::getInfoFile($this->phpcsFile), dirname(__FILE__).'/modules/drupal6/testmodule.info');
@@ -64,22 +68,28 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
     /**
      * Tests the extending classes Sniff class.
      *
+     * @param string $filename    Name of the file that will be checked.
+     * @param string $coreVersion Expected core version for the file.
+     *
      * @dataProvider coreVersionProvider
+     *
+     * @return void
      */
-    public function testCoreVersion($filename, $core_version)
+    public function testCoreVersion($filename, $coreVersion)
     {
         $this->phpcsFile->expects($this->any())
             ->method('getFilename')
-          // The file does not exist, but doesn't matter for this test.
             ->will($this->returnValue($filename));
 
-        $this->assertEquals(Project::getCoreVersion($this->phpcsFile), $core_version);
+        $this->assertEquals(Project::getCoreVersion($this->phpcsFile), $coreVersion);
 
     }//end testCoreVersion()
 
 
     /**
      * Data provider for testCoreVersion().
+     *
+     * @return array
      */
     public function coreVersionProvider()
     {

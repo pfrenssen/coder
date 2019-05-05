@@ -47,6 +47,8 @@ class AccessHookMenuUnitTest extends CoderSniffUnitTest
     /**
      * Returns a list of test files that should be checked.
      *
+     * @param string $testFileBase The base path that the unit tests files will have.
+     *
      * @return array The list of test files.
      */
     protected function getTestFiles($testFileBase)
