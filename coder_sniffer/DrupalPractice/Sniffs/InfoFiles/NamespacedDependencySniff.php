@@ -31,7 +31,7 @@ class NamespacedDependencySniff implements Sniff
      */
     public function register()
     {
-        return array(T_INLINE_HTML);
+        return [T_INLINE_HTML];
 
     }//end register()
 

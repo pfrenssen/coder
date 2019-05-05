@@ -74,10 +74,10 @@ class HookInitCssSniff extends FunctionDefinition
                 ) {
                     if ($tokens[$stackPtr]['content'] === ($fileName.'_init')) {
                         $warning = 'Do not use %s() in hook_init(), use #attached for CSS and JS in your page/form callback or in hook_page_build() instead';
-                        $phpcsFile->addWarning($warning, $string, 'AddFunctionFound', array($tokens[$string]['content']));
+                        $phpcsFile->addWarning($warning, $string, 'AddFunctionFound', [$tokens[$string]['content']]);
                     } else {
                         $warning = 'Do not use %s() in hook_page_build(), use #attached for CSS and JS on the $page render array instead';
-                        $phpcsFile->addWarning($warning, $string, 'AddFunctionFoundPageBuild', array($tokens[$string]['content']));
+                        $phpcsFile->addWarning($warning, $string, 'AddFunctionFoundPageBuild', [$tokens[$string]['content']]);
                     }
                 }
             }

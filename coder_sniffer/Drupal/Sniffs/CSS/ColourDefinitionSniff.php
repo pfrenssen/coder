@@ -29,7 +29,7 @@ class ColourDefinitionSniff implements Sniff
      *
      * @var array
      */
-    public $supportedTokenizers = array('CSS');
+    public $supportedTokenizers = ['CSS'];
 
 
     /**
@@ -39,7 +39,7 @@ class ColourDefinitionSniff implements Sniff
      */
     public function register()
     {
-        return array(T_COLOUR);
+        return [T_COLOUR];
 
     }//end register()
 
@@ -61,10 +61,10 @@ class ColourDefinitionSniff implements Sniff
         $expected = strtolower($colour);
         if ($colour !== $expected) {
             $error = 'CSS colours must be defined in lowercase; expected %s but found %s';
-            $data  = array(
-                      $expected,
-                      $colour,
-                     );
+            $data  = [
+                $expected,
+                $colour,
+            ];
             $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'NotLower', $data);
             if ($fix === true) {
                 $phpcsFile->fixer->replaceToken($stackPtr, $expected);

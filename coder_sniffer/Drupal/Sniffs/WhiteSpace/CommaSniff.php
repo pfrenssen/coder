@@ -32,7 +32,7 @@ class CommaSniff implements Sniff
      */
     public function register()
     {
-        return array(T_COMMA);
+        return [T_COMMA];
 
     }//end register()
 
@@ -73,7 +73,7 @@ class CommaSniff implements Sniff
             && $tokens[($stackPtr + 1)]['content'] !== ' '
         ) {
             $error = 'Expected one space after the comma, %s found';
-            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'TooManySpaces', array(strlen($tokens[($stackPtr + 1)]['content'])));
+            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'TooManySpaces', [strlen($tokens[($stackPtr + 1)]['content'])]);
             if ($fix === true) {
                 $phpcsFile->fixer->replaceToken(($stackPtr + 1), ' ');
             }

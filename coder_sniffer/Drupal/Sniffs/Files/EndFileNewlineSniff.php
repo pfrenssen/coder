@@ -31,11 +31,11 @@ class EndFileNewlineSniff implements Sniff
      *
      * @var array
      */
-    public $supportedTokenizers = array(
-                                   'PHP',
-                                   'JS',
-                                   'CSS',
-                                  );
+    public $supportedTokenizers = [
+        'PHP',
+        'JS',
+        'CSS',
+    ];
 
 
     /**
@@ -45,10 +45,10 @@ class EndFileNewlineSniff implements Sniff
      */
     public function register()
     {
-        return array(
-                T_OPEN_TAG,
-                T_INLINE_HTML,
-               );
+        return [
+            T_OPEN_TAG,
+            T_INLINE_HTML,
+        ];
 
     }//end register()
 
@@ -106,7 +106,7 @@ class EndFileNewlineSniff implements Sniff
 
         if ($blankLines > 1) {
             $error = 'Expected 1 newline at end of file; %s found';
-            $data  = array($blankLines);
+            $data  = [$blankLines];
             $fix   = $phpcsFile->addFixableError($error, $lastCode, 'TooMany', $data);
 
             if ($fix === true) {

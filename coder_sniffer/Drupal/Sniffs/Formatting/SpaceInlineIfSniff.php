@@ -30,7 +30,7 @@ class SpaceInlineIfSniff implements Sniff
      */
     public function register()
     {
-        return array(T_INLINE_ELSE);
+        return [T_INLINE_ELSE];
 
     }//end register()
 

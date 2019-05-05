@@ -33,7 +33,7 @@ class TxtFileLineLengthSniff implements Sniff
      */
     public function register()
     {
-        return array(T_INLINE_HTML);
+        return [T_INLINE_HTML];
 
     }//end register()
 
@@ -62,10 +62,10 @@ class TxtFileLineLengthSniff implements Sniff
             // - containing URLs (https://)
             // - starting with | (tables).
             if ($lineLength > 80 && preg_match('/^([^ ]+$|#|.*https?:\/\/|\|)/', $content) === 0) {
-                $data    = array(
-                            80,
-                            $lineLength,
-                           );
+                $data    = [
+                    80,
+                    $lineLength,
+                ];
                 $warning = 'Line exceeds %s characters; contains %s characters';
                 $phpcsFile->addWarning($warning, $stackPtr, 'TooLong', $data);
             }

@@ -32,13 +32,13 @@ class DefaultValueSanitizeSniff extends FunctionCall
      */
     public function registerFunctionNames()
     {
-        return array(
-                'check_markup',
-                'check_plain',
-                'check_url',
-                'filter_xss',
-                'filter_xss_admin',
-               );
+        return [
+            'check_markup',
+            'check_plain',
+            'check_url',
+            'filter_xss',
+            'filter_xss_admin',
+        ];
 
     }//end registerFunctionNames()
 
@@ -80,7 +80,7 @@ class DefaultValueSanitizeSniff extends FunctionCall
         }
 
         $warning = 'Do not use the %s() sanitization function on Form API #default_value elements, they get escaped automatically';
-        $data    = array($tokens[$stackPtr]['content']);
+        $data    = [$tokens[$stackPtr]['content']];
         $phpcsFile->addWarning($warning, $stackPtr, 'DefaultValue', $data);
 
     }//end processFunctionCall()

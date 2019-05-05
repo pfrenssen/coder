@@ -31,10 +31,10 @@ class DocCommentSniff implements Sniff
      *
      * @var array
      */
-    public $supportedTokenizers = array(
-                                   'PHP',
-                                   'JS',
-                                  );
+    public $supportedTokenizers = [
+        'PHP',
+        'JS',
+    ];
 
 
     /**
@@ -44,7 +44,7 @@ class DocCommentSniff implements Sniff
      */
     public function register()
     {
-        return array(T_DOC_COMMENT_OPEN_TAG);
+        return [T_DOC_COMMENT_OPEN_TAG];
 
     }//end register()
 
@@ -64,10 +64,10 @@ class DocCommentSniff implements Sniff
         $commentEnd   = $phpcsFile->findNext(T_DOC_COMMENT_CLOSE_TAG, ($stackPtr + 1));
         $commentStart = $tokens[$commentEnd]['comment_opener'];
 
-        $empty = array(
-                  T_DOC_COMMENT_WHITESPACE,
-                  T_DOC_COMMENT_STAR,
-                 );
+        $empty = [
+            T_DOC_COMMENT_WHITESPACE,
+            T_DOC_COMMENT_STAR,
+        ];
 
         $short = $phpcsFile->findNext($empty, ($stackPtr + 1), $commentEnd, true);
         if ($short === false) {
@@ -99,7 +99,7 @@ class DocCommentSniff implements Sniff
         $prev = $phpcsFile->findPrevious($empty, ($commentEnd - 1), $stackPtr, true);
         if ($tokens[$commentEnd]['content'] !== '*/') {
             $error = 'Wrong function doc comment end; expected "*/", found "%s"';
-            $phpcsFile->addError($error, $commentEnd, 'WrongEnd', array($tokens[$commentEnd]['content']));
+            $phpcsFile->addError($error, $commentEnd, 'WrongEnd', [$tokens[$commentEnd]['content']]);
         }
 
         // Check for additional blank lines at the end of the comment.
@@ -131,7 +131,7 @@ class DocCommentSniff implements Sniff
 
         // Do not check defgroup sections, they have no short description. Also don't
         // check PHPUnit tests doc blocks because they might not have a description.
-        if (in_array($tokens[$short]['content'], array('@defgroup', '@addtogroup', '@}', '@coversDefaultClass')) === true) {
+        if (in_array($tokens[$short]['content'], ['@defgroup', '@addtogroup', '@}', '@coversDefaultClass']) === true) {
             return;
         }
 
@@ -235,7 +235,7 @@ class DocCommentSniff implements Sniff
         }
 
         $lastChar = substr($shortContent, -1);
-        if (in_array($lastChar, array('.', '!', '?', ')')) === false && $shortContent !== '{@inheritdoc}'
+        if (in_array($lastChar, ['.', '!', '?', ')']) === false && $shortContent !== '{@inheritdoc}'
             // Ignore Features module export files that just use the file name as
             // comment.
             && $shortContent !== basename($phpcsFile->getFilename())
@@ -335,7 +335,7 @@ class DocCommentSniff implements Sniff
         // This does not apply to @file, @code, @link and @endlink tags.
         if ($tokens[$firstTag]['line'] !== ($tokens[$prev]['line'] + 2)
             && isset($fileShort) === false
-            && in_array($tokens[$firstTag]['content'], array('@code', '@link', '@endlink')) === false
+            && in_array($tokens[$firstTag]['content'], ['@code', '@link', '@endlink']) === false
         ) {
             $error = 'There must be exactly one blank line before the tags in a doc comment';
             $fix   = $phpcsFile->addFixableError($error, $firstTag, 'SpacingBeforeTags');
@@ -358,7 +358,7 @@ class DocCommentSniff implements Sniff
         // Break out the tags into groups and check alignment within each.
         // A tag group is one where there are no blank lines between tags.
         // The param tag group is special as it requires all @param tags to be inside.
-        $tagGroups    = array();
+        $tagGroups    = [];
         $groupid      = 0;
         $paramGroupid = null;
         $currentTag   = null;
@@ -400,12 +400,12 @@ class DocCommentSniff implements Sniff
                 // The @param, @return and @throws tag sections should be
                 // separated by a blank line both before and after these sections.
             } else if ($isNewGroup === false
-                && (in_array($currentTag, array('@param', '@return', '@throws')) === true
-                || in_array($previousTag, array('@param', '@return', '@throws')) === true)
+                && (in_array($currentTag, ['@param', '@return', '@throws']) === true
+                || in_array($previousTag, ['@param', '@return', '@throws']) === true)
                 && $previousTag !== $currentTag
             ) {
                 $error = 'Separate the %s and %s sections by a blank line.';
-                $fix   = $phpcsFile->addFixableError($error, $tag, 'TagGroupSpacing', array($previousTag, $currentTag));
+                $fix   = $phpcsFile->addFixableError($error, $tag, 'TagGroupSpacing', [$previousTag, $currentTag]);
                 if ($fix === true) {
                     $phpcsFile->fixer->replaceToken(($tag - 1), "\n".str_repeat(' ', ($tokens[$tag]['column'] - 3)).'* ');
                 }
@@ -417,7 +417,7 @@ class DocCommentSniff implements Sniff
 
         foreach ($tagGroups as $group) {
             $maxLength = 0;
-            $paddings  = array();
+            $paddings  = [];
             foreach ($group as $pos => $tag) {
                 $tagLength = strlen($tokens[$tag]['content']);
                 if ($tagLength > $maxLength) {
@@ -436,7 +436,7 @@ class DocCommentSniff implements Sniff
             $lastTag = $group[$pos];
             $next    = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($lastTag + 3), $commentEnd);
             if ($next !== false) {
-                $prev = $phpcsFile->findPrevious(array(T_DOC_COMMENT_TAG, T_DOC_COMMENT_STRING), ($next - 1), $commentStart);
+                $prev = $phpcsFile->findPrevious([T_DOC_COMMENT_TAG, T_DOC_COMMENT_STRING], ($next - 1), $commentStart);
                 if ($tokens[$next]['line'] !== ($tokens[$prev]['line'] + 2)) {
                     $error = 'There must be a single blank line after a tag group';
                     $fix   = $phpcsFile->addFixableError($error, $lastTag, 'SpacingAfterTagGroup');
@@ -461,7 +461,7 @@ class DocCommentSniff implements Sniff
             foreach ($paddings as $tag => $padding) {
                 if ($padding !== 1) {
                     $error = 'Tag value indented incorrectly; expected 1 space but found %s';
-                    $data  = array($padding);
+                    $data  = [$padding];
 
                     $fix = $phpcsFile->addFixableError($error, ($tag + 1), 'TagValueIndent', $data);
                     if ($fix === true) {
@@ -474,7 +474,7 @@ class DocCommentSniff implements Sniff
         // If there is a param group, it needs to be first; with the exception of
         // @code, @todo and link tags.
         if ($paramGroupid !== null && $paramGroupid !== 0
-            && in_array($tokens[$tokens[$commentStart]['comment_tags'][0]]['content'], array('@code', '@todo', '@link', '@endlink', '@codingStandardsIgnoreStart')) === false
+            && in_array($tokens[$tokens[$commentStart]['comment_tags'][0]]['content'], ['@code', '@todo', '@link', '@endlink', '@codingStandardsIgnoreStart']) === false
             // In JSDoc we can have many other valid tags like @function or
             // @constructor before the param tags.
             && $phpcsFile->tokenizerType !== 'JS'
@@ -483,7 +483,7 @@ class DocCommentSniff implements Sniff
             $phpcsFile->addError($error, $tagGroups[$paramGroupid][0], 'ParamNotFirst');
         }
 
-        $foundTags = array();
+        $foundTags = [];
         foreach ($tokens[$stackPtr]['comment_tags'] as $pos => $tag) {
             $tagName = $tokens[$tag]['content'];
             if (isset($foundTags[$tagName]) === true) {

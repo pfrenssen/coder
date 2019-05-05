@@ -30,7 +30,7 @@ class DescriptionTSniff implements Sniff
      */
     public function register()
     {
-        return array(T_CONSTANT_ENCAPSED_STRING);
+        return [T_CONSTANT_ENCAPSED_STRING];
 
     }//end register()
 

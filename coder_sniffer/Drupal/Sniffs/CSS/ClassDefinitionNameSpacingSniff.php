@@ -30,7 +30,7 @@ class ClassDefinitionNameSpacingSniff implements Sniff
      *
      * @var array
      */
-    public $supportedTokenizers = array('CSS');
+    public $supportedTokenizers = ['CSS'];
 
 
     /**
@@ -40,7 +40,7 @@ class ClassDefinitionNameSpacingSniff implements Sniff
      */
     public function register()
     {
-        return array(T_OPEN_CURLY_BRACKET);
+        return [T_OPEN_CURLY_BRACKET];
 
     }//end register()
 
@@ -66,11 +66,11 @@ class ClassDefinitionNameSpacingSniff implements Sniff
 
         // Find the first blank line before this opening brace, unless we get
         // to another style definition, comment or the start of the file.
-        $endTokens  = array(
-                       T_OPEN_CURLY_BRACKET  => T_OPEN_CURLY_BRACKET,
-                       T_CLOSE_CURLY_BRACKET => T_CLOSE_CURLY_BRACKET,
-                       T_OPEN_TAG            => T_OPEN_TAG,
-                      );
+        $endTokens  = [
+            T_OPEN_CURLY_BRACKET  => T_OPEN_CURLY_BRACKET,
+            T_CLOSE_CURLY_BRACKET => T_CLOSE_CURLY_BRACKET,
+            T_OPEN_TAG            => T_OPEN_TAG,
+        ];
         $endTokens += Tokens::$commentTokens;
 
         $foundContent = false;
@@ -95,7 +95,7 @@ class ClassDefinitionNameSpacingSniff implements Sniff
             if ($tokens[$i]['code'] === T_WHITESPACE
                 && strpos($tokens[$i]['content'], $phpcsFile->eolChar) !== false
                 && isset($endTokens[$tokens[($i - 1)]['code']]) === false
-                && in_array($tokens[($i - 1)]['code'], array(T_WHITESPACE, T_COMMA)) === false
+                && in_array($tokens[($i - 1)]['code'], [T_WHITESPACE, T_COMMA]) === false
             ) {
                 $error = 'Selectors must be on a single line';
                 $fix   = $phpcsFile->addFixableError($error, $i, 'SeletorSingleLine');

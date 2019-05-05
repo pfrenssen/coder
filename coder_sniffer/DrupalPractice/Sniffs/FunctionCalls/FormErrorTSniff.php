@@ -30,10 +30,10 @@ class FormErrorTSniff extends FunctionCall
      */
     public function registerFunctionNames()
     {
-        return array(
-                'form_set_error',
-                'form_error',
-               );
+        return [
+            'form_set_error',
+            'form_error',
+        ];
 
     }//end registerFunctionNames()
 

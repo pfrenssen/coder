@@ -28,20 +28,20 @@ class GlobalDrupalSniff implements Sniff
      *
      * @var string[]
      */
-    public static $baseClasses = array(
-                                  'BlockBase',
-                                  'ConfigFormBase',
-                                  'ContentEntityForm',
-                                  'ControllerBase',
-                                  'EntityForm',
-                                  'EntityReferenceFormatterBase',
-                                  'FileFormatterBase',
-                                  'FormatterBase',
-                                  'FormBase',
-                                  'ImageFormatter',
-                                  'ImageFormatterBase',
-                                  'WidgetBase',
-                                 );
+    public static $baseClasses = [
+        'BlockBase',
+        'ConfigFormBase',
+        'ContentEntityForm',
+        'ControllerBase',
+        'EntityForm',
+        'EntityReferenceFormatterBase',
+        'FileFormatterBase',
+        'FormatterBase',
+        'FormBase',
+        'ImageFormatter',
+        'ImageFormatterBase',
+        'WidgetBase',
+    ];
 
 
     /**
@@ -51,7 +51,7 @@ class GlobalDrupalSniff implements Sniff
      */
     public function register()
     {
-        return array(T_STRING);
+        return [T_STRING];
 
     }//end register()
 

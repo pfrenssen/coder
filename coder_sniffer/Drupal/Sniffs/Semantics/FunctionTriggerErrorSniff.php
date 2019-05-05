@@ -29,7 +29,7 @@ class FunctionTriggerErrorSniff extends FunctionCall
      */
     public function registerFunctionNames()
     {
-        return array('trigger_error');
+        return ['trigger_error'];
 
     }//end registerFunctionNames()
 
@@ -74,10 +74,10 @@ class FunctionTriggerErrorSniff extends FunctionCall
         if ($tokens[$argument['start']]['code'] === T_STRING
             && strcasecmp($tokens[$argument['start']]['content'], 'sprintf') === 0
         ) {
-            $message_position = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, $argument['start']);
+            $messagePosition = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, $argument['start']);
             // Remove the quotes using substr, because trim would take multiple
             // quotes away and possibly not report a faulty message.
-            $message_text = substr($tokens[$message_position]['content'], 1, ($tokens[$message_position]['length'] - 2));
+            $messageText = substr($tokens[$messagePosition]['content'], 1, ($tokens[$messagePosition]['length'] - 2));
         } else {
             // If not sprintf() then extract and store all the items except
             // whitespace, concatenation operators and comma. This will give all
@@ -86,14 +86,14 @@ class FunctionTriggerErrorSniff extends FunctionCall
                 if (in_array($tokens[$i]['code'], [T_WHITESPACE, T_STRING_CONCAT, T_COMMA]) === false) {
                     // For strings, remove the quotes using substr not trim.
                     if ($tokens[$i]['code'] === T_CONSTANT_ENCAPSED_STRING) {
-                        $message_parts[] = substr($tokens[$i]['content'], 1, ($tokens[$i]['length'] - 2));
+                        $messageParts[] = substr($tokens[$i]['content'], 1, ($tokens[$i]['length'] - 2));
                     } else {
-                        $message_parts[] = $tokens[$i]['content'];
+                        $messageParts[] = $tokens[$i]['content'];
                     }
                 }
             }
 
-            $message_text = implode(' ', $message_parts);
+            $messageText = implode(' ', $messageParts);
         }//end if
 
         // Check if there is a @deprecated tag in an associated doc comment
@@ -158,18 +158,18 @@ class FunctionTriggerErrorSniff extends FunctionCall
             }
 
             // Check the 'See' link.
-            $cr_link = $matches[6];
+            $crLink = $matches[6];
             // Allow for the alternative 'node' or 'project/aaa/issues' format.
-            preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $cr_link, $cr_matches);
+            preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $crLink, $cr_matches);
             // If cr_matches[4] is not blank it means that the url is correct
             // but it ends with a period. As this can be a common mistake give a
             // specific message to assist in fixing.
             if (isset($cr_matches[4]) === true && empty($cr_matches[4]) === false) {
                 $error = "The url '%s' should not end with a period.";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorPeriodAfterSeeUrl', array($cr_link));
+                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorPeriodAfterSeeUrl', array($crLink));
             } else if (empty($cr_matches) === true) {
                 $error = "The url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrlFormat', array($cr_link));
+                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrlFormat', array($crLink));
             }
         }//end if
 

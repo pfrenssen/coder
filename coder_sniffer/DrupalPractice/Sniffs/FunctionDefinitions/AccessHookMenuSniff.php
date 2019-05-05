@@ -57,18 +57,18 @@ class AccessHookMenuSniff extends FunctionDefinition
         );
         while ($string !== false) {
             if (substr($tokens[$string]['content'], 1, -1) === 'access callback') {
-                $array_operator = $phpcsFile->findNext(
+                $arrayOperator = $phpcsFile->findNext(
                     Tokens::$emptyTokens,
                     ($string + 1),
                     null,
                     true
                 );
-                if ($array_operator !== false
-                    && $tokens[$array_operator]['code'] === T_DOUBLE_ARROW
+                if ($arrayOperator !== false
+                    && $tokens[$arrayOperator]['code'] === T_DOUBLE_ARROW
                 ) {
                     $callback = $phpcsFile->findNext(
                         Tokens::$emptyTokens,
-                        ($array_operator + 1),
+                        ($arrayOperator + 1),
                         null,
                         true
                     );

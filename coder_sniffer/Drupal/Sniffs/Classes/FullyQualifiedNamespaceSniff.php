@@ -30,7 +30,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
      */
     public function register()
     {
-        return array(T_NS_SEPARATOR);
+        return [T_NS_SEPARATOR];
 
     }//end register()
 

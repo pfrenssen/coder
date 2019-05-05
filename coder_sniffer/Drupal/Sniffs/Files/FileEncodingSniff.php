@@ -38,7 +38,7 @@ class FileEncodingSniff implements Sniff
      *
      * @var array
      */
-    public $allowedEncodings = array('UTF-8');
+    public $allowedEncodings = ['UTF-8'];
 
 
     /**
@@ -48,10 +48,10 @@ class FileEncodingSniff implements Sniff
      */
     public function register()
     {
-        return array(
-                T_INLINE_HTML,
-                T_OPEN_TAG,
-               );
+        return [
+            T_INLINE_HTML,
+            T_OPEN_TAG,
+        ];
 
     }//end register()
 
@@ -83,7 +83,7 @@ class FileEncodingSniff implements Sniff
 
         if ($validEncodingFound === false) {
             $warning = 'File encoding is invalid, expected %s';
-            $data    = array(implode(' or ', $this->allowedEncodings));
+            $data    = [implode(' or ', $this->allowedEncodings)];
             $phpcsFile->addWarning($warning, $stackPtr, 'InvalidEncoding', $data);
         }
 

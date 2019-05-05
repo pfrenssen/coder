@@ -31,7 +31,7 @@ class UnusedUseStatementSniff implements Sniff
      */
     public function register()
     {
-        return array(T_USE);
+        return [T_USE];
 
     }//end register()
 
@@ -87,9 +87,9 @@ class UnusedUseStatementSniff implements Sniff
         if ($namespacePtr !== false && $aliasUsed === false) {
             $nsEnd     = $phpcsFile->findNext(
                 [
-                 T_NS_SEPARATOR,
-                 T_STRING,
-                 T_WHITESPACE,
+                    T_NS_SEPARATOR,
+                    T_STRING,
+                    T_WHITESPACE,
                 ],
                 ($namespacePtr + 1),
                 null,
@@ -100,16 +100,16 @@ class UnusedUseStatementSniff implements Sniff
             $useNamespacePtr = $phpcsFile->findNext([T_STRING], ($stackPtr + 1));
             $useNamespaceEnd = $phpcsFile->findNext(
                 [
-                 T_NS_SEPARATOR,
-                 T_STRING,
+                    T_NS_SEPARATOR,
+                    T_STRING,
                 ],
                 ($useNamespacePtr + 1),
                 null,
                 true
             );
-            $use_namespace   = rtrim($phpcsFile->getTokensAsString($useNamespacePtr, ($useNamespaceEnd - $useNamespacePtr - 1)), '\\');
+            $useNamespace    = rtrim($phpcsFile->getTokensAsString($useNamespacePtr, ($useNamespaceEnd - $useNamespacePtr - 1)), '\\');
 
-            if (strcasecmp($namespace, $use_namespace) === 0) {
+            if (strcasecmp($namespace, $useNamespace) === 0) {
                 $classUsed = false;
             }
         }//end if
@@ -133,16 +133,16 @@ class UnusedUseStatementSniff implements Sniff
                 if (in_array(
                     $tokens[$beforeUsage]['code'],
                     [
-                     T_USE,
-                     T_NS_SEPARATOR,
+                        T_USE,
+                        T_NS_SEPARATOR,
                     // If an object operator is used then this is a method call
                     // with the same name as the class name. Which means this is
                     // not referring to the class.
-                     T_OBJECT_OPERATOR,
+                        T_OBJECT_OPERATOR,
                     // Function definition, not class invocation.
-                     T_FUNCTION,
+                        T_FUNCTION,
                     // Static method call, not class invocation.
-                     T_DOUBLE_COLON,
+                        T_DOUBLE_COLON,
                     ]
                 ) === false
                 ) {
@@ -182,8 +182,8 @@ class UnusedUseStatementSniff implements Sniff
             $useNamespacePtr = $phpcsFile->findNext([T_STRING], ($stackPtr + 1));
             $useNamespaceEnd = $phpcsFile->findNext(
                 [
-                 T_NS_SEPARATOR,
-                 T_STRING,
+                    T_NS_SEPARATOR,
+                    T_STRING,
                 ],
                 ($useNamespacePtr + 1),
                 null,

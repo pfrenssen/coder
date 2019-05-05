@@ -30,7 +30,7 @@ class LStringTranslatableSniff extends FunctionCall
      */
     public function registerFunctionNames()
     {
-        return array('l');
+        return ['l'];
 
     }//end registerFunctionNames()
 
