@@ -102,19 +102,19 @@ class FunctionTriggerErrorSniff extends FunctionCall
         // If the @trigger_error was at level > 0 it means it is inside a
         // function so search backwards for the function comment block, which
         // will be at one level lower.
-        $strict_standard    = false;
-        $triggererror_level = $tokens[$stackPtr]['level'];
-        if ($triggererror_level === 0) {
-            $required_level = 0;
-            $block          = $phpcsFile->findNext(T_DOC_COMMENT_OPEN_TAG, $argument['start']);
+        $strictStandard    = false;
+        $triggerErrorLevel = $tokens[$stackPtr]['level'];
+        if ($triggerErrorLevel === 0) {
+            $requiredLevel = 0;
+            $block         = $phpcsFile->findNext(T_DOC_COMMENT_OPEN_TAG, $argument['start']);
         } else {
-            $required_level = ($triggererror_level - 1);
-            $block          = $phpcsFile->findPrevious(T_DOC_COMMENT_OPEN_TAG, $argument['start']);
+            $requiredLevel = ($triggerErrorLevel - 1);
+            $block         = $phpcsFile->findPrevious(T_DOC_COMMENT_OPEN_TAG, $argument['start']);
         }
 
-        if (is_null($block) === false && $tokens[$block]['level'] === $required_level && isset($tokens[$block]['comment_tags']) === true) {
+        if (isset($block) === true && $tokens[$block]['level'] === $requiredLevel && isset($tokens[$block]['comment_tags']) === true) {
             foreach ($tokens[$block]['comment_tags'] as $tag) {
-                $strict_standard = $strict_standard || (strtolower($tokens[$tag]['content']) === '@deprecated');
+                $strictStandard = $strictStandard || (strtolower($tokens[$tag]['content']) === '@deprecated');
             }
         }
 
@@ -123,32 +123,32 @@ class FunctionTriggerErrorSniff extends FunctionCall
         // %removal-version%. %extra-info%. See %cr-link%
         // For the 'relaxed' standard the 'and is removed in' can be replaced
         // with any text.
-        $matches = array();
-        if ($strict_standard === true) {
+        $matches = [];
+        if ($strictStandard === true) {
             // Use (?U) 'ungreedy' before the version so that only the text up
             // to the first period followed by a space is matched, as there may
             // be more than one sentence in the extra-info part.
             preg_match('/(.+) is deprecated in (\S+) (and is removed from) (?U)(.+)\. (.*)\. See (\S+)$/', $messageText, $matches);
-            $sniff_name = 'TriggerErrorTextLayoutStrict';
-            $error      = "The trigger_error message '%s' does not match the strict standard format: %%thing%% is deprecated in %%deprecation-version%% and is removed from %%removal-version%%. %%extra-info%%. See %%cr-link%%";
+            $sniff = 'TriggerErrorTextLayoutStrict';
+            $error = "The trigger_error message '%s' does not match the strict standard format: %%thing%% is deprecated in %%deprecation-version%% and is removed from %%removal-version%%. %%extra-info%%. See %%cr-link%%";
         } else {
             // Allow %extra-info% to be empty as this is optional in the relaxed
             // version.
             preg_match('/(.+) is deprecated in (\S+) (?U)(.+) (\S+)\. (.*)See (\S+)$/', $messageText, $matches);
-            $sniff_name = 'TriggerErrorTextLayoutRelaxed';
-            $error      = "The trigger_error message '%s' does not match the relaxed standard format: %%thing%% is deprecated in %%deprecation-version%% any free text %%removal-version%%. %%extra-info%%. See %%cr-link%%";
+            $sniff = 'TriggerErrorTextLayoutRelaxed';
+            $error = "The trigger_error message '%s' does not match the relaxed standard format: %%thing%% is deprecated in %%deprecation-version%% any free text %%removal-version%%. %%extra-info%%. See %%cr-link%%";
         }
 
         // There should be 7 items in $matches: 0 is full text, 1 = thing,
         // 2 = deprecation-version, 3 = middle text, 4 = removal-version,
         // 5 = extra-info, 6 = cr-link.
         if (count($matches) !== 7) {
-            $phpcsFile->addError($error, $argument['start'], $sniff_name, array($messageText));
+            $phpcsFile->addError($error, $argument['start'], $sniff, [$messageText]);
         } else {
             // The text follows the basic layout. Now check that the version
             // matches drupal:n.n.n or project:n.x-n.n. The text must be all
             // lower case and numbers can be one or two digits.
-            foreach (array('deprecation-version' => $matches[2], 'removal-version' => $matches[4]) as $name => $version) {
+            foreach (['deprecation-version' => $matches[2], 'removal-version' => $matches[4]] as $name => $version) {
                 if (preg_match('/^drupal:\d{1,2}\.\d{1,2}\.\d{1,2}$/', $version) === 0
                     && preg_match('/^[a-z\d_]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $version) === 0
                 ) {
@@ -160,16 +160,16 @@ class FunctionTriggerErrorSniff extends FunctionCall
             // Check the 'See' link.
             $crLink = $matches[6];
             // Allow for the alternative 'node' or 'project/aaa/issues' format.
-            preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $crLink, $cr_matches);
+            preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $crLink, $crMatches);
             // If cr_matches[4] is not blank it means that the url is correct
             // but it ends with a period. As this can be a common mistake give a
             // specific message to assist in fixing.
-            if (isset($cr_matches[4]) === true && empty($cr_matches[4]) === false) {
+            if (isset($crMatches[4]) === true && empty($crMatches[4]) === false) {
                 $error = "The url '%s' should not end with a period.";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorPeriodAfterSeeUrl', array($crLink));
-            } else if (empty($cr_matches) === true) {
+                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorPeriodAfterSeeUrl', [$crLink]);
+            } else if (empty($crMatches) === true) {
                 $error = "The url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrlFormat', array($crLink));
+                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrlFormat', [$crLink]);
             }
         }//end if
 
