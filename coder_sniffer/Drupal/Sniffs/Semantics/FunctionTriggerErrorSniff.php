@@ -128,13 +128,13 @@ class FunctionTriggerErrorSniff extends FunctionCall
             // Use (?U) 'ungreedy' before the version so that only the text up
             // to the first period followed by a space is matched, as there may
             // be more than one sentence in the extra-info part.
-            preg_match('/(.+) is deprecated in (\S+) (and is removed from) (?U)(.+)\. (.*)\. See (\S+)$/', $message_text, $matches);
+            preg_match('/(.+) is deprecated in (\S+) (and is removed from) (?U)(.+)\. (.*)\. See (\S+)$/', $messageText, $matches);
             $sniff_name = 'TriggerErrorTextLayoutStrict';
             $error      = "The trigger_error message '%s' does not match the strict standard format: %%thing%% is deprecated in %%deprecation-version%% and is removed from %%removal-version%%. %%extra-info%%. See %%cr-link%%";
         } else {
             // Allow %extra-info% to be empty as this is optional in the relaxed
             // version.
-            preg_match('/(.+) is deprecated in (\S+) (?U)(.+) (\S+)\. (.*)See (\S+)$/', $message_text, $matches);
+            preg_match('/(.+) is deprecated in (\S+) (?U)(.+) (\S+)\. (.*)See (\S+)$/', $messageText, $matches);
             $sniff_name = 'TriggerErrorTextLayoutRelaxed';
             $error      = "The trigger_error message '%s' does not match the relaxed standard format: %%thing%% is deprecated in %%deprecation-version%% any free text %%removal-version%%. %%extra-info%%. See %%cr-link%%";
         }
@@ -143,7 +143,7 @@ class FunctionTriggerErrorSniff extends FunctionCall
         // 2 = deprecation-version, 3 = middle text, 4 = removal-version,
         // 5 = extra-info, 6 = cr-link.
         if (count($matches) !== 7) {
-            $phpcsFile->addError($error, $argument['start'], $sniff_name, array($message_text));
+            $phpcsFile->addError($error, $argument['start'], $sniff_name, array($messageText));
         } else {
             // The text follows the basic layout. Now check that the version
             // matches drupal:n.n.n or project:n.x-n.n. The text must be all
