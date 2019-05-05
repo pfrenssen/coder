@@ -45,3 +45,21 @@ function example_field_formatter_view($entity_type, $entity, $field, $instance, 
   return $element;
 
 }
+
+/**
+ * A test function.
+ */
+function test_form() {
+  /*
+   * Here is some long form comment which is discouraged but not forbidden,
+   * I think? It goes over multiple lines in this pseudo doc comment style.
+   * And even more text now.
+   */
+  $form['submit_connection'] = [
+    '#prefix' => "<br style='clear:both'/>",
+    '#name' => 'enter_connection_settings',
+    '#type' => 'submit',
+    '#value' => t('Enter connection settings'),
+    '#weight' => 100,
+  ];
+}
