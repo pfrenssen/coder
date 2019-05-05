@@ -152,9 +152,6 @@
     </rule>
 
     <!-- Not compliant yet, should be fixed in the future. -->
-    <rule ref="PSR2.Classes.PropertyDeclaration">
-        <exclude-pattern>coder_sniffer/Drupal/Sniffs/WhiteSpace/ScopeIndentSniff.php</exclude-pattern>
-    </rule>
     <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps">
         <exclude-pattern>coder_sniffer/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php</exclude-pattern>
     </rule>
