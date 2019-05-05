@@ -16,9 +16,9 @@ class UnusedUseStatementUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList()
     {
-        return array();
+        return [];
 
     }//end getErrorList()
 
@@ -31,24 +31,24 @@ class UnusedUseStatementUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList()
     {
-        return array(
-                5 => 1,
-                6 => 1,
-                7 => 1,
-                10 => 1,
-                11 => 1,
-                12 => 1,
-                14 => 1,
-                16 => 1,
-                17 => 1,
-                19 => 1,
-                20 => 1,
-                21 => 1,
-                22 => 1,
-                23 => 1,
-               );
+        return [
+            5  => 1,
+            6  => 1,
+            7  => 1,
+            10 => 1,
+            11 => 1,
+            12 => 1,
+            14 => 1,
+            16 => 1,
+            17 => 1,
+            19 => 1,
+            20 => 1,
+            21 => 1,
+            22 => 1,
+            23 => 1,
+        ];
 
     }//end getWarningList()
 

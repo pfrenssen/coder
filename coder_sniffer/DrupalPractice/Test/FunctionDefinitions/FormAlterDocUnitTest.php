@@ -16,9 +16,9 @@ class FormAlterDocUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList()
     {
-        return array();
+        return [];
 
     }//end getErrorList()
 
@@ -31,22 +31,25 @@ class FormAlterDocUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList()
     {
-        return array(
-                31 => 1,
-               );
+        return [31 => 1];
 
     }//end getWarningList()
+
 
     /**
      * Returns a list of test files that should be checked.
      *
+     * @param string $testFileBase The base path that the unit tests files will have.
+     *
      * @return array The list of test files.
      */
-    protected function getTestFiles($testFileBase) {
-        return array(__DIR__ . '/test.module');
-    }
+    protected function getTestFiles($testFileBase)
+    {
+        return [__DIR__.'/test.module'];
+
+    }//end getTestFiles()
 
 
 }//end class

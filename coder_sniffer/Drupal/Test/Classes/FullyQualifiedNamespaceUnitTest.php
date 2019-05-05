@@ -2,7 +2,7 @@
 
 namespace Drupal\Sniffs\Classes;
 
-use Drupal\Test\CoderSniffUnitTest;;
+use Drupal\Test\CoderSniffUnitTest;
 
 class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
 {
@@ -14,17 +14,17 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
+     * @param string $testFile The name of the file being tested.
+     *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList($testFile=null)
     {
         switch ($testFile) {
-            case 'FullyQualifiedNamespaceUnitTest.inc':
-                return array(
-                        3 => 1,
-                       );
-            case 'FullyQualifiedNamespaceUnitTest.api.php':
-                return array();
+        case 'FullyQualifiedNamespaceUnitTest.inc':
+            return [3 => 1];
+        case 'FullyQualifiedNamespaceUnitTest.api.php':
+            return [];
         }
 
     }//end getErrorList()
@@ -38,9 +38,9 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList()
     {
-        return array();
+        return [];
 
     }//end getWarningList()
 
@@ -48,11 +48,18 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
     /**
      * Returns a list of test files that should be checked.
      *
+     * @param string $testFileBase The base path that the unit tests files will have.
+     *
      * @return array The list of test files.
      */
-    protected function getTestFiles($testFileBase) {
-        return [__DIR__.'/FullyQualifiedNamespaceUnitTest.inc', __DIR__.'/FullyQualifiedNamespaceUnitTest.api.php'];
-    }
+    protected function getTestFiles($testFileBase)
+    {
+        return [
+            __DIR__.'/FullyQualifiedNamespaceUnitTest.inc',
+            __DIR__.'/FullyQualifiedNamespaceUnitTest.api.php',
+        ];
+
+    }//end getTestFiles()
 
 
 }//end class
