@@ -16,7 +16,7 @@ class DataTypeNamespaceUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile=null)
+    public function getErrorList()
     {
         return [
             15 => 1,
@@ -36,7 +36,7 @@ class DataTypeNamespaceUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile=null)
+    public function getWarningList()
     {
         return [];
 

@@ -16,7 +16,7 @@ class GlobalClassUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile=null)
+    protected function getErrorList()
     {
         return [];
 
@@ -28,6 +28,8 @@ class GlobalClassUnitTest extends CoderSniffUnitTest
      *
      * The key of the array should represent the line number and the value
      * should represent the number of warnings that should occur on that line.
+     *
+     * @param string $testFile The name of the file being tested.
      *
      * @return array(int => int)
      */

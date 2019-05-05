@@ -14,6 +14,8 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
+     * @param string $testFile The name of the file being tested.
+     *
      * @return array(int => int)
      */
     public function getErrorList($testFile=null)
@@ -36,7 +38,7 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile=null)
+    public function getWarningList()
     {
         return [];
 
@@ -45,6 +47,8 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
 
     /**
      * Returns a list of test files that should be checked.
+     *
+     * @param string $testFileBase The base path that the unit tests files will have.
      *
      * @return array The list of test files.
      */

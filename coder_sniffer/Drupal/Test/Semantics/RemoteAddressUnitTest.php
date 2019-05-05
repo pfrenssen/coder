@@ -14,11 +14,9 @@ class RemoteAddressUnitTest extends CoderSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
-     * @param string $testFile The filename of the test file.
-     *
      * @return array(int => int)
      */
-    public function getErrorList($testFile=null)
+    public function getErrorList()
     {
         return [
             12 => 1,
@@ -34,11 +32,9 @@ class RemoteAddressUnitTest extends CoderSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of warnings that should occur on that line.
      *
-     * @param string $testFile The filename of the test file.
-     *
      * @return array(int => int)
      */
-    public function getWarningList($testFile=null)
+    public function getWarningList()
     {
         return [];
 

@@ -16,7 +16,7 @@ class ClassFilesUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile=null)
+    public function getErrorList()
     {
         return [];
 
@@ -31,7 +31,7 @@ class ClassFilesUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile=null)
+    public function getWarningList()
     {
         return [];
 
@@ -40,6 +40,8 @@ class ClassFilesUnitTest extends CoderSniffUnitTest
 
     /**
      * Returns a list of test files that should be checked.
+     *
+     * @param string $testFileBase The base path that the unit tests files will have.
      *
      * @return array The list of test files.
      */

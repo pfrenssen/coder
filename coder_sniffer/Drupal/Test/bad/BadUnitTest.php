@@ -20,6 +20,8 @@ class BadUnitTest extends CoderSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
+     * @param string $testFile The name of the file being tested.
+     *
      * @return array(int => int)
      */
     public function getErrorList($testFile=null)
@@ -387,6 +389,8 @@ class BadUnitTest extends CoderSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of warnings that should occur on that line.
      *
+     * @param string $testFile The name of the file being tested.
+     *
      * @return array(int => int)
      */
     public function getWarningList($testFile=null)
@@ -431,6 +435,8 @@ class BadUnitTest extends CoderSniffUnitTest
     /**
      * Returns a list of test files that should be checked.
      *
+     * @param string $testFileBase The base path that the unit tests files will have.
+     *
      * @return array The list of test files.
      */
     protected function getTestFiles($testFileBase)
@@ -440,7 +446,7 @@ class BadUnitTest extends CoderSniffUnitTest
 
         foreach ($di as $file) {
             $path = $file->getPathname();
-            if ($path !== __FILE__ && $file->isFile() && preg_match('/\.fixed$/', $path) !== 1) {
+            if ($path !== __FILE__ && $file->isFile() === true && preg_match('/\.fixed$/', $path) !== 1) {
                 $testFiles[] = $path;
             }
         }

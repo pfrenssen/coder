@@ -19,7 +19,7 @@ class ControlSignatureUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile=null)
+    public function getErrorList()
     {
         return [
             6 => 1,
@@ -37,7 +37,7 @@ class ControlSignatureUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile=null)
+    public function getWarningList()
     {
         return [];
 

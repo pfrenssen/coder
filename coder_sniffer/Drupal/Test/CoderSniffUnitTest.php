@@ -62,11 +62,11 @@ abstract class CoderSniffUnitTest extends \PHPUnit_Framework_TestCase
         $this->standardsDir = __DIR__.'/../';
         // Required to pull in all the defines from the tokens file.
         $tokens = new Tokens();
-        if (!defined('PHP_CODESNIFFER_VERBOSITY')) {
+        if (defined('PHP_CODESNIFFER_VERBOSITY') === false) {
             define('PHP_CODESNIFFER_VERBOSITY', 0);
         }
 
-        if (!defined('PHP_CODESNIFFER_CBF')) {
+        if (defined('PHP_CODESNIFFER_CBF') === false) {
             define('PHP_CODESNIFFER_CBF', 0);
         }
 
@@ -139,7 +139,7 @@ abstract class CoderSniffUnitTest extends \PHPUnit_Framework_TestCase
 
         // In the case where we are running all the sniffs, the standard will
         // be the root class name.
-        if ($this->allSniffCodes()) {
+        if ($this->allSniffCodes() !== false) {
             list($standardName) = explode('\\', get_class($this));
         }
 
@@ -161,7 +161,7 @@ abstract class CoderSniffUnitTest extends \PHPUnit_Framework_TestCase
         $failureMessages = [];
         foreach ($testFiles as $testFile) {
             // Setup to test the selected Sniff.
-            if ($this->allSniffCodes()) {
+            if ($this->allSniffCodes() !== false) {
                 $config->sniffs = [];
             } else {
                 $config->sniffs = [$sniffCode];
@@ -452,7 +452,7 @@ abstract class CoderSniffUnitTest extends \PHPUnit_Framework_TestCase
      *
      * @return array<int, int>
      */
-    abstract protected function getErrorList($testFile=null);
+    abstract protected function getErrorList();
 
 
     /**
@@ -463,7 +463,7 @@ abstract class CoderSniffUnitTest extends \PHPUnit_Framework_TestCase
      *
      * @return array(int => int)
      */
-    abstract protected function getWarningList($testFile=null);
+    abstract protected function getWarningList();
 
 
     /**

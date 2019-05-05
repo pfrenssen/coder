@@ -25,7 +25,7 @@ class CheckPlainUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile=null)
+    protected function getErrorList()
     {
         return [];
 
@@ -40,7 +40,7 @@ class CheckPlainUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile=null)
+    protected function getWarningList()
     {
         return [3 => 1];
 

@@ -20,7 +20,7 @@ class AutoAddedKeysUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile=null)
+    public function getErrorList()
     {
         return [];
 
@@ -35,7 +35,7 @@ class AutoAddedKeysUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile=null)
+    public function getWarningList()
     {
         return [1 => 3];
 
@@ -45,8 +45,9 @@ class AutoAddedKeysUnitTest extends CoderSniffUnitTest
     /**
      * Returns a list of test files that should be checked.
      *
+     * @param string $testFileBase The base path that the unit tests files will have.
+     *
      * @return array The list of test files.
- '
      */
     protected function getTestFiles($testFileBase)
     {

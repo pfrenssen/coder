@@ -16,7 +16,7 @@ class FunctionTUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile=null)
+    public function getErrorList()
     {
         return [29 => 1];
 
@@ -31,7 +31,7 @@ class FunctionTUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile=null)
+    public function getWarningList()
     {
         return [
             4  => 1,
