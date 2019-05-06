@@ -7,6 +7,7 @@ use Drupal\Test\CoderSniffUnitTest;
 class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
 {
 
+
     /**
      * Returns the lines where errors should occur.
      *
@@ -15,29 +16,24 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList()
     {
         switch ($testFile) {
             case 'FunctionTriggerErrorUnitTest.1.inc':
-                return array(
+                return [
                     30 => 1,
                     32 => 1,
                     34 => 1,
                     36 => 1,
                     38 => 1,
                     40 => 1,
-                );
+                ];
             case 'FunctionTriggerErrorUnitTest.2.inc':
-                return array(
-                    29 => 1,
-                );
+                return [29 => 1];
             case 'FunctionTriggerErrorUnitTest.3.inc':
-                return array(
-                    14 => 1,
-                );
+                return [14 => 1];
             default:
-                return array(
-                );
+                return [];
         }
 
     }//end getErrorList()
@@ -51,11 +47,11 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList()
     {
         switch ($testFile) {
             case 'FunctionTriggerErrorUnitTest.1.inc':
-                return array(
+                return [
                     42 => 1,
                     44 => 1,
                     46 => 1,
@@ -69,12 +65,11 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
                     62 => 1,
                     64 => 1,
                     66 => 1,
-                );
+                ];
             case 'FunctionTriggerErrorUnitTest.2.inc':
             case 'FunctionTriggerErrorUnitTest.3.inc':
             default:
-                return array(
-                );
+                return [];
         }
 
     }//end getWarningList()

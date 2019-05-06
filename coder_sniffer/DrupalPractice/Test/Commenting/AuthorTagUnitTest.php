@@ -16,9 +16,9 @@ class AuthorTagUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile = NULL)
+    protected function getErrorList()
     {
-        return array();
+        return [];
 
     }//end getErrorList()
 
@@ -31,12 +31,12 @@ class AuthorTagUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile = NULL)
+    protected function getWarningList()
     {
-        return array(
-                7 => 1,
-                13 => 1,
-               );
+        return [
+            7  => 1,
+            13 => 1,
+        ];
 
     }//end getWarningList()
 

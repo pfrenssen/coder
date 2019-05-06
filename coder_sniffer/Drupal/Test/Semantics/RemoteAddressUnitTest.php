@@ -7,22 +7,21 @@ use Drupal\Test\CoderSniffUnitTest;
 class RemoteAddressUnitTest extends CoderSniffUnitTest
 {
 
+
     /**
      * Returns the lines where errors should occur.
      *
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
-     * @param string $testFile The filename of the test file.
-     *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList()
     {
-        return array(
-                12 => 1,
-                19 => 1,
-               );
+        return [
+            12 => 1,
+            19 => 1,
+        ];
 
     }//end getErrorList()
 
@@ -33,13 +32,11 @@ class RemoteAddressUnitTest extends CoderSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of warnings that should occur on that line.
      *
-     * @param string $testFile The filename of the test file.
-     *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList()
     {
-        return array();
+        return [];
 
     }//end getWarningList()
 

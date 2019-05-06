@@ -7,6 +7,7 @@ use Drupal\Test\CoderSniffUnitTest;
 class SpaceUnaryOperatorUnitTest extends CoderSniffUnitTest
 {
 
+
     /**
      * Returns the lines where errors should occur.
      *
@@ -15,15 +16,15 @@ class SpaceUnaryOperatorUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList()
     {
-        return array(
-                3 => 1,
-                4 => 1,
-                5 => 1,
-                6 => 1,
-                7 => 1,
-               );
+        return [
+            3 => 1,
+            4 => 1,
+            5 => 1,
+            6 => 1,
+            7 => 1,
+        ];
 
     }//end getErrorList()
 
@@ -36,9 +37,9 @@ class SpaceUnaryOperatorUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList()
     {
-        return array();
+        return [];
 
     }//end getWarningList()
 

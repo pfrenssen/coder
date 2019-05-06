@@ -22,9 +22,9 @@ class VariableAnalysisUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile = NULL)
+    protected function getErrorList()
     {
-        return array();
+        return [];
 
     }//end getErrorList()
 
@@ -37,13 +37,13 @@ class VariableAnalysisUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile = NULL)
+    protected function getWarningList()
     {
-        return array(
-                4 => 1,
-                8 => 1,
-                17 => 1,
-               );
+        return [
+            4  => 1,
+            8  => 1,
+            17 => 1,
+        ];
 
     }//end getWarningList()
 

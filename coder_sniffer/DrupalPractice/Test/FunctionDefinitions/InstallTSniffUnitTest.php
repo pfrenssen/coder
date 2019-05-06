@@ -22,11 +22,9 @@ class InstallTUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList()
     {
-        return array(
-                12 => 1,
-               );
+        return [12 => 1];
 
     }//end getErrorList()
 
@@ -39,20 +37,25 @@ class InstallTUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList()
     {
-        return array();
+        return [];
 
     }//end getWarningList()
+
 
     /**
      * Returns a list of test files that should be checked.
      *
+     * @param string $testFileBase The base path that the unit tests files will have.
+     *
      * @return array The list of test files.
      */
-    protected function getTestFiles($testFileBase) {
-        return array(__DIR__ . '/test.install');
-    }
+    protected function getTestFiles($testFileBase)
+    {
+        return [__DIR__.'/test.install'];
+
+    }//end getTestFiles()
 
 
 }//end class

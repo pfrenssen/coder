@@ -16,9 +16,9 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile = NULL)
+    protected function getErrorList()
     {
-        return array();
+        return [];
 
     }//end getErrorList()
 
@@ -29,17 +29,19 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of warnings that should occur on that line.
      *
+     * @param string $testFile The name of the file being tested.
+     *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile = NULL)
+    protected function getWarningList($testFile=null)
     {
         switch ($testFile) {
-            case 'GlobalFunctionUnitTest.inc':
-                return array(6 => 1);
-            case 'ExampleService.php':
-                return array(30 => 1);
-            default:
-                return [];
+        case 'GlobalFunctionUnitTest.inc':
+            return [6 => 1];
+        case 'ExampleService.php':
+            return [30 => 1];
+        default:
+            return [];
         }
 
     }//end getWarningList()
@@ -48,11 +50,18 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
     /**
      * Returns a list of test files that should be checked.
      *
+     * @param string $testFileBase The base path that the unit tests files will have.
+     *
      * @return array The list of test files.
      */
-    protected function getTestFiles($testFileBase) {
-        return [__DIR__.'/GlobalFunctionUnitTest.inc', __DIR__.'/src/ExampleService.php'];
-    }
+    protected function getTestFiles($testFileBase)
+    {
+        return [
+            __DIR__.'/GlobalFunctionUnitTest.inc',
+            __DIR__.'/src/ExampleService.php',
+        ];
+
+    }//end getTestFiles()
 
 
 }//end class

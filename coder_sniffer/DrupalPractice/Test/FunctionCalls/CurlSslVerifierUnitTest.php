@@ -22,9 +22,9 @@ class CurlSslVerifierUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getErrorList($testFile = NULL)
+    protected function getErrorList()
     {
-        return array();
+        return [];
 
     }//end getErrorList()
 
@@ -37,9 +37,9 @@ class CurlSslVerifierUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    protected function getWarningList($testFile = NULL)
+    protected function getWarningList()
     {
-        return array(4 => 1);
+        return [4 => 1];
 
     }//end getWarningList()
 

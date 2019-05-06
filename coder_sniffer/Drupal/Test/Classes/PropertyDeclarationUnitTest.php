@@ -16,9 +16,9 @@ class PropertyDeclarationUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList()
     {
-        return array(16 => 2);
+        return [16 => 2];
 
     }//end getErrorList()
 
@@ -31,9 +31,9 @@ class PropertyDeclarationUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList()
     {
-        return array();
+        return [];
 
     }//end getWarningList()
 

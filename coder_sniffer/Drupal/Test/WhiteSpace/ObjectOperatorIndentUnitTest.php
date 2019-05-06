@@ -7,6 +7,7 @@ use Drupal\Test\CoderSniffUnitTest;
 class ObjectOperatorIndentUnitTest extends CoderSniffUnitTest
 {
 
+
     /**
      * Returns the lines where errors should occur.
      *
@@ -15,14 +16,14 @@ class ObjectOperatorIndentUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getErrorList($testFile = NULL)
+    public function getErrorList()
     {
-        return array(
-                24 => 1,
-                26 => 1,
-                28 => 1,
-                30 => 1,
-               );
+        return [
+            24 => 1,
+            26 => 1,
+            28 => 1,
+            30 => 1,
+        ];
 
     }//end getErrorList()
 
@@ -35,9 +36,9 @@ class ObjectOperatorIndentUnitTest extends CoderSniffUnitTest
      *
      * @return array(int => int)
      */
-    public function getWarningList($testFile = NULL)
+    public function getWarningList()
     {
-        return array();
+        return [];
 
     }//end getWarningList()
 
