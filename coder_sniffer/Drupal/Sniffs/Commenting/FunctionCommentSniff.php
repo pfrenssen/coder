@@ -30,23 +30,24 @@ class FunctionCommentSniff implements Sniff
      * @var array
      */
     public static $invalidTypes = [
-        'Array'    => 'array',
-        'array()'  => 'array',
-        '[]'       => 'array',
-        'boolean'  => 'bool',
-        'Boolean'  => 'bool',
-        'integer'  => 'int',
-        'str'      => 'string',
-        'stdClass' => 'object',
-        'number'   => 'int',
-        'String'   => 'string',
-        'type'     => 'mixed',
-        'NULL'     => 'null',
-        'FALSE'    => 'false',
-        'TRUE'     => 'true',
-        'Bool'     => 'bool',
-        'Int'      => 'int',
-        'Integer'  => 'int',
+        'Array'     => 'array',
+        'array()'   => 'array',
+        '[]'        => 'array',
+        'boolean'   => 'bool',
+        'Boolean'   => 'bool',
+        'integer'   => 'int',
+        'str'       => 'string',
+        'stdClass'  => 'object',
+        '\stdClass' => 'object',
+        'number'    => 'int',
+        'String'    => 'string',
+        'type'      => 'mixed',
+        'NULL'      => 'null',
+        'FALSE'     => 'false',
+        'TRUE'      => 'true',
+        'Bool'      => 'bool',
+        'Int'       => 'int',
+        'Integer'   => 'int',
     ];
 
     /**
@@ -734,7 +735,7 @@ class FunctionCommentSniff implements Sniff
                     && isset($realParams[$checkPos]) === true
                 ) {
                     $typeHint = $realParams[$checkPos]['type_hint'];
-                    if ($typeHint !== '' && $typeHint !== 'stdClass') {
+                    if ($typeHint !== '' && $typeHint !== 'stdClass' && $typeHint !== '\stdClass') {
                         $error = 'Unknown type hint "%s" found for %s';
                         $data  = [
                             $typeHint,

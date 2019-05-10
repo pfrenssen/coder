@@ -441,3 +441,15 @@ function test34($a, $b) {
     yield $i;
   }
 }
+
+/**
+ * Using \stdClass as type hint is ok, but not in the documentation.
+ *
+ * @param object $name
+ *   Some description.
+ * @param \stdClass $param2
+ *   Some description.
+ */
+function test35(\stdClass $name, \stdClass $param2) {
+
+}
