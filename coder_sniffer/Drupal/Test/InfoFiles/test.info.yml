@@ -3,5 +3,5 @@ name: Test
 
 # These should not be here, will be added by drupal.org packaging.
 project: test
-timestamp: 1234567
+datestamp: 1234567
 version: 1.2

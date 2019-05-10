@@ -71,8 +71,8 @@ class AutoAddedKeysSniff implements Sniff
             $phpcsFile->addWarning($warning, $stackPtr, 'Project');
         }
 
-        if (isset($info['timestamp']) === true) {
-            $warning = 'Remove "timestamp" from the info file, it will be added by drupal.org packaging automatically';
+        if (isset($info['datestamp']) === true) {
+            $warning = 'Remove "datestamp" from the info file, it will be added by drupal.org packaging automatically';
             $phpcsFile->addWarning($warning, $stackPtr, 'Timestamp');
         }
 
