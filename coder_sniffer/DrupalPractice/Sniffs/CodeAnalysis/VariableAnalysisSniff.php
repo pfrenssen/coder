@@ -26,9 +26,18 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 class ScopeInfo
 {
+    /**
+     * Token stackpointer to the owner of the scope.
+     *
+     * @var integer
+     */
     public $owner;
-    public $opener;
-    public $closer;
+
+    /**
+     * Variable information within this scope.
+     *
+     * @var VariableInfo[]
+     */
     public $variables = [];
 
 
@@ -59,21 +68,74 @@ class ScopeInfo
  */
 class VariableInfo
 {
+    /**
+     * The name of this variable.
+     *
+     * @var string
+     */
     public $name;
+
     /**
      * What scope the variable has: local, param, static, global, bound
      *
      * @var string
      */
     public $scopeType;
+
+    /**
+     * The type hint associated with this variable.
+     *
+     * @var string
+     */
     public $typeHint;
+
+    /**
+     * Indicates whether this variable is passed by reference.
+     *
+     * @var boolean
+     */
     public $passByReference = false;
+
+    /**
+     * Token stack pointer where the variable was first declared.
+     *
+     * @var integer
+     */
     public $firstDeclared;
+
+    /**
+     * Token stack pointer where the variable was first initialized.
+     *
+     * @var integer
+     */
     public $firstInitialized;
+
+    /**
+     * Token stack pointer where the variable was first read from.
+     *
+     * @var integer
+     */
     public $firstRead;
+
+    /**
+     * Indicates if the usage of the variable should be ignored.
+     *
+     * @var boolean
+     */
     public $ignoreUnused = false;
+
+    /**
+     * Token stack pointer where the variable was last assigned a value.
+     *
+     * @var integer
+     */
     public $lastAssignment;
 
+    /**
+     * Description mapping for the scope of the variable.
+     *
+     * @var string[]
+     */
     public static $scopeTypeDescriptions = [
         'local'  => 'variable',
         'param'  => 'function parameter',
@@ -1000,7 +1062,7 @@ class VariableAnalysisSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $token  = $tokens[$stackPtr];
 
-        $in_class = false;
+        $inClass = false;
         if (empty($token['conditions']) === false) {
             foreach (array_reverse($token['conditions'], true) as $scopePtr => $scopeCode) {
                 if (($scopeCode === T_FUNCTION) || ($scopeCode === T_CLOSURE)) {
@@ -1008,7 +1070,7 @@ class VariableAnalysisSniff implements Sniff
                 }
 
                 if (($scopeCode === T_CLASS) || ($scopeCode === T_INTERFACE) || ($scopeCode === T_TRAIT)) {
-                    $in_class = true;
+                    $inClass = true;
                 }
             }
         }
@@ -1017,7 +1079,7 @@ class VariableAnalysisSniff implements Sniff
             return $scopePtr;
         }
 
-        if ($in_class === true) {
+        if ($inClass === true) {
             // Member var of a class, we don't care.
             return false;
         }
@@ -2154,11 +2216,11 @@ class VariableAnalysisSniff implements Sniff
                 continue;
             }
 
-            $argument_first_token = $tokens[$argumentPtrs[0]];
-            if ($argument_first_token['code'] === T_ARRAY) {
+            $argumentFirstToken = $tokens[$argumentPtrs[0]];
+            if ($argumentFirstToken['code'] === T_ARRAY) {
                 // It's an array argument, recurse.
-                if (($array_arguments = $this->findFunctionCallArguments($phpcsFile, $argumentPtrs[0])) !== false) {
-                    $this->processCompactArguments($phpcsFile, $stackPtr, $array_arguments, $currScope);
+                if (($arrayArguments = $this->findFunctionCallArguments($phpcsFile, $argumentPtrs[0])) !== false) {
+                    $this->processCompactArguments($phpcsFile, $stackPtr, $arrayArguments, $currScope);
                 }
 
                 continue;
@@ -2169,23 +2231,23 @@ class VariableAnalysisSniff implements Sniff
                 continue;
             }
 
-            if ($argument_first_token['code'] === T_CONSTANT_ENCAPSED_STRING) {
+            if ($argumentFirstToken['code'] === T_CONSTANT_ENCAPSED_STRING) {
                 // Single-quoted string literal, ie compact('whatever').
                 // Substr is to strip the enclosing single-quotes.
-                $varName = substr($argument_first_token['content'], 1, -1);
+                $varName = substr($argumentFirstToken['content'], 1, -1);
                 $this->markVariableReadAndWarnIfUndefined($phpcsFile, $varName, $argumentPtrs[0], $currScope);
                 continue;
             }
 
-            if ($argument_first_token['code'] === T_DOUBLE_QUOTED_STRING) {
+            if ($argumentFirstToken['code'] === T_DOUBLE_QUOTED_STRING) {
                 // Double-quoted string literal.
-                if (preg_match($this->doubleQuotedVariableRegexp, $argument_first_token['content']) === 1) {
+                if (preg_match($this->doubleQuotedVariableRegexp, $argumentFirstToken['content']) === 1) {
                     // Bail if the string needs variable expansion, that's runtime stuff.
                     continue;
                 }
 
                 // Substr is to strip the enclosing double-quotes.
-                $varName = substr($argument_first_token['content'], 1, -1);
+                $varName = substr($argumentFirstToken['content'], 1, -1);
                 $this->markVariableReadAndWarnIfUndefined($phpcsFile, $varName, $argumentPtrs[0], $currScope);
                 continue;
             }

@@ -152,13 +152,7 @@
     </rule>
 
     <!-- Not compliant yet, should be fixed in the future. -->
-    <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps">
-        <exclude-pattern>coder_sniffer/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php</exclude-pattern>
-    </rule>
     <rule ref="PEAR.Commenting.FunctionComment.MissingParamComment">
-        <exclude-pattern>coder_sniffer/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php</exclude-pattern>
-    </rule>
-    <rule ref="Squiz.Commenting.VariableComment.Missing">
         <exclude-pattern>coder_sniffer/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php</exclude-pattern>
     </rule>
     <rule ref="PEAR.Commenting.FileComment.Missing">

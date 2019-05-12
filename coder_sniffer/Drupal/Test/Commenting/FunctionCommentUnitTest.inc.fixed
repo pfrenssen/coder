@@ -383,7 +383,7 @@ class Test2 extends AbstractTest {
   /**
    * Run method with missing described variable.
    *
-   * @param \stdClass $start
+   * @param object $start
    *   Start point.
    *
    * @return bool
@@ -466,4 +466,16 @@ function test34($a, $b) {
   for ($i = 1; $i <= 3; $i++) {
     yield $i;
   }
+}
+
+/**
+ * Using \stdClass as type hint is ok, but not in the documentation.
+ *
+ * @param object $name
+ *   Some description.
+ * @param object $param2
+ *   Some description.
+ */
+function test35(\stdClass $name, \stdClass $param2) {
+
 }
