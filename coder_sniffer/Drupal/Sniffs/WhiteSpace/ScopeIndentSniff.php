@@ -914,6 +914,17 @@ class ScopeIndentSniff implements Sniff
                 $checkIndent = (int) (ceil($checkIndent / $this->indent) * $this->indent);
             }
 
+            // Special case for ELSE statements that are not on the same
+            // line as the previous IF statements closing brace. They still need
+            // to have the same indent or it will break code after the block.
+            if ($checkToken !== null && $tokens[$checkToken]['code'] === T_ELSE) {
+                $exact = true;
+            }
+
+            if ($checkIndent === null) {
+                $checkIndent = $currentIndent;
+            }
+
             // If the line starts with "->" we assume this is an indented chained
             // method invocation, so we add one level of indentation.
             if ($checkToken !== null && $tokens[$checkToken]['code'] === T_OBJECT_OPERATOR) {
@@ -926,18 +937,6 @@ class ScopeIndentSniff implements Sniff
                 if ($content{0} === '*') {
                     $checkIndent += 1;
                 }
-            }
-
-
-            // Special case for ELSE statements that are not on the same
-            // line as the previous IF statements closing brace. They still need
-            // to have the same indent or it will break code after the block.
-            if ($checkToken !== null && $tokens[$checkToken]['code'] === T_ELSE) {
-                $exact = true;
-            }
-
-            if ($checkIndent === null) {
-                $checkIndent = $currentIndent;
             }
 
             /*
