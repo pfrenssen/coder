@@ -93,7 +93,7 @@ class ScopeIndentSniff implements Sniff
      *
      * @var int[]
      */
-    private $_ignoreIndentationTokens = [];
+    private $ignoreIndentation = [];
 
     /**
      * Any scope openers that should not cause an indent.
@@ -175,8 +175,8 @@ class ScopeIndentSniff implements Sniff
             echo "Start with token $stackPtr on line $line with indent $currentIndent".PHP_EOL;
         }
 
-        if (empty($this->_ignoreIndentationTokens) === true) {
-            $this->_ignoreIndentationTokens = [T_INLINE_HTML => true];
+        if (empty($this->ignoreIndentation) === true) {
+            $this->ignoreIndentation = [T_INLINE_HTML => true];
             foreach ($this->ignoreIndentationTokens as $token) {
                 if (is_int($token) === false) {
                     if (defined($token) === false) {
@@ -186,7 +186,7 @@ class ScopeIndentSniff implements Sniff
                     $token = constant($token);
                 }
 
-                $this->_ignoreIndentationTokens[$token] = true;
+                $this->ignoreIndentation[$token] = true;
             }
         }//end if
 
@@ -823,7 +823,7 @@ class ScopeIndentSniff implements Sniff
 
             $adjusted = false;
             if ($checkToken !== null
-                && isset($this->_ignoreIndentationTokens[$tokens[$checkToken]['code']]) === false
+                && isset($this->ignoreIndentation[$tokens[$checkToken]['code']]) === false
                 && (($tokenIndent !== $checkIndent && $exact === true)
                 || ($tokenIndent < $checkIndent && $exact === false))
             ) {
