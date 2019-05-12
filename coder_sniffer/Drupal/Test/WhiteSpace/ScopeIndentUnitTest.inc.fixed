@@ -81,6 +81,7 @@ function entity_permissions($entity_type_id, $operation) {
       switch ($operation) {
         case 'view':
           return ['view test entity'];
+
         case 'create':
         case 'update':
         case 'delete':
@@ -90,10 +91,13 @@ function entity_permissions($entity_type_id, $operation) {
       switch ($operation) {
         case 'view':
           return ['access content'];
+
         case 'create':
           return ['create resttest content'];
+
         case 'update':
           return ['edit any resttest content'];
+
         case 'delete':
           return ['delete any resttest content'];
       }
