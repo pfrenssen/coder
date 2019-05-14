@@ -6,9 +6,9 @@
  */
 
 /**
- * Implements hook_entity_info_alter.
+ * ScopeIndentSniff already handles this correctly.
  */
-function zifimage_entity_info_alter(&$entity_info) {
+function example_entity_info_alter(&$entity_info) {
   $entity_info['node']['view modes']['new_display_machine_name'] = array(
     'label' => t('New Display Name'),
     'custom settings' => '',

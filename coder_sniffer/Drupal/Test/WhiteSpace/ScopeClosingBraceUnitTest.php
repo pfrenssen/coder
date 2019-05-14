@@ -19,6 +19,7 @@ class ScopeClosingBraceUnitTest extends CoderSniffUnitTest
     public function getErrorList()
     {
         return [
+            16 => 1,
             23 => 1,
             29 => 1,
         ];
