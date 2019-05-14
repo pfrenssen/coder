@@ -240,14 +240,16 @@ class ScopeIndentSniff implements Sniff
 
             $exact = $this->exact;
 
-            if ($tokens[$i]['code'] === T_OPEN_SHORT_ARRAY) {
-                $disableExactEnd = max($disableExactEnd, $tokens[$i]['bracket_closer']);
-            }
-
             if ($tokens[$i]['code'] === T_OPEN_PARENTHESIS
                 && isset($tokens[$i]['parenthesis_closer']) === true
             ) {
                 $disableExactEnd = max($disableExactEnd, $tokens[$i]['parenthesis_closer']);
+                if ($this->debug === true) {
+                    $line = $tokens[$i]['line'];
+                    $type = $tokens[$disableExactEnd]['type'];
+                    echo "Opening parenthesis found on line $line".PHP_EOL;
+                    echo "\t=> disabling exact indent checking until $disableExactEnd ($type)".PHP_EOL;
+                }
             }
 
             if ($exact === true && $i < $disableExactEnd) {
@@ -917,6 +919,15 @@ class ScopeIndentSniff implements Sniff
                 $exact = true;
             }
 
+            // Don't perform strict checking on chained method calls since they
+            // are often covered by custom rules.
+            if ($checkToken !== null
+                && $tokens[$checkToken]['code'] === T_OBJECT_OPERATOR
+                && $exact === true
+            ) {
+                $exact = false;
+            }
+
             if ($checkIndent === null) {
                 $checkIndent = $currentIndent;
             }
@@ -924,6 +935,7 @@ class ScopeIndentSniff implements Sniff
             // If the line starts with "->" we assume this is an indented chained
             // method invocation, so we add one level of indentation.
             if ($checkToken !== null && $tokens[$checkToken]['code'] === T_OBJECT_OPERATOR) {
+                $exact = true;
                 $checkIndent += $this->indent;
             }
 
@@ -1025,15 +1037,46 @@ class ScopeIndentSniff implements Sniff
                 $i = $checkToken;
             }
 
+            // Don't check indents exactly between arrays as they tend to have custom rules.
+            if ($tokens[$i]['code'] === T_OPEN_SHORT_ARRAY) {
+                $disableExactEnd = max($disableExactEnd, $tokens[$i]['bracket_closer']);
+                if ($this->debug === true) {
+                    $line = $tokens[$i]['line'];
+                    $type = $tokens[$disableExactEnd]['type'];
+                    echo "Opening short array bracket found on line $line".PHP_EOL;
+                    if ($disableExactEnd === $tokens[$i]['bracket_closer']) {
+                        echo "\t=> disabling exact indent checking until $disableExactEnd ($type)".PHP_EOL;
+                    } else {
+                        echo "\t=> continuing to disable exact indent checking until $disableExactEnd ($type)".PHP_EOL;
+                    }
+                }
+            }
+
             // Completely skip here/now docs as the indent is a part of the
             // content itself.
             if ($tokens[$i]['code'] === T_START_HEREDOC
                 || $tokens[$i]['code'] === T_START_NOWDOC
             ) {
-                $i = $phpcsFile->findNext([T_END_HEREDOC, T_END_NOWDOC], ($i + 1));
-                $i = $phpcsFile->findNext(Tokens::$emptyTokens, ($i + 1), null, true);
+                if ($this->debug === true) {
+                    $line = $tokens[$i]['line'];
+                    $type = $tokens[$disableExactEnd]['type'];
+                    echo "Here/nowdoc found on line $line".PHP_EOL;
+                }
+
+                $i    = $phpcsFile->findNext([T_END_HEREDOC, T_END_NOWDOC], ($i + 1));
+                $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($i + 1), null, true);
+                if ($tokens[$next]['code'] === T_COMMA) {
+                    $i = $next;
+                }
+
+                if ($this->debug === true) {
+                    $line = $tokens[$i]['line'];
+                    $type = $tokens[$i]['type'];
+                    echo "\t* skipping to token $i ($type) on line $line *".PHP_EOL;
+                }
+
                 continue;
-            }
+            }//end if
 
             // Completely skip multi-line strings as the indent is a part of the
             // content itself.
