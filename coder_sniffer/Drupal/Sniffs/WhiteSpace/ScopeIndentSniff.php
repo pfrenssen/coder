@@ -935,7 +935,7 @@ class ScopeIndentSniff implements Sniff
             // If the line starts with "->" we assume this is an indented chained
             // method invocation, so we add one level of indentation.
             if ($checkToken !== null && $tokens[$checkToken]['code'] === T_OBJECT_OPERATOR) {
-                $exact = true;
+                $exact        = true;
                 $checkIndent += $this->indent;
             }
 
