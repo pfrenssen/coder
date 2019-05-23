@@ -38,6 +38,8 @@ class GlobalDrupalUnitTest extends CoderSniffUnitTest
         switch ($testFile) {
         case 'GlobalDrupalUnitTest.inc':
             return [6 => 1];
+        case 'ExampleClassWithDependencyInjection.php':
+            return [17 => 1];
         case 'ExampleService.php':
             return [16 => 1];
         default:
@@ -58,6 +60,9 @@ class GlobalDrupalUnitTest extends CoderSniffUnitTest
     {
         return [
             __DIR__.'/GlobalDrupalUnitTest.inc',
+            __DIR__.'/src/example.module',
+            __DIR__.'/src/ExampleClass.php',
+            __DIR__.'/src/ExampleClassWithDependencyInjection.php',
             __DIR__.'/src/ExampleService.php',
         ];
 

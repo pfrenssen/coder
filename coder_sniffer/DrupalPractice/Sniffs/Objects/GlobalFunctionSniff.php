@@ -45,6 +45,16 @@ class GlobalFunctionSniff implements Sniff
         'user_role_load'           => 'the "entity_type.manager" service',
     ];
 
+    /**
+     * List of global functions that are covered by traits.
+     *
+     * This is a subset of the global functions list. These functions can be
+     * replaced by methods that are provided by the listed trait.
+     *
+     * @var string[]
+     */
+    protected $traitFunctions = ['t' => '\Drupal\Core\StringTranslation\StringTranslationTrait'];
+
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -97,21 +107,40 @@ class GlobalFunctionSniff implements Sniff
 
         // Check if the class extends another class and get the name of the class
         // that is extended.
-        $classPtr    = key($tokens[$stackPtr]['conditions']);
-        $extendsName = $phpcsFile->findExtendedClassName($classPtr);
-
-        if (($extendsName === false
-            || in_array($extendsName, GlobalDrupalSniff::$baseClasses) === false)
-            && Project::isServiceClass($phpcsFile, $classPtr) === false
-        ) {
+        $classPtr = key($tokens[$stackPtr]['conditions']);
+        if ($tokens[$classPtr]['code'] !== T_CLASS) {
             return;
         }
 
-        $warning = '%s() calls should be avoided in classes, use dependency injection and %s instead';
-        $data    = [
-            $tokens[$stackPtr]['content'],
-            $this->functions[$tokens[$stackPtr]['content']],
-        ];
+        if (isset($this->traitFunctions[$tokens[$stackPtr]['content']]) === false) {
+            $extendsName = $phpcsFile->findExtendedClassName($classPtr);
+
+            // Check if the class implements ContainerInjectionInterface.
+            $implementedInterfaceNames = $phpcsFile->findImplementedInterfaceNames($classPtr);
+            $canAccessContainer        = !empty($implementedInterfaceNames) && in_array('ContainerInjectionInterface', $implementedInterfaceNames);
+
+            if (($extendsName === false
+                || in_array($extendsName, GlobalDrupalSniff::$baseClasses) === false)
+                && Project::isServiceClass($phpcsFile, $classPtr) === false
+                && $canAccessContainer === false
+            ) {
+                return;
+            }
+
+            $warning = '%s() calls should be avoided in classes, use dependency injection and %s instead';
+            $data    = [
+                $tokens[$stackPtr]['content'],
+                $this->functions[$tokens[$stackPtr]['content']],
+            ];
+        } else {
+            $warning = '%s() calls should be avoided in classes, use %s and %s instead';
+            $data    = [
+                $tokens[$stackPtr]['content'],
+                $this->traitFunctions[$tokens[$stackPtr]['content']],
+                $this->functions[$tokens[$stackPtr]['content']],
+            ];
+        }//end if
+
         $phpcsFile->addWarning($warning, $stackPtr, 'GlobalFunction', $data);
 
     }//end process()
