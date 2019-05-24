@@ -5,26 +5,26 @@ namespace Drupal\testmodule;
 use Drupal\node\Entity\Node;
 
 /**
- * Some service.
+ * A class which is not a service.
  */
-class ExampleService {
+class ExampleClass {
 
   /**
-   * Using \Drupal here but it should be injected instead.
+   * Using \Drupal here is allowed since this class cannot access the container.
    */
   public function test() {
     return \Drupal::configFactory();
   }
 
   /**
-   * Loading nodes should be done from an injected service.
+   * Loading nodes directly is allowed since we cannot access the container.
    */
   public function test2() {
     return Node::load(1);
   }
 
   /**
-   * Global function should not be used, we should use an injected service.
+   * Global function is allowed since we cannot access the container.
    */
   public function test3() {
     return format_date(time());

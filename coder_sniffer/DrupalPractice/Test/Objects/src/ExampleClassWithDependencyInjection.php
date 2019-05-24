@@ -2,22 +2,23 @@
 
 namespace Drupal\testmodule;
 
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\node\Entity\Node;
 
 /**
- * Some service.
+ * A class which is not a service but has access to the container.
  */
-class ExampleService {
+class ExampleClassWithDependencyInjection implements ContainerInjectionInterface {
 
   /**
-   * Using \Drupal here but it should be injected instead.
+   * Using \Drupal here is not allowed, it should be injected instead.
    */
   public function test() {
     return \Drupal::configFactory();
   }
 
   /**
-   * Loading nodes should be done from an injected service.
+   * Loading nodes directly is not allowed, we should use an injected service.
    */
   public function test2() {
     return Node::load(1);

@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * Using \Drupal here is allowed since this code runs in the global namespace.
+ */
+function test() {
+  return \Drupal::configFactory();
+}
+
+/**
+ * Loading nodes directly is allowed since we run in the global namespace.
+ */
+function test2() {
+  return Node::load(1);
+}
+
+/**
+ * Global function is allowed since we run in the global namespace.
+ */
+function test3() {
+  return format_date(time());
+}
+
+/**
+ * Using t() is allowed since we run in the global namespace.
+ */
+function test4() {
+  return t('Test');
+}

@@ -38,6 +38,8 @@ class GlobalClassUnitTest extends CoderSniffUnitTest
         switch ($testFile) {
         case 'GlobalClassUnitTest.inc':
             return [8 => 1];
+        case 'ExampleClassWithDependencyInjection.php':
+            return [24 => 1];
         case 'ExampleService.php':
             return [23 => 1];
         default:
@@ -58,6 +60,9 @@ class GlobalClassUnitTest extends CoderSniffUnitTest
     {
         return [
             __DIR__.'/GlobalClassUnitTest.inc',
+            __DIR__.'/src/example.module',
+            __DIR__.'/src/ExampleClass.php',
+            __DIR__.'/src/ExampleClassWithDependencyInjection.php',
             __DIR__.'/src/ExampleService.php',
         ];
 
