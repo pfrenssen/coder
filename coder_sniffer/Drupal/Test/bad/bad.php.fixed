@@ -15,7 +15,7 @@
 //   - should be only 2 additional spaces.
 //   - this one is correct.
 // Blank comments are not allowed outside of a comment block.
-// PHP Constants should be written in CAPITAL letters
+// PHP Constants should be written in CAPITAL letters.
 // Comments should be on a separate line.
 TRUE;
 FALSE;

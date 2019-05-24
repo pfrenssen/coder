@@ -79,6 +79,7 @@ class BadUnitTest extends CoderSniffUnitTest
                 10  => 1,
                 12  => 1,
                 16  => 1,
+                18  => 1,
                 19  => 2,
                 20  => 1,
                 21  => 1,
