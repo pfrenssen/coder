@@ -34,6 +34,9 @@ class DocCommentUnitTest extends CoderSniffUnitTest
                 100 => 4,
                 101 => 1,
             ];
+
+        case 'DocCommentUnitTest.3.inc':
+            return [4 => 1];
         default:
             return [];
         }

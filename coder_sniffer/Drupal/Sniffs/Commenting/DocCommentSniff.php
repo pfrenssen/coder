@@ -165,20 +165,25 @@ class DocCommentSniff implements Sniff
             $error = 'Doc comment short description must be on the first line';
             $fix   = $phpcsFile->addFixableError($error, $short, 'SpacingBeforeShort');
             if ($fix === true) {
-                $phpcsFile->fixer->beginChangeset();
-                for ($i = $start; $i < $short; $i++) {
-                    if ($tokens[$i]['line'] === $tokens[$start]['line']) {
-                        continue;
-                    } else if ($tokens[$i]['line'] === $tokens[$short]['line']) {
-                        break;
+                // Move file comment short description to the next line.
+                if (isset($fileShort) === true && $tokens[$short]['line'] === $tokens[$start]['line']) {
+                    $phpcsFile->fixer->addContentBefore($fileShort, "\n *");
+                } else {
+                    $phpcsFile->fixer->beginChangeset();
+                    for ($i = $start; $i < $short; $i++) {
+                        if ($tokens[$i]['line'] === $tokens[$start]['line']) {
+                            continue;
+                        } else if ($tokens[$i]['line'] === $tokens[$short]['line']) {
+                            break;
+                        }
+
+                        $phpcsFile->fixer->replaceToken($i, '');
                     }
 
-                    $phpcsFile->fixer->replaceToken($i, '');
+                    $phpcsFile->fixer->endChangeset();
                 }
-
-                $phpcsFile->fixer->endChangeset();
             }
-        }
+        }//end if
 
         if ($tokens[($short - 1)]['content'] !== ' '
             && strpos($tokens[($short - 1)]['content'], $phpcsFile->eolChar) === false
