@@ -37,12 +37,25 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
     {
         switch ($testFile) {
         case 'GlobalFunctionUnitTest.inc':
-            return [6 => 1];
+            return [
+                6 => 1,
+                8 => 1,
+            ];
+        case 'ExampleClass.php':
+            return [37 => 1];
+        case 'ExampleClassWithDependencyInjection.php':
+            return [
+                31 => 1,
+                38 => 1,
+            ];
         case 'ExampleService.php':
-            return [30 => 1];
+            return [
+                30 => 1,
+                37 => 1,
+            ];
         default:
             return [];
-        }
+        }//end switch
 
     }//end getWarningList()
 
@@ -58,6 +71,9 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
     {
         return [
             __DIR__.'/GlobalFunctionUnitTest.inc',
+            __DIR__.'/src/example.module',
+            __DIR__.'/src/ExampleClass.php',
+            __DIR__.'/src/ExampleClassWithDependencyInjection.php',
             __DIR__.'/src/ExampleService.php',
         ];
 

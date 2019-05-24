@@ -94,8 +94,13 @@ class GlobalDrupalSniff implements Sniff
         $classPtr    = key($tokens[$stackPtr]['conditions']);
         $extendsName = $phpcsFile->findExtendedClassName($classPtr);
 
+        // Check if the class implements ContainerInjectionInterface.
+        $implementedInterfaceNames = $phpcsFile->findImplementedInterfaceNames($classPtr);
+        $canAccessContainer        = !empty($implementedInterfaceNames) && in_array('ContainerInjectionInterface', $implementedInterfaceNames);
+
         if (($extendsName === false || in_array($extendsName, static::$baseClasses) === false)
             && Project::isServiceClass($phpcsFile, $classPtr) === false
+            && $canAccessContainer === false
         ) {
             return;
         }
