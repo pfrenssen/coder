@@ -135,9 +135,15 @@ class InlineCommentSniff implements Sniff
                 return;
             }
 
-            if ($tokens[$stackPtr]['content'] === '/**') {
-                $error = 'Inline doc block comments are not allowed; use "/* Comment */" or "// Comment" instead';
-                $phpcsFile->addError($error, $stackPtr, 'DocBlock');
+            // Inline doc blocks are allowed in JSDoc.
+            if ($tokens[$stackPtr]['content'] === '/**' && $phpcsFile->tokenizerType !== 'JS') {
+                // The only exception to inline doc blocks is the /** @var */
+                // declaration.
+                $content = $phpcsFile->getTokensAsString($stackPtr, ($tokens[$stackPtr]['comment_closer'] - $stackPtr + 1));
+                if (preg_match('#^/\*\* @var [a-zA-Z0-9_\\\\\[\]|]+ \$[a-zA-Z0-9_]+ \*/$#', $content) !== 1) {
+                    $error = 'Inline doc block comments are not allowed; use "/* Comment */" or "// Comment" instead';
+                    $phpcsFile->addError($error, $stackPtr, 'DocBlock');
+                }
             }
         }//end if
 
@@ -176,12 +182,6 @@ class InlineCommentSniff implements Sniff
 
         // Ignore code example lines.
         if ($this->isInCodeExample($phpcsFile, $stackPtr) === true) {
-            return;
-        }
-
-        // If the current line starts with a tag such as "@see" then the trailing dot
-        // rules and upper case start rules don't apply.
-        if (strpos(trim(substr($tokens[$stackPtr]['content'], 2)), '@') === 0) {
             return;
         }
 
@@ -358,10 +358,10 @@ class InlineCommentSniff implements Sniff
         if (preg_match('/^\p{L}/u', $commentText) === 1) {
             $commentCloser   = $commentText[(strlen($commentText) - 1)];
             $acceptedClosers = [
-                'full-stops'        => '.',
-                'exclamation marks' => '!',
-                'question marks' => '?',
-                'colons'            => ':',
+                'full-stops'             => '.',
+                'exclamation marks'      => '!',
+                'question marks'         => '?',
+                'colons'                 => ':',
                 'or closing parentheses' => ')',
             ];
 
@@ -394,7 +394,7 @@ class InlineCommentSniff implements Sniff
                     $phpcsFile->fixer->replaceToken($lastCommentToken, $newContent);
                 }
             }
-        }
+        }//end if
 
         // Finally, the line below the last comment cannot be empty if this inline
         // comment is on a line by itself.
@@ -469,7 +469,11 @@ class InlineCommentSniff implements Sniff
      */
     protected function isInCodeExample(File $phpcsFile, $stackPtr)
     {
-        $tokens      = $phpcsFile->getTokens();
+        $tokens = $phpcsFile->getTokens();
+        if ($tokens[$stackPtr]['content'] === '// @code'.$phpcsFile->eolChar) {
+            return true;
+        }
+
         $prevComment = $stackPtr;
         $lastComment = $stackPtr;
         while (($prevComment = $phpcsFile->findPrevious([T_COMMENT], ($lastComment - 1), null, false)) !== false) {
