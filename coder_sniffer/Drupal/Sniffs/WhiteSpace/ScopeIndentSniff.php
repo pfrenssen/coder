@@ -972,6 +972,7 @@ class ScopeIndentSniff implements Sniff
                             T_CLOSE_CURLY_BRACKET,
                             T_OPEN_CURLY_BRACKET,
                             T_COLON,
+                            T_OPEN_TAG,
                         ]
                     ) === false
                     ) {

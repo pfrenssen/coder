@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Test file.
+ */
+
+/**
+ * ScopeIndentSniff already handles this correctly.
+ */
+function example_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['new_display_machine_name'] = array(
+    'label' => t('New Display Name'),
+    'custom settings' => '',
+  );
+}
+
+/**
+ * Closing brace not aligned correctly.
+ */
+function test2() {
+  return 5;
+}
+
+/**
+ * Closing brace not on line by itself.
+ */
+function test3() {
+  return 7;
+}
