@@ -27,7 +27,7 @@ class InlineCommentUnitTest extends CoderSniffUnitTest
             24 => 1,
             44 => 1,
             47 => 1,
-            59 => 2,
+            59 => 1,
             81 => 1,
             83 => 1,
         ];
