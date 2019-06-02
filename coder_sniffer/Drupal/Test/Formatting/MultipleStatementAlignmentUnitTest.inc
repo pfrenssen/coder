@@ -29,3 +29,9 @@ function example_form_submit_redirect_handler($form, &$form_state) {
   $_SESSION['file_upload_session'] = TRUE;
   $form_state['redirect']  = 'example/' . $selected_content . '/' . $form_state['nid'] . '/mapping';
 }
+
+$my_first_variable  = 'some value';
+$my_second_variable = 'another value';
+
+$one = 1;
+$one_more = 2;

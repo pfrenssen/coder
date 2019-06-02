@@ -20,7 +20,6 @@ class MultipleStatementAlignmentUnitTest extends CoderSniffUnitTest
     {
         return [
             8  => 1,
-            10 => 1,
             11 => 1,
             13 => 1,
             14 => 1,
