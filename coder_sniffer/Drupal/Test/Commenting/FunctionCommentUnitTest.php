@@ -84,7 +84,7 @@ class FunctionCommentUnitTest extends CoderSniffUnitTest
             if (PHP_VERSION_ID < 70200) {
                 return [
                     9  => 1,
-                    12 => 1,
+                    14 => 1,
                 ];
             } else {
                 return [9 => 1];
