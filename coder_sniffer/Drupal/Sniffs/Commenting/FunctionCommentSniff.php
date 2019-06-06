@@ -9,6 +9,7 @@
 
 namespace Drupal\Sniffs\Commenting;
 
+use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -23,6 +24,13 @@ use PHP_CodeSniffer\Util\Tokens;
  */
 class FunctionCommentSniff implements Sniff
 {
+
+    /**
+     * The current PHP version.
+     *
+     * @var integer
+     */
+    private $phpVersion = null;
 
     /**
      * A map of invalid data types to valid ones for param and return documentation.
@@ -461,6 +469,13 @@ class FunctionCommentSniff implements Sniff
      */
     protected function processParams(File $phpcsFile, $stackPtr, $commentStart)
     {
+        if ($this->phpVersion === null) {
+            $this->phpVersion = Config::getConfigData('php_version');
+            if ($this->phpVersion === null) {
+                $this->phpVersion = PHP_VERSION_ID;
+            }
+        }
+
         $tokens = $phpcsFile->getTokens();
 
         $params  = [];
@@ -735,7 +750,8 @@ class FunctionCommentSniff implements Sniff
                     && isset($realParams[$checkPos]) === true
                 ) {
                     $typeHint = $realParams[$checkPos]['type_hint'];
-                    if ($typeHint !== '' && $typeHint !== 'stdClass' && $typeHint !== '\stdClass') {
+                    // As of PHP 7.2, object is a valid type hint.
+                    if ($typeHint !== '' && $typeHint !== 'stdClass' && $typeHint !== '\stdClass' && ($this->phpVersion < 70200 || $typeHint !== 'object')) {
                         $error = 'Unknown type hint "%s" found for %s';
                         $data  = [
                             $typeHint,
