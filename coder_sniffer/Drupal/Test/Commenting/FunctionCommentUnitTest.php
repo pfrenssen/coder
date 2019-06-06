@@ -82,12 +82,12 @@ class FunctionCommentUnitTest extends CoderSniffUnitTest
 
         case 'FunctionCommentUnitTest.3.inc':
             if (PHP_VERSION_ID < 70200) {
-              return [
-                  9 => 1,
-                  12 => 1,
-              ];
+                return [
+                    9  => 1,
+                    12 => 1,
+                ];
             } else {
-              return [9 => 1];
+                return [9 => 1];
             }//end if
         }//end switch
 
