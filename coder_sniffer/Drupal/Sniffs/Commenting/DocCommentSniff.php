@@ -369,7 +369,10 @@ class DocCommentSniff implements Sniff
         $currentTag   = null;
         $previousTag  = null;
         $isNewGroup   = null;
-        $ignoreTags = ['@code', '@endcode'];
+        $ignoreTags   = [
+            '@code',
+            '@endcode',
+        ];
         foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
             if ($pos > 0) {
                 $prev = $phpcsFile->findPrevious(
@@ -493,13 +496,14 @@ class DocCommentSniff implements Sniff
         }
 
         $foundTags = [];
-        $lastPos = 0;
+        $lastPos   = 0;
         foreach ($tokens[$stackPtr]['comment_tags'] as $pos => $tag) {
             $tagName = $tokens[$tag]['content'];
             // Skip code tags, they can be anywhere.
             if (in_array($tagName, $ignoreTags) === true) {
                 continue;
             }
+
             if (isset($foundTags[$tagName]) === true) {
                 $lastTag = $tokens[$stackPtr]['comment_tags'][$lastPos];
                 if ($tokens[$lastTag]['content'] !== $tagName) {
