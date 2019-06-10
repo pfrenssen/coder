@@ -11,7 +11,6 @@ class ExampleMigration extends ExampleMigrateBase {
   public function __construct($arguments) {
     parent::__construct($arguments);
     $this->description = t('Import users from the CSV.');
-    $this->dependencies[] = 'HedleyMigrateSites';
     $columns = [
       ['uuid', t('UUID')],
       ['name', t('Username')],
