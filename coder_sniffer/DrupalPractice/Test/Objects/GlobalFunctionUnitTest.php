@@ -70,6 +70,7 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase)
     {
         return [
+            __DIR__.'/src/DeclareT.php',
             __DIR__.'/src/example.module',
             __DIR__.'/src/ExampleClass.php',
             __DIR__.'/src/ExampleClassWithDependencyInjection.php',

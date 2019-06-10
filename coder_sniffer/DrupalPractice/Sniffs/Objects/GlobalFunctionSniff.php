@@ -10,9 +10,9 @@
 namespace DrupalPractice\Sniffs\Objects;
 
 use PHP_CodeSniffer\Files\File;
-use PHP_CodeSniffer\Sniffs\Sniff;
 use DrupalPractice\Sniffs\Objects\GlobalDrupalSniff;
 use DrupalPractice\Project;
+use Drupal\Sniffs\Semantics\FunctionCall;
 
 /**
  * Checks that global functions like t() are not used in forms or controllers.
@@ -21,7 +21,7 @@ use DrupalPractice\Project;
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class GlobalFunctionSniff implements Sniff
+class GlobalFunctionSniff extends FunctionCall
 {
 
     /**
@@ -57,18 +57,6 @@ class GlobalFunctionSniff implements Sniff
 
 
     /**
-     * Returns an array of tokens this test wants to listen for.
-     *
-     * @return array
-     */
-    public function register()
-    {
-        return [T_STRING];
-
-    }//end register()
-
-
-    /**
      * Processes this test, when one of its tokens is encountered.
      *
      * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
@@ -86,20 +74,13 @@ class GlobalFunctionSniff implements Sniff
             return;
         }
 
-        // We are only interested in function calls, which are not in the global
-        // scope.
-        if (isset($this->functions[$tokens[$stackPtr]['content']]) === false
-            || isset($tokens[($stackPtr + 1)]) === false
-            || $tokens[($stackPtr + 1)]['code'] !== T_OPEN_PARENTHESIS
+        // We just want to listen on function calls, nothing else.
+        if ($this->isFunctionCall($phpcsFile, $stackPtr) === false
+            // Ignore function calls in the global scope.
             || empty($tokens[$stackPtr]['conditions']) === true
+            // Only our list of function names.
+            || isset($this->functions[$tokens[$stackPtr]['content']]) === false
         ) {
-            return;
-        }
-
-        // If there is an object operator before the call then this is a method
-        // invocation, not a function call.
-        $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-        if ($tokens[$previous]['code'] === T_OBJECT_OPERATOR) {
             return;
         }
 
