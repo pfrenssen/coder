@@ -81,6 +81,11 @@ class GlobalFunctionSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
+        // Only run this sniff on Drupal 8+.
+        if (Project::getCoreVersion($phpcsFile) < 8) {
+            return;
+        }
+
         // We are only interested in function calls, which are not in the global
         // scope.
         if (isset($this->functions[$tokens[$stackPtr]['content']]) === false
