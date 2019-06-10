@@ -205,7 +205,14 @@ class FunctionCommentSniff implements Sniff
                 $return = $tag;
                 // Any strings until the next tag belong to this comment.
                 if (isset($tokens[$commentStart]['comment_tags'][($pos + 1)]) === true) {
-                    $end = $tokens[$commentStart]['comment_tags'][($pos + 1)];
+                    $skipTags = ['@code', '@endcode'];
+                    $skipPos = $pos + 1;
+                    while (isset($tokens[$commentStart]['comment_tags'][$skipPos]) === true
+                        && in_array($tokens[$commentStart]['comment_tags'][$skipPos], $skipTags) === true
+                    ) {
+                        $skipPos++;
+                    }
+                    $end = $tokens[$commentStart]['comment_tags'][$skipPos];
                 } else {
                     $end = $tokens[$commentStart]['comment_closer'];
                 }
@@ -531,7 +538,14 @@ class FunctionCommentSniff implements Sniff
 
                 // Any strings until the next tag belong to this comment.
                 if (isset($tokens[$commentStart]['comment_tags'][($pos + 1)]) === true) {
-                    $end = $tokens[$commentStart]['comment_tags'][($pos + 1)];
+                    $skipTags = ['@code', '@endcode'];
+                    $skipPos = $pos + 1;
+                    while (isset($tokens[$commentStart]['comment_tags'][$skipPos]) === true
+                        && in_array($tokens[$tokens[$commentStart]['comment_tags'][$skipPos]]['content'], $skipTags) === true
+                    ) {
+                        $skipPos++;
+                    }
+                    $end = $tokens[$commentStart]['comment_tags'][$skipPos];
                 } else {
                     $end = $tokens[$commentStart]['comment_closer'];
                 }

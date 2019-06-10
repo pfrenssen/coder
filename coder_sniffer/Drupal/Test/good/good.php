@@ -1097,7 +1097,7 @@ class Foo implements FooInterface {
 
 }
 
-t('Some long mulit-line 
+t('Some long mulit-line
   text is weird, but allowed.');
 
 // Anonymous functions should not throw indentation errors here.
@@ -1650,5 +1650,45 @@ class Test4 {
   public function testDeprecation() {
     @trigger_error('Function testDeprecation() is deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Why Dont You. See http://www.drupal.org/node/123', E_USER_DEPRECATED);
   }
+
+}
+
+/**
+ * Foo.
+ */
+interface Test5Interface {
+
+  /**
+   * Orders the result set by a given field.
+   *
+   * If called multiple times, the query will order by each specified field in
+   * the order this method is called.
+   *
+   * If the query uses DISTINCT or GROUP BY conditions, fields or expressions
+   * that are used for the order must be selected to be compatible with some
+   * databases like PostgreSQL. The PostgreSQL driver can handle simple cases
+   * automatically but it is suggested to explicitly specify them. Additionally,
+   * when ordering on an alias, the alias must be added before orderBy() is
+   * called.
+   *
+   * @param string $field
+   *   The field on which to order. The field is escaped for security so only
+   *   valid field and alias names are possible. To order by an expression, add
+   *   the expression with addExpression() first and then use the alias to order
+   *   on.
+   *
+   *   Example:
+   *   @code
+   *   $query->addExpression('SUBSTRING(thread, 1, (LENGTH(thread) - 1))', 'order_field');
+   *   $query->orderBy('order_field', 'ASC');
+   *   @endcode
+   * @param string $direction
+   *   The direction to sort. Legal values are "ASC" and "DESC". Any other value
+   *   will be converted to "ASC".
+   *
+   * @return \Drupal\Core\Database\Query\SelectInterface
+   *   The called object.
+   */
+  public function orderBy($field, $direction = 'ASC');
 
 }
