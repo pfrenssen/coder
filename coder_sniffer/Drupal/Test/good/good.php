@@ -1353,6 +1353,11 @@ class NodeType extends ConfigEntityBundleBase {
  */
 class OperatorTest {
 
+  /**
+   * Seen IDs.
+   *
+   * @var array
+   */
   protected static $seenIds;
 
   /**
