@@ -1742,4 +1742,24 @@ interface Test5Interface {
    */
   public function test2();
 
+  /**
+   * This is good.
+   *
+   * @return string
+   *   Here is a comment, let's explain the return value with an example:
+   *   @code
+   *     if ($something) {
+   *       $x = $y;
+   *     }
+   *   @endcode
+   *   And then the comment goes on here. You want more code? Here you go:
+   *   @code
+   *     if ($something) {
+   *       $x = $y;
+   *     }
+   *   @endcode
+   *   And this is the end.
+   */
+  public function test3();
+
 }
