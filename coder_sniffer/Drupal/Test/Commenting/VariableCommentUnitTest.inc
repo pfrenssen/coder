@@ -44,4 +44,6 @@ class Test {
   // Wrong style with var keyword.
   var $varStyle;
 
+  protected $missingComment;
+
 }

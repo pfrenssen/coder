@@ -48,4 +48,6 @@ class Test {
    */
   public $varStyle;
 
+  protected $missingComment;
+
 }
