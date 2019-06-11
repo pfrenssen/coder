@@ -1652,3 +1652,114 @@ class Test4 {
   }
 
 }
+
+/**
+ * Foo.
+ */
+interface Test5Interface {
+
+  /**
+   * Orders the result set by a given field.
+   *
+   * If called multiple times, the query will order by each specified field in
+   * the order this method is called.
+   *
+   * If the query uses DISTINCT or GROUP BY conditions, fields or expressions
+   * that are used for the order must be selected to be compatible with some
+   * databases like PostgreSQL. The PostgreSQL driver can handle simple cases
+   * automatically but it is suggested to explicitly specify them. Additionally,
+   * when ordering on an alias, the alias must be added before orderBy() is
+   * called.
+   *
+   * @param string $field
+   *   The field on which to order. The field is escaped for security so only
+   *   valid field and alias names are possible. To order by an expression, add
+   *   the expression with addExpression() first and then use the alias to order
+   *   on.
+   *
+   *   Example:
+   *   @code
+   *   $query->addExpression('SUBSTRING(thread, 1, (LENGTH(thread) - 1))', 'order_field');
+   *   $query->orderBy('order_field', 'ASC');
+   *   @endcode
+   * @param string $direction
+   *   The direction to sort. Legal values are "ASC" and "DESC". Any other value
+   *   will be converted to "ASC".
+   *
+   * @return \Drupal\Core\Database\Query\SelectInterface
+   *   The called object.
+   */
+  public function orderBy($field, $direction = 'ASC');
+
+  /**
+   * Example with multiple code blocks in param docs.
+   *
+   * @param string $param1
+   *   Just some Example param.
+   * @param ...
+   *   Any additional arguments are passed on to the functions called by
+   *   drupal_form_submit(), including the unique form constructor function.
+   *   For example, the node_edit form requires that a node object be passed
+   *   in here when it is called. Arguments that need to be passed by reference
+   *   should not be included here, but rather placed directly in the $form
+   *   build info array so that the reference can be preserved. For example, a
+   *   form builder function with the following signature:
+   *   @code
+   *   function mymodule_form($form, &$form_state, &$object) {
+   *   }
+   *   @endcode
+   *   would be called via drupal_form_submit() as follows:
+   *   @code
+   *   $form_state['values'] = $my_form_values;
+   *   $form_state['build_info']['args'] = array(&$object);
+   *   drupal_form_submit('mymodule_form', $form_state);
+   *   @endcode
+   */
+  public function test1($param1);
+
+  /**
+   * This is an example of a doc block that is good.
+   *
+   * We want to show some example code:
+   * @code
+   *   if ($something) {
+   *     $x = $y;
+   *   }
+   * @endcode
+   * Some more example code:
+   * @code
+   *   if ($something) {
+   *     $x = $y;
+   *   }
+   * @endcode
+   * And one more piece of example code:
+   * @code
+   *   if ($something) {
+   *     $x = $y;
+   *   }
+   * @endcode
+   * Followed by some summary text.
+   */
+  public function test2();
+
+  /**
+   * This is good.
+   *
+   * @return string
+   *   Here is a comment, let's explain the return value with an example:
+   *   @code
+   *     if ($something) {
+   *       $x = $y;
+   *     }
+   *   @endcode
+   *   And then the comment goes on here. You want more code? Here you go:
+   *   @code
+   *     if ($something) {
+   *       $x = $y;
+   *     }
+   *   @endcode
+   *   And this is the end.
+   */
+  public function test3();
+
+}

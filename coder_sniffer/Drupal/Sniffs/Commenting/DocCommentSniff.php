@@ -369,6 +369,10 @@ class DocCommentSniff implements Sniff
         $currentTag   = null;
         $previousTag  = null;
         $isNewGroup   = null;
+        $ignoreTags   = [
+            '@code',
+            '@endcode',
+        ];
         foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
             if ($pos > 0) {
                 $prev = $phpcsFile->findPrevious(
@@ -408,6 +412,9 @@ class DocCommentSniff implements Sniff
                 && (in_array($currentTag, ['@param', '@return', '@throws']) === true
                 || in_array($previousTag, ['@param', '@return', '@throws']) === true)
                 && $previousTag !== $currentTag
+                // Ignore code blocks in comments, they can be anywhere.
+                && in_array($previousTag, $ignoreTags) === false
+                && in_array($currentTag, $ignoreTags) === false
             ) {
                 $error = 'Separate the %s and %s sections by a blank line.';
                 $fix   = $phpcsFile->addFixableError($error, $tag, 'TagGroupSpacing', [$previousTag, $currentTag]);
@@ -489,19 +496,24 @@ class DocCommentSniff implements Sniff
         }
 
         $foundTags = [];
+        $lastPos   = 0;
         foreach ($tokens[$stackPtr]['comment_tags'] as $pos => $tag) {
             $tagName = $tokens[$tag]['content'];
+            // Skip code tags, they can be anywhere.
+            if (in_array($tagName, $ignoreTags) === true) {
+                continue;
+            }
+
             if (isset($foundTags[$tagName]) === true) {
-                $lastTag = $tokens[$stackPtr]['comment_tags'][($pos - 1)];
+                $lastTag = $tokens[$stackPtr]['comment_tags'][$lastPos];
                 if ($tokens[$lastTag]['content'] !== $tagName) {
                     $error = 'Tags must be grouped together in a doc comment';
                     $phpcsFile->addError($error, $tag, 'TagsNotGrouped');
                 }
-
-                continue;
             }
 
             $foundTags[$tagName] = true;
+            $lastPos = $pos;
         }
 
     }//end process()
