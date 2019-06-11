@@ -1097,7 +1097,7 @@ class Foo implements FooInterface {
 
 }
 
-t('Some long mulit-line 
+t('Some long mulit-line
   text is weird, but allowed.');
 
 // Anonymous functions should not throw indentation errors here.
@@ -1716,5 +1716,30 @@ interface Test5Interface {
    *   @endcode
    */
   public function test1($param1);
+
+  /**
+   * This is an example of a doc block that is good.
+   *
+   * We want to show some example code:
+   * @code
+   *   if ($something) {
+   *     $x = $y;
+   *   }
+   * @endcode
+   * Some more example code:
+   * @code
+   *   if ($something) {
+   *     $x = $y;
+   *   }
+   * @endcode
+   * And one more piece of example code:
+   * @code
+   *   if ($something) {
+   *     $x = $y;
+   *   }
+   * @endcode
+   * Followed by some summary text.
+   */
+  public function test2();
 
 }
