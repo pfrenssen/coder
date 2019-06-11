@@ -1691,4 +1691,30 @@ interface Test5Interface {
    */
   public function orderBy($field, $direction = 'ASC');
 
+  /**
+   * Example with multiple code blocks in param docs.
+   *
+   * @param string $param1
+   *   Just some Example param.
+   * @param ...
+   *   Any additional arguments are passed on to the functions called by
+   *   drupal_form_submit(), including the unique form constructor function.
+   *   For example, the node_edit form requires that a node object be passed
+   *   in here when it is called. Arguments that need to be passed by reference
+   *   should not be included here, but rather placed directly in the $form
+   *   build info array so that the reference can be preserved. For example, a
+   *   form builder function with the following signature:
+   *   @code
+   *   function mymodule_form($form, &$form_state, &$object) {
+   *   }
+   *   @endcode
+   *   would be called via drupal_form_submit() as follows:
+   *   @code
+   *   $form_state['values'] = $my_form_values;
+   *   $form_state['build_info']['args'] = array(&$object);
+   *   drupal_form_submit('mymodule_form', $form_state);
+   *   @endcode
+   */
+  public function test1($param1);
+
 }

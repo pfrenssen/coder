@@ -542,21 +542,26 @@ class FunctionCommentSniff implements Sniff
 
                 // Any strings until the next tag belong to this comment.
                 if (isset($tokens[$commentStart]['comment_tags'][($pos + 1)]) === true) {
+                    // Ignore code tags and include them within this comment.
                     $skipTags = [
                         '@code',
                         '@endcode',
                     ];
-                    $skipPos  = ($pos + 1);
-                    while (isset($tokens[$commentStart]['comment_tags'][$skipPos]) === true
-                        && in_array($tokens[$tokens[$commentStart]['comment_tags'][$skipPos]]['content'], $skipTags) === true
+                    $skipPos  = $pos;
+                    while (isset($tokens[$commentStart]['comment_tags'][($skipPos + 1)]) === true
+                        && in_array($tokens[$tokens[$commentStart]['comment_tags'][($skipPos + 1)]]['content'], $skipTags) === true
                     ) {
+                        $skipPos++;
+                    }
+
+                    if ($skipPos === $pos) {
                         $skipPos++;
                     }
 
                     $end = $tokens[$commentStart]['comment_tags'][$skipPos];
                 } else {
                     $end = $tokens[$commentStart]['comment_closer'];
-                }
+                }//end if
 
                 for ($i = ($tag + 3); $i < $end; $i++) {
                     if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
