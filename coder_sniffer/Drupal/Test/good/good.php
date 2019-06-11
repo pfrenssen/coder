@@ -1097,7 +1097,7 @@ class Foo implements FooInterface {
 
 }
 
-t('Some long mulit-line
+t('Some long mulit-line 
   text is weird, but allowed.');
 
 // Anonymous functions should not throw indentation errors here.
