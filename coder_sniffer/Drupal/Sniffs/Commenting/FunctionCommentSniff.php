@@ -762,7 +762,12 @@ class FunctionCommentSniff implements Sniff
                     && isset($realParams[$checkPos]) === true
                 ) {
                     $typeHint = $realParams[$checkPos]['type_hint'];
-                    if ($typeHint !== '' && $typeHint !== 'stdClass' && $typeHint !== '\stdClass') {
+                    if ($typeHint !== ''
+                        && $typeHint !== 'stdClass'
+                        && $typeHint !== '\stdClass'
+                        // As of PHP 7.2, object is a valid type hint.
+                        && $typeHint !== 'object'
+                    ) {
                         $error = 'Unknown type hint "%s" found for %s';
                         $data  = [
                             $typeHint,

@@ -479,3 +479,15 @@ function test34($a, $b) {
 function test35(\stdClass $name, \stdClass $param2) {
 
 }
+
+/**
+ * Allow "object" as real type hint (PHP 7.2).
+ *
+ * @param object $arg
+ *   Something here.
+ * @param object $blarg
+ *   Another thing.
+ */
+function test36(object $arg, object $blarg) {
+  return $arg;
+}
