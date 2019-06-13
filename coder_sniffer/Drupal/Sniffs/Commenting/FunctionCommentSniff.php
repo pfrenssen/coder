@@ -369,12 +369,6 @@ class FunctionCommentSniff implements Sniff
                     }
                 }//end if
             }//end if
-        } else {
-            // No return tag for constructor and destructor.
-            if ($return !== null) {
-                $error = '@return tag is not required for constructor and destructor';
-                $phpcsFile->addError($error, $return, 'ReturnNotRequired');
-            }
         }//end if
 
     }//end processReturn()

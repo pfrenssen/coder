@@ -465,3 +465,25 @@ function test35(\stdClass $name, \stdClass $param2) {
 function test36(object $arg, object $blarg) {
   return $arg;
 }
+
+/**
+ * A class with a method that has the same name as the class.
+ */
+class Small {
+
+  /**
+   * Our small constructor.
+   */
+  public function __construct() {
+  }
+
+  /**
+   * Return tag should be allowed here.
+   *
+   * @return string
+   */
+  public function small() {
+    return 'string';
+  }
+
+}
