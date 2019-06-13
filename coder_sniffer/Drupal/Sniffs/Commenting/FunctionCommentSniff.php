@@ -224,7 +224,7 @@ class FunctionCommentSniff implements Sniff
         }//end foreach
 
         $type = null;
-        if ($isSpecialMethod === false && $methodName !== $className) {
+        if ($isSpecialMethod === false) {
             if ($return !== null) {
                 $type = trim($tokens[($return + 2)]['content']);
                 if (empty($type) === true || $tokens[($return + 2)]['code'] !== T_DOC_COMMENT_STRING) {

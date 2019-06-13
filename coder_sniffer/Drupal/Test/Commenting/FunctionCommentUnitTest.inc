@@ -481,6 +481,7 @@ class Small {
    * Return tag should be allowed here.
    *
    * @return string
+   *   Something small.
    */
   public function small() {
     return 'string';
