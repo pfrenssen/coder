@@ -138,9 +138,9 @@ class InlineCommentSniff implements Sniff
             // Inline doc blocks are allowed in JSDoc.
             if ($tokens[$stackPtr]['content'] === '/**' && $phpcsFile->tokenizerType !== 'JS') {
                 // The only exception to inline doc blocks is the /** @var */
-                // declaration.
-                $content = $phpcsFile->getTokensAsString($stackPtr, ($tokens[$stackPtr]['comment_closer'] - $stackPtr + 1));
-                if (preg_match('#^/\*\* @var [a-zA-Z0-9_\\\\\[\]|]+ \$[a-zA-Z0-9_]+ \*/$#', $content) !== 1) {
+                // declaration. Allow that in any form.
+                $varTag = $phpcsFile->findNext([T_DOC_COMMENT_TAG], ($stackPtr + 1), $tokens[$stackPtr]['comment_closer'], false, '@var');
+                if ($varTag === false) {
                     $error = 'Inline doc block comments are not allowed; use "/* Comment */" or "// Comment" instead';
                     $phpcsFile->addError($error, $stackPtr, 'DocBlock');
                 }

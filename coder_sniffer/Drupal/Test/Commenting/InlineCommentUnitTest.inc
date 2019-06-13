@@ -86,3 +86,30 @@ class Test {
 // 4. No indentation on the next line is also fine as I'm going to demonstrate
 // here.
 test();
+
+/**
+ * Allow various weird inline var doc comments people want to use.
+ */
+function test2() {
+  /**
+   * @var string $x
+   * @var string $y
+   */
+  list($x, $y) = something();
+
+  $date_format = '';
+  $time_format = '';
+  // Date formats cannot be loaded during install or update.
+  if (!defined('MAINTENANCE_MODE')) {
+    if ($date_format_entity = DateFormat::load('html_date')) {
+      /** @var $date_format_entity \Drupal\Core\Datetime\DateFormatInterface */
+      $date_format = $date_format_entity->getPattern();
+    }
+    if ($time_format_entity = DateFormat::load('html_time')) {
+      /** @var $time_format_entity \Drupal\Core\Datetime\DateFormatInterface */
+      $time_format = $time_format_entity->getPattern();
+    }
+  }
+
+  return $x;
+}
