@@ -85,23 +85,27 @@ class FileCommentSniff implements Sniff
                 && $secondOopKeyword === false
                 && $namespace !== false
             ) {
-                $fix = $phpcsFile->addFixableError('Namespaced classes, interfaces and traits should not begin with a file doc comment', $commentStart, 'NamespaceNoFileDoc');
-                if ($fix === true) {
-                    $phpcsFile->fixer->beginChangeset();
+                if ($tokens[$commentStart]['code'] === T_COMMENT) {
+                    $phpcsFile->addError('Namespaced classes, interfaces and traits should not begin with a file doc comment', $commentStart, 'NamespaceNoFileDoc');
+                } else {
+                    $fix = $phpcsFile->addFixableError('Namespaced classes, interfaces and traits should not begin with a file doc comment', $commentStart, 'NamespaceNoFileDoc');
+                    if ($fix === true) {
+                        $phpcsFile->fixer->beginChangeset();
 
-                    for ($i = $commentStart; $i <= ($tokens[$commentStart]['comment_closer'] + 1); $i++) {
-                        $phpcsFile->fixer->replaceToken($i, '');
+                        for ($i = $commentStart; $i <= ($tokens[$commentStart]['comment_closer'] + 1); $i++) {
+                            $phpcsFile->fixer->replaceToken($i, '');
+                        }
+
+                        // If, after removing the comment, there are two new lines
+                        // remove them.
+                        if ($tokens[($commentStart - 1)]['content'] === "\n" && $tokens[$i]['content'] === "\n") {
+                            $phpcsFile->fixer->replaceToken($i, '');
+                        }
+
+                        $phpcsFile->fixer->endChangeset();
                     }
-
-                    // If, after removing the comment, there are two new lines
-                    // remove them.
-                    if ($tokens[($commentStart - 1)]['content'] === "\n" && $tokens[$i]['content'] === "\n") {
-                        $phpcsFile->fixer->replaceToken($i, '');
-                    }
-
-                    $phpcsFile->fixer->endChangeset();
                 }
-            }
+            }//end if
 
             if ($namespace !== false) {
                 return ($phpcsFile->numTokens + 1);
