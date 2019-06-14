@@ -180,7 +180,15 @@ class ArraySniff implements Sniff
                 // in other sniffs. If the conditions of a token are different it
                 // means that it is in a different nesting level.
                 if ($tokens[$newLineStart]['conditions'] !== $tokens[$stackPtr]['conditions']) {
-                    $currentLine++;
+                    // Jump to the end of the closure.
+                    $conditionKeys = array_keys($tokens[$newLineStart]['conditions']);
+                    $closureToken  = end($conditionKeys);
+                    if (isset($tokens[$closureToken]['scope_closer']) === true) {
+                        $newLineStart = $tokens[$closureToken]['scope_closer'];
+                        $currentLine  = $tokens[$closureToken]['line'];
+                    } else {
+                        $currentLine++;
+                    }
                 }
             }//end while
 

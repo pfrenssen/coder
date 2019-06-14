@@ -109,3 +109,18 @@ $backend->expects($this->exactly(1))
       'module_handler_test_missing' => [],
     ]]]
   ));
+
+/**
+ * Nested closure in an array should not throw errors.
+ */
+function mymodule_libraries_info() {
+  $libraries['some-library'] = array(
+    'xautoload' => function ($adapter) {
+      /** @var \Drupal\xautoload\Adapter\LocalDirectoryAdapter $adapter */
+      // Scan sites/all/libraries/some-library/composer.json to look for
+      // autoload information.
+      $adapter->composerJson('composer.json');
+    },
+  );
+  return $libraries;
+}
