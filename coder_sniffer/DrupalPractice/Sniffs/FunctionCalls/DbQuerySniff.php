@@ -47,7 +47,7 @@ class DbQuerySniff extends FunctionCall
      * @param int                         $closeBracket The position of the closing
      *                                                  parenthesis in the stack.
      *
-     * @return void
+     * @return void|int
      */
     public function processFunctionCall(
         File $phpcsFile,
@@ -57,7 +57,7 @@ class DbQuerySniff extends FunctionCall
     ) {
         // This check only applies to Drupal 7, not Drupal 6.
         if (Project::getCoreVersion($phpcsFile) !== '7.x') {
-            return;
+            return ($phpcsFile->numTokens + 1);
         }
 
         $tokens   = $phpcsFile->getTokens();

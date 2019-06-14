@@ -34,19 +34,19 @@ class HookInitCssSniff extends FunctionDefinition
      * @param int                         $functionPtr The position of the function keyword
      *                                                 in the stack.
      *
-     * @return void
+     * @return void|int
      */
     public function processFunction(File $phpcsFile, $stackPtr, $functionPtr)
     {
         $fileExtension = strtolower(substr($phpcsFile->getFilename(), -6));
         // Only check in *.module files.
         if ($fileExtension !== 'module') {
-            return;
+            return ($phpcsFile->numTokens + 1);
         }
 
         // This check only applies to Drupal 7, not Drupal 6.
         if (Project::getCoreVersion($phpcsFile) !== '7.x') {
-            return;
+            return ($phpcsFile->numTokens + 1);
         }
 
         $fileName = substr(basename($phpcsFile->getFilename()), 0, -7);

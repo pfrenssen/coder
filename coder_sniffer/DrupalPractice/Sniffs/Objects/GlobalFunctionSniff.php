@@ -63,15 +63,16 @@ class GlobalFunctionSniff extends FunctionCall
      * @param int                         $stackPtr  The position of the current token
      *                                               in the stack passed in $tokens.
      *
-     * @return void
+     * @return void|int
      */
     public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
         // Only run this sniff on Drupal 8+.
-        if (Project::getCoreVersion($phpcsFile) < 8) {
-            return;
+        if (Project::getCoreVersion($phpcsFile) !== '8.x') {
+            // No need to check this file again, mark it as done.
+            return ($phpcsFile->numTokens + 1);
         }
 
         // We just want to listen on function calls, nothing else.
