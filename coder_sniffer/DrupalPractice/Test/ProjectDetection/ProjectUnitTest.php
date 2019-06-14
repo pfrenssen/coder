@@ -96,15 +96,19 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 dirname(__FILE__).'/modules/drupal6/nested/test.php',
-                '6.x',
+                6,
             ],
             [
                 dirname(__FILE__).'/modules/drupal7/test.php',
-                '7.x',
+                7,
             ],
             [
                 dirname(__FILE__).'/modules/drupal8/test.php',
-                '8.x',
+                8,
+            ],
+            [
+                'invalid',
+                8,
             ],
         ];
 

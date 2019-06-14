@@ -38,7 +38,7 @@ class DisallowLongArraySyntaxSniff extends GenericDisallowLongArraySyntaxSniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $drupalVersion = Project::getCoreVersion($phpcsFile);
-        if ($drupalVersion !== '8.x') {
+        if ($drupalVersion < 8) {
             // No need to check this file again, mark it as done.
             return ($phpcsFile->numTokens + 1);
         }

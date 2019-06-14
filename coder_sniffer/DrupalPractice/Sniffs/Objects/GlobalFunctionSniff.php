@@ -70,7 +70,7 @@ class GlobalFunctionSniff extends FunctionCall
         $tokens = $phpcsFile->getTokens();
 
         // Only run this sniff on Drupal 8+.
-        if (Project::getCoreVersion($phpcsFile) !== '8.x') {
+        if (Project::getCoreVersion($phpcsFile) < 8) {
             // No need to check this file again, mark it as done.
             return ($phpcsFile->numTokens + 1);
         }

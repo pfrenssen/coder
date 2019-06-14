@@ -55,7 +55,7 @@ class GlobalConstantSniff implements Sniff
         }
 
         $coreVersion = Project::getCoreVersion($phpcsFile);
-        if ($coreVersion !== '8.x') {
+        if ($coreVersion < 8) {
             // No need to check this file again, mark it as done.
             return ($phpcsFile->numTokens + 1);
         }

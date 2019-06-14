@@ -53,7 +53,7 @@ class InstallTSniff extends FunctionDefinition
         }
 
         // This check only applies to Drupal 7, not Drupal 8.
-        if (Project::getCoreVersion($phpcsFile) !== '7.x') {
+        if (Project::getCoreVersion($phpcsFile) !== 7) {
             return ($phpcsFile->numTokens + 1);
         }
 
