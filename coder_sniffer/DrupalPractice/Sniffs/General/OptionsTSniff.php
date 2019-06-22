@@ -64,8 +64,10 @@ class OptionsTSniff implements Sniff
         }
 
         // We only search within the #options array.
-        $arrayToken   = $phpcsFile->findNext(T_ARRAY, ($stackPtr + 1));
-        $statementEnd = $tokens[$arrayToken]['parenthesis_closer'];
+        $arrayToken         = $phpcsFile->findNext(T_ARRAY, ($stackPtr + 1));
+        $statementEnd       = $tokens[$arrayToken]['parenthesis_closer'];
+        $nestestParenthesis = $tokens[$arrayToken]['nested_parenthesis'];
+        $nestestParenthesis[$tokens[$arrayToken]['parenthesis_opener']] = $tokens[$arrayToken]['parenthesis_closer'];
 
         // Go through the array by examining stuff after "=>".
         $arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($stackPtr + 1), $statementEnd, false, null, true);
@@ -76,6 +78,9 @@ class OptionsTSniff implements Sniff
             if ($tokens[$arrayValue]['code'] === T_CONSTANT_ENCAPSED_STRING
                 && is_numeric(substr($tokens[$arrayValue]['content'], 1, -1)) === false
                 && strlen($tokens[$arrayValue]['content']) > 5
+                // Make sure that we don't check stuff in nested arrays within
+                // t() for example.
+                && $tokens[$arrayValue]['nested_parenthesis'] === $nestestParenthesis
             ) {
                 // We need to make sure that the string is the one and only part
                 // of the array value.
@@ -87,7 +92,7 @@ class OptionsTSniff implements Sniff
             }
 
             $arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($arrow + 1), $statementEnd, false, null, true);
-        }
+        }//end while
 
     }//end process()
 

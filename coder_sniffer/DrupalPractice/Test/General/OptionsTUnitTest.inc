@@ -14,3 +14,12 @@ $form['number_display'] = array(
     'four' => 'four',
   ),
 );
+
+$form['display']['show_thumbnail'] = array(
+  '#title' => t('Show Thumbnail', array(), array('context' => 'test')),
+  '#type' => 'radios',
+  '#options' => array(
+    '1' => t('Yes', array(), array('context' => 'test')),
+    '0' => t('No', array(), array('context' => 'test')),
+  ),
+);
