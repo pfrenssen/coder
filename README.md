@@ -75,6 +75,40 @@ Automatically fix coding standards
     phpcbf --standard=Drupal /file/to/drupal/example_module
 
 
+## Store settings in a phpcs.xml.dist file
+
+In order to save and commit your PHPCS settings to Git you can use a
+phpcs.xml.dist file in your project like this:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="myproject">
+  <description>PHP CodeSniffer configuration for myproject development.</description>
+  <!-- Check all files in the current directory and below. -->
+  <file>.</file>
+  <arg name="extensions" value="php,module,inc,install,test,profile,theme,css,info,txt,md"/>
+  <!-- Change this value to 7 if you want to check Drupal 7 code. -->
+  <config name="drupal_core_version" value="8"/>
+
+  <!-- If you have Coder installed locally then you can reference the Drupal
+  standards with relative paths. Otherwise simply use "Drupal" and
+  "DrupalPractice. -->
+  <rule ref="../vendor/drupal/coder/coder_sniffer/Drupal"/>
+  <rule ref="../vendor/drupal/coder/coder_sniffer/DrupalPractice"/>
+
+  <!-- Example how you would disable a rule you do not like:
+  <rule ref="PEAR.Functions.ValidDefaultValue.NotAtEnd">
+    <severity>0</severity>
+  </rule>
+  -->
+</ruleset>
+```
+
+Then you can invoke phpcs without any options and it will read phpcs.xml.dist
+from the current directory. This can also be useful for Continues Integration
+setups.
+
+
 ## Working with Editors
 
 Drupal Code Sniffer can be used with various editors.
