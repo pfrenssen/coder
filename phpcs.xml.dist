@@ -7,12 +7,7 @@
     <!-- Test files that should not be checked. -->
     <exclude-pattern>coder_sniffer/*/Test/*\.(inc|css|js|api\.php|tpl\.php)$</exclude-pattern>
     <exclude-pattern>coder_sniffer/*/Test/*/(good|bad)\.php$</exclude-pattern>
-    <exclude-pattern>coder_sniffer/*/Test/*/src/*\.php$</exclude-pattern>
-    <exclude-pattern>coder_sniffer/*/Test/*/drupal7/*\.php$</exclude-pattern>
-    <exclude-pattern>coder_sniffer/*/Test/*/drupal8/*\.php$</exclude-pattern>
-    <exclude-pattern>coder_sniffer/Drupal/Test/good/LongNamespace.php</exclude-pattern>
-    <exclude-pattern>coder_sniffer/Drupal/Test/InfoFiles/trait.php</exclude-pattern>
-    <exclude-pattern>coder_sniffer/DrupalPractice/Test/ProjectDetection/modules</exclude-pattern>
+    <exclude-pattern>coder_sniffer/*/Test/*/drupal(6|7|8)/*\.php$</exclude-pattern>
 
     <!-- The following comes from the 3.4.2 PHPCS ruleset.xml { -->
 

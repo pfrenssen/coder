@@ -63,6 +63,8 @@ class GoodUnitTest extends CoderSniffUnitTest
             }
         }
 
+        $testFiles[] = __DIR__.'/drupal8/LongNamespace.php';
+
         // Get them in order.
         sort($testFiles);
         return $testFiles;

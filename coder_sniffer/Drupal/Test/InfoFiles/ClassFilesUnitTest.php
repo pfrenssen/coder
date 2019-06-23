@@ -47,7 +47,7 @@ class ClassFilesUnitTest extends CoderSniffUnitTest
      */
     protected function getTestFiles($testFileBase)
     {
-        return [__DIR__.'/class_files.info'];
+        return [__DIR__.'/drupal7/class_files.info'];
 
     }//end getTestFiles()
 

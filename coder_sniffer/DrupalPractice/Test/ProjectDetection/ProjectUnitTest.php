@@ -42,9 +42,9 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
     {
         $this->phpcsFile->expects($this->any())
             ->method('getFilename')
-            ->will($this->returnValue(dirname(__FILE__).'/modules/drupal6/test.php'));
+            ->will($this->returnValue(__DIR__.'/drupal6/test.php'));
 
-        $this->assertEquals(Project::getInfoFile($this->phpcsFile), dirname(__FILE__).'/modules/drupal6/testmodule.info');
+        $this->assertEquals(Project::getInfoFile($this->phpcsFile), __DIR__.'/drupal6/testmodule.info');
 
     }//end testInfoFileDetection()
 
@@ -58,9 +58,9 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
     {
         $this->phpcsFile->expects($this->any())
             ->method('getFilename')
-            ->will($this->returnValue(dirname(__FILE__).'/modules/drupal6/nested/test.php'));
+            ->will($this->returnValue(__DIR__.'/drupal6/nested/test.php'));
 
-        $this->assertEquals(Project::getInfoFile($this->phpcsFile), dirname(__FILE__).'/modules/drupal6/testmodule.info');
+        $this->assertEquals(Project::getInfoFile($this->phpcsFile), __DIR__.'/drupal6/testmodule.info');
 
     }//end testInfoFileNestedDetection()
 
@@ -95,15 +95,15 @@ class ProjectUnitTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                dirname(__FILE__).'/modules/drupal6/nested/test.php',
+                __DIR__.'/drupal6/nested/test.php',
                 6,
             ],
             [
-                dirname(__FILE__).'/modules/drupal7/test.php',
+                __DIR__.'/drupal7/test.php',
                 7,
             ],
             [
-                dirname(__FILE__).'/modules/drupal8/test.php',
+                __DIR__.'/drupal8/test.php',
                 8,
             ],
             [

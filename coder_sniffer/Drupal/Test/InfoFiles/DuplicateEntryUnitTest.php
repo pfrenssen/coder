@@ -53,7 +53,7 @@ class DuplicateEntryUnitTest extends CoderSniffUnitTest
      */
     protected function getTestFiles($testFileBase)
     {
-        return [__DIR__.'/test.info'];
+        return [__DIR__.'/drupal7/test.info'];
 
     }//end getTestFiles()
 

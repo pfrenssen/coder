@@ -70,12 +70,12 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase)
     {
         return [
-            __DIR__.'/src/DeclareT.php',
-            __DIR__.'/src/example.module',
-            __DIR__.'/src/ExampleClass.php',
-            __DIR__.'/src/ExampleClassWithDependencyInjection.php',
-            __DIR__.'/src/ExampleService.php',
-            __DIR__.'/src/TestForm.php',
+            __DIR__.'/drupal8/DeclareT.php',
+            __DIR__.'/drupal8/example.module',
+            __DIR__.'/drupal8/ExampleClass.php',
+            __DIR__.'/drupal8/ExampleClassWithDependencyInjection.php',
+            __DIR__.'/drupal8/ExampleService.php',
+            __DIR__.'/drupal8/TestForm.php',
             __DIR__.'/drupal7/ExampleMigration.php',
         ];
 

@@ -60,10 +60,10 @@ class GlobalDrupalUnitTest extends CoderSniffUnitTest
     {
         return [
             __DIR__.'/GlobalDrupalUnitTest.inc',
-            __DIR__.'/src/example.module',
-            __DIR__.'/src/ExampleClass.php',
-            __DIR__.'/src/ExampleClassWithDependencyInjection.php',
-            __DIR__.'/src/ExampleService.php',
+            __DIR__.'/drupal8/example.module',
+            __DIR__.'/drupal8/ExampleClass.php',
+            __DIR__.'/drupal8/ExampleClassWithDependencyInjection.php',
+            __DIR__.'/drupal8/ExampleService.php',
         ];
 
     }//end getTestFiles()

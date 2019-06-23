@@ -52,8 +52,8 @@ class AutoAddedKeysUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase)
     {
         return [
-            __DIR__.'/test.info',
-            __DIR__.'/test.info.yml',
+            __DIR__.'/drupal7/test.info',
+            __DIR__.'/drupal8/test.info.yml',
         ];
 
     }//end getTestFiles()
