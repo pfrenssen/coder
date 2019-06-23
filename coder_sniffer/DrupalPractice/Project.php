@@ -245,7 +245,7 @@ class Project
             return (int) $coreVersion;
         }
 
-        // TRy to guess the core version from info files in the file path.
+        // Try to guess the core version from info files in the file path.
         $infoFile = static::getInfoFile($phpcsFile);
         if ($infoFile === false) {
             // Default to Drupal 8.

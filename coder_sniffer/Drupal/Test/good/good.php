@@ -13,6 +13,9 @@
  * - sublist:
  *   - sub item 1
  *   - sub item2
+ *
+ * We don't want to check for class/file name matches in this test.
+ * phpcs:disable Drupal.Classes.ClassFileName
  */
 
 use Drupal\very_long_module_name_i_am_inventing_here_trololololo\SuperManager;

@@ -354,7 +354,7 @@ $var = foo(
 
 // Only multiline comments with /** should be used to comment classes
 // Curly brace has to be on the same line
-class Bar
+class bad
 {
   // Private properties must not have a prefix
   private $_secret = 1;
