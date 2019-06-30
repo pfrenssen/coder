@@ -617,6 +617,11 @@ class Bar {
   protected $modules = ['node', 'user'];
 
   /**
+   * {@inheritDoc}
+   */
+  protected $allowedModules = ['node', 'user'];
+
+  /**
    * Enter description here ...
    */
   public function foo() {
@@ -1097,6 +1102,11 @@ class Foo implements FooInterface {
   public function test7() {
     throw new Exception();
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function test8() {}
 
 }
 

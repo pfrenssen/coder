@@ -221,7 +221,10 @@ class DocCommentSniff implements Sniff
         // Remove any trailing white spaces which are detected by other sniffs.
         $shortContent = trim($shortContent);
 
-        if (preg_match('|\p{Lu}|u', $shortContent[0]) === 0 && $shortContent !== '{@inheritdoc}'
+        if (preg_match('|\p{Lu}|u', $shortContent[0]) === 0
+            // Allow both variants of inheritdoc comments.
+            && $shortContent !== '{@inheritdoc}'
+            && $shortContent !== '{@inheritDoc}'
             // Ignore Features module export files that just use the file name as
             // comment.
             && $shortContent !== basename($phpcsFile->getFilename())
@@ -240,7 +243,10 @@ class DocCommentSniff implements Sniff
         }
 
         $lastChar = substr($shortContent, -1);
-        if (in_array($lastChar, ['.', '!', '?', ')']) === false && $shortContent !== '{@inheritdoc}'
+        if (in_array($lastChar, ['.', '!', '?', ')']) === false
+            // Allow both variants of inheritdoc comments.
+            && $shortContent !== '{@inheritdoc}'
+            && $shortContent !== '{@inheritDoc}'
             // Ignore Features module export files that just use the file name as
             // comment.
             && $shortContent !== basename($phpcsFile->getFilename())

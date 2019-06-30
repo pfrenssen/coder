@@ -86,8 +86,11 @@ class VariableCommentSniff extends AbstractVariableSniff
 
         $commentStart = $tokens[$commentEnd]['comment_opener'];
 
+        // Ignore variable comments that use inheritdoc, allow both variants.
         $commentContent = $phpcsFile->getTokensAsString($commentStart, ($commentEnd - $commentStart));
-        if (strpos($commentContent, '{@inheritdoc}') !== false) {
+        if (strpos($commentContent, '{@inheritdoc}') !== false
+            || strpos($commentContent, '{@inheritDoc}') !== false
+        ) {
             return;
         }
 
