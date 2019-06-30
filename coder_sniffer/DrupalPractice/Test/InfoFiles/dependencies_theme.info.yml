@@ -1,0 +1,12 @@
+name: MyTheme
+type: theme
+description: 'Themes are allowed to have not namespaced dependencies, see https://www.drupal.org/project/drupal/issues/474684'
+package: Core
+version: VERSION
+core: 8.x
+dependencies:
+  - text
+  - rest
+  - views
+  # Some comment here.
+  - rules
