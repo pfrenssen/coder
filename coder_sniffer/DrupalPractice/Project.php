@@ -45,7 +45,7 @@ class Project
         $pathParts = pathinfo($phpcsFile->getFilename());
         // Module and install files are easy: they contain the project name in the
         // file name.
-        if (isset($pathParts['extension']) === true && ($pathParts['extension'] === 'module' || $pathParts['extension'] === 'install')) {
+        if (isset($pathParts['extension']) === true && in_array($pathParts['extension'], ['install', 'module', 'profile', 'theme']) === true) {
             $cache[$phpcsFile->getFilename()] = $pathParts['filename'];
             return $pathParts['filename'];
         }
@@ -56,8 +56,13 @@ class Project
         }
 
         $pathParts = pathinfo($infoFile);
-        $cache[$phpcsFile->getFilename()] = $pathParts['filename'];
-        return $pathParts['filename'];
+
+        // Info files end in *.info.yml on Drupal 8 and *.info on Drupal 7.
+        $filename = $pathParts['filename'];
+        $filename = preg_replace('/\.info$/', '', $filename);
+
+        $cache[$phpcsFile->getFilename()] = $filename;
+        return $filename;
 
     }//end getName()
 
