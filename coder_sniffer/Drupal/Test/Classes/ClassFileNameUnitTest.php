@@ -23,6 +23,8 @@ class ClassFileNameUnitTest extends CoderSniffUnitTest
         switch ($testFile) {
         case 'ClassFileNameUnitTest.php':
             return [3 => 1];
+        case 'drupal8.behat.inc':
+            return [];
         case 'class_fle_name_test.module':
             return [];
         }
@@ -56,6 +58,7 @@ class ClassFileNameUnitTest extends CoderSniffUnitTest
     {
         return [
             __DIR__.'/drupal8/ClassFileNameUnitTest.php',
+            __DIR__.'/drupal8/drupal8.behat.inc',
             __DIR__.'/drupal7/class_fle_name_test.module',
         ];
 
