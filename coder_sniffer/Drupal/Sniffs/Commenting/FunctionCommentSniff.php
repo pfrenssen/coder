@@ -48,6 +48,7 @@ class FunctionCommentSniff implements Sniff
         'Bool'      => 'bool',
         'Int'       => 'int',
         'Integer'   => 'int',
+        'TRUEFALSE' => 'bool',
     ];
 
     /**
