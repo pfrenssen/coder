@@ -93,10 +93,14 @@ phpcs.xml.dist file in your project like this:
   <!-- If you have Coder installed locally then you can reference the Drupal
   standards with relative paths. Otherwise simply use "Drupal" and
   "DrupalPractice. -->
-  <rule ref="../vendor/drupal/coder/coder_sniffer/Drupal"/>
+  <rule ref="../vendor/drupal/coder/coder_sniffer/Drupal">
+    <!-- Example how you would disable a rule you are not compliant with yet:
+    <exclude name="Drupal.Commenting.Deprecated"/>
+    -->
+  </rule>
   <rule ref="../vendor/drupal/coder/coder_sniffer/DrupalPractice"/>
 
-  <!-- Example how you would disable a rule you do not like:
+  <!-- Example how you would disable an external rule you do not like:
   <rule ref="PEAR.Functions.ValidDefaultValue.NotAtEnd">
     <severity>0</severity>
   </rule>
