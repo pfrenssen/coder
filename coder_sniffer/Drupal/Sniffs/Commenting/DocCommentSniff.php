@@ -378,6 +378,7 @@ class DocCommentSniff implements Sniff
         $ignoreTags   = [
             '@code',
             '@endcode',
+            '@see',
         ];
         foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
             if ($pos > 0) {
