@@ -11,7 +11,6 @@ namespace Drupal\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
-use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Ensures hook comments on function are correct.

@@ -10,7 +10,6 @@
 namespace DrupalPractice\Sniffs\Objects;
 
 use PHP_CodeSniffer\Files\File;
-use DrupalPractice\Sniffs\Objects\GlobalDrupalSniff;
 use DrupalPractice\Project;
 use Drupal\Sniffs\Semantics\FunctionCall;
 

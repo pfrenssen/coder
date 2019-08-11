@@ -9,7 +9,6 @@
 
 namespace Drupal\Sniffs\Semantics;
 
-use Drupal\Sniffs\Semantics\FunctionCall;
 use PHP_CodeSniffer\Files\File;
 
 /**

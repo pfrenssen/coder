@@ -9,7 +9,6 @@
 
 namespace Drupal\Sniffs\InfoFiles;
 
-use Drupal\Sniffs\InfoFiles\ClassFilesSniff;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 

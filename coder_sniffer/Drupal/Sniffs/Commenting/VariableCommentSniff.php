@@ -9,10 +9,8 @@
 
 namespace Drupal\Sniffs\Commenting;
 
-use Drupal\Sniffs\Commenting\FunctionCommentSniff;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
-use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Parses and verifies class property doc comments.

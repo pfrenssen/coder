@@ -157,4 +157,7 @@
         <exclude-pattern>coder_sniffer/DrupalPractice/Test</exclude-pattern>
     </rule>
 
+    <!-- Additional rules from Drupal that we want. -->
+    <rule ref="coder_sniffer/Drupal/Sniffs/Classes/UnusedUseStatementSniff.php"/>
+
 </ruleset>

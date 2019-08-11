@@ -9,7 +9,6 @@
 
 namespace Drupal\Sniffs\Formatting;
 
-use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\MultipleStatementAlignmentSniff as GenericMultipleStatementAlignmentSniff;
 use PHP_CodeSniffer\Util\Tokens;
 

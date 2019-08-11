@@ -18,7 +18,6 @@ use PHP_CodeSniffer\Ruleset;
 use PHP_CodeSniffer\Files\LocalFile;
 use PHP_CodeSniffer\RuntimeException;
 use PHP_CodeSniffer\Util\Common;
-use PHP_CodeSniffer\Autoload;
 use PHP_CodeSniffer\Util\Tokens;
 
 abstract class CoderSniffUnitTest extends \PHPUnit_Framework_TestCase
