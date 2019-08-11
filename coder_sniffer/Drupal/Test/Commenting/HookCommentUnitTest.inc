@@ -10,3 +10,62 @@
  */
 function example_page_build(&$page) {
 }
+
+/**
+ * Has a method doc comment that is not a hook implementation.
+ */
+class Test {
+
+  /**
+   * Implements a hook bridge for hook_entity_access().
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to check access for.
+   * @param string $operation
+   *   The operation being performed.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account making the to check access for.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   The result of the access check.
+   *
+   * @see hook_entity_access()
+   */
+  public function entityOperationAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    // Workspaces themselves are handled by their own access handler and we
+    // should not try to do any access checks for entity types that can not
+    // belong to a workspace.
+    if ($entity->getEntityTypeId() === 'workspace' || !$this->workspaceManager->isEntityTypeSupported($entity->getEntityType())) {
+      return AccessResult::neutral();
+    }
+
+    return $this->bypassAccessResult($account);
+  }
+
+  /**
+   * Implements a hook bridge for hook_entity_access().
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to check access for.
+   * @param string $operation
+   *   The operation being performed.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account making the to check access for.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   The result of the access check.
+   *
+   * @see hook_entity_access()
+   */
+  function entityOperationAccess2(EntityInterface $entity, $operation, AccountInterface $account) {
+    // Workspaces themselves are handled by their own access handler and we
+    // should not try to do any access checks for entity types that can not
+    // belong to a workspace.
+    if ($entity->getEntityTypeId() === 'workspace' || !$this->workspaceManager->isEntityTypeSupported($entity->getEntityType())) {
+      return AccessResult::neutral();
+    }
+
+    return $this->bypassAccessResult($account);
+  }
+
+}
