@@ -68,6 +68,15 @@ class ClassFileNameSniff implements Sniff
             $fileName = str_replace('_', '', ucwords($fileName, '_')).'SubContext';
         }
 
+        // If the file is either txt or md, it probably should not be named
+        // after the class we are searching for.
+        $extension = pathinfo($fullPath, PATHINFO_EXTENSION);
+        $ignored_extensions = ['md', 'txt'];
+        if (in_array($extension, $ignored_extensions)) {
+          return ($phpcsFile->numTokens + 1);
+        }
+
+
         if ($tokens[$decName]['code'] === T_STRING
             && $tokens[$decName]['content'] !== $fileName
         ) {
