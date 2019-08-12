@@ -70,12 +70,14 @@ class ClassFileNameSniff implements Sniff
 
         // If the file is either txt or md, it probably should not be named
         // after the class we are searching for.
-        $extension = pathinfo($fullPath, PATHINFO_EXTENSION);
-        $ignored_extensions = ['md', 'txt'];
-        if (in_array($extension, $ignored_extensions)) {
-          return ($phpcsFile->numTokens + 1);
+        $extension         = pathinfo($fullPath, PATHINFO_EXTENSION);
+        $ignoredExtensions = [
+            'md',
+            'txt',
+        ];
+        if (in_array($extension, $ignoredExtensions) === true) {
+            return ($phpcsFile->numTokens + 1);
         }
-
 
         if ($tokens[$decName]['code'] === T_STRING
             && $tokens[$decName]['content'] !== $fileName
