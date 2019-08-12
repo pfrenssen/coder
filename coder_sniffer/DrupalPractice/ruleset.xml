@@ -5,8 +5,6 @@
   <!-- All Drupal code files must be UTF-8 encoded and we treat them as such. -->
   <arg name="encoding" value="utf-8"/>
 
-  <arg name="extensions" value="php,module,inc,install,test,profile,theme,yml"/>
-
   <autoload>../Drupal/autoload.php</autoload>
 
   <rule ref="Internal.NoCodeFound">
