@@ -55,21 +55,32 @@ class TxtFileLineLengthSniff implements Sniff
 
             $content    = rtrim($tokens[$stackPtr]['content']);
             $lineLength = mb_strlen($content, 'UTF-8');
-            // Lines without spaces are allowed to be longer (for example long URLs).
-            // Markdown allowed to be longer for lines
-            // - without spaces
-            // - starting with #
-            // - containing URLs (https://)
-            // - starting with | (tables).
-            if ($lineLength > 80 && preg_match('/^([^ ]+$|#|.*https?:\/\/|\|)/', $content) === 0) {
-                $data    = [
-                    80,
-                    $lineLength,
-                ];
-                $warning = 'Line exceeds %s characters; contains %s characters';
-                $phpcsFile->addWarning($warning, $stackPtr, 'TooLong', $data);
-            }
-        }
+            if ($lineLength > 80) {
+                // Often text files contain long URLs that need to be preceded
+                // with certain textual elements that are significant for
+                // preserving the formatting of the document - e.g. a long link
+                // in a bulleted list. If we find that the line does not contain
+                // any spaces after the 40th character we'll allow it.
+                if (preg_match('/\s+/', mb_substr($content, 40)) === 0) {
+                    return;
+                }
+
+                // Lines without spaces are allowed to be longer.
+                // Markdown allowed to be longer for lines
+                // - without spaces
+                // - starting with #
+                // - starting with | (tables)
+                // - containing a link.
+                if (preg_match('/^([^ ]+$|#|\||.*\[.+\]\(.+\))/', $content) === 0) {
+                    $data    = [
+                        80,
+                        $lineLength,
+                    ];
+                    $warning = 'Line exceeds %s characters; contains %s characters';
+                    $phpcsFile->addWarning($warning, $stackPtr, 'TooLong', $data);
+                }
+            }//end if
+        }//end if
 
     }//end process()
 
