@@ -375,10 +375,11 @@ class DocCommentSniff implements Sniff
         $currentTag   = null;
         $previousTag  = null;
         $isNewGroup   = null;
-        $ignoreTags   = [
-            '@code',
-            '@endcode',
-            '@see',
+        $checkTags    = [
+            '@param',
+            '@return',
+            '@throws',
+            '@ingroup',
         ];
         foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
             if ($pos > 0) {
@@ -416,12 +417,9 @@ class DocCommentSniff implements Sniff
                 // The @param, @return and @throws tag sections should be
                 // separated by a blank line both before and after these sections.
             } else if ($isNewGroup === false
-                && (in_array($currentTag, ['@param', '@return', '@throws']) === true
-                || in_array($previousTag, ['@param', '@return', '@throws']) === true)
+                && in_array($currentTag, $checkTags) === true
+                && in_array($previousTag, $checkTags) === true
                 && $previousTag !== $currentTag
-                // Ignore code blocks in comments, they can be anywhere.
-                && in_array($previousTag, $ignoreTags) === false
-                && in_array($currentTag, $ignoreTags) === false
             ) {
                 $error = 'Separate the %s and %s sections by a blank line.';
                 $fix   = $phpcsFile->addFixableError($error, $tag, 'TagGroupSpacing', [$previousTag, $currentTag]);
@@ -507,7 +505,7 @@ class DocCommentSniff implements Sniff
         foreach ($tokens[$stackPtr]['comment_tags'] as $pos => $tag) {
             $tagName = $tokens[$tag]['content'];
             // Skip code tags, they can be anywhere.
-            if (in_array($tagName, $ignoreTags) === true) {
+            if (in_array($tagName, $checkTags) === false) {
                 continue;
             }
 
