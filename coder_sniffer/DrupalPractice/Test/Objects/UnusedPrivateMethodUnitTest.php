@@ -33,7 +33,7 @@ class UnusedPrivateMethodUnitTest extends CoderSniffUnitTest
      */
     protected function getWarningList()
     {
-        return [8 => 1];
+        return [15 => 1];
 
     }//end getWarningList()
 
