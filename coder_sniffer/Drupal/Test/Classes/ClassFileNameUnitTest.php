@@ -27,6 +27,8 @@ class ClassFileNameUnitTest extends CoderSniffUnitTest
             return [];
         case 'class_fle_name_test.module':
             return [];
+        case 'markdownFile.md':
+            return [];
         }
 
     }//end getErrorList()
@@ -60,6 +62,7 @@ class ClassFileNameUnitTest extends CoderSniffUnitTest
             __DIR__.'/drupal8/ClassFileNameUnitTest.php',
             __DIR__.'/drupal8/drupal8.behat.inc',
             __DIR__.'/drupal7/class_fle_name_test.module',
+            __DIR__.'/drupal8/markdownFile.md',
         ];
 
     }//end getTestFiles()
