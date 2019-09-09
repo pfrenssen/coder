@@ -55,7 +55,7 @@ class UnusedPrivateMethodSniff extends AbstractScopeSniff
         $tokens     = $phpcsFile->getTokens();
         $methodName = $phpcsFile->getDeclarationName($stackPtr);
 
-        if ($methodName == '__construct') {
+        if ($methodName === '__construct') {
             return;
         }
 
