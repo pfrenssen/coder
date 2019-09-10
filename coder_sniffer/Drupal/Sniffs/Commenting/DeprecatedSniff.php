@@ -91,13 +91,14 @@ class DeprecatedSniff implements Sniff
             $phpcsFile->addError($error, $stackPtr, 'IncorrectTextLayout', [$depText]);
         } else {
             // The text follows the basic layout. Now check that the versions
-            // match drupal:n.n.n or project:n.x-n.n. The text must be all lower
-            // case and numbers can be one or two digits.
+            // match drupal:n.n.n or project:n.x-n.n or project:n.x-n.n-version[n].
+            // The text must be all lower case and numbers can be one or two digits.
             foreach (['deprecation-version' => $matches[1], 'removal-version' => $matches[2]] as $name => $version) {
                 if (preg_match('/^drupal:\d{1,2}\.\d{1,2}\.\d{1,2}$/', $version) === 0
                     && preg_match('/^[a-z\d_]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $version) === 0
+                    && preg_match('/^[a-z\d_]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}-[a-z]{1,5}\d{1,2}$/', $version) === 0
                 ) {
-                    $error = "The %s '%s' does not match the lower-case machine-name standard: drupal:n.n.n or project:n.x-n.n";
+                    $error = "The %s '%s' does not match the lower-case machine-name standard: drupal:n.n.n or project:n.x-n.n or project:n.x-n.n-version[n]";
                     $phpcsFile->addWarning($error, $stackPtr, 'DeprecatedVersionFormat', [$name, $version]);
                 }
             }

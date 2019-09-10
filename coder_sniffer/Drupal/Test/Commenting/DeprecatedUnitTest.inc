@@ -58,3 +58,13 @@ function z() {
  *   This function block is OK.
  * @see http://www.drupal.org/node/7890
  */
+
+/**
+ * This doc block will pass the 'Deprecated' standards checks.
+ *
+ * @deprecated in project:8.x-1.0-beta3 and is removed from project:8.x-1.0-rc1.
+ *   Not stable versions rc, alpha and etc should be correctly accepted.
+ * @see http://www.drupal.org/node/7890
+ */
+function w() {
+}
