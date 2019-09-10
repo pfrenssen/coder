@@ -57,6 +57,20 @@ class ClassFileNameSniff implements Sniff
             return ($phpcsFile->numTokens + 1);
         }
 
+        // If the file is not a known php file (like a txt file or a md file),
+        // we do not need to check if the file is named after the class we
+        // found.
+        $extension     = pathinfo($fullPath, PATHINFO_EXTENSION);
+        $phpExtensions = [
+            'inc',
+            'php',
+            'module',
+            'theme',
+        ];
+        if (in_array($extension, $phpExtensions) === false) {
+            return ($phpcsFile->numTokens + 1);
+        }
+
         $tokens  = $phpcsFile->getTokens();
         $decName = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
 
@@ -66,17 +80,6 @@ class ClassFileNameSniff implements Sniff
         if ($isSubContext === 1) {
             $fileName = preg_replace('/\.behat$/', '', $fileName);
             $fileName = str_replace('_', '', ucwords($fileName, '_')).'SubContext';
-        }
-
-        // If the file is either txt or md, it probably should not be named
-        // after the class we are searching for.
-        $extension         = pathinfo($fullPath, PATHINFO_EXTENSION);
-        $ignoredExtensions = [
-            'md',
-            'txt',
-        ];
-        if (in_array($extension, $ignoredExtensions) === true) {
-            return ($phpcsFile->numTokens + 1);
         }
 
         if ($tokens[$decName]['code'] === T_STRING
