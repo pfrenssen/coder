@@ -19,7 +19,7 @@ class ValidVariableNameUnitTest extends CoderSniffUnitTest
     public function getErrorList()
     {
         return [
-            3 => 1,
+            3  => 1,
             46 => 1,
             57 => 1,
         ];
