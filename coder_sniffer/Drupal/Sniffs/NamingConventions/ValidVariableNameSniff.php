@@ -82,7 +82,7 @@ class ValidVariableNameSniff extends AbstractVariableSniff
         // The name of a property must start with a lowercase letter, properties
         // with underscores are not allowed, except the cases handled above.
         $memberName = ltrim($tokens[$stackPtr]['content'], '$');
-        if (preg_match('/^[a-z]/', $memberName) === 1 && strpos($memberName, '_') === FALSE) {
+        if (preg_match('/^[a-z]/', $memberName) === 1 && strpos($memberName, '_') === false) {
             return;
         }
 
