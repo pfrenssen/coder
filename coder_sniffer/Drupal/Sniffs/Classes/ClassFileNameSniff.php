@@ -57,16 +57,15 @@ class ClassFileNameSniff implements Sniff
             return ($phpcsFile->numTokens + 1);
         }
 
+        // If the file is not a php file, we do not care about how it looks,
+        // since we care about psr-4.
+        $extension = pathinfo($fullPath, PATHINFO_EXTENSION);
+        if ($extension !== 'php') {
+            return ($phpcsFile->numTokens + 1);
+        }
+
         $tokens  = $phpcsFile->getTokens();
         $decName = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
-
-        // Subcontext classes for Behat Drupal Extension are located in
-        // *.behat.inc files and should be named ModuleNameSubContext.
-        $isSubContext = preg_match('/\.behat$/', $fileName);
-        if ($isSubContext === 1) {
-            $fileName = preg_replace('/\.behat$/', '', $fileName);
-            $fileName = str_replace('_', '', ucwords($fileName, '_')).'SubContext';
-        }
 
         if ($tokens[$decName]['code'] === T_STRING
             && $tokens[$decName]['content'] !== $fileName
