@@ -35,3 +35,25 @@ class TestAnnotationProperties3 implements AnnotationInterface {
   public $entity_type;
 
 }
+
+class TestAnnotationProperties4 {
+
+  /**
+   * The MyVariable.
+   *
+   * @var string
+   */
+  public $MyVariable;
+
+}
+
+class TestAnnotationProperties5 {
+
+  /**
+   * The my_variable.
+   *
+   * @var string
+   */
+  public $my_variable;
+
+}

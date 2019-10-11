@@ -43,12 +43,6 @@ class ValidVariableNameSniff extends AbstractVariableSniff
             return;
         }
 
-        $memberName = ltrim($tokens[$stackPtr]['content'], '$');
-
-        if (strpos($memberName, '_') === false) {
-            return;
-        }
-
         // Check if the class extends another class and get the name of the class
         // that is extended.
         if (empty($tokens[$stackPtr]['conditions']) === false) {
@@ -84,6 +78,13 @@ class ValidVariableNameSniff extends AbstractVariableSniff
                 return;
             }
         }//end if
+
+        // The name of a property must start with a lowercase letter, properties
+        // with underscores are not allowed, except the cases handled above.
+        $memberName = ltrim($tokens[$stackPtr]['content'], '$');
+        if (preg_match('/^[a-z]/', $memberName) === 1 && strpos($memberName, '_') === false) {
+            return;
+        }
 
         $error = 'Class property %s should use lowerCamel naming without underscores';
         $data  = [$tokens[$stackPtr]['content']];
