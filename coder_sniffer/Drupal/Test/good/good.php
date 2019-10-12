@@ -18,6 +18,8 @@
  * phpcs:disable Drupal.Classes.ClassFileName
  */
 
+declare(strict_types=1);
+
 use Drupal\very_long_module_name_i_am_inventing_here_trololololo\SuperManager;
 use Drupal\some_module\ExampleClass as AliasedExampleClass;
 use Drupal\mymodule\TestReturnType;
