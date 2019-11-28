@@ -265,7 +265,7 @@ class Project
             if (isset($infoSettings['core']) === true
                 && is_string($infoSettings['core']) === true
             ) {
-                return (int) $infoSettings['core']{0};
+                return (int) $infoSettings['core'][0];
             }
 
             // Default to Drupal 7 if there is an info file.
