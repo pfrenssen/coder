@@ -118,7 +118,7 @@ class FunctionTSniff extends FunctionCall
 
         // Check if there is a backslash escaped single quote in the string and
         // if the string makes use of double quotes.
-        if ($string{0} === "'" && strpos($string, "\'") !== false
+        if ($string[0] === "'" && strpos($string, "\'") !== false
             && strpos($string, '"') === false
         ) {
             $warn = 'Avoid backslash escaping in translatable strings when possible, use "" quotes instead';
@@ -126,7 +126,7 @@ class FunctionTSniff extends FunctionCall
             return;
         }
 
-        if ($string{0} === '"' && strpos($string, '\"') !== false
+        if ($string[0] === '"' && strpos($string, '\"') !== false
             && strpos($string, "'") === false
         ) {
             $warn = "Avoid backslash escaping in translatable strings when possible, use '' quotes instead";
