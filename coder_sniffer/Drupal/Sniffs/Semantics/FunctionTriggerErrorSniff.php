@@ -129,13 +129,13 @@ class FunctionTriggerErrorSniff extends FunctionCall
             // to the first period followed by a space is matched, as there may
             // be more than one sentence in the extra-info part.
             preg_match('/(.+) is deprecated in (\S+) (and is removed from) (?U)(.+)\. (.*)\. See (\S+)$/', $messageText, $matches);
-            $sniff = 'TriggerErrorTextLayoutStrict';
+            $sniff = 'TextLayoutStrict';
             $error = "The trigger_error message '%s' does not match the strict standard format: %%thing%% is deprecated in %%deprecation-version%% and is removed from %%removal-version%%. %%extra-info%%. See %%cr-link%%";
         } else {
             // Allow %extra-info% to be empty as this is optional in the relaxed
             // version.
             preg_match('/(.+) is deprecated in (\S+) (?U)(.+) (\S+)\. (.*)See (\S+)$/', $messageText, $matches);
-            $sniff = 'TriggerErrorTextLayoutRelaxed';
+            $sniff = 'TextLayoutRelaxed';
             $error = "The trigger_error message '%s' does not match the relaxed standard format: %%thing%% is deprecated in %%deprecation-version%% any free text %%removal-version%%. %%extra-info%%. See %%cr-link%%";
         }
 
@@ -153,7 +153,7 @@ class FunctionTriggerErrorSniff extends FunctionCall
                     && preg_match('/^[a-z\d_]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $version) === 0
                 ) {
                     $error = "The %s '%s' does not match the lower-case machine-name standard: drupal:n.n.n or project:n.x-n.n";
-                    $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorVersion', [$name, $version]);
+                    $phpcsFile->addWarning($error, $argument['start'], 'VersionFormat', [$name, $version]);
                 }
             }
 
@@ -166,10 +166,10 @@ class FunctionTriggerErrorSniff extends FunctionCall
             // specific message to assist in fixing.
             if (isset($crMatches[4]) === true && empty($crMatches[4]) === false) {
                 $error = "The url '%s' should not end with a period.";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorPeriodAfterSeeUrl', [$crLink]);
+                $phpcsFile->addWarning($error, $argument['start'], 'PeriodAfterSeeUrl', [$crLink]);
             } else if (empty($crMatches) === true) {
                 $error = "The url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
-                $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrlFormat', [$crLink]);
+                $phpcsFile->addWarning($error, $argument['start'], 'WrongSeeUrlFormat', [$crLink]);
             }
         }//end if
 

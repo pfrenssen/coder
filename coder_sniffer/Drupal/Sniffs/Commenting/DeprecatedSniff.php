@@ -99,7 +99,7 @@ class DeprecatedSniff implements Sniff
                     && preg_match('/^[a-z\d_]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}-[a-z]{1,5}\d{1,2}$/', $version) === 0
                 ) {
                     $error = "The %s '%s' does not match the lower-case machine-name standard: drupal:n.n.n or project:n.x-n.n or project:n.x-n.n-version[n]";
-                    $phpcsFile->addWarning($error, $stackPtr, 'DeprecatedVersionFormat', [$name, $version]);
+                    $phpcsFile->addWarning($error, $stackPtr, 'VersionFormat', [$name, $version]);
                 }
             }
         }
@@ -108,7 +108,7 @@ class DeprecatedSniff implements Sniff
         $seeTag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($stackPtr + 1), $commentEnd, false, '@see');
         if ($seeTag === false) {
             $error = 'Each @deprecated tag must have a @see tag immediately following it.';
-            $phpcsFile->addError($error, $stackPtr, 'DeprecatedMissingSeeTag');
+            $phpcsFile->addError($error, $stackPtr, 'MissingSeeTag');
             return;
         }
 
@@ -122,10 +122,10 @@ class DeprecatedSniff implements Sniff
         // message to assist in fixing.
         if (isset($matches[4]) === true && empty($matches[4]) === false) {
             $error = "The @see url '%s' should not end with a period.";
-            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedPeriodAfterSeeUrl', [$crLink]);
+            $phpcsFile->addWarning($error, $seeTag, 'PeriodAfterSeeUrl', [$crLink]);
         } else if (empty($matches) === true) {
             $error = "The @see url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
-            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedWrongSeeUrlFormat', [$crLink]);
+            $phpcsFile->addWarning($error, $seeTag, 'WrongSeeUrlFormat', [$crLink]);
         }
 
     }//end process()
