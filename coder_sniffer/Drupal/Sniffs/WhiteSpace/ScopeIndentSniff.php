@@ -942,7 +942,7 @@ class ScopeIndentSniff implements Sniff
             // Comments starting with a star have an extra whitespace.
             if ($checkToken !== null && $tokens[$checkToken]['code'] === T_COMMENT) {
                 $content = trim($tokens[$checkToken]['content']);
-                if ($content{0} === '*') {
+                if ($content[0] === '*') {
                     $checkIndent += 1;
                 }
             }
