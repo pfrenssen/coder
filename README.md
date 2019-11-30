@@ -109,7 +109,7 @@ phpcs.xml.dist file in your project like this:
 ```
 
 Then you can invoke phpcs without any options and it will read phpcs.xml.dist
-from the current directory. This can also be useful for Continues Integration
+from the current directory. This can also be useful for Continuous Integration
 setups.
 
 
