@@ -46,4 +46,9 @@ class Test {
 
   protected $missingComment;
 
+  /**
+   * A typed property should still contain a variable comment.
+   */
+  public ?Bar $bar;
+
 }

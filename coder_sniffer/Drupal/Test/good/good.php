@@ -607,6 +607,13 @@ class Bar {
   public $barProperty = 1;
 
   /**
+   * Using property types is allowed.
+   *
+   * @var \Foo\Bar
+   */
+  public ?Bar $bar;
+
+  /**
    * Public static variables use camelCase, too.
    *
    * @var string
