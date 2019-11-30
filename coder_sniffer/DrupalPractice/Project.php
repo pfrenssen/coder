@@ -94,6 +94,14 @@ class Project
                 $infoFiles = glob("$dir/*.info");
             }
 
+            // Filter out directories.
+            $infoFiles = array_filter(
+                $infoFiles,
+                function ($fileName) {
+                    return is_file($fileName);
+                }
+            );
+
             // Go one directory up if we do not find an info file here.
             $dir = dirname($dir);
         } while (empty($infoFiles) === true && $dir !== dirname($dir));
