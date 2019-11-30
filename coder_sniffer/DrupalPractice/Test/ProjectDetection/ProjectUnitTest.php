@@ -111,6 +111,10 @@ class ProjectUnitTest extends TestCase
                 'invalid',
                 8,
             ],
+            [
+                __DIR__.'/directory.info/test.php',
+                8,
+            ],
         ];
 
     }//end coreVersionProvider()
