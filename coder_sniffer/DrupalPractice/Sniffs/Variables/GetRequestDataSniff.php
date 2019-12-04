@@ -60,6 +60,7 @@ class GetRequestDataSniff implements Sniff
             && $varName !== '$_GET'
             && $varName !== '$_POST'
             && $varName !== '$_FILES'
+            && $varName !== '$_COOKIE'
         ) {
             return;
         }
@@ -79,6 +80,7 @@ class GetRequestDataSniff implements Sniff
             '$_GET'     => 'query',
             '$_POST'    => 'request',
             '$_FILES'   => 'files',
+            '$_COOKIE'  => 'cookies',
         ];
 
         $type  = 'SuperglobalAccessed';
