@@ -74,10 +74,6 @@ class GetRequestDataSniff implements Sniff
             $usedVar      = $phpcsFile->getTokensAsString(($openBracket + 1), ($closeBracket - $openBracket - 1));
         }
 
-        $type  = 'SuperglobalAccessed';
-        $error = 'The %s super global must not be accessed directly; inject the request.stack service and use $stack->getCurrentRequest()->';
-        $data  = [$varName];
-
         $requestPropertyMap = [
             '$_REQUEST' => 'request',
             '$_GET'     => 'query',
@@ -85,10 +81,16 @@ class GetRequestDataSniff implements Sniff
             '$_FILES'   => 'files',
         ];
 
+        $type  = 'SuperglobalAccessed';
+        $error = 'The %s super global must not be accessed directly; inject the request.stack service and use $stack->getCurrentRequest()->%s';
+        $data  = [
+            $varName,
+            $requestPropertyMap[$varName],
+        ];
+
         if ($usedVar !== '') {
             $type  .= 'WithVar';
-            $error .= '%s->get(%s)';
-            $data[] = $requestPropertyMap[$varName];
+            $error .= '->get(%s)';
             $data[] = $usedVar;
         }
 
