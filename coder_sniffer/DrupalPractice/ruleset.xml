@@ -7,7 +7,7 @@
 
   <arg name="extensions" value="php,module,inc,install,test,profile,theme,yml"/>
 
-  <autoload>../Drupal/autoload.php</autoload>
+  <autoload>../../coder_sniffer/Drupal/autoload.php</autoload>
 
   <rule ref="Internal.NoCodeFound">
     <!-- Empty files are fine, might be used for testing. -->
