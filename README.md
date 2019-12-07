@@ -64,15 +64,15 @@ The same can be done for a Composer global installation.
 
 Check Drupal coding standards
 
-    phpcs --standard=Drupal /file/to/drupal/example_module
+    phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md /file/to/drupal/example_module
 
 Check Drupal best practices
 
-    phpcs --standard=DrupalPractice /file/to/drupal/example_module
+    phpcs --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md /file/to/drupal/example_module
 
 Automatically fix coding standards
 
-    phpcbf --standard=Drupal /file/to/drupal/example_module
+    phpcbf --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md /file/to/drupal/example_module
 
 
 ## Store settings in a phpcs.xml.dist file
