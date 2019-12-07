@@ -21,7 +21,7 @@ class ArrayUnitTest extends CoderSniffUnitTest
     public function getErrorList($testFile=null)
     {
         switch ($testFile) {
-        case 'ArrayUnitTest.1.inc':
+        case 'ArrayUnitTest.inc':
             return [
                 13 => 1,
                 33 => 1,
@@ -29,7 +29,7 @@ class ArrayUnitTest extends CoderSniffUnitTest
                 88 => 1,
                 92 => 1,
             ];
-        case 'ArrayUnitTest.2.inc':
+        case 'ArrayUnitTest.1.inc':
             return [
                 14 => 1,
                 17 => 1,
@@ -52,7 +52,7 @@ class ArrayUnitTest extends CoderSniffUnitTest
     public function getWarningList($testFile=null)
     {
         switch ($testFile) {
-        case 'ArrayUnitTest.1.inc':
+        case 'ArrayUnitTest.inc':
             return [
                 17 => 1,
                 22 => 1,
@@ -64,28 +64,11 @@ class ArrayUnitTest extends CoderSniffUnitTest
                 59 => 1,
                 76 => 1,
             ];
-        case 'ArrayUnitTest.2.inc':
+        case 'ArrayUnitTest.1.inc':
             return [];
         }
 
     }//end getWarningList()
-
-
-    /**
-     * Returns a list of test files that should be checked.
-     *
-     * @param string $testFileBase The base path that the unit tests files will have.
-     *
-     * @return array The list of test files.
-     */
-    protected function getTestFiles($testFileBase)
-    {
-        return [
-            __DIR__.'/ArrayUnitTest.1.inc',
-            __DIR__.'/ArrayUnitTest.2.inc',
-        ];
-
-    }//end getTestFiles()
 
 
 }//end class
