@@ -64,15 +64,15 @@ The same can be done for a Composer global installation.
 
 Check Drupal coding standards
 
-    phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md /file/to/drupal/example_module
+    phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml /file/to/drupal/example_module
 
 Check Drupal best practices
 
-    phpcs --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md /file/to/drupal/example_module
+    phpcs --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml /file/to/drupal/example_module
 
 Automatically fix coding standards
 
-    phpcbf --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md /file/to/drupal/example_module
+    phpcbf --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml /file/to/drupal/example_module
 
 
 ## Store settings in a phpcs.xml.dist file
@@ -86,7 +86,7 @@ phpcs.xml.dist file in your project like this:
   <description>PHP CodeSniffer configuration for myproject development.</description>
   <!-- Check all files in the current directory and below. -->
   <file>.</file>
-  <arg name="extensions" value="php,module,inc,install,test,profile,theme,css,info,txt,md"/>
+  <arg name="extensions" value="php,module,inc,install,test,profile,theme,css,info,txt,md,yml"/>
   <!-- Change this value to 7 if you want to check Drupal 7 code. -->
   <config name="drupal_core_version" value="8"/>
 
