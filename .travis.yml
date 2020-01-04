@@ -1,4 +1,3 @@
-dist: bionic
 language: php
 sudo: false
 
@@ -8,14 +7,19 @@ cache:
     - $HOME/.composer/cache
     - vendor
 
-matrix:
+jobs:
   fast_finish: true
   include:
     - php: 7.0
+      dist: xenial
     - php: 7.1
+      dist: bionic
     - php: 7.2
+      dist: bionic
     - php: 7.3
+      dist: bionic
     - php: 7.4
+      dist: bionic
 
 before_install:
   # Speed up build time by disabling Xdebug when its not needed.
