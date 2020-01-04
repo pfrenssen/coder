@@ -41,7 +41,7 @@ class DisallowLongArraySyntaxSniff extends GenericDisallowLongArraySyntaxSniff
             return ($phpcsFile->numTokens + 1);
         }
 
-        return parent::process($phpcsFile, $stackPtr);
+        parent::process($phpcsFile, $stackPtr);
 
     }//end process()
 

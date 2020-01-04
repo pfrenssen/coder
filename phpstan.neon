@@ -1,0 +1,11 @@
+parameters:
+    level: 0
+    paths:
+        - coder_sniffer/Drupal/Sniffs
+    autoload_files:
+        - coder_sniffer/Drupal/Test/phpunit-bootstrap.php
+
+    dynamicConstantNames:
+        - PHP_CODESNIFFER_IN_TESTS
+        - PHP_CODESNIFFER_CBF
+        - PHP_CODESNIFFER_VERBOSITY
