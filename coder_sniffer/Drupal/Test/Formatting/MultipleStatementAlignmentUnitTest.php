@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Sniffs\Formatting;
+namespace Drupal\Test\Formatting;
 
 use Drupal\Test\CoderSniffUnitTest;
 

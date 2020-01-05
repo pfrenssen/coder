@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Sniffs\Semantics;
+namespace Drupal\Test\Semantics;
 
 use Drupal\Test\CoderSniffUnitTest;
 

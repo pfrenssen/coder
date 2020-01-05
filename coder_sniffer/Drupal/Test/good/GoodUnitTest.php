@@ -3,7 +3,7 @@
  * Unit test class for all good files that must not throw errors/warnings.
  */
 
-namespace Drupal\good;
+namespace Drupal\Test\good;
 
 use Drupal\Test\CoderSniffUnitTest;
 

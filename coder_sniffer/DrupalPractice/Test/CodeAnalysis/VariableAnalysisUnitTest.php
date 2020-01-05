@@ -1,6 +1,6 @@
 <?php
 
-namespace DrupalPractice\Sniffs\CodeAnalysis;
+namespace DrupalPractice\Test\CodeAnalysis;
 
 use Drupal\Test\CoderSniffUnitTest;
 

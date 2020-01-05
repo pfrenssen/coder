@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Sniffs\Arrays;
+namespace Drupal\Test\Arrays;
 
 use Drupal\Test\CoderSniffUnitTest;
 

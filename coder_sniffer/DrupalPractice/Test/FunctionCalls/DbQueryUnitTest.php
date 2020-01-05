@@ -3,7 +3,7 @@
  * Unit test class for the DbQuery sniff.
  */
 
-namespace DrupalPractice\Sniffs\FunctionCalls;
+namespace DrupalPractice\Test\FunctionCalls;
 
 use Drupal\Test\CoderSniffUnitTest;
 

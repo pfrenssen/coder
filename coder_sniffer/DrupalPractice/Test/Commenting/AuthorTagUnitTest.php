@@ -1,6 +1,6 @@
 <?php
 
-namespace DrupalPractice\Sniffs\Commenting;
+namespace DrupalPractice\Test\Commenting;
 
 use Drupal\Test\CoderSniffUnitTest;
 

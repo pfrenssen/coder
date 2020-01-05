@@ -3,7 +3,7 @@
  * Unit test class for all bad files.
  */
 
-namespace Drupal\bad;
+namespace Drupal\Test\bad;
 
 use Drupal\Test\CoderSniffUnitTest;
 

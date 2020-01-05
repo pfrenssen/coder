@@ -1,6 +1,6 @@
 <?php
 
-namespace DrupalPractice\Sniffs\FunctionCalls;
+namespace DrupalPractice\Test\FunctionCalls;
 
 use Drupal\Test\CoderSniffUnitTest;
 

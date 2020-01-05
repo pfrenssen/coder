@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Sniffs\WhiteSpace;
+namespace Drupal\Test\WhiteSpace;
 
 use Drupal\Test\CoderSniffUnitTest;
 

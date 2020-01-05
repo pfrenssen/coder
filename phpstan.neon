@@ -1,7 +1,18 @@
 parameters:
     level: 0
     paths:
-        - coder_sniffer/Drupal/Sniffs
+        - coder_sniffer
+    excludes_analyse:
+        # Copied legacy code that we don't care much about.
+        - 'coder_sniffer/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php'
+        # Test base class that we should refactor to leverage upstream PHPCS better.
+        - 'coder_sniffer/Drupal/Test/CoderSniffUnitTest.php'
+        # Test files that should not be checked.
+        - 'coder_sniffer/*/Test/*.tpl.php'
+        - 'coder_sniffer/*/Test/*.api.php'
+        - 'coder_sniffer/*/Test/*/good.php'
+        - 'coder_sniffer/*/Test/*/bad.php'
+        - 'coder_sniffer/*/Test/*/drupal[678]/*.php'
     autoload_files:
         - coder_sniffer/Drupal/Test/phpunit-bootstrap.php
     ignoreErrors:

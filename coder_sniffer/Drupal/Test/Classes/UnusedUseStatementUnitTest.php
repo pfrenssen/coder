@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Sniffs\Classes;
+namespace Drupal\Test\Classes;
 
 use Drupal\Test\CoderSniffUnitTest;
 

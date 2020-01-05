@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Sniffs\NamingConventions;
+namespace Drupal\Test\NamingConventions;
 
 use Drupal\Test\CoderSniffUnitTest;
 

@@ -3,7 +3,7 @@
  * Unit test class for the CommentEmptyLine sniff.
  */
 
-namespace DrupalPractice\Sniffs\Commenting;
+namespace DrupalPractice\Test\Commenting;
 
 use Drupal\Test\CoderSniffUnitTest;
 

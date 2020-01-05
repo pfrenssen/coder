@@ -1,6 +1,6 @@
 <?php
 
-namespace DrupalPractice\Sniffs\Yaml;
+namespace DrupalPractice\Test\Yaml;
 
 use Drupal\Test\CoderSniffUnitTest;
 
