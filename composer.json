@@ -20,7 +20,7 @@
         "symfony/yaml": ">=2.0.5"
     },
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "Drupal\\": "coder_sniffer/Drupal/",
             "DrupalPractice\\": "coder_sniffer/DrupalPractice/"
         }
