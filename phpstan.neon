@@ -4,8 +4,25 @@ parameters:
         - coder_sniffer/Drupal/Sniffs
     autoload_files:
         - coder_sniffer/Drupal/Test/phpunit-bootstrap.php
-
-    dynamicConstantNames:
-        - PHP_CODESNIFFER_IN_TESTS
-        - PHP_CODESNIFFER_CBF
-        - PHP_CODESNIFFER_VERBOSITY
+    ignoreErrors:
+        # Already fixed in PHP_CodeSniffer, remove once 3.5.4 is released.
+        -
+            count: 3
+            message: '~^Cannot unset offset~'
+            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/Formatting/MultipleStatementAlignmentSniff.php
+        # PHPStan does not support variable variables, see https://github.com/phpstan/phpstan/issues/2810
+        -
+            count: 3
+            message: '~^Undefined variable: \$value[123]$~'
+            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/InfoFiles/ClassFilesSniff.php
+        -
+            count: 3
+            message: '~^Undefined variable: \$value[123]$~'
+            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
+        # We don't want to introduce abstract methods for the 2 calls because
+        # the class is used in different ways where those methods are not
+        # always necessary for implementors.
+        -
+            count: 2
+            message: '~^Call to an undefined method Drupal\\Sniffs\\Semantics\\FunctionCall::(registerFunctionNames|processFunctionCall)\(\).$~'
+            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/Semantics/FunctionCall.php
