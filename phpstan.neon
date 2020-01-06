@@ -1,5 +1,5 @@
 parameters:
-    level: 3
+    level: 4
     paths:
         - coder_sniffer
     excludes_analyse:
@@ -18,37 +18,53 @@ parameters:
         -
             count: 3
             message: '~^Cannot unset offset~'
-            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/Formatting/MultipleStatementAlignmentSniff.php
+            path: coder_sniffer/Drupal/Sniffs/Formatting/MultipleStatementAlignmentSniff.php
         # PHPStan does not support variable variables, see https://github.com/phpstan/phpstan/issues/2810
         -
             count: 3
             message: '~^Undefined variable: \$value[123]$~'
-            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/InfoFiles/ClassFilesSniff.php
+            path: coder_sniffer/Drupal/Sniffs/InfoFiles/ClassFilesSniff.php
         -
             count: 3
             message: '~^Undefined variable: \$value[123]$~'
-            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
+            path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
         -
             count: 1
             message: '~^Variable \$key might not be defined.$~'
-            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/InfoFiles/ClassFilesSniff.php
+            path: coder_sniffer/Drupal/Sniffs/InfoFiles/ClassFilesSniff.php
         -
             count: 1
             message: '~^Variable \$key might not be defined.$~'
-            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
+            path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
+        -
+            message: "#^Result of \\|\\| is always true\\.$#"
+            count: 1
+            path: coder_sniffer/Drupal/Sniffs/InfoFiles/ClassFilesSniff.php
+        -
+            message: "#^Result of \\|\\| is always true\\.$#"
+            count: 1
+            path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
+        -
+            message: "#^Call to function array_key_exists\\(\\) with 0\\|string\\|null and array\\(\\) will always evaluate to false\\.$#"
+            count: 1
+            path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
+        -
+            message: "#^Strict comparison using \\=\\=\\= between false and true will always evaluate to false\\.$#"
+            count: 1
+            path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
         # We don't want to introduce abstract methods for the 2 calls because
         # the class is used in different ways where those methods are not
         # always necessary for implementors.
         -
             count: 2
             message: '~^Call to an undefined method Drupal\\Sniffs\\Semantics\\FunctionCall::(registerFunctionNames|processFunctionCall)\(\).$~'
-            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/Semantics/FunctionCall.php
+            path: coder_sniffer/Drupal/Sniffs/Semantics/FunctionCall.php
         # False positive: Variable $a in isset() always exists and is not
         # nullable. https://github.com/phpstan/phpstan/issues/2816
         -
             count: 2
             message: '~^Variable \$fileShort in isset\(\) always exists and is not nullable.$~'
-            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/Commenting/DocCommentSniff.php
+            path: coder_sniffer/Drupal/Sniffs/Commenting/DocCommentSniff.php
         # False positive on void return types, then a return statement is not
         # necessary. https://github.com/phpstan/phpstan/issues/2643
         - '~^Method .+\(\) should return .*(void|null).* but return statement is missing\.$~'
@@ -63,3 +79,7 @@ parameters:
             message: "#^Access to an undefined property PHP_CodeSniffer\\\\Config\\:\\:\\$.+\\.$#"
             count: 5
             path: coder_sniffer/Drupal/Test/CoderSniffUnitTest.php
+        # False positive: Strict comparison using === between ... will always
+        # evaluate to false. https://github.com/phpstan/phpstan/issues/2822
+        - '~^Strict comparison using === between .+ and .+ will always evaluate to false\.$~'
+        - "#^Result of \\|\\| is always false\\.$#"
