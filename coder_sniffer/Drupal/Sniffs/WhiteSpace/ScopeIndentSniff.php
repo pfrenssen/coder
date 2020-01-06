@@ -159,6 +159,7 @@ class ScopeIndentSniff implements Sniff
         $adjustments     = [];
         $setIndents      = [];
         $disableExactEnd = 0;
+        $tokenIndent     = 0;
 
         $tokens  = $phpcsFile->getTokens();
         $first   = $phpcsFile->findFirstOnLine(T_INLINE_HTML, $stackPtr);

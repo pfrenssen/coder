@@ -195,6 +195,7 @@ class FunctionCommentSniff implements Sniff
         $methodName      = strtolower(ltrim($methodName, '_'));
 
         $return = null;
+        $end    = $stackPtr;
         foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
             if ($tokens[$tag]['content'] === '@return') {
                 if ($return !== null) {
@@ -718,6 +719,8 @@ class FunctionCommentSniff implements Sniff
                 }
             }
 
+            $suggestedName = '';
+            $typeName      = '';
             if (count($typeNames) === 1) {
                 $typeName      = $param['type'];
                 $suggestedName = static::suggestType($typeName);

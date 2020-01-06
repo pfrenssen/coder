@@ -1,5 +1,5 @@
 parameters:
-    level: 0
+    level: 1
     paths:
         - coder_sniffer
     excludes_analyse:
@@ -30,6 +30,14 @@ parameters:
             count: 3
             message: '~^Undefined variable: \$value[123]$~'
             path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
+        -
+            count: 1
+            message: '~^Variable \$key might not be defined.$~'
+            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/InfoFiles/ClassFilesSniff.php
+        -
+            count: 1
+            message: '~^Variable \$key might not be defined.$~'
+            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
         # We don't want to introduce abstract methods for the 2 calls because
         # the class is used in different ways where those methods are not
         # always necessary for implementors.
@@ -37,3 +45,9 @@ parameters:
             count: 2
             message: '~^Call to an undefined method Drupal\\Sniffs\\Semantics\\FunctionCall::(registerFunctionNames|processFunctionCall)\(\).$~'
             path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/Semantics/FunctionCall.php
+        # False positive: Variable $a in isset() always exists and is not
+        # nullable. https://github.com/phpstan/phpstan/issues/2816
+        -
+            count: 2
+            message: '~^Variable \$fileShort in isset\(\) always exists and is not nullable.$~'
+            path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/Commenting/DocCommentSniff.php

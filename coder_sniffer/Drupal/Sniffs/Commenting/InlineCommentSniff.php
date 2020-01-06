@@ -216,7 +216,8 @@ class InlineCommentSniff implements Sniff
             $lastComment     = $nextComment;
         }//end while
 
-        $commentText = '';
+        $commentText      = '';
+        $lastCommentToken = $stackPtr;
         foreach ($commentTokens as $lastCommentToken) {
             $comment = rtrim($tokens[$lastCommentToken]['content']);
 

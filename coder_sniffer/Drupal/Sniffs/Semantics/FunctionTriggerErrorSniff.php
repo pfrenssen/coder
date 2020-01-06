@@ -79,6 +79,7 @@ class FunctionTriggerErrorSniff extends FunctionCall
             // quotes away and possibly not report a faulty message.
             $messageText = substr($tokens[$messagePosition]['content'], 1, ($tokens[$messagePosition]['length'] - 2));
         } else {
+            $messageParts = [];
             // If not sprintf() then extract and store all the items except
             // whitespace, concatenation operators and comma. This will give all
             // real content such as concatenated strings and constants.
@@ -112,7 +113,10 @@ class FunctionTriggerErrorSniff extends FunctionCall
             $block         = $phpcsFile->findPrevious(T_DOC_COMMENT_OPEN_TAG, $argument['start']);
         }
 
-        if (isset($block) === true && $tokens[$block]['level'] === $requiredLevel && isset($tokens[$block]['comment_tags']) === true) {
+        if (isset($tokens[$block]['level']) === true
+            && $tokens[$block]['level'] === $requiredLevel
+            && isset($tokens[$block]['comment_tags']) === true
+        ) {
             foreach ($tokens[$block]['comment_tags'] as $tag) {
                 $strictStandard = $strictStandard || (strtolower($tokens[$tag]['content']) === '@deprecated');
             }

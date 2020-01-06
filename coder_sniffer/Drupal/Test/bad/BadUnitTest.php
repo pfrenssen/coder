@@ -442,8 +442,8 @@ class BadUnitTest extends CoderSniffUnitTest
      */
     protected function getTestFiles($testFileBase)
     {
-        $dir = dirname(__FILE__);
-        $di  = new \DirectoryIterator($dir);
+        $di        = new \DirectoryIterator(__DIR__);
+        $testFiles = [];
 
         foreach ($di as $file) {
             $path = $file->getPathname();

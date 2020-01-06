@@ -435,6 +435,7 @@ class DocCommentSniff implements Sniff
         foreach ($tagGroups as $group) {
             $maxLength = 0;
             $paddings  = [];
+            $pos       = 0;
             foreach ($group as $pos => $tag) {
                 $tagLength = strlen($tokens[$tag]['content']);
                 if ($tagLength > $maxLength) {
