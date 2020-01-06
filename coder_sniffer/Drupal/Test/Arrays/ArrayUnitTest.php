@@ -49,9 +49,9 @@ class ArrayUnitTest extends CoderSniffUnitTest
      *
      * @param string $testFile The name of the file being tested.
      *
-     * @return array(int => int)
+     * @return array<int, int>
      */
-    public function getWarningList($testFile=null)
+    protected function getWarningList(string $testFile)
     {
         switch ($testFile) {
         case 'ArrayUnitTest.inc':

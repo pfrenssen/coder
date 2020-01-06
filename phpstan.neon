@@ -52,7 +52,7 @@ parameters:
         # False positive on void return types, then a return statement is not
         # necessary. https://github.com/phpstan/phpstan/issues/2643
         - '~^Method .+\(\) should return int|void but return statement is missing\.$~'
-        # Upstream PHPCS problem where propterties on Config are not set as
+        # Upstream PHPCS problem where properties on Config are not set as
         # class variables. Ignore.
         -
             message: "#^Access to an undefined property PHP_CodeSniffer\\\\Config\\:\\:\\$annotations\\.$#"
