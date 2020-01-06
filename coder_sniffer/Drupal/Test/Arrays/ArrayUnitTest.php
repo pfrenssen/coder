@@ -36,6 +36,8 @@ class ArrayUnitTest extends CoderSniffUnitTest
             ];
         }
 
+        return [];
+
     }//end getErrorList()
 
 
@@ -64,9 +66,9 @@ class ArrayUnitTest extends CoderSniffUnitTest
                 59 => 1,
                 76 => 1,
             ];
-        case 'ArrayUnitTest.1.inc':
-            return [];
         }
+
+        return [];
 
     }//end getWarningList()
 

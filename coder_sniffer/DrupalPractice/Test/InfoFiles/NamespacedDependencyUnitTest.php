@@ -46,6 +46,8 @@ class NamespacedDependencyUnitTest extends CoderSniffUnitTest
             return [];
         }
 
+        return [];
+
     }//end getWarningList()
 
 

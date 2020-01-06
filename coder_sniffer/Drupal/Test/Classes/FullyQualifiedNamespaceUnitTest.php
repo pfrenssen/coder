@@ -23,9 +23,9 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
         switch ($testFile) {
         case 'FullyQualifiedNamespaceUnitTest.inc':
             return [3 => 1];
-        case 'FullyQualifiedNamespaceUnitTest.api.php':
-            return [];
         }
+
+        return [];
 
     }//end getErrorList()
 

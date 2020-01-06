@@ -1,5 +1,5 @@
 parameters:
-    level: 1
+    level: 2
     paths:
         - coder_sniffer
     excludes_analyse:
@@ -51,3 +51,11 @@ parameters:
             count: 2
             message: '~^Variable \$fileShort in isset\(\) always exists and is not nullable.$~'
             path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/Commenting/DocCommentSniff.php
+        # False positive on void return types, then a return statement is not
+        # necessary. https://github.com/phpstan/phpstan/issues/2643
+        - '~^Method .+\(\) should return int|void but return statement is missing\.$~'
+        # Upstream PHPCS problem that we can ignore.
+        -
+            message: "#^Access to an undefined property PHP_CodeSniffer\\\\Config\\:\\:\\$annotations\\.$#"
+            count: 1
+            path: coder_sniffer/Drupal/Sniffs/WhiteSpace/ScopeIndentSniff.php

@@ -14,7 +14,7 @@ class ProjectUnitTest extends TestCase
     /**
      * The mocked file object for testing.
      *
-     * @var \PHP_CodeSniffer\Files\File|PHPUnit_Framework_MockObject_MockObject
+     * @var \PHP_CodeSniffer\Files\File|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $phpcsFile;
 

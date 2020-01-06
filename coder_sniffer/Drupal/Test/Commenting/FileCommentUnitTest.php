@@ -49,6 +49,8 @@ class FileCommentUnitTest extends CoderSniffUnitTest
             return [2 => 1];
         }//end switch
 
+        return [];
+
     }//end getErrorList()
 
 

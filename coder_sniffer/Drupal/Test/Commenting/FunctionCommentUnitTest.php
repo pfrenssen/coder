@@ -82,6 +82,8 @@ class FunctionCommentUnitTest extends CoderSniffUnitTest
             return [8 => 1];
         }//end switch
 
+        return [];
+
     }//end getErrorList()
 
 

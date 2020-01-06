@@ -32,6 +32,8 @@ class PostStatementCommentUnitTest extends CoderSniffUnitTest
             return [6 => 1];
         }
 
+        return [];
+
     }//end getErrorList()
 
 

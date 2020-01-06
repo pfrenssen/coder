@@ -23,13 +23,9 @@ class ClassFileNameUnitTest extends CoderSniffUnitTest
         switch ($testFile) {
         case 'ClassFileNameUnitTest.php':
             return [3 => 1];
-        case 'drupal8.behat.inc':
-            return [];
-        case 'class_fle_name_test.module':
-            return [];
-        case 'markdownFile.md':
-            return [];
         }
+
+        return [];
 
     }//end getErrorList()
 
