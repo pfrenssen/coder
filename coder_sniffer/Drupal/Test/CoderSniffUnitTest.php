@@ -34,6 +34,13 @@ abstract class CoderSniffUnitTest extends TestCase
     protected $backupGlobals = false;
 
     /**
+     * The path to the root folder of Coder.
+     *
+     * @var string
+     */
+    private $rootDir = null;
+
+    /**
      * The path to the standard's main directory.
      *
      * @var string
@@ -110,7 +117,7 @@ abstract class CoderSniffUnitTest extends TestCase
     /**
      * Should this test be skipped for some reason.
      *
-     * @return void
+     * @return bool
      */
     protected function shouldSkipTest()
     {
@@ -173,13 +180,9 @@ abstract class CoderSniffUnitTest extends TestCase
             $filename  = basename($testFile);
             $oldConfig = $config->getSettings();
 
-            try {
-                $this->setCliValues($filename, $config);
-                $phpcsFile = new LocalFile($testFile, $ruleset, $config);
-                $phpcsFile->process();
-            } catch (RuntimeException $e) {
-                $this->fail('An unexpected exception has been caught: '.$e->getMessage());
-            }
+            $this->setCliValues($filename, $config);
+            $phpcsFile = new LocalFile($testFile, $ruleset, $config);
+            $phpcsFile->process();
 
             $failures        = $this->generateFailureMessages($phpcsFile);
             $failureMessages = array_merge($failureMessages, $failures);
@@ -229,10 +232,10 @@ abstract class CoderSniffUnitTest extends TestCase
     /**
      * Generate a list of test failures for a given sniffed file.
      *
-     * @param PHP_CodeSniffer_File $file The file being tested.
+     * @param \PHP_CodeSniffer\Files\LocalFile $file The file being tested.
      *
      * @return array
-     * @throws PHP_CodeSniffer_Exception
+     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException
      */
     public function generateFailureMessages(LocalFile $file)
     {
@@ -450,9 +453,11 @@ abstract class CoderSniffUnitTest extends TestCase
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
+     * @param string $testFile The name of the file being tested.
+     *
      * @return array<int, int>
      */
-    abstract protected function getErrorList();
+    abstract protected function getErrorList(string $testFile);
 
 
     /**
@@ -461,9 +466,11 @@ abstract class CoderSniffUnitTest extends TestCase
      * The key of the array should represent the line number and the value
      * should represent the number of warnings that should occur on that line.
      *
-     * @return array(int => int)
+     * @param string $testFile The name of the file being tested.
+     *
+     * @return array<int, int>
      */
-    abstract protected function getWarningList();
+    abstract protected function getWarningList(string $testFile);
 
 
     /**
