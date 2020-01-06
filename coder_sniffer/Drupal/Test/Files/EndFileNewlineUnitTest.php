@@ -16,9 +16,9 @@ class EndFileNewlineUnitTest extends CoderSniffUnitTest
      *
      * @param string $testFile The name of the file being tested.
      *
-     * @return array(int => int)
+     * @return array<int, int>
      */
-    public function getErrorList($testFile=null)
+    protected function getErrorList(string $testFile)
     {
         // All the good files have no error.
         if (strpos($testFile, 'good') !== false) {
@@ -38,9 +38,11 @@ class EndFileNewlineUnitTest extends CoderSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of warnings that should occur on that line.
      *
-     * @return array(int => int)
+     * @param string $testFile The name of the file being tested.
+     *
+     * @return array<int, int>
      */
-    public function getWarningList()
+    protected function getWarningList(string $testFile)
     {
         return [];
 
