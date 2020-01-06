@@ -20,9 +20,11 @@ class InstallTUnitTest extends CoderSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
-     * @return array(int => int)
+     * @param string $testFile The name of the file being tested.
+     *
+     * @return array<int, int>
      */
-    public function getErrorList()
+    protected function getErrorList(string $testFile)
     {
         return [12 => 1];
 

@@ -5,8 +5,6 @@ parameters:
     excludes_analyse:
         # Copied legacy code that we don't care much about.
         - 'coder_sniffer/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php'
-        # Test base class that we should refactor to leverage upstream PHPCS better.
-        - 'coder_sniffer/Drupal/Test/CoderSniffUnitTest.php'
         # Test files that should not be checked.
         - 'coder_sniffer/*/Test/*.tpl.php'
         - 'coder_sniffer/*/Test/*.api.php'
@@ -54,8 +52,13 @@ parameters:
         # False positive on void return types, then a return statement is not
         # necessary. https://github.com/phpstan/phpstan/issues/2643
         - '~^Method .+\(\) should return int|void but return statement is missing\.$~'
-        # Upstream PHPCS problem that we can ignore.
+        # Upstream PHPCS problem where propterties on Config are not set as
+        # class variables. Ignore.
         -
             message: "#^Access to an undefined property PHP_CodeSniffer\\\\Config\\:\\:\\$annotations\\.$#"
             count: 1
             path: coder_sniffer/Drupal/Sniffs/WhiteSpace/ScopeIndentSniff.php
+        -
+            message: "#^Access to an undefined property PHP_CodeSniffer\\\\Config\\:\\:\\$.+\\.$#"
+            count: 5
+            path: coder_sniffer/Drupal/Test/CoderSniffUnitTest.php
