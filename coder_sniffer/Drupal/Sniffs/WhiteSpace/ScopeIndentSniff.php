@@ -91,7 +91,7 @@ class ScopeIndentSniff implements Sniff
      * This is a cached copy of the public version of this var, which
      * can be set in a ruleset file, and some core ignored tokens.
      *
-     * @var int[]
+     * @var array<int|string, bool>
      */
     private $ignoreIndentation = [];
 
@@ -133,7 +133,7 @@ class ScopeIndentSniff implements Sniff
      * @param int                         $stackPtr  The position of the current token
      *                                               in the stack passed in $tokens.
      *
-     * @return void
+     * @return void|int
      */
     public function process(File $phpcsFile, $stackPtr)
     {

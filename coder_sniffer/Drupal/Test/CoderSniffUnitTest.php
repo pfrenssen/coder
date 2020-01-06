@@ -146,7 +146,7 @@ abstract class CoderSniffUnitTest extends TestCase
 
         // In the case where we are running all the sniffs, the standard will
         // be the root class name.
-        if ($this->allSniffCodes() !== false) {
+        if ($this->checkAllSniffCodes() !== false) {
             list($standardName) = explode('\\', get_class($this));
         }
 
@@ -168,7 +168,7 @@ abstract class CoderSniffUnitTest extends TestCase
         $failureMessages = [];
         foreach ($testFiles as $testFile) {
             // Setup to test the selected Sniff.
-            if ($this->allSniffCodes() !== false) {
+            if ($this->checkAllSniffCodes() !== false) {
                 $config->sniffs = [];
             } else {
                 $config->sniffs = [$sniffCode];
@@ -433,12 +433,12 @@ abstract class CoderSniffUnitTest extends TestCase
 
 
     /**
-     * Get a list of CLI values to set before the file is tested.
+     * Set a list of CLI values before the file is tested.
      *
      * @param string                  $filename The name of the file being tested.
      * @param \PHP_CodeSniffer\Config $config   The config data for the run.
      *
-     * @return array
+     * @return void
      */
     public function setCliValues($filename, $config)
     {
@@ -474,15 +474,15 @@ abstract class CoderSniffUnitTest extends TestCase
 
 
     /**
-     * Returns a list of sniff codes that should be checked in this test.
+     * False if just the current sniff should be checked, false if all sniffs should be checked.
      *
-     * @return array The list of sniff codes.
+     * @return bool
      */
-    protected function allSniffCodes()
+    protected function checkAllSniffCodes()
     {
         return false;
 
-    }//end allSniffCodes()
+    }//end checkAllSniffCodes()
 
 
 }//end class

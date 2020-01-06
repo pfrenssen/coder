@@ -460,16 +460,16 @@ class BadUnitTest extends CoderSniffUnitTest
 
 
     /**
-     * Returns a list of sniff codes that should be checked in this test.
+     * False if just the current sniff should be checked, false if all sniffs should be checked.
      *
-     * @return array The list of sniff codes.
+     * @return bool
      */
-    protected function allSniffCodes()
+    protected function checkAllSniffCodes()
     {
         // We want to test all sniffs defined in the standard.
         return true;
 
-    }//end allSniffCodes()
+    }//end checkAllSniffCodes()
 
 
 }//end class

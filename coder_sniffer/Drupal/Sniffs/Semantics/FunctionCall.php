@@ -170,7 +170,7 @@ abstract class FunctionCall implements Sniff
      * @param int $number Indicates which argument should be examined, starting with
      *                    1 for the first argument.
      *
-     * @return array(string => int)
+     * @return array<string, int>|false
      */
     public function getArgument($number)
     {

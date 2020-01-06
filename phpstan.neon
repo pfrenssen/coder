@@ -1,5 +1,5 @@
 parameters:
-    level: 2
+    level: 3
     paths:
         - coder_sniffer
     excludes_analyse:
@@ -51,7 +51,8 @@ parameters:
             path: %currentWorkingDirectory%/coder_sniffer/Drupal/Sniffs/Commenting/DocCommentSniff.php
         # False positive on void return types, then a return statement is not
         # necessary. https://github.com/phpstan/phpstan/issues/2643
-        - '~^Method .+\(\) should return int|void but return statement is missing\.$~'
+        - '~^Method .+\(\) should return .*(void|null).* but return statement is missing\.$~'
+        - '~^Method .+\(\) should return .*null.* but empty return statement found.$~'
         # Upstream PHPCS problem where properties on Config are not set as
         # class variables. Ignore.
         -
