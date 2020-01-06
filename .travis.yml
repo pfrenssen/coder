@@ -28,6 +28,9 @@ before_install:
   - phpenv config-rm xdebug.ini || echo 'No xdebug config.'
 
 before_script:
+  # We have a dedicated composer.json file for PHP 7.0 that does not have
+  # PHPStan because it requires >= PHP 7.1.
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then cp composer-php-7-0.json composer.json; fi
   # Running composer install without a lock file will also update cached
   # dependencies in vendor.
   - composer install
@@ -42,5 +45,6 @@ script:
   # Ensure that the DrupalPractice standard can be invoked standalone and the
   # auto-loading of abstract classes works.
   - ./vendor/bin/phpcs -p --standard=coder_sniffer/DrupalPractice coder_sniffer/DrupalPractice/Test/good/ --ignore=coder_sniffer/DrupalPractice/Test/good/GoodUnitTest.php
-   # We cannot add PHPStan to composer.json because it cannot be installed in PHP 7.0.
-  - if [[ $PHPSTAN == "1" ]]; then composer require --dev phpstan/phpstan && ./vendor/bin/phpstan analyse; fi
+   # Only run PHPStan on the latest PHP version, no need to run it multiple
+   # times.
+  - if [[ $PHPSTAN == "1" ]]; then ./vendor/bin/phpstan analyse; fi
