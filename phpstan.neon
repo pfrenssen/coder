@@ -65,6 +65,14 @@ parameters:
             count: 2
             message: '~^Variable \$fileShort in isset\(\) always exists and is not nullable.$~'
             path: coder_sniffer/Drupal/Sniffs/Commenting/DocCommentSniff.php
+        -
+            message: "#^Result of && is always false\\.$#"
+            count: 2
+            path: coder_sniffer/Drupal/Sniffs/Commenting/DocCommentSniff.php
+        -
+            message: "#^Else branch is unreachable because previous condition is always true\\.$#"
+            count: 1
+            path: coder_sniffer/Drupal/Sniffs/Commenting/FunctionCommentSniff.php
         # False positive on void return types, then a return statement is not
         # necessary. https://github.com/phpstan/phpstan/issues/2643
         - '~^Method .+\(\) should return .*(void|null).* but return statement is missing\.$~'

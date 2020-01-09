@@ -1053,8 +1053,6 @@ class FunctionCommentSniff implements Sniff
             return true;
         }//end while
 
-        return false;
-
     }//end isAliasedType()
 
 
