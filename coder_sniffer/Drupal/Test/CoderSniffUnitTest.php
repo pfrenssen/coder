@@ -246,14 +246,6 @@ abstract class CoderSniffUnitTest extends TestCase
         $expectedErrors   = $this->getErrorList(basename($testFile));
         $expectedWarnings = $this->getWarningList(basename($testFile));
 
-        if (is_array($expectedErrors) === false) {
-            throw new RuntimeException('getErrorList() must return an array');
-        }
-
-        if (is_array($expectedWarnings) === false) {
-            throw new RuntimeException('getWarningList() must return an array');
-        }
-
         /*
             We merge errors and warnings together to make it easier
             to iterate over them and produce the errors string. In this way,
@@ -457,7 +449,7 @@ abstract class CoderSniffUnitTest extends TestCase
      *
      * @return array<int, int>
      */
-    abstract protected function getErrorList(string $testFile);
+    abstract protected function getErrorList(string $testFile): array;
 
 
     /**
@@ -470,7 +462,7 @@ abstract class CoderSniffUnitTest extends TestCase
      *
      * @return array<int, int>
      */
-    abstract protected function getWarningList(string $testFile);
+    abstract protected function getWarningList(string $testFile): array;
 
 
     /**

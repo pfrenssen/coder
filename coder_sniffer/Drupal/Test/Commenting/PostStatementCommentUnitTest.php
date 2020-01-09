@@ -18,7 +18,7 @@ class PostStatementCommentUnitTest extends CoderSniffUnitTest
      *
      * @return array<int, int>
      */
-    protected function getErrorList(string $testFile)
+    protected function getErrorList(string $testFile): array
     {
         switch ($testFile) {
         case 'PostStatementCommentUnitTest.inc':
@@ -47,7 +47,7 @@ class PostStatementCommentUnitTest extends CoderSniffUnitTest
      *
      * @return array<int, int>
      */
-    protected function getWarningList(string $testFile)
+    protected function getWarningList(string $testFile): array
     {
         return [];
 

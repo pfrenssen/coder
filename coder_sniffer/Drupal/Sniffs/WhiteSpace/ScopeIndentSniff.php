@@ -81,7 +81,7 @@ class ScopeIndentSniff implements Sniff
      * or PHP open/close tags can escape from here and have their own
      * rules elsewhere.
      *
-     * @var int[]
+     * @var array<int, int|string>
      */
     public $ignoreIndentationTokens = [];
 

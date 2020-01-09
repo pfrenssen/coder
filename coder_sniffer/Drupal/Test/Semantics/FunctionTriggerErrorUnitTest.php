@@ -18,7 +18,7 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
      *
      * @return array<int, int>
      */
-    protected function getErrorList(string $testFile)
+    protected function getErrorList(string $testFile): array
     {
         switch ($testFile) {
         case 'FunctionTriggerErrorUnitTest.1.inc':
@@ -51,7 +51,7 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
      *
      * @return array<int, int>
      */
-    protected function getWarningList(string $testFile)
+    protected function getWarningList(string $testFile): array
     {
         switch ($testFile) {
         case 'FunctionTriggerErrorUnitTest.1.inc':
