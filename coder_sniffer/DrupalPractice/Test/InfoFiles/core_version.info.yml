@@ -1,0 +1,6 @@
+name: Core version
+type: module
+description: 'Info files should contain a core_version_requirement key.'
+package: Coder
+version: VERSION
+core: 8.x

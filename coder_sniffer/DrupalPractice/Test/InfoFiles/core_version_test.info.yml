@@ -1,0 +1,6 @@
+name: Core version test
+type: module
+description: 'Test modules can omit the core_version_requirement key.'
+package: Testing
+version: VERSION
+core: 8.x
