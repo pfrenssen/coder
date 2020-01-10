@@ -1,5 +1,5 @@
 parameters:
-    level: 4
+    level: 6
     paths:
         - coder_sniffer
     excludes_analyse:
@@ -91,3 +91,11 @@ parameters:
         # evaluate to false. https://github.com/phpstan/phpstan/issues/2822
         - '~^Strict comparison using === between .+ and .+ will always evaluate to false\.$~'
         - "#^Result of \\|\\| is always false\\.$#"
+        # Data type declaration in PHPCS is not correct, see
+        # https://github.com/squizlabs/PHP_CodeSniffer/pull/2809
+        -
+            message: "#^Parameter \\#2 \\$ignore of method PHP_CodeSniffer\\\\Files\\\\File\\:\\:findStartOfStatement\\(\\) expects array\\|int\\|null, string given\\.$#"
+            count: 2
+            path: coder_sniffer/Drupal/Sniffs/WhiteSpace/ScopeIndentSniff.php
+        # We support PHP 7.0 which does not have the "void" return type hint.
+        - '#^Method .+ has no return typehint specified\.$#'

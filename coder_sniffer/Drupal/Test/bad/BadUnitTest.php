@@ -438,9 +438,9 @@ class BadUnitTest extends CoderSniffUnitTest
      *
      * @param string $testFileBase The base path that the unit tests files will have.
      *
-     * @return array The list of test files.
+     * @return array<string>
      */
-    protected function getTestFiles($testFileBase)
+    protected function getTestFiles($testFileBase): array
     {
         $di        = new \DirectoryIterator(__DIR__);
         $testFiles = [];

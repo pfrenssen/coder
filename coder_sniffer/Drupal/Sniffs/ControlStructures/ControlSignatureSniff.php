@@ -30,7 +30,7 @@ class ControlSignatureSniff implements Sniff
     /**
      * A list of tokenizers this sniff supports.
      *
-     * @var array
+     * @var array<string>
      */
     public $supportedTokenizers = [
         'PHP',

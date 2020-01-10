@@ -27,7 +27,7 @@ class OpenBracketSpacingSniff implements Sniff
     /**
      * A list of tokenizers this sniff supports.
      *
-     * @var array
+     * @var array<string>
      */
     public $supportedTokenizers = [
         'PHP',
@@ -38,7 +38,7 @@ class OpenBracketSpacingSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {

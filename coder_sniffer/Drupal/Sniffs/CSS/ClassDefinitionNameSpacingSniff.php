@@ -28,7 +28,7 @@ class ClassDefinitionNameSpacingSniff implements Sniff
     /**
      * A list of tokenizers this sniff supports.
      *
-     * @var array
+     * @var array<string>
      */
     public $supportedTokenizers = ['CSS'];
 

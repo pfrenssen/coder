@@ -25,7 +25,7 @@ class FunctionAliasSniff extends FunctionCall
      * Holds all PHP function name aliases (keys) and originals (values). See
      * http://php.net/manual/en/aliases.php
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $aliases = [
         '_'                          => 'gettext',
@@ -165,7 +165,7 @@ class FunctionAliasSniff extends FunctionCall
     /**
      * Returns an array of function names this test wants to listen for.
      *
-     * @return array
+     * @return array<string>
      */
     public function registerFunctionNames()
     {

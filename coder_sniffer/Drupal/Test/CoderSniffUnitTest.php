@@ -88,9 +88,9 @@ abstract class CoderSniffUnitTest extends TestCase
      *
      * @param string $testFileBase The base path that the unit tests files will have.
      *
-     * @return string[]
+     * @return array<string>
      */
-    protected function getTestFiles($testFileBase)
+    protected function getTestFiles($testFileBase): array
     {
         $testFiles = [];
 
@@ -234,10 +234,10 @@ abstract class CoderSniffUnitTest extends TestCase
      *
      * @param \PHP_CodeSniffer\Files\LocalFile $file The file being tested.
      *
-     * @return array
+     * @return array<string>
      * @throws \PHP_CodeSniffer\Exceptions\RuntimeException
      */
-    public function generateFailureMessages(LocalFile $file)
+    public function generateFailureMessages(LocalFile $file): array
     {
         $testFile = $file->getFilename();
 

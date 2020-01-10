@@ -90,9 +90,9 @@ class ProjectUnitTest extends TestCase
     /**
      * Data provider for testCoreVersion().
      *
-     * @return array
+     * @return array<int, array<int, string|int>>
      */
-    public function coreVersionProvider()
+    public function coreVersionProvider(): array
     {
         return [
             [
@@ -144,12 +144,12 @@ class ProjectUnitTest extends TestCase
     /**
      * Data provider for testProjectNameDetection().
      *
-     * @return array
+     * @return array<int, array<int, string|false>>
      *   An array of test cases, each test case an array with two elements:
      *   - The filename to check.
      *   - The expected project name.
      */
-    public function projectNameDetectionProvider()
+    public function projectNameDetectionProvider(): array
     {
         return [
             [

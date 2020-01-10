@@ -34,7 +34,7 @@ class ScopeIndentSniff implements Sniff
     /**
      * A list of tokenizers this sniff supports.
      *
-     * @var array
+     * @var array<string>
      */
     public $supportedTokenizers = ['PHP'];
 
@@ -113,7 +113,7 @@ class ScopeIndentSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {
@@ -1504,7 +1504,7 @@ class ScopeIndentSniff implements Sniff
         $padding = '';
         if ($length > 0) {
             if ($this->tabIndent === true) {
-                $numTabs = floor($length / $this->tabWidth);
+                $numTabs = (int) floor($length / $this->tabWidth);
                 if ($numTabs > 0) {
                     $numSpaces = ($length - ($numTabs * $this->tabWidth));
                     $padding   = str_repeat("\t", $numTabs).str_repeat(' ', $numSpaces);
@@ -1542,7 +1542,7 @@ class ScopeIndentSniff implements Sniff
                 $padding = ($length + $change);
                 if ($padding > 0) {
                     if ($this->tabIndent === true) {
-                        $numTabs   = floor($padding / $this->tabWidth);
+                        $numTabs   = (int) floor($padding / $this->tabWidth);
                         $numSpaces = ($padding - ($numTabs * $this->tabWidth));
                         $padding   = str_repeat("\t", $numTabs).str_repeat(' ', $numSpaces);
                     } else {

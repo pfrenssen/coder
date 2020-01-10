@@ -27,7 +27,7 @@ class ClassFilesSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {
@@ -117,7 +117,7 @@ class ClassFilesSniff implements Sniff
      *
      * @param string $data The contents of the info file to parse
      *
-     * @return array The info array.
+     * @return array<mixed> The info array.
      */
     public static function drupalParseInfoFormat($data)
     {

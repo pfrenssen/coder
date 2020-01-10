@@ -27,7 +27,7 @@ class FunctionCommentSniff implements Sniff
     /**
      * A map of invalid data types to valid ones for param and return documentation.
      *
-     * @var array
+     * @var array<string, string>
      */
     public static $invalidTypes = [
         'Array'     => 'array',
@@ -54,7 +54,7 @@ class FunctionCommentSniff implements Sniff
     /**
      * An array of variable types for param/var we will check.
      *
-     * @var array(string)
+     * @var array<string>
      */
     public $allowedTypes = [
         'array',
@@ -68,7 +68,7 @@ class FunctionCommentSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {

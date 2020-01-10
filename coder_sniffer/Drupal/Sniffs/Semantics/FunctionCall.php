@@ -54,7 +54,7 @@ abstract class FunctionCall implements Sniff
     /**
      * Internal cache to save the calculated arguments of the function call.
      *
-     * @var array
+     * @var array<int, array>
      */
     protected $arguments;
 
@@ -70,7 +70,7 @@ abstract class FunctionCall implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {

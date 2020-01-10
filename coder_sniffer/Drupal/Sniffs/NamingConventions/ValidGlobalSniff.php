@@ -26,7 +26,7 @@ class ValidGlobalSniff implements Sniff
     /**
      * List of allowed Drupal core global variable names.
      *
-     * @var array
+     * @var array<string>
      */
     public $coreGlobals = [
         '$argc',
@@ -83,7 +83,7 @@ class ValidGlobalSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {

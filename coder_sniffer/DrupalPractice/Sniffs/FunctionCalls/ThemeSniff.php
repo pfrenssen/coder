@@ -25,7 +25,7 @@ class ThemeSniff extends FunctionCall
     /**
      * List of functions starting with "theme_" that don't generate theme output.
      *
-     * @var array
+     * @var array<string>
      */
     protected $reservedFunctions = [
         'theme_get_registry',

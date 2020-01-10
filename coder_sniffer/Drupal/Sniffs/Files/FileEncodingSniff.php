@@ -36,7 +36,7 @@ class FileEncodingSniff implements Sniff
      *
      * Any other detected encodings will throw a warning.
      *
-     * @var array
+     * @var array<string>
      */
     public $allowedEncodings = ['UTF-8'];
 
@@ -44,7 +44,7 @@ class FileEncodingSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {

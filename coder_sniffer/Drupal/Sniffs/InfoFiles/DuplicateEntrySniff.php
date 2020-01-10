@@ -26,7 +26,7 @@ class DuplicateEntrySniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {
@@ -71,7 +71,7 @@ class DuplicateEntrySniff implements Sniff
      *
      * @param string $data The contents of the info file to parse
      *
-     * @return array A list of configuration keys that appear more than once.
+     * @return array<string> A list of configuration keys that appear more than once.
      */
     protected function findDuplicateInfoFileEntries($data)
     {
