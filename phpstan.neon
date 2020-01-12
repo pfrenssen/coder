@@ -73,10 +73,19 @@ parameters:
             message: "#^Else branch is unreachable because previous condition is always true\\.$#"
             count: 1
             path: coder_sniffer/Drupal/Sniffs/Commenting/FunctionCommentSniff.php
-        # False positive on void return types, then a return statement is not
-        # necessary. https://github.com/phpstan/phpstan/issues/2643
-        - '~^Method .+\(\) should return .*(void|null).* but return statement is missing\.$~'
-        - '~^Method .+\(\) should return .*null.* but empty return statement found.$~'
+        -
+            message: "#^Strict comparison using \\=\\=\\= between true and false will always evaluate to false\\.$#"
+            count: 1
+            path: coder_sniffer/Drupal/Sniffs/Commenting/DocCommentSniff.php
+        # Wrong return type in PHPCS https://github.com/squizlabs/PHP_CodeSniffer/pull/2816
+        -
+            message: "#^Method Drupal\\\\Sniffs\\\\Files\\\\LineLengthSniff\\:\\:checkLineLength\\(\\) should return false\\|null but empty return statement found\\.$#"
+            count: 4
+            path: coder_sniffer/Drupal/Sniffs/Files/LineLengthSniff.php
+        -
+            message: "#^Method Drupal\\\\Sniffs\\\\Files\\\\LineLengthSniff\\:\\:checkLineLength\\(\\) should return false\\|null but return statement is missing\\.$#"
+            count: 1
+            path: coder_sniffer/Drupal/Sniffs/Files/LineLengthSniff.php
         # Upstream PHPCS problem where properties on Config are not set as
         # class variables. Ignore.
         -
@@ -87,10 +96,6 @@ parameters:
             message: "#^Access to an undefined property PHP_CodeSniffer\\\\Config\\:\\:\\$.+\\.$#"
             count: 5
             path: coder_sniffer/Drupal/Test/CoderSniffUnitTest.php
-        # False positive: Strict comparison using === between ... will always
-        # evaluate to false. https://github.com/phpstan/phpstan/issues/2822
-        - '~^Strict comparison using === between .+ and .+ will always evaluate to false\.$~'
-        - "#^Result of \\|\\| is always false\\.$#"
         # Data type declaration in PHPCS is not correct, see
         # https://github.com/squizlabs/PHP_CodeSniffer/pull/2809
         -
