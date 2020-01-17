@@ -506,3 +506,15 @@ class Small {
 function test37(array $matches, array $sub_key, $to) {
 
 }
+
+/**
+ * Yield from should be a recognised return statement.
+ *
+ * @return int
+ *   Integer value.
+ */
+function test38($a, $b) {
+  for ($i = 1; $i <= 3; $i++) {
+    yield from $i;
+  }
+}

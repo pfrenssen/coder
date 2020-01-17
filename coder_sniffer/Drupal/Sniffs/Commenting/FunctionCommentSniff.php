@@ -279,7 +279,7 @@ class FunctionCommentSniff implements Sniff
                             $searchStart        = $stackPtr;
                             $foundNonVoidReturn = false;
                             do {
-                                $returnToken = $phpcsFile->findNext([T_RETURN, T_YIELD], $searchStart, $endToken);
+                                $returnToken = $phpcsFile->findNext([T_RETURN, T_YIELD, T_YIELD_FROM], $searchStart, $endToken);
                                 if ($returnToken === false && $foundReturnToken === false) {
                                     $error = '@return doc comment specified, but function has no return statement';
                                     $phpcsFile->addError($error, $return, 'InvalidNoReturn');
