@@ -31,17 +31,6 @@ class FileCommentSniff implements Sniff
 
 
     /**
-     * A list of tokenizers this sniff supports.
-     *
-     * @var array<string>
-     */
-    public $supportedTokenizers = [
-        'PHP',
-        'JS',
-    ];
-
-
-    /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array<int|string>

@@ -32,13 +32,6 @@ class ScopeIndentSniff implements Sniff
 {
 
     /**
-     * A list of tokenizers this sniff supports.
-     *
-     * @var array<string>
-     */
-    public $supportedTokenizers = ['PHP'];
-
-    /**
      * The number of spaces code should be indented.
      *
      * @var integer

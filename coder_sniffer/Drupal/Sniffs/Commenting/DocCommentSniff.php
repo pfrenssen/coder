@@ -26,16 +26,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 class DocCommentSniff implements Sniff
 {
 
-    /**
-     * A list of tokenizers this sniff supports.
-     *
-     * @var array<string>
-     */
-    public $supportedTokenizers = [
-        'PHP',
-        'JS',
-    ];
-
 
     /**
      * Returns an array of tokens this test wants to listen for.
