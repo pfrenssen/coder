@@ -506,3 +506,13 @@ class Small {
 function test37(array $matches, array $sub_key, $to) {
 
 }
+
+/**
+ * Yield from should be a recognised return statement.
+ *
+ * @return Generator
+ *   Generator value.
+ */
+function test38($a, $b) {
+  yield from [$a, $b];
+}
