@@ -1016,8 +1016,6 @@ class Foo implements FooInterface {
 
   /**
    * {@inheritdoc}
-   *
-   * Some additional documentation here.
    */
   public function test2() {}
 

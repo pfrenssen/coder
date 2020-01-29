@@ -67,6 +67,22 @@ class DocCommentSniff implements Sniff
             return;
         }
 
+        // Check if the comment contains the @inheritdoc tag.
+        $commentContent = $phpcsFile->getTokensAsString($commentStart, ($commentEnd - $commentStart));
+        if (strpos($commentContent, '{@inheritdoc}') !== false || strpos($commentContent, '{@inheritDoc}') !== false) {
+            for ($i = ($commentStart + 1); $i < $commentEnd; $i++) {
+                if (in_array($tokens[$i]['code'], $empty) === false) {
+                    if ($tokens[$i]['content'] !== '{@inheritdoc}'
+                        && $tokens[$i]['content'] !== '{@inheritDoc}'
+                    ) {
+                        $error = '{@inheritdoc} must be the only line in the docblock';
+                        $phpcsFile->addError($error, $short, 'Inheritdoc');
+                        break;
+                    }
+                }
+            }
+        }
+
         // Ignore doc blocks in functions, this is handled by InlineCommentSniff.
         if (empty($tokens[$stackPtr]['conditions']) === false && in_array(T_FUNCTION, $tokens[$stackPtr]['conditions']) === true) {
             return;
