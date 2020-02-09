@@ -460,7 +460,7 @@ class BadUnitTest extends CoderSniffUnitTest
 
 
     /**
-     * False if just the current sniff should be checked, false if all sniffs should be checked.
+     * False if just the current sniff should be checked, true if all sniffs should be checked.
      *
      * @return bool
      */
