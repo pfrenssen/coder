@@ -1677,25 +1677,35 @@ class VariableAnalysisSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         // OK, are we within a list (...) construct?
-        if (($openPtr = $this->findContainingBrackets($phpcsFile, $stackPtr)) === false) {
-            return false;
+        if (($openPtr = $this->findContainingBrackets($phpcsFile, $stackPtr)) !== false) {
+            $prevPtr = $phpcsFile->findPrevious(T_WHITESPACE, ($openPtr - 1), null, true, null, true);
+            if (($prevPtr === false) || ($tokens[$prevPtr]['code'] !== T_LIST)) {
+                return false;
+            }
+
+            // OK, we're a list (...) construct... are we being assigned to?
+            $closePtr = $tokens[$openPtr]['parenthesis_closer'];
+            if (($assignPtr = $this->isNextThingAnAssign($phpcsFile, $closePtr)) !== false) {
+                // Yes, we're being assigned.
+                $writtenPtr = $this->findWhereAssignExecuted($phpcsFile, $assignPtr);
+                $this->markVariableAssignment($varName, $writtenPtr, $currScope);
+                return true;
+            }
         }
 
-        $prevPtr = $phpcsFile->findPrevious(T_WHITESPACE, ($openPtr - 1), null, true, null, true);
-        if (($prevPtr === false) || ($tokens[$prevPtr]['code'] !== T_LIST)) {
-            return false;
+        // Are we within a short list [...] construct?
+        $closePtr = $phpcsFile->findNext([T_WHITESPACE, T_VARIABLE, T_COMMA], ($stackPtr + 1), null, true);
+        if ($tokens[$closePtr]['code'] === T_CLOSE_SHORT_ARRAY) {
+            // OK, we're a short list [...] construct... are we being assigned to?
+            if (($assignPtr = $this->isNextThingAnAssign($phpcsFile, $closePtr)) !== false) {
+                // Yes, we're being assigned.
+                $writtenPtr = $this->findWhereAssignExecuted($phpcsFile, $assignPtr);
+                $this->markVariableAssignment($varName, $writtenPtr, $currScope);
+                return true;
+            }
         }
 
-        // OK, we're a list (...) construct... are we being assigned to?
-        $closePtr = $tokens[$openPtr]['parenthesis_closer'];
-        if (($assignPtr = $this->isNextThingAnAssign($phpcsFile, $closePtr)) === false) {
-            return false;
-        }
-
-        // Yes, we're being assigned.
-        $writtenPtr = $this->findWhereAssignExecuted($phpcsFile, $assignPtr);
-        $this->markVariableAssignment($varName, $writtenPtr, $currScope);
-        return true;
+        return false;
 
     }//end checkForListAssignment()
 
