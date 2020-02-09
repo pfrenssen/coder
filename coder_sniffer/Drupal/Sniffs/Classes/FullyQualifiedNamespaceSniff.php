@@ -83,7 +83,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
 
         if ($fix === true) {
             $fullName = $phpcsFile->getTokensAsString(($before + 1), ($after - 1 - $before));
-            $fullName = trim($fullName, '\ ');
+            $fullName = trim($fullName, "\ \n");
 
             $phpcsFile->fixer->beginChangeset();
 
@@ -131,9 +131,10 @@ class FullyQualifiedNamespaceSniff implements Sniff
                     $fileComment = $phpcsFile->findNext(T_WHITESPACE, ($beginning + 1), null, true);
                     if ($tokens[$fileComment]['code'] === T_DOC_COMMENT_OPEN_TAG) {
                         $beginning = $tokens[$fileComment]['comment_closer'];
+                        $phpcsFile->fixer->addContent($beginning, "\n\nuse $fullName;\n");
+                    } else {
+                        $phpcsFile->fixer->addContent($beginning, "use $fullName;\n");
                     }
-
-                    $phpcsFile->fixer->addContent($beginning, "use $fullName;\n");
                 }
             }
 

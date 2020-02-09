@@ -23,6 +23,8 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
         switch ($testFile) {
         case 'FullyQualifiedNamespaceUnitTest.inc':
             return [3 => 1];
+        case 'FullyQualifiedNamespaceUnitTest.1.inc':
+            return [16 => 1];
         }
 
         return [];
@@ -58,6 +60,7 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
     {
         return [
             __DIR__.'/FullyQualifiedNamespaceUnitTest.inc',
+            __DIR__.'/FullyQualifiedNamespaceUnitTest.1.inc',
             __DIR__.'/FullyQualifiedNamespaceUnitTest.api.php',
         ];
 
