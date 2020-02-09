@@ -14,11 +14,6 @@ parameters:
     autoload_files:
         - coder_sniffer/Drupal/Test/phpunit-bootstrap.php
     ignoreErrors:
-        # Already fixed in PHP_CodeSniffer, remove once 3.5.4 is released.
-        -
-            count: 3
-            message: '~^Cannot unset offset~'
-            path: coder_sniffer/Drupal/Sniffs/Formatting/MultipleStatementAlignmentSniff.php
         # PHPStan does not support variable variables, see https://github.com/phpstan/phpstan/issues/2810
         -
             count: 3
@@ -96,11 +91,5 @@ parameters:
             message: "#^Access to an undefined property PHP_CodeSniffer\\\\Config\\:\\:\\$.+\\.$#"
             count: 5
             path: coder_sniffer/Drupal/Test/CoderSniffUnitTest.php
-        # Data type declaration in PHPCS is not correct, see
-        # https://github.com/squizlabs/PHP_CodeSniffer/pull/2809
-        -
-            message: "#^Parameter \\#2 \\$ignore of method PHP_CodeSniffer\\\\Files\\\\File\\:\\:findStartOfStatement\\(\\) expects array\\|int\\|null, string given\\.$#"
-            count: 2
-            path: coder_sniffer/Drupal/Sniffs/WhiteSpace/ScopeIndentSniff.php
         # We support PHP 7.0 which does not have the "void" return type hint.
         - '#^Method .+ has no return typehint specified\.$#'
