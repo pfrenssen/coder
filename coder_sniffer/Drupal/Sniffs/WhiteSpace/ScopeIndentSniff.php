@@ -189,11 +189,6 @@ class ScopeIndentSniff implements Sniff
         $checkAnnotations = $phpcsFile->config->annotations;
 
         for ($i = ($stackPtr + 1); $i < $phpcsFile->numTokens; $i++) {
-            if ($i === false) {
-                // Something has gone very wrong; maybe a parse error.
-                break;
-            }
-
             if ($checkAnnotations === true
                 && $tokens[$i]['code'] === T_PHPCS_SET
                 && isset($tokens[$i]['sniffCode']) === true
