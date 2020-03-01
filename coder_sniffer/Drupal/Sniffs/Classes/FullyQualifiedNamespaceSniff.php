@@ -66,9 +66,11 @@ class FullyQualifiedNamespaceSniff implements Sniff
         }
 
         // Check if this is a use statement and ignore those.
-        $before = $phpcsFile->findPrevious([T_STRING, T_NS_SEPARATOR, T_WHITESPACE], $stackPtr, null, true);
+        $before = $phpcsFile->findPrevious([T_STRING, T_NS_SEPARATOR, T_WHITESPACE, T_COMMA, T_AS], $stackPtr, null, true);
         if ($tokens[$before]['code'] === T_USE || $tokens[$before]['code'] === T_NAMESPACE) {
-            return $phpcsFile->findNext([T_STRING, T_NS_SEPARATOR], ($stackPtr + 1), null, true);
+            return $phpcsFile->findNext([T_STRING, T_NS_SEPARATOR, T_WHITESPACE, T_COMMA, T_AS], ($stackPtr + 1), null, true);
+        } else {
+            $before = $phpcsFile->findPrevious([T_STRING, T_NS_SEPARATOR, T_WHITESPACE], $stackPtr, null, true);
         }
 
         // If this is a namespaced function call then ignore this because use
@@ -115,7 +117,13 @@ class FullyQualifiedNamespaceSniff implements Sniff
                 break;
             }
 
-            $aliasName    = false;
+            $aliasName = false;
+            // Check if we're currently in a multi-use statement.
+            if ($tokens[$endPtr]['code'] === T_COMMA) {
+                $useStatement = $endPtr;
+                continue;
+            }
+
             $useStatement = $phpcsFile->findNext(T_USE, ($endPtr + 1));
         }//end while
 
