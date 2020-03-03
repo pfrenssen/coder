@@ -23,3 +23,12 @@ $form['display']['show_thumbnail'] = array(
     '0' => t('No', array(), array('context' => 'test')),
   ),
 );
+
+$form['display']['status'] = [
+    '#title' => t('Status', array(), array('context' => 'test')),
+    '#type' => 'select',
+    '#options' => array(
+        '1' => 'Enabled',
+        '0' => t('Disabled', array(), array('context' => 'test')),
+    ),
+];

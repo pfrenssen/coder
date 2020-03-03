@@ -43,7 +43,10 @@ class OptionsTUnitTest extends CoderSniffUnitTest
      */
     protected function getWarningList(string $testFile): array
     {
-        return [14 => 1];
+        return [
+            14 => 1,
+            31 => 1,
+        ];
 
     }//end getWarningList()
 
