@@ -25,10 +25,10 @@ $form['display']['show_thumbnail'] = array(
 );
 
 $form['display']['status'] = [
-    '#title' => t('Status', array(), array('context' => 'test')),
-    '#type' => 'select',
-    '#options' => array(
-        '1' => 'Enabled',
-        '0' => t('Disabled', array(), array('context' => 'test')),
-    ),
+  '#title' => t('Status', array(), array('context' => 'test')),
+  '#type' => 'select',
+  '#options' => array(
+    '1' => 'Enabled',
+    '0' => t('Disabled', array(), array('context' => 'test')),
+  ),
 ];
