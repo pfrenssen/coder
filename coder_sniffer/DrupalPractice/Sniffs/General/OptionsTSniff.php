@@ -13,7 +13,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Checks that values in #otions form arrays are translated.
+ * Checks that values in #options form arrays are translated.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -64,10 +64,14 @@ class OptionsTSniff implements Sniff
         }
 
         // We only search within the #options array.
-        $arrayToken         = $phpcsFile->findNext(T_ARRAY, ($stackPtr + 1));
-        $statementEnd       = $tokens[$arrayToken]['parenthesis_closer'];
-        $nestestParenthesis = $tokens[$arrayToken]['nested_parenthesis'];
-        $nestestParenthesis[$tokens[$arrayToken]['parenthesis_opener']] = $tokens[$arrayToken]['parenthesis_closer'];
+        $arrayToken        = $phpcsFile->findNext(T_ARRAY, ($stackPtr + 1));
+        $statementEnd      = $tokens[$arrayToken]['parenthesis_closer'];
+        $nestedParenthesis = [];
+        if (isset($tokens[$arrayToken]['nested_parenthesis']) === true) {
+            $nestedParenthesis = $tokens[$arrayToken]['nested_parenthesis'];
+        }
+
+        $nestedParenthesis[$tokens[$arrayToken]['parenthesis_opener']] = $tokens[$arrayToken]['parenthesis_closer'];
 
         // Go through the array by examining stuff after "=>".
         $arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($stackPtr + 1), $statementEnd, false, null, true);
@@ -80,7 +84,7 @@ class OptionsTSniff implements Sniff
                 && strlen($tokens[$arrayValue]['content']) > 5
                 // Make sure that we don't check stuff in nested arrays within
                 // t() for example.
-                && $tokens[$arrayValue]['nested_parenthesis'] === $nestestParenthesis
+                && $tokens[$arrayValue]['nested_parenthesis'] === $nestedParenthesis
             ) {
                 // We need to make sure that the string is the one and only part
                 // of the array value.
