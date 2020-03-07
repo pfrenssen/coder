@@ -129,7 +129,7 @@ Editors:
 - [Visual Studio Code (VSCode)](https://www.drupal.org/node/1419996)
 
 
-## Automated Testing (PHPUnit + PHPCS)
+## Automated Testing (PHPUnit + PHPCS + PHPStan)
 
 Coder Sniffer comes with a PHPUnit test suite to make sure the sniffs work correctly.
 Use Composer to install the dependencies:
@@ -143,6 +143,10 @@ Then execute the tests:
 Then execute the coding standards checker on Coder itself:
 
     ./vendor/bin/phpcs
+
+Then execute static analysis:
+
+    ./vendor/bin/phpstan
 
 
 ## Contributing
