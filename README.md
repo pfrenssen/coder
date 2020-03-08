@@ -146,7 +146,7 @@ Then execute the coding standards checker on Coder itself:
 
 Then execute static analysis:
 
-    ./vendor/bin/phpstan
+    ./vendor/bin/phpstan analyse
 
 
 ## Contributing
