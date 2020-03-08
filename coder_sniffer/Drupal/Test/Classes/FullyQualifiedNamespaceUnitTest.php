@@ -23,11 +23,12 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
         switch ($testFile) {
         case 'FullyQualifiedNamespaceUnitTest.inc':
             return [
-                27 => 1,
-                34 => 1,
-                41 => 1,
-                55 => 1,
-                62 => 1,
+                29 => 1,
+                36 => 1,
+                43 => 1,
+                57 => 1,
+                64 => 1,
+                71 => 2,
             ];
         case 'FullyQualifiedNamespaceUnitTest.1.inc':
             return [16 => 1];
