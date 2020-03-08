@@ -59,24 +59,38 @@ class OptionsTSniff implements Sniff
         // Cut out all the white space.
         $arrayString = preg_replace('/\s+/', '', $arrayString);
 
-        if (strpos($arrayString, '=>array(') !== 0 && strpos($arrayString, ']=array(') !== 0) {
+        if (strpos($arrayString, '=>array(') !== 0
+            && strpos($arrayString, ']=array(') !== 0
+            && strpos($arrayString, '=>[') !== 0
+            && strpos($arrayString, ']=[') !== 0
+        ) {
             return;
         }
 
         // We only search within the #options array.
-        $arrayToken        = $phpcsFile->findNext(T_ARRAY, ($stackPtr + 1));
-        $statementEnd      = $tokens[$arrayToken]['parenthesis_closer'];
+        $arrayToken        = $phpcsFile->findNext([T_ARRAY, T_OPEN_SHORT_ARRAY], ($stackPtr + 1));
         $nestedParenthesis = [];
         if (isset($tokens[$arrayToken]['nested_parenthesis']) === true) {
             $nestedParenthesis = $tokens[$arrayToken]['nested_parenthesis'];
         }
 
-        $nestedParenthesis[$tokens[$arrayToken]['parenthesis_opener']] = $tokens[$arrayToken]['parenthesis_closer'];
+        if ($tokens[$arrayToken]['code'] === T_ARRAY) {
+            $statementEnd = $tokens[$arrayToken]['parenthesis_closer'];
+            $nestedParenthesis[$tokens[$arrayToken]['parenthesis_opener']] = $tokens[$arrayToken]['parenthesis_closer'];
+        } else {
+            $statementEnd = $tokens[$arrayToken]['bracket_closer'];
+        }
 
         // Go through the array by examining stuff after "=>".
-        $arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($stackPtr + 1), $statementEnd, false, null, true);
+        $arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($arrayToken + 1), $statementEnd, false, null, true);
         while ($arrow !== false) {
             $arrayValue = $phpcsFile->findNext(T_WHITESPACE, ($arrow + 1), $statementEnd, true);
+
+            $valueNestedParenthesis = [];
+            if (isset($tokens[$arrayValue]['nested_parenthesis']) === true) {
+                $valueNestedParenthesis = $tokens[$arrayValue]['nested_parenthesis'];
+            }
+
             // We are only interested in string literals that are not numbers
             // and more than 3 characters long.
             if ($tokens[$arrayValue]['code'] === T_CONSTANT_ENCAPSED_STRING
@@ -84,7 +98,7 @@ class OptionsTSniff implements Sniff
                 && strlen($tokens[$arrayValue]['content']) > 5
                 // Make sure that we don't check stuff in nested arrays within
                 // t() for example.
-                && $tokens[$arrayValue]['nested_parenthesis'] === $nestedParenthesis
+                && $valueNestedParenthesis === $nestedParenthesis
             ) {
                 // We need to make sure that the string is the one and only part
                 // of the array value.

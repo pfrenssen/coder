@@ -32,3 +32,27 @@ $form['display']['status'] = [
     '0' => t('Disabled', array(), array('context' => 'test')),
   ),
 ];
+
+$form['amount'] = [
+  '#type' => 'select',
+  '#title' => t('Amount'),
+  '#options' => [
+    '1' => '1',
+    '2' => '2',
+    '3' => '3',
+    '4' => '4',
+    '500' => '500',
+    'a' => 'a',
+    'abc' => 'abc',
+    'four' => 'four',
+  ],
+];
+
+$form['display']['hide_thumbnail'] = [
+  '#title' => t('Hide Thumbnail', [], ['context' => 'test']),
+  '#type' => 'radios',
+  '#options' => [
+    '1' => t('Yes', [], ['context' => 'test']),
+    '0' => t('No', [], ['context' => 'test']),
+  ],
+];
