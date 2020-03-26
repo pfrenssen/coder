@@ -41,3 +41,13 @@ function test5() {
 
   return [$a, $b, $x, $y];
 }
+
+function test6() {
+  $foo = ['a' => 1, 'b' => 2];
+  ['a' => $a, 'b' => $b] = $foo;
+
+  $bar = ['x' => 3, 'y' => 4];
+  list('x' => $x, 'y' => $y) = $bar;
+
+  return [$a, $b, $x, $y];
+}
