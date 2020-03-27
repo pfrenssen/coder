@@ -1694,7 +1694,7 @@ class VariableAnalysisSniff implements Sniff
         }
 
         // Are we within a short list [...] construct?
-        $closePtr = $phpcsFile->findNext([T_WHITESPACE, T_VARIABLE, T_COMMA], ($stackPtr + 1), null, true);
+        $closePtr = $phpcsFile->findNext([T_WHITESPACE, T_VARIABLE, T_COMMA, T_CONSTANT_ENCAPSED_STRING, T_DOUBLE_ARROW], ($stackPtr + 1), null, true);
         if ($tokens[$closePtr]['code'] === T_CLOSE_SHORT_ARRAY) {
             // OK, we're a short list [...] construct... are we being assigned to?
             if (($assignPtr = $this->isNextThingAnAssign($phpcsFile, $closePtr)) !== false) {
