@@ -20,8 +20,14 @@ class DeprecatedUnitTest extends CoderSniffUnitTest
      */
     protected function getErrorList(string $testFile): array
     {
-        // Basic layout is wrong.
-        return [24 => 2];
+        return [
+            // Basic layout is wrong.
+            24 => 2,
+            // No details given, check that the test gives two errors.
+            75 => 2,
+            // OK except missing the extra info.
+            81 => 1,
+        ];
 
     }//end getErrorList()
 

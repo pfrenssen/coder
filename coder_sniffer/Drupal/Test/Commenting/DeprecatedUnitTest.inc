@@ -13,8 +13,8 @@
 /**
  * This doc block will also pass the 'Deprecated' standards checks.
  *
- * @deprecated in drupal:8.6.0 and is removed from drupal:9.0.0.
- *   This function block is OK.
+ * @deprecated in drupal:8.6.0 and is removed from drupal:9.0.0. This function
+ *   block is OK.
  * @see https://www.drupal.org/project/drupal/issues/5678
  */
 function x() {
@@ -68,3 +68,17 @@ function z() {
  */
 function w() {
 }
+
+/**
+ * This will produce two errors (no text at all, hence bad layout and no see)
+ *
+ * @deprecated
+ */
+
+/**
+ * This will produce one error because there is no extra info.
+ *
+ * @deprecated in drupal:8.6.0 and is removed from drupal:8.8.0.
+ *
+ * @see http://www.drupal.org/node/7890
+ */
