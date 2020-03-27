@@ -86,7 +86,7 @@ function w() {
 /**
  * This block has incorrect basic layout but is fixable.
  *
- * @deprecated deprecated in Drupal 8.7, removed in 8.9.x There is extra
+ * @deprecated in drupal:8.7.0 and is removed from drupal:8.9.0. There is extra
  *   text before the 'in' version, wrong case, missing :, missing middle text,
  *   missing 'drupal' and incorrect 'removal' version, no period after version.
  * @see http://www.drupal.org/node/123
@@ -95,7 +95,7 @@ function w() {
 /**
  * This block also has incorrect basic layout and is fixable.
  *
- * @deprecated as of 8.8.3-dev, scheduled for removal in DRUPAL 9
+ * @deprecated in drupal:8.8.3 and is removed from drupal:9.0.0.
  *   It has 'as of' not 'in', missing word 'drupal', has -dev in first version,
  *   has 'removal', upper-case 'drupal' and short second version.
  * @see http://www.drupal.org/node/123

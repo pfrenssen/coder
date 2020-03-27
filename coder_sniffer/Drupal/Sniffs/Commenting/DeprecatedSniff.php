@@ -11,9 +11,10 @@ namespace Drupal\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Config;
 
 /**
- * Ensures standard format of a @deprecated text.
+ * Ensures standard format of @ deprecated tag text in docblock.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -21,6 +22,15 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 class DeprecatedSniff implements Sniff
 {
+
+    /**
+     * Show debug output for this sniff.
+     *
+     * Use phpcs --runtime-set deprecated_debug true
+     *
+     * @var boolean
+     */
+    private $debug = false;
 
 
     /**
@@ -30,6 +40,10 @@ class DeprecatedSniff implements Sniff
      */
     public function register()
     {
+        if (defined('PHP_CODESNIFFER_IN_TESTS') === true) {
+            $this->debug = false;
+        }
+
         return [T_DOC_COMMENT_TAG];
 
     }//end register()
@@ -46,6 +60,11 @@ class DeprecatedSniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
+        $debug = Config::getConfigData('deprecated_debug');
+        if ($debug !== null) {
+            $this->debug = (bool) $debug;
+        }
+
         $tokens = $phpcsFile->getTokens();
 
         // Only process @deprecated tags.
@@ -55,6 +74,7 @@ class DeprecatedSniff implements Sniff
 
         // Get the end point of the comment block which has the deprecated tag.
         $commentEnd = $phpcsFile->findNext(T_DOC_COMMENT_CLOSE_TAG, ($stackPtr + 1));
+
         // Get the full @deprecated text which may cover multiple lines.
         $textItems = [];
         $lastLine  = $tokens[($stackPtr + 1)]['line'];
@@ -89,7 +109,7 @@ class DeprecatedSniff implements Sniff
         if (count($matches) !== 4) {
             // The full text does not match the standard. Try to find fixes by
             // testing with a relaxed set of criteria, based on common
-            // formatting variations. This is designed for Core fixes.
+            // formatting variations. This is designed for Core fixes only.
             $error = "The text '@deprecated %s' does not match the standard format: ".$standardFormat;
             // All of the standard text should be on the first comment line, so
             // try to match with common formatting errors to allow an automatic
@@ -100,19 +120,23 @@ class DeprecatedSniff implements Sniff
                 // Get just the first line of the text.
                 $key   = array_keys($textItems)[0];
                 $text1 = $textItems[$key];
+                // Matching on (drupal|) here says that we are only attempting to provide
+                // automatic fixes for Drupal core, and if the project is missing we are
+                // assuming it is Drupal core. Deprecations for contrib projects are much
+                // less frequent and faults can be corrected manually.
                 preg_match('/^(.*)(as of|in) (drupal|)( |:|)+([\d\.\-xdev\?]+)(,| |. |)(.*)(removed|removal)([ |from|before|in|the]*) (drupal|)( |:|)([\d\-\.xdev]+)( |,|$)+(?:release|)(?:[\.,])*(.*)$/i', $text1, $matchesFix);
 
                 if (count($matchesFix) >= 12) {
-                    // This problem is a drupal core file and is fixable.
-                    if (empty($matchesFix[1]) === false) {
-                        // Verify that its acceptable to remove the text in [1].
-                        echo('>>> File: '.$phpcsFile->path.' line '.$tokens[($stackPtr)]['line'].PHP_EOL);
-                        echo('>>> First line: '.$text1.PHP_EOL);
-                        echo('>>> Would remove: '.$matchesFix[1].PHP_EOL);
+                    // It is a Drupal core deprecation and is fixable.
+                    if (empty($matchesFix[1]) === false && $this->debug === true) {
+                        // For info, to check it is acceptable to remove the text in [1].
+                        echo('DEBUG: File: '.$phpcsFile->path.', line '.$tokens[($stackPtr)]['line'].PHP_EOL);
+                        echo('DEBUG: "@deprecated '.$text1.'"'.PHP_EOL);
+                        echo('DEBUG: Fix will remove: "'.$matchesFix[1].'"'.PHP_EOL);
                     }
 
-                    $ver1 = str_Replace(['x-dev', 'x'], ['0', '0'], trim($matchesFix[5], '.'));
-                    $ver2 = str_Replace(['x-dev', 'x'], ['0', '0'], trim($matchesFix[12], '.'));
+                    $ver1 = str_Replace(['-dev', 'x'], ['', '0'], trim($matchesFix[5], '.'));
+                    $ver2 = str_Replace(['-dev', 'x'], ['', '0'], trim($matchesFix[12], '.'));
                     // If the version is short, add enough '.0' to correct it.
                     while (substr_count($ver1, '.') < 2) {
                         $ver1 .= '.0';
@@ -123,16 +147,19 @@ class DeprecatedSniff implements Sniff
                     }
 
                     $correctedText = trim('in drupal:'.$ver1.' and is removed from drupal:'.$ver2.'. '.trim($matchesFix[14]));
-                    // If $correctedText is longer than 65 this will make the whole
-                    // line exceed 80. It is probably longer than 80 before the fix.
-                    if (strlen($correctedText) > 65) {
-                        echo('>>> WARNING: File '.$phpcsFile->path.' line '.$tokens[($stackPtr)]['line'].PHP_EOL);
-                        echo('>>> WARNING: $correctedText = '.$correctedText.PHP_EOL);
-                        echo('>>> WARNING: length of $correctedText = '.strlen($correctedText).' (so line will exceed 80)'.PHP_EOL);
+                    // If $correctedText is longer than 65 this will make the whole line
+                    // exceed 80 so give a warning if running with debug.
+                    if (strlen($correctedText) > 65 && $this->debug === true) {
+                        echo('WARNING: File '.$phpcsFile->path.', line '.$tokens[($stackPtr)]['line'].PHP_EOL);
+                        echo('WARNING: Original  = * @deprecated '.$text1.PHP_EOL);
+                        echo('WARNING: Corrected = * @deprecated '.$correctedText.PHP_EOL);
+                        echo('WARNING: New line length '.(strlen($correctedText) + 15).' exceeds standard 80 character limit'.PHP_EOL);
                     }
 
-                    $fix = $phpcsFile->addFixableError($error, $key, 'IncorrectTextLayoutFixable', [$fullText]);
-                    $phpcsFile->fixer->replaceToken($key, $correctedText);
+                    $fix = $phpcsFile->addFixableError($error, $key, 'IncorrectTextLayout', [$fullText]);
+                    if ($fix === true) {
+                        $phpcsFile->fixer->replaceToken($key, $correctedText);
+                    }
                 }//end if
             }//end if
 
@@ -173,15 +200,22 @@ class DeprecatedSniff implements Sniff
 
         // Check the format of the @see url.
         $string = $phpcsFile->findNext(T_DOC_COMMENT_STRING, ($seeTag + 1), $commentEnd);
-        $crLink = $tokens[$string]['content'];
+        // If the @see tag exists but has no content then $string will be empty
+        // and $tokens[$string]['content'] will return '<?php' which makes the
+        // standards message confusing. Better to set crLink to blank here.
+        if ($string === false) {
+            $crLink = ' ';
+        } else {
+            $crLink = $tokens[$string]['content'];
+        }
+
         // Allow for the alternative 'node' or 'project/aaa/issues' format.
         preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $crLink, $matches);
-        // If matches[4] is not blank it means that the url is correct but it
-        // ends with a period. As this can be a common mistake give a specific
-        // message to assist in fixing.
         if (isset($matches[4]) === true && empty($matches[4]) === false) {
-            $error = "The @see url '%s' should not end with a period.";
-            $phpcsFile->addWarning($error, $seeTag, 'DeprecatedPeriodAfterSeeUrl', [$crLink]);
+            // If matches[4] is not blank it means that the url is correct but
+            // it ends with a period. This is covered by the generic fixable
+            // sniff FunctionCommentSniff.SeePunctuation so allow that sniff to
+            // report it (and fix it).
         } else if (empty($matches) === true) {
             $error = "The @see url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
             $phpcsFile->addWarning($error, $seeTag, 'DeprecatedWrongSeeUrlFormat', [$crLink]);
