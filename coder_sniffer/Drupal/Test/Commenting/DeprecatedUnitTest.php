@@ -27,15 +27,17 @@ class DeprecatedUnitTest extends CoderSniffUnitTest
     {
         return [
             // Basic layout is wrong. Missing see url.
-            24 => 2,
+            24  => 2,
             // No details given, check that the test gives two errors.
-            75 => 2,
+            75  => 2,
             // Layout OK but missing the extra info.
-            81 => 1,
+            81  => 1,
             // Text layout is wrong but fixable.
-            89 => 1,
+            89  => 1,
             // Text layout is wrong but fixable.
-            98 => 1,
+            98  => 1,
+            // See Url has trailing punctuation which is fixable.
+            101 => 1,
         ];
 
     }//end getErrorList()
