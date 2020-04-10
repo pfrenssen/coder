@@ -16,6 +16,9 @@
   <!-- Do not run this sniff on txt files. -->
   <exclude-pattern>*.txt</exclude-pattern>
  </rule>
+
+ <rule ref="Drupal.Classes.InterfaceAnnounced" />
+
  <rule ref="Drupal.Commenting.FileComment.SpacingAfterComment">
   <!-- Do not run this sniff on template files. -->
   <exclude-pattern>*.tpl.php</exclude-pattern>

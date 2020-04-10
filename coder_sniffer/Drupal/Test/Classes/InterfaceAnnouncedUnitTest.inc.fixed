@@ -1,0 +1,52 @@
+<?php
+
+namespace Foo\Bar;
+
+/**
+ *
+ */
+interface FooInterface {
+
+}
+
+/**
+ *
+ */
+interface BarInterface {
+
+}
+
+/**
+ *
+ */
+interface BazInterface {
+
+}
+
+/**
+ *
+ */
+class Foo implements FooInterface {
+
+}
+
+/**
+ *
+ */
+class Bar extends Foo implements BarInterface {
+
+}
+
+/**
+ *
+ */
+class Baz extends Bar implements BazInterface {
+
+}
+
+/**
+ *
+ */
+class Qux extends Foo implements BarInterface, BazInterface {
+
+}
