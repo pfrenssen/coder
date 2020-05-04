@@ -49,8 +49,15 @@ class CoreVersionRequirementSniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $fileExtension = strtolower(substr($phpcsFile->getFilename(), -9));
+        $filename      = $phpcsFile->getFilename();
+        $fileExtension = strtolower(substr($filename, -9));
         if ($fileExtension !== '.info.yml') {
+            return ($phpcsFile->numTokens + 1);
+        }
+
+        // Exclude config files which might contain the info.yml extension.
+        $filenameWithoutExtension = substr($filename, 0, -9);
+        if (strpos($filenameWithoutExtension, '.') !== false) {
             return ($phpcsFile->numTokens + 1);
         }
 
@@ -59,6 +66,11 @@ class CoreVersionRequirementSniff implements Sniff
             $info = Yaml::parse($contents);
         } catch (ParseException $e) {
             // If the YAML is invalid we ignore this file.
+            return ($phpcsFile->numTokens + 1);
+        }
+
+        // Check if the type key is set, to verify if we're inside a project info.yml file.
+        if (isset($info['type']) === false) {
             return ($phpcsFile->numTokens + 1);
         }
 
