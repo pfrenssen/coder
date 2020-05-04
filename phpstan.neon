@@ -81,15 +81,5 @@ parameters:
             message: "#^Method Drupal\\\\Sniffs\\\\Files\\\\LineLengthSniff\\:\\:checkLineLength\\(\\) should return false\\|null but return statement is missing\\.$#"
             count: 1
             path: coder_sniffer/Drupal/Sniffs/Files/LineLengthSniff.php
-        # Upstream PHPCS problem where properties on Config are not set as
-        # class variables. Ignore.
-        -
-            message: "#^Access to an undefined property PHP_CodeSniffer\\\\Config\\:\\:\\$annotations\\.$#"
-            count: 1
-            path: coder_sniffer/Drupal/Sniffs/WhiteSpace/ScopeIndentSniff.php
-        -
-            message: "#^Access to an undefined property PHP_CodeSniffer\\\\Config\\:\\:\\$.+\\.$#"
-            count: 5
-            path: coder_sniffer/Drupal/Test/CoderSniffUnitTest.php
         # We support PHP 7.0 which does not have the "void" return type hint.
         - '#^Method .+ has no return typehint specified\.$#'
