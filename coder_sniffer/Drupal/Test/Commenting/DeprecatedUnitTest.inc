@@ -93,10 +93,10 @@ function w() {
  */
 
 /**
- * This block also has incorrect basic layout and is fixable.
+ * Incorrect text and the url has trailing punctuation. Both are fixable.
  *
  * @deprecated as of 8.8.3-dev, scheduled for removal in DRUPAL 9
  *   It has 'as of' not 'in', missing word 'drupal', has -dev in first version,
  *   has 'removal', upper-case 'drupal' and short second version.
- * @see http://www.drupal.org/node/123
+ * @see http://www.drupal.org/node/123?.
  */

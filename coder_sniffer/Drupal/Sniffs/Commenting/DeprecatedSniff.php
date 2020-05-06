@@ -193,7 +193,7 @@ class DeprecatedSniff implements Sniff
         // The next tag in this comment block after @deprecated must be @see.
         $seeTag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($stackPtr + 1), $commentEnd, false, '@see');
         if ($seeTag === false) {
-            $error = 'Each @deprecated tag must have a @see tag immediately following it.';
+            $error = 'Each @deprecated tag must have a @see tag immediately following it';
             $phpcsFile->addError($error, $stackPtr, 'DeprecatedMissingSeeTag');
             return;
         }
@@ -210,12 +210,17 @@ class DeprecatedSniff implements Sniff
         }
 
         // Allow for the alternative 'node' or 'project/aaa/issues' format.
-        preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $crLink, $matches);
+        preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)([\.\?\;!]*)$]', $crLink, $matches);
         if (isset($matches[4]) === true && empty($matches[4]) === false) {
-            // If matches[4] is not blank it means that the url is correct but
-            // it ends with a period. This is covered by the generic fixable
-            // sniff FunctionCommentSniff.SeePunctuation so allow that sniff to
-            // report it (and fix it).
+            // If matches[4] is not blank it means that the url is OK but it
+            // ends with punctuation. This is a common and fixable mistake.
+            $error = "The @see url '%s' should not end with punctuation";
+            $fix   = $phpcsFile->addFixableError($error, $string, 'DeprecatedPeriodAfterSeeUrl', [$crLink]);
+            if ($fix === true) {
+                // Remove all of the the trailing punctuation.
+                $content = substr($crLink, 0, -(strlen($matches[4])));
+                $phpcsFile->fixer->replaceToken($string, $content);
+            }//end if
         } else if (empty($matches) === true) {
             $error = "The @see url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
             $phpcsFile->addWarning($error, $seeTag, 'DeprecatedWrongSeeUrlFormat', [$crLink]);

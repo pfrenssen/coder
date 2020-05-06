@@ -93,7 +93,7 @@ function w() {
  */
 
 /**
- * This block also has incorrect basic layout and is fixable.
+ * Incorrect text and the url has trailing punctuation. Both are fixable.
  *
  * @deprecated in drupal:8.8.3 and is removed from drupal:9.0.0.
  *   It has 'as of' not 'in', missing word 'drupal', has -dev in first version,
