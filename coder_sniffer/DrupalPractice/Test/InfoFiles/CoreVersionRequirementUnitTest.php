@@ -61,6 +61,7 @@ class CoreVersionRequirementUnitTest extends CoderSniffUnitTest
         return [
             __DIR__.'/core_version.info.yml',
             __DIR__.'/core_version_test.info.yml',
+            __DIR__.'/core_version.config.info.yml',
         ];
 
     }//end getTestFiles()
