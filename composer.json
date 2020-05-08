@@ -16,7 +16,7 @@
     "require": {
         "php": ">=7.0.8",
         "ext-mbstring": "*",
-        "squizlabs/php_codesniffer": "^3.5.4",
+        "squizlabs/php_codesniffer": "^3.5.5",
         "symfony/yaml": ">=2.0.5"
     },
     "autoload": {
