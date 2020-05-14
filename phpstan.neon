@@ -81,5 +81,3 @@ parameters:
             message: "#^Method Drupal\\\\Sniffs\\\\Files\\\\LineLengthSniff\\:\\:checkLineLength\\(\\) should return false\\|null but return statement is missing\\.$#"
             count: 1
             path: coder_sniffer/Drupal/Sniffs/Files/LineLengthSniff.php
-        # We support PHP 7.0 which does not have the "void" return type hint.
-        - '#^Method .+ has no return typehint specified\.$#'
