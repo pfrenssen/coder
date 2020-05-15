@@ -51,11 +51,17 @@ class ExceptionTSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $endPtr = $phpcsFile->findEndOfStatement($stackPtr);
 
-        for ($i = ($stackPtr + 1); $i < $endPtr; $i++) {
-            if ($tokens[$i]['code'] === T_STRING && $tokens[$i]['content'] === 't') {
-                $warning = 'Exceptions should not be translated';
-                $phpcsFile->addWarning($warning, $stackPtr, 'ExceptionT');
-                return;
+        $newPtr = $phpcsFile->findNext(T_NEW, ($stackPtr + 1), $endPtr);
+        if ($newPtr !== false) {
+            $openPtr = $phpcsFile->findNext(T_OPEN_PARENTHESIS, ($newPtr + 1), $endPtr);
+            if ($openPtr !== false) {
+                for ($i = ($openPtr + 1); $i < $tokens[$openPtr]['parenthesis_closer']; $i++) {
+                    if ($tokens[$i]['code'] === T_STRING && $tokens[$i]['content'] === 't') {
+                        $warning = 'Exceptions should not be translated';
+                        $phpcsFile->addWarning($warning, $stackPtr, 'ExceptionT');
+                        return;
+                    }
+                }
             }
         }
 
