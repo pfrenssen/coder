@@ -41,10 +41,10 @@ script:
   - ./vendor/bin/phpcs -p
   # Ensure that a custom standard can be invoked and the auto-loading of
   # abstract classes works.
-  - ./vendor/bin/phpcs -p --standard=coder_sniffer/Drupal/Test/phpcs-ruleset.xml coder_sniffer/Drupal/Test/good/ --ignore=coder_sniffer/Drupal/Test/good/GoodUnitTest.php
+  - ./vendor/bin/phpcs -p --standard=tests/Drupal/phpcs-ruleset.xml tests/Drupal/good/ --ignore=tests/Drupal/good/GoodUnitTest.php
   # Ensure that the DrupalPractice standard can be invoked standalone and the
   # auto-loading of abstract classes works.
-  - ./vendor/bin/phpcs -p --standard=coder_sniffer/DrupalPractice coder_sniffer/DrupalPractice/Test/good/ --ignore=coder_sniffer/DrupalPractice/Test/good/GoodUnitTest.php
+  - ./vendor/bin/phpcs -p --standard=coder_sniffer/DrupalPractice tests/DrupalPractice/good/ --ignore=tests/DrupalPractice/good/GoodUnitTest.php
    # Only run PHPStan on the latest PHP version, no need to run it multiple
    # times.
   - if [[ $PHPSTAN == "1" ]]; then ./vendor/bin/phpstan analyse; fi
