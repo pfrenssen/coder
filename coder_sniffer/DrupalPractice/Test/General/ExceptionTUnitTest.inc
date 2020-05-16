@@ -18,4 +18,12 @@ class ExceptionExample {
     return $this->t('Error');
   }
 
+  public function dolor() {
+    throw (new PipelineStepExecutionLogicException('Graph data could not be inserted'))->setUserMessage([
+      '#markup' => $this->t('Could not store triples in triple store. Reason: @message', [
+        '@message' => t('Failed'),
+      ]),
+    ]);
+  }
+
 }
