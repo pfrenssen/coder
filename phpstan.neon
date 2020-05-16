@@ -2,17 +2,22 @@ parameters:
     level: 6
     paths:
         - coder_sniffer
+        - tests
     excludes_analyse:
         # Copied legacy code that we don't care much about.
         - 'coder_sniffer/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php'
         # Test files that should not be checked.
-        - 'coder_sniffer/*/Test/*.tpl.php'
-        - 'coder_sniffer/*/Test/*.api.php'
-        - 'coder_sniffer/*/Test/*/good.php'
-        - 'coder_sniffer/*/Test/*/bad.php'
-        - 'coder_sniffer/*/Test/*/drupal[678]/*.php'
+        - 'tests/*/*.tpl.php'
+        - 'tests/*/*.api.php'
+        - 'tests/*/good.php'
+        - 'tests/*/bad.php'
+        - 'tests/*/drupal[678]/*.php'
+    # The tests directory is not autoloaded by Composer. Make PHPStan aware of
+    # it.
+    autoload_directories:
+        - tests
     autoload_files:
-        - coder_sniffer/Drupal/Test/phpunit-bootstrap.php
+        - tests/Drupal/phpunit-bootstrap.php
     ignoreErrors:
         # PHPStan does not support variable variables, see https://github.com/phpstan/phpstan/issues/2810
         -

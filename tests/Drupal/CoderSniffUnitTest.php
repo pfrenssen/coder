@@ -64,9 +64,8 @@ abstract class CoderSniffUnitTest extends TestCase
     {
         $class = get_class($this);
 
-        $this->rootDir      = __DIR__.'/../../';
-        $this->testsDir     = __DIR__.'/';
-        $this->standardsDir = __DIR__.'/../';
+        $this->rootDir  = __DIR__.'/../../';
+        $this->testsDir = __DIR__.'/';
         // Required to pull in all the defines from the tokens file.
         $tokens = new Tokens();
         if (defined('PHP_CODESNIFFER_VERBOSITY') === false) {
@@ -150,9 +149,9 @@ abstract class CoderSniffUnitTest extends TestCase
             list($standardName) = explode('\\', get_class($this));
         }
 
-        $testFileBase = $this->rootDir.$standardName.DIRECTORY_SEPARATOR.'Test'.DIRECTORY_SEPARATOR.$categoryName.DIRECTORY_SEPARATOR.$sniffName.'UnitTest.';
+        $testFileBase = $this->rootDir.'tests'.DIRECTORY_SEPARATOR.$standardName.DIRECTORY_SEPARATOR.$categoryName.DIRECTORY_SEPARATOR.$sniffName.'UnitTest.';
 
-        $this->standardsDir = $this->rootDir.$standardName.DIRECTORY_SEPARATOR;
+        $this->standardsDir = $this->rootDir.'coder_sniffer'.DIRECTORY_SEPARATOR.$standardName.DIRECTORY_SEPARATOR;
         // $testFileBase = $this->testsDir.$categoryName.DIRECTORY_SEPARATOR.$sniffName.'UnitTest.';
         // Get a list of all test files to check.
         $testFiles = $this->getTestFiles($testFileBase);
