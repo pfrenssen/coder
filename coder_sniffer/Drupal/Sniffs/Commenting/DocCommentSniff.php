@@ -248,6 +248,18 @@ class DocCommentSniff implements Sniff
             }
         }
 
+        if (strlen($shortContent) > 2 && substr($shortContent, -2) === '..') {
+            $theLast3rdChar = substr($shortContent, -3, 1);
+            // Ignore ... and /.. .
+            if (in_array($theLast3rdChar, ['.', '/']) === false) {
+                $fix = $phpcsFile->addFixableError('Duplicate full-stops found', $stackPtr, 'DuplicateFullStop');
+                if ($fix === true) {
+                    $newContent = substr($shortContent, 0, -1);
+                    $phpcsFile->fixer->replaceToken($short, $newContent);
+                }
+            }
+        }
+
         if ($tokens[$short]['line'] !== $tokens[$shortEnd]['line']) {
             $error = 'Doc comment short description must be on a single line, further text should be a separate paragraph';
             $phpcsFile->addError($error, $shortEnd, 'ShortSingleLine');
@@ -322,6 +334,18 @@ class DocCommentSniff implements Sniff
                 $fix   = $phpcsFile->addFixableError($error, $longEnd, 'LongFullStop');
                 if ($fix === true) {
                     $phpcsFile->fixer->addContent($longEnd, '.');
+                }
+            }
+
+            if (strlen($longContent) > 2 && substr($longContent, -2) === '..') {
+                $theLast3rdChar = substr($longContent, -3, 1);
+                 // Ignore ... and /.. .
+                if (in_array($theLast3rdChar, ['.', '/']) === false) {
+                    $fix = $phpcsFile->addFixableError('Duplicate full-stops found', $stackPtr, 'DuplicateFullStop');
+                    if ($fix === true) {
+                        $newContent = substr($longContent, 0, -1);
+                        $phpcsFile->fixer->replaceToken($long, $newContent);
+                    }
                 }
             }
         }//end if

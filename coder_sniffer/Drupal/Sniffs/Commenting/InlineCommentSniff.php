@@ -368,23 +368,36 @@ class InlineCommentSniff implements Sniff
             // Also allow closing tags like @endlink or @endcode.
             $isEndTag = $lastWord[0] === '@';
 
-            if (in_array($commentCloser, $acceptedClosers, true) === false
-                && $isUrl === false && $isFunction === false && $isEndTag === false
-            ) {
-                $error = 'Inline comments must end in %s';
-                $ender = '';
-                foreach ($acceptedClosers as $closerName => $symbol) {
-                    $ender .= ' '.$closerName.',';
+            if ($isUrl === false && $isFunction === false && $isEndTag === false) {
+                if (in_array($commentCloser, $acceptedClosers, true) === false) {
+                    $error = 'Inline comments must end in %s';
+                    $ender = '';
+                    foreach ($acceptedClosers as $closerName => $symbol) {
+                        $ender .= ' '.$closerName.',';
+                    }
+
+                    $ender = trim($ender, ' ,');
+                    $data  = [$ender];
+                    $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'InvalidEndChar', $data);
+                    if ($fix === true) {
+                        $newContent = preg_replace('/(\s+)$/', '.$1', $tokens[$lastCommentToken]['content']);
+                        $phpcsFile->fixer->replaceToken($lastCommentToken, $newContent);
+                    }
                 }
 
-                $ender = trim($ender, ' ,');
-                $data  = [$ender];
-                $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'InvalidEndChar', $data);
-                if ($fix === true) {
-                    $newContent = preg_replace('/(\s+)$/', '.$1', $tokens[$lastCommentToken]['content']);
-                    $phpcsFile->fixer->replaceToken($lastCommentToken, $newContent);
+                if ($commentCloser === '.') {
+                    if (strlen($commentText) > 2 && substr($commentText, -2) === '..') {
+                        $theLast3rdChar = substr($commentText, -3, 1);
+                        if (in_array($theLast3rdChar, ['.', '/']) === false) {
+                            $fix = $phpcsFile->addFixableError('Duplicate full-stops found', $lastCommentToken, 'DuplicateFullStop');
+                            if ($fix === true) {
+                                $newContent = preg_replace('/(\.\.)$/', '.', $tokens[$lastCommentToken]['content']);
+                                $phpcsFile->fixer->replaceToken($lastCommentToken, $newContent);
+                            }
+                        }
+                    }
                 }
-            }
+            }//end if
         }//end if
 
         // Finally, the line below the last comment cannot be empty if this inline

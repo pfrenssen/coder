@@ -1,7 +1,16 @@
 <?php
 
 /**
- * @file File contains Theming functions and Node definitions.
+ * @file File contains Theming functions and Node definitions..
  */
 
 require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'example') . '/example.inc';
+
+/**
+ * Class foo..
+ *
+ * This is class foo..
+ */
+class Foo {
+
+}
