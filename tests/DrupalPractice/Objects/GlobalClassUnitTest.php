@@ -39,7 +39,7 @@ class GlobalClassUnitTest extends CoderSniffUnitTest
     {
         switch ($testFile) {
         case 'GlobalClassUnitTest.inc':
-            return [8 => 1];
+            return [9 => 1];
         case 'ExampleClassWithDependencyInjection.php':
             return [24 => 1];
         case 'ExampleService.php':
