@@ -100,3 +100,13 @@ function w() {
  *   has 'removal', upper-case 'drupal' and short second version.
  * @see http://www.drupal.org/node/123
  */
+
+/**
+ * This contrib doc block will pass the 'Deprecated' standards checks.
+ *
+ * @deprecated in project:8.1.0 and is removed from project:8.2.0. This uses
+ * semantic versioning, but this is now allowed, so we should allow it as well.
+ * @see http://www.drupal.org/node/7890
+ */
+function meanwhile() {
+}
