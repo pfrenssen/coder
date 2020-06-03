@@ -51,57 +51,103 @@ class UseGlobalClassSniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
+        $tokens    = $phpcsFile->getTokens();
+        $classStmt = $phpcsFile->findNext(T_CLASS, 0);
 
         // Ensure we are in the global scope, to exclude trait use statements.
         if (empty($tokens[$stackPtr]['conditions']) === false) {
             return;
         }
 
-        // We are only interested in use statements that contain no backslash,
-        // which means this is a class without a namespace.
+        // End of the full statement.
         $stmtEnd = $phpcsFile->findNext(T_SEMICOLON, $stackPtr);
-        if ($phpcsFile->findNext(T_NS_SEPARATOR, $stackPtr, $stmtEnd) !== false) {
-            return;
-        }
 
-        // The first string token is the class name.
-        $class     = $phpcsFile->findNext(T_STRING, $stackPtr, $stmtEnd);
-        $className = $phpcsFile->getTokensAsString($class, 1);
-        // If there is more than one string token, the last one is the alias.
-        $alias     = $phpcsFile->findPrevious(T_STRING, $stmtEnd, $stackPtr);
-        $aliasName = $phpcsFile->getTokensAsString($alias, 1);
-
-        $error = 'Non-namespaced classes/interfaces/traits should not be referenced with use statements';
-        $phpcsFile->addFixableError($error, $stackPtr, 'RedundantUseStatement');
-
-        $phpcsFile->fixer->beginChangeset();
-
-        // Remove the use statement.
-        for ($i = $stackPtr; $i <= $stmtEnd; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
-
-        // Find all usages of the class, and add a leading backslash.
-        for ($i = $stackPtr; $i !== false; $i = $phpcsFile->findNext(T_STRING, ($i + 1), null, false, $aliasName)) {
-            $before = $phpcsFile->findPrevious(T_WHITESPACE, ($i - 1), null, true);
-            $after  = $phpcsFile->findNext(T_WHITESPACE, ($i + 1), null, true);
-
-            // Look for any of the following:
-            // "new Class(",
-            // "Class::" with no preceding backslash,
-            // "Class $var" with no preceding backslash,
-            // ": Class {".
-            if (($tokens[$before]['code'] === T_NEW && $tokens[$after]['code'] === T_OPEN_PARENTHESIS)
-                || ($tokens[$before]['code'] !== T_NS_SEPARATOR && $tokens[$after]['code'] === T_DOUBLE_COLON)
-                || ($tokens[$before]['code'] !== T_NS_SEPARATOR && $tokens[$after]['code'] === T_VARIABLE)
-                || ($tokens[$before]['code'] === T_COLON && $tokens[$after]['code'] === T_OPEN_CURLY_BRACKET)
-            ) {
-                $phpcsFile->fixer->replaceToken($i, '\\'.$className);
+        $lineStart = $stackPtr;
+        // Iterate through a potential multiline use statement.
+        while (false !== $lineEnd = $phpcsFile->findNext([T_SEMICOLON, T_COMMA], ($lineStart + 1), ($stmtEnd + 1))) {
+            // We are only interested in imports that contain no backslash,
+            // which means this is a class without a namespace.
+            if ($phpcsFile->findNext(T_NS_SEPARATOR, $lineStart, $lineEnd) !== false) {
+                $lineStart = $lineEnd;
+                continue;
             }
-        }
 
-        $phpcsFile->fixer->endChangeset();
+            // The first string token is the class name.
+            $class     = $phpcsFile->findNext(T_STRING, $lineStart, $lineEnd);
+            $className = $tokens[$class]['content'];
+            // If there is more than one string token, the last one is the alias.
+            $alias     = $phpcsFile->findPrevious(T_STRING, $lineEnd, $stackPtr);
+            $aliasName = $tokens[$alias]['content'];
+
+            $error = 'Non-namespaced classes/interfaces/traits should not be referenced with use statements';
+            $phpcsFile->addFixableError($error, $class, 'RedundantUseStatement');
+
+            $phpcsFile->fixer->beginChangeset();
+
+            // Remove the entire line by default.
+            $start = $lineStart;
+            $end   = $lineEnd;
+
+            if ($tokens[$lineStart]['code'] === T_COMMA) {
+                // If there are lines before this one,
+                // then leave the ending delimiter in place.
+                $end = ($lineEnd - 1);
+            } else if ($tokens[$lineEnd]['code'] === T_COMMA) {
+                // If there are lines after, but not before,
+                // then leave the use keyword.
+                $start = $class;
+            }
+
+            for ($i = $start; $i <= $end; $i++) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+
+            // Find all usages of the class, and add a leading backslash.
+            // Only start looking after the first class keyword, to skip
+            // the use statement block.
+            for ($i = $classStmt; $i !== false; $i = $phpcsFile->findNext(T_STRING, ($i + 1), null, false, $aliasName)) {
+                $before = $phpcsFile->findPrevious(T_WHITESPACE, ($i - 1), null, true);
+                $after  = $phpcsFile->findNext(T_WHITESPACE, ($i + 1), null, true);
+
+                // Look for any of the following:
+                // "new Class(",
+                // "use Class;"
+                // "Class::" or "Class $var" with no preceding backslash,
+                // "Class {" preceded by "implements", "extends", ":", ",", "use".
+                if (($tokens[$before]['code'] === T_NEW
+                    && $tokens[$after]['code'] === T_OPEN_PARENTHESIS)
+                    || ($tokens[$before]['code'] === T_USE
+                    && $tokens[$after]['code'] === T_SEMICOLON)
+                    || ($tokens[$before]['code'] !== T_NS_SEPARATOR
+                    && true === in_array(
+                        $tokens[$after]['code'],
+                        [
+                            T_DOUBLE_COLON,
+                            T_VARIABLE,
+                        ],
+                        true
+                    ))
+                    || ($tokens[$after]['code'] === T_OPEN_CURLY_BRACKET
+                    && true === in_array(
+                        $tokens[$before]['code'],
+                        [
+                            T_EXTENDS,
+                            T_COLON,
+                            T_COMMA,
+                            T_IMPLEMENTS,
+                            T_USE,
+                        ],
+                        true
+                    ))
+                ) {
+                    $phpcsFile->fixer->replaceToken($i, '\\'.$className);
+                }
+            }//end for
+
+            $phpcsFile->fixer->endChangeset();
+
+            $lineStart = $lineEnd;
+        }//end while
 
     }//end process()
 
