@@ -4,5 +4,5 @@
 <!-- This file is used to test whether projects can include and override the Drupal coding standard in their projects. -->
 <ruleset name="Drupal">
     <description>Drupal coding standard</description>
-    <rule ref=".." />
+    <rule ref="../../coder_sniffer/Drupal" />
 </ruleset>
