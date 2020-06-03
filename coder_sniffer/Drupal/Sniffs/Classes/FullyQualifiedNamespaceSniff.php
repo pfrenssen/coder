@@ -138,7 +138,8 @@ class FullyQualifiedNamespaceSniff implements Sniff
                     break;
                 }
             }
-            $classStatement = $phpcsFile->findNext(T_CLASS, $classStatement + 1);
+
+            $classStatement = $phpcsFile->findNext(T_CLASS, ($classStatement + 1));
         }
 
         $error = 'Namespaced classes/interfaces/traits should be referenced with use statements';
