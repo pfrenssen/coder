@@ -27,6 +27,7 @@ class UseGlobalClassUnitTest extends CoderSniffUnitTest
             13 => 1,
             15 => 1,
         ];
+
     }//end getErrorList()
 
 
