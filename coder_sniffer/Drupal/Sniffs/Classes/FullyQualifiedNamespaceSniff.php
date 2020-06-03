@@ -130,7 +130,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
         if ($conflict === false) {
             $classStatement = $phpcsFile->findNext(T_CLASS, 0);
             while ($classStatement !== false) {
-                $afterClassStatement = $phpcsFile->findNext(T_WHITESPACE, $classStatement, null, true);
+                $afterClassStatement = $phpcsFile->findNext(T_WHITESPACE, ($classStatement + 1), null, true);
                 // Check for 'class ClassName' declarations.
                 if ($tokens[$afterClassStatement]['code'] === T_STRING) {
                     $declaredName = $tokens[$afterClassStatement]['content'];
