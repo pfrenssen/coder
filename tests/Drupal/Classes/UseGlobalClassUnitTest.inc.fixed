@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Example.
+ */
+
+use Namespaced\TestClass;
+use Namespaced\TestClassSecond as NamespacedAlias;
+
+/**
+ * Example.
+ */
+class Example extends \Test {
+
+  use \Test;
+
+  /**
+   * Description.
+   */
+  public function test1(\Test1 $alias, TestClass $class) {
+
+  }
+
+  /**
+   * Description.
+   */
+  public function test2(NamespacedAlias $alias): \Test {
+
+  }
+
+  /**
+   * Description.
+   */
+  public function test3() {
+    try {
+    }
+    catch (\Test $exception) {
+    }
+  }
+
+  /**
+   * Description.
+   */
+  public function test4() {
+    \MultiLine::create('test');
+  }
+
+  /**
+   * Description.
+   */
+  public function test5() {
+    $test = new \MultiLineSecond();
+  }
+
+}
