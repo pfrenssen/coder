@@ -51,8 +51,10 @@ class UseGlobalClassSniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
+
         $tokens    = $phpcsFile->getTokens();
-        $classStmt = $phpcsFile->findNext(T_CLASS, 0);
+        // Find the first declaration, marking the end of the use statements.
+        $bodyStart = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT, T_FUNCTION], 0);
 
         // Ensure we are in the global scope, to exclude trait use statements.
         if (empty($tokens[$stackPtr]['conditions']) === false) {
@@ -111,9 +113,8 @@ class UseGlobalClassSniff implements Sniff
             }
 
             // Find all usages of the class, and add a leading backslash.
-            // Only start looking after the first class keyword, to skip
-            // the use statement block.
-            for ($i = $classStmt; $i !== false; $i = $phpcsFile->findNext(T_STRING, ($i + 1), null, false, $aliasName)) {
+            // Only start looking after the end of the use statement block.
+            for ($i = $bodyStart; $i !== false; $i = $phpcsFile->findNext(T_STRING, ($i + 1), null, false, $aliasName)) {
                 $before = $phpcsFile->findPrevious(T_WHITESPACE, ($i - 1), null, true);
                 $after  = $phpcsFile->findNext(T_WHITESPACE, ($i + 1), null, true);
 
