@@ -67,4 +67,11 @@ class Example extends Test {
     $test = new MultiLineAlias2();
   }
 
+  /**
+   * Description.
+   */
+  public function test7(): ?Test {
+
+  }
+
 }

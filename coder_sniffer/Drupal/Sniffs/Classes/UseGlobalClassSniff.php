@@ -121,7 +121,7 @@ class UseGlobalClassSniff implements Sniff
                 // "new Class(",
                 // "use Class;"
                 // "Class::" or "Class $var" with no preceding backslash,
-                // "Class {" preceded by "implements", "extends", ":", ",", "use".
+                // "Class {" preceded by "implements", "extends", ":", ",", "use", "?".
                 if (($tokens[$before]['code'] === T_NEW
                     && $tokens[$after]['code'] === T_OPEN_PARENTHESIS)
                     || ($tokens[$before]['code'] === T_USE
@@ -144,6 +144,7 @@ class UseGlobalClassSniff implements Sniff
                             T_COMMA,
                             T_IMPLEMENTS,
                             T_USE,
+                            T_NULLABLE,
                         ],
                         true
                     ))
