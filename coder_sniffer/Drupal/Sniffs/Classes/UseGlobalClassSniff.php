@@ -87,6 +87,7 @@ class UseGlobalClassSniff implements Sniff
             // Remove the entire line by default.
             $start = $lineStart;
             $end   = $lineEnd;
+            $next  = $phpcsFile->findNext(T_WHITESPACE, ($end + 1), null, true);
 
             if ($tokens[$lineStart]['code'] === T_COMMA) {
                 // If there are lines before this one,
@@ -96,6 +97,10 @@ class UseGlobalClassSniff implements Sniff
                 // If there are lines after, but not before,
                 // then leave the use keyword.
                 $start = $class;
+            } else if ($tokens[$next]['code'] === T_USE) {
+                // If the whole statement is removed, and there is one after it,
+                // then also remove the linebreaks.
+                $end = ($next - 1);
             }
 
             for ($i = $start; $i <= $end; $i++) {
