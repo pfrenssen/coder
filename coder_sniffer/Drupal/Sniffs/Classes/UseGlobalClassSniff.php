@@ -52,7 +52,8 @@ class UseGlobalClassSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
 
-        $tokens    = $phpcsFile->getTokens();
+        $tokens = $phpcsFile->getTokens();
+
         // Find the first declaration, marking the end of the use statements.
         $bodyStart = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT, T_FUNCTION], 0);
 
