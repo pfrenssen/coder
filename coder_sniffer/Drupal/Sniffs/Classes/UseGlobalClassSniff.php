@@ -67,7 +67,10 @@ class UseGlobalClassSniff implements Sniff
         while (false !== $lineEnd = $phpcsFile->findNext([T_SEMICOLON, T_COMMA], ($lineStart + 1), ($stmtEnd + 1))) {
             // We are only interested in imports that contain no backslash,
             // which means this is a class without a namespace.
-            if ($phpcsFile->findNext(T_NS_SEPARATOR, $lineStart, $lineEnd) !== false) {
+            // Also skip function imports.
+            if ($phpcsFile->findNext(T_NS_SEPARATOR, $lineStart, $lineEnd) !== false
+                || $phpcsFile->findNext(T_STRING, $lineStart, $lineEnd, false, 'function') !== false
+            ) {
                 $lineStart = $lineEnd;
                 continue;
             }
