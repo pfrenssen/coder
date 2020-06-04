@@ -13,6 +13,7 @@ use MultiLine as MultiLineAlias,
     MultiLineSecond;
 use Namespaced\MultiLine2 as MultiLineAlias2,
     MultiLineSecond2;
+use function count;
 
 /**
  * Example.
@@ -25,7 +26,7 @@ class Example extends Test {
    * Description.
    */
   public function test1(Alias $alias, TestClass $class) {
-
+    count([]);
   }
 
   /**
@@ -57,6 +58,13 @@ class Example extends Test {
    */
   public function test5() {
     $test = new MultiLineSecond();
+  }
+
+  /**
+   * Description.
+   */
+  public function test6() {
+    $test = new MultiLineAlias2();
   }
 
 }
