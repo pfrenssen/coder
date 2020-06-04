@@ -162,9 +162,16 @@ class UseGlobalClassSniff implements Sniff
             return true;
         }
 
-        // Inheritance: "Class {", preceded by "implements", "extends", ",".
-        if (($before === T_COMMA || $before === T_EXTENDS || $before === T_IMPLEMENTS)
-            && $after === T_OPEN_CURLY_BRACKET
+        // Extension: "extends" before and "implements" or "{" after.
+        if ($before === T_EXTENDS
+            && ($after === T_IMPLEMENTS || $after === T_OPEN_CURLY_BRACKET)
+        ) {
+            return true;
+        }
+
+        // Implementation: "implements", or "," before and "{", "," after.
+        if (($before === T_COMMA || $before === T_IMPLEMENTS)
+            && ($after === T_OPEN_CURLY_BRACKET || $after === T_COMMA)
         ) {
             return true;
         }

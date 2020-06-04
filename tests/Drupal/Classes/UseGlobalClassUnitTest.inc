@@ -18,7 +18,7 @@ use function count;
 /**
  * Example.
  */
-class Example extends Test {
+class Example extends Test implements Test, Alias, MultiLineAlias {
 
   use Test;
 

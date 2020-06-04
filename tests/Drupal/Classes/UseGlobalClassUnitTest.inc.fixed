@@ -13,7 +13,7 @@ use function count;
 /**
  * Example.
  */
-class Example extends \Test {
+class Example extends \Test implements \Test, \Test1, \MultiLine {
 
   use \Test;
 
