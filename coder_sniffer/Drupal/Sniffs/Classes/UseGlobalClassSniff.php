@@ -118,14 +118,22 @@ class UseGlobalClassSniff implements Sniff
                 $after  = $phpcsFile->findNext(T_WHITESPACE, ($i + 1), null, true);
 
                 // Look for any of the following:
-                // "new Class(",
-                // "use Class;"
-                // "Class::" or "Class $var" with no preceding backslash,
-                // "Class {" preceded by "implements", "extends", ":", ",", "use", "?".
+                // constructor calls: "new Class(",
+                // trait usage: "use Class;" and "use Class {",
+                // type hints and static calls: "Class::" or "Class $var" with no preceding backslash,
+                // inheritance: "Class {", preceded by "implements", "extends", ",",
+                // return type hints: ": Class;", "?Class;", ": Class {", "?Class {".
                 if (($tokens[$before]['code'] === T_NEW
                     && $tokens[$after]['code'] === T_OPEN_PARENTHESIS)
                     || ($tokens[$before]['code'] === T_USE
-                    && $tokens[$after]['code'] === T_SEMICOLON)
+                    && true === in_array(
+                        $tokens[$after]['code'],
+                        [
+                            T_SEMICOLON,
+                            T_OPEN_CURLY_BRACKET,
+                        ],
+                        true
+                    ))
                     || ($tokens[$before]['code'] !== T_NS_SEPARATOR
                     && true === in_array(
                         $tokens[$after]['code'],
@@ -139,12 +147,25 @@ class UseGlobalClassSniff implements Sniff
                     && true === in_array(
                         $tokens[$before]['code'],
                         [
-                            T_EXTENDS,
-                            T_COLON,
                             T_COMMA,
+                            T_EXTENDS,
                             T_IMPLEMENTS,
-                            T_USE,
+                        ],
+                        true
+                    ))
+                    || (true === in_array(
+                        $tokens[$before]['code'],
+                        [
+                            T_COLON,
                             T_NULLABLE,
+                        ],
+                        true
+                    )
+                    && true === in_array(
+                        $tokens[$after]['code'],
+                        [
+                            T_OPEN_CURLY_BRACKET,
+                            T_SEMICOLON,
                         ],
                         true
                     ))

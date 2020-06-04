@@ -74,4 +74,14 @@ class Example extends Test {
 
   }
 
+  /**
+   * Description.
+   */
+  abstract public function test8(): Test;
+
+  /**
+   * Description.
+   */
+  abstract public function test9(): ?Test;
+
 }
