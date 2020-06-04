@@ -115,11 +115,9 @@ class UseGlobalClassSniff implements Sniff
 
             // Find all usages of the class, and add a leading backslash.
             // Only start looking after the end of the use statement block.
-            for ($i = $bodyStart; $i !== false; $i = $phpcsFile->findNext(T_STRING, ($i + 1), null, false, $aliasName)) {
-                $before = $phpcsFile->findPrevious(T_WHITESPACE, ($i - 1), null, true);
-                $after  = $phpcsFile->findNext(T_WHITESPACE, ($i + 1), null, true);
-
-                if (true === self::isClassReference($tokens[$before]['code'], $tokens[$after]['code'])) {
+            $i = $bodyStart;
+            while (false !== $i = $phpcsFile->findNext(T_STRING, ($i + 1), null, false, $aliasName)) {
+                if ($tokens[($i - 1)]['code'] !== T_NS_SEPARATOR) {
                     $phpcsFile->fixer->replaceToken($i, '\\'.$className);
                 }
             }
@@ -130,62 +128,6 @@ class UseGlobalClassSniff implements Sniff
         }//end while
 
     }//end process()
-
-
-    /**
-     * Check if a particular string token is a reference to a class.
-     *
-     * @param int|string $before The first non-space token type before the string.
-     * @param int|string $after  The first non-space token type after the string.
-     *
-     * @return bool TRUE if the string token is a class reference.
-     */
-    private static function isClassReference($before, $after): bool
-    {
-        // Look for any of the following:
-        // Constructor calls: "new Class(".
-        if ($before === T_NEW && $after === T_OPEN_PARENTHESIS) {
-            return true;
-        }
-
-        // Trait usage: "use Class;" and "use Class {".
-        if ($before === T_USE
-            && ($after === T_SEMICOLON || $after === T_OPEN_CURLY_BRACKET)
-        ) {
-            return true;
-        }
-
-        // Type hints and static calls: "Class::" or "Class $var" with no preceding backslash.
-        if ($before !== T_NS_SEPARATOR
-            && ($after === T_DOUBLE_COLON || $after === T_VARIABLE)
-        ) {
-            return true;
-        }
-
-        // Extension: "extends" before and "implements" or "{" after.
-        if ($before === T_EXTENDS
-            && ($after === T_IMPLEMENTS || $after === T_OPEN_CURLY_BRACKET)
-        ) {
-            return true;
-        }
-
-        // Implementation: "implements", or "," before and "{", "," after.
-        if (($before === T_COMMA || $before === T_IMPLEMENTS)
-            && ($after === T_OPEN_CURLY_BRACKET || $after === T_COMMA)
-        ) {
-            return true;
-        }
-
-        // Return type hints: ": Class;", "?Class;", ": Class {", "?Class {".
-        if (($before === T_COLON || $before === T_NULLABLE)
-            && ($after === T_OPEN_CURLY_BRACKET || $after === T_SEMICOLON)
-        ) {
-            return true;
-        }
-
-        return false;
-
-    }//end isClassReference()
 
 
 }//end class
