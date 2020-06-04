@@ -127,6 +127,23 @@ class FullyQualifiedNamespaceSniff implements Sniff
             $useStatement = $phpcsFile->findNext(T_USE, ($endPtr + 1));
         }//end while
 
+        if ($conflict === false) {
+            $classStatement = $phpcsFile->findNext(T_CLASS, 0);
+            while ($classStatement !== false) {
+                $afterClassStatement = $phpcsFile->findNext(T_WHITESPACE, ($classStatement + 1), null, true);
+                // Check for 'class ClassName' declarations.
+                if ($tokens[$afterClassStatement]['code'] === T_STRING) {
+                    $declaredName = $tokens[$afterClassStatement]['content'];
+                    if ($declaredName === $className) {
+                        $conflict = true;
+                        break;
+                    }
+                }
+
+                $classStatement = $phpcsFile->findNext(T_CLASS, ($classStatement + 1));
+            }
+        }
+
         $error = 'Namespaced classes/interfaces/traits should be referenced with use statements';
         if ($conflict === true) {
             $fix = false;

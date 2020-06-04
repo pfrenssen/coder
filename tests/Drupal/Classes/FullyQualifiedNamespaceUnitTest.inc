@@ -72,4 +72,11 @@ class Example {
 
   }
 
+  /**
+   * Description.
+   */
+  public function test9(Test\Example $conflictingClass) {
+
+  }
+
 }
