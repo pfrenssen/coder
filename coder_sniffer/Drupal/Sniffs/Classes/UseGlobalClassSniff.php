@@ -124,7 +124,6 @@ class UseGlobalClassSniff implements Sniff
                 }
 
                 $phpcsFile->fixer->endChangeset();
-
             }//end if
 
             $lineStart = $lineEnd;
