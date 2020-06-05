@@ -48,20 +48,4 @@ class UseGlobalClassUnitTest extends CoderSniffUnitTest
     }//end getWarningList()
 
 
-    /**
-     * Returns a list of test files that should be checked.
-     *
-     * @param string $testFileBase The base path that the unit tests files will have.
-     *
-     * @return array<string>
-     */
-    protected function getTestFiles($testFileBase): array
-    {
-        return [
-            __DIR__.'/UseGlobalClassUnitTest.inc',
-        ];
-
-    }//end getTestFiles()
-
-
 }//end class
