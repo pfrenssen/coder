@@ -86,43 +86,46 @@ class UseGlobalClassSniff implements Sniff
             $aliasName = $tokens[$alias]['content'];
 
             $error = 'Non-namespaced classes/interfaces/traits should not be referenced with use statements';
-            $phpcsFile->addFixableError($error, $class, 'RedundantUseStatement');
+            $fix   = $phpcsFile->addFixableError($error, $class, 'RedundantUseStatement');
 
-            $phpcsFile->fixer->beginChangeset();
+            if ($fix === true) {
+                $phpcsFile->fixer->beginChangeset();
 
-            // Remove the entire line by default.
-            $start = $lineStart;
-            $end   = $lineEnd;
-            $next  = $phpcsFile->findNext(T_WHITESPACE, ($end + 1), null, true);
+                // Remove the entire line by default.
+                $start = $lineStart;
+                $end   = $lineEnd;
+                $next  = $phpcsFile->findNext(T_WHITESPACE, ($end + 1), null, true);
 
-            if ($tokens[$lineStart]['code'] === T_COMMA) {
-                // If there are lines before this one,
-                // then leave the ending delimiter in place.
-                $end = ($lineEnd - 1);
-            } else if ($tokens[$lineEnd]['code'] === T_COMMA) {
-                // If there are lines after, but not before,
-                // then leave the use keyword.
-                $start = $class;
-            } else if ($tokens[$next]['code'] === T_USE) {
-                // If the whole statement is removed, and there is one after it,
-                // then also remove the linebreaks.
-                $end = ($next - 1);
-            }
-
-            for ($i = $start; $i <= $end; $i++) {
-                $phpcsFile->fixer->replaceToken($i, '');
-            }
-
-            // Find all usages of the class, and add a leading backslash.
-            // Only start looking after the end of the use statement block.
-            $i = $bodyStart;
-            while (false !== $i = $phpcsFile->findNext(T_STRING, ($i + 1), null, false, $aliasName)) {
-                if ($tokens[($i - 1)]['code'] !== T_NS_SEPARATOR) {
-                    $phpcsFile->fixer->replaceToken($i, '\\'.$className);
+                if ($tokens[$lineStart]['code'] === T_COMMA) {
+                    // If there are lines before this one,
+                    // then leave the ending delimiter in place.
+                    $end = ($lineEnd - 1);
+                } else if ($tokens[$lineEnd]['code'] === T_COMMA) {
+                    // If there are lines after, but not before,
+                    // then leave the use keyword.
+                    $start = $class;
+                } else if ($tokens[$next]['code'] === T_USE) {
+                    // If the whole statement is removed, and there is one after it,
+                    // then also remove the linebreaks.
+                    $end = ($next - 1);
                 }
-            }
 
-            $phpcsFile->fixer->endChangeset();
+                for ($i = $start; $i <= $end; $i++) {
+                    $phpcsFile->fixer->replaceToken($i, '');
+                }
+
+                // Find all usages of the class, and add a leading backslash.
+                // Only start looking after the end of the use statement block.
+                $i = $bodyStart;
+                while (false !== $i = $phpcsFile->findNext(T_STRING, ($i + 1), null, false, $aliasName)) {
+                    if ($tokens[($i - 1)]['code'] !== T_NS_SEPARATOR) {
+                        $phpcsFile->fixer->replaceToken($i, '\\'.$className);
+                    }
+                }
+
+                $phpcsFile->fixer->endChangeset();
+
+            }//end if
 
             $lineStart = $lineEnd;
         }//end while
