@@ -12,21 +12,16 @@
     <exclude-pattern>*</exclude-pattern>
   </rule>
 
-  <!-- How to include this in a better way???? -->
-  <rule ref="vendor/sirbrillig/phpcs-variable-analysis/VariableAnalysis/Sniffs/CodeAnalysis/VariableAnalysisSniff.php">
+  <rule ref="DrupalPractice.CodeAnalysis.VariableAnalysis">
+    <!-- Do not run this sniff on template files. -->
+    <exclude-pattern>*.tpl.php</exclude-pattern>
     <properties>
       <property name="allowUnusedFunctionParameters" value="1"/>
     </properties>
   </rule>
-  <rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable">
-  <!-- Do not run this sniff on template files. -->
-    <exclude-pattern>*.tpl.php</exclude-pattern>
-  </rule>
-  <rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable">
+  <rule ref="DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable">
     <severity>0</severity>
   </rule>
-  <rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis.SelfOutsideClass" />
-  <rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis.StaticOutsideClass" />
 
   <!-- Ignore various version control directories. -->
   <exclude-pattern>*/\.git/*</exclude-pattern>

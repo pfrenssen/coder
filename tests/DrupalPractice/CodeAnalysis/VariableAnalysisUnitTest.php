@@ -51,17 +51,5 @@ class VariableAnalysisUnitTest extends CoderSniffUnitTest
 
     }//end getWarningList()
 
-    /**
-     * False if just the current sniff should be checked, true if all sniffs should be checked.
-     *
-     * @return bool
-     */
-    protected function checkAllSniffCodes()
-    {
-        // We want to test all sniffs defined in the standard as we're looking to include
-        // vendor/sirbrillig/phpcs-variable-analysis.
-        return true;
-
-    }//end checkAllSniffCodes()
 
 }//end class
