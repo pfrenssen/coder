@@ -16,7 +16,7 @@
     <!-- Do not run this sniff on template files. -->
     <exclude-pattern>*.tpl.php</exclude-pattern>
     <properties>
-      <property name="allowUnusedFunctionParameters" value="1"/>
+      <property name="allowUnusedFunctionParameters" value="true"/>
     </properties>
   </rule>
   <rule ref="DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable">

@@ -55,13 +55,13 @@ function test6() {
 $hospitals = [];
 $simplified = [];
 array_map(function ($item) use (&$simplified) {
-    $simplified[$item['nid']] = preg_replace('/^www./', '', $item['domain']);
+  $simplified[$item['nid']] = preg_replace('/^www./', '', $item['domain']);
 }, $hospitals);
 
 foreach ($hospitals as $id => $hospital) {
-    print $hospital;
+  print $hospital;
 }
 
 foreach ($hospitals as $i => list($event_name, $description)) {
-    $names[$i] = $event_name;
+  $names[$i] = $event_name;
 }
