@@ -56,3 +56,17 @@ $form['display']['hide_thumbnail'] = [
     '0' => t('No', [], ['context' => 'test']),
   ],
 ];
+
+$form['link'] = [
+  '#type' => 'link',
+  '#title' => t('Download'),
+  '#url' => Url::fromUri('internal:/'),
+  '#options' => [
+    'attributes' => [
+      'target' => '_blank',
+      'class' => [
+        'home',
+      ],
+    ],
+  ],
+];
