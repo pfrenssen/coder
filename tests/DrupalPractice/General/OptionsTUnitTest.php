@@ -46,7 +46,7 @@ class OptionsTUnitTest extends CoderSniffUnitTest
         return [
             14 => 1,
             31 => 1,
-            47 => 1,
+            49 => 1,
         ];
 
     }//end getWarningList()

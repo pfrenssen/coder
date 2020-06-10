@@ -89,8 +89,8 @@ class OptionsTSniff implements Sniff
             "'select'",
             "'tableselect'",
         ];
-        // Find beggining of the array containing "#options" element.
-        $startArray = $phpcsFile->findPrevious(T_VARIABLE, $stackPtr);
+        // Find beginning of the array containing "#options" element.
+        $startArray = $phpcsFile->findStartOfStatement($stackPtr, [T_DOUBLE_ARROW, T_OPEN_SHORT_ARRAY, T_OPEN_PARENTHESIS, T_COMMA]);
 
         // Find next element on array of "#type".
         $findType = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, ($startArray + 1), $statementEnd, false, "'#type'");

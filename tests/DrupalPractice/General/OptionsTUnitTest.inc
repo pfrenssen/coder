@@ -33,9 +33,11 @@ $form['display']['status'] = [
   ),
 ];
 
+$title_display = 'before';
 $form['amount'] = [
   '#type' => 'select',
   '#title' => t('Amount'),
+  '#title_display' => $title_display,
   '#options' => [
     '1' => '1',
     '2' => '2',
@@ -62,6 +64,7 @@ $form['ipsum']['#options'] = [
 $form['display']['hide_thumbnail'] = [
   '#title' => t('Hide Thumbnail', [], ['context' => 'test']),
   '#type' => 'radios',
+  '#required' => $required,
   '#options' => [
     '1' => t('Yes', [], ['context' => 'test']),
     '0' => t('No', [], ['context' => 'test']),
