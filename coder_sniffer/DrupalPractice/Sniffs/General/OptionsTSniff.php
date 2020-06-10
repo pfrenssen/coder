@@ -84,15 +84,22 @@ class OptionsTSniff implements Sniff
         // We want to find if the element "#options" belongs to a form element.
         // Array with selectable options for a form element.
         $formElements = [
-          "'checkboxes'",
-          "'radios'",
-          "'select'",
-          "'tableselect'",
+            "'checkboxes'",
+            "'radios'",
+            "'select'",
+            "'tableselect'",
         ];
         // Find beggining of the array containing "#options" element.
-        $startArray = $phpcsFile->findPrevious(T_EQUAL, $stackPtr, null, false, "=");
+        $startArray = $phpcsFile->findPrevious(T_VARIABLE, $stackPtr);
+
         // Find next element on array of "#type".
-        $findType = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, ($startArray + 1), null, false, "'#type'");
+        $findType = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, ($startArray + 1), $statementEnd, false, "'#type'");
+
+        // Stop checking the array if its #type cannot be determined.
+        if ($findType === false) {
+            return;
+        }
+
         // Get the value of "#type".
         $valueType = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, ($findType + 1), null, false);
 

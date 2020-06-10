@@ -48,6 +48,17 @@ $form['amount'] = [
   ],
 ];
 
+// Make sure this one does not trigger any warnings, as its type cannot be
+// easily determined.
+// This test array deliberately put in the middle of two arrays with '#type'
+// specified to ensure that lookup is bounded by the array itself and does not
+// leak to the beginning/end of the document.
+$form['ipsum']['#options'] = [
+  'attributes' => [
+    'target' => '_blank',
+  ],
+];
+
 $form['display']['hide_thumbnail'] = [
   '#title' => t('Hide Thumbnail', [], ['context' => 'test']),
   '#type' => 'radios',
