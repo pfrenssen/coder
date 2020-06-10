@@ -81,6 +81,28 @@ class OptionsTSniff implements Sniff
             $statementEnd = $tokens[$arrayToken]['bracket_closer'];
         }
 
+        // We want to find if the element "#options" belongs to a form element.
+        // Array with selectable options for a form element.
+        $formElements = [
+            "'checkboxes'",
+            "'radios'",
+            "'select'",
+            "'tableselect'",
+        ];
+        // Find beginning of the array containing "#options" element.
+        $startArray = $phpcsFile->findStartOfStatement($stackPtr, [T_DOUBLE_ARROW, T_OPEN_SHORT_ARRAY, T_OPEN_PARENTHESIS, T_COMMA]);
+
+        // Find next element on array of "#type".
+        $findType = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, ($startArray + 1), $statementEnd, false, "'#type'");
+
+        // Stop checking the array if its #type cannot be determined.
+        if ($findType === false) {
+            return;
+        }
+
+        // Get the value of "#type".
+        $valueType = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, ($findType + 1), null, false);
+
         // Go through the array by examining stuff after "=>".
         $arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($arrayToken + 1), $statementEnd, false, null, true);
         while ($arrow !== false) {
@@ -95,7 +117,7 @@ class OptionsTSniff implements Sniff
             // and more than 3 characters long.
             if ($tokens[$arrayValue]['code'] === T_CONSTANT_ENCAPSED_STRING
                 && is_numeric(substr($tokens[$arrayValue]['content'], 1, -1)) === false
-                && strlen($tokens[$arrayValue]['content']) > 5
+                && strlen($tokens[$arrayValue]['content']) > 5 && in_array($tokens[$valueType]['content'], $formElements) === true
                 // Make sure that we don't check stuff in nested arrays within
                 // t() for example.
                 && $valueNestedParenthesis === $nestedParenthesis
