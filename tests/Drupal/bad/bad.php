@@ -832,4 +832,7 @@ function test28() {
 
 }
 
+// Multiple statements on one line are not allowed.
+echo 'Hi!';;
+
 ?>
