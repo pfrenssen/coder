@@ -149,10 +149,6 @@
         <exclude name="Generic.Commenting.Todo.CommentFound"/>
     </rule>
 
-    <!-- Not compliant yet, should be fixed in the future. -->
-    <rule ref="PEAR.Commenting.FunctionComment.MissingParamComment">
-        <exclude-pattern>coder_sniffer/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php</exclude-pattern>
-    </rule>
     <rule ref="PEAR.Commenting.FileComment.Missing">
         <exclude-pattern>tests/Drupal</exclude-pattern>
         <exclude-pattern>tests/DrupalPractice/Test</exclude-pattern>

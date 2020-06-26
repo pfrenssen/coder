@@ -4,20 +4,16 @@ parameters:
         - coder_sniffer
         - tests
     excludes_analyse:
-        # Copied legacy code that we don't care much about.
-        - 'coder_sniffer/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php'
         # Test files that should not be checked.
         - 'tests/*/*.tpl.php'
         - 'tests/*/*.api.php'
         - 'tests/*/good.php'
         - 'tests/*/bad.php'
         - 'tests/*/drupal[678]/*.php'
-    # The tests directory is not autoloaded by Composer. Make PHPStan aware of
-    # it.
-    autoload_directories:
-        - tests
-    autoload_files:
+    bootstrapFiles:
         - tests/Drupal/phpunit-bootstrap.php
+        # PHPStan does not find the constants in this file, so load it manually.
+        - vendor/squizlabs/php_codesniffer/src/Util/Tokens.php
     ignoreErrors:
         # PHPStan does not support variable variables, see https://github.com/phpstan/phpstan/issues/2810
         -
