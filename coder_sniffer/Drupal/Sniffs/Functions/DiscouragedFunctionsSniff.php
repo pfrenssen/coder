@@ -35,6 +35,7 @@ class DiscouragedFunctionsSniff extends ForbiddenFunctionsSniff
         'dcp'                 => null,
         'dd'                  => null,
         'ddebug_backtrace'    => null,
+        'ddm'                 => null,
         'dfb'                 => null,
         'dfbt'                => null,
         'dpm'                 => null,
