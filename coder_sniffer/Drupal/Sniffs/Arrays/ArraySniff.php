@@ -31,6 +31,8 @@ class ArraySniff implements Sniff
     /**
      * The limit that the length of a line should not exceed.
      *
+     * This can be configured to have a different value but the default is 80.
+     *
      * @var integer
      */
     public $lineLimit = 80;
@@ -109,17 +111,14 @@ class ArraySniff implements Sniff
         }
 
         if ($isInlineArray === true) {
-            // Check if this array contains at least 3 elements and exceeds the 80
-            // character line length.
+            // Check if this array has more than one element and exceeds the
+            // line length defined by $this->lineLimit.
             if ($tokens[$tokens[$stackPtr][$parenthesisCloser]]['column'] > $this->lineLimit) {
                 $comma1 = $phpcsFile->findNext(T_COMMA, ($stackPtr + 1), $tokens[$stackPtr][$parenthesisCloser]);
                 if ($comma1 !== false) {
-                    $comma2 = $phpcsFile->findNext(T_COMMA, ($comma1 + 1), $tokens[$stackPtr][$parenthesisCloser]);
-                    if ($comma2 !== false) {
-                        $error = 'If the line declaring an array spans longer than %s characters, each element should be broken into its own line';
-                        $data  = [$this->lineLimit];
-                        $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration', $data);
-                    }
+                    $error = 'If the line declaring an array spans longer than %s characters, each element should be broken into its own line';
+                    $data  = [$this->lineLimit];
+                    $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration', $data);
                 }
             }
 
