@@ -9,6 +9,7 @@
 
 namespace Drupal\Sniffs\Arrays;
 
+use Drupal\Sniffs\Files\LineLengthSniff;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -113,12 +114,12 @@ class ArraySniff implements Sniff
         if ($isInlineArray === true) {
             // Check if this array has more than one element and exceeds the
             // line length defined by $this->lineLimit.
-            if ($tokens[$tokens[$stackPtr][$parenthesisCloser]]['column'] > $this->lineLimit) {
+            $lineLength = (LineLengthSniff::getLineLength($phpcsFile, $tokens[$stackPtr]['line']) - 1);
+            if ($lineLength > $this->lineLimit) {
                 $comma1 = $phpcsFile->findNext(T_COMMA, ($stackPtr + 1), $tokens[$stackPtr][$parenthesisCloser]);
                 if ($comma1 !== false) {
-                    $error = 'If the line declaring an array spans longer than %s characters, each element should be broken into its own line';
-                    $data  = [$this->lineLimit];
-                    $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration', $data);
+                    $error = 'The array declaration line has %s characters (the limit is %s). Each element should be on a new line';
+                    $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration', [$lineLength, $this->lineLimit]);
                 }
             }
 
