@@ -114,9 +114,9 @@ class ArraySniff implements Sniff
             // Check if this array has more than one element and exceeds the
             // line length defined by $this->lineLimit.
             $currentLine = $tokens[$stackPtr]['line'];
-            $tokenCount = $stackPtr;
-            while ($tokenCount < $phpcsFile->numTokens-1 && $tokens[$tokenCount+1]['line'] === $currentLine) {
-               $tokenCount++;
+            $tokenCount  = $stackPtr;
+            while ($tokenCount < ($phpcsFile->numTokens - 1) && $tokens[($tokenCount + 1)]['line'] === $currentLine) {
+                $tokenCount++;
             };
             $lineLength = ($tokens[$tokenCount]['column'] + $tokens[$tokenCount]['length'] - 1);
 
@@ -130,7 +130,7 @@ class ArraySniff implements Sniff
 
             // Only continue for multi line arrays.
             return;
-        }
+        }//end if
 
         // Find the first token on this line.
         $firstLineColumn = $tokens[$stackPtr]['column'];

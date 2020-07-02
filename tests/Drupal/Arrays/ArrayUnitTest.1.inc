@@ -12,7 +12,7 @@ $array = array(
   'inline1' => array('thisisaverylongstring', 'thisisaverylongstring'),
   'inline2' => array('thisisaverylongstring', 'thisisaverylongstring', 'thisisaverylongstring'),
   'inline3' => array('thisisaverylongstring', 'thisisaverylongstring', 'thisisaverylongstring', 'thisisaverylongstring'),
-  'inline4' => array('thisisaverylongstringwithallotoftext', 'thisisaverylongstringwithallotoftext'),
+  'inline4' => array('thisisaverylongstringwithallotoftext', 'and this line has exactly 100 chars'),
   'inline_long_ok' => array('one', 'two', 'three', 'four', 'five', 'six', 'seven'),
   'inline_long_nok' => array('one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'),
 );
