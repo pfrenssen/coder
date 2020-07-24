@@ -123,7 +123,7 @@ class ArraySniff implements Sniff
             if ($lineLength > $this->lineLimit) {
                 $comma1 = $phpcsFile->findNext(T_COMMA, ($stackPtr + 1), $tokens[$stackPtr][$parenthesisCloser]);
                 if ($comma1 !== false) {
-                    $error = 'The array declaration line has %s characters (the limit is %s). Each element should be on a new line';
+                    $error = 'The array declaration line has %s characters (the limit is %s). The array content should be split up over multiple lines';
                     $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration', [$lineLength, $this->lineLimit]);
                 }
             }

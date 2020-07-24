@@ -15,4 +15,7 @@ $array = array(
   'inline4' => array('thisisaverylongstringwithallotoftext', 'thisisaverylongstringwithallotoftext'),
   'inline_long_ok' => array('one', 'two', 'three', 'four', 'five', 'six', 'seven'),
   'inline_long_nok' => array('one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'),
+  'inline_two_elements_ok' => array('one-two-three', 'the-2nd-element-is-within-the-limit'),
+  'inline_two_elements_ok2' => array('one-two-three-four', 'the-2nd-element-is-right-on-the-limit'),
+  'inline_two_elements_not_ok' => array('one-two-three-four-five', 'the-2nd-element-extends-beyond-the-limit'),
 );
