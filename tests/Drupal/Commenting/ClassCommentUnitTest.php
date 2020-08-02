@@ -20,7 +20,11 @@ class ClassCommentUnitTest extends CoderSniffUnitTest
      */
     protected function getErrorList(string $testFile): array
     {
-        return [8 => 1];
+        if ($testFile === 'ClassCommentUnitTest.inc') {
+            return [8 => 1];
+        }
+
+        return [];
 
     }//end getErrorList()
 
@@ -37,6 +41,10 @@ class ClassCommentUnitTest extends CoderSniffUnitTest
      */
     protected function getWarningList(string $testFile): array
     {
+        if ($testFile === 'ClassCommentUnitTest.1.inc') {
+            return [10 => 1];
+        }
+
         return [];
 
     }//end getWarningList()
