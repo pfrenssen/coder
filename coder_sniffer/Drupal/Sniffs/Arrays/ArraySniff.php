@@ -31,6 +31,8 @@ class ArraySniff implements Sniff
     /**
      * The limit that the length of a line should not exceed.
      *
+     * This can be configured to have a different value but the default is 80.
+     *
      * @var integer
      */
     public $lineLimit = 80;
@@ -109,23 +111,26 @@ class ArraySniff implements Sniff
         }
 
         if ($isInlineArray === true) {
-            // Check if this array contains at least 3 elements and exceeds the 80
-            // character line length.
-            if ($tokens[$tokens[$stackPtr][$parenthesisCloser]]['column'] > $this->lineLimit) {
+            // Check if this array has more than one element and exceeds the
+            // line length defined by $this->lineLimit.
+            $currentLine = $tokens[$stackPtr]['line'];
+            $tokenCount  = $stackPtr;
+            while ($tokenCount < ($phpcsFile->numTokens - 1) && $tokens[($tokenCount + 1)]['line'] === $currentLine) {
+                $tokenCount++;
+            };
+            $lineLength = ($tokens[$tokenCount]['column'] + $tokens[$tokenCount]['length'] - 1);
+
+            if ($lineLength > $this->lineLimit) {
                 $comma1 = $phpcsFile->findNext(T_COMMA, ($stackPtr + 1), $tokens[$stackPtr][$parenthesisCloser]);
                 if ($comma1 !== false) {
-                    $comma2 = $phpcsFile->findNext(T_COMMA, ($comma1 + 1), $tokens[$stackPtr][$parenthesisCloser]);
-                    if ($comma2 !== false) {
-                        $error = 'If the line declaring an array spans longer than %s characters, each element should be broken into its own line';
-                        $data  = [$this->lineLimit];
-                        $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration', $data);
-                    }
+                    $error = 'The array declaration line has %s characters (the limit is %s). The array content should be split up over multiple lines';
+                    $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration', [$lineLength, $this->lineLimit]);
                 }
             }
 
             // Only continue for multi line arrays.
             return;
-        }
+        }//end if
 
         // Find the first token on this line.
         $firstLineColumn = $tokens[$stackPtr]['column'];
