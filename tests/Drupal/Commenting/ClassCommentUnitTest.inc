@@ -8,3 +8,17 @@
 trait Bingo {
 
 }
+
+/**
+ * Trait Bongo
+ */
+trait Bongo {
+
+}
+
+/**
+ * Trait Bango.
+ */
+trait Bango {
+
+}

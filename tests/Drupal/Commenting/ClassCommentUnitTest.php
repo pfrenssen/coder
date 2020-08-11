@@ -37,7 +37,10 @@ class ClassCommentUnitTest extends CoderSniffUnitTest
      */
     protected function getWarningList(string $testFile): array
     {
-        return [];
+        return [
+            14 => 1,
+            21 => 1,
+        ];
 
     }//end getWarningList()
 
