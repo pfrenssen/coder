@@ -140,7 +140,7 @@ class ClassCommentSniff implements Sniff
 
             if (in_array($className, $words, true) === true) {
                 $error = 'The class short comment should describe what the class does and not simply repeat the class name';
-                $phpcsFile->addWarning($error, $commentEnd, '');
+                $phpcsFile->addWarning($error, $commentEnd, 'Short');
             }
         }
 
