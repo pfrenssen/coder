@@ -79,17 +79,25 @@ class InlineVariableCommentSniff implements Sniff
             return;
         }
 
-        if ($tokens[$stackPtr]['code'] !== T_DOC_COMMENT_TAG && strpos($tokens[$stackPtr]['content'], '/*') === 0) {
+        if ($tokens[$stackPtr]['code'] === T_COMMENT) {
             if (strpos($tokens[$stackPtr]['content'], '@var') !== false) {
-                $warning = 'Inline @var declarations should start with the /** delimiter';
+                $warning = 'Inline @var declarations should use the /** */ delimiters';
 
                 if ($phpcsFile->addFixableWarning($warning, $stackPtr, 'VarInline') === true) {
-                    $phpcsFile->fixer->replaceToken($stackPtr, substr_replace($tokens[$stackPtr]['content'], '/**', 0, 2));
+                    if (strpos($tokens[$stackPtr]['content'], '#') === 0) {
+                        $varComment = substr_replace(rtrim($tokens[$stackPtr]['content']), '/**', 0, 1)." */\n";
+                    } else if (strpos($tokens[$stackPtr]['content'], '//') === 0) {
+                        $varComment = substr_replace(rtrim($tokens[$stackPtr]['content']), '/**', 0, 2)." */\n";
+                    } else {
+                        $varComment = substr_replace($tokens[$stackPtr]['content'], '/**', 0, 2);
+                    }
+
+                    $phpcsFile->fixer->replaceToken($stackPtr, $varComment);
                 }
             }
 
             return;
-        }
+        }//end if
 
         // Skip if it's not a variable declaration.
         if ($tokens[$stackPtr]['content'] !== '@var') {
