@@ -835,4 +835,18 @@ function test28() {
 // Multiple statements on one line are not allowed.
 echo 'Hi!';;
 
+/**
+ * A test class.
+ */
+class ScopeKeyword {
+
+  /**
+   * Much weird spacing here.
+   */
+  public  static  function test() {
+
+  }
+
+}
+
 ?>
