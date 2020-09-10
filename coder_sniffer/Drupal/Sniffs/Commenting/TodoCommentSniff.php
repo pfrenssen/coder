@@ -49,7 +49,7 @@ class TodoCommentSniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $tokens  = $phpcsFile->getTokens();
+        $tokens = $phpcsFile->getTokens();
         // Use the comment text by default.
         $comment = $tokens[$stackPtr]['content'];
         // Use the next line for multi-line comments.
