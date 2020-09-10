@@ -49,11 +49,14 @@ class TodoCommentSniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
+        $tokens  = $phpcsFile->getTokens();
+        // Use the comment text by default.
         $comment = $tokens[$stackPtr]['content'];
-        if ($tokens[$stackPtr]['code'] == T_DOC_COMMENT_TAG) {
+        // Use the next line for multi-line comments.
+        if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT_TAG) {
             $comment = $phpcsFile->findNext(T_DOC_COMMENT_STRING, ($stackPtr + 1));
         }
+
         $expression = '/(?i)(?=(@to(-|\s|)+do))(?-i)(?!@todo\s\w)/m';
         if ((bool) preg_match($expression, $comment) === true) {
             $phpcsFile->addError('@todo comments should be in the "@todo Some task." format.', $stackPtr, 'TodoFormat');
