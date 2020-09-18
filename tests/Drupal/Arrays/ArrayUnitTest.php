@@ -32,9 +32,9 @@ class ArrayUnitTest extends CoderSniffUnitTest
         case 'ArrayUnitTest.1.inc':
             return [
                 14 => 1,
-                15 => 1,
                 17 => 1,
                 20 => 1,
+                24 => 1,
             ];
         }
 
