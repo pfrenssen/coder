@@ -21,10 +21,6 @@ class TodoCommentUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         $errorList = array_fill_keys(range(133, 151), 1);
-        $errorList[7] = 1;
-        $errorList[12] = 1;
-        $errorList[17] = 1;
-        $errorList[22] = 1;
         $errorList[27] = 1;
         $errorList[32] = 1;
         $errorList[37] = 1;
