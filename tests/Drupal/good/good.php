@@ -1185,10 +1185,10 @@ l("<i class='icon icon-industrial-building'></i>", 'node/add/job', array(
 /**
  * Some short description.
  *
- * @@todo TODOs are allowed here.
- *
  * @param string $x
  *   Some parameter.
+ *
+ * @todo These are allowed here.
  */
 function test7($x) {
 
