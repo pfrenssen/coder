@@ -48,49 +48,53 @@ class TodoCommentSniff implements Sniff
      *
      * @return void
      */
-    public function process(File $phpcsFile, $stackPtr) {
-      $tokens = $phpcsFile->getTokens();
-      // Standard comments and multi-line comments where the "@" is missing so
-      // it does not register as a T_DOC_COMMENT_TAG.
-      if (in_array($tokens[$stackPtr]['code'], [T_COMMENT, T_DOC_COMMENT_STRING])) {
-        $comment = $tokens[$stackPtr]['content'];
-        $this->checkTodoFormat($phpcsFile, $stackPtr, $comment);
-      }
-      // Document comment tag (i.e. comments that begin with "@").
-      elseif ($tokens[$stackPtr]['code'] == T_DOC_COMMENT_TAG) {
-        // Determine if this is related at all and build the full comment line
-        // from the various segments that the line is parsed into.
-        $expression = '/^@to/i';
-        if ((bool) preg_match($expression, $tokens[$stackPtr]['content']) === true) {
-          $index = $stackPtr;
-          $comment = '';
-          while ($tokens[$index]['line'] == $tokens[$stackPtr]['line']) {
-            $comment .= $tokens[$index]['content'];
-            $index++;
-          }
-          $this->checkTodoFormat($phpcsFile, $stackPtr, $comment);
+    public function process(File $phpcsFile, $stackPtr)
+    {
+        $tokens = $phpcsFile->getTokens();
+        // Standard comments and multi-line comments where the "@" is missing so
+        // it does not register as a T_DOC_COMMENT_TAG.
+        if (in_array($tokens[$stackPtr]['code'], [T_COMMENT, T_DOC_COMMENT_STRING])) {
+            $comment = $tokens[$stackPtr]['content'];
+            $this->checkTodoFormat($phpcsFile, $stackPtr, $comment);
         }
-      }
+        // Document comment tag (i.e. comments that begin with "@").
+        else if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT_TAG) {
+            // Determine if this is related at all and build the full comment line
+            // from the various segments that the line is parsed into.
+            $expression = '/^@to/i';
+            if ((bool) preg_match($expression, $tokens[$stackPtr]['content']) === true) {
+                $index = $stackPtr;
+                $comment = '';
+                while ($tokens[$index]['line'] === $tokens[$stackPtr]['line']) {
+                    $comment .= $tokens[$index]['content'];
+                    $index++;
+                }
+                $this->checkTodoFormat($phpcsFile, $stackPtr, $comment);
+            }
+        }
 
     }//end process()
+
 
   /**
    * Checks a comment string for the correct syntax.
    *
    * @param \PHP_CodeSniffer\Files\File $phpcsFile
    *   The file being scanned.
-   * @param int $stackPtr
+   * @param int                         $stackPtr
    *   The position of the current token in the stack passed in $tokens.
-   * @param string $comment
+   * @param string                      $comment
    *   The comment text.
    *
    * @return void
    */
-    private function checkTodoFormat(File $phpcsFile, $stackPtr, string $comment) {
-      $expression = '/^(\/\/|\*)*\s*(?i)(?=(@*to(-|\s|)+do))(?-i)(?!@todo\s(?!-|:))/m';
-      if ((bool) preg_match($expression, $comment) === true) {
-        $phpcsFile->addError('@todo comments should be in the "@todo Some task." format.', $stackPtr, 'TodoFormat');
-      }
-    }
+    private function checkTodoFormat(File $phpcsFile, $stackPtr, string $comment)
+    {
+        $expression = '/^(\/\/|\*)*\s*(?i)(?=(@*to(-|\s|)+do))(?-i)(?!@todo\s(?!-|:))/m';
+        if ((bool) preg_match($expression, $comment) === true) {
+           $phpcsFile->addError('@todo comments should be in the "@todo Some task." format.', $stackPtr, 'TodoFormat');
+        }
+    }//end checkTodoFormat()
+
 
 }//end class
