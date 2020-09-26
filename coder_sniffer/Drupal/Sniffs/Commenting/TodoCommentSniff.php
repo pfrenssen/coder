@@ -53,12 +53,10 @@ class TodoCommentSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         // Standard comments and multi-line comments where the "@" is missing so
         // it does not register as a T_DOC_COMMENT_TAG.
-        if (in_array($tokens[$stackPtr]['code'], [T_COMMENT, T_DOC_COMMENT_STRING])) {
+        if ($tokens[$stackPtr]['code'] === T_COMMENT || $tokens[$stackPtr]['code'] === T_DOC_COMMENT_STRING) {
             $comment = $tokens[$stackPtr]['content'];
             $this->checkTodoFormat($phpcsFile, $stackPtr, $comment);
-        }
-
-        else if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT_TAG) {
+        } else if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT_TAG) {
             // Document comment tag (i.e. comments that begin with "@").
             // Determine if this is related at all and build the full comment line
             // from the various segments that the line is parsed into.
@@ -72,22 +70,22 @@ class TodoCommentSniff implements Sniff
                 }
 
                 $this->checkTodoFormat($phpcsFile, $stackPtr, $comment);
-            }
+            }//end if
         }
 
     }//end process()
 
 
-  /**
-   * Checks a comment string for the correct syntax.
-   *
-   * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
-   * @param int                         $stackPtr The position of the current token
-   *                                              in the stack passed in $tokens.
-   * @param string                      $comment The comment text.
-   *
-   * @return void
-   */
+    /**
+     * Checks a comment string for the correct syntax.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
+     * @param string                      $comment   The comment text.
+     *
+     * @return void
+     */
     private function checkTodoFormat(File $phpcsFile, $stackPtr, string $comment)
     {
         $expression = '/^(\/\/|\*)*\s*(?i)(?=(@*to(-|\s|)+do))(?-i)(?!@todo\s(?!-|:))/m';
