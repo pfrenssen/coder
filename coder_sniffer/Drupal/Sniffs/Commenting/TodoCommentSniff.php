@@ -88,7 +88,7 @@ class TodoCommentSniff implements Sniff
      */
     private function checkTodoFormat(File $phpcsFile, $stackPtr, string $comment)
     {
-        $expression = '/^(\/\/|\*)*\s*(?i)(?=(@*to(-|\s|)+do))(?-i)(?!@todo\s(?!-|:))/m';
+        $expression = '/^(\/\/|\*)*\s*(?i)(?=(@*to(-|\s|)+do))(?-i)(?!@todo\s(?!-|:)\S)/m';
         if ((bool) preg_match($expression, $comment) === true) {
             $comment = trim($comment, " /\r\n");
             $phpcsFile->addError("'%s' should match the format '@todo Some task'", $stackPtr, 'TodoFormat', [$comment]);
