@@ -88,14 +88,14 @@ class TodoCommentSniff implements Sniff
             // Document comment tag (i.e. comments that begin with "@").
             // Determine if this is related at all and build the full comment line
             // from the various segments that the line is parsed into.
-            $comment = $tokens[$stackPtr]['content'];
             $expression = '/^@to/i';
+            $comment    = $tokens[$stackPtr]['content'];
             if ((bool) preg_match($expression, $comment) === true) {
                 if ($this->debug === true) {
                     echo "Attempting to build comment\n";
                 }
 
-                $index = $stackPtr + 1;
+                $index = ($stackPtr + 1);
                 while ($tokens[$index]['line'] === $tokens[$stackPtr]['line']) {
                     $comment .= $tokens[$index]['content'];
                     $index++;
