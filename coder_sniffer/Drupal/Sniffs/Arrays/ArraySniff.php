@@ -113,18 +113,13 @@ class ArraySniff implements Sniff
         if ($isInlineArray === true) {
             // Check if this array has more than one element and exceeds the
             // line length defined by $this->lineLimit.
-            $currentLine = $tokens[$stackPtr]['line'];
-            $tokenCount  = $stackPtr;
-            while ($tokenCount < ($phpcsFile->numTokens - 1) && $tokens[($tokenCount + 1)]['line'] === $currentLine) {
-                $tokenCount++;
-            };
-            $lineLength = ($tokens[$tokenCount]['column'] + $tokens[$tokenCount]['length'] - 1);
+            $arrayEnding = $tokens[$tokens[$stackPtr][$parenthesisCloser]]['column'];
 
-            if ($lineLength > $this->lineLimit) {
+            if ($arrayEnding > $this->lineLimit) {
                 $comma1 = $phpcsFile->findNext(T_COMMA, ($stackPtr + 1), $tokens[$stackPtr][$parenthesisCloser]);
                 if ($comma1 !== false) {
-                    $error = 'The array declaration line has %s characters (the limit is %s). The array content should be split up over multiple lines';
-                    $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration', [$lineLength, $this->lineLimit]);
+                    $error = 'The array declaration extends to column %s (the limit is %s). The array content should be split up over multiple lines';
+                    $phpcsFile->addError($error, $stackPtr, 'LongLineDeclaration', [$arrayEnding, $this->lineLimit]);
                 }
             }
 

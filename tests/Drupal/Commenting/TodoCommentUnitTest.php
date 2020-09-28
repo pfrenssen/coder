@@ -1,10 +1,10 @@
 <?php
 
-namespace Drupal\Test\Arrays;
+namespace Drupal\Test\Commenting;
 
 use Drupal\Test\CoderSniffUnitTest;
 
-class ArrayUnitTest extends CoderSniffUnitTest
+class TodoCommentUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -20,25 +20,8 @@ class ArrayUnitTest extends CoderSniffUnitTest
      */
     protected function getErrorList(string $testFile): array
     {
-        switch ($testFile) {
-        case 'ArrayUnitTest.inc':
-            return [
-                13 => 1,
-                33 => 1,
-                83 => 1,
-                88 => 1,
-                92 => 1,
-            ];
-        case 'ArrayUnitTest.1.inc':
-            return [
-                14 => 1,
-                17 => 1,
-                20 => 1,
-                24 => 1,
-            ];
-        }
-
-        return [];
+        $errorList = (array_fill_keys(range(13, 31), 1) + array_fill_keys(range(42, 60), 1));
+        return $errorList;
 
     }//end getErrorList()
 
@@ -55,21 +38,6 @@ class ArrayUnitTest extends CoderSniffUnitTest
      */
     protected function getWarningList(string $testFile): array
     {
-        switch ($testFile) {
-        case 'ArrayUnitTest.inc':
-            return [
-                17 => 1,
-                22 => 1,
-                23 => 1,
-                24 => 1,
-                37 => 1,
-                42 => 1,
-                44 => 1,
-                59 => 1,
-                76 => 1,
-            ];
-        }
-
         return [];
 
     }//end getWarningList()

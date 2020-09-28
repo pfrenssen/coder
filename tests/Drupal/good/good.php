@@ -1185,10 +1185,10 @@ l("<i class='icon icon-industrial-building'></i>", 'node/add/job', array(
 /**
  * Some short description.
  *
- * @todo TODOs are allowed here.
- *
  * @param string $x
  *   Some parameter.
+ *
+ * @todo These are allowed here.
  */
 function test7($x) {
 
@@ -1205,8 +1205,8 @@ $x = 'Some markup text with allowed HTML5 <br> tag';
 /**
  * Provides a 'Delete any path alias' action.
  *
- * @todo: Add access callback information from Drupal 7.
- * @todo: Add group information from Drupal 7.
+ * @todo Add access callback information from Drupal 7.
+ * @todo Add group information from Drupal 7.
  *
  * @Action(
  *   id = "rules_path_alias_delete",
