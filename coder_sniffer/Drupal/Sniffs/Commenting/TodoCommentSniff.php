@@ -80,7 +80,7 @@ class TodoCommentSniff implements Sniff
         if ($tokens[$stackPtr]['code'] === T_COMMENT || $tokens[$stackPtr]['code'] === T_DOC_COMMENT_STRING) {
             $comment = $tokens[$stackPtr]['content'];
             if ($this->debug === true) {
-                echo "\$comment = '$comment'".PHP_EOL;
+                echo "Getting \$comment from \$tokens[$stackPtr]['content']\n";
             }
 
             $this->checkTodoFormat($phpcsFile, $stackPtr, $comment);
@@ -88,22 +88,21 @@ class TodoCommentSniff implements Sniff
             // Document comment tag (i.e. comments that begin with "@").
             // Determine if this is related at all and build the full comment line
             // from the various segments that the line is parsed into.
-            $pointer = $phpcsFile->findNext(T_DOC_COMMENT_STRING, ($stackPtr + 1));
-            $comment = $tokens[$pointer]['content'];
-            if ($this->debug === true) {
-                echo "FindNext \$comment = '$comment'".PHP_EOL;
-            }
-
+            $comment = $tokens[$stackPtr]['content'];
             $expression = '/^@to/i';
-            if ((bool) preg_match($expression, $tokens[$stackPtr]['content']) === true) {
-                $index   = $stackPtr;
-                $comment = '';
+            if ((bool) preg_match($expression, $comment) === true) {
+                if ($this->debug === true) {
+                    echo "Attempting to build comment\n";
+                }
+
+                $index = $stackPtr + 1;
                 while ($tokens[$index]['line'] === $tokens[$stackPtr]['line']) {
                     $comment .= $tokens[$index]['content'];
                     $index++;
-                    if ($this->debug === true) {
-                        echo "TAG \$comment = '$comment'".PHP_EOL;
-                    }
+                }
+
+                if ($this->debug === true) {
+                    echo "Result comment = $comment\n";
                 }
 
                 $this->checkTodoFormat($phpcsFile, $stackPtr, $comment);
@@ -125,10 +124,28 @@ class TodoCommentSniff implements Sniff
      */
     private function checkTodoFormat(File $phpcsFile, $stackPtr, string $comment)
     {
-        $expression = '/^(\/\/|\*)*\s*(?i)(?=(@*to(-|\s|)+do))(?-i)(?!@todo\s(?!-|:)\S)/m';
+        if ($this->debug === true) {
+            echo "Checking \$comment = '$comment'\n";
+        }
+
+        $expression = '/(?x)   # Set free-space mode to allow this commenting
+            ^(\/\/)?           # At the start optionally match two forward slashes
+            \s*                # then any amount of whitespace
+            (?i)               # set case-insensitive mode
+            (?=(               # start a postive non-consuming look-ahead to find all possible todos
+              @+to(-|\s|)+do   # if one or more @ allow space or - between the to and do
+              |                # or
+              to(-)*do         # if no @ then only accept todo or to-do or to--do, etc
+            ))
+            (?-i)              # Reset to case-sensitive
+            (?!                # Start another non-consuming look-ahead, this time negative
+              @todo\s          # It has to match lower-case @todo followed by one space
+              (?!-|:)\S        # and then any non-space except - or :
+            )/m';
+
         if ((bool) preg_match($expression, $comment) === true) {
             if ($this->debug === true) {
-                echo "Failed regex for '$comment'".PHP_EOL;
+                echo "Failed regex - give message\n";
             }
 
             $comment = trim($comment, " /\r\n");
