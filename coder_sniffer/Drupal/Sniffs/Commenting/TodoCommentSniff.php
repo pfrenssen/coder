@@ -129,13 +129,12 @@ class TodoCommentSniff implements Sniff
         }
 
         $expression = '/(?x)   # Set free-space mode to allow this commenting
-            ^(\/\/)?           # At the start optionally match two forward slashes
-            \s*                # then any amount of whitespace
+            ^(\/|\s)*          # At the start optionally match any forward slashes and spaces
             (?i)               # set case-insensitive mode
             (?=(               # start a postive non-consuming look-ahead to find all possible todos
-              @+to(-|\s|)+do   # if one or more @ allow space or - between the to and do
+              @+to(-|\s|)+do   # if one or more @ allow spaces and - between the to and do
               |                # or
-              to(-)*do         # if no @ then only accept todo or to-do or to--do, etc
+              to(-)*do         # if no @ then only accept todo or to-do or to--do, etc, no spaces
             ))
             (?-i)              # Reset to case-sensitive
             (?!                # Start another non-consuming look-ahead, this time negative
