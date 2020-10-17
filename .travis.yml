@@ -20,7 +20,7 @@ jobs:
     - php: 7.3
       dist: bionic
     - php: 7.4
-      dist: bionic
+      dist: focal
       env: PHPSTAN=1
 
 before_install:
