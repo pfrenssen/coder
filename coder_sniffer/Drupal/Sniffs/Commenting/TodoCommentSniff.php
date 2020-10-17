@@ -148,7 +148,7 @@ class TodoCommentSniff implements Sniff
             }
 
             $comment = trim($comment, " /\r\n");
-            $phpcsFile->addWarning("'%s' should match the format '@todo Some task'", $stackPtr, 'TodoFormat', [$comment]);
+            $phpcsFile->addWarning("'%s' should match the format '@todo Fix problem X here.'", $stackPtr, 'TodoFormat', [$comment]);
         }
 
     }//end checkTodoFormat()
