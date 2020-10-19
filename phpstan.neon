@@ -41,7 +41,7 @@ parameters:
             count: 1
             path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
         -
-            message: "#^Call to function array_key_exists\\(\\) with 0\\|string\\|null and array\\(\\) will always evaluate to false\\.$#"
+            message: "#^Call to function array_key_exists\\(\\) with mixed and array\\(\\) will always evaluate to false\\.$#"
             count: 1
             path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
         -
