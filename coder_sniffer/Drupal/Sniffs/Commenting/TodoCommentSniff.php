@@ -174,7 +174,7 @@ class TodoCommentSniff implements Sniff
                     $fixedTodo = str_replace($matches[2], '@todo ', $tokens[$stackPtr]['content']);
                     $phpcsFile->fixer->replaceToken($stackPtr, $fixedTodo);
                 }//end if
-            }
+            }//end if
         }//end if
 
     }//end checkTodoFormat()
