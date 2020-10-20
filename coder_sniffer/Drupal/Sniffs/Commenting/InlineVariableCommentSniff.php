@@ -89,7 +89,14 @@ class InlineVariableCommentSniff implements Sniff
                     }
 
                     if ($phpcsFile->addFixableWarning($warning, $stackPtr, 'VarInline') === true) {
-                        $phpcsFile->fixer->replaceToken($stackPtr, ('/** '.rtrim(ltrim($tokens[$stackPtr]['content'], '/# '))." */\n"));
+                        // Hashtag and slash based comments contain a trailing
+                        // new line.
+                        $varContent = rtrim($tokens[$stackPtr]['content']);
+
+                        // Remove all leading hashtags and slashes.
+                        $varContent = ltrim($varContent, '/# ');
+
+                        $phpcsFile->fixer->replaceToken($stackPtr, ('/** '.$varContent." */\n"));
                     }
                 } else {
                     if ($phpcsFile->addFixableWarning($warning, $stackPtr, 'VarInline') === true) {
