@@ -154,6 +154,10 @@ class TodoCommentSniff implements Sniff
             $fix            = $phpcsFile->addFixableWarning("'%s' should match the format '@todo Fix problem X here.'", $stackPtr, 'TodoFormat', [$commentTrimmed]);
             if ($fix === true) {
                 if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT_TAG) {
+                    // Rewrite the comment past the token content to an empty
+                    // string as part of it may be part of the match, but not in
+                    // the token content. Then replace the token content with
+                    // the fixed comment from the matched content.
                     $phpcsFile->fixer->beginChangeset();
                     $index = ($stackPtr + 1);
                     while ($tokens[$index]['line'] === $tokens[$stackPtr]['line']) {
@@ -165,6 +169,8 @@ class TodoCommentSniff implements Sniff
                     $phpcsFile->fixer->replaceToken($stackPtr, $fixedTodo);
                     $phpcsFile->fixer->endChangeset();
                 } else {
+                    // The full comment line text is available here, so the
+                    // replacement is fairly straightforward.
                     $fixedTodo = str_replace($matches[2], '@todo ', $tokens[$stackPtr]['content']);
                     $phpcsFile->fixer->replaceToken($stackPtr, $fixedTodo);
                 }//end if
