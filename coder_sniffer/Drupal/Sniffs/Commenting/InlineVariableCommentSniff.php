@@ -103,7 +103,7 @@ class InlineVariableCommentSniff implements Sniff
                         $phpcsFile->fixer->replaceToken($stackPtr, substr_replace($tokens[$stackPtr]['content'], '/**', 0, 2));
                     }
                 }
-            }
+            }//end if
 
             return;
         }//end if
