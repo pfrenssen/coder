@@ -24,6 +24,8 @@
 @trigger_error(__METHOD__ . ' method is deprecated in drupal:8.4.0 and wont work in drupal:9.0.0. Use ' . __CLASS__ . '::bundle() instead. See https://www.drupal.org/project/drupal/issues/12345', E_USER_DEPRECATED);
 // Cater for concatenation with nothing else before 'is deprecated.
 @trigger_error(__NAMESPACE__ . ' is deprecated in drupal:8.5.0 and wont work in drupal:9.0.0. Use \Drupal\Core\Messenger\MessengerInterface::addMessage() instead. See https://www.drupal.org/node/2774931', E_USER_DEPRECATED);
+// Varibale interpolation, and no extra info (optional in relaxed standard).
+@trigger_error("Thing::\${$name} is deprecated in drupal:9.1.0 and will error in drupal:10.0.0. See https://www.drupal.org/node/3177488", E_USER_DEPRECATED);
 
 // ERRORS on general layout.
 // Wrong first part - missing word.
