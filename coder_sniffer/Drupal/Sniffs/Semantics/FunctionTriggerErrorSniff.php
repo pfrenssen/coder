@@ -86,7 +86,9 @@ class FunctionTriggerErrorSniff extends FunctionCall
             for ($i = $argument['start']; $i <= $argument['end']; $i++) {
                 if (in_array($tokens[$i]['code'], [T_WHITESPACE, T_STRING_CONCAT, T_COMMA]) === false) {
                     // For strings, remove the quotes using substr not trim.
-                    if ($tokens[$i]['code'] === T_CONSTANT_ENCAPSED_STRING) {
+                    // Simple strings are T_CONSTANT_ENCAPSED_STRING and strings
+                    // with variable interpolation are T_DOUBLE_QUOTED_STRING.
+                    if ($tokens[$i]['code'] === T_CONSTANT_ENCAPSED_STRING || $tokens[$i]['code'] === T_DOUBLE_QUOTED_STRING) {
                         $messageParts[] = substr($tokens[$i]['content'], 1, ($tokens[$i]['length'] - 2));
                     } else {
                         $messageParts[] = $tokens[$i]['content'];
