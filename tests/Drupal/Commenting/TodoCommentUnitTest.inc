@@ -23,6 +23,7 @@
  * @to  do Error
  * @todo- Error
  * @todo - Error
+ * @todo
  * @todoError
  * @todo   Error
  * todo Error
@@ -48,6 +49,7 @@ function foo() {
   // @ToDO Error
   // @todo: Error
   // @todo : Error
+  // @todo
   // @to-do Error
   // @TO-DO Error
   // @To-Do Error
