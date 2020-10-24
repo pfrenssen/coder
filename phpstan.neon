@@ -57,19 +57,3 @@ parameters:
             path: coder_sniffer/Drupal/Sniffs/Semantics/FunctionCall.php
         # False positive: Variable $a in isset() always exists and is not
         # nullable. https://github.com/phpstan/phpstan/issues/2816
-        -
-            count: 2
-            message: '~^Variable \$fileShort in isset\(\) always exists and is not nullable.$~'
-            path: coder_sniffer/Drupal/Sniffs/Commenting/DocCommentSniff.php
-        -
-            message: "#^Result of && is always false\\.$#"
-            count: 2
-            path: coder_sniffer/Drupal/Sniffs/Commenting/DocCommentSniff.php
-        -
-            message: "#^Else branch is unreachable because previous condition is always true\\.$#"
-            count: 1
-            path: coder_sniffer/Drupal/Sniffs/Commenting/FunctionCommentSniff.php
-        -
-            message: "#^Strict comparison using \\=\\=\\= between true and false will always evaluate to false\\.$#"
-            count: 1
-            path: coder_sniffer/Drupal/Sniffs/Commenting/DocCommentSniff.php
