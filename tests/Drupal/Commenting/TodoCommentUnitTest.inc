@@ -1,9 +1,11 @@
 <?php
 
 /**
+ * @file
  * Test file for the todo standard.
  *
  * These are valid examples.
+ *
  * @todo Valid.
  * @todo valid with lower-case first letter
  * @todo $can start with a $
@@ -32,16 +34,17 @@
  * to-do Error
  */
 
+/**
+ * Example function.
+ */
 function foo() {
   // These are valid examples.
   // @todo Valid.
   // @todo valid with lower-case first letter
   // @todo $can start with a $
   // @todo \also with backslash
-
   // This is not a todo tag. It is a general comment and we do not want
   // to do the standards checking here.
-
   // These are all incorrect.
   // @TODO Error
   // @ToDo Error
