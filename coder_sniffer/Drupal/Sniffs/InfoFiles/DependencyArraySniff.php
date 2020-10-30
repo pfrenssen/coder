@@ -7,7 +7,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * "Dependency" should have single entry as an array in Drupal 8 info files.
+ * Dependency should have single entry as an array in Drupal 8 info files.
  *
  * @category PHP
  * @package PHP_CodeSniffer
@@ -19,6 +19,7 @@ class DependencyArraySniff implements Sniff {
    * Returns an array of tokens this test wants to listen for.
    *
    * @return arrayint|string
+   *   Returns array or string.
    */
   public function register() {
     return [T_INLINE_HTML];
@@ -35,6 +36,7 @@ class DependencyArraySniff implements Sniff {
    *   stack passed in $tokens.
    *
    * @return int
+   *   Returns integer.
    */
   public function process(File $phpcsFile, $stackPtr) {
     // Only run this sniff once per info file.
