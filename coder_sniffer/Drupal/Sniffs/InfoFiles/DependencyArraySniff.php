@@ -1,11 +1,4 @@
 <?php
-/**
- * \Drupal\Sniffs\InfoFiles\DependencyArraySniff.
- *
- * @category PHP
- * @package  PHP_CodeSniffer
- * @link     http://pear.php.net/package/PHP_CodeSniffer
- */
 
 namespace Drupal\Sniffs\InfoFiles;
 
@@ -14,32 +7,32 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * "dependency" should have single entry as an array in Drupal 8 info files.
+ * "Dependency" should have single entry as an array in Drupal 8 info files.
  *
  * @category PHP
- * @package  PHP_CodeSniffer
- * @link     http://pear.php.net/package/PHP_CodeSniffer
+ * @package PHP_CodeSniffer
+ * @link http://pear.php.net/package/PHP_CodeSniffer
  */
 class DependencyArraySniff implements Sniff {
-
 
   /**
    * Returns an array of tokens this test wants to listen for.
    *
-   * @return array<int|string>
+   * @return arrayint|string
    */
   public function register() {
     return [T_INLINE_HTML];
 
   }//end register()
 
-
   /**
    * Processes this test, when one of its tokens is encountered.
    *
-   * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
-   * @param int $stackPtr The position of the current token in the
-   *                                               stack passed in $tokens.
+   * @param \PHP_CodeSniffer\Files\File $phpcsFile
+   *   The file being scanned.
+   * @param int $stackPtr
+   *   The position of the current token in the
+   *   stack passed in $tokens.
    *
    * @return int
    */
@@ -60,7 +53,6 @@ class DependencyArraySniff implements Sniff {
 
     return ($phpcsFile->numTokens + 1);
 
-  }//end process()
+  }//End process()
 
-
-}//end class
+}//End class
