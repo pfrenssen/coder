@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Largely copied from
+ * PHP_CodeSniffer\Standards\Squiz\Sniffs\Classes\ClassFileNameSniff.
+ *
+ * Extended to support anonymous classes and Drupal core version.
+ */
 namespace Drupal\Sniffs\InfoFiles;
 
 use PHP_CodeSniffer\Files\File;
@@ -33,14 +38,10 @@ class DependencyArraySniff implements Sniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile
-     *   The file being scanned.
-     * @param int                         $stackPtr
-     *   The position of the current token in the
-     *   stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the stack passed in $tokens.
      *
-     * @return int
-     *   Returns integer.
+     * @return int Returns integer.
      */
     public function process(File $phpcsFile, $stackPtr)
     {
