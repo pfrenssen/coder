@@ -55,5 +55,3 @@ parameters:
             count: 2
             message: '~^Call to an undefined method Drupal\\Sniffs\\Semantics\\FunctionCall::(registerFunctionNames|processFunctionCall)\(\).$~'
             path: coder_sniffer/Drupal/Sniffs/Semantics/FunctionCall.php
-        # False positive: Variable $a in isset() always exists and is not
-        # nullable. https://github.com/phpstan/phpstan/issues/2816
