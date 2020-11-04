@@ -83,18 +83,27 @@ class InlineVariableCommentSniff implements Sniff
             if (strpos($tokens[$stackPtr]['content'], '@var') !== false) {
                 $warning = 'Inline @var declarations should use the /** */ delimiters';
 
-                if ($phpcsFile->addFixableWarning($warning, $stackPtr, 'VarInline') === true) {
-                    if (strpos($tokens[$stackPtr]['content'], '#') === 0) {
-                        $varComment = substr_replace(rtrim($tokens[$stackPtr]['content']), '/**', 0, 1)." */\n";
-                    } else if (strpos($tokens[$stackPtr]['content'], '//') === 0) {
-                        $varComment = substr_replace(rtrim($tokens[$stackPtr]['content']), '/**', 0, 2)." */\n";
-                    } else {
-                        $varComment = substr_replace($tokens[$stackPtr]['content'], '/**', 0, 2);
+                if (strpos($tokens[$stackPtr]['content'], '#') === 0 || strpos($tokens[$stackPtr]['content'], '//') === 0) {
+                    if (strpos($tokens[$stackPtr]['content'], '*/') !== false) {
+                        return;
                     }
 
-                    $phpcsFile->fixer->replaceToken($stackPtr, $varComment);
+                    if ($phpcsFile->addFixableWarning($warning, $stackPtr, 'VarInline') === true) {
+                        // Hashtag and slash based comments contain a trailing
+                        // new line.
+                        $varContent = rtrim($tokens[$stackPtr]['content']);
+
+                        // Remove all leading hashtags and slashes.
+                        $varContent = ltrim($varContent, '/# ');
+
+                        $phpcsFile->fixer->replaceToken($stackPtr, ('/** '.$varContent." */\n"));
+                    }
+                } else {
+                    if ($phpcsFile->addFixableWarning($warning, $stackPtr, 'VarInline') === true) {
+                        $phpcsFile->fixer->replaceToken($stackPtr, substr_replace($tokens[$stackPtr]['content'], '/**', 0, 2));
+                    }
                 }
-            }
+            }//end if
 
             return;
         }//end if
