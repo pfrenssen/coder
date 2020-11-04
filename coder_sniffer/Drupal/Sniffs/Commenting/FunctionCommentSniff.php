@@ -237,10 +237,6 @@ class FunctionCommentSniff implements Sniff
                     $typeNames      = explode('|', $type);
                     $suggestedNames = [];
                     $hasNull        = false;
-                    $hasMultiple    = false;
-                    if (count($typeNames) > 0) {
-                        $hasMultiple = true;
-                    }
 
                     foreach ($typeNames as $i => $typeName) {
                         if (strtolower($typeName) === 'null') {
