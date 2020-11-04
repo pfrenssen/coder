@@ -84,6 +84,9 @@ class InlineVariableCommentSniff implements Sniff
                 $warning = 'Inline @var declarations should use the /** */ delimiters';
 
                 if (strpos($tokens[$stackPtr]['content'], '#') === 0 || strpos($tokens[$stackPtr]['content'], '//') === 0) {
+                    // If this comment contains '*/' then the developer is mixing
+                    // inline comment styles. This could be commented out code,
+                    // so leave this line alone completely.
                     if (strpos($tokens[$stackPtr]['content'], '*/') !== false) {
                         return;
                     }
@@ -102,7 +105,7 @@ class InlineVariableCommentSniff implements Sniff
                     if ($phpcsFile->addFixableWarning($warning, $stackPtr, 'VarInline') === true) {
                         $phpcsFile->fixer->replaceToken($stackPtr, substr_replace($tokens[$stackPtr]['content'], '/**', 0, 2));
                     }
-                }
+                }//end if
             }//end if
 
             return;
