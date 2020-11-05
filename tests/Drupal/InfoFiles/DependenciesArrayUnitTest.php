@@ -8,7 +8,7 @@ use Drupal\Test\CoderSniffUnitTest;
  * A sniff unit test checks a .inc file for expected violations of a single
  * coding standard. Expected errors and warnings are stored in this class.
  */
-class DependencyArraySniffUnitTest extends CoderSniffUnitTest
+class DependenciesArrayUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -56,7 +56,7 @@ class DependencyArraySniffUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase): array
     {
         return [
-            __DIR__.'/drupal8/test.info.yml',
+            __DIR__.'/drupal8/dependencies_array.info.yml',
         ];
 
     }//end getTestFiles()
