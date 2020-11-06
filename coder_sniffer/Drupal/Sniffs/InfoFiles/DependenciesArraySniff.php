@@ -27,7 +27,6 @@ class DependenciesArraySniff implements Sniff
      * Returns an array of tokens this test wants to listen for.
      *
      * @return arrayint|string
-     *   Returns array or string.
      */
     public function register()
     {
@@ -42,7 +41,7 @@ class DependenciesArraySniff implements Sniff
      * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
      * @param int                         $stackPtr  The position of the current token in the stack passed in $tokens.
      *
-     * @return int Returns integer.
+     * @return int
      */
     public function process(File $phpcsFile, $stackPtr)
     {
@@ -51,12 +50,14 @@ class DependenciesArraySniff implements Sniff
         if ($fileExtension !== 'info') {
             return ($phpcsFile->numTokens + 1);
         }
+
         try {
             $info = Yaml::parse(file_get_contents($phpcsFile->getFilename()));
         } catch (ParseException $e) {
             // If the YAML is invalid we ignore this file.
             return ($phpcsFile->numTokens + 1);
         }
+
         if (isset($info['dependencies']) === true && is_array($info['dependencies']) === false) {
             $error = '"dependencies" should be an array in the info yaml file';
             $phpcsFile->addError($error, $stackPtr, 'Dependencies');
