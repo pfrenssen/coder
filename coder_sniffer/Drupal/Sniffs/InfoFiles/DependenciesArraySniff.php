@@ -26,7 +26,7 @@ class DependenciesArraySniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return arrayint|string
+     * @return array<int|string>
      */
     public function register()
     {
