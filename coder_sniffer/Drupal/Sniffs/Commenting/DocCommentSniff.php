@@ -373,6 +373,12 @@ class DocCommentSniff implements Sniff
         ];
         foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
             if ($pos > 0) {
+                // If this tag is not in the same column as the initial tag then
+                // it must be an inline comment tag and should be ignored here.
+                if ($tokens[$tag]['column'] !== $tokens[$firstTag]['column']) {
+                    continue;
+                }
+
                 $prev = $phpcsFile->findPrevious(
                     T_DOC_COMMENT_STRING,
                     ($tag - 1),
@@ -387,7 +393,7 @@ class DocCommentSniff implements Sniff
                 if ($isNewGroup === true) {
                     $groupid++;
                 }
-            }
+            }//end if
 
             $currentTag = $tokens[$tag]['content'];
             if ($currentTag === '@param') {
@@ -404,11 +410,10 @@ class DocCommentSniff implements Sniff
                     $paramGroupid = $groupid;
                 }
 
-                // The @param, @return and @throws tag sections should be
-                // separated by a blank line both before and after these sections.
+                // All of the $checkTags sections should be separated by a blank
+                // line both before and after the sections.
             } else if ($isNewGroup === false
-                && in_array($currentTag, $checkTags) === true
-                && in_array($previousTag, $checkTags) === true
+                && (in_array($currentTag, $checkTags) === true || in_array($previousTag, $checkTags) === true)
                 && $previousTag !== $currentTag
             ) {
                 $error = 'Separate the %s and %s sections by a blank line.';
@@ -443,7 +448,7 @@ class DocCommentSniff implements Sniff
             // but account for a multi-line tag comments.
             $lastTag = $group[$pos];
             $next    = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($lastTag + 3), $commentEnd);
-            if ($next !== false) {
+            if ($next !== false && $tokens[$next]['column'] === $tokens[$firstTag]['column']) {
                 $prev = $phpcsFile->findPrevious([T_DOC_COMMENT_TAG, T_DOC_COMMENT_STRING], ($next - 1), $commentStart);
                 if ($tokens[$next]['line'] !== ($tokens[$prev]['line'] + 2)) {
                     $error = 'There must be a single blank line after a tag group';
