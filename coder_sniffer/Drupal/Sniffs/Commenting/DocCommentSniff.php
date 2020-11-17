@@ -369,7 +369,6 @@ class DocCommentSniff implements Sniff
             '@param',
             '@return',
             '@throws',
-            '@ingroup',
         ];
         foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
             if ($pos > 0) {
