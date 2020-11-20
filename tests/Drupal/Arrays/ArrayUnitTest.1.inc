@@ -22,4 +22,5 @@ $array = array(
   'inline_two_elements_ok4' => func(['one-two-three-four', 'this-2nd-element-is-right-on-the-limit'], 'other text'),
   'inline_two_elements_ok5' => func(['one-two-three-four'], ['second_array' => 'this-is-ok'], 'other text'),
   'inline_two_elements_not_ok' => func(['one-two'], ['second_array' => 'three', 'four-five' => 'six'], 'other text'),
+  'inline_with_nested_functions_but_array_has_one_element_ok' => t('Tags: @tags', ['@tags' => implode(', ', $tags)]),
 );
