@@ -233,6 +233,7 @@ class DocCommentSniff implements Sniff
         }
 
         $lastChar = substr($shortContent, -1);
+        // Allow these characters as valid line-ends not requiring to be fixed.
         if (in_array($lastChar, ['.', '!', '?', ')']) === false
             // Allow both variants of inheritdoc comments.
             && $shortContent !== '{@inheritdoc}'
@@ -242,9 +243,17 @@ class DocCommentSniff implements Sniff
             && $shortContent !== basename($phpcsFile->getFilename())
         ) {
             $error = 'Doc comment short description must end with a full stop';
-            $fix   = $phpcsFile->addFixableError($error, $shortEnd, 'ShortFullStop');
-            if ($fix === true) {
-                $phpcsFile->fixer->addContent($shortEnd, '.');
+            // If the last character is alphanumeric and the content is all on one line then fix it.
+            if (preg_match('/[a-zA-Z0-9]/', $lastChar) === 1
+                && $tokens[$short]['line'] === $tokens[$shortEnd]['line']
+            ) {
+                $fix = $phpcsFile->addFixableError($error, $shortEnd, 'ShortFullStop');
+                if ($fix === true) {
+                    $phpcsFile->fixer->addContent($shortEnd, '.');
+                }
+            } else {
+                // The correct fix is not obvious, so report an error and leave for manual correction.
+                $phpcsFile->addError($error, $shortEnd, 'ShortFullStop');
             }
         }
 
