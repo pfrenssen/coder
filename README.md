@@ -1,6 +1,6 @@
 # Coder
 
-[![Build Status](https://travis-ci.org/pfrenssen/coder.svg?branch=8.x-3.x)](https://travis-ci.org/pfrenssen/coder)
+[![Automated tests](https://github.com/pfrenssen/coder/workflows/Tests/badge.svg)](https://github.com/pfrenssen/coder/actions)
 
 Coder is a library for automated Drupal code reviews and coding standard fixes. It
 defines rules for [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
