@@ -40,9 +40,11 @@ jobs:
         # dependencies in vendor.
         # We have a dedicated composer.json file for PHP 7.0 that does not have
         # PHPStan because it requires >= PHP 7.1.
+        # We ignore plaform requirements because we want to run older PHPUnit
+        # versions on PHP 8.
         run: |
           if [[ ${{ matrix.php-versions }} == "7.0" ]]; then cp composer-php-7-0.json composer.json; fi
-          composer install --no-progress --prefer-dist --optimize-autoloader
+          composer install --ignore-platform-reqs --no-progress --prefer-dist --optimize-autoloader
       - name: Run PHPUnit
         run: ./vendor/bin/phpunit
       - name: Run PHPCS
