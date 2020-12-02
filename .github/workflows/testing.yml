@@ -1,9 +1,5 @@
 name: Tests
-on:
-  push:
-    branches: [ 8.3.x, 8.x-3.x ]
-  pull_request:
-    branches: [ 8.3.x, 8.x-3.x ]
+on: [push, pull_request]
 jobs:
   testing:
     name: PHP ${{ matrix.php-versions }}
