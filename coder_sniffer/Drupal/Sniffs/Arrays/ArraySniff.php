@@ -121,7 +121,7 @@ class ArraySniff implements Sniff
                 // than one item. So we examine the comma's nested_parenthesis info, and break out
                 // of the loop when a valid comma is found, otherwise look for the next one.
                 $pos = ($stackPtr + 1);
-                while ($comma = $phpcsFile->findNext(T_COMMA, $pos, $tokens[$stackPtr][$parenthesisCloser])) {
+                while (($comma = $phpcsFile->findNext(T_COMMA, $pos, $tokens[$stackPtr][$parenthesisCloser])) > 0) {
                     // If the comma has no nested information then it is part of
                     // the main array being tested. No need to search for more.
                     if (isset($tokens[$comma]['nested_parenthesis']) === false) {
