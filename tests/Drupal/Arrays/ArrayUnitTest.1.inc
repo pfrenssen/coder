@@ -20,7 +20,7 @@ $array = array(
   'inline_two_elements_not_ok' => array('one-two-three-four-five', '2nd-element-goes-beyond-the-limit-to-110'),
   'inline_two_elements_ok3' => func(['one-two-three-four', 'five'], 'other text which goes past the limit'),
   'inline_two_elements_ok4' => func(['one-two-three-four', 'this-2nd-element-is-right-on-the-limit'], 'other text'),
-  'inline_two_elements_ok5' => func(['one-two-three-four'], ['second_array' => 'this-is-ok'], 'other text'),
+  'inline_two_elements_ok5' => func(['one-two-three-four'], ['second_array' => 'ends at 92'], 'func ends at 113'),
   'inline_two_elements_not_ok' => func(['one-two'], ['second_array' => 'stops', 'at' => 'column 101'], 'other text'),
   'inline_with_nested_functions_but_array_has_one_element_ok' => t('Tags: @tags', ['@tags' => implode(', ', $tags)]),
   'inline_one_element_ok' => 'Extends beyond the limit but ok as there is only one element. The array ends at 115'),
