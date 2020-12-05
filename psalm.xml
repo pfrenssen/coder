@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="5"
+    resolveFromConfigFile="true"
+    autoloader="tests/Drupal/phpunit-bootstrap.php"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+
+    <projectFiles>
+        <directory name="coder_sniffer" />
+        <ignoreFiles>
+            <directory name="vendor" />
+            <file name="coder_sniffer/DrupalPractice/Sniffs/CodeAnalysis/VariableAnalysisSniff.php" />
+            <file name="tests/**/**/*.tpl.php" />
+            <file name="tests/**/**/*.api.php" />
+            <file name="tests/**/**/good.php" />
+            <file name="tests/**/**/bad.php" />
+            <file name="tests/**/**/drupal*/*.php" />
+        </ignoreFiles>
+    </projectFiles>
+</psalm>
