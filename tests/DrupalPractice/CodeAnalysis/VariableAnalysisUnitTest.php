@@ -47,6 +47,7 @@ class VariableAnalysisUnitTest extends CoderSniffUnitTest
             4  => 1,
             8  => 1,
             17 => 1,
+            61 => 1,
         ];
 
     }//end getWarningList()
