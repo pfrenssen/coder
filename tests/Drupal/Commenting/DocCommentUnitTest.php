@@ -35,11 +35,20 @@ class DocCommentUnitTest extends CoderSniffUnitTest
                 101 => 1,
             ];
 
+        case 'DocCommentUnitTest.1.inc':
+            return [
+                24 => 1,
+                28 => 1,
+                32 => 1,
+                36 => 1,
+                41 => 2,
+            ];
+
         case 'DocCommentUnitTest.3.inc':
             return [4 => 1];
         default:
             return [];
-        }
+        }//end switch
 
     }//end getErrorList()
 
