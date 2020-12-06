@@ -113,3 +113,13 @@ function test2() {
 
   return $x;
 }
+
+// An example comment where I will demonstrate the usage of path ./../..
+// in this sentence..
+test();
+
+// An example comment ends with /..
+test();
+
+// An example comment ends with ...
+test();
