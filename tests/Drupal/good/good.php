@@ -1577,6 +1577,16 @@ function test23(): TestReturnType {
 }
 
 /**
+ * Variadic arguments with proper declaration.
+ *
+ * @param \Drupal\mymodule\Element ...$element
+ *   The variadic parameter comment.
+ */
+function test24(Element ...$element) {
+
+}
+
+/**
  * Test class.
  */
 class Test2 {
