@@ -19,9 +19,8 @@ use PHP_CodeSniffer\Files\LocalFile;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Util\Common;
 use PHP_CodeSniffer\Util\Tokens;
-use PHPUnit\Framework\TestCase;
 
-abstract class CoderSniffUnitTest extends TestCase
+abstract class CoderSniffUnitTest extends PhpunitCompatibilityTestCase
 {
 
     /**
@@ -60,7 +59,7 @@ abstract class CoderSniffUnitTest extends TestCase
      *
      * @return void
      */
-    protected function setUp()
+    protected function compatibleSetUp()
     {
         $class = get_class($this);
 
@@ -76,7 +75,7 @@ abstract class CoderSniffUnitTest extends TestCase
             define('PHP_CODESNIFFER_CBF', 0);
         }
 
-    }//end setUp()
+    }//end compatibleSetUp()
 
 
     /**

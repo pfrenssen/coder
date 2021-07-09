@@ -2,13 +2,13 @@
 
 namespace DrupalPractice\Test\ProjectDetection;
 
+use Drupal\Test\PhpunitCompatibilityTestCase;
 use DrupalPractice\Project;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Tests that project and version detection works.
  */
-class ProjectUnitTest extends TestCase
+class ProjectUnitTest extends PhpunitCompatibilityTestCase
 {
 
     /**
@@ -24,14 +24,13 @@ class ProjectUnitTest extends TestCase
      *
      * @return void
      */
-    public function setUp()
+    protected function compatibleSetUp()
     {
-        parent::setUp();
         $this->phpcsFile = $this->getMockBuilder('\PHP_CodeSniffer\Files\File')
             ->disableOriginalConstructor()
             ->getMock();
 
-    }//end setUp()
+    }//end compatibleSetUp()
 
 
     /**

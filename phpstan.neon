@@ -10,6 +10,8 @@ parameters:
         - 'tests/*/good.php'
         - 'tests/*/bad.php'
         - 'tests/*/drupal[678]/*.php'
+        # Compatibilty layer class for PHPUnit that should not be checked.
+        - 'tests/Drupal/PhpunitCompatibilityTestCase.php'
     bootstrapFiles:
         - tests/Drupal/phpunit-bootstrap.php
         # PHPStan does not find the constants in this file, so load it manually.
