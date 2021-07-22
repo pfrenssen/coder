@@ -75,10 +75,10 @@ Automatically fix coding standards
     phpcbf --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml /file/to/drupal/example_module
 
 
-## Store settings in a phpcs.xml.dist file
+## Store settings in a phpcs.xml file
 
 In order to save and commit your PHPCS settings to Git you can use a
-phpcs.xml.dist file in your project like this:
+phpcs.xml file in your project like this:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -108,7 +108,7 @@ phpcs.xml.dist file in your project like this:
 </ruleset>
 ```
 
-Then you can invoke phpcs without any options and it will read phpcs.xml.dist
+Then you can invoke phpcs without any options and it will read phpcs.xml
 from the current directory. This can also be useful for Continuous Integration
 setups.
 
