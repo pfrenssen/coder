@@ -1,14 +1,14 @@
 <?php
 
 /**
- * \DrupalPractice\Sniffs\Tests\WaitForText
+ * \DrupalPractice\Sniffs\FunctionCalls\WaitForText
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
-namespace DrupalPractice\Sniffs\Tests;
+namespace DrupalPractice\Sniffs\FunctionCalls;
 
 use PHP_CodeSniffer\Files\File;
 use Drupal\Sniffs\Semantics\FunctionCall;
