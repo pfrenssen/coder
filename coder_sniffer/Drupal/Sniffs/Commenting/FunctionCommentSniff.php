@@ -371,10 +371,6 @@ class FunctionCommentSniff implements Sniff
                         if ($fix === true) {
                             $phpcsFile->fixer->replaceToken(($return + 2), $matches[1]);
                         }
-                    } else {
-                        $error = 'Return type "%s" must not contain spaces';
-                        $data  = [$type];
-                        $phpcsFile->addError($error, $return, 'ReturnTypeSpaces', $data);
                     }
                 }//end if
             }//end if
@@ -998,7 +994,7 @@ class FunctionCommentSniff implements Sniff
             return $type;
         }
 
-        $type = preg_replace('/[^a-zA-Z0-9_\\\[\]]/', '', $type);
+        $type = preg_replace('/[^a-zA-Z0-9_:,\{\<\}\>\\\[\]]/', '', $type);
 
         return $type;
 
