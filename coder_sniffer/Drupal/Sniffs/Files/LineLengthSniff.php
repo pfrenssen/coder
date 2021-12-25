@@ -46,7 +46,7 @@ class LineLengthSniff extends GenericLineLengthSniff
      * Checks if a line is too long.
      *
      * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
-     * @param array<int, array>           $tokens    The token stack.
+     * @param array<int, mixed>           $tokens    The token stack.
      * @param int                         $stackPtr  The first token on the next line.
      *
      * @return void
