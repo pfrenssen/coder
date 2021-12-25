@@ -3,7 +3,7 @@ parameters:
     paths:
         - coder_sniffer
         - tests
-    excludes_analyse:
+    excludePaths:
         # Test files that should not be checked.
         - 'tests/*/*.tpl.php'
         - 'tests/*/*.api.php'
