@@ -780,6 +780,8 @@ class FunctionCommentSniff implements Sniff
                         && $typeHint !== '\stdClass'
                         // As of PHP 7.2, object is a valid type hint.
                         && $typeHint !== 'object'
+                        // As of PHP 8.0, mixed is a valid type hint.
+                        && $typeHint !== 'mixed'
                     ) {
                         $error = 'Unknown type hint "%s" found for %s';
                         $data  = [
