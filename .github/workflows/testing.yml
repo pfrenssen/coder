@@ -46,4 +46,4 @@ jobs:
           ./vendor/bin/phpcs -p --standard=tests/Drupal/phpcs-ruleset.xml tests/Drupal/good/ --ignore=tests/Drupal/good/GoodUnitTest.php
           ./vendor/bin/phpcs -p --standard=coder_sniffer/DrupalPractice tests/DrupalPractice/good/ --ignore=tests/DrupalPractice/good/GoodUnitTest.php
       - name: Run PHPStan
-        run: ./vendor/bin/phpstan analyse; fi
+        run: ./vendor/bin/phpstan analyse
