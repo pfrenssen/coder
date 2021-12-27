@@ -6,6 +6,7 @@
  <arg name="encoding" value="utf-8"/>
 
  <autoload>./coder_unique_autoload_phpcs_bug_2751.php</autoload>
+ <config name="installed_paths" value="../../slevomat/coding-standard,../../vendor/slevomat/coding-standard"/>
 
  <rule ref="Internal.NoCodeFound">
   <!-- Empty files are fine, might be used for testing. -->
@@ -119,6 +120,9 @@
 
  <rule ref="PSR2.Namespaces.NamespaceDeclaration" />
  <rule ref="PSR2.Namespaces.UseDeclaration" />
+
+ <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator" />
+ <rule ref="SlevomatCodingStandard.PHP.ShortList" />
 
  <rule ref="Squiz.Arrays.ArrayDeclaration" />
  <!-- Disable some error messages that we do not want. -->
