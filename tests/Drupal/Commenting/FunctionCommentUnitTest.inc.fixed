@@ -542,3 +542,13 @@ function test37(array $matches, array $sub_key, $to) {
 function test38($a, $b) {
   yield from [$a, $b];
 }
+
+/**
+ * Allow "mixed" as real type hint (PHP 8.0).
+ *
+ * @param mixed $arg
+ *   Something here.
+ */
+function test39(mixed $arg) {
+  return $arg;
+}

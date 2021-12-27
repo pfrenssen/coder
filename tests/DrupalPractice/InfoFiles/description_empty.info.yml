@@ -1,0 +1,6 @@
+name: Description
+description: ''
+type: module
+package: Coder
+version: VERSION
+core_version_requirement: ^9

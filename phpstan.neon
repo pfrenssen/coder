@@ -3,7 +3,7 @@ parameters:
     paths:
         - coder_sniffer
         - tests
-    excludes_analyse:
+    excludePaths:
         # Test files that should not be checked.
         - 'tests/*/*.tpl.php'
         - 'tests/*/*.api.php'
@@ -39,15 +39,23 @@ parameters:
             count: 1
             path: coder_sniffer/Drupal/Sniffs/InfoFiles/ClassFilesSniff.php
         -
+            message: "#^Offset 0\\|non\\-empty\\-string on array\\{\\} in isset\\(\\) does not exist\\.$#"
+            count: 1
+            path: coder_sniffer/Drupal/Sniffs/InfoFiles/ClassFilesSniff.php
+        -
             message: "#^Result of \\|\\| is always true\\.$#"
             count: 1
             path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
         -
-            message: "#^Call to function array_key_exists\\(\\) with mixed and array\\(\\) will always evaluate to false\\.$#"
+            message: "#^Strict comparison using \\=\\=\\= between false and true will always evaluate to false\\.$#"
             count: 1
             path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
         -
-            message: "#^Strict comparison using \\=\\=\\= between false and true will always evaluate to false\\.$#"
+            message: "#^Call to function array_key_exists\\(\\) with mixed and array\\{\\} will always evaluate to false\\.$#"
+            count: 1
+            path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
+        -
+            message: "#^Offset 0\\|non\\-empty\\-string on array\\{\\} in isset\\(\\) does not exist\\.$#"
             count: 1
             path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
         # We don't want to introduce abstract methods for the 2 calls because
