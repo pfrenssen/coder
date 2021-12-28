@@ -6,7 +6,6 @@
  <arg name="encoding" value="utf-8"/>
 
  <autoload>./coder_unique_autoload_phpcs_bug_2751.php</autoload>
- <config name="installed_paths" value="../../slevomat/coding-standard,../../vendor/slevomat/coding-standard"/>
 
  <rule ref="Internal.NoCodeFound">
   <!-- Empty files are fine, might be used for testing. -->
