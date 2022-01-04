@@ -91,7 +91,7 @@ class InsecureUnserializeSniff extends FunctionCall
      * @return void
      */
     protected function fail($phpcsFile, $position) {
-        $phpcsFile->addError('unserialize() is insecure unless allowed classes are limited.', $position, 'InsecureUnserialize');
+        $phpcsFile->addError('unserialize() is insecure unless allowed classes are limited. Use a safe format like JSON or use the allowed_classes option.', $position, 'InsecureUnserialize');
     }
 
 
