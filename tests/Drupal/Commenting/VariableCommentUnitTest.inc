@@ -51,4 +51,11 @@ class Test {
    */
   public ?Bar $bar;
 
+  /**
+   * Property fooBar.
+   *
+   * @var Foo|Bar|false|null
+   */
+  public Foo|Bar|FALSE|NULL $fooBar;
+
 }

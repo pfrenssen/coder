@@ -119,7 +119,7 @@ class TodoCommentSniff implements Sniff
      * @param int                         $stackPtr  The position of the current token
      *                                               in the stack passed in $tokens.
      * @param string                      $comment   The comment text.
-     * @param array<array>                $tokens    The token data.
+     * @param array<int, mixed>           $tokens    The token data.
      *
      * @return void
      */

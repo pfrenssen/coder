@@ -54,7 +54,7 @@ abstract class FunctionCall implements Sniff
     /**
      * Internal cache to save the calculated arguments of the function call.
      *
-     * @var array<int, array>
+     * @var array<int, mixed>
      */
     protected $arguments;
 
