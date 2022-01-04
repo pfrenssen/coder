@@ -54,33 +54,36 @@ class InsecureUnserializeSniff extends FunctionCall
         $openBracket,
         $closeBracket
     ) {
-          $tokens   = $phpcsFile->getTokens();
-          $argument = $this->getArgument(2);
-          if (!$argument) {
-              $this->fail($phpcsFile, $closeBracket);
-              return;
-          }
+        $tokens   = $phpcsFile->getTokens();
+        $argument = $this->getArgument(2);
+        if ($argument === false) {
+            $this->fail($phpcsFile, $closeBracket);
+            return;
+        }
 
-          $allowed_classes_key_start = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, $argument['start'], $argument['end'], false, '\'allowed_classes\'');
-          if (!$allowed_classes_key_start) {
-            $allowed_classes_key_start = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, $argument['start'], $argument['end'], false, '"allowed_classes"');
-          }
-          if (!$allowed_classes_key_start) {
-              $this->fail($phpcsFile, $argument['end']);
-              return;
-          }
-          $allowed_classes_arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, $allowed_classes_key_start, $argument['end'], false);
-          if (!$allowed_classes_arrow) {
-              $this->fail($phpcsFile, $argument['end']);
-              return;
-          }
+        $allowedClassesKeyStart = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, $argument['start'], $argument['end'], false, '\'allowed_classes\'');
+        if ($allowedClassesKeyStart === false) {
+            $allowedClassesKeyStart = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, $argument['start'], $argument['end'], false, '"allowed_classes"');
+        }
 
-          $allowed_classes_value = $phpcsFile->findNext(T_WHITESPACE, $allowed_classes_arrow + 1, $argument['end'], true);
-          if ($tokens[$allowed_classes_value]['code'] === T_TRUE) {
-              $this->fail($phpcsFile, $allowed_classes_value);
-          }
+        if ($allowedClassesKeyStart === false) {
+            $this->fail($phpcsFile, $argument['end']);
+            return;
+        }
+
+        $allowedClassesArrow = $phpcsFile->findNext(T_DOUBLE_ARROW, $allowedClassesKeyStart, $argument['end'], false);
+        if ($allowedClassesArrow === false) {
+            $this->fail($phpcsFile, $argument['end']);
+            return;
+        }
+
+        $allowedClassesValue = $phpcsFile->findNext(T_WHITESPACE, ($allowedClassesArrow + 1), $argument['end'], true);
+        if ($tokens[$allowedClassesValue]['code'] === T_TRUE) {
+            $this->fail($phpcsFile, $allowedClassesValue);
+        }
 
     }//end processFunctionCall()
+
 
     /**
      * Record a violation of the standard.
@@ -90,9 +93,11 @@ class InsecureUnserializeSniff extends FunctionCall
      *
      * @return void
      */
-    protected function fail($phpcsFile, $position) {
+    protected function fail(File $phpcsFile, int $position)
+    {
         $phpcsFile->addError('unserialize() is insecure unless allowed classes are limited. Use a safe format like JSON or use the allowed_classes option.', $position, 'InsecureUnserialize');
-    }
+
+    }//end fail()
 
 
 }//end class

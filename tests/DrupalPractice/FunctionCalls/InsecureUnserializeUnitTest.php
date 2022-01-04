@@ -30,12 +30,12 @@ class InsecureUnserializeUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [
-          13 => 1,
-          15 => 1,
-          18 => 1,
-          21 => 1,
-          22 => 1,
-          26 => 1,
+            13 => 1,
+            15 => 1,
+            18 => 1,
+            21 => 1,
+            22 => 1,
+            26 => 1,
         ];
 
     }//end getErrorList()
