@@ -94,7 +94,7 @@ function test2() {
    * @var string $x
    * @var string $y
    */
-  list($x, $y) = something();
+  [$x, $y] = something();
 
   $date_format = '';
   $time_format = '';

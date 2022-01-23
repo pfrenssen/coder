@@ -1175,7 +1175,7 @@ function test6(array $names) {
 
 }
 
-list(,, $bundle) = entity_extract_ids('node', $entity);
+[,, $bundle] = entity_extract_ids('node', $entity);
 
 l("<i class='icon icon-industrial-building'></i>", 'node/add/job', array(
   'attributes' => array('title' => t('add job')),

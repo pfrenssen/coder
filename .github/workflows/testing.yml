@@ -8,11 +8,6 @@ jobs:
       fail-fast: false
       matrix:
         php-versions: ['7.1', '7.2', '7.3', '7.4', '8.0', '8.1']
-        phpstan: ['1']
-        # Extra run to also test on PHP 7.0 without PHPStan.
-        include:
-          - php-versions: '7.0'
-            phpstan: '0'
     steps:
       - name: Checkout Coder
         uses: actions/checkout@v2
@@ -36,10 +31,7 @@ jobs:
       - name: Install Composer dependencies
         # Running composer install without a lock file will also update cached
         # dependencies in vendor.
-        # We have a dedicated composer.json file for PHP 7.0 that does not have
-        # PHPStan because it requires >= PHP 7.1.
         run: |
-          if [[ ${{ matrix.php-versions }} == "7.0" ]]; then cp composer-php-7-0.json composer.json; fi
           composer install --no-progress --prefer-dist --optimize-autoloader
       - name: Run PHPUnit
         run: ./vendor/bin/phpunit
@@ -54,4 +46,4 @@ jobs:
           ./vendor/bin/phpcs -p --standard=tests/Drupal/phpcs-ruleset.xml tests/Drupal/good/ --ignore=tests/Drupal/good/GoodUnitTest.php
           ./vendor/bin/phpcs -p --standard=coder_sniffer/DrupalPractice tests/DrupalPractice/good/ --ignore=tests/DrupalPractice/good/GoodUnitTest.php
       - name: Run PHPStan
-        run: if [[ ${{ matrix.phpstan }} == "1" ]]; then ./vendor/bin/phpstan analyse; fi
+        run: ./vendor/bin/phpstan analyse
