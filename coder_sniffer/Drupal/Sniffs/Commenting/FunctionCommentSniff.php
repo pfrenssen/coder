@@ -994,7 +994,7 @@ class FunctionCommentSniff implements Sniff
             return $type;
         }
 
-        $type = preg_replace('/[^a-zA-Z0-9_:,\{\<\}\>\\\[\]]/', '', $type);
+        $type = preg_replace('/[^a-zA-Z0-9_:\(\),\{\<\}\>\\\[\]]/', '', $type);
 
         return $type;
 
