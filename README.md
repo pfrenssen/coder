@@ -16,7 +16,7 @@ please use [ESLint](http://eslint.org/) and see the
 [Drupal ESLint](https://www.drupal.org/node/1955232) documentation.
 
 
-## Installation
+## Global installation
 
 First, make sure Composer is installed correctly:
 
@@ -25,33 +25,15 @@ First, make sure Composer is installed correctly:
 If you get composer not found or similar, follow Composer's installation
 instructions.
 
-Install Coder (8.x-3.x) in your global Composer directory in your home directory
-(`~/.composer`):
+Install Coder (8.3.x) in your global Composer directory in your home directory
+(`~/.config/composer`):
 
     composer global require drupal/coder
 
 To make the `phpcs` and `phpcbf` commands available globally, add the Composer
 bin path to your `$PATH` variable in `~/.profile`, `~/.bashrc` or `~/.zshrc`:
 
-    export PATH="$PATH:$HOME/.composer/vendor/bin"
-
-
-### Composer Installer Plugins
-
-The Coder package (>= 8.2.11) now works with Composer Installer Plugins,
-that find and register standards whenever packages are installed or updated.
-To use such a plugin within your project, follow these steps.
-
-    composer require --dev drupal/coder
-
-Now, you will see Drupal and DrupalPractice listed in the available PHP
-CodeSniffer standards.
-
-    vendor/bin/phpcs -i
-
-The same can be done for a Composer global installation.
-
-    composer global require drupal/coder
+    export PATH="$PATH:$HOME/.config/composer/vendor/bin"
 
 
 ## Usage
@@ -67,6 +49,21 @@ Check Drupal best practices
 Automatically fix coding standards
 
     phpcbf --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml /file/to/drupal/example_module
+
+
+## Local installation in your Drupal project
+
+For collaborating developer teams it makes sense to lock a Coder version with
+your other development dependencies locally. In your project where you have your
+composer.json file execute this:
+
+    composer require --dev drupal/coder
+
+Then you can run Coder on your custom module code like this:
+
+    ./vendor/bin/phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml web/modules/custom
+
+To simplify execution it is highly recommended to use a settings file, see below.
 
 
 ## Store settings in a phpcs.xml.dist file
@@ -104,7 +101,9 @@ phpcs.xml.dist file in your project like this:
 
 Then you can invoke phpcs without any options and it will read phpcs.xml.dist
 from the current directory. This can also be useful for Continuous Integration
-setups.
+setups. Example:
+
+    ./vendor/bin/phpcs -p
 
 
 ## Working with Editors
