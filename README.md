@@ -35,10 +35,6 @@ bin path to your `$PATH` variable in `~/.profile`, `~/.bashrc` or `~/.zshrc`:
 
     export PATH="$PATH:$HOME/.composer/vendor/bin"
 
-Register the Drupal and DrupalPractice Standard with PHPCS:
-
-    phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
-
 
 ### Composer Installer Plugins
 
@@ -46,7 +42,6 @@ The Coder package (>= 8.2.11) now works with Composer Installer Plugins,
 that find and register standards whenever packages are installed or updated.
 To use such a plugin within your project, follow these steps.
 
-    composer require --dev dealerdirect/phpcodesniffer-composer-installer
     composer require --dev drupal/coder
 
 Now, you will see Drupal and DrupalPractice listed in the available PHP
@@ -56,7 +51,6 @@ CodeSniffer standards.
 
 The same can be done for a Composer global installation.
 
-    composer global require dealerdirect/phpcodesniffer-composer-installer
     composer global require drupal/coder
 
 
