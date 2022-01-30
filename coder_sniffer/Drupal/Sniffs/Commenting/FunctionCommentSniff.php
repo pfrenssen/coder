@@ -822,7 +822,7 @@ class FunctionCommentSniff implements Sniff
                             continue;
                         }
 
-                        $newIndent = ($param['commentLines'][$lineNum]['indent'] + $spaces - $param['type_space']);
+                        $newIndent = max($param['commentLines'][$lineNum]['indent'] + $spaces - $param['type_space'], 0);
                         $phpcsFile->fixer->replaceToken(
                             ($param['commentLines'][$lineNum]['token'] - 1),
                             str_repeat(' ', $newIndent)
