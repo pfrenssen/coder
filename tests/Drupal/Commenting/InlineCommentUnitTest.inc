@@ -47,6 +47,9 @@ test();
 //  2 spaces instead of one.
 test();
 
+// cspell:ignore lines starting with cspell: don't need to end with a period
+test();
+
 /**
  * Test function.
  */
