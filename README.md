@@ -163,3 +163,5 @@ Thank you!
 
 Greg Sherwood and Squiz Pty Ltd, many sniffs are modified copies of their original
 work on [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer).
+
+
