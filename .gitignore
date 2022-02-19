@@ -1,2 +1,4 @@
+.gitignore
 /vendor/
 /composer.lock
+.phpunit.result.cache
