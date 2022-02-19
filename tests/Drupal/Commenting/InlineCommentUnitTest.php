@@ -29,9 +29,9 @@ class InlineCommentUnitTest extends CoderSniffUnitTest
             24 => 1,
             44 => 1,
             47 => 1,
-            59 => 1,
-            81 => 1,
-            83 => 1,
+            62 => 1,
+            84 => 1,
+            86 => 1,
         ];
 
     }//end getErrorList()
