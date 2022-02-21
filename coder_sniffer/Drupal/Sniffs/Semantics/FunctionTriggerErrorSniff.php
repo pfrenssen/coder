@@ -69,6 +69,11 @@ class FunctionTriggerErrorSniff extends FunctionCall
         // Get the first argument passed to trigger_error().
         $argument = $this->getArgument(1);
 
+        // Skip variable deprecation messages.
+        if ($tokens[$argument['start']]['code'] === T_VARIABLE) {
+            return;
+        }
+
         // Extract the message text to check. If if it formed using sprintf()
         // then find the single overall string using ->findNext.
         if ($tokens[$argument['start']]['code'] === T_STRING

@@ -23,12 +23,12 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
         switch ($testFile) {
         case 'FunctionTriggerErrorUnitTest.1.inc':
             return [
-                32 => 1,
                 34 => 1,
                 36 => 1,
                 38 => 1,
                 40 => 1,
                 42 => 1,
+                44 => 1,
             ];
         case 'FunctionTriggerErrorUnitTest.2.inc':
             return [29 => 1];
@@ -56,7 +56,6 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
         switch ($testFile) {
         case 'FunctionTriggerErrorUnitTest.1.inc':
             return [
-                44 => 1,
                 46 => 1,
                 48 => 1,
                 50 => 1,
@@ -69,6 +68,7 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
                 64 => 1,
                 66 => 1,
                 68 => 1,
+                70 => 1,
             ];
         case 'FunctionTriggerErrorUnitTest.2.inc':
         case 'FunctionTriggerErrorUnitTest.3.inc':
