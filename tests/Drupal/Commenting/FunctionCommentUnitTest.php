@@ -74,6 +74,8 @@ class FunctionCommentUnitTest extends CoderSniffUnitTest
                 427 => 2,
                 450 => 1,
                 460 => 1,
+                538 => 1,
+                540 => 1,
             ];
         case 'FunctionCommentUnitTest.1.inc':
             return [];
