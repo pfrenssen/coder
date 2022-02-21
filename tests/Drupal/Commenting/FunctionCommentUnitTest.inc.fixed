@@ -554,7 +554,7 @@ function test39(mixed $arg) {
 }
 
 /**
- * Test multiline comments with excess spaces in the @param annotation..
+ * Test multiline comments with excess spaces in the @param annotation.
  */
 class Test40 {
 
