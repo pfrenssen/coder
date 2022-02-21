@@ -157,13 +157,12 @@ class FunctionTriggerErrorSniff extends FunctionCall
             $phpcsFile->addError($error, $argument['start'], $sniff, [$messageText]);
         } else {
             // The text follows the basic layout. Now check that the version
-            // matches drupal:n.n.n or project:n.x-n.n. The text must be all
+            // matches drupal:n.n.n or project:n.x-n.n or project:n.x-n.n-label[n]
+            // or project:n.n.n or project:n.n.n-label[n]. The text must be all
             // lower case and numbers can be one or two digits.
             foreach (['deprecation-version' => $matches[2], 'removal-version' => $matches[4]] as $name => $version) {
-                if (preg_match('/^drupal:\d{1,2}\.\d{1,2}\.\d{1,2}$/', $version) === 0
-                    && preg_match('/^[a-z\d_]+:\d{1,2}\.x\-\d{1,2}\.\d{1,2}$/', $version) === 0
-                ) {
-                    $error = "The %s '%s' does not match the lower-case machine-name standard: drupal:n.n.n or project:n.x-n.n";
+                if (preg_match('/^[a-z\d_]+:(\d{1,2}\.\d{1,2}\.\d{1,2}|\d{1,2}\.x\-\d{1,2}\.\d{1,2})(-[a-z]{1,5}\d{1,2})?$/', $version) === 0) {
+                    $error = "The %s '%s' does not match the lower-case machine-name standard: drupal:n.n.n or project:n.x-n.n or project:n.x-n.n-label[n] or project:n.n.n or project:n.n.n-label[n]";
                     $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorVersion', [$name, $version]);
                 }
             }
