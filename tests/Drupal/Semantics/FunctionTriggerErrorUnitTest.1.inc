@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Example code lines for FunctionTriggerError sniff test.
+ * Test data for the relaxed version of FunctionTriggerError coding standard.
  */
 
 // Passes.
@@ -11,19 +11,19 @@
 // Not E_USER_DEPRECATED, so cannot fail it.
 @trigger_error('CommentTestBase is deprecated in drupal 8.4.0', E_USER_SOMETHING_ELSE);
 // All correct.
-@trigger_error('\Drupal\Some\Class\Foo is deprecated in drupal:8.5.0 and wont work in in drupal:9.0.0. Use \Drupal\Foo\Bar instead. See http://www.drupal.org/node/2908490', E_USER_DEPRECATED);
+@trigger_error('\Drupal\Some\Class\Foo is deprecated in drupal:8.5.0 and will not work in in drupal:9.0.0. Use \Drupal\Foo\Bar instead. See http://www.drupal.org/node/2908490', E_USER_DEPRECATED);
 // Alternative using __NAMESPACE__.
-@trigger_error(__NAMESPACE__ . '\Foo is deprecated in drupal:8.5.12 and wont work in drupal:9.0.0. Use \Drupal\Foo\Bar instead. See http://www.drupal.org/node/2908490', E_USER_DEPRECATED);
+@trigger_error(__NAMESPACE__ . '\Foo is deprecated in drupal:8.5.12 and will not work in drupal:9.0.0. Use \Drupal\Foo\Bar instead. See http://www.drupal.org/node/2908490', E_USER_DEPRECATED);
 // Alternative https url and cater for E_User_Deprecated in non-upper case.
-@trigger_error("\Drupal\Some\Class\Foo is deprecated in drupal:8.11.0 and wont work in drupal:9.0.0. Use \Drupal\Foo. See https://www.drupal.org/project/drupal/issues/2908490", E_User_Deprecated);
+@trigger_error("\Drupal\Some\Class\Foo is deprecated in drupal:8.11.0 and will not work in drupal:9.0.0. Use \Drupal\Foo. See https://www.drupal.org/project/drupal/issues/2908490", E_User_Deprecated);
 // Alternative syntax for contrib project and issue url.
-@trigger_error('Function foo_bar() is deprecated in my_module:8.x-2.0 and wont work in my_module:9.x-1.0. Use bar_baz() instead. See https://www.drupal.org/project/my_module/issues/2908490', E_USER_DEPRECATED);
+@trigger_error('Function foo_bar() is deprecated in my_module:8.x-2.0 and will not work in my_module:9.x-1.0. Use bar_baz() instead. See https://www.drupal.org/project/my_module/issues/2908490', E_USER_DEPRECATED);
 // Cater for sprintf inside the message.
-@trigger_error(sprintf('Function %s is deprecated in drupal:8.5.0 and wont work in drupal:9.0.0. Use foo() instead. See http://www.drupal.org/project/my_module/issues/123', $settings), E_USER_DEPRECATED);
+@trigger_error(sprintf('Function %s is deprecated in drupal:8.5.0 and will not work in drupal:9.0.0. Use foo() instead. See http://www.drupal.org/project/my_module/issues/123', $settings), E_USER_DEPRECATED);
 // Cater for concatenations in the message.
-@trigger_error(__METHOD__ . ' method is deprecated in drupal:8.4.0 and wont work in drupal:9.0.0. Use ' . __CLASS__ . '::bundle() instead. See https://www.drupal.org/project/drupal/issues/12345', E_USER_DEPRECATED);
+@trigger_error(__METHOD__ . ' method is deprecated in drupal:8.4.0 and will not work in drupal:9.0.0. Use ' . __CLASS__ . '::bundle() instead. See https://www.drupal.org/project/drupal/issues/12345', E_USER_DEPRECATED);
 // Cater for concatenation with nothing else before 'is deprecated.
-@trigger_error(__NAMESPACE__ . ' is deprecated in drupal:8.5.0 and wont work in drupal:9.0.0. Use \Drupal\Core\Messenger\MessengerInterface::addMessage() instead. See https://www.drupal.org/node/2774931', E_USER_DEPRECATED);
+@trigger_error(__NAMESPACE__ . ' is deprecated in drupal:8.5.0 and will not work in drupal:9.0.0. Use \Drupal\Core\Messenger\MessengerInterface::addMessage() instead. See https://www.drupal.org/node/2774931', E_USER_DEPRECATED);
 // Varibale interpolation, and no extra info (optional in relaxed standard).
 @trigger_error("Thing::\${$name} is deprecated in drupal:9.1.0 and will error in drupal:10.0.0. See https://www.drupal.org/node/3177488", E_USER_DEPRECATED);
 
