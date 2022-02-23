@@ -69,6 +69,7 @@ class InlineCommentSniff implements Sniff
             );
 
             $ignore = [
+                T_ATTRIBUTE,
                 T_CLASS,
                 T_INTERFACE,
                 T_TRAIT,
