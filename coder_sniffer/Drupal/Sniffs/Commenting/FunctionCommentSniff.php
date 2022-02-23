@@ -94,17 +94,17 @@ class FunctionCommentSniff implements Sniff
 
         $beforeFunction = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
         if ($tokens[$beforeFunction]['code'] === T_ATTRIBUTE_END
-            && !empty($tokens[$beforeFunction]['attribute_opener'])
+            && empty($tokens[$beforeFunction]['attribute_opener'] === false)
             && $tokens[$tokens[$beforeFunction]['attribute_opener']]['code'] === T_ATTRIBUTE
         ) {
             // It's an attribute, such as #[\ReturnTypeWillChange].
-            $attributeLines = $tokens[$beforeFunction]['line'] - $tokens[$tokens[$beforeFunction]['attribute_opener']]['line'] + 1;
-            $commentEnd = $phpcsFile->findPrevious($find, $tokens[$beforeFunction]['attribute_opener'] - 1, null, true);
-        }
-        else {
+            $attributeLines = ($tokens[$beforeFunction]['line'] - $tokens[$tokens[$beforeFunction]['attribute_opener']]['line'] + 1);
+            $commentEnd     = $phpcsFile->findPrevious($find, ($tokens[$beforeFunction]['attribute_opener'] - 1), null, true);
+        } else {
             $attributeLines = 0;
-            $commentEnd = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
+            $commentEnd     = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
         }
+
         $beforeCommentEnd = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($commentEnd - 1), null, true);
         if (($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             && $tokens[$commentEnd]['code'] !== T_COMMENT)
