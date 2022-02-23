@@ -94,7 +94,6 @@ class FunctionCommentSniff implements Sniff
 
         $beforeFunction = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
         if ($tokens[$beforeFunction]['code'] === T_ATTRIBUTE_END
-            && empty($tokens[$beforeFunction]['attribute_opener'] === false)
             && $tokens[$tokens[$beforeFunction]['attribute_opener']]['code'] === T_ATTRIBUTE
         ) {
             // It's an attribute, such as #[\ReturnTypeWillChange].
