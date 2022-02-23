@@ -1800,3 +1800,17 @@ interface Test5Interface {
   public function test3();
 
 }
+
+/**
+ * Test PHP attributes.
+ */
+class TestPhpAttributes {
+
+  /**
+   * Tests method with PHP attribute and docblock.
+   */
+  #[\ReturnTypeWillChange]
+  public function attributes(): void {
+  }
+
+}
