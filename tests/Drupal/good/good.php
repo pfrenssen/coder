@@ -1069,6 +1069,9 @@ class Foo implements FooInterface {
    * @return \Drupal\locale\StringInterface[]
    *   Array of objects of the class requested.
    */
+  #[
+    \ReturnTypeWillChange
+  ]
   protected function dbStringLoad(array $conditions, array $options, $class) {
     $strings = array();
     $result = $this->dbStringSelect($conditions, $options)->execute();
