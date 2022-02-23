@@ -1069,9 +1069,6 @@ class Foo implements FooInterface {
    * @return \Drupal\locale\StringInterface[]
    *   Array of objects of the class requested.
    */
-  #[
-    \ReturnTypeWillChange
-  ]
   protected function dbStringLoad(array $conditions, array $options, $class) {
     $strings = array();
     $result = $this->dbStringSelect($conditions, $options)->execute();
@@ -1801,5 +1798,19 @@ interface Test5Interface {
    *   And this is the end.
    */
   public function test3();
+
+}
+
+/**
+ * Test PHP attributes.
+ */
+class TestPhpAttributes {
+
+  /**
+   * Tests method with PHP attribute and docblock.
+   */
+  #[\ReturnTypeWillChange]
+  public function attributes(): void {
+  }
 
 }
