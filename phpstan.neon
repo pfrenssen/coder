@@ -63,3 +63,8 @@ parameters:
             count: 2
             message: '~^Call to an undefined method Drupal\\Sniffs\\Semantics\\FunctionCall::(registerFunctionNames|processFunctionCall)\(\).$~'
             path: coder_sniffer/Drupal/Sniffs/Semantics/FunctionCall.php
+        # PHPStan Bug https://github.com/phpstan/phpstan/issues/6811
+        -
+            message: "#^Strict comparison using \\=\\=\\= between mixed and 0 will always evaluate to false\\.$#"
+            count: 1
+            path: coder_sniffer/Drupal/Sniffs/Formatting/MultipleStatementAlignmentSniff.php
