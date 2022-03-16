@@ -299,5 +299,5 @@
  <exclude-pattern>*/\.bzr/*</exclude-pattern>
  
  <!-- Ignore min.css files-->
- <exclude-pattern>*min.css</exclude-pattern>
+ <exclude-pattern>*.min.css</exclude-pattern>
 </ruleset>
