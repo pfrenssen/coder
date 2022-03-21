@@ -298,6 +298,6 @@
  <exclude-pattern>*/\.hg/*</exclude-pattern>
  <exclude-pattern>*/\.bzr/*</exclude-pattern>
  
- <!-- Ignore min.css files-->
- <exclude-pattern>*.min.css</exclude-pattern>
+ <!-- Ignore minified CSS files.-->
+ <exclude-pattern>*\.min\.css$</exclude-pattern>
 </ruleset>
