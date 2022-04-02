@@ -297,4 +297,7 @@
  <exclude-pattern>*/\.svn/*</exclude-pattern>
  <exclude-pattern>*/\.hg/*</exclude-pattern>
  <exclude-pattern>*/\.bzr/*</exclude-pattern>
+ 
+ <!-- Ignore minified CSS files.-->
+ <exclude-pattern>*\.min\.css$</exclude-pattern>
 </ruleset>
