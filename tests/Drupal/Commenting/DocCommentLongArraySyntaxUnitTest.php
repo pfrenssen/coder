@@ -29,7 +29,7 @@ class DocCommentLongArraySyntaxUnitTest extends CoderSniffUnitTest
             ];
         default:
             return [];
-         }
+        }
 
     }//end getErrorList()
 
