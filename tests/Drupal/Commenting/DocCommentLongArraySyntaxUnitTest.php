@@ -4,7 +4,7 @@ namespace Drupal\Test\Commenting;
 
 use Drupal\Test\CoderSniffUnitTest;
 
-class DocCommentArrayUnitTest extends CoderSniffUnitTest
+class DocCommentLongArraySyntaxUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -20,11 +20,12 @@ class DocCommentArrayUnitTest extends CoderSniffUnitTest
      */
     protected function getErrorList(string $testFile): array
     {
-         switch ($testFile) {
-        case 'DocCommentArrayUnitTest.inc':
+        switch ($testFile) {
+        case 'DocCommentLongArraySyntaxUnitTest.inc':
             return [
-                9  => 1,
-                16 => 1,
+                11 => 1,
+                23 => 1,
+                24 => 1,
             ];
         default:
             return [];
