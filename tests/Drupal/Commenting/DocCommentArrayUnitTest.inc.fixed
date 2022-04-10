@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Test long array notation in doc comments.
+ */
+
+/**
+ * Long array notation used.
+ * $table = [
+ *   '#type' => 'table',
+ * ];
+ */
+function test1() {
+
+}
