@@ -58,7 +58,6 @@ class FunctionCommentUnitTest extends CoderSniffUnitTest
                 308 => 1,
                 311 => 1,
                 321 => 1,
-                324 => 1,
                 334 => 1,
                 345 => 1,
                 357 => 1,

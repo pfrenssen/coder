@@ -710,11 +710,7 @@ class FunctionCommentSniff implements Sniff
                 $param['type']       = preg_replace('/\s+\.{3}$/', '', $param['type']);
             }
 
-            if (preg_match('/\s/', $param['type']) === 1) {
-                $error = 'Parameter type "%s" must not contain spaces';
-                $data  = [$param['type']];
-                $phpcsFile->addError($error, $param['tag'], 'ParamTypeSpaces', $data);
-            } else if ($param['type'] !== $suggestedType) {
+            if ($param['type'] !== $suggestedType) {
                 $error = 'Expected "%s" but found "%s" for parameter type';
                 $data  = [
                     $suggestedType,
@@ -994,7 +990,7 @@ class FunctionCommentSniff implements Sniff
             return $type;
         }
 
-        $type = preg_replace('/[^a-zA-Z0-9_:\(\),\{\<\}\>\\\[\]]/', '', $type);
+        $type = preg_replace('/[^a-zA-Z0-9_:(),{<}>\\\[\]\-.\s?|\'\"*]/', '', $type);
 
         return $type;
 

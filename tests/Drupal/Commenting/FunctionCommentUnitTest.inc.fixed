@@ -330,10 +330,10 @@ function test26($var) {
 /**
  * Data types with spaces.
  *
- * @param string or int $x
- *   Data types should not contain spaces.
+ * @param array<int, \stdClass> $x
+ *   We don't care that data types contain spaces.
  *
- * @return int or bool
+ * @return array<int, \stdClass>
  *   Same spaces in data type here.
  */
 function test27($x) {
@@ -569,4 +569,294 @@ class Test40 {
 
   }
 
+}
+
+/**
+ * Generics test.
+ *
+ * @param T $object
+ *   Template.
+ *
+ * @template T
+ *
+ * @return T
+ */
+function test40(object $object) {
+  return clone $object;
+}
+
+/**
+ * PHPStan: Basic types.
+ *
+ * @param int $param1
+ *   Parameter.
+ * @param string $param2
+ *   Parameter.
+ * @param array-key $param3
+ *   Parameter.
+ * @param bool $param4
+ *   Parameter.
+ * @param true $param5
+ *   Parameter.
+ * @param false $param6
+ *   Parameter.
+ * @param null $param7
+ *   Parameter.
+ * @param float $param8
+ *   Parameter.
+ * @param double $param9
+ *   Parameter.
+ * @param scalar $param10
+ *   Parameter.
+ * @param array $param11
+ *   Parameter.
+ * @param iterable $param12
+ *   Parameter.
+ * @param callable $param13
+ *   Parameter.
+ * @param resource $param14
+ *   Parameter.
+ * @param void $param15
+ *   Parameter.
+ * @param object $param16
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#basic-types
+ */
+function test41(int $param1, string $param2, mixed $param3, bool $param4, mixed $param5, mixed $param6, mixed $param7, float $param8, double $param9, mixed $param10, array $param11, iterable $param12, callable $param13, mixed $param14, mixed $param15, object $param16) {
+  return 0;
+}
+
+/**
+ * PHPStan: Integer ranges.
+ *
+ * @param positive-int $param1
+ *   Parameter.
+ * @param negative-int $param2
+ *   Parameter.
+ * @param int<0, 100> $param3
+ *   Parameter.
+ * @param int<min, 100> $param4
+ *   Parameter.
+ * @param int<50, max> $param5
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#integer-ranges
+ */
+function test42(mixed $param1, mixed $param2, mixed $param3, mixed $param4, mixed $param5) {
+  return 0;
+}
+
+/**
+ * PHPStan: General arrays.
+ *
+ * @param Type[] $param1
+ *   Parmameter.
+ * @param array<Type> $param2
+ *   Parmameter.
+ * @param array<int, Type> $param3
+ *   Parmameter.
+ * @param non-empty-array<Type> $param4
+ *   Parmameter.
+ * @param non-empty-array<int, Type> $param5
+ *   Parmameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#general-arrays
+ */
+function test43(mixed $param1, mixed $param2, mixed $param3, mixed $param4, mixed $param5) {
+  return 0;
+}
+
+/**
+ * PHPStan: Key and value types of arrays and iterables.
+ *
+ * @param key-of<Type::ARRAY_CONST> $param1
+ *   Parameter.
+ * @param value-of<Type::ARRAY_CONST> $param2
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#key-and-value-types-of-arrays-and-iterables
+ */
+function test44(mixed $param1, mixed $param2) {
+  return 0;
+}
+
+/**
+ * PHPStan: Iterables.
+ *
+ * @param iterable<Type> $param1
+ *   Parameter.
+ * @param Collection<Type> $param2
+ *   Parameter.
+ * @param Collection<int, Type> $param3
+ *   Parameter.
+ * @param Collection|Type[] $param4
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#iterables
+ */
+function test45(mixed $param1, mixed $param2, mixed $param3, mixed $param4) {
+  return 0;
+}
+
+/**
+ * PHPStan: Union types.
+ *
+ * @param Type1|Type2 $param1
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#union-types
+ */
+function test46(mixed $param1) {
+  return 0;
+}
+
+/**
+ * PHPStan: Intersection types.
+ *
+ * @param Type1&Type2 $param1
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#intersection-types
+ */
+function test47(mixed $param1) {
+  return 0;
+}
+
+/**
+ * PHPStan: Parentheses.
+ *
+ * @param (Type1&Type2)|Type3 $param1
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#parentheses
+ */
+function test48(mixed $param1) {
+  return 0;
+}
+
+/**
+ * PHPStan: static and $this.
+ *
+ * @param static $param1
+ *   Parameter.
+ * @param $this $param2
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#static-and-%24this
+ */
+function test49(mixed $param1, mixed $param2) {
+  return 0;
+}
+
+/**
+ * PHPStan: class-string.
+ *
+ * @param class-string $param1
+ *   Parameter.
+ * @param class-string<Foo> $param2
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#class-string
+ */
+function test50(mixed $param1, mixed $param2) {
+  return 0;
+}
+
+/**
+ * PHPStan: Other advanced string types.
+ *
+ * @param callable-string $param1
+ *   Parameter.
+ * @param numeric-string $param2
+ *   Parameter.
+ * @param non-empty-string $param3
+ *   Parameter.
+ * @param literal-string $param4
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#other-advanced-string-types
+ */
+function test51(mixed $param1, mixed $param2, mixed $param3, mixed $param4) {
+  return 0;
+}
+
+
+/**
+ * PHPStan: Array shapes.
+ *
+ * @param array{'foo': int, "bar": string} $param1
+ *   Parameter.
+ * @param array{0: int, 1?: int} $param2
+ *   Parameter.
+ * @param array{int, int} $param3
+ *   Parameter.
+ * @param array{foo: int, bar: string} $param4
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#array-shapes
+ */
+function test52(mixed $param1, mixed $param2, mixed $param3, mixed $param4) {
+  return 0;
+}
+
+/**
+ * PHPStan: Literals and constants.
+ *
+ * @param 234 $param1
+ *   Parameter.
+ * @param 1.0 $param2
+ *   Parameter.
+ * @param 'foo'|'bar' $param3
+ *   Parameter.
+ * @param Foo::SOME_CONSTANT $param4
+ *   Parameter.
+ * @param Foo::SOME_CONSTANT|Bar::OTHER_CONSTANT $param5
+ *   Parameter.
+ * @param Foo::* $param6
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#literals-and-constants
+ */
+function test53(mixed $param1, mixed $param2, mixed $param3, mixed $param4, mixed $param5, mixed $param6) {
+  return 0;
+}
+
+
+/**
+ * PHPStan: Callables.
+ *
+ * callable(int, int): string $param1
+ *   Parameter.
+ * callable(int, int=): string $param2
+ *   Parameter.
+ * callable(int $foo, string $bar): void $param3
+ *   Parameter.
+ * callable(string &$bar): mixed $param4
+ *   Parameter.
+ * callable(float ...$floats): (int|null) $param5
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#callables
+ */
+function test54(mixed $param1, mixed $param2, mixed $param3, mixed $param4, mixed $param5) {
+  return 0;
+}
+
+/**
+ * PHPStan: Bottom type.
+ *
+ * @param never $param1
+ *   Parameter.
+ * @param never-return $param2
+ *   Parameter.
+ * @param never-returns $param3
+ *   Parameter.
+ * @param no-return $param4
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#bottom-type
+ */
+function test55(mixed $param1, mixed $param2, mixed $param3, mixed $param4) {
+  return 0;
 }
