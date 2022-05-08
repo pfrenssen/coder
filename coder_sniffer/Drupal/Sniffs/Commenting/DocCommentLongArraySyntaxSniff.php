@@ -52,7 +52,7 @@ class DocCommentLongArraySyntaxSniff implements Sniff
         // Look for @code annotations.
         $codeEnd = $stackPtr;
         do {
-			$codeStart = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($codeEnd + 1), $commentEnd, false, '@code');
+            $codeStart = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($codeEnd + 1), $commentEnd, false, '@code');
             if ($codeStart !== false) {
                 $codeEnd = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($codeStart + 1), $commentEnd, false, '@endcode');
                 if ($codeEnd !== false) {
