@@ -20,17 +20,11 @@ class DocCommentLongArraySyntaxUnitTest extends CoderSniffUnitTest
      */
     protected function getErrorList(string $testFile): array
     {
-        switch ($testFile) {
-        case 'DocCommentLongArraySyntaxUnitTest.inc':
-            return [
-                11 => 1,
-                23 => 1,
-                24 => 1,
-            ];
-        default:
-            return [];
-        }
-
+        return [
+            11 => 1,
+            23 => 1,
+            24 => 1,
+        ];
     }//end getErrorList()
 
 
