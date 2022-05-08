@@ -25,6 +25,7 @@ class DocCommentLongArraySyntaxUnitTest extends CoderSniffUnitTest
             23 => 1,
             24 => 1,
         ];
+
     }//end getErrorList()
 
 
