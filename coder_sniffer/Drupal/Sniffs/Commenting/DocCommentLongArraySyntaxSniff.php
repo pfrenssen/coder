@@ -59,7 +59,7 @@ class DocCommentLongArraySyntaxSniff implements Sniff
                     // Check for long array syntax use inside this @code annotation.
                     for ($i = ($codeStart + 1); $i < $codeEnd; $i++) {
                         if (preg_match('/\barray\s*\(/', $tokens[$i]['content']) === 1) {
-                            $error = 'Long array syntax used in doc comment code annotation';
+                            $error = 'Long array syntax must not be used in doc comment code annotations';
                             $phpcsFile->addError($error, $i, 'DocLongArray');
                         }
                     }
