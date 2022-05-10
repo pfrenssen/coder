@@ -28,6 +28,16 @@ use PHP_CodeSniffer\Util\Common;
 class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
 {
 
+    /**
+     * A list of function prefixes which may not respect naming convention.
+     *
+     * @var string[]
+     */
+    protected $allowedFunctionPrefixes = [
+        'template_preprocess',
+        'theme',
+    ];
+
 
     /**
      * Processes the tokens within the scope.
@@ -106,7 +116,7 @@ class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
         $isApiFile     = substr($phpcsFile->getFilename(), -8) === '.api.php';
         $isHookExample = substr($functionName, 0, 5) === 'hook_';
         if ($isApiFile === true && $isHookExample === true) {
-            // Ignore for examaple hook_ENTITY_TYPE_insert() functions in .api.php
+            // Ignore for example hook_ENTITY_TYPE_insert() functions in .api.php
             // files.
             return;
         }
@@ -119,6 +129,27 @@ class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
                 $functionName,
             ];
             $phpcsFile->addError($error, $stackPtr, 'InvalidName', $data);
+        }
+
+        // Validate function names only in *.module files.
+        $isModuleFile = substr($phpcsFile->getFilename(), -7) === '.module';
+        if ($isModuleFile === true) {
+            // Check if the function prefix is allowed to not respect standard.
+            foreach ($this->allowedFunctionPrefixes as $allowedFunctionPrefix) {
+                if (substr($functionName, 0, strlen($allowedFunctionPrefix)) === $allowedFunctionPrefix) {
+                    return;
+                }
+            }
+
+            $moduleName = substr(basename($phpcsFile->getFilename()), 0, -7);
+            if (preg_match("/^_?$moduleName\_.+/", $functionName) === 0) {
+                $error = 'All functions defined in a module file must be prefixed with the module\'s name, found "%s" but expected "%s"';
+                $data  = [
+                    $functionName,
+                    $moduleName.'_'.$functionName,
+                ];
+                $phpcsFile->addError($error, $stackPtr, 'InvalidPrefix', $data);
+            }
         }
 
     }//end processTokenOutsideScope()
