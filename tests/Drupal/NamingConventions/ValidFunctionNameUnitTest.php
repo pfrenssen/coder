@@ -20,11 +20,18 @@ class ValidFunctionNameUnitTest extends CoderSniffUnitTest
      */
     protected function getErrorList(string $testFile): array
     {
-        return [
-            3 => 1,
-            4 => 1,
-            8 => 1,
-        ];
+        switch ($testFile) {
+        case 'ValidFunctionNameUnitTest.inc':
+            return [
+                3 => 1,
+                4 => 1,
+                8 => 1,
+            ];
+        case 'valid_function_name_test.module':
+            return [24 => 1];
+        }
+
+        return [];
 
     }//end getErrorList()
 
@@ -44,6 +51,23 @@ class ValidFunctionNameUnitTest extends CoderSniffUnitTest
         return [];
 
     }//end getWarningList()
+
+
+    /**
+     * Returns a list of test files that should be checked.
+     *
+     * @param string $testFileBase The base path that the unit tests files will have.
+     *
+     * @return array<string>
+     */
+    protected function getTestFiles($testFileBase): array
+    {
+        $testFiles[] = __DIR__.'/valid_function_name_test.module';
+        $testFiles[] = __DIR__.'/ValidFunctionNameUnitTest.inc';
+
+        return $testFiles;
+
+    }//end getTestFiles()
 
 
 }//end class

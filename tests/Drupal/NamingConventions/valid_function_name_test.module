@@ -1,0 +1,33 @@
+<?php
+/**
+ * @file
+ * Examples of valid and invalid function names in a module file.
+ */
+
+/**
+ * Theme function for good item.
+ */
+function theme_good_item($variables) {
+  return TRUE;
+}
+
+/**
+ * Process variables for good.tpl.php.
+ */
+function template_preprocess_good(&$variables) {
+  return TRUE;
+}
+
+/**
+ * This function does not respect the naming convention as it is not prefixed.
+ */
+function not_respecting_naming_convention_with_module_prefix() {
+  return TRUE;
+}
+
+/**
+ * This function does respect the naming convention as it is prefixed.
+ */
+function valid_function_name_test_with_module_prefix() {
+  return TRUE;
+}
