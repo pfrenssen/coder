@@ -254,10 +254,13 @@ class ArraySniff implements Sniff
                 break;
             }
 
+            // Default expected column, indentation of 2 spaces
             $expectedColumn = ($firstLineColumn + 2);
-            // If the line starts with "->" then we assume an additional level of
-            // indentation.
-            if ($tokens[$newLineStart]['code'] === T_OBJECT_OPERATOR) {
+
+            // Handles cases where we expect another level of indentation
+            // Expects: '->', '?', ':'
+            $increasedNestingTokens = [T_OBJECT_OPERATOR, T_INLINE_THEN, T_INLINE_ELSE];
+            if (in_array($tokens[$newLineStart]['code'], $increasedNestingTokens, true)) {
                 $expectedColumn += 2;
             }
 
