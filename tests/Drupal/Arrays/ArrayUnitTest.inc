@@ -142,6 +142,9 @@ $array = [
   ('expect' === 'fail')
       ? 'reason'
       : 'too much indentation',
+  ('expect' === 'fail')
+? 'reason'
+: 'negative indentation',
   [
     'multidimensional tests',
     ('expect' === 'pass')
@@ -153,6 +156,9 @@ $array = [
     ('expect' === 'fail')
         ? 'reason'
         : 'too much indentation',
+    ('expect' === 'fail')
+  ? 'reason'
+  : 'negative indentation',
   ],
 ];
 
@@ -168,7 +174,10 @@ $array = [
   'root_item_4' => ('expect' === 'fail')
       ? 'reason'
       : 'too much indentation',
-  'root_item_5' => [
+  'root_item_5' => ('expect' === 'fail')
+? 'reason'
+: 'negative indentation',
+  'root_item_6' => [
     'multidimensional_item_1' => ('expect' === 'pass')
       ? 'reason'
       : 'indented as expected',
@@ -178,5 +187,8 @@ $array = [
     'multidimensional_item_3' => ('expect' === 'fail')
         ? 'reason'
         : 'too much indentation',
+    'multidimensional_item_4' => ('expect' === 'fail')
+  ? 'reason'
+  : 'negative indentation',
   ],
 ];
