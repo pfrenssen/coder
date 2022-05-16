@@ -254,13 +254,22 @@ class ArraySniff implements Sniff
                 break;
             }
 
-            // Default expected column, indentation of 2 spaces
-            $expectedColumn = ($firstLineColumn + 2);
+            // Define tokens that require extra indentation when found at the start of a line.
+            // Expects: '->', '?', ':'.
+            $extraIndentTokens = [
+                T_OBJECT_OPERATOR,
+                T_INLINE_THEN,
+                T_INLINE_ELSE,
+            ];
 
-            // Handles cases where we expect another level of indentation
-            // Expects: '->', '?', ':'
-            $increasedNestingTokens = [T_OBJECT_OPERATOR, T_INLINE_THEN, T_INLINE_ELSE];
-            if (in_array($tokens[$newLineStart]['code'], $increasedNestingTokens, true)) {
+            // Determine whether extra indentation required for the next array line.
+            // True where the line starts with one of the defined extra indent tokens.
+            $extraIndentRequired = (in_array($tokens[$newLineStart]['code'], $extraIndentTokens, true));
+
+            // Determine the expected column, default indentation of +2 spaces.
+            // Where increased nesting required, bump another +2 spaces.
+            $expectedColumn = ($firstLineColumn + 2);
+            if ($extraIndentRequired === true) {
                 $expectedColumn += 2;
             }
 
