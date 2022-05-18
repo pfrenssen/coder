@@ -124,3 +124,71 @@ function mymodule_libraries_info() {
   );
   return $libraries;
 }
+
+/**
+ * Multiline ternary operators should have another level of indentation enforced
+ * for their components. Single increase only.
+ */
+
+// Indexed.
+$array = [
+  'root tests',
+  ('expect' === 'pass')
+    ? 'reason'
+    : 'indented as expected',
+  ('expect' === 'fail')
+  ? 'reason'
+  : 'no indentation',
+  ('expect' === 'fail')
+      ? 'reason'
+      : 'too much indentation',
+  ('expect' === 'fail')
+? 'reason'
+: 'negative indentation',
+  [
+    'multidimensional tests',
+    ('expect' === 'pass')
+      ? 'reason'
+      : 'indented as expected',
+    ('expect' === 'fail')
+    ? 'reason'
+    : 'no indentation',
+    ('expect' === 'fail')
+        ? 'reason'
+        : 'too much indentation',
+    ('expect' === 'fail')
+  ? 'reason'
+  : 'negative indentation',
+  ],
+];
+
+// Associative.
+$array = [
+  'root_item_1' => 'root tests',
+  'root_item_2' => ('expect' === 'pass')
+    ? 'reason'
+    : 'indented as expected',
+  'root_item_3' => ('expect' === 'fail')
+  ? 'reason'
+  : 'no indentation',
+  'root_item_4' => ('expect' === 'fail')
+      ? 'reason'
+      : 'too much indentation',
+  'root_item_5' => ('expect' === 'fail')
+? 'reason'
+: 'negative indentation',
+  'root_item_6' => [
+    'multidimensional_item_1' => ('expect' === 'pass')
+      ? 'reason'
+      : 'indented as expected',
+    'multidimensional_item_2' => ('expect' === 'fail')
+    ? 'reason'
+    : 'no indentation',
+    'multidimensional_item_3' => ('expect' === 'fail')
+        ? 'reason'
+        : 'too much indentation',
+    'multidimensional_item_4' => ('expect' === 'fail')
+  ? 'reason'
+  : 'negative indentation',
+  ],
+];

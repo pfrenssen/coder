@@ -23,11 +23,35 @@ class ArrayUnitTest extends CoderSniffUnitTest
         switch ($testFile) {
         case 'ArrayUnitTest.inc':
             return [
-                13 => 1,
-                33 => 1,
-                83 => 1,
-                88 => 1,
-                92 => 1,
+                13  => 1,
+                33  => 1,
+                83  => 1,
+                88  => 1,
+                92  => 1,
+                140 => 1,
+                141 => 1,
+                143 => 1,
+                144 => 1,
+                146 => 1,
+                147 => 1,
+                154 => 1,
+                155 => 1,
+                157 => 1,
+                158 => 1,
+                160 => 1,
+                161 => 1,
+                172 => 1,
+                173 => 1,
+                175 => 1,
+                176 => 1,
+                178 => 1,
+                179 => 1,
+                185 => 1,
+                186 => 1,
+                188 => 1,
+                189 => 1,
+                191 => 1,
+                192 => 1,
             ];
         case 'ArrayUnitTest.1.inc':
             return [
@@ -36,7 +60,7 @@ class ArrayUnitTest extends CoderSniffUnitTest
                 20 => 1,
                 24 => 1,
             ];
-        }
+        }//end switch
 
         return [];
 
