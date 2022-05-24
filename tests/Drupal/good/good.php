@@ -614,6 +614,11 @@ class Bar {
   public ?Bar $bar;
 
   /**
+   * A typed property the may omit @var.
+   */
+  public Bar $baz;
+
+  /**
    * Public static variables use camelCase, too.
    *
    * @var string
