@@ -614,7 +614,7 @@ class Bar {
   public ?Bar $bar;
 
   /**
-   * A typed property the may omit @var.
+   * A typed property may omit @var.
    */
   public Bar $baz;
 
