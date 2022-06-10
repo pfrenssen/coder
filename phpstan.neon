@@ -37,7 +37,7 @@ parameters:
             count: 1
             path: coder_sniffer/Drupal/Sniffs/InfoFiles/ClassFilesSniff.php
         -
-            message: "#^Offset 0\\|non\\-empty\\-string on array\\{\\} in isset\\(\\) does not exist\\.$#"
+            message: "#^Offset mixed on array\\{\\} in isset\\(\\) does not exist\\.$#"
             count: 1
             path: coder_sniffer/Drupal/Sniffs/InfoFiles/ClassFilesSniff.php
         -
@@ -53,7 +53,7 @@ parameters:
             count: 1
             path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
         -
-            message: "#^Offset 0\\|non\\-empty\\-string on array\\{\\} in isset\\(\\) does not exist\\.$#"
+            message: "#^Offset mixed on array\\{\\} in isset\\(\\) does not exist\\.$#"
             count: 1
             path: coder_sniffer/Drupal/Sniffs/InfoFiles/DuplicateEntrySniff.php
         # We don't want to introduce abstract methods for the 2 calls because
