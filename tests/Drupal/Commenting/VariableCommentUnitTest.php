@@ -27,7 +27,6 @@ class VariableCommentUnitTest extends CoderSniffUnitTest
             42 => 1,
             45 => 1,
             47 => 1,
-            51 => 1,
         ];
 
     }//end getErrorList()
