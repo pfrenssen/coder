@@ -111,12 +111,9 @@ class VariableCommentSniff extends AbstractVariableSniff
 
         // The @var tag is the only one we require.
         if ($foundVar === null) {
-            // If there's an inline type argument then you may omit the @var
-            // comment.
-            $propertyName       = $phpcsFile->findNext([T_VARIABLE, T_CLASS, T_INTERFACE], ($commentEnd + 1));
-            $visibilityModifier = $phpcsFile->findPrevious([T_PUBLIC, T_PROTECTED, T_PRIVATE], $propertyName);
-            // Check if there's a type between the variable name and the visibility modifier.
-            if ($phpcsFile->findPrevious([T_STRING], $propertyName, $visibilityModifier) !== false) {
+            // If there's an inline type argument then you may omit the @var comment.
+            // Check if there's a type between the variable name and the comment end.
+            if ($phpcsFile->findPrevious([T_STRING], $stackPtr, $commentEnd) !== false) {
                 return;
             }
 
