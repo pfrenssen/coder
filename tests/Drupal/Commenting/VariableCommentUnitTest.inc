@@ -58,4 +58,9 @@ class Test {
    */
   public Foo|Bar|FALSE|NULL $fooBar;
 
+  /**
+   * Readonly property.
+   */
+  protected readonly string $readOnly;
+
 }
