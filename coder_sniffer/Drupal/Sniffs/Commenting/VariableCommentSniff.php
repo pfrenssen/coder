@@ -48,6 +48,7 @@ class VariableCommentSniff extends AbstractVariableSniff
             T_STRING,
             T_NS_SEPARATOR,
             T_NULLABLE,
+            T_READONLY,
             T_TYPE_UNION,
             T_FALSE,
             T_NULL,
