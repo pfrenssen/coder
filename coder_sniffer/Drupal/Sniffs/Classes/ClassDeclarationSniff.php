@@ -27,6 +27,12 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
 
 
     /**
+     * {@inheritdoc}
+     */
+    public $indent = 2;
+
+
+    /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array<int|string>
