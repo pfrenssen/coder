@@ -30,3 +30,29 @@ function test1() {
 function test2() {
 
 }
+
+/**
+ * Malformed code block that does not end correctly, ignore it.
+ *
+ * The structure of the array is:
+ * @code
+ * $workflow_array = [
+ *   'entity_state' => [
+ *     'user' => [
+ *       'transition1',
+ *       'transition2',
+ *     ],
+ *   ],
+ * ];
+ * @code
+ */
+function test3() {
+
+}
+
+/**
+ * The structure of the array @code ['a' => 'b'] @endcode
+ */
+function test4() {
+
+}
