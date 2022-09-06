@@ -55,7 +55,11 @@ class DocCommentLongArraySyntaxSniff implements Sniff
             $codeStart = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($codeEnd + 1), $commentEnd, false, '@code');
             if ($codeStart !== false) {
                 $codeEnd = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($codeStart + 1), $commentEnd, false, '@endcode');
-                if ($codeEnd !== false) {
+                // If the code block never ends then simply ignore this
+                // docblock, it is probably malformed.
+                if ($codeEnd === false) {
+                    break;
+                } else {
                     // Check for long array syntax use inside this @code annotation.
                     for ($i = ($codeStart + 1); $i < $codeEnd; $i++) {
                         if (preg_match('/\barray\s*\(/', $tokens[$i]['content']) === 1) {
