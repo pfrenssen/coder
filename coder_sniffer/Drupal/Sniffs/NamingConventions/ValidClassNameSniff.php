@@ -70,7 +70,7 @@ class ValidClassNameSniff implements Sniff
         // Make sure the first letter is a capital.
         if (preg_match('|^[A-Z]|', $name) === 0) {
             $error = '%s name must begin with a capital letter';
-            $phpcsFile->addError($error, $stackPtr, 'StartWithCaptial', $errorData);
+            $phpcsFile->addError($error, $stackPtr, 'StartWithCapital', $errorData);
         }
 
         // Search for underscores.
