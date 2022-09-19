@@ -769,7 +769,7 @@ t('Link to Drupal\'s <a href="@url">admin pages</a>.', array('@url' => url('admi
 // Comment one.
 t('x');
 // Comment two.
-// @todo this is valid!
+// @todo This is valid!
 t('x');
 // Goes on?
 t('x');

@@ -7,9 +7,9 @@
  * These are valid examples.
  *
  * @todo Valid.
- * @todo valid with lower-case first letter
- * @todo $can start with a $
- * @todo \also with backslash
+ * @todo Valid
+ * @todo Multiple words are valid.
+ * @todo Multiple words are valid
  *
  * These are all incorrect but can be fixed automatically.
  *
@@ -38,6 +38,7 @@
  * @todo
  * @to-do
  * @TODO
+ * @todo this should be uppercase
  */
 
 /**
@@ -46,6 +47,7 @@
 function foo() {
   // These are valid examples.
   // @todo Valid.
+  // These are invalid since they don't start with a capital letter.
   // @todo valid with lower-case first letter
   // @todo $can start with a $
   // @todo \also with backslash
