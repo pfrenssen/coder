@@ -20,7 +20,11 @@ class ClassCommentUnitTest extends CoderSniffUnitTest
      */
     protected function getErrorList(string $testFile): array
     {
-        return [8 => 1];
+        return [
+            8  => 1,
+            41 => 1,
+            48 => 1,
+        ];
 
     }//end getErrorList()
 
