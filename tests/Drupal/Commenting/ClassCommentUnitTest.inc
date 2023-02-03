@@ -22,3 +22,10 @@ trait Bongo {
 trait Bango {
 
 }
+
+/**
+ * Some example.
+ */
+final readonly class Example {
+
+}
