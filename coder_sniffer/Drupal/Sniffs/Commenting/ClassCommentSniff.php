@@ -59,8 +59,8 @@ class ClassCommentSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $find   = Tokens::$methodPrefixes;
         $find[T_WHITESPACE] = T_WHITESPACE;
-        $find[T_READONLY] = T_READONLY;
-        $name   = $tokens[$stackPtr]['content'];
+        $find[T_READONLY]   = T_READONLY;
+        $name           = $tokens[$stackPtr]['content'];
         $classCodeStart = $stackPtr;
 
         $previousContent = null;
