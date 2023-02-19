@@ -58,17 +58,37 @@ class ClassCommentSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
         $find   = Tokens::$methodPrefixes;
-        $find[] = T_WHITESPACE;
-        $find[] = T_READONLY;
-        $name   = $tokens[$stackPtr]['content'];
+        $find[T_WHITESPACE] = T_WHITESPACE;
+        $find[T_READONLY]   = T_READONLY;
+        $name           = $tokens[$stackPtr]['content'];
+        $classCodeStart = $stackPtr;
 
-        $commentEnd = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
+        $previousContent = null;
+        for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
+            if (isset($find[$tokens[$commentEnd]['code']]) === true) {
+                continue;
+            }
+
+            if ($previousContent === null) {
+                $previousContent = $commentEnd;
+            }
+
+            if ($tokens[$commentEnd]['code'] === T_ATTRIBUTE_END
+                && isset($tokens[$commentEnd]['attribute_opener']) === true
+            ) {
+                $commentEnd = $classCodeStart = $tokens[$commentEnd]['attribute_opener'];
+                continue;
+            }
+
+            break;
+        }
+
         if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             && $tokens[$commentEnd]['code'] !== T_COMMENT
         ) {
-            $fix = $phpcsFile->addFixableError('Missing %s doc comment', $stackPtr, 'Missing', [$name]);
+            $fix = $phpcsFile->addFixableError('Missing %s doc comment', $classCodeStart, 'Missing', [$name]);
             if ($fix === true) {
-                $phpcsFile->fixer->addContent($commentEnd, "\n/**\n *\n */");
+                $phpcsFile->fixer->addContent($commentEnd, "\n\n/**\n *\n */");
             }
 
             return;
@@ -84,7 +104,7 @@ class ClassCommentSniff implements Sniff
         $fileTag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($start + 1), $commentEnd, false, '@file');
         if ($fileTag !== false) {
             // This is a file comment.
-            $fix = $phpcsFile->addFixableError('Missing %s doc comment', $stackPtr, 'Missing', [$name]);
+            $fix = $phpcsFile->addFixableError('Missing %s doc comment', $classCodeStart, 'Missing', [$name]);
             if ($fix === true) {
                 $phpcsFile->fixer->addContent($commentEnd, "\n/**\n *\n */");
             }
@@ -93,7 +113,7 @@ class ClassCommentSniff implements Sniff
         }
 
         if ($tokens[$commentEnd]['code'] === T_COMMENT) {
-            $fix = $phpcsFile->addFixableError('You must use "/**" style comments for a %s comment', $stackPtr, 'WrongStyle', [$name]);
+            $fix = $phpcsFile->addFixableError('You must use "/**" style comments for a %s comment', $classCodeStart, 'WrongStyle', [$name]);
             if ($fix === true) {
                 // Convert the comment into a doc comment.
                 $phpcsFile->fixer->beginChangeset();
@@ -110,12 +130,12 @@ class ClassCommentSniff implements Sniff
             return;
         }
 
-        if ($tokens[$commentEnd]['line'] !== ($tokens[$stackPtr]['line'] - 1)) {
+        if ($tokens[$commentEnd]['line'] !== ($tokens[$classCodeStart]['line'] - 1)) {
             $error = 'There must be exactly one newline after the %s comment';
             $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter', [$name]);
             if ($fix === true) {
                 $phpcsFile->fixer->beginChangeset();
-                for ($i = ($commentEnd + 1); $tokens[$i]['code'] === T_WHITESPACE && $i < $stackPtr; $i++) {
+                for ($i = ($commentEnd + 1); $tokens[$i]['code'] === T_WHITESPACE && $i < $classCodeStart; $i++) {
                     $phpcsFile->fixer->replaceToken($i, '');
                 }
 
