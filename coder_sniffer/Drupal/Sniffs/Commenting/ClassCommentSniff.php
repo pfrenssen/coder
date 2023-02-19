@@ -88,7 +88,7 @@ class ClassCommentSniff implements Sniff
         ) {
             $fix = $phpcsFile->addFixableError('Missing %s doc comment', $classCodeStart, 'Missing', [$name]);
             if ($fix === true) {
-                $phpcsFile->fixer->addContent($commentEnd, "\n/**\n *\n */");
+                $phpcsFile->fixer->addContent($commentEnd, "\n\n/**\n *\n */");
             }
 
             return;
