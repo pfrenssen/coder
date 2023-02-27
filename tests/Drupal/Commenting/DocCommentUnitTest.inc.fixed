@@ -137,11 +137,11 @@ function test14(array $matches, array $sub_key, $to) {
 function test15_this_inheritdoc_is_correct();
 
 /**
- * @inheritdoc
+ * {@inheritdoc}
  */
 function test16_lower_case_fail_needs_braces();
 
 /**
- * {@inheritdoc}
+ * {@inheritDoc}
  */
 function test17_camel_case_fail_needs_braces();
