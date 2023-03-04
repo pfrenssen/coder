@@ -130,3 +130,18 @@ function test13() {
 function test14(array $matches, array $sub_key, $to) {
 
 }
+
+/**
+ * {@inheritdoc}
+ */
+function test15_this_inheritdoc_is_correct();
+
+/**
+ * {@inheritdoc}
+ */
+function test16_lower_case_fail_needs_braces();
+
+/**
+ * {@inheritDoc}
+ */
+function test17_camel_case_fail_needs_braces();
