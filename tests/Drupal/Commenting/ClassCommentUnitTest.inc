@@ -51,3 +51,12 @@ class NotGood {
 class WrongSpacing {
 
 }
+
+/**
+ * This is correct.
+ */
+#[Some\Attribute(foo: 'bar')]
+#[Other\Attribute(baz: 'qux')]
+class DoubleAttribute {
+
+}
