@@ -89,19 +89,23 @@ class FunctionCommentSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $find   = Tokens::$methodPrefixes;
-        $find[] = T_WHITESPACE;
+        $ignore = Tokens::$methodPrefixes;
+        $ignore[T_WHITESPACE] = T_WHITESPACE;
+        $functionCodeStart    = $stackPtr;
 
-        $beforeFunction = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
-        if ($tokens[$beforeFunction]['code'] === T_ATTRIBUTE_END
-            && $tokens[$tokens[$beforeFunction]['attribute_opener']]['code'] === T_ATTRIBUTE
-        ) {
-            // It's an attribute, such as #[\ReturnTypeWillChange].
-            $attributeLines = ($tokens[$beforeFunction]['line'] - $tokens[$tokens[$beforeFunction]['attribute_opener']]['line'] + 1);
-            $commentEnd     = $phpcsFile->findPrevious($find, ($tokens[$beforeFunction]['attribute_opener'] - 1), null, true);
-        } else {
-            $attributeLines = 0;
-            $commentEnd     = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
+        for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
+            if (isset($ignore[$tokens[$commentEnd]['code']]) === true) {
+                continue;
+            }
+
+            if ($tokens[$commentEnd]['code'] === T_ATTRIBUTE_END
+                && isset($tokens[$commentEnd]['attribute_opener']) === true
+            ) {
+                $commentEnd = $functionCodeStart = $tokens[$commentEnd]['attribute_opener'];
+                continue;
+            }
+
+            break;
         }
 
         $beforeCommentEnd = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($commentEnd - 1), null, true);
@@ -162,7 +166,7 @@ class FunctionCommentSniff implements Sniff
             }
         }//end foreach
 
-        if ($tokens[$commentEnd]['line'] !== ($tokens[$stackPtr]['line'] - $attributeLines - 1)) {
+        if ($tokens[$commentEnd]['line'] !== ($tokens[$functionCodeStart]['line'] - 1)) {
             $error = 'There must be no blank lines after the function comment';
             $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter');
             if ($fix === true) {

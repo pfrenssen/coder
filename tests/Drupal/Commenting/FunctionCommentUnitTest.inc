@@ -544,3 +544,18 @@ class Test40 {
     }
 
 }
+
+/**
+ * Test PHP attributes.
+ */
+class Test41 {
+
+  /**
+   * Method docblock.
+   */
+  #[Some\Attribute(foo: 'bar')]
+  #[Other\Attribute(baz: 'qux')]
+  public function method() {
+  }
+
+}
