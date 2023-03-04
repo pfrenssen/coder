@@ -144,7 +144,7 @@ class DocCommentSniff implements Sniff
             // below, hence we give a more useful message and can fix it automatically.
             if (stripos($tokens[$short]['content'], '@inheritdoc') === 0) {
                 $error = "{$tokens[$short]['content']} found. Did you mean {{$tokens[$short]['content']}}?";
-                $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'InheritDocWithoutBraces');
+                $fix   = $phpcsFile->addFixableError($error, $short, 'InheritDocWithoutBraces');
                 if ($fix === true) {
                     $phpcsFile->fixer->replaceToken($short, "{{$tokens[$short]['content']}}");
                 }
