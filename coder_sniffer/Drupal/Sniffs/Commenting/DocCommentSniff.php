@@ -139,10 +139,23 @@ class DocCommentSniff implements Sniff
                 return;
             }
 
+            // If inheritDoc is found without curly braces it is identified as a T_DOC_COMMENT_TAG not a
+            // T_DOC_COMMENT_STRING. It would be misleading to give the 'Missing short description' error
+            // below, hence we give a more useful message and can fix it automatically.
+            if (stripos($tokens[$short]['content'], '@inheritdoc') === 0) {
+                $error = "{$tokens[$short]['content']} found. Did you mean {{$tokens[$short]['content']}}?";
+                $fix   = $phpcsFile->addFixableError($error, $short, 'InheritDocWithoutBraces');
+                if ($fix === true) {
+                    $phpcsFile->fixer->replaceToken($short, "{{$tokens[$short]['content']}}");
+                }
+
+                return;
+            }
+
             $error = 'Missing short description in doc comment';
             $phpcsFile->addError($error, $stackPtr, 'MissingShort');
             return;
-        }
+        }//end if
 
         if (isset($fileShort) === true) {
             $start = $fileShort;
