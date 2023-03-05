@@ -33,8 +33,8 @@ class DocCommentUnitTest extends CoderSniffUnitTest
                 66  => 1,
                 100 => 4,
                 101 => 1,
-                131 => 1,
                 136 => 1,
+                141 => 1,
             ];
 
         case 'DocCommentUnitTest.1.inc':
