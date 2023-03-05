@@ -125,7 +125,12 @@ function test14(array $matches, array $sub_key, $to) {
 /**
  * {@inheritdoc}
  */
-function test15_this_inheritdoc_is_correct();
+function test15_lower_case_inheritdoc();
+
+/**
+ * {@inheritDoc}
+ */
+function test15_camel_case_inheritdoc();
 
 /**
  * @inheritdoc
