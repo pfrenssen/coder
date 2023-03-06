@@ -45,9 +45,8 @@ class DependenciesArraySniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        // Only run this sniff once per info file.
-        $fileExtension = strtolower(substr($phpcsFile->getFilename(), -8, 4));
-        if ($fileExtension !== 'info') {
+        // Only run this sniff on .info.yml files.
+        if (strtolower(substr($phpcsFile->getFilename(), -9)) !== '.info.yml') {
             return ($phpcsFile->numTokens + 1);
         }
 
