@@ -59,8 +59,17 @@ class DependenciesArraySniff implements Sniff
         }
 
         if (isset($info['dependencies']) === true && is_array($info['dependencies']) === false) {
+            // The $stackPtr will always indicate line 1, but we can get the actual line by
+            // searching $tokens to find the dependencies item.
+            $tokens = $phpcsFile->getTokens();
+            foreach ($tokens as $key => $token) {
+                if (preg_match('/dependencies\s*\:/', $token['content']) === 1) {
+                    break;
+                }
+            }
+
             $error = '"dependencies" should be an array in the info yaml file';
-            $phpcsFile->addError($error, $stackPtr, 'Dependencies');
+            $phpcsFile->addError($error, $key, 'Dependencies');
         }
 
         return ($phpcsFile->numTokens + 1);
