@@ -5,8 +5,7 @@ namespace Drupal\Test\InfoFiles;
 use Drupal\Test\CoderSniffUnitTest;
 
 /**
- * A sniff unit test checks a .inc file for expected violations of a single
- * coding standard. Expected errors and warnings are stored in this class.
+ * Unit test class for the DependenciesArray sniff.
  */
 class DependenciesArrayUnitTest extends CoderSniffUnitTest
 {
@@ -24,7 +23,7 @@ class DependenciesArrayUnitTest extends CoderSniffUnitTest
      */
     protected function getErrorList(string $testFile): array
     {
-        return [];
+        return [3 => 1];
 
     }//end getErrorList()
 
@@ -41,7 +40,7 @@ class DependenciesArrayUnitTest extends CoderSniffUnitTest
      */
     protected function getWarningList(string $testFile): array
     {
-        return [1 => 3];
+        return [];
 
     }//end getWarningList()
 
