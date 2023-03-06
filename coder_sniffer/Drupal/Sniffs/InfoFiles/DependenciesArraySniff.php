@@ -1,9 +1,10 @@
 <?php
 /**
- * Largely copied from
- * PHP_CodeSniffer\Standards\Squiz\Sniffs\Classes\ClassFileNameSniff.
+ * \Drupal\Sniffs\InfoFiles\DependenciesArraySniff.
  *
- * Extended to support anonymous classes and Drupal core version.
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 namespace Drupal\Sniffs\InfoFiles;
 
@@ -13,7 +14,7 @@ use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 
 /**
- * Dependencies should have single entry as an array in Drupal 8 info files.
+ * Dependencies should be an array in .info.yml files.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -36,7 +37,7 @@ class DependenciesArraySniff implements Sniff
 
 
     /**
-     * Processes this test, when one of its tokens is encountered.
+     * Processes this test when one of its tokens is encountered.
      *
      * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
      * @param int                         $stackPtr  The position of the current token in the stack passed in $tokens.
