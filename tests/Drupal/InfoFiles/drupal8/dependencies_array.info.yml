@@ -1,9 +1,4 @@
 core: 8.x
 name: Dependencies Array Test
-
-# These should not be here, will be added by drupal.org packaging.
-project: test
-datestamp: 1234567
-version: 1.2
-dependencies:
-  drupal.taxonomy
+dependencies : 
+  drupal:taxonomy
