@@ -2,12 +2,12 @@
 
 namespace MyNamespace\Depth;
 
-use Thing\NotUsed;
-use Thing\Fail\ActuallyUsed;
-use Test\TraitTest;
-use Thing\DifferentName as UsedOtherName;
 use Example\MyUrlHelper;
 use MyNamespace\Depth\SomeClass as CoreSomeClass;
+use Test\TraitTest;
+use Thing\DifferentName as UsedOtherName;
+use Thing\Fail\ActuallyUsed;
+use Thing\NotUsed;
 
 /**
  * Bla.
