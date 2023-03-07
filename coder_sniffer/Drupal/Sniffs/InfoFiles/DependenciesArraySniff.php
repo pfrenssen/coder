@@ -62,6 +62,9 @@ class DependenciesArraySniff implements Sniff
             // The $stackPtr will always indicate line 1, but we can get the actual line by
             // searching $tokens to find the dependencies item.
             $tokens = $phpcsFile->getTokens();
+            // $tokens cannot be empty at this point, but PHPStan 10.1.4 does not know this and gives the error
+            // "Variable $key might not be defined". So initialise it here.
+            $key = $stackPtr;
             foreach ($tokens as $key => $token) {
                 if (preg_match('/dependencies\s*\:/', $token['content']) === 1) {
                     break;
