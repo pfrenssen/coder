@@ -123,6 +123,7 @@ class SpaceUnaryOperatorSniff implements Sniff
                 T_CLOSE_SHORT_ARRAY,
                 T_VARIABLE,
                 T_STRING,
+                T_LINE,
             ]
         );
 
