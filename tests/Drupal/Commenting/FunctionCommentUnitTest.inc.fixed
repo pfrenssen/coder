@@ -257,7 +257,7 @@ function test21($arg1, $arg2, $arg3) {
  *
  * @param array|bool|float|int|mixed|object|string|resource|callable $arg1
  *   All of the above types are valid.
- * @param array|bool|int|string|object|null $arg2
+ * @param array|bool|int|string|null $arg2
  *   All of the above types are invalid.
  * @param array|bool|int|string $arg3
  *   All of the above types are invalid.
@@ -383,7 +383,7 @@ class Test2 extends AbstractTest {
   /**
    * Run method with missing described variable.
    *
-   * @param object $start
+   * @param \stdClass $start
    *   Start point.
    *
    * @return bool
@@ -469,11 +469,11 @@ function test34($a, $b) {
 }
 
 /**
- * Using \stdClass as type hint is ok, but not in the documentation.
+ * Using \stdClass as type hint and doc type is ok.
  *
  * @param object $name
  *   Some description.
- * @param object $param2
+ * @param \stdClass $param2
  *   Some description.
  */
 function test35(\stdClass $name, \stdClass $param2) {
@@ -483,7 +483,7 @@ function test35(\stdClass $name, \stdClass $param2) {
 /**
  * Allow "object" as real type hint (PHP 7.2).
  *
- * @param object $arg
+ * @param \stdClass $arg
  *   Something here.
  * @param object $blarg
  *   Another thing.

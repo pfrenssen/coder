@@ -245,7 +245,7 @@ function test21($arg1, $arg2, $arg3) {
  *
  * @param array|bool|float|int|mixed|object|string|resource|callable $arg1
  *   All of the above types are valid.
- * @param Array|boolean|integer|str|stdClass|NULL $arg2
+ * @param Array|boolean|integer|str|NULL $arg2
  *   All of the above types are invalid.
  * @param array()|Boolean|number|String $arg3
  *   All of the above types are invalid.
@@ -443,7 +443,7 @@ function test34($a, $b) {
 }
 
 /**
- * Using \stdClass as type hint is ok, but not in the documentation.
+ * Using \stdClass as type hint and doc type is ok.
  *
  * @param object $name
  *   Some description.
