@@ -27,7 +27,7 @@ class Test {
   /**
    * Test for some common misspellings.
    *
-   * @var bool|object|null|false|true|array
+   * @var bool|null|false|true|array
    */
   protected $someVar;
 

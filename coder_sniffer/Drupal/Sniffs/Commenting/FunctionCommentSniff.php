@@ -37,8 +37,6 @@ class FunctionCommentSniff implements Sniff
         'Boolean'   => 'bool',
         'integer'   => 'int',
         'str'       => 'string',
-        'stdClass'  => 'object',
-        '\stdClass' => 'object',
         'number'    => 'int',
         'String'    => 'string',
         'type'      => 'mixed',

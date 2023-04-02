@@ -27,7 +27,7 @@ class Test {
   /**
    * Test for some common misspellings.
    *
-   * @var Boolean|stdClass|NULL|FALSE|TRUE|[]
+   * @var Boolean|NULL|FALSE|TRUE|[]
    */
   protected $someVar;
 
