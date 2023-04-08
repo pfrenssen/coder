@@ -25,6 +25,13 @@ use PHP_CodeSniffer\Util\Tokens;
 class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
 {
 
+    /**
+     * {@inheritdoc}
+     *
+     * @var integer
+     */
+    public $indent = 2;
+
 
     /**
      * Returns an array of tokens this test wants to listen for.

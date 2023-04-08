@@ -40,3 +40,14 @@ namespace {
 class ThirdClass {
   // No-op.
 }
+
+/**
+ * Class declaration over multiple lines.
+ */
+class WithManyInterfaces implements
+  Interface1,
+  Interface2,
+  Interface3,
+  Interface4 {
+
+}
