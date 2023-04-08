@@ -770,7 +770,7 @@ function test25() {
 }
 
 /**
- * Void returns are not allowed.
+ * Void returns are allowed.
  *
  * @return void
  *   Description.
