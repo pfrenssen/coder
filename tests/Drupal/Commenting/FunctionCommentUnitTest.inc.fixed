@@ -681,3 +681,62 @@ function test_return_void() {
  */
 function test_return_void2(): void {
 }
+
+/**
+ * PHPStan: General arrays.
+ *
+ * @param Type[] $param1
+ *   Parameter.
+ * @param array<Type> $param2
+ *   Parameter.
+ * @param array<int, Type> $param3
+ *   Parameter.
+ * @param non-empty-array<Type> $param4
+ *   Parameter.
+ * @param non-empty-array<int, Type> $param5
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#general-arrays
+ */
+function test_arrays(array $param1, array $param2, array $param3, array $param4, array $param5) {
+}
+
+/**
+ * @return Type[]
+ *   Square brackets.
+ */
+function test_return_type_array(): array {
+  return [];
+}
+
+/**
+ * @return array<Type>
+ *   Arrow brackets.
+ */
+function test_return_arrow_array(): array {
+  return [];
+}
+
+/**
+ * @return array<int, Type>
+ *   Keyed array.
+ */
+function test_return_keyed_array(): array {
+  return [];
+}
+
+/**
+ * @return non-empty-array<Type>
+ *   Non empty array with type.
+ */
+function test_return_non_empty_array(): array {
+  return [new Type()];
+}
+
+/**
+ * @return non-empty-array<int, Type>
+ *   Non empty keyed array with type.
+ */
+function test_return_non_empty_keyed_array(): array {
+  return [0 => new Type()];
+}

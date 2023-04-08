@@ -385,7 +385,10 @@ class FunctionCommentSniff implements Sniff
                         if ($fix === true) {
                             $phpcsFile->fixer->replaceToken(($return + 2), $matches[1]);
                         }
-                    } else {
+
+                        // Do not check PHPStan array shapes from
+                        // https://phpstan.org/writing-php-code/phpdoc-types#general-arrays .
+                    } else if (strpos($type, 'array') === false) {
                         $error = 'Return type "%s" must not contain spaces';
                         $data  = [$type];
                         $phpcsFile->addError($error, $return, 'ReturnTypeSpaces', $data);
@@ -729,9 +732,13 @@ class FunctionCommentSniff implements Sniff
             }
 
             if (preg_match('/\s/', $param['type']) === 1) {
-                $error = 'Parameter type "%s" must not contain spaces';
-                $data  = [$param['type']];
-                $phpcsFile->addError($error, $param['tag'], 'ParamTypeSpaces', $data);
+                // Do not check PHPStan array shapes from
+                // https://phpstan.org/writing-php-code/phpdoc-types#general-arrays .
+                if (strpos($param['type'], 'array') === false) {
+                    $error = 'Parameter type "%s" must not contain spaces';
+                    $data  = [$param['type']];
+                    $phpcsFile->addError($error, $param['tag'], 'ParamTypeSpaces', $data);
+                }
             } else if ($param['type'] !== $suggestedType) {
                 $error = 'Expected "%s" but found "%s" for parameter type';
                 $data  = [
@@ -745,7 +752,7 @@ class FunctionCommentSniff implements Sniff
                     $content .= $param['var'];
                     $phpcsFile->fixer->replaceToken(($param['tag'] + 2), $content);
                 }
-            }
+            }//end if
 
             $suggestedName = '';
             $typeName      = '';
@@ -1007,9 +1014,9 @@ class FunctionCommentSniff implements Sniff
             return $type;
         }
 
-        // Also allow "-" for special type hint "array-key" supported by PHPStan
+        // Also allow "-" and "<>" for special type hints supported by PHPStan
         // https://phpstan.org/writing-php-code/phpdoc-types#basic-types .
-        $type = preg_replace('/[^a-zA-Z0-9_\\\[\]\-]/', '', $type);
+        $type = preg_replace('/[^a-zA-Z0-9_\\\[\]\-<>]/', '', $type);
 
         return $type;
 
