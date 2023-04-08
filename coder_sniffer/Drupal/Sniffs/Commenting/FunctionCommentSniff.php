@@ -1008,7 +1008,7 @@ class FunctionCommentSniff implements Sniff
         }
 
         // Also allow "-" for special type hint "array-key" supported by PHPStan
-        // https://phpstan.org/writing-php-code/phpdoc-types#basic-types
+        // https://phpstan.org/writing-php-code/phpdoc-types#basic-types .
         $type = preg_replace('/[^a-zA-Z0-9_\\\[\]\-]/', '', $type);
 
         return $type;
