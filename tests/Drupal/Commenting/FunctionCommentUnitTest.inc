@@ -559,3 +559,99 @@ class Test41 {
   }
 
 }
+
+/**
+ * Support for PHPStan basic types.
+ *
+ * @param int $param1
+ *   Integer.
+ * @param string $param2
+ *   String.
+ * @param array-key $param3
+ *   Array key.
+ * @param bool $param4
+ *   Boolean.
+ * @param true $param5
+ *   Boolean TRUE.
+ * @param false $param6
+ *   Boolean FALSE.
+ * @param null $param7
+ *   NULL.
+ * @param float $param8
+ *   Float.
+ * @param double $param9
+ *   Double.
+ * @param scalar $param10
+ *   Scalar.
+ * @param array $param11
+ *   Array.
+ * @param iterable $param12
+ *   Iterable.
+ * @param callable $param13
+ *   Callable.
+ * @param resource $param14
+ *   Resource.
+ * @param void $param15
+ *   Void.
+ * @param object $param16
+ *   Object.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#basic-types
+ */
+function test_basic_types(int $param1, string $param2, mixed $param3, bool $param4, bool $param5, bool $param6, $param7, float $param8, $param9, $param10, array $param11, $param12, $param13, $param14, $param15, $param16) {
+
+}
+
+/**
+ * @return int
+ *   Int.
+ */
+function test_return_int(): int {
+  return 0;
+}
+
+/**
+ * @return int
+ *   Int
+ */
+function test_return_int2() {
+  return 0;
+}
+
+/**
+ * @return string
+ *   String.
+ */
+function test_return_string(): string {
+  return '';
+}
+
+/**
+ * @return string
+ *   String.
+ */
+function test_return_string2() {
+  return '';
+}
+
+/**
+ * @return array-key
+ *   Array key.
+ */
+function test_return_array_key() {
+  return '';
+}
+
+/**
+ * @return void
+ *   Void.
+ */
+function test_return_void() {
+}
+
+/**
+ * @return void
+ *   Void.
+ */
+function test_return_void2(): void {
+}

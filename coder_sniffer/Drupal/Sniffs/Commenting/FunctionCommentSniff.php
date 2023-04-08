@@ -56,10 +56,25 @@ class FunctionCommentSniff implements Sniff
      */
     public $allowedTypes = [
         'array',
+        'array-key',
+        'bool',
+        'callable',
+        'double',
+        'float',
+        'int',
+        'iterable',
         'mixed',
         'object',
         'resource',
         'callable',
+        'true',
+        'false',
+        'null',
+        'scalar',
+        'stdClass',
+        '\stdClass',
+        'string',
+        'void',
     ];
 
 
@@ -276,10 +291,7 @@ class FunctionCommentSniff implements Sniff
                         }
                     }//end if
 
-                    if ($type === 'void') {
-                        $error = 'If there is no return value for a function, there must not be a @return tag.';
-                        $phpcsFile->addError($error, $return, 'VoidReturn');
-                    } else if ($type !== 'mixed') {
+                    if ($type !== 'mixed' && $type !== 'void') {
                         // If return type is not void, there needs to be a return statement
                         // somewhere in the function that returns something.
                         if (isset($tokens[$stackPtr]['scope_closer']) === true) {
@@ -747,7 +759,7 @@ class FunctionCommentSniff implements Sniff
             if (count($typeNames) === 1 && $typeName === $suggestedName) {
                 // Check type hint for array and custom type.
                 $suggestedTypeHint = '';
-                if (strpos($suggestedName, 'array') !== false) {
+                if (strpos($suggestedName, 'array') !== false && $suggestedName !== 'array-key') {
                     $suggestedTypeHint = 'array';
                 } else if (strpos($suggestedName, 'callable') !== false) {
                     $suggestedTypeHint = 'callable';
@@ -762,7 +774,7 @@ class FunctionCommentSniff implements Sniff
                 if ($suggestedTypeHint !== '' && isset($realParams[$checkPos]) === true) {
                     $typeHint = $realParams[$checkPos]['type_hint'];
                     // Primitive type hints are allowed to be omitted.
-                    if ($typeHint === '' && in_array($suggestedTypeHint, ['string', 'int', 'float', 'bool']) === false) {
+                    if ($typeHint === '' && in_array($suggestedTypeHint, $this->allowedTypes) === false) {
                         $error = 'Type hint "%s" missing for %s';
                         $data  = [
                             $suggestedTypeHint,
@@ -789,12 +801,7 @@ class FunctionCommentSniff implements Sniff
                 ) {
                     $typeHint = $realParams[$checkPos]['type_hint'];
                     if ($typeHint !== ''
-                        && $typeHint !== 'stdClass'
-                        && $typeHint !== '\stdClass'
-                        // As of PHP 7.2, object is a valid type hint.
-                        && $typeHint !== 'object'
-                        // As of PHP 8.0, mixed is a valid type hint.
-                        && $typeHint !== 'mixed'
+                        && in_array($typeHint, $this->allowedTypes) === false
                     ) {
                         $error = 'Unknown type hint "%s" found for %s';
                         $data  = [
@@ -1000,7 +1007,9 @@ class FunctionCommentSniff implements Sniff
             return $type;
         }
 
-        $type = preg_replace('/[^a-zA-Z0-9_\\\[\]]/', '', $type);
+        // Also allow "-" for special type hint "array-key" supported by PHPStan
+        // https://phpstan.org/writing-php-code/phpdoc-types#basic-types
+        $type = preg_replace('/[^a-zA-Z0-9_\\\[\]\-]/', '', $type);
 
         return $type;
 
