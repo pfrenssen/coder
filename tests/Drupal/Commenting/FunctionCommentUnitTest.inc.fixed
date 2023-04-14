@@ -740,3 +740,111 @@ function test_return_non_empty_array(): array {
 function test_return_non_empty_keyed_array(): array {
   return [0 => new Type()];
 }
+
+/**
+ * PHPStan: Array shapes.
+ *
+ * @param array{'foo': int, "bar": string} $param1
+ *   Parameter.
+ * @param array{0: int, 1?: int} $param2
+ *   Parameter.
+ * @param array{int, int} $param3
+ *   Parameter.
+ * @param array{foo: int, bar: string} $param4
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#array-shapes
+ */
+function test_advanced_array_shapes(array $param1, array $param2, array $param3, array $param4) {
+}
+
+/**
+ * @return array{'foo': int, "bar": string}
+ *   Array.
+ */
+function test_return_array_shape(): array {
+  return [];
+}
+
+/**
+ * @return array{0: int, 1?: int}
+ *   Array.
+ */
+function test_return_array_shape_int(): array {
+  return [];
+}
+
+/**
+ * @return array{int, int}
+ *   Array.
+ */
+function test_return_array_shape_nokey(): array {
+  return [];
+}
+
+/**
+ * @return array{foo: int, bar: string}
+ *   Array.
+ */
+function test_return_array_shape_noquote(): array {
+  return [];
+}
+
+/**
+ * PHPStan: Integer ranges.
+ *
+ * @param positive-int $param1
+ *   Parameter.
+ * @param negative-int $param2
+ *   Parameter.
+ * @param int<0, 100> $param3
+ *   Parameter.
+ * @param int<min, 100> $param4
+ *   Parameter.
+ * @param int<50, max> $param5
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#integer-ranges
+ */
+function test_integer_ranges(int $param1, int $param2, int $param3, int $param4, int $param5) {
+}
+
+/**
+ * @return positive-int
+ *   Integer.
+ */
+function test_return_positive_integer(): int {
+  return 1;
+}
+
+/**
+ * @return negative-int
+ *   Integer.
+ */
+function test_return_negative_integer(): int {
+  return -1;
+}
+
+/**
+ * @return int<0, 100>
+ *   Integer.
+ */
+function test_return_integer_range(): int {
+  return 0;
+}
+
+/**
+ * @return int<min, 100>
+ *   Integer.
+ */
+function test_return_integer_min(): int {
+  return 0;
+}
+
+/**
+ * @return int<50, max>
+ *   Integer.
+ */
+function test_return_integer_max(): int {
+  return 50;
+}
