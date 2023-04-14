@@ -62,6 +62,8 @@ class FunctionCommentSniff implements Sniff
         'double',
         'float',
         'int',
+        'positive-int',
+        'negative-int',
         'iterable',
         'mixed',
         'object',
@@ -386,9 +388,9 @@ class FunctionCommentSniff implements Sniff
                             $phpcsFile->fixer->replaceToken(($return + 2), $matches[1]);
                         }
 
-                        // Do not check PHPStan array shapes from
-                        // https://phpstan.org/writing-php-code/phpdoc-types#general-arrays .
-                    } else if (strpos($type, 'array') === false) {
+                        // Do not check PHPStan types that contain any kind of brackets.
+                        // See https://phpstan.org/writing-php-code/phpdoc-types#general-arrays .
+                    } else if (preg_match('/[<\[\{\(]/', $type) === 0) {
                         $error = 'Return type "%s" must not contain spaces';
                         $data  = [$type];
                         $phpcsFile->addError($error, $return, 'ReturnTypeSpaces', $data);
@@ -732,9 +734,9 @@ class FunctionCommentSniff implements Sniff
             }
 
             if (preg_match('/\s/', $param['type']) === 1) {
-                // Do not check PHPStan array shapes from
-                // https://phpstan.org/writing-php-code/phpdoc-types#general-arrays .
-                if (strpos($param['type'], 'array') === false) {
+                // Do not check PHPStan types that contain any kind of brackets.
+                // See https://phpstan.org/writing-php-code/phpdoc-types#general-arrays .
+                if (preg_match('/[<\[\{\(]/', $param['type']) === 0) {
                     $error = 'Parameter type "%s" must not contain spaces';
                     $data  = [$param['type']];
                     $phpcsFile->addError($error, $param['tag'], 'ParamTypeSpaces', $data);
