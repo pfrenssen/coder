@@ -172,7 +172,7 @@ function test14(stdClass $user) {
 }
 
 /**
- * Array parameter type mismatch.
+ * Array parameter type mismatch is allowed, use PHPStan to validate types.
  *
  * @param array $foo
  *   Comment here.
@@ -821,4 +821,85 @@ function test_return_integer_min(): int {
  */
 function test_return_integer_max(): int {
   return 50;
+}
+
+/**
+ * PHPStan: Advanced string types.
+ *
+ * @param class-string $param1
+ *   Parameter.
+ * @param class-string<Foo> $param2
+ *   Parameter.
+ * @param callable-string $param3
+ *   Parameter.
+ * @param numeric-string $param4
+ *   Parameter.
+ * @param non-empty-string $param5
+ *   Parameter.
+ * @param non-falsy-string $param6
+ *   Parameter.
+ * @param literal-string $param7
+ *   Parameter.
+ * @param numeric-string|null $param8
+ *   Parameter.
+ *
+ * @see https://phpstan.org/writing-php-code/phpdoc-types#other-advanced-string-types
+ */
+function test_string_types(string $param1, string $param2, string $param3, string $param4, string $param5, string $param6, string $param7, $param8) {
+}
+
+/**
+ * @return class-string
+ *   Class string.
+ */
+function test_return_class_string(): string {
+  return '';
+}
+
+/**
+ * @return class-string<Foo>
+ *   Class string.
+ */
+function test_return_class_string_foo(): string {
+  return '';
+}
+
+/**
+ * @return callable-string
+ *   Callable string.
+ */
+function test_return_callable_string(): string {
+  return '';
+}
+
+/**
+ * @return numeric-string
+ *   Numeric string.
+ */
+function test_return_numeric_string(): string {
+  return '';
+}
+
+/**
+ * @return non-empty-string
+ *   Non empty string.
+ */
+function test_return_non_empty_string(): string {
+  return 'foo';
+}
+
+/**
+ * @return non-falsy-string
+ *   Non falsy string.
+ */
+function test_return_non_falsy_string(): string {
+  return '';
+}
+
+/**
+ * @return literal-string
+ *   Literal string.
+ */
+function test_return_literal_string(): string {
+  return '';
 }

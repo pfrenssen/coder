@@ -49,36 +49,6 @@ class FunctionCommentSniff implements Sniff
         'TRUEFALSE' => 'bool',
     ];
 
-    /**
-     * An array of variable types for param/var we will check.
-     *
-     * @var array<string>
-     */
-    public $allowedTypes = [
-        'array',
-        'array-key',
-        'bool',
-        'callable',
-        'double',
-        'float',
-        'int',
-        'positive-int',
-        'negative-int',
-        'iterable',
-        'mixed',
-        'object',
-        'resource',
-        'callable',
-        'true',
-        'false',
-        'null',
-        'scalar',
-        'stdClass',
-        '\stdClass',
-        'string',
-        'void',
-    ];
-
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -756,72 +726,6 @@ class FunctionCommentSniff implements Sniff
                 }
             }//end if
 
-            $suggestedName = '';
-            $typeName      = '';
-            if (count($typeNames) === 1) {
-                $typeName      = $param['type'];
-                $suggestedName = static::suggestType($typeName);
-            }
-
-            // This runs only if there is only one type name and the type name
-            // is not one of the disallowed type names.
-            if (count($typeNames) === 1 && $typeName === $suggestedName) {
-                // Check type hint for array and custom type.
-                $suggestedTypeHint = '';
-                if (strpos($suggestedName, 'array') !== false && $suggestedName !== 'array-key') {
-                    $suggestedTypeHint = 'array';
-                } else if (strpos($suggestedName, 'callable') !== false) {
-                    $suggestedTypeHint = 'callable';
-                } else if (substr($suggestedName, -2) === '[]') {
-                    $suggestedTypeHint = 'array';
-                } else if ($suggestedName === 'object') {
-                    $suggestedTypeHint = '';
-                } else if (in_array($typeName, $this->allowedTypes) === false) {
-                    $suggestedTypeHint = $suggestedName;
-                }
-
-                if ($suggestedTypeHint !== '' && isset($realParams[$checkPos]) === true) {
-                    $typeHint = $realParams[$checkPos]['type_hint'];
-                    // Primitive type hints are allowed to be omitted.
-                    if ($typeHint === '' && in_array($suggestedTypeHint, $this->allowedTypes) === false) {
-                        $error = 'Type hint "%s" missing for %s';
-                        $data  = [
-                            $suggestedTypeHint,
-                            $param['var'],
-                        ];
-                        $phpcsFile->addError($error, $stackPtr, 'TypeHintMissing', $data);
-                    } else if ($typeHint !== $suggestedTypeHint && $typeHint !== '') {
-                        // The type hint could be fully namespaced, so we check
-                        // for the part after the last "\".
-                        $nameParts = explode('\\', $suggestedTypeHint);
-                        $lastPart  = end($nameParts);
-                        if ($lastPart !== $typeHint && $this->isAliasedType($typeHint, $suggestedTypeHint, $phpcsFile) === false) {
-                            $error = 'Expected type hint "%s"; found "%s" for %s';
-                            $data  = [
-                                $lastPart,
-                                $typeHint,
-                                $param['var'],
-                            ];
-                            $phpcsFile->addError($error, $stackPtr, 'IncorrectTypeHint', $data);
-                        }
-                    }//end if
-                } else if ($suggestedTypeHint === ''
-                    && isset($realParams[$checkPos]) === true
-                ) {
-                    $typeHint = $realParams[$checkPos]['type_hint'];
-                    if ($typeHint !== ''
-                        && in_array($typeHint, $this->allowedTypes) === false
-                    ) {
-                        $error = 'Unknown type hint "%s" found for %s';
-                        $data  = [
-                            $typeHint,
-                            $param['var'],
-                        ];
-                        $phpcsFile->addError($error, $stackPtr, 'InvalidTypeHint', $data);
-                    }
-                }//end if
-            }//end if
-
             // Check number of spaces after the type.
             $spaces = 1;
             if ($param['type_space'] !== $spaces) {
@@ -1023,73 +927,6 @@ class FunctionCommentSniff implements Sniff
         return $type;
 
     }//end suggestType()
-
-
-    /**
-     * Checks if a used type hint is an alias defined by a "use" statement.
-     *
-     * @param string                      $typeHint          The type hint used.
-     * @param string                      $suggestedTypeHint The fully qualified type to
-     *                                                       check against.
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile         The file being checked.
-     *
-     * @return boolean
-     */
-    protected function isAliasedType($typeHint, $suggestedTypeHint, File $phpcsFile)
-    {
-        $tokens = $phpcsFile->getTokens();
-
-        // Iterate over all "use" statements in the file.
-        $usePtr = 0;
-        while ($usePtr !== false) {
-            $usePtr = $phpcsFile->findNext(T_USE, ($usePtr + 1));
-            if ($usePtr === false) {
-                return false;
-            }
-
-            // Only check use statements in the global scope.
-            if (empty($tokens[$usePtr]['conditions']) === false) {
-                continue;
-            }
-
-            // Now comes the original class name, possibly with namespace
-            // backslashes.
-            $originalClass = $phpcsFile->findNext(Tokens::$emptyTokens, ($usePtr + 1), null, true);
-            if ($originalClass === false || ($tokens[$originalClass]['code'] !== T_STRING
-                && $tokens[$originalClass]['code'] !== T_NS_SEPARATOR)
-            ) {
-                continue;
-            }
-
-            $originalClassName = '';
-            while (in_array($tokens[$originalClass]['code'], [T_STRING, T_NS_SEPARATOR]) === true) {
-                $originalClassName .= $tokens[$originalClass]['content'];
-                $originalClass++;
-            }
-
-            if (ltrim($originalClassName, '\\') !== ltrim($suggestedTypeHint, '\\')) {
-                continue;
-            }
-
-            // Now comes the "as" keyword signaling an alias name for the class.
-            $asPtr = $phpcsFile->findNext(Tokens::$emptyTokens, ($originalClass + 1), null, true);
-            if ($asPtr === false || $tokens[$asPtr]['code'] !== T_AS) {
-                continue;
-            }
-
-            // Now comes the name the class is aliased to.
-            $aliasPtr = $phpcsFile->findNext(Tokens::$emptyTokens, ($asPtr + 1), null, true);
-            if ($aliasPtr === false || $tokens[$aliasPtr]['code'] !== T_STRING
-                || $tokens[$aliasPtr]['content'] !== $typeHint
-            ) {
-                continue;
-            }
-
-            // We found a use statement that aliases the used type hint!
-            return true;
-        }//end while
-
-    }//end isAliasedType()
 
 
     /**
