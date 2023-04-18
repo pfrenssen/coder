@@ -866,8 +866,66 @@ function test_return_integer_max(): int {
  *   Parameter.
  * @param literal-string $param7
  *   Parameter.
+ * @param numeric-string|null $param8
+ *   Parameter.
  *
  * @see https://phpstan.org/writing-php-code/phpdoc-types#other-advanced-string-types
  */
-function test_string_types(string $param1, string $param2, string $param3, string $param4, string $param5, string $param6, string $param7) {
+function test_string_types(string $param1, string $param2, string $param3, string $param4, string $param5, string $param6, string $param7, $param8) {
+}
+
+/**
+ * @return class-string
+ *   Class string.
+ */
+function test_return_class_string(): string {
+  return '';
+}
+
+/**
+ * @return class-string<Foo>
+ *   Class string.
+ */
+function test_return_class_string_foo(): string {
+  return '';
+}
+
+/**
+ * @return callable-string
+ *   Callable string.
+ */
+function test_return_callable_string(): string {
+  return '';
+}
+
+/**
+ * @return numeric-string
+ *   Numeric string.
+ */
+function test_return_numeric_string(): string {
+  return '';
+}
+
+/**
+ * @return non-empty-string
+ *   Non empty string.
+ */
+function test_return_non_empty_string(): string {
+  return 'foo';
+}
+
+/**
+ * @return non-falsy-string
+ *   Non falsy string.
+ */
+function test_return_non_falsy_string(): string {
+  return '';
+}
+
+/**
+ * @return literal-string
+ *   Literal string.
+ */
+function test_return_literal_string(): string {
+  return '';
 }

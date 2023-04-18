@@ -49,36 +49,6 @@ class FunctionCommentSniff implements Sniff
         'TRUEFALSE' => 'bool',
     ];
 
-    /**
-     * An array of variable types for param/var we will check.
-     *
-     * @var array<string>
-     */
-    public $allowedTypes = [
-        'array',
-        'array-key',
-        'bool',
-        'callable',
-        'double',
-        'float',
-        'int',
-        'positive-int',
-        'negative-int',
-        'iterable',
-        'mixed',
-        'object',
-        'resource',
-        'callable',
-        'true',
-        'false',
-        'null',
-        'scalar',
-        'stdClass',
-        '\stdClass',
-        'string',
-        'void',
-    ];
-
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -754,58 +724,6 @@ class FunctionCommentSniff implements Sniff
                     $content .= $param['var'];
                     $phpcsFile->fixer->replaceToken(($param['tag'] + 2), $content);
                 }
-            }//end if
-
-            $suggestedName = '';
-            $typeName      = '';
-            if (count($typeNames) === 1) {
-                $typeName      = $param['type'];
-                $suggestedName = static::suggestType($typeName);
-            }
-
-            // This runs only if there is only one type name and the type name
-            // is not one of the disallowed type names.
-            if (count($typeNames) === 1 && $typeName === $suggestedName) {
-                // Check type hint for array and custom type.
-                $suggestedTypeHint = '';
-                if (strpos($suggestedName, 'array') !== false && $suggestedName !== 'array-key') {
-                    $suggestedTypeHint = 'array';
-                } else if (strpos($suggestedName, 'callable') !== false) {
-                    $suggestedTypeHint = 'callable';
-                } else if (substr($suggestedName, -2) === '[]') {
-                    $suggestedTypeHint = 'array';
-                } else if ($suggestedName === 'object') {
-                    $suggestedTypeHint = '';
-                } else if (in_array($typeName, $this->allowedTypes) === false) {
-                    $suggestedTypeHint = $suggestedName;
-                }
-
-                if ($suggestedTypeHint !== '' && isset($realParams[$checkPos]) === true) {
-                    $typeHint = $realParams[$checkPos]['type_hint'];
-                    // Primitive type hints are allowed to be omitted.
-                    if ($typeHint === '' && in_array($suggestedTypeHint, $this->allowedTypes) === false) {
-                        $error = 'Type hint "%s" missing for %s';
-                        $data  = [
-                            $suggestedTypeHint,
-                            $param['var'],
-                        ];
-                        $phpcsFile->addError($error, $stackPtr, 'TypeHintMissing', $data);
-                    }
-                } else if ($suggestedTypeHint === ''
-                    && isset($realParams[$checkPos]) === true
-                ) {
-                    $typeHint = $realParams[$checkPos]['type_hint'];
-                    if ($typeHint !== ''
-                        && in_array($typeHint, $this->allowedTypes) === false
-                    ) {
-                        $error = 'Unknown type hint "%s" found for %s';
-                        $data  = [
-                            $typeHint,
-                            $param['var'],
-                        ];
-                        $phpcsFile->addError($error, $stackPtr, 'InvalidTypeHint', $data);
-                    }
-                }//end if
             }//end if
 
             // Check number of spaces after the type.
