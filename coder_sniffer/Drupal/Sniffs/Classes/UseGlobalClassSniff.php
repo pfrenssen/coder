@@ -11,6 +11,7 @@ namespace Drupal\Sniffs\Classes;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Checks non-namespaced classes are referenced by FQN, not imported.
@@ -53,6 +54,12 @@ class UseGlobalClassSniff implements Sniff
     {
 
         $tokens = $phpcsFile->getTokens();
+
+        // Make sure this is not a closure USE group.
+        $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        if ($tokens[$next]['code'] === T_OPEN_PARENTHESIS) {
+            return;
+        }
 
         // Find the first declaration, marking the end of the use statements.
         $bodyStart = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT, T_FUNCTION], 0);
