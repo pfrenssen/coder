@@ -1,0 +1,10 @@
+<?php
+namespace Drupal\example\Controller;
+
+/**
+ * Foo.
+ */
+class ExampleController
+{
+
+}
