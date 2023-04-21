@@ -305,8 +305,8 @@ function test25() {
 /**
  * Type declarations should not have any illegal characters.
  *
- * @param \Ille*al $var
- *   This asterisk does not belong here.
+ * @param \Ille§al $var
+ *   This character does not belong here.
  *
  * @return \Some/Namespace
  *   This should not have a forward slash.

@@ -63,4 +63,25 @@ class Test {
    */
   protected readonly string $readOnly;
 
+  /**
+   * PHPStan array annotation.
+   *
+   * @var array<int,array<int,int>>
+   */
+  protected array $arrayStructure;
+
+  /**
+   * PHPStan array shapes.
+   *
+   * @var array{'foo': int, "bar"?: string}
+   */
+  protected array $arrayShape;
+
+  /**
+   * PHPStan constant wildcard.
+   *
+   * @var Foo::*
+   */
+  protected string $constant;
+
 }
