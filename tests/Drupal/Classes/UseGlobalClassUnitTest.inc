@@ -85,3 +85,26 @@ class Example extends Test implements Test, Alias, MultiLineAlias {
   abstract public function test9(): ?Test;
 
 }
+
+$getMapOnlyLatestRevision = function ($tableName, $baseField, $idField, $preValidIds = []) use ($db): ?array {
+  if (empty($tableName) || empty($baseField) || empty($idField)) {
+    return NULL;
+  }
+  $ids = [];
+  $map = [];
+  if (empty($preValidIds)) {
+    $ids = $db->query("SELECT MAX($idField) FROM $tableName GROUP BY $baseField")->fetchCol();
+  }
+  else {
+    $ids = $db->query("SELECT MAX($idField) FROM $tableName WHERE $idField IN (:ids[]) GROUP BY $baseField", [
+      ':ids[]' => $preValidIds,
+    ])->fetchCol();
+  }
+  if (empty($ids)) {
+    return NULL;
+  }
+  $map = $db->query("SELECT * FROM $tableName WHERE $idField IN (:ids[])", [
+    ':ids[]' => $ids,
+  ])->fetchAllAssoc($idField);
+  return $map;
+};
