@@ -687,6 +687,12 @@ class FunctionCommentSniff implements Sniff
                 $checkPos++;
             }
 
+            // Support variadic arguments.
+            if (preg_match('/(\s+)\.{3}$/', $param['type'], $matches) === 1) {
+                $param['type_space'] = strlen($matches[1]);
+                $param['type']       = preg_replace('/\s+\.{3}$/', '', $param['type']);
+            }
+
             // Check the param type value. This could also be multiple parameter
             // types separated by '|'.
             $typeNames      = explode('|', $param['type']);
@@ -696,12 +702,6 @@ class FunctionCommentSniff implements Sniff
             }
 
             $suggestedType = implode('|', $suggestedNames);
-
-            // Support variadic arguments.
-            if (preg_match('/(\s+)\.{3}$/', $param['type'], $matches) === 1) {
-                $param['type_space'] = strlen($matches[1]);
-                $param['type']       = preg_replace('/\s+\.{3}$/', '', $param['type']);
-            }
 
             if (preg_match('/\s/', $param['type']) === 1) {
                 // Do not check PHPStan types that contain any kind of brackets.
@@ -920,9 +920,10 @@ class FunctionCommentSniff implements Sniff
             return $type;
         }
 
-        // Also allow "-" and "<>" for special type hints supported by PHPStan
+        // Also allow some more characters for special type hints supported by
+        // PHPStan:
         // https://phpstan.org/writing-php-code/phpdoc-types#basic-types .
-        $type = preg_replace('/[^a-zA-Z0-9_\\\[\]\-<>]/', '', $type);
+        $type = preg_replace('/[^a-zA-Z0-9_\\\[\]\-<> ,"\{\}\?\':\*]/', '', $type);
 
         return $type;
 
