@@ -224,7 +224,8 @@ class DocCommentSniff implements Sniff
         // Remove any trailing white spaces which are detected by other sniffs.
         $shortContent = trim($shortContent);
 
-        if (preg_match('|\p{Lu}|u', $shortContent[0]) === 0
+        if ($shortContent !== ''
+            && preg_match('|\p{Lu}|u', $shortContent[0]) === 0
             // Allow both variants of inheritdoc comments.
             && $shortContent !== '{@inheritdoc}'
             && $shortContent !== '{@inheritDoc}'
