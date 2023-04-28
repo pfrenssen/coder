@@ -929,3 +929,16 @@ function test_return_non_falsy_string(): string {
 function test_return_literal_string(): string {
   return '';
 }
+
+/**
+ * PHP 8 intersection types are ok.
+ *
+ * @param Foo&Bar $a
+ *   Intersection type parameter.
+ *
+ * @return Foo&Bar
+ *   Intersection type return declaration.
+ */
+function test_intersection_types(Foo&Bar $a): Foo&Bar {
+  return new Xyz();
+}
