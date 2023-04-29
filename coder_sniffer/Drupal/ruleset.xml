@@ -121,6 +121,7 @@
  <rule ref="PSR2.Namespaces.UseDeclaration" />
 
  <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator" />
+ <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses" />
  <rule ref="SlevomatCodingStandard.PHP.ShortList" />
 
  <rule ref="Squiz.Arrays.ArrayDeclaration" />
