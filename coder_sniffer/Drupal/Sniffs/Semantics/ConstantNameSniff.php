@@ -85,7 +85,7 @@ class ConstantNameSniff implements Sniff
                     $expectedStart."_$constName",
                     $constName,
                 ];
-                $phpcsFile->addWarning($warning, $stackPtr, 'ConstantStart', $data);
+                $phpcsFile->addWarning($warning, $stackPtr, 'ConstConstantStart', $data);
                 return;
             }//end if
         }
