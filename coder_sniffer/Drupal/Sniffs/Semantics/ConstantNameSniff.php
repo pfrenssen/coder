@@ -31,7 +31,7 @@ class ConstantNameSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {
@@ -50,7 +50,7 @@ class ConstantNameSniff implements Sniff
      * @param int                         $stackPtr  The position of the current token in the
      *                                               stack passed in $tokens.
      *
-     * @return void
+     * @return void|int
      */
     public function process(File $phpcsFile, $stackPtr)
     {
@@ -58,7 +58,7 @@ class ConstantNameSniff implements Sniff
         $fileExtension = end($nameParts);
         // Only check in *.module files.
         if ($fileExtension !== 'module' && $fileExtension !== 'install') {
-            return;
+            return ($phpcsFile->numTokens + 1);
         }
 
         $tokens = $phpcsFile->getTokens();
@@ -126,7 +126,6 @@ class ConstantNameSniff implements Sniff
                 $constName,
             ];
             $phpcsFile->addWarning($warning, $stackPtr, 'ConstantStart', $data);
-            return;
         }//end if
 
     }//end process()
