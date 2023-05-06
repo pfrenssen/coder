@@ -1,3 +1,9 @@
 <?php
 
 define('WRONG_CONSTANT_NAME', 'test');
+
+const ANOTHER_WRONG_NAME = 'test';
+
+class Test {
+  const CLASS_CONSTANT = 'should be ignored';
+}

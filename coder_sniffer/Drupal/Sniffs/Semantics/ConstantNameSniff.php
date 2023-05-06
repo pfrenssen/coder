@@ -10,78 +10,125 @@
 namespace Drupal\Sniffs\Semantics;
 
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Checks that constants introduced with define() in module or install files start
  * with the module's name.
  *
+ * Largely copied from
+ * \PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions\UpperCaseConstantNameSniff.
+ *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class ConstantNameSniff extends FunctionCall
+class ConstantNameSniff implements Sniff
 {
 
 
     /**
-     * Returns an array of function names this test wants to listen for.
+     * Returns an array of tokens this test wants to listen for.
      *
-     * @return array<string>
+     * @return array<int|string>
      */
-    public function registerFunctionNames()
+    public function register()
     {
-        return ['define'];
+        return [
+            T_STRING,
+            T_CONST,
+        ];
 
-    }//end registerFunctionNames()
+    }//end register()
 
 
     /**
-     * Processes this function call.
+     * Processes this test, when one of its tokens is encountered.
      *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
-     * @param int                         $stackPtr     The position of the function call in
-     *                                                  the stack.
-     * @param int                         $openBracket  The position of the opening
-     *                                                  parenthesis in the stack.
-     * @param int                         $closeBracket The position of the closing
-     *                                                  parenthesis in the stack.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
-     * @return void
+     * @return void|int
      */
-    public function processFunctionCall(
-        File $phpcsFile,
-        $stackPtr,
-        $openBracket,
-        $closeBracket
-    ) {
+    public function process(File $phpcsFile, $stackPtr)
+    {
         $nameParts     = explode('.', basename($phpcsFile->getFilename()));
         $fileExtension = end($nameParts);
         // Only check in *.module files.
         if ($fileExtension !== 'module' && $fileExtension !== 'install') {
-            return;
+            return ($phpcsFile->numTokens + 1);
         }
 
-        $tokens   = $phpcsFile->getTokens();
-        $argument = $this->getArgument(1);
-        if ($tokens[$argument['start']]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
-            // Not a string literal, so this is some obscure constant that we ignore.
+        $tokens = $phpcsFile->getTokens();
+        // Only check in the outer scope, not within classes.
+        if (empty($tokens[$stackPtr]['conditions']) === false) {
             return;
         }
 
         $moduleName    = reset($nameParts);
         $expectedStart = strtoupper($moduleName);
-        // Remove the quotes around the string litral.
-        $constant = substr($tokens[$argument['start']]['content'], 1, -1);
-        if (strpos($constant, $expectedStart) !== 0) {
-            $warning = 'All constants defined by a module must be prefixed with the module\'s name, expected "%s" but found "%s"';
-            $data    = [
-                $expectedStart."_$constant",
-                $constant,
-            ];
-            $phpcsFile->addWarning($warning, $stackPtr, 'ConstantStart', $data);
+
+        if ($tokens[$stackPtr]['code'] === T_CONST) {
+            // This is a class constant.
+            $constant = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+            if ($constant === false) {
+                return;
+            }
+
+            $constName = $tokens[$constant]['content'];
+
+            if (strpos($constName, $expectedStart) !== 0) {
+                $warning = 'All constants defined by a module must be prefixed with the module\'s name, expected "%s" but found "%s"';
+                $data    = [
+                    $expectedStart."_$constName",
+                    $constName,
+                ];
+                $phpcsFile->addWarning($warning, $stackPtr, 'ConstConstantStart', $data);
+                return;
+            }//end if
         }
 
-    }//end processFunctionCall()
+        // Only interested in define statements now.
+        if (strtolower($tokens[$stackPtr]['content']) !== 'define') {
+            return;
+        }
+
+        // Make sure this is not a method call.
+        $prev = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
+        if ($tokens[$prev]['code'] === T_OBJECT_OPERATOR
+            || $tokens[$prev]['code'] === T_DOUBLE_COLON
+            || $tokens[$prev]['code'] === T_NULLSAFE_OBJECT_OPERATOR
+        ) {
+            return;
+        }
+
+        // If the next non-whitespace token after this token
+        // is not an opening parenthesis then it is not a function call.
+        $openBracket = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        if ($openBracket === false) {
+            return;
+        }
+
+        // The next non-whitespace token must be the constant name.
+        $constPtr = $phpcsFile->findNext(T_WHITESPACE, ($openBracket + 1), null, true);
+        if ($tokens[$constPtr]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
+            return;
+        }
+
+        $constName = $tokens[$constPtr]['content'];
+
+        if (strpos($constName, $expectedStart) !== 0) {
+            $warning = 'All constants defined by a module must be prefixed with the module\'s name, expected "%s" but found "%s"';
+            $data    = [
+                $expectedStart."_$constName",
+                $constName,
+            ];
+            $phpcsFile->addWarning($warning, $stackPtr, 'ConstantStart', $data);
+        }//end if
+
+    }//end process()
 
 
 }//end class
