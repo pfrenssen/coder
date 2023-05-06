@@ -382,6 +382,20 @@ class BadUnitTest extends CoderSniffUnitTest
                 846 => 2,
                 852 => 2,
             ];
+        case 'BadFullyQualifiedNamespace.inc':
+            return [
+                10 => 1,
+                11 => 1,
+                29 => 1,
+                36 => 1,
+                43 => 1,
+                57 => 1,
+                64 => 1,
+                71 => 2,
+                78 => 1,
+            ];
+        case 'BadFullyQualifiedNamespace.1.inc':
+            return [16 => 1];
         }//end switch
 
         return [];
@@ -431,6 +445,8 @@ class BadUnitTest extends CoderSniffUnitTest
                 823 => 1,
                 824 => 1,
             ];
+        case 'BadFullyQualifiedNamespace.inc':
+            return [9 => 1];
         }//end switch
 
         return [];

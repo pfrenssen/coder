@@ -5,15 +5,14 @@
  * Example.
  */
 
-use Test\Alias as TestAlias;
 use Test\Bar;
-use Test\Foo;
-use Test\MultiLine as MultiLineAlias;
-use Test\MultiLineSecond;
 use Test\NotUsed;
+use Test\Alias as TestAlias;
+use Test\MultiLine as MultiLineAlias,
+    Test\MultiLineSecond;
 
 /**
- * Example.
+ * Example with lots of variations.
  */
 class Example {
 
@@ -27,21 +26,21 @@ class Example {
   /**
    * Description.
    */
-  public function test2(NotUsed $notUsed) {
+  public function test2(Test\NotUsed $notUsed) {
 
   }
 
   /**
    * Description.
    */
-  public function test3(TestAlias $alias) {
+  public function test3(Test\Alias $alias) {
 
   }
 
   /**
    * Description.
    */
-  public function test4(Foo $foo) {
+  public function test4(Test\Foo $foo) {
 
   }
 
@@ -69,7 +68,7 @@ class Example {
   /**
    * Description.
    */
-  public function test8(MultiLineAlias $multiLine, MultiLineSecond $multiLineSecond) {
+  public function test8(Test\MultiLine $multiLine, Test\MultiLineSecond $multiLineSecond) {
 
   }
 

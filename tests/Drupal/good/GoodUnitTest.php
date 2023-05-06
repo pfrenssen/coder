@@ -57,16 +57,20 @@ class GoodUnitTest extends CoderSniffUnitTest
      */
     protected function getTestFiles($testFileBase): array
     {
-        $di = new \DirectoryIterator(__DIR__);
+        $directories = [
+            __DIR__,
+            __DIR__.'/drupal8',
+        ];
+        foreach ($directories as $directory) {
+            $di = new \DirectoryIterator($directory);
 
-        foreach ($di as $file) {
-            $path = $file->getPathname();
-            if ($path !== __FILE__ && $file->isFile() === true) {
-                $testFiles[] = $path;
+            foreach ($di as $file) {
+                $path = $file->getPathname();
+                if ($path !== __FILE__ && $file->isFile() === true) {
+                    $testFiles[] = $path;
+                }
             }
         }
-
-        $testFiles[] = __DIR__.'/drupal8/LongNamespace.php';
 
         // Get them in order.
         sort($testFiles);
