@@ -54,7 +54,10 @@ class ConstantNameUnitTest extends CoderSniffUnitTest
      */
     protected function getWarningList(string $testFile): array
     {
-        return [3 => 1];
+        return [
+            3 => 1,
+            5 => 1,
+        ];
 
     }//end getWarningList()
 
