@@ -961,4 +961,16 @@ class Test3 {
     return [];
   }
 
+  /**
+   * Variadic parameters without description are not ok.
+   *
+   * @param string[]|string ...$classes
+   *
+   * @return array
+   *   The return array.
+   */
+  public function testVariadicParameterNoDescription(...$classes): array {
+    return [];
+  }
+
 }
