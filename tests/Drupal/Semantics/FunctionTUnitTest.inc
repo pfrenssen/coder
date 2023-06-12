@@ -21,8 +21,6 @@ $x = t('Test') . ' (disabled)';
 
 class Test {
 
-  const FOO2 = 'bar2';
-
   public function doSomething() {
     return $this->t('This string should avoid backslashes for \'');
   }
@@ -38,7 +36,6 @@ class Test {
 }
 
 // Using constants in t() should be allowed.
-const FOO='bar';
 $x = t(FOO);
 $x = t(Test::FOO);
 $x = t(self::FOO);
