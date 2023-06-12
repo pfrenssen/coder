@@ -20,6 +20,7 @@ $x = '<p>' . t('Test') . '</p><p>More text.</p>';
 $x = t('Test') . ' (disabled)';
 
 class Test {
+  const FOO='bar';
 
   public function doSomething() {
     return $this->t('This string should avoid backslashes for \'');
@@ -33,9 +34,15 @@ class Test {
     return new TranslationWrapper(' Do not start with a space');
   }
 
+  public function testConstants() {
+    // Using constants in t() should be allowed.
+    $x = t(self::FOO);
+  }
+
 }
 
 // Using constants in t() should be allowed.
-$x = t(FOO);
+const FOO2='bar2';
+$x = t(FOO2);
 $x = t(Test::FOO);
-$x = t(self::FOO);
+
