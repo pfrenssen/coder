@@ -845,21 +845,23 @@ class FunctionCommentSniff implements Sniff
         // Missing parameters only apply to methods and not function because on
         // functions it is allowed to leave out param comments for form constructors
         // for example.
-        // It is also allowed to ommit pram tags completely, in which case we don't
+        // It is also allowed to omit param tags completely, in which case we don't
         // throw errors. Only throw errors if param comments exists but are
         // incomplete on class methods.
         if ($tokens[$stackPtr]['level'] > 0 && empty($foundParams) === false) {
             foreach ($realParams as $realParam) {
                 $realParamKeyName = $realParam['name'];
                 if (in_array($realParamKeyName, $foundParams) === false
-                    && ($realParam['pass_by_reference'] === true
-                    && in_array("&$realParamKeyName", $foundParams) === true) === false
+                    && (($realParam['pass_by_reference'] === true
+                    && in_array("&$realParamKeyName", $foundParams) === true)
+                    || ($realParam['variable_length'] === true
+                    && in_array("...$realParamKeyName", $foundParams) === true)) === false
                 ) {
                     $error = 'Parameter %s is not described in comment';
                     $phpcsFile->addError($error, $commentStart, 'ParamMissingDefinition', [$realParam['name']]);
                 }
             }
-        }
+        }//end if
 
     }//end processParams()
 
