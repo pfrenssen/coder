@@ -7,4 +7,4 @@
  * It is used to check sniffs that run on .module files but skip .php files.
  */
 
-define('FOO_BAR', 5);
+define('GOOD_FOO_BAR', 5);
