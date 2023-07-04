@@ -54,9 +54,11 @@ class ConstantNameUnitTest extends CoderSniffUnitTest
      */
     protected function getWarningList(string $testFile): array
     {
+        // The .install and .module test files are identical, so the return
+        // array can be the same, without checking $testFile.
         return [
             3 => 1,
-            5 => 1,
+            6 => 1,
         ];
 
     }//end getWarningList()
