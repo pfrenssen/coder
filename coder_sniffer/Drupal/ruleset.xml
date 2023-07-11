@@ -147,6 +147,9 @@
  <rule ref="Squiz.Arrays.ArrayDeclaration.NoCommaAfterLast">
   <severity>0</severity>
  </rule>
+ <rule ref="Squiz.Arrays.ArrayDeclaration.NoKeySpecified">
+  <severity>0</severity>
+ </rule>
  <rule ref="Squiz.Arrays.ArrayDeclaration.NotLowerCase">
   <severity>0</severity>
  </rule>
