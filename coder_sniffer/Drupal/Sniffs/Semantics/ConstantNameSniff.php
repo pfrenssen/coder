@@ -117,7 +117,8 @@ class ConstantNameSniff implements Sniff
             return;
         }
 
-        $constName = $tokens[$constPtr]['content'];
+        // Get the constant name and remove single and double quotes.
+        $constName = str_replace(["'", '"'], ['', ''], $tokens[$constPtr]['content']);
 
         if (strpos($constName, $expectedStart) !== 0) {
             $warning = 'All constants defined by a module must be prefixed with the module\'s name, expected "%s" but found "%s"';
