@@ -162,6 +162,14 @@ $x = [
   ],
 ];
 
+// Array with a key followed by no key is allowed.
+// See https://www.drupal.org/project/coder/issues/3355778
+// and https://www.drupal.org/project/drupal/issues/2908266
+$form['testing_no_key'] = [
+  'a' => 'apple',
+  'banana',
+];
+
 // Arrays in function calls.
 foo(
   array(
