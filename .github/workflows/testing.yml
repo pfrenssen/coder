@@ -51,3 +51,47 @@ jobs:
           ./vendor/bin/phpcs -p --standard=coder_sniffer/DrupalPractice tests/DrupalPractice/good/ --ignore=tests/DrupalPractice/good/GoodUnitTest.php
       - name: Run PHPStan
         run: if [[ ${{ matrix.phpstan }} == "1" ]]; then ./vendor/bin/phpstan analyse; fi
+
+  drupal_core_check:
+    needs:
+      - testing
+    continue-on-error: true
+    runs-on: "ubuntu-latest"
+    name: "Regression test with Drupal coding standards against Drupal core HEAD"
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+      - name: "Set the version alias for self"
+        run: |
+          if [ "${{ github.event_name }}" == 'pull_request' ]; then
+            echo "VERSION_ALIAS=dev-"${{ github.sha }}"" >> $GITHUB_OUTPUT
+          else
+            echo "VERSION_ALIAS=dev-"${{ github.ref_name }}"" >> $GITHUB_OUTPUT
+          fi
+        id: branch_alias
+      - name: "Install PHP 8.2"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "8.2"
+          tools: composer:v2
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd, apcu
+      - name: "Checkout Drupal core HEAD"
+        run: |
+          cd ${{ runner.temp }}
+          git clone https://git.drupalcode.org/project/drupal.git
+          cd drupal
+          composer config repositories.0 composer https://packages.drupal.org/8
+          composer config repositories.1 path $GITHUB_WORKSPACE
+      - name: "Install Drupal core dependencies"
+        uses: "ramsey/composer-install@v2"
+        with:
+          working-directory: "${{ runner.temp }}/drupal"
+      - name: "Require drupal/coder"
+        run: |
+          cd ${{ runner.temp }}/drupal
+          composer require --dev drupal/coder "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 8.3.99" --with-all-dependencies
+      - name: "Check Drupal coding standards against Drupal core HEAD"
+        run: |
+          cd ${{ runner.temp }}/drupal
+          ./vendor/bin/phpcs -ps --parallel=$(nproc) --standard=./core/phpcs.xml.dist
