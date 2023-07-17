@@ -55,7 +55,6 @@ jobs:
   drupal_core_check:
     needs:
       - testing
-    continue-on-error: true
     runs-on: "ubuntu-latest"
     name: "Regression test with Drupal coding standards against Drupal core HEAD"
     steps:
