@@ -34,14 +34,4 @@ class Test {
     return new TranslationWrapper(' Do not start with a space');
   }
 
-  public function testConstants() {
-    // Using constants in t() should be allowed.
-    $x = t(self::FOO);
-  }
-
 }
-
-// Using constants in t() should be allowed.
-const FOO2 = 'bar2';
-$x = t(FOO2);
-$x = t(Test::FOO);
