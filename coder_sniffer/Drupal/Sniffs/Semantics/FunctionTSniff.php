@@ -75,10 +75,7 @@ class FunctionTSniff extends FunctionCall
             return;
         }
 
-        if ($tokens[$argument['start']]['code'] !== T_CONSTANT_ENCAPSED_STRING
-            && $tokens[$argument['start']]['code'] !== T_STRING
-            && $tokens[$argument['start']]['code'] !== T_SELF
-        ) {
+        if ($tokens[$argument['start']]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
             // Not a translatable string literal.
             $warning = 'Only string literals should be passed to t() where possible';
             $phpcsFile->addWarning($warning, $argument['start'], 'NotLiteralString');
