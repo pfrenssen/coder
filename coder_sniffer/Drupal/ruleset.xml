@@ -122,6 +122,22 @@
 
  <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator" />
  <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses" />
+ <!-- Allow global names with backslash like \Drupal. -->
+ <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly">
+  <properties>
+   <property name="allowFullyQualifiedGlobalClasses" value="true" />
+   <property name="allowFullyQualifiedGlobalFunctions" value="true" />
+   <property name="allowFullyQualifiedGlobalConstants" value="true" />
+   <property name="allowFallbackGlobalFunctions" value="true" />
+   <property name="allowFallbackGlobalConstants" value="true" />
+  </properties>
+ </rule>
+ <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName">
+  <exclude-pattern>*.api.php</exclude-pattern>
+ </rule>
+ <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedNameWithoutNamespace">
+  <severity>0</severity>
+ </rule>
  <rule ref="SlevomatCodingStandard.PHP.ShortList" />
 
  <rule ref="Squiz.Arrays.ArrayDeclaration" />
@@ -298,7 +314,7 @@
  <exclude-pattern>*/\.svn/*</exclude-pattern>
  <exclude-pattern>*/\.hg/*</exclude-pattern>
  <exclude-pattern>*/\.bzr/*</exclude-pattern>
- 
+
  <!-- Ignore minified CSS files.-->
  <exclude-pattern>*\.min\.css$</exclude-pattern>
 </ruleset>

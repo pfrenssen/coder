@@ -8,7 +8,6 @@
  * without them.
  * phpcs:disable Drupal.Commenting
  */
-
 use Foo\Bar;
 
 /**
