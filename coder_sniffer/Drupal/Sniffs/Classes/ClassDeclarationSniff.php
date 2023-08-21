@@ -44,6 +44,7 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
             T_CLASS,
             T_INTERFACE,
             T_TRAIT,
+            T_ENUM,
         ];
 
     }//end register()

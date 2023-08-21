@@ -62,7 +62,7 @@ class UseGlobalClassSniff implements Sniff
         }
 
         // Find the first declaration, marking the end of the use statements.
-        $bodyStart = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT, T_FUNCTION], 0);
+        $bodyStart = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM, T_FUNCTION], 0);
 
         // Ensure we are in the global scope, to exclude trait use statements.
         if (empty($tokens[$stackPtr]['conditions']) === false) {

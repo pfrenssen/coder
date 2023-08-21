@@ -72,7 +72,7 @@ class ClassFilesSniff implements Sniff
                 $searchTokens = token_get_all(file_get_contents($fileName));
                 foreach ($searchTokens as $token) {
                     if (is_array($token) === true
-                        && in_array($token[0], [T_CLASS, T_INTERFACE, T_TRAIT]) === true
+                        && in_array($token[0], [T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM]) === true
                     ) {
                         continue 2;
                     }
