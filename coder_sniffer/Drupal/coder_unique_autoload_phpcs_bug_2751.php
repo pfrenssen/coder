@@ -11,9 +11,6 @@
  * @see      https://github.com/squizlabs/PHP_CodeSniffer/issues/1469
  */
 
-// Backwards compatibility for T_ENUM. Look at https://www.php.net/manual/en/tokens.php for more information.
-defined('T_ENUM') || define('T_ENUM', 10336);
-
 // Abstract base classes are not discovered by the autoloader.
 require_once 'Sniffs/Semantics/FunctionCall.php';
 require_once 'Sniffs/Semantics/FunctionDefinition.php';
