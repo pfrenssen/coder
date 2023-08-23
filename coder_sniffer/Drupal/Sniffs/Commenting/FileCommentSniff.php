@@ -59,12 +59,12 @@ class FileCommentSniff implements Sniff
         // Files containing exactly one class, interface or trait are allowed to
         // ommit a file doc block. If a namespace is used then the file comment must
         // be omitted.
-        $oopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT], $stackPtr);
+        $oopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM], $stackPtr);
         if ($oopKeyword !== false) {
             $namespace = $phpcsFile->findNext(T_NAMESPACE, $stackPtr);
             // Check if the file contains multiple classes/interfaces/traits - then a
             // file doc block is allowed.
-            $secondOopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT], ($oopKeyword + 1));
+            $secondOopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM], ($oopKeyword + 1));
             // Namespaced classes, interfaces and traits should not have an @file doc
             // block.
             if (($tokens[$commentStart]['code'] === T_DOC_COMMENT_OPEN_TAG

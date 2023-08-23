@@ -1819,3 +1819,11 @@ class TestPhpAttributes {
   }
 
 }
+
+/**
+ * Enums must have a comment block.
+ */
+enum MyWellNamedEnum: int {
+  case One = 1;
+  case Two = 2;
+}

@@ -32,7 +32,7 @@ class MethodDeclarationSniff extends PSR2MethodDeclarationSniff
      */
     public function __construct()
     {
-        AbstractScopeSniff::__construct([T_CLASS, T_INTERFACE, T_TRAIT], [T_FUNCTION]);
+        AbstractScopeSniff::__construct([T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM], [T_FUNCTION]);
 
     }//end __construct()
 
