@@ -47,7 +47,7 @@ class FileCommentUnitTest extends CoderSniffUnitTest
             return [4 => 1];
         case 'FileCommentUnitTest.12.inc':
             return [2 => 1];
-          case 'FileCommentUnitTest.13.inc':
+        case 'FileCommentUnitTest.13.inc':
             return [3 => 1];
         }//end switch
 
