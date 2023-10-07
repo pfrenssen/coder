@@ -67,14 +67,15 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: drupal/drupal
-          ref: "10.1.x"
+          ref: "11.x"
           path: drupal
 
       - name: Run PHPCS on Drupal core for regressions
         if: ${{ matrix.extra-tests == '1' }}
-        # @todo Remove the ignored file once Drupal core has fixed it.
+        # @todo Remove the ignored files once Drupal core has fixed them.
         # In case more Drupal core files have known problems that should be
         # ignored, add them with the --ignore option.
         run: |
           cd drupal/core
-          ../../vendor/bin/phpcs -p --ignore=modules/sdc/src/ExtensionType.php
+          ../../vendor/bin/phpcs -p \
+            --ignore=modules/sdc/src/ExtensionType.php,lib/Drupal/Core/Database/Transaction/ClientConnectionTransactionState.php,lib/Drupal/Core/Database/Transaction/StackItemType.php
