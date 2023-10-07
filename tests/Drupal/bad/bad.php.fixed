@@ -174,7 +174,7 @@ $a = array(
 );
 
 // Single line array declaration is too long.
-$page_options = array('home' => t('Front Page'), 'all' => t('All Pages'), 'list' => t('List Pages'));
+$page_options = array('home' => t('Front Page'), 'all' => t('All Pages'), 'list' => t('List Pages'), 'delete' => t('Delete'));
 
 // Item assignment operators must be prefixed and followed by a space.
 $a = array('one' => '1');
