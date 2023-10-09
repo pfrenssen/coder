@@ -31,11 +31,13 @@ class ArraySniff implements Sniff
     /**
      * The limit that the length of a line should not exceed.
      *
-     * This can be configured to have a different value but the default is 80.
+     * This can be configured to have a different value but the default is 120.
+     * We don't enforce 80 characters by default because that can make array
+     * definitions in nested arrays or function calls less readable.
      *
      * @var integer
      */
-    public $lineLimit = 80;
+    public $lineLimit = 120;
 
 
     /**
