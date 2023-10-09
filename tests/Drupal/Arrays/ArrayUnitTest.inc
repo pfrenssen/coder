@@ -10,7 +10,7 @@ $array = [
   'inline' => [],
   'inline3' => ['one', 'two', 'three'],
   'inline_long_ok' => ['one', 'two', 'three', 'four', 'five'],
-  'inline_long_nok' => ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'],
+  'inline_long_nok' => ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'],
   'nested' => [
   ],
   'nested2' => [
@@ -30,7 +30,7 @@ $array = array(
   'inline' => array(),
   'inline3' => array('one', 'two', 'three'),
   'inline_long_ok' => array('one', 'two', 'three', 'four', 'five'),
-  'inline_long_nok' => array('one', 'two', 'three', 'four', 'five', 'six', 'seven'),
+  'inline_long_nok' => array('one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'),
   'nested' => array(
   ),
   'nested2' => array(
