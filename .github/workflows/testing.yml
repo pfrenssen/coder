@@ -8,14 +8,16 @@ jobs:
       fail-fast: false
       matrix:
         php-versions: ['7.2', '7.3', '7.4', '8.0', '8.1']
-        phpstan: ['0']
-        # We only need to run PHPStan once on the latest PHP version.
+        extra-tests: ['0']
+        # We only need to run PHPStan and Druapl core regression tests once on
+        # the latest PHP version.
         include:
           - php-versions: '8.2'
-            phpstan: '1'
+            extra-tests: '1'
     steps:
       - name: Checkout Coder
         uses: actions/checkout@v3
+
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
@@ -23,9 +25,11 @@ jobs:
           extensions: mbstring
           # Disable Xdebug for better performance.
           coverage: none
+
       - name: Get composer cache directory
         id: composercache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
       - name: Cache composer dependencies
         uses: actions/cache@v3
         with:
@@ -33,14 +37,18 @@ jobs:
           # Use composer.json for key, if composer.lock is not committed.
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
+
       - name: Install Composer dependencies
         # Running composer install without a lock file will also update cached
         # dependencies in vendor.
         run: composer install --no-progress --prefer-dist --optimize-autoloader
+
       - name: Run PHPUnit
         run: ./vendor/bin/phpunit
+
       - name: Run PHPCS
         run: ./vendor/bin/phpcs
+
       - name: Check custom standard autoloading
         # Ensure that a custom standard can be invoked and the auto-loading of
         # abstract classes works.
@@ -49,5 +57,25 @@ jobs:
         run: |
           ./vendor/bin/phpcs -p --standard=tests/Drupal/phpcs-ruleset.xml tests/Drupal/good/ --ignore=tests/Drupal/good/GoodUnitTest.php
           ./vendor/bin/phpcs -p --standard=coder_sniffer/DrupalPractice tests/DrupalPractice/good/ --ignore=tests/DrupalPractice/good/GoodUnitTest.php
+
       - name: Run PHPStan
-        run: if [[ ${{ matrix.phpstan }} == "1" ]]; then ./vendor/bin/phpstan analyse; fi
+        if: ${{ matrix.extra-tests == '1' }}
+        run: ./vendor/bin/phpstan analyse
+
+      - name: Checkout Drupal core
+        if: ${{ matrix.extra-tests == '1' }}
+        uses: actions/checkout@v3
+        with:
+          repository: drupal/drupal
+          ref: "11.x"
+          path: drupal
+
+      - name: Run PHPCS on Drupal core for regressions
+        if: ${{ matrix.extra-tests == '1' }}
+        # @todo Remove the ignored files once Drupal core has fixed them.
+        # In case more Drupal core files have known problems that should be
+        # ignored, add them with the --ignore option.
+        run: |
+          cd drupal/core
+          ../../vendor/bin/phpcs -p \
+            --ignore=modules/sdc/src/ExtensionType.php,lib/Drupal/Core/Database/Transaction/ClientConnectionTransactionState.php,lib/Drupal/Core/Database/Transaction/StackItemType.php
