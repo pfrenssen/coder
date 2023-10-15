@@ -50,6 +50,7 @@ class VariableCommentSniff extends AbstractVariableSniff
             T_NULLABLE,
             T_READONLY,
             T_TYPE_UNION,
+            T_TYPE_INTERSECTION,
             T_FALSE,
             T_NULL,
         ];
