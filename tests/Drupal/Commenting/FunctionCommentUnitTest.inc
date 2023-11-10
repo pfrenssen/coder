@@ -948,3 +948,13 @@ class Test3 {
   }
 
 }
+
+/**
+ * Test that docblock is optoinal for __construct methods.
+ */
+class Test43 {
+
+  public function __construct() {
+  }
+
+}
