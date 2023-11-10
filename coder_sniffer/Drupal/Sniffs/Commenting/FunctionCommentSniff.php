@@ -94,7 +94,7 @@ class FunctionCommentSniff implements Sniff
         }
 
         // Constructor methods are exempt from requiring a docblock.
-        // @see https://www.drupal.org/project/coder/issues/3400560
+        // @see https://www.drupal.org/project/coder/issues/3400560.
         $methodName = $phpcsFile->getDeclarationName($stackPtr);
         if ($methodName === '__construct'
             && $tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
