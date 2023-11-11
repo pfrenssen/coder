@@ -976,7 +976,7 @@ class Test3 {
 }
 
 /**
- * Test that docblock is optoinal for __construct methods.
+ * Test that docblock is optional for __construct methods.
  */
 class Test43 {
 
