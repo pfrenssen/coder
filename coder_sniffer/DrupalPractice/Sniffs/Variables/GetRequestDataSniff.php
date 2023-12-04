@@ -18,7 +18,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  *
  * Inspired by GetRequestDataSniff.php from Squiz Labs.
  *
- * @see https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/MySource/Sniffs/PHP/GetRequestDataSniff.php
+ * @see https://github.com/phpcsstandards/PHP_CodeSniffer/blob/master/src/Standards/MySource/Sniffs/PHP/GetRequestDataSniff.php
  *
  * @category PHP
  * @package  PHP_CodeSniffer

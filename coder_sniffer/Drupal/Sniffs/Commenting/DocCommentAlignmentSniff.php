@@ -17,7 +17,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * Largely copied from
  * \PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\DocCommentAlignmentSniff to also
  * handle the "var" keyword. See
- * https://github.com/squizlabs/PHP_CodeSniffer/pull/1212
+ * https://github.com/phpcsstandards/PHP_CodeSniffer/pull/1212
  *
  * @category PHP
  * @package  PHP_CodeSniffer

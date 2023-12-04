@@ -13,7 +13,7 @@ parameters:
     bootstrapFiles:
         - tests/Drupal/phpunit-bootstrap.php
         # PHPStan does not find the constants in this file, so load it manually.
-        - vendor/squizlabs/php_codesniffer/src/Util/Tokens.php
+        - vendor/phpcsstandards/php_codesniffer/src/Util/Tokens.php
     ignoreErrors:
         # PHPStan does not support variable variables, see https://github.com/phpstan/phpstan/issues/2810
         -

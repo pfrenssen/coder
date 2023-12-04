@@ -3,7 +3,7 @@
 [![Automated tests](https://github.com/pfrenssen/coder/workflows/Tests/badge.svg)](https://github.com/pfrenssen/coder/actions)
 
 Coder is a library for automated Drupal code reviews and coding standard fixes. It
-defines rules for [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
+defines rules for [PHP_CodeSniffer](https://github.com/phpcsstandards/PHP_CodeSniffer)
 
 Built-in support for:
 - "Drupal": Coding Standards https://www.drupal.org/coding-standards
@@ -162,4 +162,4 @@ Thank you!
 ## Credits
 
 Greg Sherwood and Squiz Pty Ltd, many sniffs are modified copies of their original
-work on [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer).
+work on [PHPCS](https://github.com/phpcsstandards/PHP_CodeSniffer).

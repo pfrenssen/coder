@@ -2,4 +2,4 @@
 
 require 'vendor/autoload.php';
 require 'tests/Drupal/CoderSniffUnitTest.php';
-require 'vendor/squizlabs/php_codesniffer/autoload.php';
+require 'vendor/phpcsstandards/php_codesniffer/autoload.php';

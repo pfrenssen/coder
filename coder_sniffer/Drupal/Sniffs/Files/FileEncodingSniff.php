@@ -6,7 +6,7 @@
  * @package   PHP_CodeSniffer
  * @author    Klaus Purer <klaus.purer@mail.com>
  * @copyright 2016 Klaus Purer
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/phpcsstandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -24,7 +24,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * @package   PHP_CodeSniffer
  * @author    Klaus Purer <klaus.purer@mail.com>
  * @copyright 2016 Klaus Purer
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/phpcsstandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @version   Release: @package_version@
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
