@@ -69,12 +69,13 @@ class BadUnitTest extends CoderSniffUnitTest
         case 'bad.module':
             return [
                 1  => 1,
-                12 => 1,
-                19 => 1,
-                26 => 1,
-                33 => 1,
-                44 => 1,
-                45 => 1,
+                7  => 1,
+                14 => 1,
+                21 => 1,
+                28 => 1,
+                35 => 1,
+                46 => 1,
+                47 => 1,
             ];
         case 'bad.php':
             return [
@@ -404,7 +405,7 @@ class BadUnitTest extends CoderSniffUnitTest
     {
         switch ($testFile) {
         case 'bad.module':
-            return [7 => 1];
+            return [9 => 1];
         case 'bad.php':
             return [
                 14  => 1,

@@ -123,6 +123,14 @@
  <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator" />
  <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses" />
  <rule ref="SlevomatCodingStandard.PHP.ShortList" />
+ <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
+  <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing"/>
+  <properties>
+   <property name="linesCountBeforeDeclare" value="1"/>
+   <property name="linesCountAfterDeclare" value="1"/>
+   <property name="spacesCountAroundEqualsSign" value="0"/>
+  </properties>
+ </rule>
 
  <rule ref="Squiz.Arrays.ArrayDeclaration" />
  <!-- Disable some error messages that we do not want. -->
@@ -298,7 +306,7 @@
  <exclude-pattern>*/\.svn/*</exclude-pattern>
  <exclude-pattern>*/\.hg/*</exclude-pattern>
  <exclude-pattern>*/\.bzr/*</exclude-pattern>
- 
+
  <!-- Ignore minified CSS files.-->
  <exclude-pattern>*\.min\.css$</exclude-pattern>
 </ruleset>
