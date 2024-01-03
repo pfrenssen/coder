@@ -68,7 +68,7 @@ class FunctionUnsilencedDeprecationSniff extends FunctionCall
 
         if ($tokens[($stackPtr - 1)]['type'] !== 'T_ASPERAND') {
             $error = 'All trigger_error calls used for deprecation must be prefixed by an "@"';
-            $phpcsFile->addError($error, $stackPtr, 'FunctionTriggerError');
+            $phpcsFile->addError($error, $stackPtr, 'FunctionUnsilencedDeprecation');
         }
 
     }//end processFunctionCall()
