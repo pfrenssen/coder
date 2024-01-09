@@ -142,7 +142,7 @@ class TodoCommentSniff implements Sniff
             (?-i)              # Reset to case-sensitive
             (?!                # Start another non-consuming look-ahead, this time negative
               @todo\s          # It has to match lower-case @todo followed by one space
-              (?!-|:)\S        # and then any non-space except "-" or ":".
+              (?!-|:)[A-Z]     # and then any capital letter except "-" or ":".
             )/m';
 
         if ((bool) preg_match($expression, $comment, $matches) === true) {
