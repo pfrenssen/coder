@@ -72,10 +72,8 @@ jobs:
 
       - name: Run PHPCS on Drupal core for regressions
         if: ${{ matrix.extra-tests == '1' }}
-        # @todo Remove the ignored files once Drupal core has fixed them.
-        # In case more Drupal core files have known problems that should be
-        # ignored, add them with the --ignore option.
+        # In case Drupal core files have known problems that should be
+        # ignored temporarily, add them with the --ignore option.
         run: |
           cd drupal/core
-          ../../vendor/bin/phpcs -p \
-            --ignore=modules/sdc/src/ExtensionType.php,lib/Drupal/Core/Database/Transaction/ClientConnectionTransactionState.php,lib/Drupal/Core/Database/Transaction/StackItemType.php
+          ../../vendor/bin/phpcs -p
