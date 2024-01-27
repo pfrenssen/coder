@@ -7,4 +7,6 @@
  * It is used to check sniffs that run on .module files but skip .php files.
  */
 
+declare(strict_types=1);
+
 define('GOOD_FOO_BAR', 5);
