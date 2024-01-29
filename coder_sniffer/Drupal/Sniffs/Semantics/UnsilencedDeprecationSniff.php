@@ -18,7 +18,7 @@ use PHP_CodeSniffer\Files\File;
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class FunctionUnsilencedDeprecationSniff extends FunctionCall
+class UnsilencedDeprecationSniff extends FunctionCall
 {
 
 

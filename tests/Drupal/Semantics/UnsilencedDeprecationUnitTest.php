@@ -4,7 +4,7 @@ namespace Drupal\Test\Semantics;
 
 use Drupal\Test\CoderSniffUnitTest;
 
-class FunctionUnsilencedDeprecationUnitTest extends CoderSniffUnitTest
+class UnsilencedDeprecationUnitTest extends CoderSniffUnitTest
 {
 
 
