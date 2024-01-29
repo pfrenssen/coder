@@ -54,15 +54,16 @@ class UnsilencedDeprecationSniff extends FunctionCall
         $closeBracket
     ) {
 
-        $tokens = $phpcsFile->getTokens();
+        $tokens   = $phpcsFile->getTokens();
+        $argument = $this->getArgument(2);
 
         // If no second argument then quit.
-        if ($this->getArgument(2) === false) {
+        if ($argument === false) {
             return;
         }
 
         // Only check deprecation messages.
-        if (strcasecmp($tokens[$this->getArgument(2)['start']]['content'], 'E_USER_DEPRECATED') !== 0) {
+        if (strcasecmp($tokens[$argument['start']]['content'], 'E_USER_DEPRECATED') !== 0) {
             return;
         }
 
