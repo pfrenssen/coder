@@ -16,4 +16,4 @@ trigger_error('CommentTestBase is deprecated in drupal 8.4.0', E_USER_SOMETHING_
 // E_USER_DEPRECATED, so silenced is fine...
 @trigger_error('CommentTestBase is deprecated in drupal 8.4.0', E_USER_DEPRECATED);
 // ... but unsilenced fails.
-trigger_error('CommentTestBase is deprecated in drupal 8.4.0', E_USER_DEPRECATED);
+@trigger_error('CommentTestBase is deprecated in drupal 8.4.0', E_USER_DEPRECATED);
