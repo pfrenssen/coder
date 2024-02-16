@@ -1812,6 +1812,12 @@ interface Test5Interface {
 class TestPhpAttributes {
 
   /**
+   * Bar property.
+   */
+  #[NotBlank]
+  private bool $bar;
+
+  /**
    * Tests method with PHP attribute and docblock.
    */
   #[\ReturnTypeWillChange]
