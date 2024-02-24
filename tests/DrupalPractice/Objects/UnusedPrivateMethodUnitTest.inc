@@ -16,4 +16,18 @@ class Test {
 
   }
 
+  /**
+   * Method is called from somewhere in the class.
+   */
+  private function isUsed() {
+
+  }
+
+  /**
+   * Call method with different upper/lower case.
+   */
+  public function doCalls() {
+    $this->IsUsEd();
+  }
+
 }
