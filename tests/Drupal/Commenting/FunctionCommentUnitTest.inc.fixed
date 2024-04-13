@@ -288,11 +288,11 @@ function test23() {
 }
 
 /**
- * Even when null is given in @return there must be at least 1 valid return.
+ * Don't test if the return type was actually fulfilling all options.
  *
- * When null is a potential return value it should be allowed to have return
- * statements with void return. This does not mean that all returns can be void.
- * There must be at least one non-void return.
+ * Even if there is bool specified we don't care if it is actually used or not.
+ * Other tools such as PHPStan should be used to validate the return types.
+ * This is fine!
  *
  * @return bool|null
  *   This implies that the return value can be NULL, a boolean, or empty.
@@ -983,4 +983,22 @@ class Test43 {
   public function __construct() {
   }
 
+}
+
+/**
+ * Closure return statements with different types are allowed.
+ *
+ * @return array
+ *   Some array.
+ */
+function return_some_array(): array {
+  do_something_with_a_callback(function () {
+    if ($some_condition) {
+      // Early return.
+      return;
+    }
+
+    // Do work.
+  });
+  return [];
 }
