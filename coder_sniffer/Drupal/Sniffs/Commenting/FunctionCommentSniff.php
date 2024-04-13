@@ -219,8 +219,8 @@ class FunctionCommentSniff implements Sniff
                 } else {
                     $end = $tokens[$commentStart]['comment_closer'];
                 }
-            }
-        }
+            }//end if
+        }//end foreach
 
         if ($return !== null) {
             $returnType = trim($tokens[($return + 2)]['content']);
@@ -328,6 +328,7 @@ class FunctionCommentSniff implements Sniff
                     }//end if
                 }//end if
             }//end if
+
             $comment = '';
             for ($i = ($return + 3); $i < $end; $i++) {
                 if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
