@@ -382,7 +382,8 @@ class BadUnitTest extends CoderSniffUnitTest
                 836 => 1,
                 838 => 1,
                 849 => 2,
-                855 => 2,
+                860 => 1,
+                864 => 2,
             ];
         }//end switch
 
