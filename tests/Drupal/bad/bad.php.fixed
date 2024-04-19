@@ -911,7 +911,7 @@ class ScopeKeyword {
  */
 function test29(
   int $a,
-  string $b
+  string $b,
 ) {
   echo "Hello";
 }

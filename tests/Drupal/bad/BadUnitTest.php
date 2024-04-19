@@ -382,7 +382,7 @@ class BadUnitTest extends CoderSniffUnitTest
                 836 => 1,
                 838 => 1,
                 849 => 2,
-                860 => 1,
+                860 => 2,
                 864 => 2,
             ];
         }//end switch
@@ -478,6 +478,22 @@ class BadUnitTest extends CoderSniffUnitTest
         return true;
 
     }//end checkAllSniffCodes()
+
+
+    /**
+     * Skip this test on PHP versions lower than 8 because of MultiLineTrailingCommaSniff.
+     *
+     * @return bool
+     */
+    protected function shouldSkipTest()
+    {
+        if (version_compare(PHP_VERSION, '8.0.0') < 0) {
+            return true;
+        }
+
+        return false;
+
+    }//end shouldSkipTest()
 
 
 }//end class

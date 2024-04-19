@@ -1476,7 +1476,7 @@ function test18(
   CacheTagsInvalidatorInterface $cache_invalidator,
   ModuleHandlerInterface $module_handler,
   EntityFieldManagerInterface $entity_field_manager,
-  EntityTypeBundleInfoInterface $entity_type_bundle_info
+  EntityTypeBundleInfoInterface $entity_type_bundle_info,
 ) {
   return 0;
 }
