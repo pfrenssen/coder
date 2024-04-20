@@ -7,7 +7,7 @@
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
- namespace Drupal\Sniffs\Functions;
+namespace Drupal\Sniffs\Functions;
 
 use PHP_CodeSniffer\Standards\Generic\Sniffs\Functions\OpeningFunctionBraceKernighanRitchieSniff;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclarationSniff as SquizFunctionDeclarationSniff;
