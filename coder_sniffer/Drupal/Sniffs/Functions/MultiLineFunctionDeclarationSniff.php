@@ -10,6 +10,7 @@
 namespace Drupal\Sniffs\Functions;
 
 use PHP_CodeSniffer\Standards\Generic\Sniffs\Functions\OpeningFunctionBraceKernighanRitchieSniff;
+use PHP_CodeSniffer\Standards\PEAR\Sniffs\Functions\FunctionDeclarationSniff as PearFunctionDeclarationSniff;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclarationSniff as SquizFunctionDeclarationSniff;
 use PHP_CodeSniffer\Util\Tokens;
 
@@ -94,8 +95,11 @@ class MultiLineFunctionDeclarationSniff extends SquizFunctionDeclarationSniff
      */
     public function processMultiLineDeclaration($phpcsFile, $stackPtr, $tokens)
     {
-        // We do everything the parent sniff does, and a bit more.
-        parent::processMultiLineDeclaration($phpcsFile, $stackPtr, $tokens);
+        // We do everything the grandparent sniff does, and a bit more.
+        PearFunctionDeclarationSniff::processMultiLineDeclaration($phpcsFile, $stackPtr, $tokens);
+
+        $openBracket = $tokens[$stackPtr]['parenthesis_opener'];
+        $this->processBracket($phpcsFile, $openBracket, $tokens, 'function');
 
         // Trailing commas on the last function parameter are only possible in
         // PHP 8.0+.

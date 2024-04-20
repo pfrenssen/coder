@@ -42,3 +42,10 @@ class Test {
   }
 
 }
+
+$x = function (
+  $a,
+  $b,
+) use ($foo, $bar) {
+
+};
