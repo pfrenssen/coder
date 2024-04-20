@@ -4,7 +4,7 @@ namespace Drupal\Test\Functions;
 
 use Drupal\Test\CoderSniffUnitTest;
 
-class MultiLineTrailingCommaUnitTest extends CoderSniffUnitTest
+class MultiLineFunctionDeclarationUnitTest extends CoderSniffUnitTest
 {
 
 
@@ -21,8 +21,10 @@ class MultiLineTrailingCommaUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [
-            8  => 1,
-            17 => 1,
+            13 => 1,
+            22 => 1,
+            38 => 3,
+            41 => 2,
         ];
 
     }//end getErrorList()
