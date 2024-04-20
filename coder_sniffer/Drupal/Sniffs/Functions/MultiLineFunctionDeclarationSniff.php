@@ -1,6 +1,6 @@
 <?php
 /**
- * \Drupal\Sniffs\Functions\MultiLineTrailingCommaSniff.
+ * \Drupal\Sniffs\Functions\MultiLineFunctionDeclarationSniff
  *
  * @category PHP
  * @package  PHP_CodeSniffer
