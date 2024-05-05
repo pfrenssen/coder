@@ -43,6 +43,11 @@
   the HTML -->
   <exclude-pattern>*.tpl.php</exclude-pattern>
  </rule>
+ <rule ref="Drupal.WhiteSpace.ScopeClosingBrace">
+  <!-- Do not run this sniff on template files, as the indentation might follow
+  the HTML -->
+  <exclude-pattern>*.tpl.php</exclude-pattern>
+ </rule>
 
  <rule ref="Generic.CodeAnalysis.UselessOverridingMethod" />
  <rule ref="Generic.Files.ByteOrderMark" />

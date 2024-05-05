@@ -20,11 +20,16 @@ class ScopeClosingBraceUnitTest extends CoderSniffUnitTest
      */
     protected function getErrorList(string $testFile): array
     {
-        return [
-            16 => 1,
-            23 => 1,
-            29 => 1,
-        ];
+        switch ($testFile) {
+        case 'ScopeClosingBraceUnitTest.inc':
+            return [
+                16 => 1,
+                23 => 1,
+                29 => 1,
+            ];
+        }
+
+        return [];
 
     }//end getErrorList()
 
