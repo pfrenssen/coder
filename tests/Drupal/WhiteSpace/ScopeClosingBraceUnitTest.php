@@ -51,4 +51,20 @@ class ScopeClosingBraceUnitTest extends CoderSniffUnitTest
     }//end getWarningList()
 
 
+    /**
+     * Skip this test on PHP versions lower than 8 because the syntax is not allowed there.
+     *
+     * @return bool
+     */
+    protected function shouldSkipTest()
+    {
+        if (version_compare(PHP_VERSION, '8.0.0') < 0) {
+            return true;
+        }
+
+        return false;
+
+    }//end shouldSkipTest()
+
+
 }//end class
