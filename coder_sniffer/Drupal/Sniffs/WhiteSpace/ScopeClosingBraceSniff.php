@@ -117,10 +117,12 @@ class ScopeClosingBraceSniff implements Sniff
             break;
         }
 
-        if ($tokens[$lastContent]['line'] === $tokens[$scopeEnd]['line']
+        if ($tokens[$lastContent]['line'] === $tokens[$scopeEnd]['line']) {
             // Only allow empty classes and methods.
-            && $tokens[$lastContent]['code'] !== T_OPEN_CURLY_BRACKET
-        ) {
+            if ($tokens[$lastContent]['code'] === T_OPEN_CURLY_BRACKET) {
+                return;
+            }
+
             $error = 'Closing brace must be on a line by itself';
             $fix   = $phpcsFile->addFixableError($error, $scopeEnd, 'Line');
             if ($fix === true) {
