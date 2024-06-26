@@ -1,3 +1,8 @@
 services:
   testmodule.example:
     class: Drupal\testmodule\ExampleService
+
+  testmodule.test_tagged_iterator:
+    class: Drupal\testmodule\ExampleService
+    arguments:
+      - !tagged_iterator coder_test
