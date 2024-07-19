@@ -1887,3 +1887,15 @@ $form['strings'] = [
   '#empty' => $this->t('No strings available.'),
   '#attributes' => ['class' => ['locale-translate-edit-table']],
 ];
+
+/**
+ * Plugin discovery annotations with long translatable strings are allowed.
+ *
+ * @Plugin(
+ *   id = "aggregator",
+ *   title = @Translation("Default fetcher"),
+ *   description = @Translation("Downloads data from a URL using Drupal's HTTP request handler."),
+ * )
+ */
+class DefaultFetcher implements FetcherInterface {
+}
