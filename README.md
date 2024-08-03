@@ -73,8 +73,8 @@ phpcs.xml.dist file in your project like this:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<ruleset name="myproject">
-  <description>PHP CodeSniffer configuration for myproject development.</description>
+<ruleset name="example">
+  <description>PHP CodeSniffer configuration for example development.</description>
   <!-- Check all files in the current directory and below. -->
   <file>.</file>
   <arg name="extensions" value="php,module,inc,install,test,profile,theme,css,info,txt,md,yml"/>
@@ -139,7 +139,7 @@ Then execute the coding standards checker on Coder itself:
 
 Then execute static analysis:
 
-    ./vendor/bin/phpstan analyse
+    ./vendor/bin/phpstan
 
 
 ## Contributing
@@ -153,6 +153,8 @@ Thank you!
 
 
 ## Maintainers
+
+[//]: # cspell:ignore Pieter Frenssen Welford
 
 - Pieter Frenssen, https://www.drupal.org/u/pfrenssen
 - Michael Welford, https://www.drupal.org/u/mikejw
