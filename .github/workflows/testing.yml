@@ -65,6 +65,8 @@ jobs:
       - name: Run Cspell
         if: ${{ matrix.extra-tests == '1' }}
         uses: streetsidesoftware/cspell-action@v6
+        with:
+          incremental_files_only: false
 
       - name: Checkout Drupal core
         if: ${{ matrix.extra-tests == '1' }}
