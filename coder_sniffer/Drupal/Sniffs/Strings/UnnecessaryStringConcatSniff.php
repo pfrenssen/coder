@@ -2,9 +2,9 @@
 /**
  * \Drupal\Sniffs\Strings\UnnecessaryStringConcatSniff.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
 namespace Drupal\Sniffs\Strings;
@@ -17,9 +17,9 @@ use PHP_CodeSniffer\Util\Tokens;
 /**
  * Checks that two strings are not concatenated together; suggests using one string instead.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class UnnecessaryStringConcatSniff extends GenericUnnecessaryStringConcatSniff
 {

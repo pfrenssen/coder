@@ -27,7 +27,7 @@ class DiscouragedFunctionsSniff extends ForbiddenFunctionsSniff
      * The value is NULL if no alternative exists, i.e., the function should
      * just not be used.
      *
-     * cSpell:disable
+     * cspell:disable
      *
      * @var array<string, null>
      */
@@ -59,7 +59,7 @@ class DiscouragedFunctionsSniff extends ForbiddenFunctionsSniff
         'fnmatch'             => null,
          // Functions which are a security risk.
         'eval'                => null,
-        // cSpell:enable
+        // Cspell:enable .
     ];
 
     /**

@@ -225,8 +225,8 @@ class FileCommentSniff implements Sniff
             && $tokens[$next]['code'] === T_CLOSE_TAG
         ) {
             $error = 'There must be no blank line after the file comment in a template';
-            // cspell:ignore TeamplateSpacingAfterComment
-            $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'TeamplateSpacingAfterComment');
+            // Cspell:ignore TeamplateSpacingAfterComment .
+            $fix = $phpcsFile->addFixableError($error, $commentEnd, 'TeamplateSpacingAfterComment');
             if ($fix === true) {
                 $phpcsFile->fixer->beginChangeset();
                 $uselessLine = ($commentEnd + 1);

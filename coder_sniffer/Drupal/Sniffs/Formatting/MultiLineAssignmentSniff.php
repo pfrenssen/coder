@@ -17,9 +17,9 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  *
  * If an assignment goes over two lines, ensure the equal sign is indented.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class MultiLineAssignmentSniff implements Sniff
 {

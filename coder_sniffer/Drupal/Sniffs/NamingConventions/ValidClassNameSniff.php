@@ -2,9 +2,9 @@
 /**
  * \Drupal\Sniffs\NamingConventions\ValidClassNameSniff.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
 namespace Drupal\Sniffs\NamingConventions;
@@ -18,9 +18,9 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * Ensures class and interface names start with a capital letter
  * and do not use _ separators.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class ValidClassNameSniff implements Sniff
 {

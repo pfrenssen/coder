@@ -56,7 +56,7 @@ class ColourDefinitionSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $color = $tokens[$stackPtr]['content'];
+        $color  = $tokens[$stackPtr]['content'];
 
         $expected = strtolower($color);
         if ($color !== $expected) {

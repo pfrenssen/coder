@@ -167,7 +167,7 @@ class FunctionAliasSniff extends FunctionCall
     /**
      * Returns an array of function names this test wants to listen for.
      *
-     * cSpell:enable
+     * Cspell:enable
      *
      * @return array<string>
      */

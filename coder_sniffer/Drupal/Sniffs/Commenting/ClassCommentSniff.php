@@ -17,9 +17,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * Checks that comment doc blocks exist on classes, interfaces and traits. Largely
  * copied from PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\ClassCommentSniff.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class ClassCommentSniff implements Sniff
 {

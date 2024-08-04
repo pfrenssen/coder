@@ -27,7 +27,7 @@ class FunctionCommentSniff implements Sniff
     /**
      * A map of invalid data types to valid ones for param and return documentation.
      *
-     * cspell:ignore TRUEFALSE
+     * Cspell:ignore TRUEFALSE
      *
      * @var array<string, string>
      */
@@ -442,7 +442,7 @@ class FunctionCommentSniff implements Sniff
                         $comment .= ' '.$tokens[$i]['content'];
                         if ($indent < 3) {
                             $error = 'Throws comment indentation must be 3 spaces, found %s spaces';
-                            // cspell:ignore TrhowsCommentIndentation
+                            // Cspell:ignore TrhowsCommentIndentation .
                             $phpcsFile->addError($error, $i, 'TrhowsCommentIndentation', [$indent]);
                         }
                     }

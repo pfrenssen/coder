@@ -98,8 +98,8 @@ class ClassDefinitionNameSpacingSniff implements Sniff
                 && in_array($tokens[($i - 1)]['code'], [T_WHITESPACE, T_COMMA]) === false
             ) {
                 $error = 'Selectors must be on a single line';
-                // cspell:ignore SeletorSingleLine
-                $fix   = $phpcsFile->addFixableError($error, $i, 'SeletorSingleLine');
+                // Cspell:ignore SeletorSingleLine .
+                $fix = $phpcsFile->addFixableError($error, $i, 'SeletorSingleLine');
                 if ($fix === true) {
                     $phpcsFile->fixer->replaceToken($i, str_replace($phpcsFile->eolChar, ' ', $tokens[$i]['content']));
                 }

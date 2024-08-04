@@ -2,9 +2,9 @@
 /**
  * \Drupal\Sniffs\WhiteSpace\ObjectOperatorIndentSniff.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
 namespace Drupal\Sniffs\WhiteSpace;
@@ -19,9 +19,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * Checks that object operators are indented 2 spaces if they are the first
  * thing on a line.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class ObjectOperatorIndentSniff implements Sniff
 {
