@@ -27,6 +27,8 @@ class FunctionCommentSniff implements Sniff
     /**
      * A map of invalid data types to valid ones for param and return documentation.
      *
+     * cspell:ignore TRUEFALSE
+     *
      * @var array<string, string>
      */
     public static $invalidTypes = [
@@ -440,6 +442,7 @@ class FunctionCommentSniff implements Sniff
                         $comment .= ' '.$tokens[$i]['content'];
                         if ($indent < 3) {
                             $error = 'Throws comment indentation must be 3 spaces, found %s spaces';
+                            // cspell:ignore TrhowsCommentIndentation
                             $phpcsFile->addError($error, $i, 'TrhowsCommentIndentation', [$indent]);
                         }
                     }
@@ -456,7 +459,7 @@ class FunctionCommentSniff implements Sniff
                     return;
                 }
 
-                // Starts with a capital letter and ends with a fullstop.
+                // Starts with a capital letter and ends with a full stop.
                 $firstChar = $comment[0];
                 if (strtoupper($firstChar) !== $firstChar) {
                     $error = '@throws tag comment must start with a capital letter';

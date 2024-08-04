@@ -13,7 +13,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Check the usage of the t() function to not escape translateable strings with back
+ * Check the usage of the t() function to not escape translatable strings with back
  * slashes. Also checks that the first argument does not use string concatenation.
  *
  * @category PHP

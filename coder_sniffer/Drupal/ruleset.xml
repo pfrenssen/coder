@@ -32,7 +32,7 @@
  <rule ref="Drupal.Functions.FunctionDeclaration.SpaceBeforeParenthesis">
   <severity>0</severity>
  </rule>
- <!-- Silence mmethod name underscore warning which is coverd already in
+ <!-- Silence method name underscore warning which is covered already in
    Drupal.NamingConventions.ValidFunctionName.ScopeNotCamelCaps. -->
  <rule ref="Drupal.Methods.MethodDeclaration.Underscore">
   <severity>0</severity>

@@ -67,7 +67,7 @@ class DuplicateEntrySniff implements Sniff
 
 
     /**
-     * Parses a Drupal info file and checsk if a key apperas more than once.
+     * Parses a Drupal info file and checks if a key appears more than once.
      *
      * @param string $data The contents of the info file to parse
      *

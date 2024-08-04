@@ -82,10 +82,10 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
         }
 
         $previous        = $phpcsFile->findPrevious(T_WHITESPACE, ($openingBrace - 1), null, true);
-        $decalrationLine = $tokens[$previous]['line'];
+        $declarationLine = $tokens[$previous]['line'];
         $braceLine       = $tokens[$openingBrace]['line'];
 
-        $lineDifference = ($braceLine - $decalrationLine);
+        $lineDifference = ($braceLine - $declarationLine);
 
         if ($lineDifference > 0) {
             $error = 'Opening brace should be on the same line as the declaration';

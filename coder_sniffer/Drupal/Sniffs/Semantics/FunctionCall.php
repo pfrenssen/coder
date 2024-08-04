@@ -190,19 +190,19 @@ abstract class FunctionCall implements Sniff
         // End token of the last argument.
         $end           = $this->phpcsFile->findPrevious(Tokens::$emptyTokens, ($this->closeBracket - 1), null, true);
         $lastArgEnd    = $end;
-        $nextSeperator = $this->openBracket;
+        $nextSeparator = $this->openBracket;
         $counter       = 1;
-        while (($nextSeperator = $this->phpcsFile->findNext(T_COMMA, ($nextSeperator + 1), $this->closeBracket)) !== false) {
+        while (($nextSeparator = $this->phpcsFile->findNext(T_COMMA, ($nextSeparator + 1), $this->closeBracket)) !== false) {
             // Make sure the comma belongs directly to this function call,
             // and is not inside a nested function call or array.
-            $brackets    = $tokens[$nextSeperator]['nested_parenthesis'];
+            $brackets    = $tokens[$nextSeparator]['nested_parenthesis'];
             $lastBracket = array_pop($brackets);
             if ($lastBracket !== $this->closeBracket) {
                 continue;
             }
 
             // Update the end token of the current argument.
-            $end = $this->phpcsFile->findPrevious(Tokens::$emptyTokens, ($nextSeperator - 1), null, true);
+            $end = $this->phpcsFile->findPrevious(Tokens::$emptyTokens, ($nextSeparator - 1), null, true);
             // Save the calculated findings for the current argument.
             $this->arguments[$counter] = [
                 'start' => $start,
@@ -213,7 +213,7 @@ abstract class FunctionCall implements Sniff
             }
 
             $counter++;
-            $start = $this->phpcsFile->findNext(Tokens::$emptyTokens, ($nextSeperator + 1), null, true);
+            $start = $this->phpcsFile->findNext(Tokens::$emptyTokens, ($nextSeparator + 1), null, true);
             $end   = $lastArgEnd;
         }//end while
 

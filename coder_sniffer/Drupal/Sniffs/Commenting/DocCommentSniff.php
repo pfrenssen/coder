@@ -383,6 +383,7 @@ class DocCommentSniff implements Sniff
         // A tag group is one where there are no blank lines between tags.
         // The param tag group is special as it requires all @param tags to be inside.
         $tagGroups    = [];
+        // cspell:ignore groupid
         $groupid      = 0;
         $paramGroupid = null;
         $currentTag   = null;

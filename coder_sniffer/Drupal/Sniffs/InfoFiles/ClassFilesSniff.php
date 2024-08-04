@@ -80,6 +80,7 @@ class ClassFilesSniff implements Sniff
 
                 $ptr   = self::getPtr('files[]', $file, $phpcsFile);
                 $error = "It's only necessary to declare files[] if they declare a class or interface.";
+                // cspell:ignore UnecessaryFileDeclaration
                 $phpcsFile->addError($error, $ptr, 'UnecessaryFileDeclaration');
             }//end foreach
         }//end if

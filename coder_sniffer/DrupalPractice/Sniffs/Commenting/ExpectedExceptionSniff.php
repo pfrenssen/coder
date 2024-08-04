@@ -13,7 +13,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Checks that the PHPunit @expectedExcpetion tags are not used.
+ * Checks that the PHPunit @expectedException tags are not used.
  *
  * See https://thephp.cc/news/2016/02/questioning-phpunit-best-practices .
  *

@@ -26,6 +26,8 @@ class FunctionAliasSniff extends FunctionCall
      * http://php.net/manual/en/aliases.php
      *
      * @var array<string, string>
+     *
+     * cSpell:disable
      */
     protected $aliases = [
         '_'                          => 'gettext',
@@ -164,6 +166,8 @@ class FunctionAliasSniff extends FunctionCall
 
     /**
      * Returns an array of function names this test wants to listen for.
+     *
+     * cSpell:enable
      *
      * @return array<string>
      */

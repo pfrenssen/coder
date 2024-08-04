@@ -1,6 +1,6 @@
 <?php
 /**
- * \Drupal\Sniffs\Semanitcs\FunctionTriggerErrorSniff.
+ * \Drupal\Sniffs\Semantics\FunctionTriggerErrorSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer

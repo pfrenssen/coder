@@ -57,7 +57,7 @@ class FileCommentSniff implements Sniff
         $commentStart = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
 
         // Files containing exactly one class, interface or trait are allowed to
-        // ommit a file doc block. If a namespace is used then the file comment must
+        // omit a file doc block. If a namespace is used then the file comment must
         // be omitted.
         $oopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM], $stackPtr);
         if ($oopKeyword !== false) {
@@ -159,7 +159,7 @@ class FileCommentSniff implements Sniff
         $next       = $phpcsFile->findNext(T_WHITESPACE, ($commentEnd + 1), null, true);
 
         // If there is no @file tag and the next line is a function or class
-        // definition then the file docblock is mising.
+        // definition then the file docblock is missing.
         if ($tokens[$next]['line'] === ($tokens[$commentEnd]['line'] + 1)
             && $tokens[$next]['code'] === T_FUNCTION
         ) {
@@ -225,6 +225,7 @@ class FileCommentSniff implements Sniff
             && $tokens[$next]['code'] === T_CLOSE_TAG
         ) {
             $error = 'There must be no blank line after the file comment in a template';
+            // cspell:ignore TeamplateSpacingAfterComment
             $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'TeamplateSpacingAfterComment');
             if ($fix === true) {
                 $phpcsFile->fixer->beginChangeset();
