@@ -135,6 +135,7 @@
    <property name="spacesCountAroundEqualsSign" value="0"/>
   </properties>
  </rule>
+ <rule ref="SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue" />
 
  <rule ref="Squiz.Arrays.ArrayDeclaration" />
  <!-- Disable some error messages that we do not want. -->
