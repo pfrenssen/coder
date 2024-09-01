@@ -161,13 +161,12 @@ class FunctionAliasSniff extends FunctionCall
         'snmpwalkoid'                => 'snmprealwalk',
         'strchr'                     => 'strstr',
         'xptr_new_context'           => 'xpath_new_context',
+        // cspell:enable
     ];
 
 
     /**
      * Returns an array of function names this test wants to listen for.
-     *
-     * Cspell:enable
      *
      * @return array<string>
      */

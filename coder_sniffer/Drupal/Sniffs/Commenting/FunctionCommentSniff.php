@@ -27,7 +27,7 @@ class FunctionCommentSniff implements Sniff
     /**
      * A map of invalid data types to valid ones for param and return documentation.
      *
-     * Cspell:ignore TRUEFALSE
+     * cspell:ignore TRUEFALSE
      *
      * @var array<string, string>
      */
@@ -442,7 +442,7 @@ class FunctionCommentSniff implements Sniff
                         $comment .= ' '.$tokens[$i]['content'];
                         if ($indent < 3) {
                             $error = 'Throws comment indentation must be 3 spaces, found %s spaces';
-                            // Cspell:ignore TrhowsCommentIndentation .
+                            // cspell:ignore TrhowsCommentIndentation
                             $phpcsFile->addError($error, $i, 'TrhowsCommentIndentation', [$indent]);
                         }
                     }
@@ -772,7 +772,7 @@ class FunctionCommentSniff implements Sniff
                     $content .= $param['var'];
                     $content .= str_repeat(' ', $param['var_space']);
                     // At this point there is no description expected in the
-                    // @param line so no need to append comment.
+                    // param line so no need to append comment.
                     $phpcsFile->fixer->replaceToken(($param['tag'] + 2), $content);
 
                     // Fix up the indent of additional comment lines.

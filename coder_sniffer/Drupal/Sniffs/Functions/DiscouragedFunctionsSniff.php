@@ -59,7 +59,7 @@ class DiscouragedFunctionsSniff extends ForbiddenFunctionsSniff
         'fnmatch'             => null,
          // Functions which are a security risk.
         'eval'                => null,
-        // Cspell:enable .
+        // cspell:enable
     ];
 
     /**

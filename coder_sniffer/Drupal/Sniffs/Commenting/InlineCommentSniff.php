@@ -351,7 +351,7 @@ class InlineCommentSniff implements Sniff
         // Also, when the comment starts with cspell: don't check the end of the
         // comment.
         if (preg_match('/^\p{L}/u', $commentText) === 1
-            && preg_match('/(cspell|spell\-checker):ignore/i', $commentText) === 0
+            && preg_match('/(cspell|spell\-checker):/i', $commentText) === 0
         ) {
             $commentCloser   = $commentText[(strlen($commentText) - 1)];
             $acceptedClosers = [
