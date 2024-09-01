@@ -27,8 +27,6 @@ class FunctionCommentSniff implements Sniff
     /**
      * A map of invalid data types to valid ones for param and return documentation.
      *
-     * cspell:ignore TRUEFALSE
-     *
      * @var array<string, string>
      */
     public static $invalidTypes = [
@@ -48,6 +46,7 @@ class FunctionCommentSniff implements Sniff
         'Bool'      => 'bool',
         'Int'       => 'int',
         'Integer'   => 'int',
+        // cspell:ignore TRUEFALSE
         'TRUEFALSE' => 'bool',
     ];
 
