@@ -5,12 +5,12 @@
  * Example.
  */
 
-use Test\Alias as TestAlias;
-use Test\Bar;
-use Test\Foo;
-use Test\MultiLine as MultiLineAlias;
 use Test\MultiLineSecond;
+use Test\Foo;
 use Test\NotUsed;
+use Test\Bar;
+use Test\Alias as TestAlias;
+use Test\MultiLine as MultiLineAlias;
 
 /**
  * Example.
