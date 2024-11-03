@@ -121,11 +121,6 @@
  <rule ref="PSR2.Namespaces.UseDeclaration" />
 
  <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator" />
- <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses">
-  <properties>
-   <property name="caseSensitive" value="true"/>
-  </properties>
- </rule>
  <rule ref="SlevomatCodingStandard.PHP.ShortList" />
  <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
   <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing"/>
