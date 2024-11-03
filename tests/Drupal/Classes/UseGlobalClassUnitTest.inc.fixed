@@ -5,9 +5,9 @@
  * Example.
  */
 
-use Namespaced\MultiLine2 as MultiLineAlias2;
 use Namespaced\TestClass;
 use Namespaced\TestClassSecond as NamespacedAlias;
+use Namespaced\MultiLine2 as MultiLineAlias2;
 use function count;
 
 /**
