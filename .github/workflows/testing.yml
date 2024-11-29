@@ -14,6 +14,8 @@ jobs:
         include:
           - php-versions: '8.3'
             extra-tests: '1'
+          - php-versions: '8.4'
+            extra-tests: '1'
     steps:
       - name: Checkout Coder
         uses: actions/checkout@v4
