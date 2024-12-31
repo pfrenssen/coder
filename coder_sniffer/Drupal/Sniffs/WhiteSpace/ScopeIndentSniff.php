@@ -74,7 +74,7 @@ class ScopeIndentSniff implements Sniff
      * or PHP open/close tags can escape from here and have their own
      * rules elsewhere.
      *
-     * @var int[]
+     * @var array<int, int|string>
      */
     public $ignoreIndentationTokens = [];
 
@@ -153,6 +153,7 @@ class ScopeIndentSniff implements Sniff
         $setIndents        = [];
         $disableExactStack = [];
         $disableExactEnd   = 0;
+        $tokenIndent       = 0;
 
         $tokens  = $phpcsFile->getTokens();
         $first   = $phpcsFile->findFirstOnLine(T_INLINE_HTML, $stackPtr);
@@ -189,11 +190,6 @@ class ScopeIndentSniff implements Sniff
         $checkAnnotations = $phpcsFile->config->annotations;
 
         for ($i = ($stackPtr + 1); $i < $phpcsFile->numTokens; $i++) {
-            if ($i === false) {
-                // Something has gone very wrong; maybe a parse error.
-                break;
-            }
-
             if ($checkAnnotations === true
                 && $tokens[$i]['code'] === T_PHPCS_SET
                 && isset($tokens[$i]['sniffCode']) === true
@@ -1573,7 +1569,7 @@ class ScopeIndentSniff implements Sniff
         $padding = '';
         if ($length > 0) {
             if ($this->tabIndent === true) {
-                $numTabs = floor($length / $this->tabWidth);
+                $numTabs = (int) floor($length / $this->tabWidth);
                 if ($numTabs > 0) {
                     $numSpaces = ($length - ($numTabs * $this->tabWidth));
                     $padding   = str_repeat("\t", $numTabs).str_repeat(' ', $numSpaces);
@@ -1611,7 +1607,7 @@ class ScopeIndentSniff implements Sniff
                 $padding = ($length + $change);
                 if ($padding > 0) {
                     if ($this->tabIndent === true) {
-                        $numTabs   = floor($padding / $this->tabWidth);
+                        $numTabs   = (int) floor($padding / $this->tabWidth);
                         $numSpaces = ($padding - ($numTabs * $this->tabWidth));
                         $padding   = str_repeat("\t", $numTabs).str_repeat(' ', $numSpaces);
                     } else {
