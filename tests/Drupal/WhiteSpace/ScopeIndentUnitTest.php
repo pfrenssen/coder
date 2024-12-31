@@ -26,6 +26,8 @@ class ScopeIndentUnitTest extends CoderSniffUnitTest
             20 => 1,
             32 => 1,
             34 => 1,
+            216 => 1,
+            222 => 1,
         ];
 
     }//end getErrorList()
