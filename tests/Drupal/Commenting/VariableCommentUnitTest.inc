@@ -96,4 +96,10 @@ class Test {
    */
   protected UserStorageInterface&MockObject $userStorageMock2;
 
+  /**
+   * The search score.
+   */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
+  public string $search_score;
+
 }

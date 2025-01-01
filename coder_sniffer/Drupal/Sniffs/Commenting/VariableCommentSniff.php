@@ -11,6 +11,7 @@ namespace Drupal\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Parses and verifies class property doc comments.
@@ -38,7 +39,7 @@ class VariableCommentSniff extends AbstractVariableSniff
     public function processMemberVar(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $ignore = [
+        $ignore = ([
             T_PUBLIC            => T_PUBLIC,
             T_PRIVATE           => T_PRIVATE,
             T_PROTECTED         => T_PROTECTED,
@@ -57,7 +58,7 @@ class VariableCommentSniff extends AbstractVariableSniff
             T_FALSE             => T_FALSE,
             T_SELF              => T_SELF,
             T_PARENT            => T_PARENT,
-        ];
+        ] + Tokens::$phpcsCommentTokens);
 
         for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
             if (isset($ignore[$tokens[$commentEnd]['code']]) === true) {
