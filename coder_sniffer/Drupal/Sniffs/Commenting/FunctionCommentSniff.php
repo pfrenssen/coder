@@ -952,7 +952,7 @@ class FunctionCommentSniff implements Sniff
         // Also allow some more characters for special type hints supported by
         // PHPStan:
         // https://phpstan.org/writing-php-code/phpdoc-types#basic-types .
-        $type = preg_replace('/[^a-zA-Z0-9_\\\[\]\-<> ,"\{\}\?\':\*\|\&]/', '', $type);
+        $type = preg_replace('/[^a-zA-Z0-9_\\\[\]\-<> ,"\{\}\?\':\*\|\&\(\)]/', '', $type);
 
         return $type;
 
