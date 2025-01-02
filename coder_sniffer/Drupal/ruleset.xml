@@ -111,7 +111,7 @@
 
   <!-- PSR-2 sniffs -->
   <rule ref="PSR2.Classes.PropertyDeclaration">
-     <!-- Already covered by Drupal.Classes.PropertyDeclaration.VarUsed. -->
+    <!-- Already covered by Drupal.Classes.PropertyDeclaration.VarUsed. -->
     <exclude name="PSR2.Classes.PropertyDeclaration.VarUsed"/>
   </rule>
   <rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
@@ -120,6 +120,22 @@
   <!-- SlevomatCodingStandard sniffs -->
   <rule ref="SlevomatCodingStandard.Classes.BackedEnumTypeSpacing"/>
   <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator"/>
+  <!-- Allow global names with backslash like \Drupal. -->
+  <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly">
+    <properties>
+      <property name="allowFullyQualifiedGlobalClasses" value="true"/>
+      <property name="allowFullyQualifiedGlobalFunctions" value="true"/>
+      <property name="allowFullyQualifiedGlobalConstants" value="true"/>
+      <property name="allowFallbackGlobalFunctions" value="true"/>
+      <property name="allowFallbackGlobalConstants" value="true"/>
+    </properties>
+  </rule>
+  <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName">
+    <exclude-pattern>*.api.php</exclude-pattern>
+  </rule>
+  <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedNameWithoutNamespace">
+    <severity>0</severity>
+  </rule>
   <rule ref="SlevomatCodingStandard.PHP.ShortList"/>
   <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
     <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing"/>
