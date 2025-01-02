@@ -93,8 +93,8 @@ class HookCommentSniff implements Sniff
             ) {
                 $phpcsFile->addWarning('Format should be "* Implements hook_foo().", "* Implements hook_foo_BAR_ID_bar() for xyz_bar().",, "* Implements hook_foo_BAR_ID_bar() for xyz-bar.html.twig.", "* Implements hook_foo_BAR_ID_bar() for xyz-bar.tpl.php.", or "* Implements hook_foo_BAR_ID_bar() for block templates."', $short, 'HookCommentFormat');
             } else {
-                // Check that a hook implementation does not duplicate @param and
-                // @return documentation.
+                // Check that a hook implementation does not duplicate param and
+                // return documentation.
                 foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
                     if ($tokens[$tag]['content'] === '@param') {
                         $warn = 'Hook implementations should not duplicate @param documentation';

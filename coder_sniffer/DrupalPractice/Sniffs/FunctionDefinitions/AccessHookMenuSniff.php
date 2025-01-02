@@ -49,7 +49,7 @@ class AccessHookMenuSniff extends FunctionDefinition
             return;
         }
 
-        // Search for 'access callabck' => TRUE in the function body.
+        // Search for 'access callback' => TRUE in the function body.
         $string = $phpcsFile->findNext(
             T_CONSTANT_ENCAPSED_STRING,
             $tokens[$functionPtr]['scope_opener'],

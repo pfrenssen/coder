@@ -20,11 +20,16 @@ class ScopeClosingBraceUnitTest extends CoderSniffUnitTest
      */
     protected function getErrorList(string $testFile): array
     {
-        return [
-            16 => 1,
-            23 => 1,
-            29 => 1,
-        ];
+        switch ($testFile) {
+        case 'ScopeClosingBraceUnitTest.inc':
+            return [
+                16 => 1,
+                23 => 1,
+                29 => 1,
+            ];
+        }
+
+        return [];
 
     }//end getErrorList()
 
@@ -44,6 +49,22 @@ class ScopeClosingBraceUnitTest extends CoderSniffUnitTest
         return [];
 
     }//end getWarningList()
+
+
+    /**
+     * Skip this test on PHP versions lower than 8 because the syntax is not allowed there.
+     *
+     * @return bool
+     */
+    protected function shouldSkipTest()
+    {
+        if (version_compare(PHP_VERSION, '8.0.0') < 0) {
+            return true;
+        }
+
+        return false;
+
+    }//end shouldSkipTest()
 
 
 }//end class

@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Util\Tokens;
 /**
  * Verifies that class/interface/trait methods have scope modifiers.
  *
- * Laregely copied from
+ * Largely copied from
  * \PHP_CodeSniffer\Standards\Squiz\Sniffs\Scope\MethodScopeSniff to work on
  * traits and have a fixer.
  *
@@ -34,7 +34,7 @@ class MethodScopeSniff extends AbstractScopeSniff
      */
     public function __construct()
     {
-        parent::__construct([T_CLASS, T_INTERFACE, T_TRAIT], [T_FUNCTION]);
+        parent::__construct([T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM], [T_FUNCTION]);
 
     }//end __construct()
 

@@ -84,4 +84,29 @@ class Test {
    */
   protected string $constant;
 
+  /**
+   * Intersection type support, it is allowed to repeat it in the var type.
+   *
+   * @var \Drupal\user\UserStorageInterface&\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected UserStorageInterface&MockObject $userStorageMock;
+
+  /**
+   * It is also allowed to leave the var comment out since there is a type.
+   */
+  protected UserStorageInterface&MockObject $userStorageMock2;
+
+  /**
+   * The search score.
+   */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
+  public string $search_score;
+
+  /**
+   * Allow parentheses in the type declaration.
+   *
+   * @var (\Drupal\user\UserInterface&\PHPUnit\Framework\MockObject\MockObject)|null
+   */
+  protected $userMock;
+
 }

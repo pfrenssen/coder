@@ -2,12 +2,9 @@
 /**
  * \Drupal\Sniffs\Strings\UnnecessaryStringConcatSniff.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
 namespace Drupal\Sniffs\Strings;
@@ -20,12 +17,9 @@ use PHP_CodeSniffer\Util\Tokens;
 /**
  * Checks that two strings are not concatenated together; suggests using one string instead.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class UnnecessaryStringConcatSniff extends GenericUnnecessaryStringConcatSniff
 {
@@ -81,8 +75,8 @@ class UnnecessaryStringConcatSniff extends GenericUnnecessaryStringConcatSniff
                 // the line length limit.
                 $lineLengthLimitSniff = new LineLengthSniff;
 
-                $lineLenght   = $lineLengthLimitSniff->getLineLength($phpcsFile, $tokens[$prev]['line']);
-                $stringLength = ($lineLenght + strlen($tokens[$next]['content']) - 4);
+                $lineLength   = $lineLengthLimitSniff->getLineLength($phpcsFile, $tokens[$prev]['line']);
+                $stringLength = ($lineLength + strlen($tokens[$next]['content']) - 4);
                 if ($stringLength > $lineLengthLimitSniff->lineLimit) {
                     return;
                 }

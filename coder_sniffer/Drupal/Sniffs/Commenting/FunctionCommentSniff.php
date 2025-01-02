@@ -46,6 +46,7 @@ class FunctionCommentSniff implements Sniff
         'Bool'      => 'bool',
         'Int'       => 'int',
         'Integer'   => 'int',
+        // cspell:ignore TRUEFALSE
         'TRUEFALSE' => 'bool',
     ];
 
@@ -91,6 +92,16 @@ class FunctionCommentSniff implements Sniff
             }
 
             break;
+        }
+
+        // Constructor methods are exempt from requiring a docblock.
+        // @see https://www.drupal.org/project/coder/issues/3400560.
+        $methodName = $phpcsFile->getDeclarationName($stackPtr);
+        if ($methodName === '__construct'
+            && $tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
+            && $tokens[$commentEnd]['code'] !== T_COMMENT
+        ) {
+            return;
         }
 
         $beforeCommentEnd = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($commentEnd - 1), null, true);
@@ -180,22 +191,9 @@ class FunctionCommentSniff implements Sniff
     protected function processReturn(File $phpcsFile, $stackPtr, $commentStart)
     {
         $tokens = $phpcsFile->getTokens();
-
-        // Skip constructor and destructor.
-        $className = '';
-        foreach ($tokens[$stackPtr]['conditions'] as $condPtr => $condition) {
-            if ($condition === T_CLASS || $condition === T_INTERFACE) {
-                $className = $phpcsFile->getDeclarationName($condPtr);
-                $className = strtolower(ltrim($className, '_'));
-            }
-        }
-
-        $methodName      = $phpcsFile->getDeclarationName($stackPtr);
-        $isSpecialMethod = ($methodName === '__construct' || $methodName === '__destruct');
-        $methodName      = strtolower(ltrim($methodName, '_'));
-
         $return = null;
         $end    = $stackPtr;
+
         foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
             if ($tokens[$tag]['content'] === '@return') {
                 if ($return !== null) {
@@ -225,147 +223,172 @@ class FunctionCommentSniff implements Sniff
             }//end if
         }//end foreach
 
-        $type = null;
-        if ($isSpecialMethod === false) {
-            if ($return !== null) {
-                $type = trim($tokens[($return + 2)]['content']);
-                if (empty($type) === true || $tokens[($return + 2)]['code'] !== T_DOC_COMMENT_STRING) {
-                    $error = 'Return type missing for @return tag in function comment';
-                    $phpcsFile->addError($error, $return, 'MissingReturnType');
-                } else if (strpos($type, ' ') === false) {
-                    // Check return type (can be multiple, separated by '|').
-                    $typeNames      = explode('|', $type);
-                    $suggestedNames = [];
-                    $hasNull        = false;
-
-                    foreach ($typeNames as $i => $typeName) {
-                        if (strtolower($typeName) === 'null') {
-                            $hasNull = true;
-                        }
-
-                        $suggestedName = static::suggestType($typeName);
-                        if (in_array($suggestedName, $suggestedNames) === false) {
-                            $suggestedNames[] = $suggestedName;
-                        }
+        if ($return !== null) {
+            $returnType = trim($tokens[($return + 2)]['content']);
+            if (empty($returnType) === true || $tokens[($return + 2)]['code'] !== T_DOC_COMMENT_STRING) {
+                $error = 'Return type missing for @return tag in function comment';
+                $phpcsFile->addError($error, $return, 'MissingReturnType');
+            } else if (strpos($returnType, ' ') === false) {
+                // Check return type (can be multiple, separated by '|').
+                $typeNames      = explode('|', $returnType);
+                $suggestedNames = [];
+                $hasNull        = false;
+                foreach ($typeNames as $i => $typeName) {
+                    if (strtolower($typeName) === 'null') {
+                        $hasNull = true;
                     }
 
-                    $suggestedType = implode('|', $suggestedNames);
-                    if ($type !== $suggestedType) {
-                        $error = 'Expected "%s" but found "%s" for function return type';
-                        $data  = [
-                            $suggestedType,
-                            $type,
-                        ];
-                        $fix   = $phpcsFile->addFixableError($error, $return, 'InvalidReturn', $data);
-                        if ($fix === true) {
-                            $content = $suggestedType;
-                            $phpcsFile->fixer->replaceToken(($return + 2), $content);
-                        }
-                    }//end if
-
-                    if ($type !== 'mixed' && $type !== 'void') {
-                        // If return type is not void, there needs to be a return statement
-                        // somewhere in the function that returns something.
-                        if (isset($tokens[$stackPtr]['scope_closer']) === true) {
-                            $endToken           = $tokens[$stackPtr]['scope_closer'];
-                            $foundReturnToken   = false;
-                            $searchStart        = $stackPtr;
-                            $foundNonVoidReturn = false;
-                            do {
-                                $returnToken = $phpcsFile->findNext([T_RETURN, T_YIELD, T_YIELD_FROM], $searchStart, $endToken);
-                                if ($returnToken === false && $foundReturnToken === false) {
-                                    $error = '@return doc comment specified, but function has no return statement';
-                                    $phpcsFile->addError($error, $return, 'InvalidNoReturn');
-                                } else {
-                                    // Check for return token as the last loop after the last return
-                                    // in the function will enter this else condition
-                                    // but without the returnToken.
-                                    if ($returnToken !== false) {
-                                        $foundReturnToken = true;
-                                        $semicolon        = $phpcsFile->findNext(T_WHITESPACE, ($returnToken + 1), null, true);
-                                        if ($tokens[$semicolon]['code'] === T_SEMICOLON) {
-                                            // Void return is allowed if the @return type has null in it.
-                                            if ($hasNull === false) {
-                                                $error = 'Function return type is not void, but function is returning void here';
-                                                $phpcsFile->addError($error, $returnToken, 'InvalidReturnNotVoid');
-                                            }
-                                        } else {
-                                            $foundNonVoidReturn = true;
-                                        }//end if
-
-                                        $searchStart = ($returnToken + 1);
-                                    }//end if
-                                }//end if
-                            } while ($returnToken !== false);
-
-                            if ($foundNonVoidReturn === false && $foundReturnToken === true) {
-                                $error = 'Function return type is not void, but function does not have a non-void return statement';
-                                $phpcsFile->addError($error, $return, 'InvalidReturnNotVoid');
-                            }
-                        }//end if
-                    }//end if
-                }//end if
-
-                $comment = '';
-                for ($i = ($return + 3); $i < $end; $i++) {
-                    if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
-                        $indent = 0;
-                        if ($tokens[($i - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
-                            $indent = strlen($tokens[($i - 1)]['content']);
-                        }
-
-                        $comment       .= ' '.$tokens[$i]['content'];
-                        $commentLines[] = [
-                            'comment' => $tokens[$i]['content'],
-                            'token'   => $i,
-                            'indent'  => $indent,
-                        ];
-                        if ($indent < 3) {
-                            $error = 'Return comment indentation must be 3 spaces, found %s spaces';
-                            $fix   = $phpcsFile->addFixableError($error, $i, 'ReturnCommentIndentation', [$indent]);
-                            if ($fix === true) {
-                                $phpcsFile->fixer->replaceToken(($i - 1), '   ');
-                            }
-                        }
-                    }
-                }//end for
-
-                // The first line of the comment must be indented no more than 3
-                // spaces, the following lines can be more so we only check the first
-                // line.
-                if (empty($commentLines[0]['indent']) === false && $commentLines[0]['indent'] > 3) {
-                    $error = 'Return comment indentation must be 3 spaces, found %s spaces';
-                    $fix   = $phpcsFile->addFixableError($error, ($commentLines[0]['token'] - 1), 'ReturnCommentIndentation', [$commentLines[0]['indent']]);
-                    if ($fix === true) {
-                        $phpcsFile->fixer->replaceToken(($commentLines[0]['token'] - 1), '   ');
+                    $suggestedName = $this->suggestType($typeName);
+                    if (in_array($suggestedName, $suggestedNames, true) === false) {
+                        $suggestedNames[] = $suggestedName;
                     }
                 }
 
-                if ($comment === '' && $type !== '$this' && $type !== 'static') {
-                    if (strpos($type, ' ') !== false) {
-                        $error = 'Description for the @return value must be on the next line';
-                    } else {
-                        $error = 'Description for the @return value is missing';
-                    }
+                $suggestedType = implode('|', $suggestedNames);
+                if ($returnType !== $suggestedType) {
+                    $error = 'Expected "%s" but found "%s" for function return type';
+                    $data  = [
+                        $suggestedType,
+                        $returnType,
+                    ];
+                    $fix   = $phpcsFile->addFixableError($error, $return, 'InvalidReturn', $data);
+                    if ($fix === true) {
+                        $replacement = $suggestedType;
 
-                    $phpcsFile->addError($error, $return, 'MissingReturnComment');
-                } else if (strpos($type, ' ') !== false) {
-                    if (preg_match('/^([^\s]+)[\s]+(\$[^\s]+)[\s]*$/', $type, $matches) === 1) {
-                        $error = 'Return type must not contain variable name "%s"';
-                        $data  = [$matches[2]];
-                        $fix   = $phpcsFile->addFixableError($error, ($return + 2), 'ReturnVarName', $data);
-                        if ($fix === true) {
-                            $phpcsFile->fixer->replaceToken(($return + 2), $matches[1]);
+                        $phpcsFile->fixer->replaceToken(($return + 2), $replacement);
+                        unset($replacement);
+                    }
+                }
+
+                // If the return type is void, make sure there is
+                // no return statement in the function.
+                if ($returnType === 'void') {
+                    if (isset($tokens[$stackPtr]['scope_closer']) === true) {
+                        $endToken = $tokens[$stackPtr]['scope_closer'];
+                        for ($returnToken = $stackPtr; $returnToken < $endToken; $returnToken++) {
+                            if ($tokens[$returnToken]['code'] === T_CLOSURE
+                                || $tokens[$returnToken]['code'] === T_ANON_CLASS
+                            ) {
+                                $returnToken = $tokens[$returnToken]['scope_closer'];
+                                continue;
+                            }
+
+                            if ($tokens[$returnToken]['code'] === T_RETURN
+                                || $tokens[$returnToken]['code'] === T_YIELD
+                                || $tokens[$returnToken]['code'] === T_YIELD_FROM
+                            ) {
+                                break;
+                            }
                         }
 
-                        // Do not check PHPStan types that contain any kind of brackets.
-                        // See https://phpstan.org/writing-php-code/phpdoc-types#general-arrays .
-                    } else if (preg_match('/[<\[\{\(]/', $type) === 0) {
-                        $error = 'Return type "%s" must not contain spaces';
-                        $data  = [$type];
-                        $phpcsFile->addError($error, $return, 'ReturnTypeSpaces', $data);
-                    }
+                        if ($returnToken !== $endToken) {
+                            // If the function is not returning anything, just
+                            // exiting, then there is no problem.
+                            $semicolon = $phpcsFile->findNext(T_WHITESPACE, ($returnToken + 1), null, true);
+                            if ($tokens[$semicolon]['code'] !== T_SEMICOLON) {
+                                $error = 'Function return type is void, but function contains return statement';
+                                $phpcsFile->addError($error, $return, 'InvalidReturnVoid');
+                            }
+                        }
+                    }//end if
+                } else if ($returnType !== 'mixed'
+                    && $returnType !== 'never'
+                    && in_array('void', $typeNames, true) === false
+                ) {
+                    // If return type is not void, never, or mixed, there needs to be a
+                    // return statement somewhere in the function that returns something.
+                    if (isset($tokens[$stackPtr]['scope_closer']) === true) {
+                        $endToken = $tokens[$stackPtr]['scope_closer'];
+                        for ($returnToken = $stackPtr; $returnToken < $endToken; $returnToken++) {
+                            if ($tokens[$returnToken]['code'] === T_CLOSURE
+                                || $tokens[$returnToken]['code'] === T_ANON_CLASS
+                            ) {
+                                $returnToken = $tokens[$returnToken]['scope_closer'];
+                                continue;
+                            }
+
+                            if ($tokens[$returnToken]['code'] === T_RETURN
+                                || $tokens[$returnToken]['code'] === T_YIELD
+                                || $tokens[$returnToken]['code'] === T_YIELD_FROM
+                            ) {
+                                break;
+                            }
+                        }
+
+                        if ($returnToken === $endToken) {
+                            $error = 'Function return type is not void, but function has no return statement';
+                            $phpcsFile->addError($error, $return, 'InvalidNoReturn');
+                        } else {
+                            $semicolon = $phpcsFile->findNext(T_WHITESPACE, ($returnToken + 1), null, true);
+                            // Void return is allowed if the @return type has null in it.
+                            if ($tokens[$semicolon]['code'] === T_SEMICOLON && $hasNull === false) {
+                                $error = 'Function return type is not void, but function is returning void here';
+                                $phpcsFile->addError($error, $returnToken, 'InvalidReturnNotVoid');
+                            }
+                        }
+                    }//end if
                 }//end if
+            }//end if
+
+            $comment = '';
+            for ($i = ($return + 3); $i < $end; $i++) {
+                if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
+                    $indent = 0;
+                    if ($tokens[($i - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
+                        $indent = strlen($tokens[($i - 1)]['content']);
+                    }
+
+                    $comment       .= ' '.$tokens[$i]['content'];
+                    $commentLines[] = [
+                        'comment' => $tokens[$i]['content'],
+                        'token'   => $i,
+                        'indent'  => $indent,
+                    ];
+                    if ($indent < 3) {
+                        $error = 'Return comment indentation must be 3 spaces, found %s spaces';
+                        $fix   = $phpcsFile->addFixableError($error, $i, 'ReturnCommentIndentation', [$indent]);
+                        if ($fix === true) {
+                            $phpcsFile->fixer->replaceToken(($i - 1), '   ');
+                        }
+                    }
+                }
+            }//end for
+
+            // The first line of the comment must be indented no more than 3
+            // spaces, the following lines can be more so we only check the first
+            // line.
+            if (empty($commentLines[0]['indent']) === false && $commentLines[0]['indent'] > 3) {
+                $error = 'Return comment indentation must be 3 spaces, found %s spaces';
+                $fix   = $phpcsFile->addFixableError($error, ($commentLines[0]['token'] - 1), 'ReturnCommentIndentation', [$commentLines[0]['indent']]);
+                if ($fix === true) {
+                    $phpcsFile->fixer->replaceToken(($commentLines[0]['token'] - 1), '   ');
+                }
+            }
+
+            if ($comment === '' && $returnType !== '$this' && $returnType !== 'static') {
+                if (strpos($returnType, ' ') !== false) {
+                    $error = 'Description for the @return value must be on the next line';
+                } else {
+                    $error = 'Description for the @return value is missing';
+                }
+
+                $phpcsFile->addError($error, $return, 'MissingReturnComment');
+            } else if (strpos($returnType, ' ') !== false) {
+                if (preg_match('/^([^\s]+)[\s]+(\$[^\s]+)[\s]*$/', $returnType, $matches) === 1) {
+                    $error = 'Return type must not contain variable name "%s"';
+                    $data  = [$matches[2]];
+                    $fix   = $phpcsFile->addFixableError($error, ($return + 2), 'ReturnVarName', $data);
+                    if ($fix === true) {
+                        $phpcsFile->fixer->replaceToken(($return + 2), $matches[1]);
+                    }
+
+                    // Do not check PHPStan types that contain any kind of brackets.
+                    // See https://phpstan.org/writing-php-code/phpdoc-types#general-arrays .
+                } else if (preg_match('/[<\[\{\(]/', $returnType) === 0) {
+                    $error = 'Return type "%s" must not contain spaces';
+                    $data  = [$returnType];
+                    $phpcsFile->addError($error, $return, 'ReturnTypeSpaces', $data);
+                }
             }//end if
         }//end if
 
@@ -418,6 +441,7 @@ class FunctionCommentSniff implements Sniff
                         $comment .= ' '.$tokens[$i]['content'];
                         if ($indent < 3) {
                             $error = 'Throws comment indentation must be 3 spaces, found %s spaces';
+                            // cspell:ignore TrhowsCommentIndentation
                             $phpcsFile->addError($error, $i, 'TrhowsCommentIndentation', [$indent]);
                         }
                     }
@@ -434,7 +458,7 @@ class FunctionCommentSniff implements Sniff
                     return;
                 }
 
-                // Starts with a capital letter and ends with a fullstop.
+                // Starts with a capital letter and ends with a full stop.
                 $firstChar = $comment[0];
                 if (strtoupper($firstChar) !== $firstChar) {
                     $error = '@throws tag comment must start with a capital letter';
@@ -747,7 +771,7 @@ class FunctionCommentSniff implements Sniff
                     $content .= $param['var'];
                     $content .= str_repeat(' ', $param['var_space']);
                     // At this point there is no description expected in the
-                    // @param line so no need to append comment.
+                    // param line so no need to append comment.
                     $phpcsFile->fixer->replaceToken(($param['tag'] + 2), $content);
 
                     // Fix up the indent of additional comment lines.
@@ -845,21 +869,23 @@ class FunctionCommentSniff implements Sniff
         // Missing parameters only apply to methods and not function because on
         // functions it is allowed to leave out param comments for form constructors
         // for example.
-        // It is also allowed to ommit pram tags completely, in which case we don't
+        // It is also allowed to omit param tags completely, in which case we don't
         // throw errors. Only throw errors if param comments exists but are
         // incomplete on class methods.
         if ($tokens[$stackPtr]['level'] > 0 && empty($foundParams) === false) {
             foreach ($realParams as $realParam) {
                 $realParamKeyName = $realParam['name'];
                 if (in_array($realParamKeyName, $foundParams) === false
-                    && ($realParam['pass_by_reference'] === true
-                    && in_array("&$realParamKeyName", $foundParams) === true) === false
+                    && (($realParam['pass_by_reference'] === true
+                    && in_array("&$realParamKeyName", $foundParams) === true)
+                    || ($realParam['variable_length'] === true
+                    && in_array("...$realParamKeyName", $foundParams) === true)) === false
                 ) {
                     $error = 'Parameter %s is not described in comment';
                     $phpcsFile->addError($error, $commentStart, 'ParamMissingDefinition', [$realParam['name']]);
                 }
             }
-        }
+        }//end if
 
     }//end processParams()
 
@@ -926,7 +952,7 @@ class FunctionCommentSniff implements Sniff
         // Also allow some more characters for special type hints supported by
         // PHPStan:
         // https://phpstan.org/writing-php-code/phpdoc-types#basic-types .
-        $type = preg_replace('/[^a-zA-Z0-9_\\\[\]\-<> ,"\{\}\?\':\*\|\&]/', '', $type);
+        $type = preg_replace('/[^a-zA-Z0-9_\\\[\]\-<> ,"\{\}\?\':\*\|\&\(\)]/', '', $type);
 
         return $type;
 

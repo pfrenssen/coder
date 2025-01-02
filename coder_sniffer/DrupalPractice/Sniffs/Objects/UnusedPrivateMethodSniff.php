@@ -77,7 +77,8 @@ class UnusedPrivateMethodSniff extends AbstractScopeSniff
 
             if ($tokens[$next]['code'] === T_OBJECT_OPERATOR) {
                 $call = $phpcsFile->findNext(Tokens::$emptyTokens, ($next + 1), null, true);
-                if ($call === false || $tokens[$call]['content'] !== $methodName) {
+                // PHP method calls are case insensitive.
+                if ($call === false || strcasecmp($tokens[$call]['content'], $methodName) !== 0) {
                     continue;
                 }
 

@@ -190,7 +190,7 @@ class Project
             return false;
         }
 
-        $services = Yaml::parse(file_get_contents($ymlFile));
+        $services = Yaml::parse(file_get_contents($ymlFile), Yaml::PARSE_CUSTOM_TAGS);
         if (isset($services['services']) === false) {
             $cache[$phpcsFile->getFilename()] = false;
             return false;

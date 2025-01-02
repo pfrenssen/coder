@@ -1457,14 +1457,16 @@ function test17($arg) {
 }
 
 /**
- * Ignore indentation of multi-line function declarations.
+ * Indentation of multi-line function declarations is standardized.
  */
-function test18(ConfigFactoryInterface $config_factory,
-                EntityTypeManagerInterface $entity_type_manager,
-                CacheTagsInvalidatorInterface $cache_invalidator,
-                ModuleHandlerInterface $module_handler,
-                EntityFieldManagerInterface $entity_field_manager,
-                EntityTypeBundleInfoInterface $entity_type_bundle_info) {
+function test18(
+  ConfigFactoryInterface $config_factory,
+  EntityTypeManagerInterface $entity_type_manager,
+  CacheTagsInvalidatorInterface $cache_invalidator,
+  ModuleHandlerInterface $module_handler,
+  EntityFieldManagerInterface $entity_field_manager,
+  EntityTypeBundleInfoInterface $entity_type_bundle_info,
+) {
   return 0;
 }
 
@@ -1801,11 +1803,95 @@ interface Test5Interface {
 class TestPhpAttributes {
 
   /**
+   * Bar property.
+   */
+  #[NotBlank]
+  private bool $bar;
+
+  /**
    * Tests method with PHP attribute and docblock.
    */
   #[\ReturnTypeWillChange]
   public function attributes(): void {
   }
+
+}
+
+/**
+ * Enums must have a comment block.
+ */
+enum MyWellNamedEnum: int {
+  case One = 1;
+  case Two = 2;
+}
+
+// Allow longer than 80 character array definitions on one line (up to 120).
+if (!in_array($form_object->getOperation(), ['add', 'edit', 'delete', 'clone', 'default'], TRUE)) {
+  return;
+}
+if ($content_type_facet_field && in_array($entity_type, ['entity:node', 'entity:media'])) {
+  $foo->setContentTypeFacetValues($item, $entity_type, $content_type_facet_field);
+}
+
+/**
+ * Testing nested array definitions going over 80 characters.
+ */
+class LongNestedArrayLine {
+
+  /**
+   * Test method.
+   */
+  public function foo() {
+    foreach ($x as $y) {
+      foreach ($a as $b) {
+        $form[$policyTypeKey]['directives'][$directiveName]['options']['flags_wrapper']['flags'] = [
+          '#type' => 'checkboxes',
+          '#parents' => [$policyTypeKey, 'directives', $directiveName, 'flags', 'humans'],
+          '#options' => [
+            'unsafe-inline' => "'unsafe-inline'",
+            'unsafe-eval' => "'unsafe-eval'",
+            'unsafe-hashes' => "'unsafe-hashes'",
+            'unsafe-allow-redirects' => "'unsafe-allow-redirects'",
+            'strict-dynamic' => "'strict-dynamic'",
+            'report-sample' => "'report-sample'",
+          ],
+          '#default_value' => $config->get($policyTypeKey . '.directives.' . $directiveName . '.flags') ?: [],
+        ];
+      }
+    }
+  }
+
+}
+
+// Allow array definition statements over 80 but under 120 characters.
+$form['strings'] = [
+  '#type' => 'table',
+  '#tree' => TRUE,
+  '#language' => $langname,
+  '#header' => [
+    $this->t('Source string'),
+    $this->t('Translation for @language on this longer line', ['@language' => $langname]),
+    $this->t('Delete'),
+  ],
+  '#empty' => $this->t('No strings available.'),
+  '#attributes' => ['class' => ['locale-translate-edit-table']],
+];
+
+/**
+ * Implements hook_cron().
+ */
+#[Hook('cron')]
+class CronHook {
+
+  public function __construct(
+    private readonly EntityTypeManagerInterface $entityTypeManager,
+    private readonly StreamWrapperManagerInterface $streamWrapperManager,
+    private readonly ConfigFactoryInterface $configFactory,
+    private readonly FileUsageInterface $fileUsage,
+    private readonly TimeInterface $time,
+    #[Autowire('@logger.channel.file')]
+    private readonly LoggerInterface $logger,
+  ) {}
 
 }
 

@@ -20,6 +20,7 @@ $x = '<p>' . t('Test') . '</p><p>More text.</p>';
 $x = t('Test') . ' (disabled)';
 
 class Test {
+  const FOO = 'bar';
 
   public function doSomething() {
     return $this->t('This string should avoid backslashes for \'');

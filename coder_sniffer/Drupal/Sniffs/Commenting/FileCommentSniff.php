@@ -57,14 +57,14 @@ class FileCommentSniff implements Sniff
         $commentStart = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
 
         // Files containing exactly one class, interface or trait are allowed to
-        // ommit a file doc block. If a namespace is used then the file comment must
+        // omit a file doc block. If a namespace is used then the file comment must
         // be omitted.
-        $oopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT], $stackPtr);
+        $oopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM], $stackPtr);
         if ($oopKeyword !== false) {
             $namespace = $phpcsFile->findNext(T_NAMESPACE, $stackPtr);
             // Check if the file contains multiple classes/interfaces/traits - then a
             // file doc block is allowed.
-            $secondOopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT], ($oopKeyword + 1));
+            $secondOopKeyword = $phpcsFile->findNext([T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM], ($oopKeyword + 1));
             // Namespaced classes, interfaces and traits should not have an @file doc
             // block.
             if (($tokens[$commentStart]['code'] === T_DOC_COMMENT_OPEN_TAG
@@ -159,7 +159,7 @@ class FileCommentSniff implements Sniff
         $next       = $phpcsFile->findNext(T_WHITESPACE, ($commentEnd + 1), null, true);
 
         // If there is no @file tag and the next line is a function or class
-        // definition then the file docblock is mising.
+        // definition then the file docblock is missing.
         if ($tokens[$next]['line'] === ($tokens[$commentEnd]['line'] + 1)
             && $tokens[$next]['code'] === T_FUNCTION
         ) {
@@ -225,7 +225,8 @@ class FileCommentSniff implements Sniff
             && $tokens[$next]['code'] === T_CLOSE_TAG
         ) {
             $error = 'There must be no blank line after the file comment in a template';
-            $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'TeamplateSpacingAfterComment');
+            // cspell:ignore TeamplateSpacingAfterComment
+            $fix = $phpcsFile->addFixableError($error, $commentEnd, 'TeamplateSpacingAfterComment');
             if ($fix === true) {
                 $phpcsFile->fixer->beginChangeset();
                 $uselessLine = ($commentEnd + 1);

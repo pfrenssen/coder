@@ -124,6 +124,7 @@ class DeprecatedSniff implements Sniff
                 // automatic fixes for Drupal core, and if the project is missing we are
                 // assuming it is Drupal core. Deprecations for contrib projects are much
                 // less frequent and faults can be corrected manually.
+                // cspell:ignore xdev
                 preg_match('/^(.*)(as of|in) (drupal|)( |:|)+([\d\.\-xdev\?]+)(,| |. |)(.*)(removed|removal)([ |from|before|in|the]*) (drupal|)( |:|)([\d\-\.xdev]+)( |,|$)+(?:release|)(?:[\.,])*(.*)$/i', $text1, $matchesFix);
 
                 if (count($matchesFix) >= 12) {

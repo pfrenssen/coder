@@ -38,7 +38,6 @@
     <rule ref="Squiz.Commenting.BlockComment"/>
     <rule ref="Squiz.Commenting.DocCommentAlignment"/>
     <rule ref="Squiz.Commenting.EmptyCatchComment"/>
-    <rule ref="Squiz.Commenting.InlineComment"/>
     <rule ref="Squiz.Commenting.LongConditionClosingComment"/>
     <rule ref="Squiz.Commenting.PostStatementComment"/>
     <rule ref="Squiz.Commenting.VariableComment"/>
@@ -156,5 +155,6 @@
 
     <!-- Additional rules from Drupal that we want. -->
     <rule ref="coder_sniffer/Drupal/Sniffs/Classes/UnusedUseStatementSniff.php"/>
+    <rule ref="coder_sniffer/Drupal/Sniffs/Commenting/InlineCommentSniff.php"/>
 
 </ruleset>

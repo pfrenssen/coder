@@ -15,7 +15,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 /**
  * \Drupal\Sniffs\CSS\ColourDefinitionSniff.
  *
- * Ensure colours are defined in lower-case.
+ * Ensure colors are defined in lower-case.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -56,14 +56,14 @@ class ColourDefinitionSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $colour = $tokens[$stackPtr]['content'];
+        $color  = $tokens[$stackPtr]['content'];
 
-        $expected = strtolower($colour);
-        if ($colour !== $expected) {
-            $error = 'CSS colours must be defined in lowercase; expected %s but found %s';
+        $expected = strtolower($color);
+        if ($color !== $expected) {
+            $error = 'CSS colors must be defined in lowercase; expected %s but found %s';
             $data  = [
                 $expected,
-                $colour,
+                $color,
             ];
             $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'NotLower', $data);
             if ($fix === true) {

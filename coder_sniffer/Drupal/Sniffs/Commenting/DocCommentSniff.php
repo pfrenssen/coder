@@ -382,7 +382,8 @@ class DocCommentSniff implements Sniff
         // Break out the tags into groups and check alignment within each.
         // A tag group is one where there are no blank lines between tags.
         // The param tag group is special as it requires all @param tags to be inside.
-        $tagGroups    = [];
+        $tagGroups = [];
+        // cspell:ignore groupid
         $groupid      = 0;
         $paramGroupid = null;
         $currentTag   = null;
@@ -506,12 +507,12 @@ class DocCommentSniff implements Sniff
             }
         }//end foreach
 
-        // If there is a param group, it needs to be first; with the exception of
-        // @code, @todo and link tags.
+        // If there is a param group, it needs to be first; with the exception
+        // of @code, @todo and link tags.
         if ($paramGroupid !== null && $paramGroupid !== 0
             && in_array($tokens[$tokens[$commentStart]['comment_tags'][0]]['content'], ['@code', '@todo', '@link', '@endlink', '@codingStandardsIgnoreStart']) === false
             // In JSDoc we can have many other valid tags like @function or
-            // @constructor before the param tags.
+            // tags like @constructor before the param tags.
             && $phpcsFile->tokenizerType !== 'JS'
         ) {
             $error = 'Parameter tags must be defined first in a doc comment';

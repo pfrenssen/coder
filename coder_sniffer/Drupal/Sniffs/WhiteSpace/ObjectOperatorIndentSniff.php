@@ -2,12 +2,9 @@
 /**
  * \Drupal\Sniffs\WhiteSpace\ObjectOperatorIndentSniff.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
 namespace Drupal\Sniffs\WhiteSpace;
@@ -22,13 +19,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * Checks that object operators are indented 2 spaces if they are the first
  * thing on a line.
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.2.0RC3
- * @link      http://pear.php.net/package/PHP_CodeSniffer
+ * @category PHP
+ * @package  PHP_CodeSniffer
+ * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class ObjectOperatorIndentSniff implements Sniff
 {
@@ -94,7 +87,7 @@ class ObjectOperatorIndentSniff implements Sniff
         }
 
         // Closing parenthesis can be indented in several ways, so rather use the
-        // line that opended the parenthesis.
+        // line that opened the parenthesis.
         if ($tokens[$startOfLine]['code'] === T_CLOSE_PARENTHESIS) {
             $startOfLine = $this->findStartOfline($phpcsFile, $tokens[$startOfLine]['parenthesis_opener']);
         }

@@ -116,3 +116,16 @@ function test2() {
 
   return $x;
 }
+
+// Allow all the cspell comment variants.
+// cspell:ignore bananarama
+$x = 1;
+// With some comment before it.
+// cSpell:ignore bananarama
+$x = 2;
+// And here as well.
+// spell-checker:ignore bananarama
+$x = 3;
+// Different keword.
+// spellchecker:disable-next-line
+$x = 4;

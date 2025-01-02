@@ -1,0 +1,62 @@
+{
+    // Version of the setting file.  Always 0.2
+    "version": "0.2",
+    // language - current active spelling language
+    "language": "en-US",
+    "ignorePaths": [
+        "composer.*",
+        "tests",
+        "vendor"
+    ],
+    "dictionaries": [
+        "dictionary",
+        "drupal",
+        "companies",
+        "fonts",
+        "html",
+        "php",
+        "softwareTerms"
+    ],
+    // words - list of words to be always considered correct
+    "words": [
+        "addtogroup",
+        "autoloader",
+        "codesniffer",
+        "ColourDefinitionSniff",
+        "CURLOPT_SSL_VERIFYPEER",
+        "datestamp",
+        "defgroup",
+        "drush",
+        "endcode",
+        "endlink",
+        "heredocs",
+        "Kernighan",
+        "Komodo",
+        "multibyte",
+        "Netbeans",
+        "phpcbf",
+        "Ritchie",
+        "ruleset",
+        "sirbrillig",
+        "squizlabs",
+        "Squiz",
+        "startOfLine",
+        "Superglobal",
+        "T_ASPERAND",
+        "T_COLOUR",
+        "T_CONSTANT_ENCAPSED_STRING",
+        "T_DNUMBER",
+        "T_LNUMBER",
+        "T_NULLSAFE_OBJECT_OPERATOR",
+        "tableselect",
+        "ungreedy",
+        "unserialized",
+        "webform"
+    ],
+    // flagWords - list of words to be always considered incorrect
+    // This is useful for offensive words and common spelling errors.
+    // For example "hte" should be "the"
+    "flagWords": [
+        "hte"
+    ]
+}

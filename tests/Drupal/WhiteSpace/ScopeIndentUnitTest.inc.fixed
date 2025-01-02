@@ -215,3 +215,22 @@ $has_index_value_scalar['foo']['value'] = array (
 EXPECTED
   ],
 ];
+
+/**
+ * Test PHP attributes.
+ */
+class TestPhpAttributes {
+
+  /**
+   * Bar property.
+   */
+  #[NotBlank]
+  private bool $bar;
+
+  /**
+   * Tests method with PHP attribute and docblock.
+   */
+  #[\ReturnTypeWillChange]
+  public function attributes(): void {}
+
+}

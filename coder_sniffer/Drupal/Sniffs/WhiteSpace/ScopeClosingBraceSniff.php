@@ -103,30 +103,30 @@ class ScopeClosingBraceSniff implements Sniff
         }
 
         // Check that the closing brace is on it's own line.
-        $lastContent = $phpcsFile->findPrevious(
-            [
-                T_WHITESPACE,
-                T_INLINE_HTML,
-                T_OPEN_TAG,
-            ],
-            ($scopeEnd - 1),
-            $scopeStart,
-            true
-        );
+        for ($lastContent = ($scopeEnd - 1); $lastContent > $scopeStart; $lastContent--) {
+            if ($tokens[$lastContent]['code'] === T_WHITESPACE || $tokens[$lastContent]['code'] === T_OPEN_TAG) {
+                continue;
+            }
+
+            if ($tokens[$lastContent]['code'] === T_INLINE_HTML
+                && ltrim($tokens[$lastContent]['content']) === ''
+            ) {
+                continue;
+            }
+
+            break;
+        }
 
         if ($tokens[$lastContent]['line'] === $tokens[$scopeEnd]['line']) {
             // Only allow empty classes and methods.
-            if (($tokens[$tokens[$scopeEnd]['scope_condition']]['code'] !== T_CLASS
-                && $tokens[$tokens[$scopeEnd]['scope_condition']]['code'] !== T_INTERFACE
-                && in_array(T_CLASS, $tokens[$scopeEnd]['conditions']) === false
-                && in_array(T_INTERFACE, $tokens[$scopeEnd]['conditions']) === false)
-                || $tokens[$lastContent]['code'] !== T_OPEN_CURLY_BRACKET
-            ) {
-                $error = 'Closing brace must be on a line by itself';
-                $fix   = $phpcsFile->addFixableError($error, $scopeEnd, 'Line');
-                if ($fix === true) {
-                    $phpcsFile->fixer->addNewlineBefore($scopeEnd);
-                }
+            if ($tokens[$lastContent]['code'] === T_OPEN_CURLY_BRACKET) {
+                return;
+            }
+
+            $error = 'Closing brace must be on a line by itself';
+            $fix   = $phpcsFile->addFixableError($error, $scopeEnd, 'Line');
+            if ($fix === true) {
+                $phpcsFile->fixer->addNewlineBefore($scopeEnd);
             }
 
             return;
@@ -170,7 +170,7 @@ class ScopeClosingBraceSniff implements Sniff
                 $fix   = $phpcsFile->addFixableError($error, $scopeEnd, 'BreakIndent', $data);
             }
         } else {
-            $expectedIndent = ($startColumn - 1);
+            $expectedIndent = max(0, ($startColumn - 1));
             if ($braceIndent !== $expectedIndent) {
                 $error = 'Closing brace indented incorrectly; expected %s spaces, found %s';
                 $data  = [

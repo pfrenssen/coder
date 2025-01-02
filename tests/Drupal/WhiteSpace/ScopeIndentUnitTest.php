@@ -21,11 +21,13 @@ class ScopeIndentUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [
-            6  => 1,
-            18 => 1,
-            20 => 1,
-            32 => 1,
-            34 => 1,
+            6   => 1,
+            18  => 1,
+            20  => 1,
+            32  => 1,
+            34  => 1,
+            216 => 1,
+            222 => 1,
         ];
 
     }//end getErrorList()

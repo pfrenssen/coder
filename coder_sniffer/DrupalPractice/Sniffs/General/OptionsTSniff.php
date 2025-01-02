@@ -127,6 +127,7 @@ class OptionsTSniff implements Sniff
                 $afterValue = $phpcsFile->findNext(T_WHITESPACE, ($arrayValue + 1), $statementEnd, true);
                 if ($tokens[$afterValue]['code'] === T_COMMA || $tokens[$afterValue]['code'] === T_CLOSE_PARENTHESIS) {
                     $warning = '#options values usually have to run through t() for translation';
+                    // cspell:ignore TforValue
                     $phpcsFile->addWarning($warning, $arrayValue, 'TforValue');
                 }
             }

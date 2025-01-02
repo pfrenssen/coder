@@ -26,6 +26,8 @@ class FunctionAliasSniff extends FunctionCall
      * http://php.net/manual/en/aliases.php
      *
      * @var array<string, string>
+     *
+     * cSpell:disable
      */
     protected $aliases = [
         '_'                          => 'gettext',
@@ -159,6 +161,7 @@ class FunctionAliasSniff extends FunctionCall
         'snmpwalkoid'                => 'snmprealwalk',
         'strchr'                     => 'strstr',
         'xptr_new_context'           => 'xpath_new_context',
+        // cspell:enable
     ];
 
 
