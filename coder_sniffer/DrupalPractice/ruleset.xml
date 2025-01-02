@@ -5,8 +5,6 @@
   <!-- All Drupal code files must be UTF-8 encoded and we treat them as such. -->
   <arg name="encoding" value="utf-8"/>
 
-  <autoload>../Drupal/coder_unique_autoload_phpcs_bug_2751.php</autoload>
-
   <rule ref="Internal.NoCodeFound">
     <!-- Empty files are fine, might be used for testing. -->
     <exclude-pattern>*</exclude-pattern>
