@@ -20,7 +20,7 @@ class PropertyDeclarationUnitTest extends CoderSniffUnitTest
      */
     protected function getErrorList(string $testFile): array
     {
-        return [16 => 2];
+        return [16 => 1];
 
     }//end getErrorList()
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Verifies that properties are declared correctly.
+ * Verifies that the "var" keyword is not used for class properties.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -10,106 +10,53 @@
 namespace Drupal\Sniffs\Classes;
 
 use PHP_CodeSniffer\Files\File;
-use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
-use PHP_CodeSniffer\Util\Tokens;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Largely copied from
- * \PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\PropertyDeclarationSniff to have a fixer
- * for the var keyword.
+ * Originally this was a fork of the PSR2 PropertyDeclarationSniff to have a fixer
+ * for the var keyword. Since we don't want to maintain all the forked code, this
+ * class was changed to only target the var keyword and provide a fixer for it.
+ *
+ * As a replacement PSR2.Classes.PropertyDeclaration is now included in ruleset.xml.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class PropertyDeclarationSniff extends AbstractVariableSniff
+class PropertyDeclarationSniff implements Sniff
 {
 
 
     /**
-     * Processes the function tokens within the class.
+     * Returns an array of tokens this test wants to listen for.
      *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
-     * @param int                         $stackPtr  The position where the token was found.
-     *
-     * @return void
+     * @return array<int|string>
      */
-    protected function processMemberVar(File $phpcsFile, $stackPtr)
+    public function register()
     {
-        $tokens = $phpcsFile->getTokens();
+        return [T_VAR];
 
-        if ($tokens[$stackPtr]['content'][1] === '_') {
-            $error = 'Property name "%s" should not be prefixed with an underscore to indicate visibility';
-            $data  = [$tokens[$stackPtr]['content']];
-            $phpcsFile->addWarning($error, $stackPtr, 'Underscore', $data);
-        }
-
-        // Detect multiple properties defined at the same time. Throw an error
-        // for this, but also only process the first property in the list so we don't
-        // repeat errors.
-        $find = Tokens::$scopeModifiers;
-        $find = array_merge($find, [T_VARIABLE, T_VAR, T_SEMICOLON]);
-        $prev = $phpcsFile->findPrevious($find, ($stackPtr - 1));
-        if ($tokens[$prev]['code'] === T_VARIABLE) {
-            return;
-        }
-
-        if ($tokens[$prev]['code'] === T_VAR) {
-            $error = 'The var keyword must not be used to declare a property';
-            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'VarUsed');
-            if ($fix === true) {
-                $phpcsFile->fixer->replaceToken($prev, 'public');
-            }
-        }
-
-        $next = $phpcsFile->findNext([T_VARIABLE, T_SEMICOLON], ($stackPtr + 1));
-        if ($tokens[$next]['code'] === T_VARIABLE) {
-            $error = 'There must not be more than one property declared per statement';
-            $phpcsFile->addError($error, $stackPtr, 'Multiple');
-        }
-
-        $modifier = $phpcsFile->findPrevious(Tokens::$scopeModifiers, $stackPtr);
-        if (($modifier === false) || ($tokens[$modifier]['line'] !== $tokens[$stackPtr]['line'])) {
-            $error = 'Visibility must be declared on property "%s"';
-            $data  = [$tokens[$stackPtr]['content']];
-            $phpcsFile->addError($error, $stackPtr, 'ScopeMissing', $data);
-        }
-
-    }//end processMemberVar()
+    }//end register()
 
 
     /**
-     * Processes normal variables.
+     * Processes this test, when one of its tokens is encountered.
      *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
-     * @param int                         $stackPtr  The position where the token was found.
-     *
-     * @return void
-     */
-    protected function processVariable(File $phpcsFile, $stackPtr)
-    {
-        /*
-            We don't care about normal variables.
-        */
-
-    }//end processVariable()
-
-
-    /**
-     * Processes variables in double quoted strings.
-     *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
-     * @param int                         $stackPtr  The position where the token was found.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
-    protected function processVariableInString(File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
-        /*
-            We don't care about normal variables.
-        */
+        $error = 'The var keyword must not be used to declare a property';
+        $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'VarUsed');
+        if ($fix === true) {
+            $phpcsFile->fixer->replaceToken($stackPtr, 'public');
+        }
 
-    }//end processVariableInString()
+    }//end process()
 
 
 }//end class
