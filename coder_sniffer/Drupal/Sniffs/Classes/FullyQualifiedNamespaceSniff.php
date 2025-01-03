@@ -60,7 +60,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
         }
 
         // We are only interested in a backslash embedded between strings, which
-        // means this is a class reference with more than once namespace part.
+        // means this is a class reference with more than one namespace part.
         if ($tokens[($stackPtr - 1)]['code'] !== T_STRING || $tokens[($stackPtr + 1)]['code'] !== T_STRING) {
             return;
         }
@@ -76,7 +76,10 @@ class FullyQualifiedNamespaceSniff implements Sniff
         // If this is a namespaced function call then ignore this because use
         // statements for functions are not possible in PHP 5.5 and lower.
         $after = $phpcsFile->findNext([T_STRING, T_NS_SEPARATOR, T_WHITESPACE], $stackPtr, null, true);
-        if ($tokens[$after]['code'] === T_OPEN_PARENTHESIS && $tokens[$before]['code'] !== T_NEW) {
+        if ($tokens[$after]['code'] === T_OPEN_PARENTHESIS
+            && $tokens[$before]['code'] !== T_NEW
+            && $tokens[$before]['code'] !== T_ATTRIBUTE
+        ) {
             return ($after + 1);
         }
 
