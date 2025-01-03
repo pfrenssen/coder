@@ -1,0 +1,11 @@
+<?php
+
+namespace Namespace2;
+
+use Namespace1\D;
+
+/**
+ * Class C's description.
+ */
+class C extends D {
+}

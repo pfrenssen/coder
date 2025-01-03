@@ -187,14 +187,20 @@ class FullyQualifiedNamespaceSniff implements Sniff
                 if ($useStatement !== false && empty($tokens[$useStatement]['conditions']) === true) {
                     $phpcsFile->fixer->addContentBefore($useStatement, "$use\n");
                 } else {
-                    // Check if there is an @file comment.
-                    $beginning   = 0;
-                    $fileComment = $phpcsFile->findNext(T_WHITESPACE, ($beginning + 1), null, true);
-                    if ($tokens[$fileComment]['code'] === T_DOC_COMMENT_OPEN_TAG) {
-                        $beginning = $tokens[$fileComment]['comment_closer'];
+                    // Check if there is a namespace declaration and add it there.
+                    $namespace = $phpcsFile->findNext(T_NAMESPACE, 0);
+                    if ($namespace !== false) {
+                        $beginning = $phpcsFile->findEndOfStatement($namespace);
                         $phpcsFile->fixer->addContent($beginning, "\n\n$use\n");
                     } else {
-                        $phpcsFile->fixer->addContent($beginning, "$use\n");
+                        // Check if there is an @file comment.
+                        $fileComment = $phpcsFile->findNext(T_WHITESPACE, 1, null, true);
+                        if ($tokens[$fileComment]['code'] === T_DOC_COMMENT_OPEN_TAG) {
+                            $beginning = $tokens[$fileComment]['comment_closer'];
+                            $phpcsFile->fixer->addContent($beginning, "\n\n$use\n");
+                        } else {
+                            $phpcsFile->fixer->addContent(0, "\n\n$use\n");
+                        }
                     }
                 }
             }//end if
