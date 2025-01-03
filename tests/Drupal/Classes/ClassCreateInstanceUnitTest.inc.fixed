@@ -1,7 +1,7 @@
 <?php
 
-use Vendor\DateTools\DateInterval;
 use Vendor\DateTools;
+use Vendor\DateTools\DateInterval;
 
 $x = array(new Foo(), array());
 $y = new Foo();
