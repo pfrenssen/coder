@@ -43,7 +43,7 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
                 15 => 1,
                 16 => 1,
             ];
-        }
+        }//end switch
 
         return [];
 
