@@ -1,0 +1,21 @@
+<?php
+
+namespace Drupal\action_link_test_plugins\Plugin\StateAction;
+
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\action_link\Attribute\StateAction;
+use Drupal\action_link\Plugin\StateAction\StateActionBase;
+
+/**
+ * Test action which is always usable.
+ */
+#[StateAction(
+  id: 'test_always',
+  label: new TranslatableMarkup('Test Always'),
+  description: new TranslatableMarkup('Test Always'),
+  directions: [
+    'change' => 'change',
+  ]
+)]
+class TestAlways extends StateActionBase {
+}
