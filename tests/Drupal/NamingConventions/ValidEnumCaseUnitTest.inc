@@ -7,6 +7,7 @@ enum Test: int {
   case TWO_TEST = 2;
   // Must not contain only upper case.
   case THREE = 3;
-  // Some upper case parts are allowed for now.
+  // Upper case parts are not allowed.
   case FourJSONCase = 4;
+  case FiveCorrect = 5;
 }
