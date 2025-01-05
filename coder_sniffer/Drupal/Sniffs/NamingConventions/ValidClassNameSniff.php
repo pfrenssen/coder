@@ -73,7 +73,7 @@ class ValidClassNameSniff implements Sniff
         }
 
         // Ensure the name does not contain acronyms.
-        if (preg_match('|[A-Z]{2}|', $name) === 1) {
+        if (preg_match('|[A-Z]{3}|', $name) === 1) {
             $error = '%s name must use UpperCamel naming and not contain multiple upper case letters in a row';
             $phpcsFile->addError($error, $stackPtr, 'NoUpperAcronyms', $errorData);
         }

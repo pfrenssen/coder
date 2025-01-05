@@ -9,5 +9,5 @@ enum Test: int {
   case THREE = 3;
   // Upper case parts are not allowed.
   case FourJSONCase = 4;
-  case FiveCorrect = 5;
+  case FiveAndAHorseCorrect = 5;
 }
