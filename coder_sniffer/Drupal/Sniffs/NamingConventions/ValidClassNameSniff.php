@@ -15,7 +15,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 /**
  * \Drupal\Sniffs\NamingConventions\ValidClassNameSniff.
  *
- * Ensures class and interface names start with a capital letter
+ * Ensures class, enum, interface and trait names start with a capital letter
  * and do not use _ separators.
  *
  * @category PHP
@@ -35,7 +35,9 @@ class ValidClassNameSniff implements Sniff
     {
         return [
             T_CLASS,
+            T_ENUM,
             T_INTERFACE,
+            T_TRAIT,
         ];
 
     }//end register()
@@ -60,7 +62,7 @@ class ValidClassNameSniff implements Sniff
 
         // Make sure the first letter is a capital.
         if (preg_match('|^[A-Z]|', $name) === 0) {
-            $error = '%s name must begin with a capital letter';
+            $error = '%s name must use UpperCamel naming and begin with a capital letter';
             $phpcsFile->addError($error, $stackPtr, 'StartWithCapital', $errorData);
         }
 
@@ -68,6 +70,12 @@ class ValidClassNameSniff implements Sniff
         if (strpos($name, '_') !== false) {
             $error = '%s name must use UpperCamel naming without underscores';
             $phpcsFile->addError($error, $stackPtr, 'NoUnderscores', $errorData);
+        }
+
+        // Ensure the name is not all uppercase.
+        if (strtoupper($name) === $name) {
+            $error = '%s name must use UpperCamel naming and not be all uppercase';
+            $phpcsFile->addError($error, $stackPtr, 'NotAllUppercase', $errorData);
         }
 
     }//end process()
