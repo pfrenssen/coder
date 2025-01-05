@@ -1905,3 +1905,12 @@ class CronHook {
   ) {}
 
 }
+
+/**
+ * Doc block is here and an ignore directive is ok.
+ */
+// phpcs:ignore Drupal.NamingConventions.ValidClassName
+enum PUROSELY_WRONG_BUT_OK: int {
+  case   One = 1;
+  case   Two = 2;
+}
