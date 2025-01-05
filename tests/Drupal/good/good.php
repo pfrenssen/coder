@@ -1124,7 +1124,7 @@ class Foo implements FooInterface {
 
 }
 
-t('Some long mulit-line 
+t('Some long mulit-line
   text is weird, but allowed.');
 
 // Anonymous functions should not throw indentation errors here.
@@ -1911,6 +1911,6 @@ class CronHook {
  */
 // phpcs:ignore Drupal.NamingConventions.ValidClassName
 enum PUROSELY_WRONG_BUT_OK: int {
-  case   One = 1;
-  case   Two = 2;
+  case One = 1;
+  case Two = 2;
 }
