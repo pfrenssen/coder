@@ -21,10 +21,9 @@ class ValidEnumCaseUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [
-            5  => 1,
-            7  => 2,
-            9  => 1,
-            11 => 1,
+            5 => 1,
+            7 => 2,
+            9 => 1,
         ];
 
     }//end getErrorList()

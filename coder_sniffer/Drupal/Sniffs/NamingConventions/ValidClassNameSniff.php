@@ -72,8 +72,11 @@ class ValidClassNameSniff implements Sniff
             $phpcsFile->addError($error, $stackPtr, 'NoUnderscores', $errorData);
         }
 
-        // Ensure the name does not contain acronyms.
-        if (preg_match('|[A-Z]{3}|', $name) === 1) {
+        // Ensure the name is not all uppercase.
+        // @todo We could make this more strict to check if there are more than
+        // 2 upper case characters in a row, but not decided yet.
+        // See https://www.drupal.org/project/coder/issues/3497433
+        if (strtoupper($name) === $name) {
             $error = '%s name must use UpperCamel naming and not contain multiple upper case letters in a row';
             $phpcsFile->addError($error, $stackPtr, 'NoUpperAcronyms', $errorData);
         }
