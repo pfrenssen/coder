@@ -380,7 +380,7 @@ class BadUnitTest extends CoderSniffUnitTest
                 827 => 1,
                 829 => 1,
                 836 => 1,
-                838 => 1,
+                838 => 3,
                 849 => 2,
                 860 => 2,
                 867 => 1,
