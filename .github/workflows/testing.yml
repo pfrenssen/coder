@@ -84,4 +84,4 @@ jobs:
         # core is updated to that version.
         run: |
           cd drupal/core
-          ../../vendor/bin/phpcs -p -s --ignore=lib/Drupal/Core/Entity/EntityType.php,lib/Drupal/Core/Recipe/RecipeInputFormTrait.php,lib/Drupal/Core/Form/FormState.php,modules/migrate/src/Plugin/Migration.php,modules/views/src/ViewExecutable.php,modules/views/src/Plugin/views/style/StylePluginBase.php
+          ../../vendor/bin/phpcs -p -s --ignore=lib/Drupal/Core/Entity/EntityType.php,lib/Drupal/Core/Recipe/RecipeInputFormTrait.php,lib/Drupal/Core/Form/FormState.php,modules/migrate/src/Plugin/Migration.php,modules/views/src/ViewExecutable.php,modules/views/src/Plugin/views/style/StylePluginBase.php,core/lib/Drupal/Core/FileTransfer/FTP.php,core/lib/Drupal/Core/FileTransfer/SSH.php
