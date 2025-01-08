@@ -1914,3 +1914,11 @@ enum PUROSELY_WRONG_BUT_OK: int {
   case One = 1;
   case Two = 2;
 }
+
+/**
+ * Doc block is here and an ignore directive is ok.
+ */
+// phpcs:ignore Drupal.NamingConventions.ValidClassName
+function phpcs_ignore_comment() {
+
+}

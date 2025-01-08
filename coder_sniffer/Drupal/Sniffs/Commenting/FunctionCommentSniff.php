@@ -75,12 +75,16 @@ class FunctionCommentSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $ignore = Tokens::$methodPrefixes;
+        $ignore = (Tokens::$methodPrefixes + Tokens::$phpcsCommentTokens);
         $ignore[T_WHITESPACE] = T_WHITESPACE;
         $functionCodeStart    = $stackPtr;
 
         for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
             if (isset($ignore[$tokens[$commentEnd]['code']]) === true) {
+                if (isset(Tokens::$phpcsCommentTokens[$tokens[$commentEnd]['code']]) === true) {
+                    $functionCodeStart = $commentEnd;
+                }
+
                 continue;
             }
 
