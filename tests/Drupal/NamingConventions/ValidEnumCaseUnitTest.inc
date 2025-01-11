@@ -10,6 +10,7 @@ enum Test: int {
   // Upper case parts are allowed for now.
   case FourJSONCase = 4;
   case FiveAndAHorseCorrect = 5;
+  case UIExample = 6;
 }
 
 // Those are all ok.
