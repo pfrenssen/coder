@@ -1929,6 +1929,12 @@ enum PUROSELY_WRONG_BUT_OK: int {
 class TestAlways extends StateActionBase {
 
   /**
+   * Partial names are ok in attributes for now.
+   */
+  #[Assert\NotBlank]
+  private bool $bar;
+
+  /**
    * Partially qualified names are ok in attributes for now.
    */
   #[CLI\Command(
