@@ -11,3 +11,17 @@ enum Test: int {
   case FourJSONCase = 4;
   case FiveAndAHorseCorrect = 5;
 }
+
+// Those are all ok.
+enum FiscalQuarter {
+  case Q1;
+  case Q2;
+  case Q3;
+  case Q4;
+}
+
+enum Plan {
+  case A;
+  case B;
+  case C;
+}
