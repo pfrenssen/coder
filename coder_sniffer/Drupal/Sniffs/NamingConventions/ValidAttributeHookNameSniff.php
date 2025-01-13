@@ -1,13 +1,13 @@
 <?php
 /**
- * \Drupal\Sniffs\General\AttributeHookNoHookPrefix.
+ * \Drupal\Sniffs\NamingConventions\ValidAttributeHookNameSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
-namespace DrupalPractice\Sniffs\General;
+namespace Drupal\Sniffs\NamingConventions;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -19,7 +19,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class AttributeHookNoHookPrefix implements Sniff
+class ValidAttributeHookNameSniff implements Sniff
 {
 
 
@@ -59,7 +59,7 @@ class AttributeHookNoHookPrefix implements Sniff
             && str_contains($tokens[$stackPtr + 3]['content'], 'hook_')
         ) {
             $hookName = $tokens[$stackPtr + 3]['content'];
-            $phpcsFile->addFixableWarning('Hook name should not start with "hook_" prefix. Hook name used:' . $hookName, $stackPtr + 3,'HookAttributePrefixName');
+            $phpcsFile->addFixableWarning('Hook name should not start with "hook_" prefix. Hook name used:' . $hookName, $stackPtr + 3,'AttributePrefixHookName');
             $phpcsFile->fixer->replaceToken($stackPtr + 3, str_replace('hook_', '', $hookName));
         }
 
