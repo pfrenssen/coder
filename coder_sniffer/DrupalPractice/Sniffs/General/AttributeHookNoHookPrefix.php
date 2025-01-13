@@ -1,13 +1,13 @@
 <?php
 /**
- * \Drupal\Sniffs\Classes\FullyQualifiedNamespaceSniff.
+ * \Drupal\Sniffs\General\AttributeHookNoHookPrefix.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
-namespace Drupal\Sniffs\Classes;
+namespace DrupalPractice\Sniffs\General;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -19,7 +19,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class TestSniff implements Sniff
+class AttributeHookNoHookPrefix implements Sniff
 {
 
 
@@ -52,12 +52,6 @@ class TestSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-//        $shortContent = '';
-//        $end = $phpcsFile->findNext([T_ATTRIBUTE_END], ($stackPtr + 1));
-//        for ($i = ($stackPtr + 1); $i < $end; $i++) {
-//            $shortContent .= $tokens[$i]['content'];
-//        }
-//        $a = 1;
 
         if ($tokens[$stackPtr + 1]['type'] === 'T_STRING'
             && $tokens[$stackPtr + 1]['content'] === 'Hook'
