@@ -13,7 +13,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Checks that class references do not use FQN but use statements.
+ * Checks that Hook attribute argument name not starts with "hook_" prefix.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -52,14 +52,19 @@ class TestSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $end = $phpcsFile->findNext([T_ATTRIBUTE_END], ($stackPtr + 2));
-        $shortContent = '';
-        if ()
-        for ($i = ($stackPtr + 1); $i < $end; $i++) {
-          $shortContent .= $tokens[$i]['content'];
-        }
-        if (preg_match('/^hook\(.hook_/i', $shortContent, $matches) === 1) {
-          var_dump($matches);
+//        $shortContent = '';
+//        $end = $phpcsFile->findNext([T_ATTRIBUTE_END], ($stackPtr + 1));
+//        for ($i = ($stackPtr + 1); $i < $end; $i++) {
+//            $shortContent .= $tokens[$i]['content'];
+//        }
+//        $a = 1;
+
+        if ($tokens[$stackPtr + 1]['type'] === 'T_STRING'
+            && $tokens[$stackPtr + 1]['content'] === 'Hook'
+            && $tokens[$stackPtr + 3]['type'] === 'T_CONSTANT_ENCAPSED_STRING'
+            && str_contains($tokens[$stackPtr + 3]['content'], 'hook_')
+        ) {
+            $phpcsFile->addWarning('Hook name should not start with "hook_" prefix. Hook name used:' . $tokens[$stackPtr + 3]['content'], $stackPtr + 3,'HookAttributePrefixName');
         }
 
     }//end process()
