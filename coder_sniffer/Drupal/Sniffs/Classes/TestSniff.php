@@ -64,7 +64,9 @@ class TestSniff implements Sniff
             && $tokens[$stackPtr + 3]['type'] === 'T_CONSTANT_ENCAPSED_STRING'
             && str_contains($tokens[$stackPtr + 3]['content'], 'hook_')
         ) {
-            $phpcsFile->addWarning('Hook name should not start with "hook_" prefix. Hook name used:' . $tokens[$stackPtr + 3]['content'], $stackPtr + 3,'HookAttributePrefixName');
+            $hookName = $tokens[$stackPtr + 3]['content'];
+            $phpcsFile->addWarning('Hook name should not start with "hook_" prefix. Hook name used:' . $hookName, $stackPtr + 3,'HookAttributePrefixName');
+            $phpcsFile->fixer->replaceToken($stackPtr + 3, str_replace('hook_', '', $hookName));
         }
 
     }//end process()
