@@ -65,7 +65,7 @@ class TestSniff implements Sniff
             && str_contains($tokens[$stackPtr + 3]['content'], 'hook_')
         ) {
             $hookName = $tokens[$stackPtr + 3]['content'];
-            $phpcsFile->addWarning('Hook name should not start with "hook_" prefix. Hook name used:' . $hookName, $stackPtr + 3,'HookAttributePrefixName');
+            $phpcsFile->addFixableWarning('Hook name should not start with "hook_" prefix. Hook name used:' . $hookName, $stackPtr + 3,'HookAttributePrefixName');
             $phpcsFile->fixer->replaceToken($stackPtr + 3, str_replace('hook_', '', $hookName));
         }
 
