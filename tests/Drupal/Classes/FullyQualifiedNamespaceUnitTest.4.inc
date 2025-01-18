@@ -8,7 +8,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
 
 /**
- * Test action which is always usable.
+ * Fully qualified names are allowed, there is no standard yet.
  */
 #[\Drupal\action_link\Attribute\StateAction(
   id: 'test_always',
