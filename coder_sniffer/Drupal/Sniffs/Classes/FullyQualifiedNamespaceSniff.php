@@ -65,6 +65,11 @@ class FullyQualifiedNamespaceSniff implements Sniff
             return;
         }
 
+        // Skip names in PHP attributes, no standards defined yet.
+        if (isset($tokens[$stackPtr]['attribute_closer']) === true) {
+            return $tokens[$stackPtr]['attribute_closer'];
+        }
+
         // Check if this is a use statement and ignore those.
         $before = $phpcsFile->findPrevious([T_STRING, T_NS_SEPARATOR, T_WHITESPACE, T_COMMA, T_AS], $stackPtr, null, true);
         if ($tokens[$before]['code'] === T_USE || $tokens[$before]['code'] === T_NAMESPACE) {

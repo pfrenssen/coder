@@ -5,8 +5,6 @@
  * Some function comment tests.
  */
 
-use Some\Attribute;
-
 /**
  * Test.
  *
@@ -581,7 +579,7 @@ class Test41 {
   /**
    * Method docblock.
    */
-  #[Attribute(foo: 'bar')]
+  #[Some\Attribute(foo: 'bar')]
   #[Other\Attribute(baz: 'qux')]
   public function method() {
   }

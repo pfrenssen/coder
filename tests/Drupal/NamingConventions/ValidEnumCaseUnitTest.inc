@@ -10,4 +10,19 @@ enum Test: int {
   // Upper case parts are allowed for now.
   case FourJSONCase = 4;
   case FiveAndAHorseCorrect = 5;
+  case UIExample = 6;
+}
+
+// Those are all ok.
+enum FiscalQuarter {
+  case Q1;
+  case Q2;
+  case Q3;
+  case Q4;
+}
+
+enum Plan {
+  case A;
+  case B;
+  case C;
 }

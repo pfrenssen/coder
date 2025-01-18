@@ -38,11 +38,7 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
         case 'FullyQualifiedNamespaceUnitTest.3.inc':
             return [10 => 2];
         case 'FullyQualifiedNamespaceUnitTest.4.inc':
-            return [
-                13 => 1,
-                15 => 1,
-                16 => 1,
-            ];
+            return [];
         }//end switch
 
         return [];
