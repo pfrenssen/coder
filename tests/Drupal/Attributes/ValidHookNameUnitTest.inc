@@ -20,3 +20,11 @@ function module_node_view() {
 function module_piratehook_view() {
 
 }
+
+/**
+ * Implements hook_hook_info().
+ */
+#[Hook('hook_info')]
+function module_hook_info() {
+
+}
