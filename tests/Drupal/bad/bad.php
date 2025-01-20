@@ -868,12 +868,4 @@ function test30(TestType $a = NULL) {
   echo "Hello";
 }
 
-/**
- * Implements hook_node_view().
- */
-#[Hook('hook_node_view')]
-function bad_node_view() {
-
-}
-
 ?>

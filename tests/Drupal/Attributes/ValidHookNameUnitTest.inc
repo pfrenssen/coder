@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Contains Test.
+ */
+
+/**
+ * Implements hook_node_view().
+ */
+#[Hook('hook_node_view')]
+function module_node_view() {
+
+}
+
+/**
+ * Implements hook_piratehook_view().
+ */
+#[Hook('piratehook_view')]
+function module_piratehook_view() {
+
+}
