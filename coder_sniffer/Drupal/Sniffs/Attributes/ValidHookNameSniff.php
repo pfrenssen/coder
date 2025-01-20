@@ -22,6 +22,13 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 class ValidHookNameSniff implements Sniff
 {
 
+    /**
+     * List of hooks that should not be fixed.
+     *
+     * @var string[]
+     */
+    public array $hookExceptions = ['hook_info'];
+
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -51,17 +58,31 @@ class ValidHookNameSniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
-
-        if ($tokens[($stackPtr + 1)]['type'] === 'T_STRING'
-            && $tokens[($stackPtr + 1)]['content'] === 'Hook'
-            && $tokens[($stackPtr + 3)]['type'] === 'T_CONSTANT_ENCAPSED_STRING'
-            && str_contains($tokens[($stackPtr + 3)]['content'], 'hook_')
+        $tokens        = $phpcsFile->getTokens();
+        $attributeName = $phpcsFile->findNext(T_STRING, ($stackPtr + 1));
+        if ($attributeName !== false
+            && $tokens[$attributeName]['content'] === 'Hook'
         ) {
-            $hookName = $tokens[($stackPtr + 3)]['content'];
-            $phpcsFile->addFixableWarning('Hook name should not start with "hook_" prefix. Hook name used:'.$hookName, ($stackPtr + 3), 'AttributePrefixHookName');
-            $phpcsFile->fixer->replaceToken(($stackPtr + 3), str_replace('hook_', '', $hookName));
-        }
+            $hookName = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, ($attributeName + 2));
+            if ($hookName !== false
+            ) {
+                // Remove outer quotes.
+                $hookNameValue = trim($tokens[$hookName]['content'], '"\'');
+
+                if (in_array($hookNameValue, $this->hookExceptions) === false
+                    && strpos($hookNameValue, 'hook_') === 0
+                ) {
+                    $fix = $phpcsFile->addFixableWarning("Hook name should not start with 'hook_'. Hook name used: $hookNameValue", $hookName, 'HookPrefix');
+                    if ($fix === true && strlen($hookNameValue) > 5) {
+                        // Remove "hook_" prefix.
+                        $hookNameValueFixed = substr($hookNameValue, 5);
+                        // Return outer quotes.
+                        $hookNameValueFixed = str_replace($hookNameValue, $hookNameValueFixed, $tokens[$hookName]['content']);
+                        $phpcsFile->fixer->replaceToken($hookName, $hookNameValueFixed);
+                    }
+                }
+            }
+        }//end if
 
     }//end process()
 
