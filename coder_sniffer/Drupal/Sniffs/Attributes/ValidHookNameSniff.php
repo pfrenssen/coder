@@ -1,13 +1,13 @@
 <?php
 /**
- * \Drupal\Sniffs\NamingConventions\ValidAttributeHookNameSniff.
+ * \Drupal\Sniffs\Attribute\ValidHookNameSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 
-namespace Drupal\Sniffs\NamingConventions;
+namespace Drupal\Sniffs\Attributes;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -19,7 +19,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class ValidAttributeHookNameSniff implements Sniff
+class ValidHookNameSniff implements Sniff
 {
 
 
@@ -53,14 +53,14 @@ class ValidAttributeHookNameSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        if ($tokens[$stackPtr + 1]['type'] === 'T_STRING'
-            && $tokens[$stackPtr + 1]['content'] === 'Hook'
-            && $tokens[$stackPtr + 3]['type'] === 'T_CONSTANT_ENCAPSED_STRING'
-            && str_contains($tokens[$stackPtr + 3]['content'], 'hook_')
+        if ($tokens[($stackPtr + 1)]['type'] === 'T_STRING'
+            && $tokens[($stackPtr + 1)]['content'] === 'Hook'
+            && $tokens[($stackPtr + 3)]['type'] === 'T_CONSTANT_ENCAPSED_STRING'
+            && str_contains($tokens[($stackPtr + 3)]['content'], 'hook_')
         ) {
-            $hookName = $tokens[$stackPtr + 3]['content'];
-            $phpcsFile->addFixableWarning('Hook name should not start with "hook_" prefix. Hook name used:' . $hookName, $stackPtr + 3,'AttributePrefixHookName');
-            $phpcsFile->fixer->replaceToken($stackPtr + 3, str_replace('hook_', '', $hookName));
+            $hookName = $tokens[($stackPtr + 3)]['content'];
+            $phpcsFile->addFixableWarning('Hook name should not start with "hook_" prefix. Hook name used:'.$hookName, ($stackPtr + 3), 'AttributePrefixHookName');
+            $phpcsFile->fixer->replaceToken(($stackPtr + 3), str_replace('hook_', '', $hookName));
         }
 
     }//end process()
