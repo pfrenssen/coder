@@ -37,7 +37,14 @@ class ValidHookNameUnitTest extends CoderSniffUnitTest
      */
     protected function getWarningList(string $testFile): array
     {
-        return [11 => 1];
+        return [
+            13  => 1,
+            23  => 1,
+            32  => 1,
+            40  => 1,
+            88  => 1,
+            103 => 1,
+        ];
 
     }//end getWarningList()
 
