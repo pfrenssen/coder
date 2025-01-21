@@ -16,8 +16,8 @@ function module_valid() {
 /**
  * Single quotes.
  */
-#[Hook('hook_node_view')]
-function module_node_view() {
+#[Hook('hook_info')]
+function module_info() {
 
 }
 
@@ -61,22 +61,6 @@ function module_piratehook_view() {
  */
 #[Hook('hook_hookpirate_view')]
 function module_hookpirate_view() {
-
-}
-
-/**
- * "hook_info" is exception. No warning.
- */
-#[Hook('hook_info')]
-function module_hook_info() {
-
-}
-
-/**
- * Named argument. "hook_info" is exception. No warning.
- */
-#[Hook(hook: 'hook_info')]
-function mymodule_hook_info() {
 
 }
 

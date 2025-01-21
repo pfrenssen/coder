@@ -44,8 +44,8 @@ class ValidHookNameUnitTest extends CoderSniffUnitTest
             44  => 1,
             52  => 1,
             62  => 1,
-            101 => 1,
-            116 => 1,
+            85  => 1,
+            100 => 1,
         ];
 
     }//end getWarningList()

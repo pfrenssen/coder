@@ -22,13 +22,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 class ValidHookNameSniff implements Sniff
 {
 
-    /**
-     * List of hooks that should not be fixed.
-     *
-     * @var string[]
-     */
-    public array $hookExceptions = ['hook_info'];
-
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -69,9 +62,7 @@ class ValidHookNameSniff implements Sniff
                 // Remove outer quotes.
                 $hookNameValue = trim($tokens[$hookName]['content'], '"\'');
 
-                if (in_array($hookNameValue, $this->hookExceptions) === false
-                    && strpos($hookNameValue, 'hook_') === 0
-                ) {
+                if (strpos($hookNameValue, 'hook_') === 0) {
                     $fix = $phpcsFile->addFixableWarning("Hook name should not start with 'hook_'. Hook name used: $hookNameValue", $hookName, 'HookPrefix');
                     if ($fix === true && strlen($hookNameValue) > 5) {
                         // Remove "hook_" prefix.
