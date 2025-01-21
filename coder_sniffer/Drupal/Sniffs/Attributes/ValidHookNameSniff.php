@@ -1,6 +1,6 @@
 <?php
 /**
- * \Drupal\Sniffs\Attribute\ValidHookNameSniff.
+ * \Drupal\Sniffs\Attributes\ValidHookNameSniff.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
