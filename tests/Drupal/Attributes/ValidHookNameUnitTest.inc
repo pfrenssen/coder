@@ -57,7 +57,7 @@ function module_piratehook_view() {
 /**
  * Implements hook_hookpirate_view().
  *
- * "hook" is a part of hook name. No warning.
+ * "hook" is a part of hook name.
  */
 #[Hook('hook_hookpirate_view')]
 function module_hookpirate_view() {
