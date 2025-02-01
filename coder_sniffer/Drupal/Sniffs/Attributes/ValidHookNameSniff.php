@@ -57,16 +57,17 @@ class ValidHookNameSniff implements Sniff
             && $tokens[$attributeName]['content'] === 'Hook'
         ) {
             $hookName = $phpcsFile->findNext(T_CONSTANT_ENCAPSED_STRING, ($attributeName + 2));
-            if ($hookName !== false
-            ) {
+            if ($hookName !== false) {
                 // Remove outer quotes.
                 $hookNameValue = trim($tokens[$hookName]['content'], '"\'');
 
-                if (strpos($hookNameValue, 'hook_') === 0) {
-                    $fix = $phpcsFile->addFixableWarning("Hook name should not start with 'hook_'. Hook name used: $hookNameValue", $hookName, 'HookPrefix');
-                    if ($fix === true && strlen($hookNameValue) > 5) {
-                        // Remove "hook_" prefix.
-                        $hookNameValueFixed = substr($hookNameValue, 5);
+                if (strpos($hookNameValue, 'hook_') === 0 && $hookNameValue !== 'hook_') {
+                    // Remove "hook_" prefix.
+                    $hookNameValueFixed = substr($hookNameValue, 5);
+                    $message            = sprintf("The hook name should not start with 'hook_', expected '%s' but found '%s'", $hookNameValueFixed, $hookNameValue);
+
+                    $fix = $phpcsFile->addFixableWarning($message, $hookName, 'HookPrefix');
+                    if ($fix === true) {
                         // Return outer quotes.
                         $hookNameValueFixed = str_replace($hookNameValue, $hookNameValueFixed, $tokens[$hookName]['content']);
                         $phpcsFile->fixer->replaceToken($hookName, $hookNameValueFixed);

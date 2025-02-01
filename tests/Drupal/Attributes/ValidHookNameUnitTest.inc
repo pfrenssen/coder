@@ -29,6 +29,13 @@ function module_node_load() {
 
 }
 
+/**
+ * Not finished hook name. No warning
+ */
+#[Hook('hook_')]
+function module_system() {
+
+}
 
 /**
  * Attribute named argument.
