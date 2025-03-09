@@ -63,7 +63,7 @@ class ValidClassNameSniff implements Sniff
         // Make sure the first letter is a capital.
         if (preg_match('|^[A-Z]|', $name) === 0) {
             $error = '%s name must use UpperCamel naming and begin with a capital letter';
-            $phpcsFile->addError($error, $stackPtr, 'StartWithCapital', $errorData);
+            $this->processUpperLowerCase($className, $phpcsFile, 'StartWithCapital', $error, $errorData);
         }
 
         // Search for underscores.
@@ -75,10 +75,44 @@ class ValidClassNameSniff implements Sniff
         // Ensure the name does not contain acronyms.
         if (preg_match('|[A-Z]{3}|', $name) === 1) {
             $error = '%s name must use UpperCamel naming and not contain multiple upper case letters in a row';
-            $phpcsFile->addError($error, $stackPtr, 'NoUpperAcronyms', $errorData);
+            $this->processUpperLowerCase($className, $phpcsFile, 'NoUpperAcronyms', $error, $errorData);
         }
 
     }//end process()
+
+
+    protected function processUpperLowerCase(int $stackPtr, File $phpcsFile, string $errorCode, string $errorMessage, array $errorData): void
+    {
+        $fix = $phpcsFile->addFixableError($errorMessage, $stackPtr, $errorCode, $errorData);
+        if ($fix === false) {
+            return;
+        }
+
+        $tokens = $phpcsFile->getTokens();
+        $name   = ucfirst($tokens[$stackPtr]['content']);
+        $upperCaseStarted = false;
+        for ($i = 0; $i < strlen($name); $i++) {
+            if ($upperCaseStarted === true
+                && ctype_upper($name[$i]) === true
+                && isset($name[($i + 1)])
+                && (ctype_upper($name[($i + 1)]) === true || $name[($i + 1)] === '_')
+            ) {
+                $name[$i] = strtolower($name[$i]);
+            } else {
+                if (ctype_upper($name[$i]) === true) {
+                    $upperCaseStarted = true;
+                } else {
+                    $upperCaseStarted = false;
+                }
+            }
+        }
+
+        $name[(strlen($name) - 1)] = strtolower($name[(strlen($name) - 1)]);
+        $phpcsFile->fixer->replaceToken($stackPtr, $name);
+
+        // @todo Can we move files?
+
+    }//end processUpperLowerCase()
 
 
 }//end class
