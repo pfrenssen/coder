@@ -11,6 +11,7 @@ namespace Drupal\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Ensures doc blocks follow basic formatting.
@@ -50,9 +51,18 @@ class DocCommentSniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $tokens       = $phpcsFile->getTokens();
-        $commentEnd   = $phpcsFile->findNext(T_DOC_COMMENT_CLOSE_TAG, ($stackPtr + 1));
-        $commentStart = $tokens[$commentEnd]['comment_opener'];
+        $tokens = $phpcsFile->getTokens();
+
+        if (isset($tokens[$stackPtr]['comment_closer']) === false
+            || ($tokens[$tokens[$stackPtr]['comment_closer']]['content'] === ''
+            && $tokens[$stackPtr]['comment_closer'] === ($phpcsFile->numTokens - 1))
+        ) {
+            // Don't process an unfinished comment during live coding.
+            return;
+        }
+
+        $commentStart = $stackPtr;
+        $commentEnd   = $tokens[$stackPtr]['comment_closer'];
 
         $empty = [
             T_DOC_COMMENT_WHITESPACE,
@@ -463,15 +473,21 @@ class DocCommentSniff implements Sniff
                 // Check for a value. No value means no padding needed.
                 $string = $phpcsFile->findNext(T_DOC_COMMENT_STRING, $tag, $commentEnd);
                 if ($string !== false && $tokens[$string]['line'] === $tokens[$tag]['line']) {
-                    $paddings[$tag] = strlen($tokens[($tag + 1)]['content']);
+                    $paddings[$tag] = $tokens[($tag + 1)]['length'];
                 }
             }
 
             // Check that there was single blank line after the tag block
-            // but account for a multi-line tag comments.
+            // but account for multi-line tag comments.
+            $find = Tokens::$phpcsCommentTokens;
+            $find[T_DOC_COMMENT_TAG] = T_DOC_COMMENT_TAG;
+
             $lastTag = $group[$pos];
-            $next    = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($lastTag + 3), $commentEnd);
-            if ($next !== false && $tokens[$next]['column'] === $tokens[$firstTag]['column']) {
+            $next    = $phpcsFile->findNext($find, ($lastTag + 3), $commentEnd);
+            if ($next !== false
+                && $tokens[$next]['column'] === $tokens[$firstTag]['column']
+                && in_array($tokens[$lastTag]['content'], $checkTags) === true
+            ) {
                 $prev = $phpcsFile->findPrevious([T_DOC_COMMENT_TAG, T_DOC_COMMENT_STRING], ($next - 1), $commentStart);
                 if ($tokens[$next]['line'] !== ($tokens[$prev]['line'] + 2)) {
                     $error = 'There must be a single blank line after a tag group';
