@@ -5,8 +5,6 @@
  * Testing class/trait comments.
  */
 
-use Some\Attribute;
-
 /**
  *
  */
@@ -62,7 +60,7 @@ class WrongSpacing {
 /**
  * This is correct.
  */
-#[Attribute(foo: 'bar')]
+#[Some\Attribute(foo: 'bar')]
 #[Other\Attribute(baz: 'qux')]
 class DoubleAttribute {
 

@@ -1914,3 +1914,75 @@ enum PUROSELY_WRONG_BUT_OK: int {
   case One = 1;
   case Two = 2;
 }
+
+/**
+ * Fully qualified class name is allowed in PHP attributes for now.
+ */
+#[\Drupal\action_link\Attribute\StateAction(
+  id: 'test_always',
+  label: new \Drupal\Core\StringTranslation\TranslatableMarkup('Test Always'),
+  description: new \Drupal\Core\StringTranslation\TranslatableMarkup('Test Always'),
+  directions: [
+    'change' => 'change',
+  ]
+)]
+class TestAlways extends StateActionBase {
+
+  /**
+   * Partial names are ok in attributes for now.
+   */
+  #[Assert\NotBlank]
+  private bool $bar;
+
+  /**
+   * Partially qualified names are ok in attributes for now.
+   */
+  #[CLI\Command(
+    name: 'example',
+    aliases: ['example-foo']
+  )]
+  #[CLI\Option(name: 'pretty_format', description: 'Display the count in pretty format.')]
+  public function test(array $options = ['pretty-format' => TRUE]): void {
+  }
+
+}
+
+/**
+ * Doc block is here and an ignore directive is ok.
+ */
+// phpcs:ignore Drupal.NamingConventions.ValidClassName
+function phpcs_ignore_comment() {
+
+}
+
+/**
+ * Test class.
+ */
+class TestPlugin {
+
+  /**
+   * Gets a fallback id for a missing plugin.
+   *
+   * This method should be implemented in extending classes that also implement
+   * FallbackPluginManagerInterface. It is called by
+   * PluginManagerBase::handlePluginNotFound on the abstract class, and
+   * therefore should be defined as well on the abstract class to prevent static
+   * analysis errors.
+   *
+   * @param string $plugin_id
+   *   The ID of the missing requested plugin.
+   * @param array $configuration
+   *   An array of configuration relevant to the plugin instance.
+   *
+   * phpcs:ignore Drupal.Commenting.FunctionComment.InvalidNoReturn
+   * @return string
+   *   The id of an existing plugin to use when the plugin does not exist.
+   *
+   * @throws \BadMethodCallException
+   *   If the method is not implemented in the concrete plugin manager class.
+   */
+  protected function getFallbackPluginId($plugin_id, array $configuration = []) {
+    throw new \BadMethodCallException(static::class . '::getFallbackPluginId() not implemented.');
+  }
+
+}
