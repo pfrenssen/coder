@@ -63,7 +63,6 @@ class ClassCommentSniff implements Sniff
         $name           = $tokens[$stackPtr]['content'];
         $classCodeStart = $stackPtr;
 
-        $previousContent = null;
         for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
             if (isset($find[$tokens[$commentEnd]['code']]) === true) {
                 if (isset(Tokens::$phpcsCommentTokens[$tokens[$commentEnd]['code']]) === true) {
@@ -71,10 +70,6 @@ class ClassCommentSniff implements Sniff
                 }
 
                 continue;
-            }
-
-            if ($previousContent === null) {
-                $previousContent = $commentEnd;
             }
 
             if ($tokens[$commentEnd]['code'] === T_ATTRIBUTE_END

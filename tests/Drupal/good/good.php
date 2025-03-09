@@ -1946,3 +1946,43 @@ class TestAlways extends StateActionBase {
   }
 
 }
+
+/**
+ * Doc block is here and an ignore directive is ok.
+ */
+// phpcs:ignore Drupal.NamingConventions.ValidClassName
+function phpcs_ignore_comment() {
+
+}
+
+/**
+ * Test class.
+ */
+class TestPlugin {
+
+  /**
+   * Gets a fallback id for a missing plugin.
+   *
+   * This method should be implemented in extending classes that also implement
+   * FallbackPluginManagerInterface. It is called by
+   * PluginManagerBase::handlePluginNotFound on the abstract class, and
+   * therefore should be defined as well on the abstract class to prevent static
+   * analysis errors.
+   *
+   * @param string $plugin_id
+   *   The ID of the missing requested plugin.
+   * @param array $configuration
+   *   An array of configuration relevant to the plugin instance.
+   *
+   * phpcs:ignore Drupal.Commenting.FunctionComment.InvalidNoReturn
+   * @return string
+   *   The id of an existing plugin to use when the plugin does not exist.
+   *
+   * @throws \BadMethodCallException
+   *   If the method is not implemented in the concrete plugin manager class.
+   */
+  protected function getFallbackPluginId($plugin_id, array $configuration = []) {
+    throw new \BadMethodCallException(static::class . '::getFallbackPluginId() not implemented.');
+  }
+
+}
