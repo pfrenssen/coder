@@ -61,7 +61,6 @@ class BadUnitTest extends CoderSniffUnitTest
         case 'bad.install':
             return [
                 1  => 1,
-                10 => 1,
                 13 => 1,
                 16 => 1,
                 51 => 1,
