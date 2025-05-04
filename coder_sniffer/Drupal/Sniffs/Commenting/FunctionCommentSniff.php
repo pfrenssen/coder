@@ -99,7 +99,7 @@ class FunctionCommentSniff implements Sniff
             // If there is a phpstan-ignore inline comment disregard it and continue searching backwards
             // to find the function comment.
             if ($tokens[$commentEnd]['code'] === T_COMMENT
-                && preg_match('/\@xphpstan-ignore/', $tokens[$commentEnd]['content']) === true
+                && preg_match('/\@phpstan-ignore/', $tokens[$commentEnd]['content']) === true
             ) {
                 $phpstanCommentLines += 1;
                 continue;
