@@ -99,14 +99,14 @@ class FunctionCommentSniff implements Sniff
             // If there is a phpstan-ignore inline comment disregard it and continue searching backwards
             // to find the function comment.
             if ($tokens[$commentEnd]['code'] === T_COMMENT
-                && preg_match('/\@xphpstan-ignore/', $tokens[$commentEnd]['content'])
+                && preg_match('/\@xphpstan-ignore/', $tokens[$commentEnd]['content']) === true
             ) {
                 $phpstanCommentLines += 1;
                 continue;
             }
 
             break;
-        }
+        }//end for
 
         // Constructor methods are exempt from requiring a docblock.
         // @see https://www.drupal.org/project/coder/issues/3400560.
