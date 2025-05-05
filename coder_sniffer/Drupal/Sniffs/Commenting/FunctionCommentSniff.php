@@ -78,7 +78,6 @@ class FunctionCommentSniff implements Sniff
         $ignore = (Tokens::$methodPrefixes + Tokens::$phpcsCommentTokens);
         $ignore[T_WHITESPACE] = T_WHITESPACE;
         $functionCodeStart    = $stackPtr;
-        $phpstanCommentLines  = 0;
 
         for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
             if (isset($ignore[$tokens[$commentEnd]['code']]) === true) {
@@ -101,7 +100,7 @@ class FunctionCommentSniff implements Sniff
             if ($tokens[$commentEnd]['code'] === T_COMMENT
                 && preg_match('/\@phpstan-ignore/', $tokens[$commentEnd]['content']) === 1
             ) {
-                $phpstanCommentLines += 1;
+                $functionCodeStart = $commentEnd;
                 continue;
             }
 
@@ -176,7 +175,7 @@ class FunctionCommentSniff implements Sniff
             }
         }//end foreach
 
-        if ($tokens[$commentEnd]['line'] !== ($tokens[$functionCodeStart]['line'] - 1 - $phpstanCommentLines)) {
+        if ($tokens[$commentEnd]['line'] !== ($tokens[$functionCodeStart]['line'] - 1)) {
             $error = 'There must be no blank lines after the function comment';
             $fix   = $phpcsFile->addFixableError($error, $commentEnd, 'SpacingAfter');
             if ($fix === true) {
