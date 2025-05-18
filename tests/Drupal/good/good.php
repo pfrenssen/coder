@@ -1124,7 +1124,7 @@ class Foo implements FooInterface {
 
 }
 
-t('Some long mulit-line 
+t('Some long mulit-line
   text is weird, but allowed.');
 
 // Anonymous functions should not throw indentation errors here.
@@ -1983,6 +1983,22 @@ class TestPlugin {
    */
   protected function getFallbackPluginId($plugin_id, array $configuration = []) {
     throw new \BadMethodCallException(static::class . '::getFallbackPluginId() not implemented.');
+  }
+
+}
+
+/**
+ * Test for @phpstan-ignore-next-line.
+ *
+ * Coder issue https://www.drupal.org/project/coder/issues/3516489
+ */
+class TestPhpstanIgnore1 extends BaseMySqlSchema {
+
+  /**
+   * This is the function docblock comment.
+   */
+  // @phpstan-ignore-next-line missingType.return
+  public function addField($table, $field, $spec, $keys_new = []) {
   }
 
 }
