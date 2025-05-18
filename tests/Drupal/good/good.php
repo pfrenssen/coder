@@ -1986,3 +1986,20 @@ class TestPlugin {
   }
 
 }
+
+/**
+ * Provides a collection of condition plugins.
+ */
+class ConditionPluginCollection extends DefaultLazyPluginCollection {
+
+  /**
+   * {@inheritdoc}
+   *
+   * phpcs:ignore Drupal.Commenting.FunctionComment.MissingReturnComment
+   * @return \Drupal\Core\Condition\ConditionInterface
+   */
+  public function &get($instance_id) {
+    return 'x';
+  }
+
+}
