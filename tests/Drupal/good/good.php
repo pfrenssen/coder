@@ -1993,13 +1993,6 @@ class TestPlugin {
 class ConditionPluginCollection extends DefaultLazyPluginCollection {
 
   /**
-   * An array of collected contexts for conditions.
-   *
-   * @var \Drupal\Component\Plugin\Context\ContextInterface[]
-   */
-  protected $conditionContexts = [];
-
-  /**
    * {@inheritdoc}
    *
    * phpcs:ignore Drupal.Commenting.FunctionComment.MissingReturnComment
