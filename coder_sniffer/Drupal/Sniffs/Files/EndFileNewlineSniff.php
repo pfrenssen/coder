@@ -27,18 +27,6 @@ class EndFileNewlineSniff implements Sniff
 
 
     /**
-     * A list of tokenizers this sniff supports.
-     *
-     * @var array<string>
-     */
-    public $supportedTokenizers = [
-        'PHP',
-        'JS',
-        'CSS',
-    ];
-
-
-    /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array<int|string>
@@ -65,14 +53,8 @@ class EndFileNewlineSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
         // Skip to the end of the file.
-        $tokens = $phpcsFile->getTokens();
-        if ($phpcsFile->tokenizerType === 'PHP') {
-            $lastToken = ($phpcsFile->numTokens - 1);
-        } else {
-            // JS and CSS have an artificial token at the end which we have to
-            // ignore.
-            $lastToken = ($phpcsFile->numTokens - 2);
-        }
+        $tokens    = $phpcsFile->getTokens();
+        $lastToken = ($phpcsFile->numTokens - 1);
 
         // Hard-coding the expected \n in this sniff as it is PSR-2 specific and
         // PSR-2 enforces the use of unix style newlines.

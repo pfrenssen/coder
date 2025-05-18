@@ -55,13 +55,6 @@ class CloseBracketSpacingSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        // Ignore curly brackets in javascript files.
-        if ($tokens[$stackPtr]['code'] === T_CLOSE_CURLY_BRACKET
-            && $phpcsFile->tokenizerType === 'JS'
-        ) {
-            return;
-        }
-
         if (isset($tokens[($stackPtr - 1)]) === true
             && $tokens[($stackPtr - 1)]['code'] === T_WHITESPACE
         ) {

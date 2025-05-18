@@ -54,13 +54,6 @@ class OpenBracketSpacingSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        // Ignore curly brackets in javascript files.
-        if ($tokens[$stackPtr]['code'] === T_OPEN_CURLY_BRACKET
-            && $phpcsFile->tokenizerType === 'JS'
-        ) {
-            return;
-        }
-
         if (isset($tokens[($stackPtr + 1)]) === true
             && $tokens[($stackPtr + 1)]['code'] === T_WHITESPACE
             && strpos($tokens[($stackPtr + 1)]['content'], $phpcsFile->eolChar) === false

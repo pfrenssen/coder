@@ -209,38 +209,6 @@ class ControlSignatureSniff implements Sniff
             if (isset($tokens[$stackPtr]['scope_closer']) === true) {
                 $closer = $tokens[$stackPtr]['scope_closer'];
             }
-
-            // Do-while loops should have curly braces. This is optional in
-            // Javascript.
-            if ($closer === false && $tokens[$stackPtr]['code'] === T_DO && $phpcsFile->tokenizerType === 'JS') {
-                $error  = 'The code block in a do-while loop should be surrounded by curly braces';
-                $fix    = $phpcsFile->addFixableError($error, $stackPtr, 'DoWhileCurlyBraces');
-                $closer = $phpcsFile->findNext(T_WHILE, $stackPtr);
-                if ($fix === true) {
-                    $phpcsFile->fixer->beginChangeset();
-                    // Append an opening curly brace followed by a newline after
-                    // the DO.
-                    $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
-                    if ($next !== ($stackPtr + 1)) {
-                        $phpcsFile->fixer->replaceToken(($stackPtr + 1), '');
-                    }
-
-                    $phpcsFile->fixer->addContent($stackPtr, ' {'.$phpcsFile->eolChar);
-
-                    // Prepend a closing curly brace before the WHILE and ensure
-                    // it is on a new line.
-                    $prepend = $phpcsFile->eolChar;
-                    if ($tokens[($closer - 1)]['code'] === T_WHITESPACE) {
-                        $prepend = '';
-                        if ($tokens[($closer - 1)]['content'] !== $phpcsFile->eolChar) {
-                            $phpcsFile->fixer->replaceToken(($closer - 1), $phpcsFile->eolChar);
-                        }
-                    }
-
-                    $phpcsFile->fixer->addContentBefore($closer, $prepend.'} ');
-                    $phpcsFile->fixer->endChangeset();
-                }//end if
-            }//end if
         } else if ($tokens[$stackPtr]['code'] === T_ELSE
             || $tokens[$stackPtr]['code'] === T_ELSEIF
             || $tokens[$stackPtr]['code'] === T_CATCH

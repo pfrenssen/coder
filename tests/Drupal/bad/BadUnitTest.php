@@ -32,26 +32,6 @@ class BadUnitTest extends CoderSniffUnitTest
                 1 => 2,
                 8 => 1,
             ];
-        case 'bad.css':
-            return [
-                1  => 1,
-                2  => 1,
-                3  => 2,
-                4  => 1,
-                5  => 1,
-                6  => 1,
-                7  => 1,
-                8  => 1,
-                9  => 1,
-                12 => 3,
-                16 => 1,
-                17 => 1,
-                21 => 1,
-                26 => 1,
-                27 => 1,
-                31 => 1,
-                36 => 1,
-            ];
         case 'bad.info':
             return [
                 1 => 3,

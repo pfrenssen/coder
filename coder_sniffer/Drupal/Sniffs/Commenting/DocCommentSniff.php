@@ -83,8 +83,7 @@ class DocCommentSniff implements Sniff
         }
 
         // The first line of the comment should just be the /** code.
-        // In JSDoc there are cases with @lends that are on the same line as code.
-        if ($tokens[$short]['line'] === $tokens[$stackPtr]['line'] && $phpcsFile->tokenizerType !== 'JS') {
+        if ($tokens[$short]['line'] === $tokens[$stackPtr]['line']) {
             $error = 'The open comment tag must be the only content on the line';
             $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'ContentAfterOpen');
             if ($fix === true) {
@@ -137,12 +136,6 @@ class DocCommentSniff implements Sniff
 
         // Check for a comment description.
         if ($tokens[$short]['code'] !== T_DOC_COMMENT_STRING) {
-            // JSDoc has many cases of @type declaration that don't have a
-            // description.
-            if ($phpcsFile->tokenizerType === 'JS') {
-                return;
-            }
-
             // PHPUnit test methods are allowed to skip the short description and
             // only provide an @covers annotation.
             if ($tokens[$short]['content'] === '@covers') {
@@ -527,9 +520,6 @@ class DocCommentSniff implements Sniff
         // of @code, @todo and link tags.
         if ($paramGroupid !== null && $paramGroupid !== 0
             && in_array($tokens[$tokens[$commentStart]['comment_tags'][0]]['content'], ['@code', '@todo', '@link', '@endlink', '@codingStandardsIgnoreStart']) === false
-            // In JSDoc we can have many other valid tags like @function or
-            // tags like @constructor before the param tags.
-            && $phpcsFile->tokenizerType !== 'JS'
         ) {
             $error = 'Parameter tags must be defined first in a doc comment';
             $phpcsFile->addError($error, $tagGroups[$paramGroupid][0], 'ParamNotFirst');
