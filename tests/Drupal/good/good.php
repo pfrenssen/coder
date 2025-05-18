@@ -1986,3 +1986,27 @@ class TestPlugin {
   }
 
 }
+
+/**
+ * Provides a collection of condition plugins.
+ */
+class ConditionPluginCollection extends DefaultLazyPluginCollection {
+
+  /**
+   * An array of collected contexts for conditions.
+   *
+   * @var \Drupal\Component\Plugin\Context\ContextInterface[]
+   */
+  protected $conditionContexts = [];
+
+  /**
+   * {@inheritdoc}
+   *
+   * phpcs:ignore Drupal.Commenting.FunctionComment.MissingReturnComment
+   * @return \Drupal\Core\Condition\ConditionInterface
+   */
+  public function &get($instance_id) {
+    return 'x';
+  }
+
+}
