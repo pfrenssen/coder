@@ -27,6 +27,7 @@
   <rule ref="Drupal.CSS.ClassDefinitionNameSpacing">
     <severity>0</severity>
   </rule>
+  <!-- cspell:ignore Colour -->
   <rule ref="Drupal.CSS.ColourDefinition">
     <severity>0</severity>
   </rule>
