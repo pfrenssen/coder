@@ -23,13 +23,23 @@
     <exclude-pattern>*.tpl.php</exclude-pattern>
   </rule>
 
-  <!-- Silence deprecated sniff that will be removed in Coder 9.x. -->
+  <!-- Silence deprecated sniffs that will be removed in Coder 9.x. -->
+  <rule ref="Drupal.CSS.ClassDefinitionNameSpacing">
+    <severity>0</severity>
+  </rule>
+  <rule ref="Drupal.CSS.ColourDefinition">
+    <severity>0</severity>
+  </rule>
   <rule ref="Drupal.Functions.FunctionDeclaration.SpaceAfter">
     <severity>0</severity>
   </rule>
   <rule ref="Drupal.Functions.FunctionDeclaration.SpaceBeforeParenthesis">
     <severity>0</severity>
   </rule>
+  <rule ref="Drupal.Strings.UnnecessaryStringConcat">
+    <severity>0</severity>
+  </rule>
+
   <!-- Silence method name underscore warning which is covered already in
        Drupal.NamingConventions.ValidFunctionName.ScopeNotCamelCaps. -->
   <rule ref="Drupal.Methods.MethodDeclaration.Underscore">
@@ -65,6 +75,11 @@
   <rule ref="Generic.PHP.DisallowShortOpenTag"/>
   <rule ref="Generic.PHP.LowerCaseKeyword"/>
   <rule ref="Generic.PHP.UpperCaseConstant"/>
+  <rule ref="Generic.Strings.UnnecessaryStringConcat">
+    <properties>
+      <property name="allowMultiline" value="true"/>
+    </properties>
+  </rule>
   <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
   <rule ref="Generic.WhiteSpace.LanguageConstructSpacing"/>
 
