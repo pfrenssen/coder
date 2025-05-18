@@ -97,9 +97,7 @@ class FunctionCommentSniff implements Sniff
 
             // If there is a phpstan-ignore inline comment disregard it and continue searching backwards
             // to find the function comment.
-            if ($tokens[$commentEnd]['code'] === T_COMMENT
-                && preg_match('/\@phpstan-ignore/', $tokens[$commentEnd]['content']) === 1
-            ) {
+            if ($this->tokenIsPhpstanComment($tokens[$commentEnd]) === true) {
                 $functionCodeStart = $commentEnd;
                 continue;
             }
@@ -189,6 +187,20 @@ class FunctionCommentSniff implements Sniff
         $this->processSees($phpcsFile, $stackPtr, $commentStart);
 
     }//end process()
+
+
+    /**
+     * Determine if a token is a '@phpstan-' control comment.
+     *
+     * @param array $token The token to be checked.
+     *
+     * @return bool True if the token contains a @phpstan comment.
+     */
+    public static function tokenIsPhpstanComment($token)
+    {
+        return ($token['code'] === T_COMMENT && strpos($token['content'], ' @phpstan-') !== false);
+
+    }//end tokenIsPhpstanComment()
 
 
     /**
