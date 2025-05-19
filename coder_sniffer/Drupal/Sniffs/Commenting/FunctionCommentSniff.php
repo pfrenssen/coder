@@ -192,7 +192,7 @@ class FunctionCommentSniff implements Sniff
     /**
      * Determine if a token is a '@phpstan-' control comment.
      *
-     * @param array $token The token to be checked.
+     * @param array<mixed> $token The token to be checked.
      *
      * @return bool True if the token contains a @phpstan comment.
      */
