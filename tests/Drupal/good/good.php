@@ -2009,13 +2009,6 @@ class ConditionPluginCollection extends DefaultLazyPluginCollection {
  *
  * Coder issue https://www.drupal.org/project/coder/issues/3516489
  */
-class TestPhpstanIgnore1 extends BaseMySqlSchema {
-
-  /**
-   * This is the function docblock comment.
-   */
-  // @phpstan-ignore-next-line missingType.return
-  public function addField($table, $field, $spec, $keys_new = []) {
-  }
-
+// @phpstan-ignore-next-line missingType.return
+public function ignore_phpstan_comment() {
 }
