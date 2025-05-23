@@ -2012,3 +2012,19 @@ class ConditionPluginCollection extends DefaultLazyPluginCollection {
 // @phpstan-ignore-next-line missingType.return
 public function ignore_phpstan_comment() {
 }
+
+/**
+ * Test for @phpstan-ignore with attribute before.
+ */
+#[ExampleAttribute('foo', 'bar')]
+// @phpstan-ignore-next-line missingType.return
+public function ignore_phpstan_comment_with_attribute_before() {
+}
+
+/**
+ * Test for @phpstan-ignore with attribute after.
+ */
+// @phpstan-ignore-next-line missingType.return
+#[ExampleAttribute('foo', 'bar')]
+public function ignore_phpstan_comment_with_attribute_after() {
+}
