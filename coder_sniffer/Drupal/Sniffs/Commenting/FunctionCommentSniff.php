@@ -95,8 +95,15 @@ class FunctionCommentSniff implements Sniff
                 continue;
             }
 
+            // If there is a phpstan-ignore inline comment disregard it and continue searching backwards
+            // to find the function comment.
+            if ($this->tokenIsPhpstanComment($tokens[$commentEnd]) === true) {
+                $functionCodeStart = $commentEnd;
+                continue;
+            }
+
             break;
-        }
+        }//end for
 
         // Constructor methods are exempt from requiring a docblock.
         // @see https://www.drupal.org/project/coder/issues/3400560.
@@ -180,6 +187,20 @@ class FunctionCommentSniff implements Sniff
         $this->processSees($phpcsFile, $stackPtr, $commentStart);
 
     }//end process()
+
+
+    /**
+     * Determine if a token is a '@phpstan-' control comment.
+     *
+     * @param array<mixed> $token The token to be checked.
+     *
+     * @return bool True if the token contains a @phpstan comment.
+     */
+    public static function tokenIsPhpstanComment($token)
+    {
+        return ($token['code'] === T_COMMENT && strpos($token['content'], ' @phpstan-') !== false);
+
+    }//end tokenIsPhpstanComment()
 
 
     /**

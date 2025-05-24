@@ -2003,3 +2003,20 @@ class ConditionPluginCollection extends DefaultLazyPluginCollection {
   }
 
 }
+
+/**
+ * Test for @phpstan-ignore-next-line.
+ *
+ * Coder issue https://www.drupal.org/project/coder/issues/3516489
+ */
+// @phpstan-ignore-next-line missingType.return
+public function ignore_phpstan_comment() {
+}
+
+/**
+ * Test for @phpstan-ignore with attribute before.
+ */
+#[ExampleAttribute('foo', 'bar')]
+// @phpstan-ignore-next-line missingType.return
+public function ignore_phpstan_comment_with_attribute_before() {
+}
