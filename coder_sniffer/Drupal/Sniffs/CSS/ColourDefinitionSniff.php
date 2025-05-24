@@ -10,13 +10,13 @@
 namespace Drupal\Sniffs\CSS;
 
 use PHP_CodeSniffer\Files\File;
-use PHP_CodeSniffer\Sniffs\DeprecatedSniff;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * \Drupal\Sniffs\CSS\ColourDefinitionSniff.
+ * Disabled sniff. Previously ensured that colors are defined in lower-case.
  *
- * Ensure colors are defined in lower-case.
+ * We cannot implement DeprecatedSniff here because that would show deprecation
+ * messages to Coder users although they cannot fix them.
  *
  * @deprecated in Coder 8.3.30 and will be removed in Coder 9.0.0. Checking CSS
  *   coding standards is not supported anymore, use Stylelint instead with the
@@ -27,15 +27,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class ColourDefinitionSniff implements Sniff, DeprecatedSniff
+class ColourDefinitionSniff implements Sniff
 {
-
-    /**
-     * A list of tokenizers this sniff supports.
-     *
-     * @var array<string>
-     */
-    public $supportedTokenizers = ['CSS'];
 
 
     /**
@@ -45,7 +38,7 @@ class ColourDefinitionSniff implements Sniff, DeprecatedSniff
      */
     public function register()
     {
-        return [T_COLOUR];
+        return [T_OPEN_TAG];
 
     }//end register()
 
@@ -61,21 +54,8 @@ class ColourDefinitionSniff implements Sniff, DeprecatedSniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
-        $color  = $tokens[$stackPtr]['content'];
-
-        $expected = strtolower($color);
-        if ($color !== $expected) {
-            $error = 'CSS colors must be defined in lowercase; expected %s but found %s';
-            $data  = [
-                $expected,
-                $color,
-            ];
-            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'NotLower', $data);
-            if ($fix === true) {
-                $phpcsFile->fixer->replaceToken($stackPtr, $expected);
-            }
-        }
+        // This sniff is deprecated and disabled - do nothing.
+        return ($phpcsFile->numTokens + 1);
 
     }//end process()
 
