@@ -6,7 +6,7 @@
     <file>tests</file>
 
     <!-- Test files that should not be checked. -->
-    <exclude-pattern>tests/*\.(inc|css|js|api\.php|tpl\.php)$</exclude-pattern>
+    <exclude-pattern>tests/*\.(inc|api\.php|tpl\.php)$</exclude-pattern>
     <exclude-pattern>tests/*/(good|bad)\.php$</exclude-pattern>
     <exclude-pattern>tests/*/drupal(6|7|8)/*\.php$</exclude-pattern>
 

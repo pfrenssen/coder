@@ -64,7 +64,7 @@ jobs:
 
       - name: Run Cspell
         if: ${{ matrix.extra-tests == '1' }}
-        uses: streetsidesoftware/cspell-action@v6
+        uses: streetsidesoftware/cspell-action@v7
         with:
           incremental_files_only: false
 

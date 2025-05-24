@@ -9,88 +9,89 @@
 
 namespace Drupal\Sniffs\Strings;
 
-use Drupal\Sniffs\Files\LineLengthSniff;
 use PHP_CodeSniffer\Files\File;
-use PHP_CodeSniffer\Standards\Generic\Sniffs\Strings\UnnecessaryStringConcatSniff as GenericUnnecessaryStringConcatSniff;
-use PHP_CodeSniffer\Util\Tokens;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
  * Checks that two strings are not concatenated together; suggests using one string instead.
+ *
+ * We cannot implement DeprecatedSniff here because that would show deprecation
+ * messages to Coder users although they cannot fix them.
+ *
+ * @deprecated in Coder 8.3.30 and will be removed in Coder 9.0.0. Use
+ *   Generic.Strings.UnnecessaryStringConcat instead.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
-class UnnecessaryStringConcatSniff extends GenericUnnecessaryStringConcatSniff
+class UnnecessaryStringConcatSniff implements Sniff
 {
 
 
+     /**
+      * Returns the token types that this sniff is interested in.
+      *
+      * @return array<int, int|string>
+      */
+    public function register()
+    {
+        return [T_OPEN_TAG];
+
+    }//end register()
+
+
     /**
-     * Processes this sniff, when one of its tokens is encountered.
+     * Processes the tokens that this sniff is interested in.
      *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
-     * @param int                         $stackPtr  The position of the current token
-     *                                               in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where the token was found.
+     * @param int                         $stackPtr  The position in the stack where
+     *                                               the token was found.
      *
-     * @return void
+     * @return int
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        // Work out which type of file this is for.
-        $tokens = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['code'] === T_STRING_CONCAT) {
-            if ($phpcsFile->tokenizerType === 'JS') {
-                return;
-            }
-        } else {
-            if ($phpcsFile->tokenizerType === 'PHP') {
-                return;
-            }
-        }
-
-        $prev = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-        $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
-        if ($prev === false || $next === false) {
-            return;
-        }
-
-        $stringTokens = Tokens::$stringTokens;
-        if (in_array($tokens[$prev]['code'], $stringTokens) === true
-            && in_array($tokens[$next]['code'], $stringTokens) === true
-        ) {
-            if ($tokens[$prev]['content'][0] === $tokens[$next]['content'][0]) {
-                // Before we throw an error for PHP, allow strings to be
-                // combined if they would have < and ? next to each other because
-                // this trick is sometimes required in PHP strings.
-                if ($phpcsFile->tokenizerType === 'PHP') {
-                    $prevChar = substr($tokens[$prev]['content'], -2, 1);
-                    $nextChar = $tokens[$next]['content'][1];
-                    $combined = $prevChar.$nextChar;
-                    if ($combined === '?'.'>' || $combined === '<'.'?') {
-                        return;
-                    }
-                }
-
-                // Before we throw an error check if the string is longer than
-                // the line length limit.
-                $lineLengthLimitSniff = new LineLengthSniff;
-
-                $lineLength   = $lineLengthLimitSniff->getLineLength($phpcsFile, $tokens[$prev]['line']);
-                $stringLength = ($lineLength + strlen($tokens[$next]['content']) - 4);
-                if ($stringLength > $lineLengthLimitSniff->lineLimit) {
-                    return;
-                }
-
-                $error = 'String concat is not required here; use a single string instead';
-                if ($this->error === true) {
-                    $phpcsFile->addError($error, $stackPtr, 'Found');
-                } else {
-                    $phpcsFile->addWarning($error, $stackPtr, 'Found');
-                }
-            }//end if
-        }//end if
+        // This sniff is deprecated and disabled - do nothing.
+        return ($phpcsFile->numTokens + 1);
 
     }//end process()
+
+
+        /**
+         * {@inheritdoc}
+         *
+         * @return string
+         */
+    public function getDeprecationVersion(): string
+    {
+        return 'Coder 8.3.30';
+
+    }//end getDeprecationVersion()
+
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return string
+     */
+    public function getRemovalVersion(): string
+    {
+        return 'Coder 9.0.0';
+
+    }//end getRemovalVersion()
+
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return string
+     */
+    public function getDeprecationMessage(): string
+    {
+        return 'The custom UnnecessaryStringConcatSniff is deprecated and will be removed in Coder 9.0.0. Use Generic.Strings.UnnecessaryStringConcat instead.';
+
+    }//end getDeprecationMessage()
 
 
 }//end class
