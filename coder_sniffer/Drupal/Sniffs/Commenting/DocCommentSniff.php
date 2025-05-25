@@ -406,6 +406,10 @@ class DocCommentSniff implements Sniff
                     continue;
                 }
 
+                // Search for the previous comment string but also allow for
+                // PHPCS ignore comments. If we encounter ignore comments then
+                // we need to be more lenient later by checking if $prev is an
+                // ignore comment.
                 $prev = $phpcsFile->findPrevious(
                     ([T_DOC_COMMENT_STRING => T_DOC_COMMENT_STRING] + Tokens::$phpcsCommentTokens),
                     ($tag - 1),
