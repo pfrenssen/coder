@@ -406,8 +406,12 @@ class DocCommentSniff implements Sniff
                     continue;
                 }
 
+                // Search for the previous comment string but also allow for
+                // PHPCS ignore comments. If we encounter ignore comments then
+                // we need to be more lenient later by checking if $prev is an
+                // ignore comment.
                 $prev = $phpcsFile->findPrevious(
-                    T_DOC_COMMENT_STRING,
+                    ([T_DOC_COMMENT_STRING => T_DOC_COMMENT_STRING] + Tokens::$phpcsCommentTokens),
                     ($tag - 1),
                     $tokens[$commentStart]['comment_tags'][($pos - 1)]
                 );
@@ -442,6 +446,7 @@ class DocCommentSniff implements Sniff
             } else if ($isNewGroup === false
                 && (in_array($currentTag, $checkTags) === true || in_array($previousTag, $checkTags) === true)
                 && $previousTag !== $currentTag
+                && in_array($tokens[$prev]['code'], Tokens::$phpcsCommentTokens) === false
             ) {
                 $error = 'Separate the %s and %s sections by a blank line.';
                 $fix   = $phpcsFile->addFixableError($error, $tag, 'TagGroupSpacing', [$previousTag, $currentTag]);
