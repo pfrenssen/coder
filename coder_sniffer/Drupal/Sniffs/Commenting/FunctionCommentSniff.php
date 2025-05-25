@@ -258,13 +258,18 @@ class FunctionCommentSniff implements Sniff
                 $typeNames      = explode('|', $returnType);
                 $suggestedNames = [];
                 $hasNull        = false;
+                // Do not check PHPStan types that contain any kind of brackets.
+                // See https://phpstan.org/writing-php-code/phpdoc-types#general-arrays .
+                $isPhpstanType = preg_match('/[<\[\{\(]/', $returnType) === 1;
                 foreach ($typeNames as $i => $typeName) {
                     if (strtolower($typeName) === 'null') {
                         $hasNull = true;
                     }
 
                     $suggestedName = $this->suggestType($typeName);
-                    if (in_array($suggestedName, $suggestedNames, true) === false) {
+                    if (in_array($suggestedName, $suggestedNames, true) === false
+                        || $isPhpstanType === true
+                    ) {
                         $suggestedNames[] = $suggestedName;
                     }
                 }
