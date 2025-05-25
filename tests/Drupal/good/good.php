@@ -2047,3 +2047,16 @@ interface BreadcrumbBuilderInterface {
   public function applies(RouteMatchInterface $route_match /* , CacheableMetadata $cacheable_metadata */);
 
 }
+
+/**
+ * Test that nested array types are ok.
+ *
+ * @param array<array<scalar|null>|object|scalar|null> $param
+ *   A complex nested array type.
+ *
+ * @return array<array<scalar|null>|object|scalar|null>
+ *   An array of results.
+ */
+function pdo_weird_return_type($param) {
+  return pdo();
+}
