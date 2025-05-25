@@ -2020,3 +2020,30 @@ public function ignore_phpstan_comment() {
 // @phpstan-ignore-next-line missingType.return
 public function ignore_phpstan_comment_with_attribute_before() {
 }
+
+/**
+ * Test PHPCS ignore comments between param docs.
+ */
+interface BreadcrumbBuilderInterface {
+
+  /**
+   * Whether this breadcrumb builder should be used to build the breadcrumb.
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The current route match.
+   * phpcs:ignore Drupal.Commenting.FunctionComment.ParamNameNoMatch
+   * @param \Drupal\Core\Cache\CacheableMetadata $cacheable_metadata
+   *   The cacheable metadata to add to if your check varies by or depends
+   *   on something. Anything you specify here does not have to be repeated in
+   *   the build() method as it will be merged in automatically.
+   *
+   * @return bool
+   *   TRUE if this builder should be used or FALSE to let other builders
+   *   decide.
+   *
+   * @todo Uncomment new method parameters before drupal:12.0.0, see
+   *   https://www.drupal.org/project/drupal/issues/3459277.
+   */
+  public function applies(RouteMatchInterface $route_match /* , CacheableMetadata $cacheable_metadata */);
+
+}
