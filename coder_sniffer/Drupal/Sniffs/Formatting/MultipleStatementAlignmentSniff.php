@@ -61,13 +61,12 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
             $end = $phpcsFile->numTokens;
         }
 
-        $find = Tokens::$assignmentTokens;
+        $find = Tokens::ASSIGNMENT_TOKENS;
         unset($find[T_DOUBLE_ARROW]);
 
-        $scopes = Tokens::$scopeOpeners;
+        $scopes = Tokens::SCOPE_OPENERS;
         unset($scopes[T_CLOSURE]);
         unset($scopes[T_ANON_CLASS]);
-        unset($scopes[T_OBJECT]);
 
         for ($assign = $stackPtr; $assign < $end; $assign++) {
             if ($tokens[$assign]['level'] < $tokens[$stackPtr]['level']) {
@@ -88,7 +87,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
 
             if (isset($find[$tokens[$assign]['code']]) === false) {
                 // A blank line indicates that the assignment block has ended.
-                if (isset(Tokens::$emptyTokens[$tokens[$assign]['code']]) === false
+                if (isset(Tokens::EMPTY_TOKENS[$tokens[$assign]['code']]) === false
                     && ($tokens[$assign]['line'] - $tokens[$lastCode]['line']) > 1
                     && $tokens[$assign]['level'] === $tokens[$stackPtr]['level']
                     && $arrayEnd === null
@@ -114,7 +113,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
                     $arrayEnd = $tokens[$tokens[$assign]['parenthesis_opener']]['parenthesis_closer'];
                 }
 
-                if (isset(Tokens::$emptyTokens[$tokens[$assign]['code']]) === false) {
+                if (isset(Tokens::EMPTY_TOKENS[$tokens[$assign]['code']]) === false) {
                     $lastCode = $assign;
 
                     if ($tokens[$assign]['code'] === T_SEMICOLON) {
@@ -169,7 +168,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
             }//end if
 
             $var = $phpcsFile->findPrevious(
-                Tokens::$emptyTokens,
+                Tokens::EMPTY_TOKENS,
                 ($assign - 1),
                 null,
                 true

@@ -52,7 +52,7 @@ class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
     protected function processTokenWithinScope(File $phpcsFile, $stackPtr, $currScope)
     {
         $methodName = $phpcsFile->getDeclarationName($stackPtr);
-        if ($methodName === null) {
+        if ($methodName === '') {
             // Ignore closures.
             return;
         }
@@ -108,7 +108,7 @@ class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
     protected function processTokenOutsideScope(File $phpcsFile, $stackPtr)
     {
         $functionName = $phpcsFile->getDeclarationName($stackPtr);
-        if ($functionName === null) {
+        if ($functionName === '') {
             // Ignore closures.
             return;
         }

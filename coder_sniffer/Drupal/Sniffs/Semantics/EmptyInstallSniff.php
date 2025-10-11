@@ -49,7 +49,7 @@ class EmptyInstallSniff extends FunctionDefinition
         ) {
             // Check if there is a function body.
             $bodyPtr = $phpcsFile->findNext(
-                Tokens::$emptyTokens,
+                Tokens::EMPTY_TOKENS,
                 ($tokens[$functionPtr]['scope_opener'] + 1),
                 $tokens[$functionPtr]['scope_closer'],
                 true

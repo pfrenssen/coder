@@ -57,7 +57,7 @@ class TInHookSchemaSniff extends FunctionDefinition
         while ($string !== false) {
             if ($tokens[$string]['content'] === 't') {
                 $opener = $phpcsFile->findNext(
-                    Tokens::$emptyTokens,
+                    Tokens::EMPTY_TOKENS,
                     ($string + 1),
                     null,
                     true

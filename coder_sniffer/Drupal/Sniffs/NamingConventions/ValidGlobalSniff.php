@@ -107,7 +107,7 @@ class ValidGlobalSniff implements Sniff
 
         $varToken = $stackPtr;
         // Find variable names until we hit a semicolon.
-        $ignore   = Tokens::$emptyTokens;
+        $ignore   = Tokens::EMPTY_TOKENS;
         $ignore[] = T_SEMICOLON;
         while (($varToken = $phpcsFile->findNext($ignore, ($varToken + 1), null, true, null, true)) !== false) {
             if ($tokens[$varToken]['code'] === T_VARIABLE

@@ -53,9 +53,9 @@ class LineLengthSniff extends GenericLineLengthSniff
      */
     protected function checkLineLength($phpcsFile, $tokens, $stackPtr)
     {
-        if (isset(Tokens::$commentTokens[$tokens[($stackPtr - 1)]['code']]) === true) {
+        if (isset(Tokens::COMMENT_TOKENS[$tokens[($stackPtr - 1)]['code']]) === true) {
             // Allow any PHPCS ignore comments to exceed the 80 character limit.
-            if (isset(Tokens::$phpcsCommentTokens[$tokens[($stackPtr - 1)]['code']]) === true) {
+            if (isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[($stackPtr - 1)]['code']]) === true) {
                 return;
             }
 

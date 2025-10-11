@@ -114,7 +114,7 @@ class HookCommentSniff implements Sniff
         // Check if the doc block just repeats the function name with
         // "Implements example_hook_name()".
         $functionName = $phpcsFile->getDeclarationName($stackPtr);
-        if ($functionName !== null && preg_match("/^[\s]*Implements $functionName\(\)\.$/i", $shortContent) === 1) {
+        if ($functionName !== '' && preg_match("/^[\s]*Implements $functionName\(\)\.$/i", $shortContent) === 1) {
             $error = 'Hook implementations must be documented with "Implements hook_example()."';
             $fix   = $phpcsFile->addFixableError($error, $short, 'HookRepeat');
             if ($fix === true) {

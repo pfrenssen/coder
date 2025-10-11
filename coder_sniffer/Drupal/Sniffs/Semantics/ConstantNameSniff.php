@@ -72,7 +72,7 @@ class ConstantNameSniff implements Sniff
 
         if ($tokens[$stackPtr]['code'] === T_CONST) {
             // This is a class constant.
-            $constant = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+            $constant = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
             if ($constant === false) {
                 return;
             }
@@ -106,7 +106,7 @@ class ConstantNameSniff implements Sniff
 
         // If the next non-whitespace token after this token
         // is not an opening parenthesis then it is not a function call.
-        $openBracket = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $openBracket = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
         if ($openBracket === false) {
             return;
         }

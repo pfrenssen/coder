@@ -58,7 +58,7 @@ class VariableCommentSniff extends AbstractVariableSniff
             T_FALSE             => T_FALSE,
             T_SELF              => T_SELF,
             T_PARENT            => T_PARENT,
-        ] + Tokens::$phpcsCommentTokens);
+        ] + Tokens::PHPCS_ANNOTATION_TOKENS);
 
         for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
             if (isset($ignore[$tokens[$commentEnd]['code']]) === true) {

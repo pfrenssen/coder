@@ -66,12 +66,12 @@ class DefaultValueSanitizeSniff extends FunctionCall
 
         // We assume that the sequence '#default_value' => check_plain(...) is
         // wrong because the Form API already sanitizes #default_value.
-        $arrow = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+        $arrow = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
         if ($arrow === false || $tokens[$arrow]['code'] !== T_DOUBLE_ARROW) {
             return;
         }
 
-        $arrayKey = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($arrow - 1), null, true);
+        $arrayKey = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($arrow - 1), null, true);
         if ($arrayKey === false
             || $tokens[$arrayKey]['code'] !== T_CONSTANT_ENCAPSED_STRING
             || substr($tokens[$arrayKey]['content'], 1, -1) !== '#default_value'

@@ -152,7 +152,7 @@ class ControlSignatureSniff implements Sniff
 
                 // Skip all empty tokens on the same line as the opener.
                 if ($tokens[$next]['line'] === $tokens[$opener]['line']
-                    && (isset(Tokens::$emptyTokens[$code]) === true
+                    && (isset(Tokens::EMPTY_TOKENS[$code]) === true
                     || $code === T_CLOSE_TAG)
                 ) {
                     continue;
@@ -213,7 +213,7 @@ class ControlSignatureSniff implements Sniff
             || $tokens[$stackPtr]['code'] === T_ELSEIF
             || $tokens[$stackPtr]['code'] === T_CATCH
         ) {
-            $closer = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+            $closer = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
             if ($closer === false || $tokens[$closer]['code'] !== T_CLOSE_CURLY_BRACKET) {
                 return;
             }

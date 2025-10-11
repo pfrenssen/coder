@@ -110,7 +110,7 @@ class MultiLineFunctionDeclarationSniff extends SquizFunctionDeclarationSniff
         $function = $tokens[$stackPtr];
 
         $lastTrailingComma = $phpcsFile->findPrevious(
-            Tokens::$emptyTokens,
+            Tokens::EMPTY_TOKENS,
             ($function['parenthesis_closer'] - 1),
             $function['parenthesis_opener'],
             true

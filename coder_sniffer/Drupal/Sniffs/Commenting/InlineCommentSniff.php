@@ -62,7 +62,7 @@ class InlineCommentSniff implements Sniff
         // not allowed.
         if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT_OPEN_TAG) {
             $nextToken = $phpcsFile->findNext(
-                Tokens::$emptyTokens,
+                Tokens::EMPTY_TOKENS,
                 ($stackPtr + 1),
                 null,
                 true
@@ -100,7 +100,7 @@ class InlineCommentSniff implements Sniff
             }
 
             $prevToken = $phpcsFile->findPrevious(
-                Tokens::$emptyTokens,
+                Tokens::EMPTY_TOKENS,
                 ($stackPtr - 1),
                 null,
                 true

@@ -75,13 +75,13 @@ class FunctionCommentSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $ignore = (Tokens::$methodPrefixes + Tokens::$phpcsCommentTokens);
+        $ignore = (Tokens::METHOD_MODIFIERS + Tokens::PHPCS_ANNOTATION_TOKENS);
         $ignore[T_WHITESPACE] = T_WHITESPACE;
         $functionCodeStart    = $stackPtr;
 
         for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
             if (isset($ignore[$tokens[$commentEnd]['code']]) === true) {
-                if (isset(Tokens::$phpcsCommentTokens[$tokens[$commentEnd]['code']]) === true) {
+                if (isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$commentEnd]['code']]) === true) {
                     $functionCodeStart = $commentEnd;
                 }
 
@@ -115,7 +115,7 @@ class FunctionCommentSniff implements Sniff
             return;
         }
 
-        $beforeCommentEnd = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($commentEnd - 1), null, true);
+        $beforeCommentEnd = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($commentEnd - 1), null, true);
         if (($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             && $tokens[$commentEnd]['code'] !== T_COMMENT)
             || ($beforeCommentEnd !== false

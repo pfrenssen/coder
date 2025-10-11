@@ -60,7 +60,7 @@ class SpaceUnaryOperatorSniff implements Sniff
 
         // Check decrement / increment.
         if ($tokens[$stackPtr]['code'] === T_DEC || $tokens[$stackPtr]['code'] === T_INC) {
-            $previous   = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+            $previous   = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
             $modifyLeft = in_array(
                 $tokens[$previous]['code'],
                 [

@@ -62,7 +62,7 @@ class ClassCreateInstanceSniff implements Sniff
         $nextParenthesis = $phpcsFile->findNext(T_OPEN_PARENTHESIS, ($stackPtr + 1), $commaOrColon);
         if ($nextParenthesis === false) {
             $error       = 'Calling class constructors must always include parentheses';
-            $constructor = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true, null, true);
+            $constructor = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true, null, true);
             // We can invoke the fixer if we know this is a static constructor
             // function call or constructor calls with namespaces, example
             // "new \DOMDocument;" or constructor with class names in variables
@@ -76,7 +76,7 @@ class ClassCreateInstanceSniff implements Sniff
                 $nextConstructorPart = $constructor;
                 while (true) {
                     $nextConstructorPart = $phpcsFile->findNext(
-                        Tokens::$emptyTokens,
+                        Tokens::EMPTY_TOKENS,
                         ($nextConstructorPart + 1),
                         null,
                         true,

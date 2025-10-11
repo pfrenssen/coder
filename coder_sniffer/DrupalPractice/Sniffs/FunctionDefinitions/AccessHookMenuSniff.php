@@ -58,7 +58,7 @@ class AccessHookMenuSniff extends FunctionDefinition
         while ($string !== false) {
             if (substr($tokens[$string]['content'], 1, -1) === 'access callback') {
                 $arrayOperator = $phpcsFile->findNext(
-                    Tokens::$emptyTokens,
+                    Tokens::EMPTY_TOKENS,
                     ($string + 1),
                     null,
                     true
@@ -67,7 +67,7 @@ class AccessHookMenuSniff extends FunctionDefinition
                     && $tokens[$arrayOperator]['code'] === T_DOUBLE_ARROW
                 ) {
                     $callback = $phpcsFile->findNext(
-                        Tokens::$emptyTokens,
+                        Tokens::EMPTY_TOKENS,
                         ($arrayOperator + 1),
                         null,
                         true
@@ -81,7 +81,7 @@ class AccessHookMenuSniff extends FunctionDefinition
                             $tokens[$functionPtr]['scope_opener'],
                             true
                         );
-                        if ($commentBefore !== false && in_array($tokens[$commentBefore]['code'], Tokens::$commentTokens) === false) {
+                        if ($commentBefore !== false && in_array($tokens[$commentBefore]['code'], Tokens::COMMENT_TOKENS) === false) {
                             $warning = 'Open page callback found, please add a comment before the line why there is no access restriction';
                             $phpcsFile->addWarning($warning, $callback, 'OpenCallback');
                         }

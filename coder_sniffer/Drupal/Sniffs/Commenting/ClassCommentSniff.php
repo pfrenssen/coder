@@ -59,13 +59,13 @@ class ClassCommentSniff implements Sniff
             T_FINAL      => T_FINAL,
             T_READONLY   => T_READONLY,
             T_WHITESPACE => T_WHITESPACE,
-        ] + Tokens::$phpcsCommentTokens);
+        ] + Tokens::PHPCS_ANNOTATION_TOKENS);
         $name           = $tokens[$stackPtr]['content'];
         $classCodeStart = $stackPtr;
 
         for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
             if (isset($find[$tokens[$commentEnd]['code']]) === true) {
-                if (isset(Tokens::$phpcsCommentTokens[$tokens[$commentEnd]['code']]) === true) {
+                if (isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$commentEnd]['code']]) === true) {
                     $classCodeStart = $commentEnd;
                 }
 

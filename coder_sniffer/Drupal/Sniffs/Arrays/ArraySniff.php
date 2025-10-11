@@ -83,7 +83,7 @@ class ArraySniff implements Sniff
         }
 
         $lastItem = $phpcsFile->findPrevious(
-            Tokens::$emptyTokens,
+            Tokens::EMPTY_TOKENS,
             ($tokens[$stackPtr][$parenthesisCloser] - 1),
             $stackPtr,
             true
@@ -101,7 +101,7 @@ class ArraySniff implements Sniff
         if ($tokens[$lastItem]['code'] !== T_COMMA && $isInlineArray === false
             && $tokens[($lastItem + 1)]['code'] !== T_CLOSE_PARENTHESIS
             && $tokens[($lastItem + 1)]['code'] !== T_CLOSE_SHORT_ARRAY
-            && isset(Tokens::$heredocTokens[$tokens[$lastItem]['code']]) === false
+            && isset(Tokens::HEREDOC_TOKENS[$tokens[$lastItem]['code']]) === false
         ) {
             $data = [$tokens[$lastItem]['content']];
             $fix  = $phpcsFile->addFixableWarning('A comma should follow the last multiline array item. Found: %s', $lastItem, 'CommaLastItem', $data);
@@ -195,7 +195,7 @@ class ArraySniff implements Sniff
             $currentLine  = $tokens[$newLineStart]['line'];
             while ($currentLine >= $tokens[$newLineStart]['line']) {
                 $newLineStart = $phpcsFile->findNext(
-                    Tokens::$emptyTokens,
+                    Tokens::EMPTY_TOKENS,
                     ($newLineStart + 1),
                     ($tokens[$stackPtr][$parenthesisCloser] + 1),
                     true
@@ -284,7 +284,7 @@ class ArraySniff implements Sniff
                 $isMultiLineString = $tokens[($newLineStart - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
                     && substr($tokens[($newLineStart - 1)]['content'], -1) === $phpcsFile->eolChar;
                 // Skip NOWDOC or HEREDOC lines.
-                $nowDoc = isset(Tokens::$heredocTokens[$tokens[$newLineStart]['code']]);
+                $nowDoc = isset(Tokens::HEREDOC_TOKENS[$tokens[$newLineStart]['code']]);
                 if ($innerNesting === false && $isMultiLineString === false && $nowDoc === false) {
                     $error = 'Array indentation error, expected %s spaces but found %s';
                     $data  = [

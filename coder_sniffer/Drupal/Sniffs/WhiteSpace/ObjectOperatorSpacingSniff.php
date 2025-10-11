@@ -75,7 +75,7 @@ class ObjectOperatorSpacingSniff implements Sniff
         $phpcsFile->recordMetric($stackPtr, 'Spacing before object operator', $before);
         $phpcsFile->recordMetric($stackPtr, 'Spacing after object operator', $after);
 
-        $prevToken = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+        $prevToken = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
         // Line breaks are allowed before an object operator.
         if ($before !== 0 && $tokens[$stackPtr]['line'] === $tokens[$prevToken]['line']) {
             $error = 'Space found before object operator';

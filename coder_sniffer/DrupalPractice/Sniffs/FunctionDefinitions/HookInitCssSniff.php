@@ -64,7 +64,7 @@ class HookInitCssSniff extends FunctionDefinition
         while ($string !== false) {
             if ($tokens[$string]['content'] === 'drupal_add_css' || $tokens[$string]['content'] === 'drupal_add_js') {
                 $opener = $phpcsFile->findNext(
-                    Tokens::$emptyTokens,
+                    Tokens::EMPTY_TOKENS,
                     ($string + 1),
                     null,
                     true

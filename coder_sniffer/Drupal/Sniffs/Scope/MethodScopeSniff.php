@@ -53,7 +53,7 @@ class MethodScopeSniff extends AbstractScopeSniff
         $tokens = $phpcsFile->getTokens();
 
         $methodName = $phpcsFile->getDeclarationName($stackPtr);
-        if ($methodName === null) {
+        if ($methodName === '') {
             // Ignore closures.
             return;
         }
@@ -67,7 +67,7 @@ class MethodScopeSniff extends AbstractScopeSniff
         for ($i = ($stackPtr - 1); $i > 0; $i--) {
             if ($tokens[$i]['line'] < $tokens[$stackPtr]['line']) {
                 break;
-            } else if (isset(Tokens::$scopeModifiers[$tokens[$i]['code']]) === true) {
+            } else if (isset(Tokens::SCOPE_MODIFIERS[$tokens[$i]['code']]) === true) {
                 $modifier = $i;
                 break;
             }

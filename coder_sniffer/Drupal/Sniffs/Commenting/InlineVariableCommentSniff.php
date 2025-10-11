@@ -66,7 +66,6 @@ class InlineVariableCommentSniff implements Sniff
             T_STATIC,
             T_ABSTRACT,
             T_CONST,
-            T_PROPERTY,
             T_INCLUDE,
             T_INCLUDE_ONCE,
             T_REQUIRE,
@@ -75,7 +74,7 @@ class InlineVariableCommentSniff implements Sniff
         ];
 
         // If this is a function/class/interface doc block comment, skip it.
-        $nextToken = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $nextToken = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
         if (in_array($tokens[$nextToken]['code'], $ignore, true) === true) {
             return;
         }

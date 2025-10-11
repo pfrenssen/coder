@@ -102,7 +102,7 @@ abstract class FunctionCall implements Sniff
         }
 
         // Find the next non-empty token.
-        $openBracket = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $openBracket = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
 
         $this->phpcsFile    = $phpcsFile;
         $this->functionCall = $stackPtr;
@@ -128,7 +128,7 @@ abstract class FunctionCall implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
         // Find the next non-empty token.
-        $openBracket = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $openBracket = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
 
         if ($tokens[$openBracket]['code'] !== T_OPEN_PARENTHESIS) {
             // Not a function call.
@@ -141,7 +141,7 @@ abstract class FunctionCall implements Sniff
         }
 
         // Find the previous non-empty token.
-        $search   = Tokens::$emptyTokens;
+        $search   = Tokens::EMPTY_TOKENS;
         $search[] = T_BITWISE_AND;
         $previous = $phpcsFile->findPrevious($search, ($stackPtr - 1), null, true);
         if ($tokens[$previous]['code'] === T_FUNCTION) {
@@ -181,14 +181,14 @@ abstract class FunctionCall implements Sniff
 
         $tokens = $this->phpcsFile->getTokens();
         // Start token of the first argument.
-        $start = $this->phpcsFile->findNext(Tokens::$emptyTokens, ($this->openBracket + 1), null, true);
+        $start = $this->phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($this->openBracket + 1), null, true);
         if ($start === $this->closeBracket) {
             // Function call has no arguments, so return false.
             return false;
         }
 
         // End token of the last argument.
-        $end           = $this->phpcsFile->findPrevious(Tokens::$emptyTokens, ($this->closeBracket - 1), null, true);
+        $end           = $this->phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($this->closeBracket - 1), null, true);
         $lastArgEnd    = $end;
         $nextSeparator = $this->openBracket;
         $counter       = 1;
@@ -202,7 +202,7 @@ abstract class FunctionCall implements Sniff
             }
 
             // Update the end token of the current argument.
-            $end = $this->phpcsFile->findPrevious(Tokens::$emptyTokens, ($nextSeparator - 1), null, true);
+            $end = $this->phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($nextSeparator - 1), null, true);
             // Save the calculated findings for the current argument.
             $this->arguments[$counter] = [
                 'start' => $start,
@@ -213,7 +213,7 @@ abstract class FunctionCall implements Sniff
             }
 
             $counter++;
-            $start = $this->phpcsFile->findNext(Tokens::$emptyTokens, ($nextSeparator + 1), null, true);
+            $start = $this->phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($nextSeparator + 1), null, true);
             $end   = $lastArgEnd;
         }//end while
 

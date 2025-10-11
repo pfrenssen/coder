@@ -70,19 +70,19 @@ class UnusedPrivateMethodSniff extends AbstractScopeSniff
                 continue;
             }
 
-            $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($current + 1), null, true);
+            $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($current + 1), null, true);
             if ($next === false) {
                 continue;
             }
 
             if ($tokens[$next]['code'] === T_OBJECT_OPERATOR) {
-                $call = $phpcsFile->findNext(Tokens::$emptyTokens, ($next + 1), null, true);
+                $call = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($next + 1), null, true);
                 // PHP method calls are case insensitive.
                 if ($call === false || strcasecmp($tokens[$call]['content'], $methodName) !== 0) {
                     continue;
                 }
 
-                $parenthesis = $phpcsFile->findNext(Tokens::$emptyTokens, ($call + 1), null, true);
+                $parenthesis = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($call + 1), null, true);
                 if ($parenthesis === false || $tokens[$parenthesis]['code'] !== T_OPEN_PARENTHESIS) {
                     continue;
                 }
@@ -91,7 +91,7 @@ class UnusedPrivateMethodSniff extends AbstractScopeSniff
                 // can stop.
                 return;
             } else if ($tokens[$next]['code'] === T_COMMA) {
-                $call = $phpcsFile->findNext(Tokens::$emptyTokens, ($next + 1), null, true);
+                $call = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($next + 1), null, true);
                 if ($call === false || substr($tokens[$call]['content'], 1, -1) !== $methodName) {
                     continue;
                 }

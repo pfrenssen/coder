@@ -58,7 +58,7 @@ class ObjectOperatorIndentSniff implements Sniff
             return;
         }
 
-        $previousLine = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 2), null, true, null, true);
+        $previousLine = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 2), null, true, null, true);
 
         if ($previousLine === false) {
             return;

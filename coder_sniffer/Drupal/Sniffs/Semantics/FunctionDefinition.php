@@ -50,7 +50,7 @@ abstract class FunctionDefinition implements Sniff
         $tokens = $phpcsFile->getTokens();
         // Check if this is a function definition.
         $functionPtr = $phpcsFile->findPrevious(
-            Tokens::$emptyTokens,
+            Tokens::EMPTY_TOKENS,
             ($stackPtr - 1),
             null,
             true

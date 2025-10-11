@@ -157,7 +157,7 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
         if ($prevContent !== $tokens[$stackPtr]['scope_opener']
             && $tokens[$prevContent]['line'] !== ($tokens[$closeBrace]['line'] - 2)
             // If the class only contains a comment no extra line is needed.
-            && isset(Tokens::$commentTokens[$tokens[$prevContent]['code']]) === false
+            && isset(Tokens::COMMENT_TOKENS[$tokens[$prevContent]['code']]) === false
             // Enums are allowed to enclose the cases without an extra line.
             && $tokens[$stackPtr]['code'] !== T_ENUM
         ) {

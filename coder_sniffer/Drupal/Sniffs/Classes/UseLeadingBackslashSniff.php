@@ -55,7 +55,7 @@ class UseLeadingBackslashSniff implements Sniff
         }
 
         $startPtr = $phpcsFile->findNext(
-            Tokens::$emptyTokens,
+            Tokens::EMPTY_TOKENS,
             ($stackPtr + 1),
             null,
             true

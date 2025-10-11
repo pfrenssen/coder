@@ -89,9 +89,9 @@ class FunctionTSniff extends FunctionCall
             return;
         }
 
-        $concatAfter = $phpcsFile->findNext(Tokens::$emptyTokens, ($closeBracket + 1), null, true, null, true);
+        $concatAfter = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closeBracket + 1), null, true, null, true);
         if ($concatAfter !== false && $tokens[$concatAfter]['code'] === T_STRING_CONCAT) {
-            $stringAfter = $phpcsFile->findNext(Tokens::$emptyTokens, ($concatAfter + 1), null, true, null, true);
+            $stringAfter = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($concatAfter + 1), null, true, null, true);
             if ($stringAfter !== false
                 && $tokens[$stringAfter]['code'] === T_CONSTANT_ENCAPSED_STRING
                 && $this->checkConcatString($tokens[$stringAfter]['content']) === false

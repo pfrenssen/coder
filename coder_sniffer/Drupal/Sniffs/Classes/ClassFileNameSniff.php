@@ -66,7 +66,7 @@ class ClassFileNameSniff implements Sniff
         }
 
         $tokens  = $phpcsFile->getTokens();
-        $decName = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $decName = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
 
         if ($tokens[$decName]['code'] === T_STRING
             && $tokens[$decName]['content'] !== $fileName

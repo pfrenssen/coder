@@ -61,7 +61,7 @@ class DataTypeNamespaceSniff implements Sniff
         }
 
         $classPtr = $phpcsFile->findPrevious(
-            Tokens::$emptyTokens,
+            Tokens::EMPTY_TOKENS,
             ($semiColon - 1),
             null,
             true

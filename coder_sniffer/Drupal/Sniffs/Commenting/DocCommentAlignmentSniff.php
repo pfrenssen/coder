@@ -53,7 +53,7 @@ class DocCommentAlignmentSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         // We are only interested in function/class/interface doc block comments.
-        $ignore = Tokens::$emptyTokens;
+        $ignore = Tokens::EMPTY_TOKENS;
 
         $nextToken = $phpcsFile->findNext($ignore, ($stackPtr + 1), null, true);
         $ignore    = [
@@ -65,15 +65,12 @@ class DocCommentAlignmentSniff implements Sniff
             T_PROTECTED => true,
             T_STATIC    => true,
             T_ABSTRACT  => true,
-            T_PROPERTY  => true,
-            T_OBJECT    => true,
-            T_PROTOTYPE => true,
             T_VAR       => true,
         ];
 
         if (isset($ignore[$tokens[$nextToken]['code']]) === false) {
             // Could be a file comment.
-            $prevToken = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+            $prevToken = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
             if ($tokens[$prevToken]['code'] !== T_OPEN_TAG) {
                 return;
             }

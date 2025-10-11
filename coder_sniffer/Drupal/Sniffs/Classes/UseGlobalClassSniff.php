@@ -56,7 +56,7 @@ class UseGlobalClassSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         // Make sure this is not a closure USE group.
-        $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
         if ($tokens[$next]['code'] === T_OPEN_PARENTHESIS) {
             return;
         }

@@ -363,7 +363,7 @@ class DocCommentSniff implements Sniff
         if ($tokens[$firstTag]['line'] !== ($tokens[$prev]['line'] + 2)
             && isset($fileShort) === false
             && in_array($tokens[$firstTag]['content'], ['@code', '@link', '@endlink']) === false
-            && isset(Tokens::$phpcsCommentTokens[$tokens[$prev]['code']]) === false
+            && isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$prev]['code']]) === false
         ) {
             $error = 'There must be exactly one blank line before the tags in a doc comment';
             $fix   = $phpcsFile->addFixableError($error, $firstTag, 'SpacingBeforeTags');
@@ -411,7 +411,7 @@ class DocCommentSniff implements Sniff
                 // we need to be more lenient later by checking if $prev is an
                 // ignore comment.
                 $prev = $phpcsFile->findPrevious(
-                    ([T_DOC_COMMENT_STRING => T_DOC_COMMENT_STRING] + Tokens::$phpcsCommentTokens),
+                    ([T_DOC_COMMENT_STRING => T_DOC_COMMENT_STRING] + Tokens::PHPCS_ANNOTATION_TOKENS),
                     ($tag - 1),
                     $tokens[$commentStart]['comment_tags'][($pos - 1)]
                 );
@@ -446,7 +446,7 @@ class DocCommentSniff implements Sniff
             } else if ($isNewGroup === false
                 && (in_array($currentTag, $checkTags) === true || in_array($previousTag, $checkTags) === true)
                 && $previousTag !== $currentTag
-                && in_array($tokens[$prev]['code'], Tokens::$phpcsCommentTokens) === false
+                && in_array($tokens[$prev]['code'], Tokens::PHPCS_ANNOTATION_TOKENS) === false
             ) {
                 $error = 'Separate the %s and %s sections by a blank line.';
                 $fix   = $phpcsFile->addFixableError($error, $tag, 'TagGroupSpacing', [$previousTag, $currentTag]);
@@ -478,7 +478,7 @@ class DocCommentSniff implements Sniff
 
             // Check that there was single blank line after the tag block
             // but account for multi-line tag comments.
-            $find = Tokens::$phpcsCommentTokens;
+            $find = Tokens::PHPCS_ANNOTATION_TOKENS;
             $find[T_DOC_COMMENT_TAG] = T_DOC_COMMENT_TAG;
 
             $lastTag = $group[$pos];
@@ -525,7 +525,7 @@ class DocCommentSniff implements Sniff
         // If there is a param group, it needs to be first; with the exception
         // of @code, @todo and link tags.
         if ($paramGroupid !== null && $paramGroupid !== 0
-            && in_array($tokens[$tokens[$commentStart]['comment_tags'][0]]['content'], ['@code', '@todo', '@link', '@endlink', '@codingStandardsIgnoreStart']) === false
+            && in_array($tokens[$tokens[$commentStart]['comment_tags'][0]]['content'], ['@code', '@todo', '@link', '@endlink']) === false
         ) {
             $error = 'Parameter tags must be defined first in a doc comment';
             $phpcsFile->addError($error, $tagGroups[$paramGroupid][0], 'ParamNotFirst');
