@@ -117,6 +117,44 @@ function test2() {
   return $x;
 }
 
+/**
+ * Check more inline doc block cases.
+ */
+function test3() {
+  /** I am not allowed. */
+  something();
+
+  /**
+    * I am also not allowed.
+    * Even though I go on multiple lines.
+    */
+  something();
+
+  /** @some-unknown-tag I am allowed. */
+  something();
+
+  /**
+   *
+   * @some-tag-on-the-third-line */
+  something();
+
+  /**
+   * @some-tag-here
+   *
+   * Additonal text after is fine.
+   */
+  something();
+
+  /**
+   * There is some text here before the doc tag.
+   *
+   * This should not be allowed.
+   *
+   * @some-other-tag
+   */
+  something();
+}
+
 // Allow all the cspell comment variants.
 // cspell:ignore bananarama
 $x = 1;

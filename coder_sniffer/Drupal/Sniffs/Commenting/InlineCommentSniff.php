@@ -111,10 +111,18 @@ class InlineCommentSniff implements Sniff
             }
 
             if ($tokens[$stackPtr]['content'] === '/**') {
-                // The only exception to inline doc blocks is the /** @var */
-                // declaration. Allow that in any form.
-                $varTag = $phpcsFile->findNext([T_DOC_COMMENT_TAG], ($stackPtr + 1), $tokens[$stackPtr]['comment_closer'], false, '@var');
-                if ($varTag === false) {
+                // The only exception are inline doc blocks that start with a doc comment tag, e.g. /** @var */.
+                // Any trailing content after the comment tag is fine.
+                $anyTag = $phpcsFile->findNext([T_DOC_COMMENT_TAG], ($stackPtr + 1), $tokens[$stackPtr]['comment_closer'], false);
+
+                // Ensure that there is nothing but stars and whitespace before the tag starts.
+                // In particular, preceding text is not allowed.
+                $beforeTag = false;
+                if ($anyTag !== false) {
+                    $beforeTag = $phpcsFile->findNext([T_DOC_COMMENT_STAR, T_DOC_COMMENT_WHITESPACE], ($stackPtr + 1), $anyTag, true);
+                }
+
+                if ($anyTag === false || $beforeTag !== false) {
                     $error = 'Inline doc block comments are not allowed; use "/* Comment */" or "// Comment" instead';
                     $phpcsFile->addError($error, $stackPtr, 'DocBlock');
                 }
