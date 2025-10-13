@@ -2,6 +2,8 @@
 <!-- See http://pear.php.net/manual/en/package.php.php-codesniffer.annotated-ruleset.php -->
 <ruleset name="Drupal">
   <description>Drupal coding standard</description>
+  <!-- Files with these extensions are checked, see core/phpcs.xml.dist -->
+  <arg name="extensions" value="engine,inc,install,module,php,profile,test,theme,yml"/>
   <!-- All Drupal code files must be UTF-8 encoded and we treat them as such. -->
   <arg name="encoding" value="utf-8"/>
 
@@ -65,7 +67,7 @@
   <rule ref="Generic.PHP.DeprecatedFunctions"/>
   <rule ref="Generic.PHP.DisallowShortOpenTag">
     <!-- Do not run this sniff on .yml files -->
-    <exclude-pattern>**/*.yml</exclude-pattern>
+    <!-- <exclude-pattern>*.yml</exclude-pattern> -->
   </rule>
   <rule ref="Generic.PHP.LowerCaseKeyword"/>
   <rule ref="Generic.PHP.UpperCaseConstant"/>
