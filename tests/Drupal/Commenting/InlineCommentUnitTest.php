@@ -21,17 +21,20 @@ class InlineCommentUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [
-            8  => 1,
-            10 => 1,
-            13 => 1,
-            15 => 1,
-            20 => 1,
-            24 => 1,
-            44 => 1,
-            47 => 1,
-            62 => 1,
-            84 => 1,
-            86 => 1,
+            8   => 1,
+            10  => 1,
+            13  => 1,
+            15  => 1,
+            20  => 1,
+            24  => 1,
+            44  => 1,
+            47  => 1,
+            62  => 1,
+            84  => 1,
+            86  => 1,
+            124 => 1,
+            127 => 1,
+            148 => 1,
         ];
 
     }//end getErrorList()
