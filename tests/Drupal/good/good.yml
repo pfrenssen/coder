@@ -1,0 +1,3 @@
+top_level:
+  # Generic.PHP.DisallowShortOpenTag should not complain at the short xml tag below.
+  data: '<?xml anything ?>\n'
