@@ -65,7 +65,7 @@
   <rule ref="Generic.PHP.DeprecatedFunctions"/>
   <rule ref="Generic.PHP.DisallowShortOpenTag">
     <!-- Do not run this sniff on .yml files -->
-    <!-- <exclude-pattern>*.yml</exclude-pattern> -->
+    <exclude-pattern>*.yml</exclude-pattern>
   </rule>
   <rule ref="Generic.PHP.LowerCaseKeyword"/>
   <rule ref="Generic.PHP.UpperCaseConstant"/>
