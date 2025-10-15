@@ -130,6 +130,8 @@
   <rule ref="SlevomatCodingStandard.Commenting.ForbiddenComments">
     <properties>
        <property name="forbiddenCommentPatterns" type="array">
+         <!-- Catch comments ending in 2 dots, bot leave comments ending in 3
+         dots alone. -->
          <element value="/(?&lt;!\.)\.\.(?!\.)$/"/>
        </property>
     </properties>
