@@ -127,6 +127,15 @@
 
   <!-- SlevomatCodingStandard sniffs -->
   <rule ref="SlevomatCodingStandard.Classes.BackedEnumTypeSpacing"/>
+  <rule ref="SlevomatCodingStandard.Commenting.ForbiddenComments">
+    <properties>
+       <property name="forbiddenCommentPatterns" type="array">
+         <!-- Catch comments ending in 2 dots, bot leave comments ending in 3
+         dots alone. -->
+         <element value="/(?&lt;!\.)\.\.(?!\.)$/"/>
+       </property>
+    </properties>
+  </rule>
   <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator"/>
   <rule ref="SlevomatCodingStandard.PHP.ShortList"/>
   <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
