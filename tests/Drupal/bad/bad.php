@@ -868,4 +868,9 @@ function test30(TestType $a = NULL) {
   echo "Hello";
 }
 
+/**
+ * Comments are not allowed to end in 2 dots..
+ */
+function test31() {}
+
 ?>

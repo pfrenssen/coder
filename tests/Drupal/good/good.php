@@ -2060,3 +2060,8 @@ interface BreadcrumbBuilderInterface {
 function pdo_weird_return_type($param) {
   return pdo();
 }
+
+/**
+ * Comments are allowed to end in 3 dots...
+ */
+function comment_test_dots() {}
