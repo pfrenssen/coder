@@ -80,8 +80,6 @@ jobs:
         if: ${{ matrix.extra-tests == '1' }}
         # In case Drupal core files have known problems that should be
         # ignored temporarily, add them with the --ignore option.
-        # @todo Remove ignore option once Coder 8.3.27 is released and Drupal
-        # core is updated to that version.
         run: |
           cd drupal/core
-          ../../vendor/bin/phpcs -p -s --exclude=Drupal.Commenting.FunctionComment --ignore=lib/Drupal/Core/Entity/EntityType.php,lib/Drupal/Core/Recipe/RecipeInputFormTrait.php,lib/Drupal/Core/Form/FormState.php,modules/migrate/src/Plugin/Migration.php,modules/views/src/ViewExecutable.php,modules/views/src/Plugin/views/style/StylePluginBase.php,core/lib/Drupal/Core/FileTransfer/FTP.php,core/lib/Drupal/Core/FileTransfer/SSH.php,modules/system/tests/modules/theme_test/src/EventSubscriber/ThemeTestSubscriber.php,modules/views/src/Plugin/views/pager/PagerPluginBase.php,lib/Drupal/Core/Breadcrumb/BreadcrumbBuilderInterface.php
+          ../../vendor/bin/phpcs -p -s --parallel=$(nproc)
