@@ -51,7 +51,7 @@ class GlobalDrupalSniff implements Sniff
      */
     public function register()
     {
-        return [T_STRING];
+        return [T_NAME_FULLY_QUALIFIED];
 
     }//end register()
 
@@ -71,7 +71,7 @@ class GlobalDrupalSniff implements Sniff
 
         // We are only interested in Drupal:: static method calls, not in the global
         // scope.
-        if ($tokens[$stackPtr]['content'] !== 'Drupal'
+        if ($tokens[$stackPtr]['content'] !== '\Drupal'
             || $tokens[($stackPtr + 1)]['code'] !== T_DOUBLE_COLON
             || isset($tokens[($stackPtr + 2)]) === false
             || $tokens[($stackPtr + 2)]['code'] !== T_STRING
