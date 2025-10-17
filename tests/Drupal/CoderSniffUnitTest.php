@@ -87,7 +87,7 @@ abstract class CoderSniffUnitTest extends TestCase
      *
      * @return array<string>
      */
-    protected function getTestFiles($testFileBase): array
+    protected function getTestFiles(string $testFileBase): array
     {
         $testFiles = [];
 
