@@ -67,7 +67,7 @@ class UnusedUseStatementSniff implements Sniff
             true
         );
 
-        if ($tokens[$classPtr]['code'] !== T_NAME_QUALIFIED) {
+        if (in_array($tokens[$classPtr]['code'], Tokens::NAME_TOKENS) === false) {
             return;
         }
 
