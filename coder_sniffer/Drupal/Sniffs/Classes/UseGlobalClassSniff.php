@@ -125,9 +125,7 @@ class UseGlobalClassSniff implements Sniff
                 // Only start looking after the end of the use statement block.
                 $i = $bodyStart;
                 while (false !== $i = $phpcsFile->findNext(T_STRING, ($i + 1), null, false, $aliasName)) {
-                    if ($tokens[($i - 1)]['code'] !== T_NS_SEPARATOR) {
-                        $phpcsFile->fixer->replaceToken($i, '\\'.$className);
-                    }
+                    $phpcsFile->fixer->replaceToken($i, '\\'.$className);
                 }
 
                 $phpcsFile->fixer->endChangeset();
