@@ -73,12 +73,9 @@ class DataTypeNamespaceSniff implements Sniff
 
         // Replace @var data types in doc comments with the fully qualified class
         // name.
-        $useNamespacePtr = $phpcsFile->findNext([T_STRING], ($stackPtr + 1));
+        $useNamespacePtr = $phpcsFile->findNext(Tokens::NAME_TOKENS, ($stackPtr + 1));
         $useNamespaceEnd = $phpcsFile->findNext(
-            [
-                T_NS_SEPARATOR,
-                T_STRING,
-            ],
+            Tokens::NAME_TOKENS,
             ($useNamespacePtr + 1),
             null,
             true

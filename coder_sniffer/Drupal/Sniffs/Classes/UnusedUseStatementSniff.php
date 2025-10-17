@@ -67,7 +67,7 @@ class UnusedUseStatementSniff implements Sniff
             true
         );
 
-        if ($tokens[$classPtr]['code'] !== T_STRING) {
+        if ($tokens[$classPtr]['code'] !== T_NAME_QUALIFIED) {
             return;
         }
 
@@ -75,7 +75,8 @@ class UnusedUseStatementSniff implements Sniff
         // insensitive, that's why we cannot search for the exact class name string
         // and need to iterate over all T_STRING tokens in the file.
         $classUsed      = $phpcsFile->findNext(T_STRING, ($classPtr + 1));
-        $lowerClassName = strtolower($tokens[$classPtr]['content']);
+        $classParts     = explode('\\', $tokens[$classPtr]['content']);
+        $lowerClassName = strtolower(array_pop($classParts));
 
         // Check if the referenced class is in the same namespace as the current
         // file. If it is then the use statement is not necessary.
@@ -86,23 +87,16 @@ class UnusedUseStatementSniff implements Sniff
 
         if ($namespacePtr !== false && $aliasUsed === false) {
             $nsEnd     = $phpcsFile->findNext(
-                [
-                    T_NS_SEPARATOR,
-                    T_STRING,
-                    T_WHITESPACE,
-                ],
+                Tokens::NAME_TOKENS + Tokens::EMPTY_TOKENS,
                 ($namespacePtr + 1),
                 null,
                 true
             );
             $namespace = trim($phpcsFile->getTokensAsString(($namespacePtr + 1), ($nsEnd - $namespacePtr - 1)));
 
-            $useNamespacePtr = $phpcsFile->findNext([T_STRING], ($stackPtr + 1));
+            $useNamespacePtr = $phpcsFile->findNext(Tokens::NAME_TOKENS, ($stackPtr + 1));
             $useNamespaceEnd = $phpcsFile->findNext(
-                [
-                    T_NS_SEPARATOR,
-                    T_STRING,
-                ],
+                Tokens::NAME_TOKENS,
                 ($useNamespacePtr + 1),
                 null,
                 true
@@ -128,7 +122,6 @@ class UnusedUseStatementSniff implements Sniff
                     $tokens[$beforeUsage]['code'],
                     [
                         T_USE,
-                        T_NS_SEPARATOR,
                     // If an object operator is used then this is a method call
                     // with the same name as the class name. Which means this is
                     // not referring to the class.
@@ -175,10 +168,7 @@ class UnusedUseStatementSniff implements Sniff
             // name.
             $useNamespacePtr = $phpcsFile->findNext([T_STRING], ($stackPtr + 1));
             $useNamespaceEnd = $phpcsFile->findNext(
-                [
-                    T_NS_SEPARATOR,
-                    T_STRING,
-                ],
+                Tokens::NAME_TOKENS,
                 ($useNamespacePtr + 1),
                 null,
                 true

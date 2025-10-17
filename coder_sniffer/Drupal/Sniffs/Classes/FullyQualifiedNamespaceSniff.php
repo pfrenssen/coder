@@ -11,6 +11,7 @@ namespace Drupal\Sniffs\Classes;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Checks that class references do not use FQN but use statements.
@@ -30,7 +31,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
      */
     public function register()
     {
-        return [T_NS_SEPARATOR];
+        return [T_NAME_FULLY_QUALIFIED];
 
     }//end register()
 
@@ -61,7 +62,9 @@ class FullyQualifiedNamespaceSniff implements Sniff
 
         // We are only interested in a backslash embedded between strings, which
         // means this is a class reference with more than one namespace part.
-        if ($tokens[($stackPtr - 1)]['code'] !== T_STRING || $tokens[($stackPtr + 1)]['code'] !== T_STRING) {
+        if (substr_count($tokens[$stackPtr]['content'], '\\') === 1
+            && strpos($tokens[$stackPtr]['content'], '\\') === 0
+        ) {
             return;
         }
 
@@ -78,18 +81,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
             $before = $phpcsFile->findPrevious([T_STRING, T_NS_SEPARATOR, T_WHITESPACE], $stackPtr, null, true);
         }
 
-        // If this is a namespaced function call then ignore this because use
-        // statements for functions are not possible in PHP 5.5 and lower.
-        $after = $phpcsFile->findNext([T_STRING, T_NS_SEPARATOR, T_WHITESPACE], $stackPtr, null, true);
-        if ($tokens[$after]['code'] === T_OPEN_PARENTHESIS
-            && $tokens[$before]['code'] !== T_NEW
-            && $tokens[$before]['code'] !== T_ATTRIBUTE
-        ) {
-            return ($after + 1);
-        }
-
-        $fullName  = $phpcsFile->getTokensAsString(($before + 1), ($after - 1 - $before));
-        $fullName  = trim($fullName, "\ \n");
+        $fullName  = trim($tokens[$stackPtr]['content']);
         $parts     = explode('\\', $fullName);
         $className = end($parts);
 
@@ -101,7 +93,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
         $useStatement = $phpcsFile->findNext(T_USE, 0);
         while ($useStatement !== false && empty($tokens[$useStatement]['conditions']) === true) {
             $endPtr      = $phpcsFile->findEndOfStatement($useStatement);
-            $useEnd      = ($phpcsFile->findNext([T_STRING, T_NS_SEPARATOR, T_WHITESPACE], ($useStatement + 1), null, true) - 1);
+            $useEnd      = ($phpcsFile->findNext(Tokens::EMPTY_TOKENS + Tokens::NAME_TOKENS, ($useStatement + 1), null, true) - 1);
             $useFullName = trim($phpcsFile->getTokensAsString(($useStatement + 1), ($useEnd - $useStatement)));
 
             // Check if use statement contains an alias.
@@ -163,18 +155,11 @@ class FullyQualifiedNamespaceSniff implements Sniff
         if ($fix === true) {
             $phpcsFile->fixer->beginChangeset();
 
-            // Replace the fully qualified name with the local name.
-            for ($i = ($before + 1); $i < $after; $i++) {
-                if ($tokens[$i]['code'] !== T_WHITESPACE) {
-                    $phpcsFile->fixer->replaceToken($i, '');
-                }
-            }
-
             // Use alias name if available.
             if ($aliasName !== false) {
-                $phpcsFile->fixer->addContentBefore(($after - 1), $aliasName);
+                $phpcsFile->fixer->replaceToken($stackPtr, $aliasName);
             } else {
-                $phpcsFile->fixer->addContentBefore(($after - 1), $className);
+                $phpcsFile->fixer->replaceToken($stackPtr, $className);
             }
 
             // Insert use statement at the beginning of the file if it is not there
