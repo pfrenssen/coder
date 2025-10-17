@@ -68,7 +68,9 @@ class ClassCreateInstanceSniff implements Sniff
             // "new \DOMDocument;" or constructor with class names in variables
             // "new $controller;".
             if ($tokens[$constructor]['code'] === T_STRING
-                || $tokens[$constructor]['code'] === T_NS_SEPARATOR
+                || $tokens[$constructor]['code'] === T_NAME_QUALIFIED
+                || $tokens[$constructor]['code'] === T_NAME_FULLY_QUALIFIED
+                || $tokens[$constructor]['code'] === T_NAME_RELATIVE
                 || ($tokens[$constructor]['code'] === T_VARIABLE
                 && $tokens[($constructor + 1)]['code'] === T_SEMICOLON)
             ) {
@@ -85,7 +87,9 @@ class ClassCreateInstanceSniff implements Sniff
                     );
                     if ($nextConstructorPart === false
                         || ($tokens[$nextConstructorPart]['code'] !== T_STRING
-                        && $tokens[$nextConstructorPart]['code'] !== T_NS_SEPARATOR)
+                        && $tokens[$nextConstructorPart]['code'] !== T_NAME_QUALIFIED
+                        && $tokens[$nextConstructorPart]['code'] !== T_NAME_FULLY_QUALIFIED
+                        && $tokens[$nextConstructorPart]['code'] !== T_NAME_RELATIVE)
                     ) {
                         break;
                     }
