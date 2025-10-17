@@ -93,15 +93,7 @@ class UnusedUseStatementSniff implements Sniff
                 true
             );
             $namespace = trim($phpcsFile->getTokensAsString(($namespacePtr + 1), ($nsEnd - $namespacePtr - 1)));
-
-            $useNamespacePtr = $phpcsFile->findNext(Tokens::NAME_TOKENS, ($stackPtr + 1));
-            $useNamespaceEnd = $phpcsFile->findNext(
-                Tokens::NAME_TOKENS,
-                ($useNamespacePtr + 1),
-                null,
-                true
-            );
-            $useNamespace    = rtrim($phpcsFile->getTokensAsString($useNamespacePtr, ($useNamespaceEnd - $useNamespacePtr - 1)), '\\');
+            $useNamespace    = implode('\\', $classParts);
 
             if (strcasecmp($namespace, $useNamespace) === 0) {
                 $classUsed = false;
