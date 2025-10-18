@@ -79,7 +79,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
             return;
         }
 
-        $fullName  = trim($tokens[$stackPtr]['content']);
+        $fullName  = trim($tokens[$stackPtr]['content'], '\\ ');
         $parts     = explode('\\', $fullName);
         $className = end($parts);
 
@@ -198,10 +198,6 @@ class FullyQualifiedNamespaceSniff implements Sniff
 
             $phpcsFile->fixer->endChangeset();
         }//end if
-
-        // Continue after this class reference so that errors for this are not
-        // flagged multiple times.
-        return $phpcsFile->findNext([T_STRING, T_NS_SEPARATOR], ($stackPtr + 1), null, true);
 
     }//end process()
 
