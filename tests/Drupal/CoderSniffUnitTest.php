@@ -17,7 +17,6 @@ use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Ruleset;
 use PHP_CodeSniffer\Files\LocalFile;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
-use PHP_CodeSniffer\Util\Common;
 use PHP_CodeSniffer\Util\Tokens;
 use PHPUnit\Framework\TestCase;
 
@@ -420,6 +419,7 @@ abstract class CoderSniffUnitTest extends TestCase
 
     }//end generateFailureMessages()
 
+
     /**
      * Given a test class name, returns the code for the sniff.
      *
@@ -448,14 +448,16 @@ abstract class CoderSniffUnitTest extends TestCase
             $sniff = substr($sniff, 0, -8);
         } else {
             throw new \InvalidArgumentException(
-                'The $testClass parameter was not passed a fully qualified sniff(test) class name. Received: ' . $testClass
+                'The $testClass parameter was not passed a fully qualified sniff(test) class name. Received: '.$testClass
             );
         }
 
         $standard = $parts[($partsCount - 4)];
         $category = $parts[($partsCount - 2)];
-        return $standard . '.' . $category . '.' . $sniff;
-    }
+        return $standard.'.'.$category.'.'.$sniff;
+
+    }//end getSniffCode()
+
 
     /**
      * Set a list of CLI values before the file is tested.

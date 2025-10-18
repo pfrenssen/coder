@@ -88,6 +88,7 @@ class UseGlobalClassSniff implements Sniff
                 $lineStart = $lineEnd;
                 continue;
             }
+
             // If there is more than one string token, the last one is the alias.
             $alias     = $phpcsFile->findPrevious(T_STRING, $lineEnd, $stackPtr);
             $aliasName = $tokens[$alias]['content'];

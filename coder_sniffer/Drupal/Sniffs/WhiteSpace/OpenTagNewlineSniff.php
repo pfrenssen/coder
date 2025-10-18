@@ -50,8 +50,9 @@ class OpenTagNewlineSniff implements Sniff
     {
         // This sniff only works when there are \n line endings.
         if ($phpcsFile->eolChar !== "\n") {
-            return $phpcsFile->numTokens + 1;
+            return ($phpcsFile->numTokens + 1);
         }
+
         $tokens = $phpcsFile->getTokens();
 
         // Only check the very first PHP open tag in a file, ignore any others.

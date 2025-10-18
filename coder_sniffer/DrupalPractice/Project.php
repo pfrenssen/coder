@@ -195,9 +195,10 @@ class Project
             $cache[$phpcsFile->getFilename()] = false;
             return false;
         }
+
         $nameQualifiedPtr = $phpcsFile->findNext(T_NAME_QUALIFIED, ($namespacePtr + 1));
-        $namespace       = $phpcsFile->getTokens()[$nameQualifiedPtr]['content'] ?? '';
-        $classNameSpaced = ltrim($namespace.'\\'.$phpcsFile->getDeclarationName($classPtr), '\\');
+        $namespace        = ($phpcsFile->getTokens()[$nameQualifiedPtr]['content'] ?? '');
+        $classNameSpaced  = ltrim($namespace.'\\'.$phpcsFile->getDeclarationName($classPtr), '\\');
 
         foreach ($services['services'] as $service) {
             if (isset($service['class']) === true

@@ -106,7 +106,6 @@
     <rule ref="Generic.Formatting.MultipleStatementAlignment">
         <properties>
             <property name="maxPadding" value="12"/>
-            <property name="warning" value="true"/>
         </properties>
     </rule>
 
@@ -154,7 +153,9 @@
     </rule>
 
     <!-- Additional rules from Drupal that we want. -->
-    <rule ref="coder_sniffer/Drupal/Sniffs/Classes/UnusedUseStatementSniff.php"/>
     <rule ref="coder_sniffer/Drupal/Sniffs/Commenting/InlineCommentSniff.php"/>
+
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>
 
 </ruleset>

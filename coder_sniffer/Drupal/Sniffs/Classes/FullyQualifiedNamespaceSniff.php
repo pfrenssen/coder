@@ -31,7 +31,10 @@ class FullyQualifiedNamespaceSniff implements Sniff
      */
     public function register()
     {
-        return [T_NAME_FULLY_QUALIFIED, T_NAME_QUALIFIED];
+        return [
+            T_NAME_FULLY_QUALIFIED,
+            T_NAME_QUALIFIED,
+        ];
 
     }//end register()
 
@@ -74,7 +77,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
         }
 
         // Check if this is a use statement and ignore those.
-        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS + Tokens::NAME_TOKENS + [T_COMMA => T_COMMA, T_AS => T_AS], $stackPtr - 1, null, true);
+        $before = $phpcsFile->findPrevious((Tokens::EMPTY_TOKENS + Tokens::NAME_TOKENS + [T_COMMA => T_COMMA, T_AS => T_AS]), ($stackPtr - 1), null, true);
         if ($tokens[$before]['code'] === T_USE || $tokens[$before]['code'] === T_NAMESPACE) {
             return;
         }
@@ -91,7 +94,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
         $useStatement = $phpcsFile->findNext(T_USE, 0);
         while ($useStatement !== false && empty($tokens[$useStatement]['conditions']) === true) {
             $endPtr      = $phpcsFile->findEndOfStatement($useStatement);
-            $useEnd      = ($phpcsFile->findNext(Tokens::EMPTY_TOKENS + Tokens::NAME_TOKENS, ($useStatement + 1), null, true) - 1);
+            $useEnd      = ($phpcsFile->findNext((Tokens::EMPTY_TOKENS + Tokens::NAME_TOKENS), ($useStatement + 1), null, true) - 1);
             $useFullName = trim($phpcsFile->getTokensAsString(($useStatement + 1), ($useEnd - $useStatement)));
 
             // Check if use statement contains an alias.

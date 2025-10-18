@@ -74,7 +74,7 @@ class DataTypeNamespaceSniff implements Sniff
         // Replace @var data types in doc comments with the fully qualified class
         // name.
         $fullNamespace = $tokens[$classPtr]['content'];
-        $className = substr($fullNamespace, strrpos($fullNamespace, '\\') + 1);
+        $className     = substr($fullNamespace, (strrpos($fullNamespace, '\\') + 1));
 
         $tag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($stackPtr + 1));
 
