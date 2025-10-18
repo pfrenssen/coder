@@ -1397,17 +1397,6 @@ class OperatorTest {
 
 }
 
-// Namespaced function call is allowed because PHP 5.5 and lower do not support
-// use statements for functions.
-$default_config = [
-  'verify' => TRUE,
-  'timeout' => 30,
-  'headers' => [
-    'User-Agent' => 'Drupal/' . \Drupal::VERSION . ' (+https://www.drupal.org/) ' . \GuzzleHttp\default_user_agent(),
-  ],
-  'handler' => $stack,
-];
-
 // camelCase and snake_case variables are allowed.
 $snake_case = 1;
 $camelCase = 1;
