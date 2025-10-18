@@ -142,6 +142,7 @@
   </rule>
   <rule ref="SlevomatCodingStandard.ControlStructures.NewWithParentheses"/>
   <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator"/>
+  <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses"/>
   <rule ref="SlevomatCodingStandard.PHP.ShortList"/>
   <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
     <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing"/>

@@ -383,6 +383,26 @@ class BadUnitTest extends CoderSniffUnitTest
                 16 => 1,
                 31 => 1,
             ];
+        case 'UnusedUseStatementUnitTest.inc':
+            return [
+                5  => 1,
+                6  => 1,
+                7  => 1,
+                10 => 1,
+                11 => 1,
+                12 => 1,
+                14 => 1,
+                17 => 1,
+                19 => 1,
+                20 => 1,
+                21 => 1,
+                22 => 1,
+                23 => 1,
+                35 => 1,
+                56 => 1,
+                85 => 1,
+                98 => 1,
+            ];
         }//end switch
 
         return [];
