@@ -6,11 +6,11 @@
  */
 
 use Test\MultiLineSecond;
+use Test\MultiLine;
 use Test\Foo;
 use Test\NotUsed;
 use Test\Bar;
 use Test\Alias as TestAlias;
-use Test\MultiLine as MultiLineAlias;
 
 /**
  * Example.
@@ -69,7 +69,7 @@ class Example {
   /**
    * Description.
    */
-  public function test8(MultiLineAlias $multiLine, MultiLineSecond $multiLineSecond) {
+  public function test8(MultiLine $multiLine, MultiLineSecond $multiLineSecond) {
 
   }
 
