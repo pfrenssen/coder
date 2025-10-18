@@ -31,7 +31,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
      */
     public function register()
     {
-        return [T_NAME_FULLY_QUALIFIED];
+        return [T_NAME_FULLY_QUALIFIED, T_NAME_QUALIFIED];
 
     }//end register()
 
@@ -74,11 +74,9 @@ class FullyQualifiedNamespaceSniff implements Sniff
         }
 
         // Check if this is a use statement and ignore those.
-        $before = $phpcsFile->findPrevious([T_STRING, T_NS_SEPARATOR, T_WHITESPACE, T_COMMA, T_AS], $stackPtr, null, true);
+        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, $stackPtr - 1, null, true);
         if ($tokens[$before]['code'] === T_USE || $tokens[$before]['code'] === T_NAMESPACE) {
-            return $phpcsFile->findNext([T_STRING, T_NS_SEPARATOR, T_WHITESPACE, T_COMMA, T_AS], ($stackPtr + 1), null, true);
-        } else {
-            $before = $phpcsFile->findPrevious([T_STRING, T_NS_SEPARATOR, T_WHITESPACE], $stackPtr, null, true);
+            return;
         }
 
         $fullName  = trim($tokens[$stackPtr]['content']);
