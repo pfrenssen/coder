@@ -367,6 +367,22 @@ class BadUnitTest extends CoderSniffUnitTest
                 872 => 1,
                 876 => 2,
             ];
+        case 'ClassCreateInstanceUnitTest.inc':
+            return [
+                3  => 1,
+                4  => 1,
+                5  => 1,
+                6  => 1,
+                8  => 1,
+                9  => 1,
+                10 => 1,
+                11 => 1,
+                12 => 2,
+                13 => 2,
+                14 => 2,
+                16 => 1,
+                31 => 1,
+            ];
         }//end switch
 
         return [];
