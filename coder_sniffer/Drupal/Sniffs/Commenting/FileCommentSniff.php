@@ -162,13 +162,7 @@ class FileCommentSniff implements Sniff
             if ($fileTag === false) {
                 $fix = $phpcsFile->addFixableError('Missing file doc comment', $stackPtr, 'Missing');
                 if ($fix === true) {
-                    // Only PHP has a real opening tag, additional newline at the
-                    // beginning here.
-                    if ($phpcsFile->tokenizerType === 'PHP') {
-                        $phpcsFile->fixer->addContent($stackPtr, "\n/**\n * @file\n */\n");
-                    } else {
-                        $phpcsFile->fixer->addContent($stackPtr, "/**\n * @file\n */\n");
-                    }
+                    $phpcsFile->fixer->addContent($stackPtr, "\n/**\n * @file\n */\n");
                 }
 
                 return ($phpcsFile->numTokens + 1);

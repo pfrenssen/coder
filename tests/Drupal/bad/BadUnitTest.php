@@ -29,7 +29,7 @@ class BadUnitTest extends CoderSniffUnitTest
         switch ($testFile) {
         case 'bad_crlf.inc':
             return [
-                1 => 2,
+                1 => 1,
                 8 => 1,
             ];
         case 'bad.info':

@@ -434,7 +434,7 @@ abstract class CoderSniffUnitTest extends TestCase
      */
     public function getSniffCode(string $testClass): string
     {
-        if (is_string($testClass) === false || $testClass === '') {
+        if ($testClass === '') {
             throw new \InvalidArgumentException('The $testClass parameter must be a non-empty string');
         }
 
