@@ -74,7 +74,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
         }
 
         // Check if this is a use statement and ignore those.
-        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, $stackPtr - 1, null, true);
+        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS + Tokens::NAME_TOKENS + [T_COMMA => T_COMMA, T_AS => T_AS], $stackPtr - 1, null, true);
         if ($tokens[$before]['code'] === T_USE || $tokens[$before]['code'] === T_NAMESPACE) {
             return;
         }
