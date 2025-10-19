@@ -92,4 +92,7 @@ jobs:
           find . -type f -exec sed -i '/\/\/ phpcs:ignore/ s/, /,/g' {} +
           find . -type f -name "*.php" -exec sed -i 's#// @codingStandardsIgnoreStart#// phpcs:disable#g' {} +
           find . -type f -name "*.php" -exec sed -i 's#// @codingStandardsIgnoreEnd#// phpcs:enable#g' {} +
+          sed -i '/<rule ref="Drupal.Functions.FunctionDeclaration"\/>/d' phpcs.xml.dist
+          sed -i 's/DrupalPractice.CodeAnalysis.VariableAnalysis/VariableAnalysis.CodeAnalysis.VariableAnalysis/g' phpcs.xml.dist
+          find . -type f -name "*.php" -exec sed -i 's#// phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UnusedVariable#// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable#g' {} +
           ../../vendor/bin/phpcs -p -s --parallel=$(nproc) --ignore=lib/Drupal/Core/Command/GenerateTheme.php,modules/mysql/tests/src/Kernel/mysql/Console/DbDumpCommandTest.php
