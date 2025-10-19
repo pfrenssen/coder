@@ -131,7 +131,7 @@ class VariableCommentSniff extends AbstractVariableSniff
         if ($foundVar === null) {
             // If there's an inline type argument then you may omit the @var comment.
             // Check if there's a type between the variable name and the comment end.
-            if ($phpcsFile->findPrevious([T_STRING], $stackPtr, $commentEnd) !== false) {
+            if ($phpcsFile->findPrevious(Tokens::NAME_TOKENS, $stackPtr, $commentEnd) !== false) {
                 return;
             }
 

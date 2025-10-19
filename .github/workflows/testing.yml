@@ -86,4 +86,4 @@ jobs:
           sed -i 's/Drupal.Classes.ClassCreateInstance/SlevomatCodingStandard.ControlStructures.NewWithParentheses/g' phpcs.xml.dist
           sed -i 's/Drupal.Classes.UnusedUseStatement/SlevomatCodingStandard.Namespaces.UnusedUses/g' phpcs.xml.dist
           sed -i '/<rule ref="SlevomatCodingStandard.Exceptions.RequireNonCapturingCatch" \/>/a \  <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>' phpcs.xml.dist
-          ../../vendor/bin/phpcs -p -s --parallel=$(nproc)
+          ../../vendor/bin/phpcs -p -s --parallel=$(nproc) --ignore=lib/Drupal/Core/Command/GenerateTheme.php

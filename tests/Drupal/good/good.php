@@ -2054,3 +2054,15 @@ function pdo_weird_return_type($param) {
  * Comments are allowed to end in 3 dots...
  */
 function comment_test_dots() {}
+
+/**
+ * Executes the page caching before the main kernel takes over the request.
+ */
+class PageCache implements HttpKernelInterface {
+
+  /**
+   * The wrapped HTTP kernel.
+   */
+  protected \Closure $httpKernel;
+
+}
