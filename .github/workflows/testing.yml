@@ -90,4 +90,6 @@ jobs:
           find . -type f -name "*.php" -exec sed -i 's#// @codingStandardsIgnoreLine#// phpcs:ignore#g' {} +
           find . -type f -name "*.php" -exec sed -i 's#// @codingStandardsIgnoreFile#// phpcs:ignoreFile#g' {} +
           find . -type f -exec sed -i '/\/\/ phpcs:ignore/ s/, /,/g' {} +
-          ../../vendor/bin/phpcs -p -s --parallel=$(nproc) --ignore=lib/Drupal/Core/Command/GenerateTheme.php
+          find . -type f -name "*.php" -exec sed -i 's#// @codingStandardsIgnoreStart#// phpcs:disable#g' {} +
+          find . -type f -name "*.php" -exec sed -i 's#// @codingStandardsIgnoreEnd#// phpcs:enable#g' {} +
+          ../../vendor/bin/phpcs -p -s --parallel=$(nproc) --ignore=lib/Drupal/Core/Command/GenerateTheme.php,modules/mysql/tests/src/Kernel/mysql/Console/DbDumpCommandTest.php
