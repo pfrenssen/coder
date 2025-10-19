@@ -2065,4 +2065,12 @@ class PageCache implements HttpKernelInterface {
    */
   protected \Closure $httpKernel;
 
+  /**
+   * The entity for this result.
+   *
+   * @var \Drupal\Core\Entity\EntityInterface
+   */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName,PSR2.Classes.PropertyDeclaration.Underscore
+  public $_entity = NULL;
+
 }
