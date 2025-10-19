@@ -82,4 +82,8 @@ jobs:
         # ignored temporarily, add them with the --ignore option.
         run: |
           cd drupal/core
+          # Fix Drupal core PHPCS config by replacing removed sniffs.
+          sed -i 's/Drupal.Classes.ClassCreateInstance/SlevomatCodingStandard.ControlStructures.NewWithParentheses/g' phpcs.xml.dist
+          sed -i 's/Drupal.Classes.UnusedUseStatement/SlevomatCodingStandard.Namespaces.UnusedUses/g' phpcs.xml.dist
+          sed -i '/<rule ref="SlevomatCodingStandard.Exceptions.RequireNonCapturingCatch" \/>/a \  <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>' phpcs.xml.dist
           ../../vendor/bin/phpcs -p -s --parallel=$(nproc)
