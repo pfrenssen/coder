@@ -75,19 +75,20 @@ class UseGlobalClassSniff implements Sniff
         $lineStart = $stackPtr;
         // Iterate through a potential multiline use statement.
         while (false !== $lineEnd = $phpcsFile->findNext([T_SEMICOLON, T_COMMA], ($lineStart + 1), ($stmtEnd + 1))) {
-            // We are only interested in imports that contain no backslash,
-            // which means this is a class without a namespace.
-            // Also skip function imports.
-            if ($phpcsFile->findNext(T_NS_SEPARATOR, $lineStart, $lineEnd) !== false
-                || $phpcsFile->findNext(T_STRING, $lineStart, $lineEnd, false, 'function') !== false
-            ) {
+            // Skip function imports.
+            if ($phpcsFile->findNext(T_STRING, $lineStart, $lineEnd, false, 'function') !== false) {
                 $lineStart = $lineEnd;
                 continue;
             }
 
-            // The first string token is the class name.
-            $class     = $phpcsFile->findNext(T_STRING, $lineStart, $lineEnd);
+            $class     = $phpcsFile->findNext(Tokens::NAME_TOKENS, $lineStart, $lineEnd);
             $className = $tokens[$class]['content'];
+            if (strpos($className, '\\') !== false) {
+                // This is a namespaced class, skip it.
+                $lineStart = $lineEnd;
+                continue;
+            }
+
             // If there is more than one string token, the last one is the alias.
             $alias     = $phpcsFile->findPrevious(T_STRING, $lineEnd, $stackPtr);
             $aliasName = $tokens[$alias]['content'];
@@ -125,9 +126,7 @@ class UseGlobalClassSniff implements Sniff
                 // Only start looking after the end of the use statement block.
                 $i = $bodyStart;
                 while (false !== $i = $phpcsFile->findNext(T_STRING, ($i + 1), null, false, $aliasName)) {
-                    if ($tokens[($i - 1)]['code'] !== T_NS_SEPARATOR) {
-                        $phpcsFile->fixer->replaceToken($i, '\\'.$className);
-                    }
+                    $phpcsFile->fixer->replaceToken($i, '\\'.$className);
                 }
 
                 $phpcsFile->fixer->endChangeset();

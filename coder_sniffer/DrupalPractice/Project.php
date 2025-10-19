@@ -196,18 +196,9 @@ class Project
             return false;
         }
 
-        $nsEnd           = $phpcsFile->findNext(
-            [
-                T_NS_SEPARATOR,
-                T_STRING,
-                T_WHITESPACE,
-            ],
-            ($namespacePtr + 1),
-            null,
-            true
-        );
-        $namespace       = trim($phpcsFile->getTokensAsString(($namespacePtr + 1), ($nsEnd - $namespacePtr - 1)));
-        $classNameSpaced = ltrim($namespace.'\\'.$phpcsFile->getDeclarationName($classPtr), '\\');
+        $nameQualifiedPtr = $phpcsFile->findNext(T_NAME_QUALIFIED, ($namespacePtr + 1));
+        $namespace        = ($phpcsFile->getTokens()[$nameQualifiedPtr]['content'] ?? '');
+        $classNameSpaced  = ltrim($namespace.'\\'.$phpcsFile->getDeclarationName($classPtr), '\\');
 
         foreach ($services['services'] as $service) {
             if (isset($service['class']) === true

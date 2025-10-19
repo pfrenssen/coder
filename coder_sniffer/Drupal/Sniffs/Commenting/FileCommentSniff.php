@@ -138,16 +138,12 @@ class FileCommentSniff implements Sniff
             if ($fix === true) {
                 // Only PHP has a real opening tag, additional newline at the
                 // beginning here.
-                if ($phpcsFile->tokenizerType === 'PHP') {
-                    // In templates add the file doc block to the very beginning of
-                    // the file.
-                    if ($tokens[0]['code'] === T_INLINE_HTML) {
-                        $phpcsFile->fixer->addContentBefore(0, "<?php\n\n/**\n * @file\n */\n?>\n");
-                    } else {
-                        $phpcsFile->fixer->addContent($stackPtr, "\n/**\n * @file\n */\n");
-                    }
+                // In templates add the file doc block to the very beginning of
+                // the file.
+                if ($tokens[0]['code'] === T_INLINE_HTML) {
+                    $phpcsFile->fixer->addContentBefore(0, "<?php\n\n/**\n * @file\n */\n?>\n");
                 } else {
-                    $phpcsFile->fixer->addContent($stackPtr, "/**\n * @file\n */\n");
+                    $phpcsFile->fixer->addContent($stackPtr, "\n/**\n * @file\n */\n");
                 }
             }
 
@@ -166,13 +162,7 @@ class FileCommentSniff implements Sniff
             if ($fileTag === false) {
                 $fix = $phpcsFile->addFixableError('Missing file doc comment', $stackPtr, 'Missing');
                 if ($fix === true) {
-                    // Only PHP has a real opening tag, additional newline at the
-                    // beginning here.
-                    if ($phpcsFile->tokenizerType === 'PHP') {
-                        $phpcsFile->fixer->addContent($stackPtr, "\n/**\n * @file\n */\n");
-                    } else {
-                        $phpcsFile->fixer->addContent($stackPtr, "/**\n * @file\n */\n");
-                    }
+                    $phpcsFile->fixer->addContent($stackPtr, "\n/**\n * @file\n */\n");
                 }
 
                 return ($phpcsFile->numTokens + 1);

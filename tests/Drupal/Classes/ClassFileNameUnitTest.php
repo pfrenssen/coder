@@ -59,7 +59,7 @@ class ClassFileNameUnitTest extends CoderSniffUnitTest
         return [
             __DIR__.'/drupal8/ClassFileNameUnitTest.php',
             __DIR__.'/drupal8/drupal8.behat.inc',
-            __DIR__.'/drupal7/class_fle_name_test.module',
+            __DIR__.'/drupal7/class_file_name_test.module',
             __DIR__.'/drupal8/markdownFile.md',
         ];
 

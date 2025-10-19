@@ -61,11 +61,11 @@ class UseLeadingBackslashSniff implements Sniff
             true
         );
 
-        if ($startPtr !== false && $tokens[$startPtr]['code'] === T_NS_SEPARATOR) {
+        if ($startPtr !== false && $tokens[$startPtr]['code'] === T_NAME_FULLY_QUALIFIED) {
             $error = 'When importing a class with "use", do not include a leading \\';
             $fix   = $phpcsFile->addFixableError($error, $startPtr, 'SeparatorStart');
             if ($fix === true) {
-                $phpcsFile->fixer->replaceToken($startPtr, '');
+                $phpcsFile->fixer->replaceToken($startPtr, ltrim($tokens[$startPtr]['content'], '\\'));
             }
         }
 

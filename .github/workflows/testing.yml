@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
+        php-versions: ['7.4', '8.0', '8.1', '8.2', '8.3']
         extra-tests: ['0']
         # We only need to run PHPStan and Drupal core regression tests once on
         # the latest PHP version.
@@ -82,4 +82,14 @@ jobs:
         # ignored temporarily, add them with the --ignore option.
         run: |
           cd drupal/core
-          ../../vendor/bin/phpcs -p -s --parallel=$(nproc)
+          # Fix Drupal core PHPCS config by replacing removed sniffs.
+          sed -i 's/Drupal.Classes.ClassCreateInstance/SlevomatCodingStandard.ControlStructures.NewWithParentheses/g' phpcs.xml.dist
+          sed -i 's/Drupal.Classes.UnusedUseStatement/SlevomatCodingStandard.Namespaces.UnusedUses/g' phpcs.xml.dist
+          sed -i '/<rule ref="SlevomatCodingStandard.Exceptions.RequireNonCapturingCatch" \/>/a \  <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>' phpcs.xml.dist
+          find . -type f -name "*.php" -exec sed -i 's#// phpcs:ignore Drupal.Classes.PropertyDeclaration, Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing#// phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName,PSR2.Classes.PropertyDeclaration.Underscore#g' {} +
+          find . -type f -name "*.php" -exec sed -i 's#// @codingStandardsIgnoreLine#// phpcs:ignore#g' {} +
+          find . -type f -name "*.php" -exec sed -i 's#// @codingStandardsIgnoreFile#// phpcs:ignoreFile#g' {} +
+          find . -type f -exec sed -i '/\/\/ phpcs:ignore/ s/, /,/g' {} +
+          find . -type f -name "*.php" -exec sed -i 's#// @codingStandardsIgnoreStart#// phpcs:disable#g' {} +
+          find . -type f -name "*.php" -exec sed -i 's#// @codingStandardsIgnoreEnd#// phpcs:enable#g' {} +
+          ../../vendor/bin/phpcs -p -s --parallel=$(nproc) --ignore=lib/Drupal/Core/Command/GenerateTheme.php,modules/mysql/tests/src/Kernel/mysql/Console/DbDumpCommandTest.php

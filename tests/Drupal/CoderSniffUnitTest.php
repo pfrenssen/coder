@@ -17,7 +17,6 @@ use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Ruleset;
 use PHP_CodeSniffer\Files\LocalFile;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
-use PHP_CodeSniffer\Util\Common;
 use PHP_CodeSniffer\Util\Tokens;
 use PHPUnit\Framework\TestCase;
 
@@ -62,8 +61,6 @@ abstract class CoderSniffUnitTest extends TestCase
      */
     public function setUp(): void
     {
-        $class = get_class($this);
-
         $this->rootDir  = __DIR__.'/../../';
         $this->testsDir = __DIR__.'/';
         // Required to pull in all the defines from the tokens file.
@@ -89,7 +86,7 @@ abstract class CoderSniffUnitTest extends TestCase
      *
      * @return array<string>
      */
-    protected function getTestFiles($testFileBase): array
+    protected function getTestFiles(string $testFileBase): array
     {
         $testFiles = [];
 
@@ -140,7 +137,7 @@ abstract class CoderSniffUnitTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $sniffCode = Common::getSniffCode(get_class($this));
+        $sniffCode = $this->getSniffCode(static::class);
         list($standardName, $categoryName, $sniffName) = explode('.', $sniffCode);
 
         // In the case where we are running all the sniffs, the standard will
@@ -421,6 +418,45 @@ abstract class CoderSniffUnitTest extends TestCase
         return $failureMessages;
 
     }//end generateFailureMessages()
+
+
+    /**
+     * Given a test class name, returns the code for the sniff.
+     *
+     * Forked from PHP_CodeSniffer\Util\Common to work with our test files.
+     *
+     * @param string $testClass The fully qualified test class name.
+     *
+     * @return string
+     *
+     * @throws \InvalidArgumentException When $testClass is not a non-empty string.
+     * @throws \InvalidArgumentException When $testClass is not a valid FQN for a test class.
+     */
+    public function getSniffCode(string $testClass): string
+    {
+        if ($testClass === '') {
+            throw new \InvalidArgumentException('The $testClass parameter must be a non-empty string');
+        }
+
+        $parts      = explode('\\', $testClass);
+        $partsCount = count($parts);
+
+        $sniff = $parts[($partsCount - 1)];
+
+        if ($sniff !== 'UnitTest' && substr($sniff, -8) === 'UnitTest') {
+            // Unit test class name.
+            $sniff = substr($sniff, 0, -8);
+        } else {
+            throw new \InvalidArgumentException(
+                'The $testClass parameter was not passed a fully qualified sniff(test) class name. Received: '.$testClass
+            );
+        }
+
+        $standard = $parts[($partsCount - 4)];
+        $category = $parts[($partsCount - 2)];
+        return $standard.'.'.$category.'.'.$sniff;
+
+    }//end getSniffCode()
 
 
     /**

@@ -8,8 +8,8 @@
 use Test\Bar;
 use Test\NotUsed;
 use Test\Alias as TestAlias;
-use Test\MultiLine as MultiLineAlias,
-    Test\MultiLineSecond;
+use Test\MultiLine as MultiLineAlias;
+use Test\MultiLineSecond;
 
 /**
  * Example.

@@ -47,8 +47,6 @@ class VariableCommentSniff extends AbstractVariableSniff
             T_STATIC            => T_STATIC,
             T_READONLY          => T_READONLY,
             T_WHITESPACE        => T_WHITESPACE,
-            T_STRING            => T_STRING,
-            T_NS_SEPARATOR      => T_NS_SEPARATOR,
             T_NAMESPACE         => T_NAMESPACE,
             T_NULLABLE          => T_NULLABLE,
             T_TYPE_UNION        => T_TYPE_UNION,
@@ -58,7 +56,7 @@ class VariableCommentSniff extends AbstractVariableSniff
             T_FALSE             => T_FALSE,
             T_SELF              => T_SELF,
             T_PARENT            => T_PARENT,
-        ] + Tokens::PHPCS_ANNOTATION_TOKENS);
+        ] + Tokens::PHPCS_ANNOTATION_TOKENS + Tokens::NAME_TOKENS);
 
         for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
             if (isset($ignore[$tokens[$commentEnd]['code']]) === true) {
@@ -133,7 +131,7 @@ class VariableCommentSniff extends AbstractVariableSniff
         if ($foundVar === null) {
             // If there's an inline type argument then you may omit the @var comment.
             // Check if there's a type between the variable name and the comment end.
-            if ($phpcsFile->findPrevious([T_STRING], $stackPtr, $commentEnd) !== false) {
+            if ($phpcsFile->findPrevious(Tokens::NAME_TOKENS, $stackPtr, $commentEnd) !== false) {
                 return;
             }
 

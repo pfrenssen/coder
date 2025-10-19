@@ -67,23 +67,14 @@ class DataTypeNamespaceSniff implements Sniff
             true
         );
 
-        if ($tokens[$classPtr]['code'] !== T_STRING) {
+        if (in_array($tokens[$classPtr]['code'], Tokens::NAME_TOKENS) === false) {
             return;
         }
 
         // Replace @var data types in doc comments with the fully qualified class
         // name.
-        $useNamespacePtr = $phpcsFile->findNext([T_STRING], ($stackPtr + 1));
-        $useNamespaceEnd = $phpcsFile->findNext(
-            [
-                T_NS_SEPARATOR,
-                T_STRING,
-            ],
-            ($useNamespacePtr + 1),
-            null,
-            true
-        );
-        $fullNamespace   = $phpcsFile->getTokensAsString($useNamespacePtr, ($useNamespaceEnd - $useNamespacePtr));
+        $fullNamespace = $tokens[$classPtr]['content'];
+        $className     = substr($fullNamespace, (strrpos($fullNamespace, '\\') + 1));
 
         $tag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($stackPtr + 1));
 
@@ -96,13 +87,13 @@ class DataTypeNamespaceSniff implements Sniff
                 && $tokens[($tag + 1)]['code'] === T_DOC_COMMENT_WHITESPACE
                 && isset($tokens[($tag + 2)]) === true
                 && $tokens[($tag + 2)]['code'] === T_DOC_COMMENT_STRING
-                && strpos($tokens[($tag + 2)]['content'], $tokens[$classPtr]['content']) === 0
+                && strpos($tokens[($tag + 2)]['content'], $className) === 0
             ) {
                 $error = 'Data types in %s tags need to be fully namespaced';
                 $data  = [$tokens[$tag]['content']];
                 $fix   = $phpcsFile->addFixableError($error, ($tag + 2), 'DataTypeNamespace', $data);
                 if ($fix === true) {
-                    $replacement = '\\'.$fullNamespace.substr($tokens[($tag + 2)]['content'], strlen($tokens[$classPtr]['content']));
+                    $replacement = '\\'.$fullNamespace.substr($tokens[($tag + 2)]['content'], strlen($className));
                     $phpcsFile->fixer->replaceToken(($tag + 2), $replacement);
                 }
             }

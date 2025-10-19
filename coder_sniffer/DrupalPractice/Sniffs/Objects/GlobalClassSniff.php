@@ -181,12 +181,18 @@ class GlobalClassSniff implements Sniff
     {
         $useStatement = $phpcsFile->findNext(T_USE, 0);
         while ($useStatement !== false) {
-            $endPtr      = $phpcsFile->findEndOfStatement($useStatement);
-            $useEnd      = ($phpcsFile->findNext([T_STRING, T_NS_SEPARATOR, T_WHITESPACE], ($useStatement + 1), null, true) - 1);
-            $useFullName = trim($phpcsFile->getTokensAsString(($useStatement + 1), ($useEnd - $useStatement)), '\\ ');
+            $endPtr         = $phpcsFile->findEndOfStatement($useStatement);
+            $useFullNamePtr = $phpcsFile->findNext([T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED], ($useStatement + 1), $endPtr);
+            if ($useFullNamePtr === false) {
+                // No qualified name found, skip to next use statement.
+                $useStatement = $phpcsFile->findNext(T_USE, ($endPtr + 1));
+                continue;
+            }
+
+            $useFullName = trim($phpcsFile->getTokens()[$useFullNamePtr]['content'], '\\ ');
 
             // Check if use statement contains an alias.
-            $asPtr = $phpcsFile->findNext(T_AS, ($useEnd + 1), $endPtr);
+            $asPtr = $phpcsFile->findNext(T_AS, ($useFullNamePtr + 1), $endPtr);
             if ($asPtr !== false) {
                 $aliasName = trim($phpcsFile->getTokensAsString(($asPtr + 1), ($endPtr - 1 - $asPtr)));
                 if ($aliasName === $className) {

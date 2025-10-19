@@ -37,6 +37,10 @@
     <severity>0</severity>
   </rule>
 
+  <rule ref="Drupal.WhiteSpace.CloseBracketSpacing">
+    <!-- Do not run this sniff on template files. -->
+    <exclude-pattern>*.tpl.php</exclude-pattern>
+  </rule>
   <rule ref="Drupal.WhiteSpace.ScopeIndent">
     <!-- Do not run this sniff on template files, as the indentation might follow
          the HTML -->
@@ -136,7 +140,10 @@
        </property>
     </properties>
   </rule>
+  <rule ref="SlevomatCodingStandard.ControlStructures.NewWithParentheses"/>
   <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator"/>
+  <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses"/>
+  <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>
   <rule ref="SlevomatCodingStandard.PHP.ShortList"/>
   <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
     <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing"/>
