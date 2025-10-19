@@ -10,14 +10,14 @@
     <exclude-pattern>*</exclude-pattern>
   </rule>
 
-  <rule ref="DrupalPractice.CodeAnalysis.VariableAnalysis">
+  <rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis">
     <!-- Do not run this sniff on template files. -->
     <exclude-pattern>*.tpl.php</exclude-pattern>
     <properties>
       <property name="allowUnusedFunctionParameters" value="true"/>
     </properties>
   </rule>
-  <rule ref="DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable">
+  <rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable">
     <severity>0</severity>
   </rule>
 
