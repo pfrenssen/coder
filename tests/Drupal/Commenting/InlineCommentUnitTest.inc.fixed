@@ -54,7 +54,7 @@ test();
  */
 function example_custom_block_view($delta = '') {
   // This example is adapted from node.module.
-  $block = array();
+  $block = [];
 
   switch ($delta) {
     case 'my_block':

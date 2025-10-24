@@ -7,8 +7,8 @@
 // Comment should be on the line before.
 foo();
 
-$x = array(
+$x = [
   'a' => 'b',
 // Comment should be on the line before.
   'c' => 'd',
-);
+];

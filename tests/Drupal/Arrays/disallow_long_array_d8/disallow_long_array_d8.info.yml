@@ -1,4 +1,0 @@
-name: 'Disallow Long Array Test'
-type: module
-description: 'Test module.'
-core: 8.x

@@ -45,6 +45,7 @@
   </rule>
 
   <!-- Generic sniffs -->
+  <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
   <rule ref="Generic.CodeAnalysis.EmptyPHPStatement"/>
   <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
   <rule ref="Generic.Files.ByteOrderMark"/>

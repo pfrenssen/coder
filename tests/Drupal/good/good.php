@@ -67,7 +67,7 @@ $i++;
 ++$i;
 $x = $success ? $context['results']['success']++ : $context['results']['error']++;
 $i = -1;
-array('i' => -1);
+['i' => -1];
 $i = (1 == -1);
 $i = (1 === -1);
 range(-50, -45);
@@ -76,7 +76,7 @@ $x->{$i} + 1;
 REQUEST_TIME + 42;
 !$x;
 !($x + $y);
-array(-1, -2, -3);
+[-1, -2, -3];
 [-1, -2, -3];
 
 // Operator line break for long lines.
@@ -96,25 +96,25 @@ $x = (CRM_Foo_Bar::singleton()->checkWhizBang($option1, $option2))
 
 // The last item in an multiline array should be followed by a comma.
 // But not in a inline array.
-$a = array();
-$a = array('1', '2', '3');
-$a = array(
+$a = [];
+$a = ['1', '2', '3'];
+$a = [
   '1',
   '2',
   '3',
-);
-$a = array('1', '2', array('3'));
-$a = array('1', '2',
-  array(
+];
+$a = ['1', '2', ['3']];
+$a = ['1', '2',
+  [
     'one',
     'two',
     'three',
-    array(
+    [
       'key' => $value,
       'title' => 'test',
-    ),
-  ),
-);
+    ],
+  ],
+];
 // Short array syntax.
 $a = [];
 $a = ['1', '2', '3'];
@@ -137,18 +137,18 @@ $a = ['1', '2',
 ];
 
 // Array indentation.
-$x = array(
+$x = [
   'foo' => 'bar',
   'fi' => long_function_call('hsdfsdmfsldkfnmdflkngdfngfg',
     'fghfghfghfghfgh', $z),
   'a' => 'b',
-  'foo' => array(
+  'foo' => [
     'blu' => 1,
-    'f' => x(1) + array(
+    'f' => x(1) + [
       'h' => 'x',
-    ),
-  ),
-);
+    ],
+  ],
+];
 $x = [
   'foo' => 'bar',
   'fi' => long_function_call('hsdfsdmfsldkfnmdflkngdfngfg',
@@ -164,14 +164,14 @@ $x = [
 
 // Arrays in function calls.
 foo(
-  array(
+  [
     'value' => 0,
     'description' => t('xyz @url',
-      array(
+      [
         '@url' => 'http://example.com',
-      )
+      ]
     ),
-  )
+  ]
 );
 foo(
   [
@@ -185,11 +185,11 @@ foo(
 );
 
 // Pretty array layout.
-$a = array(
+$a = [
   'title'    => 1,
   'weight'   => 2,
   'callback' => 3,
-);
+];
 $a = [
   'title'    => 1,
   'weight'   => 2,
@@ -200,10 +200,10 @@ $a = [
 $query = db_query("
   SELECT * FROM {foobar} WHERE nid IN (1, 2, 3)
   AND date BETWEEN '%s' AND '%s'
-  ", array(
+  ", [
     ':from_date' => $from_date,
     ':to_date' => $to_date,
-  )
+  ]
 );
 $query = db_query("
   SELECT * FROM {foobar} WHERE nid IN (1, 2, 3)
@@ -218,10 +218,10 @@ $query = db_query("
 $query = db_query("
   SELECT * FROM {foobar} WHERE nid IN (1, 2, 3)
   AND date BETWEEN '%s' AND '%s'", /* comment
-  in here */ array(
+  in here */ [
     ':from_date' => $from_date,
     ':to_date' => $to_date,
-  )
+  ]
 );
 $query = db_query("
   SELECT * FROM {foobar} WHERE nid IN (1, 2, 3)
@@ -233,7 +233,7 @@ $query = db_query("
 );
 
 // Array with multi-line constant string in it.
-$array = array(
+$array = [
   'name' => 'example_a',
   'title' => 'Example A',
   'xml' => '
@@ -243,7 +243,7 @@ $array = array(
     123456789 123456789 123456789 123456789 123456789 123456789 123456789
   </bar>
 </foo>',
-);
+];
 $array = [
   'name' => 'example_a',
   'title' => 'Example A',
@@ -259,10 +259,10 @@ $array = [
 // Indentation: multi line function call with array and fuction closer on the
 // same line.
 $result = example_fetch_data($id,
-  array(
+  [
     'include_detail' => TRUE,
     'quiet' => TRUE,
-  ));
+  ]);
 some_function();
 $result = example_fetch_data($id,
   [
@@ -274,10 +274,10 @@ some_function();
 // Indentation: multi line function call with array and closing brace on the
 // same line.
 watchdog('example', 'Some warning %code for %id',
-  array(
+  [
     '%code' => $code,
     '%doi' => $id,
-  ),
+  ],
   WATCHDOG_WARNING);
 watchdog('example', 'Some warning %code for %id',
   [
@@ -292,22 +292,22 @@ $x = [
 ];
 
 // Nested arrays with object operators.
-$derivatives["entity:$entity_type_id"] = array(
-  'label' => t('Create @entity_type path alias', array('@entity_type' => $entity_type->getLowercaseLabel())),
+$derivatives["entity:$entity_type_id"] = [
+  'label' => t('Create @entity_type path alias', ['@entity_type' => $entity_type->getLowercaseLabel()]),
   'category' => t('Path'),
   'entity_type_id' => $entity_type_id,
-  'context' => array(
+  'context' => [
     'entity' => ContextDefinition::create("entity:$entity_type_id")
       ->setLabel($entity_type->getLabel())
       ->setRequired(TRUE)
-      ->setDescription(t('The @entity_type for which to create a path alias.', array('@entity_type' => $entity_type->getLowercaseLabel()))),
+      ->setDescription(t('The @entity_type for which to create a path alias.', ['@entity_type' => $entity_type->getLowercaseLabel()])),
     'alias' => ContextDefinition::create('string')
       ->setLabel(t('Path alias'))
       ->setRequired(TRUE)
       ->setDescription(t("Specify an alternative path by which the content can be accessed. For example, 'about' for an about page. Use a relative path and do not add a trailing slash.")),
-  ),
-  'provides' => array(),
-) + $base_plugin_definition;
+  ],
+  'provides' => [],
+] + $base_plugin_definition;
 
 $derivatives["entity:$entity_type_id"] = [
   'label' => t('Create @entity_type path alias', ['@entity_type' => $entity_type->getLowercaseLabel()]),
@@ -326,24 +326,24 @@ $derivatives["entity:$entity_type_id"] = [
   'provides' => [],
 ] + $base_plugin_definition;
 
-$test = array(
+$test = [
   'columns' => $columns,
-  'indexes' => array(),
-  'foreign keys' => array(
-    'format' => array(
+  'indexes' => [],
+  'foreign keys' => [
+    'format' => [
       'table' => 'filter_format',
-      'columns' => array('format' => 'format'),
-    ),
-    'file_managed' => array(
+      'columns' => ['format' => 'format'],
+    ],
+    'file_managed' => [
       'table' => 'file_managed',
-      'columns' => array('fid' => 'carousel_image'),
-    ),
-  ),
-);
+      'columns' => ['fid' => 'carousel_image'],
+    ],
+  ],
+];
 
 // Arrays by reference in arrays.
-$x = array('foo');
-$y = array(&$x);
+$x = ['foo'];
+$y = [&$x];
 
 $x = ['foo'];
 $y = [&$x];
@@ -357,76 +357,76 @@ multiline_call(Inspector::assertAllCallable([
     return TRUE;
   },
 ]));
-multiline_call(Inspector::assertAllCallable(array(
+multiline_call(Inspector::assertAllCallable([
   'strchr',
-  array($x, 'callMe'),
-  array('test', 'callMeStatic'),
+  [$x, 'callMe'],
+  ['test', 'callMeStatic'],
   function () {
     return TRUE;
   },
-)));
+]));
 
 // Nested array indentation with closures.
-$options = array(
-  'value' => array(
-    'Callback' => array(
-      'callback' => function ($value, ExecutionContextInterface $context) {
-        TheaterItem::theaterValidate($value, $context);
-      },
-    ),
-  ),
-);
-
-$options = array(
+$options = [
   'value' => [
-    'Callback' => array(
+    'Callback' => [
       'callback' => function ($value, ExecutionContextInterface $context) {
         TheaterItem::theaterValidate($value, $context);
       },
-    ),
+    ],
   ],
-);
+];
 
-$test = array(
+$options = [
+  'value' => [
+    'Callback' => [
+      'callback' => function ($value, ExecutionContextInterface $context) {
+        TheaterItem::theaterValidate($value, $context);
+      },
+    ],
+  ],
+];
+
+$test = [
   'original' => '$no_index_value_scalar = TRUE;',
-  'settings' => array(
-    'no_index_value_foo' => array(
-      'foo' => array(
-        'value' => (object) array(
+  'settings' => [
+    'no_index_value_foo' => [
+      'foo' => [
+        'value' => (object) [
           'value' => NULL,
           'required' => TRUE,
           'comment' => 'comment',
-        ),
-      ),
-    ),
-  ),
+        ],
+      ],
+    ],
+  ],
   'expected' => <<<'EXPECTED'
 $no_index_value_scalar = TRUE;
 $no_index_value_foo['foo']['value'] = NULL; // comment
 EXPECTED
-);
+];
 
-$test = array(
+$test = [
   'original' => '$no_index_value_scalar = TRUE;',
-  'settings' => array(
-    'no_index_value_foo' => array(
-      'foo' => array(
-        'value' => (object) array(
+  'settings' => [
+    'no_index_value_foo' => [
+      'foo' => [
+        'value' => (object) [
           'value' => NULL,
           'required' => TRUE,
           'comment' => 'comment',
-        ),
-      ),
-    ),
-  ),
+        ],
+      ],
+    ],
+  ],
   'expected' => <<<EXPECTED
 abc
 def
 EXPECTED
-);
+];
 
 // Item assignment operators must be prefixed and followed by a space.
-$a = array('one' => '1', 'two' => '2');
+$a = ['one' => '1', 'two' => '2'];
 foreach ($a as $key => $value) {
 }
 
@@ -498,10 +498,10 @@ function foo() {
       return 6;
 
     case 3:
-      return array(
+      return [
         'whiz',
         'bang',
-      );
+      ];
 
     case 4:
       return helper_func(
@@ -560,22 +560,22 @@ $var = foo(
 
 // Multiline function call with array.
 $var = foo(
-  array(
+  [
     $i,
     $i,
     $i,
-  ),
+  ],
   $i,
   $i
 );
 
 // Multiline function call with only one array.
 $var = foo(
-  array(
+  [
     $i,
     $i,
     $i,
-  )
+  ]
 );
 
 /**
@@ -768,7 +768,7 @@ function test3() {
 t('special character: \"');
 t("special character: \'");
 // Escaping is allowed here because we make use of the other quote type, too.
-t('Link to Drupal\'s <a href="@url">admin pages</a>.', array('@url' => url('admin')));
+t('Link to Drupal\'s <a href="@url">admin pages</a>.', ['@url' => url('admin')]);
 
 // Test inline comment style.
 // Comment one.
@@ -1075,7 +1075,7 @@ class Foo implements FooInterface {
    *   Array of objects of the class requested.
    */
   protected function dbStringLoad(array $conditions, array $options, $class) {
-    $strings = array();
+    $strings = [];
     $result = $this->dbStringSelect($conditions, $options)->execute();
     foreach ($result as $item) {
       /** @var \Drupal\locale\StringInterface $string */
@@ -1164,7 +1164,7 @@ function test5() {
     ->method('findTranslation')
     ->will($this->returnCallback(function ($argument) use ($translations) {
       if (isset($translations[$argument['language']][$argument['source']])) {
-        return (object) array('translation' => $translations[$argument['language']][$argument['source']]);
+        return (object) ['translation' => $translations[$argument['language']][$argument['source']]];
       }
       return TRUE;
     }));
@@ -1182,10 +1182,10 @@ function test6(array $names) {
 
 [,, $bundle] = entity_extract_ids('node', $entity);
 
-l("<i class='icon icon-industrial-building'></i>", 'node/add/job', array(
-  'attributes' => array('title' => t('add job')),
+l("<i class='icon icon-industrial-building'></i>", 'node/add/job', [
+  'attributes' => ['title' => t('add job')],
   'html'       => TRUE,
-));
+]);
 
 /**
  * Some short description.
@@ -1487,11 +1487,11 @@ function is_table_empty($table_name, $database) {
  */
 function test19($key, $value, $connection) {
   $connection->merge('foo')
-    ->keys(array(
+    ->keys([
       'name' => $key,
       'collection' => 'collection',
-    ))
-    ->fields(array('value' => $value))
+    ])
+    ->fields(['value' => $value])
     ->execute();
 }
 
@@ -1509,12 +1509,12 @@ ContentLanguageSettings::create([
 function test20($link, $parents, $connection) {
   return $connection
     ->insert('book')
-    ->fields(array(
+    ->fields([
       'nid' => $link['nid'],
       'bid' => $link['bid'],
       'pid' => $link['pid'],
       'weight' => $link['weight'],
-    ) + $parents
+    ] + $parents
     )
     ->execute();
 }

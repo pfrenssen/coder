@@ -9,10 +9,10 @@
  * ScopeIndentSniff already handles this correctly.
  */
 function example_entity_info_alter(&$entity_info) {
-  $entity_info['node']['view modes']['new_display_machine_name'] = array(
+  $entity_info['node']['view modes']['new_display_machine_name'] = [
     'label' => t('New Display Name'),
     'custom settings' => '',
-  );
+  ];
 }
 
 /**

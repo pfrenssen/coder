@@ -42,12 +42,12 @@ function bad_requirements() {
  * Menu title and description should be untranslated.
  */
 function bad_menu() {
-  $items['example'] = array(
+  $items['example'] = [
     'title' => t('Example Page'),
     'description' => t('My example module page that does something.'),
     'page callback' => 'example_page',
-    'access arguments' => array('access content'),
+    'access arguments' => ['access content'],
     'type' => MENU_SUGGESTED_ITEM,
-  );
+  ];
   return $items;
 }

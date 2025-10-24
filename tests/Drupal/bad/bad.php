@@ -132,52 +132,52 @@ $x->{$i}+ 1;
 
 // Last item of a multiline array has to be followed by a
 // comma. On inline arrays not!
-$a = array('1', '2', '3',);
-$a = array(
+$a = ['1', '2', '3',];
+$a = [
   '1',
   '2',
   '3'
-);
-$a = array('1', '2', array('3', ));
-$a = array('1', '2', array('3',), );
-$a = array('1', '2', array('3'), );
-$a = array('1', '2', array('3',), );
-$a = array('1', '2', array(
-  '3'),
-);
-$a = array(
+];
+$a = ['1', '2', ['3', ]];
+$a = ['1', '2', ['3',], ];
+$a = ['1', '2', ['3'], ];
+$a = ['1', '2', ['3',], ];
+$a = ['1', '2', [
+  '3'],
+];
+$a = [
   '1',
   '2',
-  array('3',)
-);
+  ['3',]
+];
 // Missing comma on the last item.
-$field = array(
+$field = [
   'field_name' => 'test_text',
   'type' => 'text'
-);
+];
 
 // Array white space style.
-$a = array ('1');
-$a = array( '1');
-$a = array('1' );
-$a = array( '1','2' );
+$a =  ['1'];
+$a = [ '1'];
+$a = ['1' ];
+$a = [ '1','2' ];
 
-// Wrong usage of array keyword.
-$a = Array('1');
-$a = ARRAY('x');
+// These 2 lines a ok.
+$a = ['1'];
+$a = ['x'];
 
 // Array indentation error.
-$a = array(
+$a = [
 'x' => 'y',
-);
+];
 
 // Single line array declaration is too long.
-$page_options = array('home' => t('Front Page'), 'all' => t('All Pages'), 'list' => t('List Pages'), 'delete' => t('Delete'));
+$page_options = ['home' => t('Front Page example'), 'all' => t('All Pages'), 'list' => t('List Pages'), 'delete' => t('Delete')];
 
 // Item assignment operators must be prefixed and followed by a space
-$a = array('one'=>'1');
-$a = array('one'=> '1');
-$a = array('one' =>'1');
+$a = ['one'=>'1'];
+$a = ['one'=> '1'];
+$a = ['one' =>'1'];
 foreach ( $a as $key=>$value) {
 }
 foreach ( $a as $key =>$value) {
@@ -460,14 +460,14 @@ function test2() {
  * Implementation of hook_menu().
  */
 function mymodule_menu() {
-  return array();
+  return [];
 }
 
 /**
  * Implements of hook_boing().
  */
 function mymodule_boing() {
-  return array();
+  return [];
 }
 
 /**
@@ -783,7 +783,7 @@ function test26() {
  * Debugging functions are discouraged.
  */
 function test27() {
-  $var = array(1, 2, 3);
+  $var = [1, 2, 3];
   dsm($var);
   dpm($var);
 }

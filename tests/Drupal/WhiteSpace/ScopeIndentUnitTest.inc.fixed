@@ -34,7 +34,7 @@ setTimeout(function () {
  */
 function example_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
 
-  $element = array();
+  $element = [];
   switch ($display['type']) {
     case 'example_schema_format':
       foreach ($items as $delta => $item) {
