@@ -172,7 +172,7 @@ $a = [
 ];
 
 // Single line array declaration is too long.
-$page_options = ['home' => t('Front Page'), 'all' => t('All Pages'), 'list' => t('List Pages'), 'delete' => t('Delete')];
+$page_options = ['home' => t('Front Page example'), 'all' => t('All Pages'), 'list' => t('List Pages'), 'delete' => t('Delete')];
 
 // Item assignment operators must be prefixed and followed by a space
 $a = ['one'=>'1'];
