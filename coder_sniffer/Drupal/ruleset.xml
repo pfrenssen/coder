@@ -188,7 +188,7 @@
 
   <rule ref="Squiz.Classes.ClassFileName">
     <!-- Disable class name to file name matching in Test files. -->
-    <exclude-pattern>*/tests/*/*Test.php</exclude-pattern>
+    <exclude-pattern>*/tests/*/*(Test|TestBase).php</exclude-pattern>
   </rule>
   <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration"/>
   <!-- Disable some error messages that we already cover. -->
