@@ -3,7 +3,7 @@
 [![Automated tests](https://github.com/pfrenssen/coder/workflows/Tests/badge.svg)](https://github.com/pfrenssen/coder/actions)
 
 Coder is a library for automated Drupal code reviews and coding standard fixes. It
-defines rules for [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
+defines rules for [PHP_CodeSniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer/)
 
 Built-in support for:
 - "Drupal": Coding Standards https://www.drupal.org/coding-standards
@@ -16,41 +16,6 @@ please use [ESLint](http://eslint.org/) and see the
 [Drupal ESLint](https://www.drupal.org/node/1955232) documentation.
 
 
-## Global installation
-
-First, make sure Composer is installed correctly:
-
-    which composer
-
-If you get composer not found or similar, follow Composer's installation
-instructions.
-
-Install Coder (8.3.x) in your global Composer directory in your home directory
-(`~/.config/composer`):
-
-    composer global require drupal/coder
-
-To make the `phpcs` and `phpcbf` commands available globally, add the Composer
-bin path to your `$PATH` variable in `~/.profile`, `~/.bashrc` or `~/.zshrc`:
-
-    export PATH="$PATH:$HOME/.config/composer/vendor/bin"
-
-
-## Usage
-
-Check Drupal coding standards
-
-    phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml /file/to/drupal/example_module
-
-Check Drupal best practices
-
-    phpcs --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml /file/to/drupal/example_module
-
-Automatically fix coding standards
-
-    phpcbf --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml /file/to/drupal/example_module
-
-
 ## Local installation in your Drupal project
 
 For collaborating developer teams it makes sense to lock a Coder version with
@@ -61,9 +26,24 @@ composer.json file execute this:
 
 Then you can run Coder on your custom module code like this:
 
-    ./vendor/bin/phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml web/modules/custom
+    ./vendor/bin/phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,info,txt,md,yml web/modules/custom
 
 To simplify execution it is highly recommended to use a settings file, see below.
+
+
+## Usage
+
+Check Drupal coding standards
+
+    ./vendor/bin/phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,info,txt,md,yml web/modules/custom
+
+Check Drupal best practices
+
+    ./vendor/bin/phpcs --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,info,txt,md,yml web/modules/custom
+
+Automatically fix coding standards
+
+    ./vendor/bin/phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,info,txt,md,yml web/modules/custom
 
 
 ## Store settings in a phpcs.xml.dist file
@@ -75,21 +55,16 @@ phpcs.xml.dist file in your project like this:
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="example">
   <description>PHP CodeSniffer configuration for example development.</description>
-  <!-- Check all files in the current directory and below. -->
-  <file>.</file>
-  <arg name="extensions" value="php,module,inc,install,test,profile,theme,css,info,txt,md,yml"/>
-  <!-- Change this value to 7 if you want to check Drupal 7 code. -->
-  <config name="drupal_core_version" value="8"/>
+  <!-- Check all files in the custom module directory and below. -->
+  <file>web/modules/custom</file>
+  <arg name="extensions" value="php,module,inc,install,test,profile,theme,info,txt,md,yml"/>
 
-  <!-- If you have Coder installed locally then you can reference the Drupal
-  standards with relative paths. Otherwise simply use "Drupal" and
-  "DrupalPractice. -->
-  <rule ref="../vendor/drupal/coder/coder_sniffer/Drupal">
+  <rule ref="Drupal">
     <!-- Example how you would disable a rule you are not compliant with yet:
     <exclude name="Drupal.Commenting.Deprecated"/>
     -->
   </rule>
-  <rule ref="../vendor/drupal/coder/coder_sniffer/DrupalPractice"/>
+  <rule ref="DrupalPractice"/>
 
   <!-- Example how you would disable an external rule you do not like:
   <rule ref="PEAR.Functions.ValidDefaultValue.NotAtEnd">
@@ -163,5 +138,5 @@ Thank you!
 
 ## Credits
 
-Greg Sherwood and Squiz Pty Ltd, many sniffs are modified copies of their original
-work on [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer).
+Juliette Reinders Folmer and Greg Sherwood, many sniffs are modified copies of their original
+work on [PHPCS](https://github.com/PHPCSStandards/PHP_CodeSniffer/).
