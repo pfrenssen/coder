@@ -152,6 +152,10 @@ abstract class CoderSniffUnitTest extends TestCase
         // $testFileBase = $this->testsDir.$categoryName.DIRECTORY_SEPARATOR.$sniffName.'UnitTest.';
         // Get a list of all test files to check.
         $testFiles = $this->getTestFiles($testFileBase);
+        $this->assertNotEmpty(
+            $testFiles,
+            'No test files found for the '.$sniffCode.' unit test.'
+        );
 
         $config        = new Config();
         $config->cache = false;
