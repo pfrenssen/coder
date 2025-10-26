@@ -25,7 +25,7 @@ use Some\Data\Test10;
 /**
  * Bla.
  */
-class Pum {
+class UnusedUseStatementUnitTest {
   use TraitTest;
   use Test\AnotherTrait;
 

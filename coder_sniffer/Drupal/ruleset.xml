@@ -186,6 +186,7 @@
 
   <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
 
+  <rule ref="Squiz.Classes.ClassFileName"/>
   <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration"/>
   <!-- Disable some error messages that we already cover. -->
   <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration.AsNotLower">

@@ -402,6 +402,10 @@ class BadUnitTest extends CoderSniffUnitTest
                 85 => 1,
                 98 => 1,
             ];
+        case 'WrongClassName.php':
+            return [
+                6 => 1,
+            ];
         }//end switch
 
         return [];

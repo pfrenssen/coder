@@ -18,7 +18,7 @@ $bar = new $foo[$x + 1][$y + 1];
 /**
  * Test class.
  */
-class Test2 {
+class ClassCreateInstanceUnitTest {
 
   /**
    * Using PHP 7 return type hints is fine.

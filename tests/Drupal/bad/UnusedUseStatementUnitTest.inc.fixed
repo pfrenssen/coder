@@ -12,7 +12,7 @@ use MyNamespace\Depth\SomeClass as CoreSomeClass;
 /**
  * Bla.
  */
-class Pum {
+class UnusedUseStatementUnitTest {
   use TraitTest;
   use Test\AnotherTrait;
 
