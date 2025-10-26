@@ -7,8 +7,8 @@ parameters:
         # Test files that should not be checked.
         - 'tests/*/*.tpl.php'
         - 'tests/*/*.api.php'
-        - 'tests/*/good.php'
-        - 'tests/*/bad.php'
+        - 'tests/*/good/*.php'
+        - 'tests/*/bad/*.php'
         - 'tests/*/drupal[678]/*.php'
     bootstrapFiles:
         - tests/Drupal/phpunit-bootstrap.php

@@ -86,6 +86,7 @@ jobs:
           sed -i 's/Drupal.Classes.ClassCreateInstance/SlevomatCodingStandard.ControlStructures.NewWithParentheses/g' phpcs.xml.dist
           sed -i 's/Drupal.Classes.UnusedUseStatement/SlevomatCodingStandard.Namespaces.UnusedUses/g' phpcs.xml.dist
           sed -i '/<rule ref="SlevomatCodingStandard.Exceptions.RequireNonCapturingCatch" \/>/a \  <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>' phpcs.xml.dist
+          sed -i 's@<rule ref="Drupal.Classes.ClassFileName"/>@<rule ref="Squiz.Classes.ClassFileName">\n    <!-- Disable class name to file name matching for *Test.php files. -->\n    <exclude-pattern>*/tests/*/*(Test|TestBase).php</exclude-pattern>\n  </rule>@' phpcs.xml.dist
           find . -type f -name "*.php" -exec sed -i 's#// phpcs:ignore Drupal.Classes.PropertyDeclaration, Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing#// phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName,PSR2.Classes.PropertyDeclaration.Underscore#g' {} +
           find . -type f -name "*.php" -exec sed -i 's#// @codingStandardsIgnoreLine#// phpcs:ignore#g' {} +
           find . -type f -name "*.php" -exec sed -i 's#// @codingStandardsIgnoreFile#// phpcs:ignoreFile#g' {} +
@@ -95,4 +96,4 @@ jobs:
           sed -i '/<rule ref="Drupal.Functions.FunctionDeclaration"\/>/d' phpcs.xml.dist
           sed -i 's/DrupalPractice.CodeAnalysis.VariableAnalysis/VariableAnalysis.CodeAnalysis.VariableAnalysis/g' phpcs.xml.dist
           find .. -type f -name "*.php" -exec sed -i 's#// phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis#// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis#g' {} +
-          ../../vendor/bin/phpcs -p -s --parallel=$(nproc) --ignore=lib/Drupal/Core/Command/GenerateTheme.php,modules/mysql/tests/src/Kernel/mysql/Console/DbDumpCommandTest.php
+          ../../vendor/bin/phpcs -p -s --parallel=$(nproc) --ignore=lib/Drupal/Core/Command/GenerateTheme.php,modules/mysql/tests/src/Kernel/mysql/Console/DbDumpCommandTest.php,modules/big_pipe/tests/modules/big_pipe_test/src/BigPipePlaceholderTestCases.php,tests/fixtures/plugins/CustomPlugin.php,modules/package_manager/tests/modules/package_manager_test_api/src/ApiController.php
