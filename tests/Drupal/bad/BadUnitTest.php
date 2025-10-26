@@ -404,6 +404,10 @@ class BadUnitTest extends CoderSniffUnitTest
                 85 => 1,
                 98 => 1,
             ];
+        case 'UseLeadingBackslashUnitTest.inc':
+            return [
+                8  => 1,
+            ];
         case 'WrongClassName.php':
             return [
                 6 => 1,

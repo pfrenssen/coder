@@ -136,6 +136,7 @@
   <rule ref="SlevomatCodingStandard.ControlStructures.NewWithParentheses"/>
   <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator"/>
   <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses"/>
+  <rule ref="SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash"/>
   <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>
   <rule ref="SlevomatCodingStandard.PHP.ShortList"/>
   <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
