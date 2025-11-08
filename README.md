@@ -129,7 +129,7 @@ Thank you!
 
 ## Maintainers
 
-[//]: # cspell:ignore Pieter Frenssen Welford
+<!-- cspell:ignore Pieter Frenssen Welford -->
 
 - Pieter Frenssen, https://www.drupal.org/u/pfrenssen
 - Michael Welford, https://www.drupal.org/u/mikejw
@@ -138,7 +138,7 @@ Thank you!
 
 ## Credits
 
-[//]: # cspell:ignore Reinders Folmer
+<!-- cspell:ignore Reinders Folmer -->
 
 Juliette Reinders Folmer and Greg Sherwood, many sniffs are modified copies of their original
 work on [PHPCS](https://github.com/PHPCSStandards/PHP_CodeSniffer/).
