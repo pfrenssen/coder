@@ -471,8 +471,7 @@ class FunctionCommentSniff implements Sniff
                         $comment .= ' '.$tokens[$i]['content'];
                         if ($indent < 3) {
                             $error = 'Throws comment indentation must be 3 spaces, found %s spaces';
-                            // cspell:ignore TrhowsCommentIndentation
-                            $phpcsFile->addError($error, $i, 'TrhowsCommentIndentation', [$indent]);
+                            $phpcsFile->addError($error, $i, 'ThrowsCommentIndentation', [$indent]);
                         }
                     }
                 }
