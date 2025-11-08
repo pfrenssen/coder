@@ -138,5 +138,7 @@ Thank you!
 
 ## Credits
 
+[//]: # cspell:ignore Reinders Folmer
+
 Juliette Reinders Folmer and Greg Sherwood, many sniffs are modified copies of their original
 work on [PHPCS](https://github.com/PHPCSStandards/PHP_CodeSniffer/).
