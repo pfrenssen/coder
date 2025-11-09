@@ -97,4 +97,5 @@ jobs:
           sed -i '/<rule ref="Drupal.Functions.FunctionDeclaration"\/>/d' phpcs.xml.dist
           sed -i 's/DrupalPractice.CodeAnalysis.VariableAnalysis/VariableAnalysis.CodeAnalysis.VariableAnalysis/g' phpcs.xml.dist
           find .. -type f -name "*.php" -exec sed -i 's#// phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis#// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis#g' {} +
+          sed -i 's/Drupal.Methods.MethodDeclaration/PSR2.Methods.MethodDeclaration/g' phpcs.xml.dist
           ../../vendor/bin/phpcs -p -s --parallel=$(nproc) --ignore=lib/Drupal/Core/Command/GenerateTheme.php,modules/mysql/tests/src/Kernel/mysql/Console/DbDumpCommandTest.php,modules/big_pipe/tests/modules/big_pipe_test/src/BigPipePlaceholderTestCases.php,tests/fixtures/plugins/CustomPlugin.php,modules/package_manager/tests/modules/package_manager_test_api/src/ApiController.php

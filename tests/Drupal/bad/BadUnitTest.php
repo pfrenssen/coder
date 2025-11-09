@@ -446,6 +446,8 @@ class BadUnitTest extends CoderSniffUnitTest
                 363 => 1,
                 366 => 1,
                 382 => 1,
+                407 => 1,
+                411 => 1,
                 433 => 1,
                 434 => 1,
                 436 => 1,
