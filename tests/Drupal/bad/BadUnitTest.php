@@ -383,6 +383,11 @@ class BadUnitTest extends CoderSniffUnitTest
                 16 => 1,
                 31 => 1,
             ];
+        case 'NamespaceUnitTest.inc':
+            return [
+                1 => 1,
+                3 => 1,
+            ];
         case 'UnusedUseStatementUnitTest.inc':
             return [
                 5  => 1,
