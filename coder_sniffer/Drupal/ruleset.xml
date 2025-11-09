@@ -51,6 +51,7 @@
     <severity>0</severity>
   </rule>
   <rule ref="Generic.NamingConventions.ConstructorName"/>
+  <rule ref="Generic.NamingConventions.InterfaceNameSuffix"/>
   <rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
   <rule ref="Generic.PHP.DeprecatedFunctions"/>
   <rule ref="Generic.PHP.DisallowShortOpenTag">
