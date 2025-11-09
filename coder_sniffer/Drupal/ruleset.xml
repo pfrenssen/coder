@@ -22,13 +22,6 @@
     <!-- Do not run this sniff on template files. -->
     <exclude-pattern>*.tpl.php</exclude-pattern>
   </rule>
-
-  <!-- Silence method name underscore warning which is covered already in
-       Drupal.NamingConventions.ValidFunctionName.ScopeNotCamelCaps. -->
-  <rule ref="Drupal.Methods.MethodDeclaration.Underscore">
-    <severity>0</severity>
-  </rule>
-
   <rule ref="Drupal.WhiteSpace.CloseBracketSpacing">
     <!-- Do not run this sniff on template files. -->
     <exclude-pattern>*.tpl.php</exclude-pattern>
@@ -119,6 +112,7 @@
      <!-- Already covered by Drupal.Classes.PropertyDeclaration.VarUsed. -->
     <exclude name="PSR2.Classes.PropertyDeclaration.VarUsed"/>
   </rule>
+  <rule ref="PSR2.Methods.MethodDeclaration"/>
   <rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
   <rule ref="PSR2.Namespaces.UseDeclaration"/>
 
