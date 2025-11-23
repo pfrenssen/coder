@@ -389,6 +389,12 @@ class BadUnitTest extends CoderSniffUnitTest
                 16 => 1,
                 31 => 1,
             ];
+        case 'FinallySpacingUnitTest.inc':
+            return [
+                1 => 1,
+                5 => 1,
+                7 => 1,
+            ];
         case 'NamespaceUnitTest.inc':
             return [
                 1 => 1,
