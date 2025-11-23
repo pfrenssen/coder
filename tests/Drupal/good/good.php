@@ -821,7 +821,7 @@ function mymodule_foo_bar_block() {
 /**
  * Not documenting all parameters is allowed.
  *
- * @param Node $node
+ * @param \Drupal\node\Entity\Node $node
  *   The loaded node entity that we will use to do whatever.
  */
 function mymodule_form_callback($form, &$form_state, Node $node) {
@@ -947,7 +947,7 @@ $x = 'Some markup text with allowed HTML5 <br> tag';
  * @param int $x
  *   Exclamation mark allowed!
  *
- * @throws MyException
+ * @throws \MyException
  *   Exclamation mark allowed!
  */
 function test8($x) {

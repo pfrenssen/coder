@@ -10,7 +10,7 @@ class GoodReferenceDocs {
    *
    * @param array &$form
    *   The form array.
-   * @param Drupal\Core\Form\FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
    *
    * @return array
@@ -32,7 +32,7 @@ class GoodReferenceDocs {
   /**
    * Parameters described by reference are OK.
    *
-   * @param Drupal\Core\Form\FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
    * @param array &$old_form
    *   The old form build.

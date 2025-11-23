@@ -105,7 +105,7 @@ class GoodDocBlock implements FooInterface {
    * The second version of this test with error name with underscores
    * is added below.
    *
-   * @throws Exception
+   * @throws \Exception
    */
   public function test6() {
     throw new Exception();
