@@ -102,4 +102,5 @@ jobs:
           sed -i 's/Drupal.Classes.InterfaceName/Generic.NamingConventions.InterfaceNameSuffix/g' phpcs.xml.dist
           sed -i '/<rule ref="Drupal.Commenting.DataTypeNamespace"\/>/d' phpcs.xml.dist
           sed -i 's/Drupal.ControlStructures.ElseIf/PSR2.ControlStructures.ElseIfDeclaration/g' phpcs.xml.dist
+          sed -i 's/Drupal.ControlStructures.InlineControlStructure/Generic.ControlStructures.InlineControlStructure/g' phpcs.xml.dist
           ../../vendor/bin/phpcs -p -s --parallel=$(nproc) --exclude=Drupal.ControlStructures.ControlSignature --ignore=lib/Drupal/Core/Command/GenerateTheme.php,modules/mysql/tests/src/Kernel/mysql/Console/DbDumpCommandTest.php,modules/big_pipe/tests/modules/big_pipe_test/src/BigPipePlaceholderTestCases.php,tests/fixtures/plugins/CustomPlugin.php,modules/package_manager/tests/modules/package_manager_test_api/src/ApiController.php,modules/views/tests/src/Kernel/Plugin/StyleGridTest.php
