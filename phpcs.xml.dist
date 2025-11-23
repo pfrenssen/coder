@@ -75,7 +75,8 @@
     <rule ref="PSR12.Operators.OperatorSpacing"/>
     <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
     <rule ref="Generic.Arrays.DisallowLongArraySyntax">
-        <!-- Files involved in the requirements check should stay compatible with PHP 5.3. -->
+        <!-- Files involved in the requirements check should stay compatible with PHP 5.3.
+        cspell:ignore phpc -->
         <exclude-pattern>bin/phpc(s|bf)$</exclude-pattern>
         <exclude-pattern>requirements\.php$</exclude-pattern>
     </rule>
