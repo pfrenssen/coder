@@ -388,6 +388,10 @@ class BadUnitTest extends CoderSniffUnitTest
                 1 => 1,
                 3 => 1,
             ];
+        case 'TraitNameSuffix.inc':
+            return [
+                6 => 1,
+            ];
         case 'UnusedUseStatementUnitTest.inc':
             return [
                 5  => 1,
