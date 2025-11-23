@@ -11,15 +11,13 @@ namespace Drupal\Sniffs\NamingConventions;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions\CamelCapsFunctionNameSniff;
-use PHP_CodeSniffer\Util\Common;
 
 /**
  * \Drupal\Sniffs\NamingConventions\ValidFunctionNameSniff.
  *
  * Extends
  * \PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions\CamelCapsFunctionNameSniff
- * to also check global function names outside the scope of classes and to not
- * allow methods beginning with an underscore.
+ * to also check global function names outside the scope of classes.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -37,62 +35,6 @@ class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
         'template_preprocess',
         'theme',
     ];
-
-
-    /**
-     * Processes the tokens within the scope.
-     *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being processed.
-     * @param int                         $stackPtr  The position where this token was
-     *                                               found.
-     * @param int                         $currScope The position of the current scope.
-     *
-     * @return void
-     */
-    protected function processTokenWithinScope(File $phpcsFile, $stackPtr, $currScope)
-    {
-        $methodName = $phpcsFile->getDeclarationName($stackPtr);
-        if ($methodName === '') {
-            // Ignore closures.
-            return;
-        }
-
-        $className = $phpcsFile->getDeclarationName($currScope);
-        $errorData = [$className . '::' . $methodName];
-
-        // Is this a magic method. i.e., is prefixed with "__" ?
-        if (preg_match('|^__|', $methodName) !== 0) {
-            $magicPart = strtolower(substr($methodName, 2));
-            if (isset($this->magicMethods[$magicPart]) === false
-                && isset($this->methodsDoubleUnderscore[$magicPart]) === false
-            ) {
-                $error = 'Method name "%s" is invalid; only PHP magic methods should be prefixed with a double underscore';
-                $phpcsFile->addError($error, $stackPtr, 'MethodDoubleUnderscore', $errorData);
-            }
-
-            return;
-        }
-
-        $methodProps = $phpcsFile->getMethodProperties($stackPtr);
-        if (Common::isCamelCaps($methodName, false, true, $this->strict) === false) {
-            if ($methodProps['scope_specified'] === true) {
-                $error = '%s method name "%s" is not in lowerCamel format';
-                $data  = [
-                    ucfirst($methodProps['scope']),
-                    $errorData[0],
-                ];
-                $phpcsFile->addError($error, $stackPtr, 'ScopeNotCamelCaps', $data);
-            } else {
-                $error = 'Method name "%s" is not in lowerCamel format';
-                $phpcsFile->addError($error, $stackPtr, 'NotCamelCaps', $errorData);
-            }
-
-            $phpcsFile->recordMetric($stackPtr, 'CamelCase method name', 'no');
-            return;
-        } else {
-            $phpcsFile->recordMetric($stackPtr, 'CamelCase method name', 'yes');
-        }
-    }
 
 
     /**
