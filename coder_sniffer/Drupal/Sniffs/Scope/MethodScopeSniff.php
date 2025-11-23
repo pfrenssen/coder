@@ -17,8 +17,8 @@ use PHP_CodeSniffer\Util\Tokens;
  * Verifies that class/interface/trait methods have scope modifiers.
  *
  * Largely copied from
- * \PHP_CodeSniffer\Standards\Squiz\Sniffs\Scope\MethodScopeSniff to work on
- * traits and have a fixer.
+ * \PHP_CodeSniffer\Standards\Squiz\Sniffs\Scope\MethodScopeSniff to have a
+ * fixer.
  *
  * @category PHP
  * @package  PHP_CodeSniffer
@@ -29,12 +29,11 @@ class MethodScopeSniff extends AbstractScopeSniff
 
 
     /**
-     * Constructs a
-     * \PHP_CodeSniffer\Standards\Squiz\Sniffs\Scope\MethodScopeSniff.
+     * Constructor.
      */
     public function __construct()
     {
-        parent::__construct([T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM], [T_FUNCTION]);
+        parent::__construct(Tokens::OO_SCOPE_TOKENS, [T_FUNCTION]);
     }
 
 
@@ -47,32 +46,26 @@ class MethodScopeSniff extends AbstractScopeSniff
      *
      * @return void
      */
-    protected function processTokenWithinScope(File $phpcsFile, $stackPtr, $currScope)
+    protected function processTokenWithinScope(File $phpcsFile, int $stackPtr, int $currScope)
     {
         $tokens = $phpcsFile->getTokens();
 
+        // Determine if this is a function which needs to be examined.
+        $conditions = $tokens[$stackPtr]['conditions'];
+        end($conditions);
+        $deepestScope = key($conditions);
+        if ($deepestScope !== $currScope) {
+            return;
+        }
+
         $methodName = $phpcsFile->getDeclarationName($stackPtr);
         if ($methodName === '') {
-            // Ignore closures.
+            // Ignore live coding.
             return;
         }
 
-        if ($phpcsFile->hasCondition($stackPtr, T_FUNCTION) === true) {
-            // Ignore nested functions.
-            return;
-        }
-
-        $modifier = null;
-        for ($i = ($stackPtr - 1); $i > 0; $i--) {
-            if ($tokens[$i]['line'] < $tokens[$stackPtr]['line']) {
-                break;
-            } elseif (isset(Tokens::SCOPE_MODIFIERS[$tokens[$i]['code']]) === true) {
-                $modifier = $i;
-                break;
-            }
-        }
-
-        if ($modifier === null) {
+        $properties = $phpcsFile->getMethodProperties($stackPtr);
+        if ($properties['scope_specified'] === false) {
             $error = 'Visibility must be declared on method "%s"';
             $data  = [$methodName];
             $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'Missing', $data);
@@ -96,7 +89,7 @@ class MethodScopeSniff extends AbstractScopeSniff
      *
      * @return void
      */
-    protected function processTokenOutsideScope(File $phpcsFile, $stackPtr)
+    protected function processTokenOutsideScope(File $phpcsFile, int $stackPtr)
     {
     }
 }
