@@ -194,7 +194,7 @@ class BadUnitTest extends CoderSniffUnitTest
                 216 => 2,
                 218 => 1,
                 222 => 2,
-                225 => 2,
+                225 => 1,
                 230 => 1,
                 233 => 1,
                 237 => 1,
@@ -397,6 +397,11 @@ class BadUnitTest extends CoderSniffUnitTest
                 21 => 1,
                 31 => 1,
             ];
+        case 'ElseIfUnitTest.inc':
+            return [
+                1 => 1,
+                9 => 1,
+            ];
         case 'FinallySpacingUnitTest.inc':
             return [
                 1 => 1,
@@ -473,6 +478,7 @@ class BadUnitTest extends CoderSniffUnitTest
                 156 => 1,
                 193 => 1,
                 202 => 1,
+                225 => 1,
                 360 => 1,
                 363 => 1,
                 366 => 1,
@@ -493,6 +499,11 @@ class BadUnitTest extends CoderSniffUnitTest
                 823 => 1,
                 824 => 1,
                 836 => 1,
+            ];
+        case 'ElseIfUnitTest.inc':
+            return [
+                6 => 1,
+                9 => 1,
             ];
         }//end switch
 

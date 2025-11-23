@@ -114,6 +114,7 @@
      <!-- Already covered by Drupal.Classes.PropertyDeclaration.VarUsed. -->
     <exclude name="PSR2.Classes.PropertyDeclaration.VarUsed"/>
   </rule>
+  <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
   <rule ref="PSR2.ControlStructures.SwitchDeclaration">
     <!-- Disable some error messages that we do not want. -->
     <exclude name="PSR2.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE"/>
