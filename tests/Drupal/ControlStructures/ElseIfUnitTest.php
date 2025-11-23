@@ -24,8 +24,7 @@ class ElseIfUnitTest extends CoderSniffUnitTest
             6 => 1,
             9 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -41,8 +40,5 @@ class ElseIfUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

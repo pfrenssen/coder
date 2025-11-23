@@ -31,8 +31,7 @@ class DocCommentLongArraySyntaxSniff implements Sniff
     public function register()
     {
         return [T_DOC_COMMENT_OPEN_TAG];
-
-    }//end register()
+    }
 
 
     /**
@@ -70,8 +69,5 @@ class DocCommentLongArraySyntaxSniff implements Sniff
                 }
             }
         } while ($codeStart !== false);
-
-    }//end process()
-
-
-}//end class
+    }
+}

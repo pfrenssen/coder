@@ -31,8 +31,7 @@ class ValidHookNameSniff implements Sniff
     public function register()
     {
         return [T_ATTRIBUTE];
-
-    }//end register()
+    }
 
 
     /**
@@ -75,8 +74,5 @@ class ValidHookNameSniff implements Sniff
                 }
             }
         }//end if
-
-    }//end process()
-
-
-}//end class
+    }
+}

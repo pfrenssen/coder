@@ -31,8 +31,7 @@ class AuthorTagSniff implements Sniff
     public function register()
     {
         return [T_DOC_COMMENT_TAG];
-
-    }//end register()
+    }
 
 
     /**
@@ -53,8 +52,5 @@ class AuthorTagSniff implements Sniff
             $warning = '@author tags are not usually used in Drupal, because over time multiple contributors will touch the code anyway';
             $phpcsFile->addWarning($warning, $stackPtr, 'AuthorFound');
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

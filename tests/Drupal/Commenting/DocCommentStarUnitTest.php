@@ -20,17 +20,16 @@ class DocCommentStarUnitTest extends CoderSniffUnitTest
      */
     protected function getErrorList(string $testFile): array
     {
-         switch ($testFile) {
-        case 'DocCommentStarUnitTest.inc':
-            return [
-                9  => 1,
-                16 => 1,
-            ];
-        default:
-            return [];
-         }
-
-    }//end getErrorList()
+        switch ($testFile) {
+            case 'DocCommentStarUnitTest.inc':
+                return [
+                    9  => 1,
+                    16 => 1,
+                ];
+            default:
+                return [];
+        }
+    }
 
 
     /**
@@ -46,8 +45,5 @@ class DocCommentStarUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

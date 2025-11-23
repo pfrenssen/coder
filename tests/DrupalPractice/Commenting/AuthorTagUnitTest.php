@@ -21,8 +21,7 @@ class AuthorTagUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -41,8 +40,5 @@ class AuthorTagUnitTest extends CoderSniffUnitTest
             7  => 1,
             13 => 1,
         ];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

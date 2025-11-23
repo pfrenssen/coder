@@ -32,8 +32,7 @@ abstract class FunctionDefinition implements Sniff
     public function register()
     {
         return [T_STRING];
-
-    }//end register()
+    }
 
 
     /**
@@ -58,8 +57,7 @@ abstract class FunctionDefinition implements Sniff
         if ($tokens[$functionPtr]['code'] === T_FUNCTION) {
             $this->processFunction($phpcsFile, $stackPtr, $functionPtr);
         }
-
-    }//end process()
+    }
 
 
     /**
@@ -74,6 +72,4 @@ abstract class FunctionDefinition implements Sniff
      * @return void
      */
     abstract public function processFunction(File $phpcsFile, $stackPtr, $functionPtr);
-
-
-}//end class
+}

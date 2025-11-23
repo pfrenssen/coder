@@ -75,8 +75,7 @@ abstract class FunctionCall implements Sniff
     public function register()
     {
         return [T_STRING];
-
-    }//end register()
+    }
 
 
     /**
@@ -111,8 +110,7 @@ abstract class FunctionCall implements Sniff
         $this->arguments    = [];
 
         $this->processFunctionCall($phpcsFile, $stackPtr, $openBracket, $this->closeBracket);
-
-    }//end process()
+    }
 
 
     /**
@@ -160,8 +158,7 @@ abstract class FunctionCall implements Sniff
         }
 
         return true;
-
-    }//end isFunctionCall()
+    }
 
 
     /**
@@ -227,8 +224,5 @@ abstract class FunctionCall implements Sniff
             'end'   => $end,
         ];
         return $this->arguments[$counter];
-
-    }//end getArgument()
-
-
-}//end class
+    }
+}

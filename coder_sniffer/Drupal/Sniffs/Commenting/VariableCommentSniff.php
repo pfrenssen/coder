@@ -87,11 +87,11 @@ class VariableCommentSniff extends AbstractVariableSniff
                 $phpcsFile->fixer->beginChangeset();
                 $comment = '';
                 for ($i = $commentEnd; $tokens[$i]['code'] === T_COMMENT; $i--) {
-                    $comment = ' *'.ltrim($tokens[$i]['content'], '/* ').$comment;
+                    $comment = ' *' . ltrim($tokens[$i]['content'], '/* ') . $comment;
                     $phpcsFile->fixer->replaceToken($i, '');
                 }
 
-                $phpcsFile->fixer->replaceToken($commentEnd, "/**\n".rtrim($comment, "*/\n")."\n */\n");
+                $phpcsFile->fixer->replaceToken($commentEnd, "/**\n" . rtrim($comment, "*/\n") . "\n */\n");
                 $phpcsFile->fixer->endChangeset();
             }
 
@@ -117,7 +117,7 @@ class VariableCommentSniff extends AbstractVariableSniff
                 } else {
                     $foundVar = $tag;
                 }
-            } else if ($tokens[$tag]['content'] === '@see') {
+            } elseif ($tokens[$tag]['content'] === '@see') {
                 // Make sure the tag isn't empty.
                 $string = $phpcsFile->findNext(T_DOC_COMMENT_STRING, $tag, $commentEnd);
                 if ($string === false || $tokens[$string]['line'] !== $tokens[$tag]['line']) {
@@ -176,7 +176,7 @@ class VariableCommentSniff extends AbstractVariableSniff
             if ($fix === true) {
                 $phpcsFile->fixer->replaceToken(($foundVar + 2), $matches[1]);
             }
-        } else if ($varType !== $suggestedType) {
+        } elseif ($varType !== $suggestedType) {
             $error = 'Expected "%s" but found "%s" for @var tag in member variable comment';
             $data  = [
                 $suggestedType,
@@ -187,8 +187,7 @@ class VariableCommentSniff extends AbstractVariableSniff
                 $phpcsFile->fixer->replaceToken(($foundVar + 2), $suggestedType);
             }
         }//end if
-
-    }//end processMemberVar()
+    }
 
 
     /**
@@ -204,8 +203,7 @@ class VariableCommentSniff extends AbstractVariableSniff
      */
     protected function processVariable(File $phpcsFile, $stackPtr)
     {
-
-    }//end processVariable()
+    }
 
 
     /**
@@ -221,8 +219,5 @@ class VariableCommentSniff extends AbstractVariableSniff
      */
     protected function processVariableInString(File $phpcsFile, $stackPtr)
     {
-
-    }//end processVariableInString()
-
-
-}//end class
+    }
+}

@@ -33,8 +33,7 @@ class VariableNameSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['variable_get'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -94,8 +93,5 @@ class VariableNameSniff extends FunctionCall
             ];
             $phpcsFile->addWarning($warning, $argument['start'], 'VariableName', $data);
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

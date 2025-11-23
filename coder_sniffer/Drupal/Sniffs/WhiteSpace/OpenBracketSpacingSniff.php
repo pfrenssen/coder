@@ -37,8 +37,7 @@ class OpenBracketSpacingSniff implements Sniff
             T_OPEN_PARENTHESIS,
             T_OPEN_SHORT_ARRAY,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -72,8 +71,5 @@ class OpenBracketSpacingSniff implements Sniff
                 $phpcsFile->fixer->replaceToken(($stackPtr + 1), '');
             }
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

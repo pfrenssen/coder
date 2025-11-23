@@ -31,8 +31,7 @@ class ElseIfSniff implements Sniff
     public function register()
     {
         return [T_ELSE];
-
-    }//end register()
+    }
 
 
     /**
@@ -73,8 +72,5 @@ class ElseIfSniff implements Sniff
                 $phpcsFile->fixer->endChangeset();
             }
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

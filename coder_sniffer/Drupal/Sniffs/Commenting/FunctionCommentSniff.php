@@ -59,8 +59,7 @@ class FunctionCommentSniff implements Sniff
     public function register()
     {
         return [T_FUNCTION];
-
-    }//end register()
+    }
 
 
     /**
@@ -139,11 +138,11 @@ class FunctionCommentSniff implements Sniff
                 $phpcsFile->fixer->beginChangeset();
                 $comment = '';
                 for ($i = $commentEnd; $tokens[$i]['code'] === T_COMMENT; $i--) {
-                    $comment = ' *'.ltrim($tokens[$i]['content'], '/* ').$comment;
+                    $comment = ' *' . ltrim($tokens[$i]['content'], '/* ') . $comment;
                     $phpcsFile->fixer->replaceToken($i, '');
                 }
 
-                $phpcsFile->fixer->replaceToken($commentEnd, "/**\n".rtrim($comment, "*/\n")."\n */\n");
+                $phpcsFile->fixer->replaceToken($commentEnd, "/**\n" . rtrim($comment, "*/\n") . "\n */\n");
                 $phpcsFile->fixer->endChangeset();
             }
 
@@ -185,8 +184,7 @@ class FunctionCommentSniff implements Sniff
         $this->processThrows($phpcsFile, $stackPtr, $commentStart);
         $this->processParams($phpcsFile, $stackPtr, $commentStart);
         $this->processSees($phpcsFile, $stackPtr, $commentStart);
-
-    }//end process()
+    }
 
 
     /**
@@ -199,8 +197,7 @@ class FunctionCommentSniff implements Sniff
     public static function tokenIsPhpstanComment($token)
     {
         return ($token['code'] === T_COMMENT && strpos($token['content'], ' @phpstan-') !== false);
-
-    }//end tokenIsPhpstanComment()
+    }
 
 
     /**
@@ -253,7 +250,7 @@ class FunctionCommentSniff implements Sniff
             if (empty($returnType) === true || $tokens[($return + 2)]['code'] !== T_DOC_COMMENT_STRING) {
                 $error = 'Return type missing for @return tag in function comment';
                 $phpcsFile->addError($error, $return, 'MissingReturnType');
-            } else if (strpos($returnType, ' ') === false) {
+            } elseif (strpos($returnType, ' ') === false) {
                 // Check return type (can be multiple, separated by '|').
                 $typeNames      = explode('|', $returnType);
                 $suggestedNames = [];
@@ -321,7 +318,7 @@ class FunctionCommentSniff implements Sniff
                             }
                         }
                     }//end if
-                } else if ($returnType !== 'mixed'
+                } elseif ($returnType !== 'mixed'
                     && $returnType !== 'never'
                     && in_array('void', $typeNames, true) === false
                 ) {
@@ -368,7 +365,7 @@ class FunctionCommentSniff implements Sniff
                         $indent = strlen($tokens[($i - 1)]['content']);
                     }
 
-                    $comment       .= ' '.$tokens[$i]['content'];
+                    $comment       .= ' ' . $tokens[$i]['content'];
                     $commentLines[] = [
                         'comment' => $tokens[$i]['content'],
                         'token'   => $i,
@@ -403,7 +400,7 @@ class FunctionCommentSniff implements Sniff
                 }
 
                 $phpcsFile->addError($error, $return, 'MissingReturnComment');
-            } else if (strpos($returnType, ' ') !== false) {
+            } elseif (strpos($returnType, ' ') !== false) {
                 if (preg_match('/^([^\s]+)[\s]+(\$[^\s]+)[\s]*$/', $returnType, $matches) === 1) {
                     $error = 'Return type must not contain variable name "%s"';
                     $data  = [$matches[2]];
@@ -414,15 +411,14 @@ class FunctionCommentSniff implements Sniff
 
                     // Do not check PHPStan types that contain any kind of brackets.
                     // See https://phpstan.org/writing-php-code/phpdoc-types#general-arrays .
-                } else if (preg_match('/[<\[\{\(]/', $returnType) === 0) {
+                } elseif (preg_match('/[<\[\{\(]/', $returnType) === 0) {
                     $error = 'Return type "%s" must not contain spaces';
                     $data  = [$returnType];
                     $phpcsFile->addError($error, $return, 'ReturnTypeSpaces', $data);
                 }
             }//end if
         }//end if
-
-    }//end processReturn()
+    }
 
 
     /**
@@ -468,7 +464,7 @@ class FunctionCommentSniff implements Sniff
                             $indent = strlen($tokens[($i - 1)]['content']);
                         }
 
-                        $comment .= ' '.$tokens[$i]['content'];
+                        $comment .= ' ' . $tokens[$i]['content'];
                         if ($indent < 3) {
                             $error = 'Throws comment indentation must be 3 spaces, found %s spaces';
                             $phpcsFile->addError($error, $i, 'ThrowsCommentIndentation', [$indent]);
@@ -501,8 +497,7 @@ class FunctionCommentSniff implements Sniff
                 }
             }//end if
         }//end foreach
-
-    }//end processThrows()
+    }
 
 
     /**
@@ -571,7 +566,7 @@ class FunctionCommentSniff implements Sniff
                     $error = 'Doc comment parameter name "%s" must not end with a dot';
                     $fix   = $phpcsFile->addFixableError($error, ($tag + 2), 'ParamNameDot', [$var]);
                     if ($fix === true) {
-                        $content = $type.' '.substr($var, 0, -1);
+                        $content = $type . ' ' . substr($var, 0, -1);
                         $phpcsFile->fixer->replaceToken(($tag + 2), $content);
                     }
 
@@ -627,7 +622,7 @@ class FunctionCommentSniff implements Sniff
                             }
                         }
 
-                        $comment       .= ' '.$tokens[$i]['content'];
+                        $comment       .= ' ' . $tokens[$i]['content'];
                         $commentLines[] = [
                             'comment' => $tokens[$i]['content'],
                             'token'   => $i,
@@ -679,7 +674,7 @@ class FunctionCommentSniff implements Sniff
                     if (isset($matches[4]) === true && preg_match('/[^\s]+[\s]+[^\s]+/', $matches[4]) === 0) {
                         $fix = $phpcsFile->addFixableError($error, $tag, 'MissingParamType');
                         if ($fix === true) {
-                            $phpcsFile->fixer->replaceToken(($tag + 2), $matches[4].' '.$var);
+                            $phpcsFile->fixer->replaceToken(($tag + 2), $matches[4] . ' ' . $var);
                         }
                     } else {
                         $phpcsFile->addError($error, $tag, 'MissingParamType');
@@ -732,9 +727,9 @@ class FunctionCommentSniff implements Sniff
 
                 if ($realName === $param['var']
                     || ($realParams[$checkPos]['pass_by_reference'] === true
-                    && ('&'.$realName) === $param['var'])
+                    && ('&' . $realName) === $param['var'])
                     || ($realParams[$checkPos]['variable_length'] === true
-                    && ('...'.$realName) === $param['var'])
+                    && ('...' . $realName) === $param['var'])
                 ) {
                     $matched = true;
                     break;
@@ -767,7 +762,7 @@ class FunctionCommentSniff implements Sniff
                     $data  = [$param['type']];
                     $phpcsFile->addError($error, $param['tag'], 'ParamTypeSpaces', $data);
                 }
-            } else if ($param['type'] !== $suggestedType) {
+            } elseif ($param['type'] !== $suggestedType) {
                 $error = 'Expected "%s" but found "%s" for parameter type';
                 $data  = [
                     $suggestedType,
@@ -842,7 +837,7 @@ class FunctionCommentSniff implements Sniff
                     // Reset the parameter position to check for following
                     // parameters.
                     $checkPos = ($pos - 1);
-                } else if (substr($param['var'], -4) !== ',...') {
+                } elseif (substr($param['var'], -4) !== ',...') {
                     // We must have an extra parameter comment.
                     $error = 'Superfluous parameter comment';
                     $phpcsFile->addError($error, $param['tag'], 'ExtraParamComment');
@@ -915,8 +910,7 @@ class FunctionCommentSniff implements Sniff
                 }
             }
         }//end if
-
-    }//end processParams()
+    }
 
 
     /**
@@ -957,8 +951,7 @@ class FunctionCommentSniff implements Sniff
                 }
             }
         }//end foreach
-
-    }//end processSees()
+    }
 
 
     /**
@@ -984,8 +977,7 @@ class FunctionCommentSniff implements Sniff
         $type = preg_replace('/[^a-zA-Z0-9_\\\[\]\-<> ,"\{\}\?\':\*\|\&\(\)]/', '', $type);
 
         return $type;
-
-    }//end suggestType()
+    }
 
 
     /**
@@ -1017,8 +1009,5 @@ class FunctionCommentSniff implements Sniff
         }
 
         return false;
-
-    }//end isInCodeExample()
-
-
-}//end class
+    }
+}

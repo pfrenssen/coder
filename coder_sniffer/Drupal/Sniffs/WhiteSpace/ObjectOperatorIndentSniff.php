@@ -35,8 +35,7 @@ class ObjectOperatorIndentSniff implements Sniff
     public function register()
     {
         return [T_OBJECT_OPERATOR];
-
-    }//end register()
+    }
 
 
     /**
@@ -120,8 +119,7 @@ class ObjectOperatorIndentSniff implements Sniff
                 $phpcsFile->fixer->replaceToken(($stackPtr - 1), str_repeat(' ', $expectedIndent));
             }
         }
-
-    }//end process()
+    }
 
 
     /**
@@ -148,8 +146,5 @@ class ObjectOperatorIndentSniff implements Sniff
         }
 
         return $startOfLine;
-
-    }//end findStartOfline()
-
-
-}//end class
+    }
+}

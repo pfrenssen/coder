@@ -51,7 +51,7 @@ class HookInitCssSniff extends FunctionDefinition
 
         $fileName = substr(basename($phpcsFile->getFilename()), 0, -7);
         $tokens   = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['content'] !== ($fileName.'_init') && $tokens[$stackPtr]['content'] !== ($fileName.'_page_build')) {
+        if ($tokens[$stackPtr]['content'] !== ($fileName . '_init') && $tokens[$stackPtr]['content'] !== ($fileName . '_page_build')) {
             return;
         }
 
@@ -72,7 +72,7 @@ class HookInitCssSniff extends FunctionDefinition
                 if ($opener !== false
                     && $tokens[$opener]['code'] === T_OPEN_PARENTHESIS
                 ) {
-                    if ($tokens[$stackPtr]['content'] === ($fileName.'_init')) {
+                    if ($tokens[$stackPtr]['content'] === ($fileName . '_init')) {
                         $warning = 'Do not use %s() in hook_init(), use #attached for CSS and JS in your page/form callback or in hook_page_build() instead';
                         $phpcsFile->addWarning($warning, $string, 'AddFunctionFound', [$tokens[$string]['content']]);
                     } else {
@@ -88,8 +88,5 @@ class HookInitCssSniff extends FunctionDefinition
                 $tokens[$functionPtr]['scope_closer']
             );
         }//end while
-
-    }//end processFunction()
-
-
-}//end class
+    }
+}

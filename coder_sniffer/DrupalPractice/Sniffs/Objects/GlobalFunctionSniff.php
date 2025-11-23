@@ -128,8 +128,5 @@ class GlobalFunctionSniff extends FunctionCall
         }//end if
 
         $phpcsFile->addWarning($warning, $stackPtr, 'GlobalFunction', $data);
-
-    }//end process()
-
-
-}//end class
+    }
+}

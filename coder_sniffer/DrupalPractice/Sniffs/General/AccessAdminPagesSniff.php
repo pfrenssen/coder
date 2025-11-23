@@ -46,7 +46,7 @@ class AccessAdminPagesSniff extends FunctionDefinition
         $tokens = $phpcsFile->getTokens();
 
         $fileName = substr(basename($phpcsFile->getFilename()), 0, -7);
-        if ($tokens[$stackPtr]['content'] !== ($fileName.'_menu')) {
+        if ($tokens[$stackPtr]['content'] !== ($fileName . '_menu')) {
             return;
         }
 
@@ -69,8 +69,5 @@ class AccessAdminPagesSniff extends FunctionDefinition
                 $tokens[$functionPtr]['scope_closer']
             );
         }//end while
-
-    }//end processFunction()
-
-
-}//end class
+    }
+}

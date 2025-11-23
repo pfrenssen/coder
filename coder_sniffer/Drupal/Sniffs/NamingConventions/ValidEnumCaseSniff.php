@@ -28,8 +28,5 @@ class ValidEnumCaseSniff extends ValidClassNameSniff
     public function register()
     {
         return [T_ENUM_CASE];
-
-    }//end register()
-
-
-}//end class
+    }
+}

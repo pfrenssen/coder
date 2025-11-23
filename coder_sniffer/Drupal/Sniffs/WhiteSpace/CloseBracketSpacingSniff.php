@@ -38,8 +38,7 @@ class CloseBracketSpacingSniff implements Sniff
             T_CLOSE_PARENTHESIS,
             T_CLOSE_SHORT_ARRAY,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -72,8 +71,5 @@ class CloseBracketSpacingSniff implements Sniff
                 }
             }
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

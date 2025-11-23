@@ -25,7 +25,7 @@ class StrictSchemaDisabledSniff extends AbstractVariableSniff
     /**
      * The name of the variable in the test base class to disable config schema checking.
      */
-    const STRICT_CONFIG_SCHEMA_NAME = '$strictConfigSchema';
+    public const STRICT_CONFIG_SCHEMA_NAME = '$strictConfigSchema';
 
 
     /**
@@ -62,8 +62,7 @@ class StrictSchemaDisabledSniff extends AbstractVariableSniff
                 );
             }
         }//end if
-
-    }//end processMemberVar()
+    }
 
 
     /**
@@ -83,8 +82,7 @@ class StrictSchemaDisabledSniff extends AbstractVariableSniff
         $classPtr = key($tokens[$stackPtr]['conditions']);
         $name     = $phpcsFile->findNext([T_STRING], $classPtr);
         return strpos($tokens[$name]['content'], 'Test') !== false;
-
-    }//end isTestClass()
+    }
 
 
     /**
@@ -101,8 +99,7 @@ class StrictSchemaDisabledSniff extends AbstractVariableSniff
      */
     protected function processVariable(File $phpcsFile, $stackPtr)
     {
-
-    }//end processVariable()
+    }
 
 
     /**
@@ -123,8 +120,5 @@ class StrictSchemaDisabledSniff extends AbstractVariableSniff
      */
     protected function processVariableInString(File $phpcsFile, $stackPtr)
     {
-
-    }//end processVariableInString()
-
-
-}//end class
+    }
+}

@@ -32,8 +32,7 @@ class RequiredSniff implements Sniff
     public function register()
     {
         return [T_INLINE_HTML];
-
-    }//end register()
+    }
 
 
     /**
@@ -68,7 +67,7 @@ class RequiredSniff implements Sniff
         if (isset($info['core']) === false) {
             $error = '"core" property is missing in the info file';
             $phpcsFile->addError($error, $stackPtr, 'Core');
-        } else if ($info['core'] === '7.x' && isset($info['php']) === true
+        } elseif ($info['core'] === '7.x' && isset($info['php']) === true
             && $info['php'] <= '5.2'
         ) {
             $error = 'Drupal 7 core already requires PHP 5.2';
@@ -77,8 +76,5 @@ class RequiredSniff implements Sniff
         }
 
         return ($phpcsFile->numTokens + 1);
-
-    }//end process()
-
-
-}//end class
+    }
+}

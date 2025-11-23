@@ -32,8 +32,7 @@ class CurlSslVerifierSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['curl_setopt'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -66,8 +65,5 @@ class CurlSslVerifierSniff extends FunctionCall
             $warning = 'Potential security problem: SSL peer verification must not be disabled';
             $phpcsFile->addWarning($warning, $value['start'], 'SslPeerVerificationDisabled');
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

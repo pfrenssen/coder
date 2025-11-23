@@ -31,8 +31,7 @@ class MessageTSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['drupal_set_message'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -60,8 +59,5 @@ class MessageTSniff extends FunctionCall
             $warning = 'Messages are user facing text and must run through t() for translation';
             $phpcsFile->addWarning($warning, $argument['start'], 'ErrorMessage');
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

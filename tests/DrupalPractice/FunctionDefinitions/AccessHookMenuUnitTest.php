@@ -27,8 +27,7 @@ class AccessHookMenuUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -44,8 +43,7 @@ class AccessHookMenuUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [24 => 1];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -57,9 +55,6 @@ class AccessHookMenuUnitTest extends CoderSniffUnitTest
      */
     protected function getTestFiles($testFileBase): array
     {
-        return [__DIR__.'/test.module'];
-
-    }//end getTestFiles()
-
-
-}//end class
+        return [__DIR__ . '/test.module'];
+    }
+}

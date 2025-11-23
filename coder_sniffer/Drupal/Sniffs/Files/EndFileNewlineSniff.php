@@ -37,8 +37,7 @@ class EndFileNewlineSniff implements Sniff
             T_OPEN_TAG,
             T_INLINE_HTML,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -73,7 +72,7 @@ class EndFileNewlineSniff implements Sniff
         $lastLine = $tokens[$lastToken]['line'];
         if ($tokens[$lastToken]['code'] === T_WHITESPACE) {
             $lastCode = $phpcsFile->findPrevious(T_WHITESPACE, ($lastToken - 1), null, true);
-        } else if ($tokens[$lastToken]['code'] === T_INLINE_HTML) {
+        } elseif ($tokens[$lastToken]['code'] === T_INLINE_HTML) {
             $lastCode = $lastToken;
             while ($lastCode > 0 && trim($tokens[$lastCode]['content']) === '') {
                 $lastCode--;
@@ -105,8 +104,5 @@ class EndFileNewlineSniff implements Sniff
 
         // Skip the rest of the file.
         return ($phpcsFile->numTokens + 1);
-
-    }//end process()
-
-
-}//end class
+    }
+}

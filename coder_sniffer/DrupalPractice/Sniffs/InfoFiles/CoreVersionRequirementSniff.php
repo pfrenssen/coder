@@ -34,8 +34,7 @@ class CoreVersionRequirementSniff implements Sniff
     public function register()
     {
         return [T_INLINE_HTML];
-
-    }//end register()
+    }
 
 
     /**
@@ -85,8 +84,5 @@ class CoreVersionRequirementSniff implements Sniff
         }
 
         return ($phpcsFile->numTokens + 1);
-
-    }//end process()
-
-
-}//end class
+    }
+}

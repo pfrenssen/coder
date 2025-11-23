@@ -21,29 +21,28 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         switch ($testFile) {
-        case 'FullyQualifiedNamespaceUnitTest.inc':
-            return [
-                29 => 1,
-                36 => 1,
-                43 => 1,
-                57 => 1,
-                64 => 1,
-                71 => 2,
-                78 => 1,
-            ];
-        case 'FullyQualifiedNamespaceUnitTest.1.inc':
-            return [16 => 1];
-        case 'FullyQualifiedNamespaceUnitTest.2.inc':
-            return [8 => 1];
-        case 'FullyQualifiedNamespaceUnitTest.3.inc':
-            return [10 => 2];
-        case 'FullyQualifiedNamespaceUnitTest.4.inc':
-            return [];
+            case 'FullyQualifiedNamespaceUnitTest.inc':
+                return [
+                    29 => 1,
+                    36 => 1,
+                    43 => 1,
+                    57 => 1,
+                    64 => 1,
+                    71 => 2,
+                    78 => 1,
+                ];
+            case 'FullyQualifiedNamespaceUnitTest.1.inc':
+                return [16 => 1];
+            case 'FullyQualifiedNamespaceUnitTest.2.inc':
+                return [8 => 1];
+            case 'FullyQualifiedNamespaceUnitTest.3.inc':
+                return [10 => 2];
+            case 'FullyQualifiedNamespaceUnitTest.4.inc':
+                return [];
         }//end switch
 
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -59,8 +58,7 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -73,15 +71,12 @@ class FullyQualifiedNamespaceUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase): array
     {
         return [
-            __DIR__.'/FullyQualifiedNamespaceUnitTest.inc',
-            __DIR__.'/FullyQualifiedNamespaceUnitTest.1.inc',
-            __DIR__.'/FullyQualifiedNamespaceUnitTest.2.inc',
-            __DIR__.'/FullyQualifiedNamespaceUnitTest.3.inc',
-            __DIR__.'/FullyQualifiedNamespaceUnitTest.4.inc',
-            __DIR__.'/FullyQualifiedNamespaceUnitTest.api.php',
+            __DIR__ . '/FullyQualifiedNamespaceUnitTest.inc',
+            __DIR__ . '/FullyQualifiedNamespaceUnitTest.1.inc',
+            __DIR__ . '/FullyQualifiedNamespaceUnitTest.2.inc',
+            __DIR__ . '/FullyQualifiedNamespaceUnitTest.3.inc',
+            __DIR__ . '/FullyQualifiedNamespaceUnitTest.4.inc',
+            __DIR__ . '/FullyQualifiedNamespaceUnitTest.api.php',
         ];
-
-    }//end getTestFiles()
-
-
-}//end class
+    }
+}

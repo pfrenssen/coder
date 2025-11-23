@@ -21,20 +21,19 @@ class PostStatementCommentUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         switch ($testFile) {
-        case 'PostStatementCommentUnitTest.inc':
-            return [
-                3 => 1,
-                7 => 1,
-            ];
-        case 'PostStatementCommentUnitTest.1.inc':
-            return [1 => 1];
-        case 'PostStatementCommentUnitTest.2.inc':
-            return [6 => 1];
+            case 'PostStatementCommentUnitTest.inc':
+                return [
+                    3 => 1,
+                    7 => 1,
+                ];
+            case 'PostStatementCommentUnitTest.1.inc':
+                return [1 => 1];
+            case 'PostStatementCommentUnitTest.2.inc':
+                return [6 => 1];
         }
 
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -50,8 +49,5 @@ class PostStatementCommentUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

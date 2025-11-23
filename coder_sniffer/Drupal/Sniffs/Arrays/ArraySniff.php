@@ -27,7 +27,6 @@ use PHP_CodeSniffer\Util\Tokens;
 class ArraySniff implements Sniff
 {
 
-
     /**
      * The limit that the length of a line should not exceed.
      *
@@ -51,8 +50,7 @@ class ArraySniff implements Sniff
             T_ARRAY,
             T_OPEN_SHORT_ARRAY,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -304,8 +302,5 @@ class ArraySniff implements Sniff
 
             $lineStart = $newLineStart;
         }//end while
-
-    }//end process()
-
-
-}//end class
+    }
+}

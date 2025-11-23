@@ -39,8 +39,7 @@ class ValidClassNameSniff implements Sniff
             T_INTERFACE,
             T_TRAIT,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -80,8 +79,5 @@ class ValidClassNameSniff implements Sniff
             $error = '%s name must use UpperCamel naming and not contain multiple upper case letters in a row';
             $phpcsFile->addError($error, $stackPtr, 'NoUpperAcronyms', $errorData);
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

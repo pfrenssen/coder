@@ -39,8 +39,7 @@ class DefaultValueSanitizeSniff extends FunctionCall
             'filter_xss',
             'filter_xss_admin',
         ];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -82,8 +81,5 @@ class DefaultValueSanitizeSniff extends FunctionCall
         $warning = 'Do not use the %s() sanitization function on Form API #default_value elements, they get escaped automatically';
         $data    = [$tokens[$stackPtr]['content']];
         $phpcsFile->addWarning($warning, $stackPtr, 'DefaultValue', $data);
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

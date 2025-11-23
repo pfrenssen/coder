@@ -89,8 +89,7 @@ class ValidVariableNameSniff extends AbstractVariableSniff
         $error = 'Class property %s should use lowerCamel naming without underscores';
         $data  = [$tokens[$stackPtr]['content']];
         $phpcsFile->addError($error, $stackPtr, 'LowerCamelName', $data);
-
-    }//end processMemberVar()
+    }
 
 
     /**
@@ -133,8 +132,7 @@ class ValidVariableNameSniff extends AbstractVariableSniff
             $error = "Variable \"$varName\" starts with a capital letter, but only \$lowerCamelCase or \$snake_case is allowed";
             $phpcsFile->addError($error, $stackPtr, 'LowerStart');
         }
-
-    }//end processVariable()
+    }
 
 
     /**
@@ -148,9 +146,5 @@ class ValidVariableNameSniff extends AbstractVariableSniff
     protected function processVariableInString(File $phpcsFile, $stackPtr)
     {
         // We don't care about variables in strings.
-        return;
-
-    }//end processVariableInString()
-
-
-}//end class
+    }
+}

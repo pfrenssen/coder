@@ -31,8 +31,7 @@ class OptionsTSniff implements Sniff
     public function register()
     {
         return [T_CONSTANT_ENCAPSED_STRING];
-
-    }//end register()
+    }
 
 
     /**
@@ -133,8 +132,5 @@ class OptionsTSniff implements Sniff
 
             $arrow = $phpcsFile->findNext(T_DOUBLE_ARROW, ($arrow + 1), $statementEnd, false, null, true);
         }//end while
-
-    }//end process()
-
-
-}//end class
+    }
+}

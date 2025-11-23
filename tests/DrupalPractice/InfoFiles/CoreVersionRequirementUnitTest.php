@@ -21,8 +21,7 @@ class CoreVersionRequirementUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -38,15 +37,14 @@ class CoreVersionRequirementUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         switch ($testFile) {
-        case 'core_version.info.yml':
-            return [1 => 1];
-        case 'core_version_test.info.yml':
-            return [];
+            case 'core_version.info.yml':
+                return [1 => 1];
+            case 'core_version_test.info.yml':
+                return [];
         }
 
         return [];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -59,12 +57,9 @@ class CoreVersionRequirementUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase): array
     {
         return [
-            __DIR__.'/core_version.info.yml',
-            __DIR__.'/core_version_test.info.yml',
-            __DIR__.'/core_version.config.info.yml',
+            __DIR__ . '/core_version.info.yml',
+            __DIR__ . '/core_version_test.info.yml',
+            __DIR__ . '/core_version.config.info.yml',
         ];
-
-    }//end getTestFiles()
-
-
-}//end class
+    }
+}

@@ -58,7 +58,7 @@ class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
         }
 
         $className = $phpcsFile->getDeclarationName($currScope);
-        $errorData = [$className.'::'.$methodName];
+        $errorData = [$className . '::' . $methodName];
 
         // Is this a magic method. i.e., is prefixed with "__" ?
         if (preg_match('|^__|', $methodName) !== 0) {
@@ -92,8 +92,7 @@ class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
         } else {
             $phpcsFile->recordMetric($stackPtr, 'CamelCase method name', 'yes');
         }
-
-    }//end processTokenWithinScope()
+    }
 
 
     /**
@@ -146,13 +145,10 @@ class ValidFunctionNameSniff extends CamelCapsFunctionNameSniff
                 $error = 'All functions defined in a module file must be prefixed with the module\'s name, found "%s" but expected "%s"';
                 $data  = [
                     $functionName,
-                    $moduleName.'_'.$functionName,
+                    $moduleName . '_' . $functionName,
                 ];
                 $phpcsFile->addError($error, $stackPtr, 'InvalidPrefix', $data);
             }
         }
-
-    }//end processTokenOutsideScope()
-
-
-}//end class
+    }
+}

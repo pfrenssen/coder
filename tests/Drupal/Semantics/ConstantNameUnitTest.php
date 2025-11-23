@@ -18,11 +18,10 @@ class ConstantNameUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase): array
     {
         return [
-            __DIR__.'/constant_test.install',
-            __DIR__.'/constant_test.module',
+            __DIR__ . '/constant_test.install',
+            __DIR__ . '/constant_test.module',
         ];
-
-    }//end getTestFiles()
+    }
 
 
     /**
@@ -38,8 +37,7 @@ class ConstantNameUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -60,8 +58,5 @@ class ConstantNameUnitTest extends CoderSniffUnitTest
             3 => 1,
             6 => 1,
         ];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

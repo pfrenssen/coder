@@ -24,8 +24,7 @@ class DocCommentAlignmentUnitTest extends CoderSniffUnitTest
             14 => 1,
             15 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -41,8 +40,5 @@ class DocCommentAlignmentUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

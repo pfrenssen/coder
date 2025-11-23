@@ -32,8 +32,7 @@ class AutoAddedKeysSniff implements Sniff
     public function register()
     {
         return [T_INLINE_HTML];
-
-    }//end register()
+    }
 
 
     /**
@@ -52,7 +51,7 @@ class AutoAddedKeysSniff implements Sniff
             // Drupal 7 style info file.
             $contents = file_get_contents($phpcsFile->getFilename());
             $info     = ClassFilesSniff::drupalParseInfoFormat($contents);
-        } else if (preg_match('/\.info\.yml$/', $phpcsFile->getFilename()) === 1) {
+        } elseif (preg_match('/\.info\.yml$/', $phpcsFile->getFilename()) === 1) {
             // Drupal 8 style info.yml file.
             $contents = file_get_contents($phpcsFile->getFilename());
             try {
@@ -82,8 +81,5 @@ class AutoAddedKeysSniff implements Sniff
         }
 
         return ($phpcsFile->numTokens + 1);
-
-    }//end process()
-
-
-}//end class
+    }
+}

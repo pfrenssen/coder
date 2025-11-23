@@ -173,8 +173,7 @@ class FunctionAliasSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return array_keys($this->aliases);
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -204,8 +203,5 @@ class FunctionAliasSniff extends FunctionCall
             $this->aliases[$name],
         ];
         $phpcsFile->addError($error, $stackPtr, 'FunctionAlias', $data);
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

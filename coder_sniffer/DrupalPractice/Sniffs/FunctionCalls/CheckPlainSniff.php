@@ -31,8 +31,7 @@ class CheckPlainSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['check_plain'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -60,8 +59,5 @@ class CheckPlainSniff extends FunctionCall
             $warning = 'Do not use check_plain() on string literals, because they cannot contain user provided text';
             $phpcsFile->addWarning($warning, $argument['start'], 'CheckPlainLiteral');
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

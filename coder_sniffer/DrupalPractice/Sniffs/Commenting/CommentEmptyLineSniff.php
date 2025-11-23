@@ -32,8 +32,7 @@ class CommentEmptyLineSniff implements Sniff
     public function register()
     {
         return [T_COMMENT];
-
-    }//end register()
+    }
 
 
     /**
@@ -62,15 +61,12 @@ class CommentEmptyLineSniff implements Sniff
                 if ($tokens[$i]['code'] !== T_WHITESPACE) {
                     return;
                 }
-            } else if ($tokens[$i]['line'] > ($tokens[$stackPtr]['line'] + 1)) {
+            } elseif ($tokens[$i]['line'] > ($tokens[$stackPtr]['line'] + 1)) {
                 break;
             }
         }
 
         $warning = 'There must be no blank line following an inline comment';
         $phpcsFile->addWarning($warning, $stackPtr, 'SpacingAfter');
-
-    }//end process()
-
-
-}//end class
+    }
+}

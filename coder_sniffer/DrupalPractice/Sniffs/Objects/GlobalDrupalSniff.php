@@ -52,8 +52,7 @@ class GlobalDrupalSniff implements Sniff
     public function register()
     {
         return [T_NAME_FULLY_QUALIFIED];
-
-    }//end register()
+    }
 
 
     /**
@@ -107,8 +106,5 @@ class GlobalDrupalSniff implements Sniff
 
         $warning = '\Drupal calls should be avoided in classes, use dependency injection instead';
         $phpcsFile->addWarning($warning, $stackPtr, 'GlobalDrupal');
-
-    }//end process()
-
-
-}//end class
+    }
+}

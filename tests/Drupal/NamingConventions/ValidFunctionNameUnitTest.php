@@ -21,19 +21,18 @@ class ValidFunctionNameUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         switch ($testFile) {
-        case 'ValidFunctionNameUnitTest.inc':
-            return [
-                3 => 1,
-                4 => 1,
-                8 => 1,
-            ];
-        case 'valid_function_name_test.module':
-            return [24 => 1];
+            case 'ValidFunctionNameUnitTest.inc':
+                return [
+                    3 => 1,
+                    4 => 1,
+                    8 => 1,
+                ];
+            case 'valid_function_name_test.module':
+                return [24 => 1];
         }
 
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -49,8 +48,7 @@ class ValidFunctionNameUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -62,12 +60,9 @@ class ValidFunctionNameUnitTest extends CoderSniffUnitTest
      */
     protected function getTestFiles($testFileBase): array
     {
-        $testFiles[] = __DIR__.'/valid_function_name_test.module';
-        $testFiles[] = __DIR__.'/ValidFunctionNameUnitTest.inc';
+        $testFiles[] = __DIR__ . '/valid_function_name_test.module';
+        $testFiles[] = __DIR__ . '/ValidFunctionNameUnitTest.inc';
 
         return $testFiles;
-
-    }//end getTestFiles()
-
-
-}//end class
+    }
+}

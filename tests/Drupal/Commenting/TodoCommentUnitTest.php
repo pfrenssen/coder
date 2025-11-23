@@ -21,8 +21,7 @@ class TodoCommentUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -39,8 +38,5 @@ class TodoCommentUnitTest extends CoderSniffUnitTest
     {
         $warningList = (array_fill_keys(range(16, 34), 1) + array_fill_keys(range(38, 40), 1) + array_fill_keys(range(55, 73), 1) + array_fill_keys(range(75, 77), 1));
         return $warningList;
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

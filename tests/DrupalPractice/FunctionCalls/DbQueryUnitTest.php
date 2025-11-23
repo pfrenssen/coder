@@ -30,8 +30,7 @@ class DbQueryUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -53,8 +52,5 @@ class DbQueryUnitTest extends CoderSniffUnitTest
             12 => 1,
             18 => 1,
         ];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

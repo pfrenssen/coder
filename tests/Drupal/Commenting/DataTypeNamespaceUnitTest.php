@@ -26,8 +26,7 @@ class DataTypeNamespaceUnitTest extends CoderSniffUnitTest
             21 => 1,
             31 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -43,8 +42,5 @@ class DataTypeNamespaceUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

@@ -69,4 +69,4 @@ class DiscouragedFunctionsSniff extends ForbiddenFunctionsSniff
      */
     public $error = false;
 
-}//end class
+}

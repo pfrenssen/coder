@@ -21,8 +21,7 @@ class FormAlterDocUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -38,8 +37,7 @@ class FormAlterDocUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [31 => 1];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -51,9 +49,6 @@ class FormAlterDocUnitTest extends CoderSniffUnitTest
      */
     protected function getTestFiles($testFileBase): array
     {
-        return [__DIR__.'/test.module'];
-
-    }//end getTestFiles()
-
-
-}//end class
+        return [__DIR__ . '/test.module'];
+    }
+}

@@ -32,8 +32,7 @@ class UseGlobalClassSniff implements Sniff
     public function register()
     {
         return [T_USE];
-
-    }//end register()
+    }
 
 
     /**
@@ -74,7 +73,7 @@ class UseGlobalClassSniff implements Sniff
 
         $lineStart = $stackPtr;
         // Iterate through a potential multiline use statement.
-        while (false !== $lineEnd = $phpcsFile->findNext([T_SEMICOLON, T_COMMA], ($lineStart + 1), ($stmtEnd + 1))) {
+        while (($lineEnd = $phpcsFile->findNext([T_SEMICOLON, T_COMMA], ($lineStart + 1), ($stmtEnd + 1))) !== false) {
             // Skip function imports.
             if ($phpcsFile->findNext(T_STRING, $lineStart, $lineEnd, false, 'function') !== false) {
                 $lineStart = $lineEnd;
@@ -108,11 +107,11 @@ class UseGlobalClassSniff implements Sniff
                     // If there are lines before this one,
                     // then leave the ending delimiter in place.
                     $end = ($lineEnd - 1);
-                } else if ($tokens[$lineEnd]['code'] === T_COMMA) {
+                } elseif ($tokens[$lineEnd]['code'] === T_COMMA) {
                     // If there are lines after, but not before,
                     // then leave the use keyword.
                     $start = $class;
-                } else if ($tokens[$next]['code'] === T_USE) {
+                } elseif ($tokens[$next]['code'] === T_USE) {
                     // If the whole statement is removed, and there is one after it,
                     // then also remove the linebreaks.
                     $end = ($next - 1);
@@ -125,8 +124,8 @@ class UseGlobalClassSniff implements Sniff
                 // Find all usages of the class, and add a leading backslash.
                 // Only start looking after the end of the use statement block.
                 $i = $bodyStart;
-                while (false !== $i = $phpcsFile->findNext(T_STRING, ($i + 1), null, false, $aliasName)) {
-                    $phpcsFile->fixer->replaceToken($i, '\\'.$className);
+                while (($i = $phpcsFile->findNext(T_STRING, ($i + 1), null, false, $aliasName)) !== false) {
+                    $phpcsFile->fixer->replaceToken($i, '\\' . $className);
                 }
 
                 $phpcsFile->fixer->endChangeset();
@@ -134,8 +133,5 @@ class UseGlobalClassSniff implements Sniff
 
             $lineStart = $lineEnd;
         }//end while
-
-    }//end process()
-
-
-}//end class
+    }
+}

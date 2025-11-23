@@ -43,8 +43,7 @@ class FunctionTSniff extends FunctionCall
             'TranslatableMarkup',
             'TranslationWrapper',
         ];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -132,8 +131,7 @@ class FunctionTSniff extends FunctionCall
             $warn = "Avoid backslash escaping in translatable strings when possible, use '' quotes instead";
             $phpcsFile->addWarning($warn, $argument['start'], 'BackslashDoubleQuote');
         }
-
-    }//end processFunctionCall()
+    }
 
 
     /**
@@ -174,8 +172,5 @@ class FunctionTSniff extends FunctionCall
         }
 
         return false;
-
-    }//end checkConcatString()
-
-
-}//end class
+    }
+}

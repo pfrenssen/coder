@@ -26,8 +26,7 @@ class MultiLineFunctionDeclarationUnitTest extends CoderSniffUnitTest
             38 => 3,
             41 => 2,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -43,8 +42,7 @@ class MultiLineFunctionDeclarationUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -59,8 +57,5 @@ class MultiLineFunctionDeclarationUnitTest extends CoderSniffUnitTest
         }
 
         return false;
-
-    }//end shouldSkipTest()
-
-
-}//end class
+    }
+}

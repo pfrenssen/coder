@@ -36,8 +36,7 @@ class GetRequestDataSniff implements Sniff
     public function register()
     {
         return [T_VARIABLE];
-
-    }//end register()
+    }
 
 
     /**
@@ -100,8 +99,5 @@ class GetRequestDataSniff implements Sniff
 
         $error .= ' instead';
         $phpcsFile->addError($error, $stackPtr, $type, $data);
-
-    }//end process()
-
-
-}//end class
+    }
+}

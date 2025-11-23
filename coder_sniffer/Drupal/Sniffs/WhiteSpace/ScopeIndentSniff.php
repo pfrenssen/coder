@@ -115,8 +115,7 @@ class ScopeIndentSniff implements Sniff
         }
 
         return [T_OPEN_TAG];
-
-    }//end register()
+    }
 
 
     /**
@@ -166,7 +165,7 @@ class ScopeIndentSniff implements Sniff
 
         if ($this->debug === true) {
             $line = $tokens[$stackPtr]['line'];
-            echo "Start with token $stackPtr on line $line with indent $currentIndent".PHP_EOL;
+            echo "Start with token $stackPtr on line $line with indent $currentIndent" . PHP_EOL;
         }
 
         if (empty($this->ignoreIndentation) === true) {
@@ -199,7 +198,7 @@ class ScopeIndentSniff implements Sniff
                 $value = $tokens[$i]['sniffPropertyValue'];
                 if ($value === 'true') {
                     $value = true;
-                } else if ($value === 'false') {
+                } elseif ($value === 'false') {
                     $value = false;
                 } else {
                     $value = (bool) $value;
@@ -215,7 +214,7 @@ class ScopeIndentSniff implements Sniff
                         $value = 'false';
                     }
 
-                    echo "* token $i on line $line set exact flag to $value *".PHP_EOL;
+                    echo "* token $i on line $line set exact flag to $value *" . PHP_EOL;
                 }
             }//end if
 
@@ -238,8 +237,8 @@ class ScopeIndentSniff implements Sniff
                 if ($this->debug === true) {
                     $line = $tokens[$i]['line'];
                     $type = $tokens[$disableExactEnd]['type'];
-                    echo "Opening parenthesis found on line $line".PHP_EOL;
-                    echo "\t=> disabling exact indent checking until $disableExactEnd ($type)".PHP_EOL;
+                    echo "Opening parenthesis found on line $line" . PHP_EOL;
+                    echo "\t=> disabling exact indent checking until $disableExactEnd ($type)" . PHP_EOL;
                 }
             }
 
@@ -279,7 +278,7 @@ class ScopeIndentSniff implements Sniff
 
                 if ($this->debug === true) {
                     $line = $tokens[$i]['line'];
-                    echo "Closing parenthesis found on line $line".PHP_EOL;
+                    echo "Closing parenthesis found on line $line" . PHP_EOL;
                 }
 
                 $parenOpener = $tokens[$parenCloser]['parenthesis_opener'];
@@ -293,7 +292,7 @@ class ScopeIndentSniff implements Sniff
                         $parens = key($parens);
                         if ($this->debug === true) {
                             $line = $tokens[$parens]['line'];
-                            echo "\t* token has nested parenthesis $parens on line $line *".PHP_EOL;
+                            echo "\t* token has nested parenthesis $parens on line $line *" . PHP_EOL;
                         }
                     }
 
@@ -309,20 +308,20 @@ class ScopeIndentSniff implements Sniff
                         if ($this->debug === true) {
                             $line = $tokens[$condition]['line'];
                             $type = $tokens[$condition]['type'];
-                            echo "\t* token is inside condition $condition ($type) on line $line *".PHP_EOL;
+                            echo "\t* token is inside condition $condition ($type) on line $line *" . PHP_EOL;
                         }
                     }
 
                     if ($parens > $condition) {
                         if ($this->debug === true) {
-                            echo "\t* using parenthesis *".PHP_EOL;
+                            echo "\t* using parenthesis *" . PHP_EOL;
                         }
 
                         $parenOpener = $parens;
                         $condition   = 0;
-                    } else if ($condition > 0) {
+                    } elseif ($condition > 0) {
                         if ($this->debug === true) {
-                            echo "\t* using condition *".PHP_EOL;
+                            echo "\t* using condition *" . PHP_EOL;
                         }
 
                         $parenOpener = $condition;
@@ -336,14 +335,14 @@ class ScopeIndentSniff implements Sniff
 
                     if ($condition > 0 && $lastOpenTagCondition === $condition) {
                         if ($this->debug === true) {
-                            echo "\t* open tag is inside condition; using open tag *".PHP_EOL;
+                            echo "\t* open tag is inside condition; using open tag *" . PHP_EOL;
                         }
 
                         $first = $phpcsFile->findFirstOnLine([T_WHITESPACE, T_INLINE_HTML], $lastOpenTag, true);
                         if ($this->debug === true) {
                             $line = $tokens[$first]['line'];
                             $type = $tokens[$first]['type'];
-                            echo "\t* first token on line $line is $first ($type) *".PHP_EOL;
+                            echo "\t* first token on line $line is $first ($type) *" . PHP_EOL;
                         }
 
                         $checkIndent = ($tokens[$first]['column'] - 1);
@@ -355,9 +354,9 @@ class ScopeIndentSniff implements Sniff
 
                         if ($this->debug === true) {
                             $type = $tokens[$lastOpenTag]['type'];
-                            echo "\t=> checking indent of $checkIndent; main indent set to $currentIndent by token $lastOpenTag ($type)".PHP_EOL;
+                            echo "\t=> checking indent of $checkIndent; main indent set to $currentIndent by token $lastOpenTag ($type)" . PHP_EOL;
                         }
-                    } else if ($condition > 0
+                    } elseif ($condition > 0
                         && isset($tokens[$condition]['scope_opener']) === true
                         && isset($setIndents[$tokens[$condition]['scope_opener']]) === true
                     ) {
@@ -370,7 +369,7 @@ class ScopeIndentSniff implements Sniff
 
                         if ($this->debug === true) {
                             $type = $tokens[$condition]['type'];
-                            echo "\t=> checking indent of $checkIndent; main indent set to $currentIndent by token $condition ($type)".PHP_EOL;
+                            echo "\t=> checking indent of $checkIndent; main indent set to $currentIndent by token $condition ($type)" . PHP_EOL;
                         }
                     } else {
                         $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $parenOpener, true);
@@ -383,7 +382,7 @@ class ScopeIndentSniff implements Sniff
                         if ($this->debug === true) {
                             $line = $tokens[$first]['line'];
                             $type = $tokens[$first]['type'];
-                            echo "\t* first token on line $line is $first ($type) *".PHP_EOL;
+                            echo "\t* first token on line $line is $first ($type) *" . PHP_EOL;
                         }
 
                         if ($first === $tokens[$parenCloser]['parenthesis_opener']
@@ -395,8 +394,8 @@ class ScopeIndentSniff implements Sniff
                             if ($this->debug === true) {
                                 $line = $tokens[$first]['line'];
                                 $type = $tokens[$first]['type'];
-                                echo "\t* first token is the parenthesis opener *".PHP_EOL;
-                                echo "\t* amended first token is $first ($type) on line $line *".PHP_EOL;
+                                echo "\t* first token is the parenthesis opener *" . PHP_EOL;
+                                echo "\t* amended first token is $first ($type) on line $line *" . PHP_EOL;
                             }
                         }
 
@@ -406,7 +405,7 @@ class ScopeIndentSniff implements Sniff
                             if ($this->debug === true) {
                                 $line = $tokens[$prev]['line'];
                                 $type = $tokens[$prev]['type'];
-                                echo "\t* previous is $type on line $line *".PHP_EOL;
+                                echo "\t* previous is $type on line $line *" . PHP_EOL;
                             }
 
                             $first = $phpcsFile->findFirstOnLine([T_WHITESPACE, T_INLINE_HTML], $prev, true);
@@ -420,7 +419,7 @@ class ScopeIndentSniff implements Sniff
                             if ($this->debug === true) {
                                 $line = $tokens[$first]['line'];
                                 $type = $tokens[$first]['type'];
-                                echo "\t* amended first token is $first ($type) on line $line *".PHP_EOL;
+                                echo "\t* amended first token is $first ($type) on line $line *" . PHP_EOL;
                             }
                         }//end if
 
@@ -428,7 +427,7 @@ class ScopeIndentSniff implements Sniff
                             && $tokens[$first]['scope_closer'] === $first
                         ) {
                             if ($this->debug === true) {
-                                echo "\t* first token is a scope closer *".PHP_EOL;
+                                echo "\t* first token is a scope closer *" . PHP_EOL;
                             }
 
                             if (isset($tokens[$first]['scope_condition']) === true) {
@@ -449,7 +448,7 @@ class ScopeIndentSniff implements Sniff
 
                                 if ($this->debug === true) {
                                     $type = $tokens[$first]['type'];
-                                    echo "\t=> indent set to $currentIndent by token $first ($type)".PHP_EOL;
+                                    echo "\t=> indent set to $currentIndent by token $first ($type)" . PHP_EOL;
                                 }
                             }//end if
                         } else {
@@ -464,12 +463,12 @@ class ScopeIndentSniff implements Sniff
 
                             if ($this->debug === true) {
                                 $type = $tokens[$first]['type'];
-                                echo "\t=> checking indent of $checkIndent; main indent set to $currentIndent by token $first ($type)".PHP_EOL;
+                                echo "\t=> checking indent of $checkIndent; main indent set to $currentIndent by token $first ($type)" . PHP_EOL;
                             }
                         }//end if
                     }//end if
-                } else if ($this->debug === true) {
-                    echo "\t * ignoring single-line definition *".PHP_EOL;
+                } elseif ($this->debug === true) {
+                    echo "\t * ignoring single-line definition *" . PHP_EOL;
                 }//end if
             }//end if
 
@@ -487,7 +486,7 @@ class ScopeIndentSniff implements Sniff
 
                 if ($this->debug === true) {
                     $line = $tokens[$arrayCloser]['line'];
-                    echo "Closing short array bracket found on line $line".PHP_EOL;
+                    echo "Closing short array bracket found on line $line" . PHP_EOL;
                 }
 
                 $arrayOpener = $tokens[$arrayCloser]['bracket_opener'];
@@ -498,7 +497,7 @@ class ScopeIndentSniff implements Sniff
                     if ($this->debug === true) {
                         $line = $tokens[$first]['line'];
                         $type = $tokens[$first]['type'];
-                        echo "\t* first token on line $line is $first ($type) *".PHP_EOL;
+                        echo "\t* first token on line $line is $first ($type) *" . PHP_EOL;
                     }
 
                     if ($first === $tokens[$arrayCloser]['bracket_opener']) {
@@ -513,7 +512,7 @@ class ScopeIndentSniff implements Sniff
                         if ($this->debug === true) {
                             $line = $tokens[$prev]['line'];
                             $type = $tokens[$prev]['type'];
-                            echo "\t* previous is $type on line $line *".PHP_EOL;
+                            echo "\t* previous is $type on line $line *" . PHP_EOL;
                         }
 
                         $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $prev, true);
@@ -522,9 +521,9 @@ class ScopeIndentSniff implements Sniff
                         if ($this->debug === true) {
                             $line = $tokens[$first]['line'];
                             $type = $tokens[$first]['type'];
-                            echo "\t* amended first token is $first ($type) on line $line *".PHP_EOL;
+                            echo "\t* amended first token is $first ($type) on line $line *" . PHP_EOL;
                         }
-                    } else if ($tokens[$first]['code'] === T_WHITESPACE) {
+                    } elseif ($tokens[$first]['code'] === T_WHITESPACE) {
                         $first = $phpcsFile->findNext(T_WHITESPACE, ($first + 1), null, true);
                     }
 
@@ -540,13 +539,13 @@ class ScopeIndentSniff implements Sniff
                         // been processed and set the indent level correctly, so
                         // don't adjust it again.
                         if ($this->debug === true) {
-                            echo "\t* first token is a scope closer; ignoring closing short array bracket *".PHP_EOL;
+                            echo "\t* first token is a scope closer; ignoring closing short array bracket *" . PHP_EOL;
                         }
 
                         if (isset($setIndents[$first]) === true) {
                             $currentIndent = $setIndents[$first];
                             if ($this->debug === true) {
-                                echo "\t=> indent reset to $currentIndent".PHP_EOL;
+                                echo "\t=> indent reset to $currentIndent" . PHP_EOL;
                             }
                         }
                     } else {
@@ -561,11 +560,11 @@ class ScopeIndentSniff implements Sniff
 
                         if ($this->debug === true) {
                             $type = $tokens[$first]['type'];
-                            echo "\t=> checking indent of $checkIndent; main indent set to $currentIndent by token $first ($type)".PHP_EOL;
+                            echo "\t=> checking indent of $checkIndent; main indent set to $currentIndent by token $first ($type)" . PHP_EOL;
                         }
                     }//end if
-                } else if ($this->debug === true) {
-                    echo "\t * ignoring single-line definition *".PHP_EOL;
+                } elseif ($this->debug === true) {
+                    echo "\t * ignoring single-line definition *" . PHP_EOL;
                 }//end if
             }//end if
 
@@ -603,7 +602,7 @@ class ScopeIndentSniff implements Sniff
                     if ($this->debug === true) {
                         $line = $tokens[$checkToken]['line'];
                         $type = $tokens[$checkToken]['type'];
-                        echo "Indent adjusted to $length for $type on line $line".PHP_EOL;
+                        echo "Indent adjusted to $length for $type on line $line" . PHP_EOL;
                     }
 
                     $adjustments[$checkToken] = $adjustments[$first];
@@ -611,7 +610,7 @@ class ScopeIndentSniff implements Sniff
                     if ($this->debug === true) {
                         $line = $tokens[$checkToken]['line'];
                         $type = $tokens[$checkToken]['type'];
-                        echo "\t=> add adjustment of ".$adjustments[$checkToken]." for token $checkToken ($type) on line $line".PHP_EOL;
+                        echo "\t=> add adjustment of " . $adjustments[$checkToken] . " for token $checkToken ($type) on line $line" . PHP_EOL;
                     }
                 }//end if
             }//end if
@@ -635,7 +634,7 @@ class ScopeIndentSniff implements Sniff
                         $line = $tokens[$checkToken]['line'];
                     }
 
-                    echo "Close scope ($type) on line $line".PHP_EOL;
+                    echo "Close scope ($type) on line $line" . PHP_EOL;
                 }
 
                 $scopeCloser = $checkToken;
@@ -647,7 +646,7 @@ class ScopeIndentSniff implements Sniff
                 if ($this->debug === true) {
                     $line = $tokens[$conditionToken]['line'];
                     $type = $tokens[$conditionToken]['type'];
-                    echo "\t=> removed open scope $conditionToken ($type) on line $line".PHP_EOL;
+                    echo "\t=> removed open scope $conditionToken ($type) on line $line" . PHP_EOL;
                 }
 
                 if (isset($tokens[$scopeCloser]['scope_condition']) === true) {
@@ -655,7 +654,7 @@ class ScopeIndentSniff implements Sniff
                     if ($this->debug === true) {
                         $line = $tokens[$first]['line'];
                         $type = $tokens[$first]['type'];
-                        echo "\t* first token is $first ($type) on line $line *".PHP_EOL;
+                        echo "\t* first token is $first ($type) on line $line *" . PHP_EOL;
                     }
 
                     while ($tokens[$first]['code'] === T_CONSTANT_ENCAPSED_STRING
@@ -665,7 +664,7 @@ class ScopeIndentSniff implements Sniff
                         if ($this->debug === true) {
                             $line = $tokens[$first]['line'];
                             $type = $tokens[$first]['type'];
-                            echo "\t* found multi-line string; amended first token is $first ($type) on line $line *".PHP_EOL;
+                            echo "\t* found multi-line string; amended first token is $first ($type) on line $line *" . PHP_EOL;
                         }
                     }
 
@@ -678,7 +677,7 @@ class ScopeIndentSniff implements Sniff
 
                     if ($this->debug === true) {
                         $type = $tokens[$scopeCloser]['type'];
-                        echo "\t=> indent set to $currentIndent by token $scopeCloser ($type)".PHP_EOL;
+                        echo "\t=> indent set to $currentIndent by token $scopeCloser ($type)" . PHP_EOL;
                     }
 
                     // We only check the indent of scope closers if they are
@@ -731,8 +730,8 @@ class ScopeIndentSniff implements Sniff
                     if ($this->debug === true) {
                         $line = $tokens[$i]['line'];
                         $type = $tokens[$lastOpener]['type'];
-                        echo "Shared closer found on line $line".PHP_EOL;
-                        echo "\t=> indent set to $currentIndent by token $lastOpener ($type)".PHP_EOL;
+                        echo "Shared closer found on line $line" . PHP_EOL;
+                        echo "\t=> indent set to $currentIndent by token $lastOpener ($type)" . PHP_EOL;
                     }
                 }
 
@@ -746,8 +745,8 @@ class ScopeIndentSniff implements Sniff
 
                     if ($this->debug === true) {
                         $line = $tokens[$i]['line'];
-                        echo "Closure found on line $line".PHP_EOL;
-                        echo "\t=> checking indent of $checkIndent; main indent remains at $currentIndent".PHP_EOL;
+                        echo "Closure found on line $line" . PHP_EOL;
+                        echo "\t=> checking indent of $checkIndent; main indent remains at $currentIndent" . PHP_EOL;
                     }
                 }
             }//end if
@@ -780,7 +779,7 @@ class ScopeIndentSniff implements Sniff
                         if ($this->debug === true) {
                             $line = $tokens[$checkToken]['line'];
                             $type = $tokens[$checkToken]['type'];
-                            echo "\t* method prefix ($type) found on line $line; indent set to exact *".PHP_EOL;
+                            echo "\t* method prefix ($type) found on line $line; indent set to exact *" . PHP_EOL;
                         }
 
                         $exact = true;
@@ -950,7 +949,7 @@ class ScopeIndentSniff implements Sniff
                 if ($this->debug === true) {
                     $line    = $tokens[$checkToken]['line'];
                     $message = vsprintf($error, $data);
-                    echo "[Line $line] $message".PHP_EOL;
+                    echo "[Line $line] $message" . PHP_EOL;
                 }
 
                 // Assume the change would be applied and continue
@@ -965,7 +964,7 @@ class ScopeIndentSniff implements Sniff
                     if ($accepted === true && $this->debug === true) {
                         $line = $tokens[$checkToken]['line'];
                         $type = $tokens[$checkToken]['type'];
-                        echo "\t=> add adjustment of ".$adjustments[$checkToken]." for token $checkToken ($type) on line $line".PHP_EOL;
+                        echo "\t=> add adjustment of " . $adjustments[$checkToken] . " for token $checkToken ($type) on line $line" . PHP_EOL;
                     }
                 }
             }//end if
@@ -982,11 +981,11 @@ class ScopeIndentSniff implements Sniff
                     $line    = $tokens[$i]['line'];
                     $type    = $tokens[$disableExactEnd]['type'];
                     $endLine = $tokens[$disableExactEnd]['line'];
-                    echo "Opening short array bracket found on line $line".PHP_EOL;
+                    echo "Opening short array bracket found on line $line" . PHP_EOL;
                     if ($disableExactEnd === $tokens[$i]['bracket_closer']) {
-                        echo "\t=> disabling exact indent checking until $disableExactEnd ($type) on line $endLine".PHP_EOL;
+                        echo "\t=> disabling exact indent checking until $disableExactEnd ($type) on line $endLine" . PHP_EOL;
                     } else {
-                        echo "\t=> continuing to disable exact indent checking until $disableExactEnd ($type) on line $endLine".PHP_EOL;
+                        echo "\t=> continuing to disable exact indent checking until $disableExactEnd ($type) on line $endLine" . PHP_EOL;
                     }
                 }
             }
@@ -998,7 +997,7 @@ class ScopeIndentSniff implements Sniff
             ) {
                 if ($this->debug === true) {
                     $line = $tokens[$i]['line'];
-                    echo "Here/nowdoc found on line $line".PHP_EOL;
+                    echo "Here/nowdoc found on line $line" . PHP_EOL;
                 }
 
                 $i    = $phpcsFile->findNext([T_END_HEREDOC, T_END_NOWDOC], ($i + 1));
@@ -1010,7 +1009,7 @@ class ScopeIndentSniff implements Sniff
                 if ($this->debug === true) {
                     $line = $tokens[$i]['line'];
                     $type = $tokens[$i]['type'];
-                    echo "\t* skipping to token $i ($type) on line $line *".PHP_EOL;
+                    echo "\t* skipping to token $i ($type) on line $line *" . PHP_EOL;
                 }
 
                 continue;
@@ -1042,7 +1041,7 @@ class ScopeIndentSniff implements Sniff
             ) {
                 if ($this->debug === true) {
                     $line = $tokens[$i]['line'];
-                    echo "Open PHP tag found on line $line".PHP_EOL;
+                    echo "Open PHP tag found on line $line" . PHP_EOL;
                 }
 
                 if ($checkToken === null) {
@@ -1064,7 +1063,7 @@ class ScopeIndentSniff implements Sniff
 
                 if ($this->debug === true) {
                     $type = $tokens[$i]['type'];
-                    echo "\t=> indent set to $currentIndent by token $i ($type)".PHP_EOL;
+                    echo "\t=> indent set to $currentIndent by token $i ($type)" . PHP_EOL;
                 }
 
                 continue;
@@ -1075,7 +1074,7 @@ class ScopeIndentSniff implements Sniff
             if ($tokens[$i]['code'] === T_CLOSE_TAG) {
                 if ($this->debug === true) {
                     $line = $tokens[$i]['line'];
-                    echo "Close PHP tag found on line $line".PHP_EOL;
+                    echo "Close PHP tag found on line $line" . PHP_EOL;
                 }
 
                 if ($tokens[$lastOpenTag]['line'] !== $tokens[$i]['line']) {
@@ -1099,7 +1098,7 @@ class ScopeIndentSniff implements Sniff
 
                 if ($this->debug === true) {
                     $type = $tokens[$i]['type'];
-                    echo "\t=> indent set to $currentIndent by token $i ($type)".PHP_EOL;
+                    echo "\t=> indent set to $currentIndent by token $i ($type)" . PHP_EOL;
                 }
 
                 continue;
@@ -1112,7 +1111,7 @@ class ScopeIndentSniff implements Sniff
                     if ($this->debug === true) {
                         $type = str_replace('_', ' ', strtolower(substr($tokens[$i]['type'], 2)));
                         $line = $tokens[$i]['line'];
-                        echo "* ignoring single-line $type on line $line *".PHP_EOL;
+                        echo "* ignoring single-line $type on line $line *" . PHP_EOL;
                     }
 
                     $i = $closer;
@@ -1122,14 +1121,14 @@ class ScopeIndentSniff implements Sniff
                 if ($this->debug === true) {
                     $type = str_replace('_', ' ', strtolower(substr($tokens[$i]['type'], 2)));
                     $line = $tokens[$i]['line'];
-                    echo "Open $type on line $line".PHP_EOL;
+                    echo "Open $type on line $line" . PHP_EOL;
                 }
 
                 $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $i, true);
                 if ($this->debug === true) {
                     $line = $tokens[$first]['line'];
                     $type = $tokens[$first]['type'];
-                    echo "\t* first token is $first ($type) on line $line *".PHP_EOL;
+                    echo "\t* first token is $first ($type) on line $line *" . PHP_EOL;
                 }
 
                 while ($tokens[$first]['code'] === T_CONSTANT_ENCAPSED_STRING
@@ -1139,7 +1138,7 @@ class ScopeIndentSniff implements Sniff
                     if ($this->debug === true) {
                         $line = $tokens[$first]['line'];
                         $type = $tokens[$first]['type'];
-                        echo "\t* found multi-line string; amended first token is $first ($type) on line $line *".PHP_EOL;
+                        echo "\t* found multi-line string; amended first token is $first ($type) on line $line *" . PHP_EOL;
                     }
                 }
 
@@ -1152,7 +1151,7 @@ class ScopeIndentSniff implements Sniff
                     $conditionToken = $tokens[$i]['scope_condition'];
                     $conditionLine  = $tokens[$conditionToken]['line'];
                     $conditionType  = $tokens[$conditionToken]['type'];
-                    echo "\t=> added open scope $closerToken ($closerType) on line $closerLine, pointing to condition $conditionToken ($conditionType) on line $conditionLine".PHP_EOL;
+                    echo "\t=> added open scope $closerToken ($closerType) on line $closerLine, pointing to condition $conditionToken ($conditionType) on line $conditionLine" . PHP_EOL;
                 }
 
                 if (isset($adjustments[$first]) === true) {
@@ -1166,7 +1165,7 @@ class ScopeIndentSniff implements Sniff
 
                 if ($this->debug === true) {
                     $type = $tokens[$i]['type'];
-                    echo "\t=> indent set to $currentIndent by token $i ($type)".PHP_EOL;
+                    echo "\t=> indent set to $currentIndent by token $i ($type)" . PHP_EOL;
                 }
 
                 continue;
@@ -1182,7 +1181,7 @@ class ScopeIndentSniff implements Sniff
                     if ($this->debug === true) {
                         $line = $tokens[$i]['line'];
                         $type = $tokens[$i]['type'];
-                        echo "* ignoring single-line $type on line $line *".PHP_EOL;
+                        echo "* ignoring single-line $type on line $line *" . PHP_EOL;
                     }
 
                     $i = $closer;
@@ -1193,7 +1192,7 @@ class ScopeIndentSniff implements Sniff
                 if ($condition === T_FN) {
                     if ($this->debug === true) {
                         $line = $tokens[$tokens[$i]['scope_condition']]['line'];
-                        echo "* ignoring arrow function on line $line *".PHP_EOL;
+                        echo "* ignoring arrow function on line $line *" . PHP_EOL;
                     }
 
                     $i = $closer;
@@ -1206,7 +1205,7 @@ class ScopeIndentSniff implements Sniff
                     if ($this->debug === true) {
                         $line = $tokens[$i]['line'];
                         $type = $tokens[$tokens[$i]['scope_condition']]['type'];
-                        echo "Open scope ($type) on line $line".PHP_EOL;
+                        echo "Open scope ($type) on line $line" . PHP_EOL;
                     }
 
                     $currentIndent += $this->indent;
@@ -1219,12 +1218,12 @@ class ScopeIndentSniff implements Sniff
                         $conditionToken = $tokens[$i]['scope_condition'];
                         $conditionLine  = $tokens[$conditionToken]['line'];
                         $conditionType  = $tokens[$conditionToken]['type'];
-                        echo "\t=> added open scope $closerToken ($closerType) on line $closerLine, pointing to condition $conditionToken ($conditionType) on line $conditionLine".PHP_EOL;
+                        echo "\t=> added open scope $closerToken ($closerType) on line $closerLine, pointing to condition $conditionToken ($conditionType) on line $conditionLine" . PHP_EOL;
                     }
 
                     if ($this->debug === true) {
                         $type = $tokens[$i]['type'];
-                        echo "\t=> indent set to $currentIndent by token $i ($type)".PHP_EOL;
+                        echo "\t=> indent set to $currentIndent by token $i ($type)" . PHP_EOL;
                     }
 
                     continue;
@@ -1243,7 +1242,7 @@ class ScopeIndentSniff implements Sniff
                 if ($this->debug === true) {
                     $type = str_replace('_', ' ', strtolower(substr($tokens[$tokens[$i]['scope_condition']]['type'], 2)));
                     $line = $tokens[$i]['line'];
-                    echo "Close $type on line $line".PHP_EOL;
+                    echo "Close $type on line $line" . PHP_EOL;
                 }
 
                 $prev = false;
@@ -1257,7 +1256,7 @@ class ScopeIndentSniff implements Sniff
                     $parens = key($parens);
                     if ($this->debug === true) {
                         $line = $tokens[$parens]['line'];
-                        echo "\t* token has nested parenthesis $parens on line $line *".PHP_EOL;
+                        echo "\t* token has nested parenthesis $parens on line $line *" . PHP_EOL;
                     }
                 }
 
@@ -1271,20 +1270,20 @@ class ScopeIndentSniff implements Sniff
                     if ($this->debug === true) {
                         $line = $tokens[$condition]['line'];
                         $type = $tokens[$condition]['type'];
-                        echo "\t* token is inside condition $condition ($type) on line $line *".PHP_EOL;
+                        echo "\t* token is inside condition $condition ($type) on line $line *" . PHP_EOL;
                     }
                 }
 
                 if ($parens > $condition) {
                     if ($this->debug === true) {
-                        echo "\t* using parenthesis *".PHP_EOL;
+                        echo "\t* using parenthesis *" . PHP_EOL;
                     }
 
                     $prev      = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($parens - 1), null, true);
                     $condition = 0;
-                } else if ($condition > 0) {
+                } elseif ($condition > 0) {
                     if ($this->debug === true) {
-                        echo "\t* using condition *".PHP_EOL;
+                        echo "\t* using condition *" . PHP_EOL;
                     }
 
                     $prev   = $condition;
@@ -1296,7 +1295,7 @@ class ScopeIndentSniff implements Sniff
                     if ($prev === false) {
                         $prev = $i;
                         if ($this->debug === true) {
-                            echo "\t* could not find a previous T_EQUAL or T_RETURN token; will use current token *".PHP_EOL;
+                            echo "\t* could not find a previous T_EQUAL or T_RETURN token; will use current token *" . PHP_EOL;
                         }
                     }
                 }
@@ -1304,14 +1303,14 @@ class ScopeIndentSniff implements Sniff
                 if ($this->debug === true) {
                     $line = $tokens[$prev]['line'];
                     $type = $tokens[$prev]['type'];
-                    echo "\t* previous token is $type on line $line *".PHP_EOL;
+                    echo "\t* previous token is $type on line $line *" . PHP_EOL;
                 }
 
                 $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $prev, true);
                 if ($this->debug === true) {
                     $line = $tokens[$first]['line'];
                     $type = $tokens[$first]['type'];
-                    echo "\t* first token on line $line is $first ($type) *".PHP_EOL;
+                    echo "\t* first token on line $line is $first ($type) *" . PHP_EOL;
                 }
 
                 $prev = $phpcsFile->findStartOfStatement($first);
@@ -1320,14 +1319,14 @@ class ScopeIndentSniff implements Sniff
                     if ($this->debug === true) {
                         $line = $tokens[$prev]['line'];
                         $type = $tokens[$prev]['type'];
-                        echo "\t* amended previous is $type on line $line *".PHP_EOL;
+                        echo "\t* amended previous is $type on line $line *" . PHP_EOL;
                     }
 
                     $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $prev, true);
                     if ($this->debug === true) {
                         $line = $tokens[$first]['line'];
                         $type = $tokens[$first]['type'];
-                        echo "\t* amended first token is $first ($type) on line $line *".PHP_EOL;
+                        echo "\t* amended first token is $first ($type) on line $line *" . PHP_EOL;
                     }
                 }
 
@@ -1340,13 +1339,13 @@ class ScopeIndentSniff implements Sniff
                     && $tokens[$first]['scope_closer'] === $first
                 ) {
                     if ($this->debug === true) {
-                        echo "\t* first token is a scope closer *".PHP_EOL;
+                        echo "\t* first token is a scope closer *" . PHP_EOL;
                     }
 
                     if ($condition === 0 || $tokens[$condition]['scope_opener'] < $first) {
                         $currentIndent = $setIndents[$first];
-                    } else if ($this->debug === true) {
-                        echo "\t* ignoring scope closer *".PHP_EOL;
+                    } elseif ($this->debug === true) {
+                        echo "\t* ignoring scope closer *" . PHP_EOL;
                     }
                 }
 
@@ -1356,15 +1355,14 @@ class ScopeIndentSniff implements Sniff
 
                 if ($this->debug === true) {
                     $type = $tokens[$first]['type'];
-                    echo "\t=> indent set to $currentIndent by token $first ($type)".PHP_EOL;
+                    echo "\t=> indent set to $currentIndent by token $first ($type)" . PHP_EOL;
                 }
             }//end if
         }//end for
 
         // Don't process the rest of the file.
         return $phpcsFile->numTokens;
-
-    }//end process()
+    }
 
 
     /**
@@ -1394,7 +1392,7 @@ class ScopeIndentSniff implements Sniff
                 $numTabs = (int) floor($length / $this->tabWidth);
                 if ($numTabs > 0) {
                     $numSpaces = ($length - ($numTabs * $this->tabWidth));
-                    $padding   = str_repeat("\t", $numTabs).str_repeat(' ', $numSpaces);
+                    $padding   = str_repeat("\t", $numTabs) . str_repeat(' ', $numSpaces);
                 }
             } else {
                 $padding = str_repeat(' ', $length);
@@ -1403,7 +1401,7 @@ class ScopeIndentSniff implements Sniff
 
         if ($tokens[$stackPtr]['column'] === 1) {
             $trimmed  = ltrim($tokens[$stackPtr]['content']);
-            $accepted = $phpcsFile->fixer->replaceToken($stackPtr, $padding.$trimmed);
+            $accepted = $phpcsFile->fixer->replaceToken($stackPtr, $padding . $trimmed);
         } else {
             // Easier to just replace the entire indent.
             $accepted = $phpcsFile->fixer->replaceToken(($stackPtr - 1), $padding);
@@ -1431,7 +1429,7 @@ class ScopeIndentSniff implements Sniff
                     if ($this->tabIndent === true) {
                         $numTabs   = (int) floor($padding / $this->tabWidth);
                         $numSpaces = ($padding - ($numTabs * $this->tabWidth));
-                        $padding   = str_repeat("\t", $numTabs).str_repeat(' ', $numSpaces);
+                        $padding   = str_repeat("\t", $numTabs) . str_repeat(' ', $numSpaces);
                     } else {
                         $padding = str_repeat(' ', $padding);
                     }
@@ -1444,14 +1442,11 @@ class ScopeIndentSniff implements Sniff
                     $length = strlen($padding);
                     $line   = $tokens[$x]['line'];
                     $type   = $tokens[$x]['type'];
-                    echo "\t=> Indent adjusted to $length for $type on line $line".PHP_EOL;
+                    echo "\t=> Indent adjusted to $length for $type on line $line" . PHP_EOL;
                 }
             }//end for
         }//end if
 
         return true;
-
-    }//end adjustIndent()
-
-
-}//end class
+    }
+}

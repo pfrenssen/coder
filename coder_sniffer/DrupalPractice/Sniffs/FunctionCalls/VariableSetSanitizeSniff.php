@@ -32,8 +32,7 @@ class VariableSetSanitizeSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['variable_set'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -73,8 +72,5 @@ class VariableSetSanitizeSniff extends FunctionCall
             $data    = [$tokens[$argument['start']]['content']];
             $phpcsFile->addWarning($warning, $argument['start'], 'VariableSet', $data);
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

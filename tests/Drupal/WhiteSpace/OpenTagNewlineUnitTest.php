@@ -21,8 +21,7 @@ class OpenTagNewlineUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [1 => 1];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -38,8 +37,5 @@ class OpenTagNewlineUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

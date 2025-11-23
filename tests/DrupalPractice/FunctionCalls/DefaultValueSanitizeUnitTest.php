@@ -27,8 +27,7 @@ class DefaultValueSanitizeUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -44,8 +43,5 @@ class DefaultValueSanitizeUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [6 => 1];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

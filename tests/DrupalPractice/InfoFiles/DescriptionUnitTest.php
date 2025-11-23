@@ -21,8 +21,7 @@ class DescriptionUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -38,15 +37,14 @@ class DescriptionUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         switch ($testFile) {
-        case 'description_missing.info.yml':
-            return [1 => 1];
-        case 'description_empty.info.yml':
-            return [1 => 1];
+            case 'description_missing.info.yml':
+                return [1 => 1];
+            case 'description_empty.info.yml':
+                return [1 => 1];
         }
 
         return [];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -59,11 +57,8 @@ class DescriptionUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase): array
     {
         return [
-            __DIR__.'/description_empty.info.yml',
-            __DIR__.'/description_missing.info.yml',
+            __DIR__ . '/description_empty.info.yml',
+            __DIR__ . '/description_missing.info.yml',
         ];
-
-    }//end getTestFiles()
-
-
-}//end class
+    }
+}

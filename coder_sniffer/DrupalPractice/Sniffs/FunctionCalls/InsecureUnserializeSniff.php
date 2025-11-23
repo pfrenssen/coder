@@ -31,8 +31,7 @@ class InsecureUnserializeSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['unserialize'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -81,8 +80,7 @@ class InsecureUnserializeSniff extends FunctionCall
         if ($tokens[$allowedClassesValue]['code'] === T_TRUE) {
             $this->fail($phpcsFile, $allowedClassesValue);
         }
-
-    }//end processFunctionCall()
+    }
 
 
     /**
@@ -96,8 +94,5 @@ class InsecureUnserializeSniff extends FunctionCall
     protected function fail(File $phpcsFile, int $position)
     {
         $phpcsFile->addError('unserialize() is insecure unless allowed classes are limited. Use a safe format like JSON or use the allowed_classes option.', $position, 'InsecureUnserialize');
-
-    }//end fail()
-
-
-}//end class
+    }
+}

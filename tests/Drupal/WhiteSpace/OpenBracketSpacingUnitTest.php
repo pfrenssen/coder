@@ -24,8 +24,7 @@ class OpenBracketSpacingUnitTest extends CoderSniffUnitTest
             3 => 1,
             5 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -41,8 +40,5 @@ class OpenBracketSpacingUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

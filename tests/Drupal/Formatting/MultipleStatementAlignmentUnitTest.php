@@ -31,8 +31,7 @@ class MultipleStatementAlignmentUnitTest extends CoderSniffUnitTest
             20 => 1,
             30 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -48,8 +47,5 @@ class MultipleStatementAlignmentUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

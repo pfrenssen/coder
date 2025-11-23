@@ -27,8 +27,7 @@ class HookInitCssUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -47,8 +46,7 @@ class HookInitCssUnitTest extends CoderSniffUnitTest
             7  => 1,
             14 => 1,
         ];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -60,9 +58,6 @@ class HookInitCssUnitTest extends CoderSniffUnitTest
      */
     protected function getTestFiles($testFileBase): array
     {
-        return [__DIR__.'/test.module'];
-
-    }//end getTestFiles()
-
-
-}//end class
+        return [__DIR__ . '/test.module'];
+    }
+}

@@ -33,8 +33,7 @@ class ExpectedExceptionSniff implements Sniff
     public function register()
     {
         return [T_DOC_COMMENT_TAG];
-
-    }//end register()
+    }
 
 
     /**
@@ -58,8 +57,5 @@ class ExpectedExceptionSniff implements Sniff
             $warning = '%s tags should not be used, use $this->setExpectedException() or $this->expectException() instead';
             $phpcsFile->addWarning($warning, $stackPtr, 'TagFound', [$content]);
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

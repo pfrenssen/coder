@@ -32,8 +32,7 @@ class FormStateInputSniff implements Sniff
     public function register()
     {
         return [T_VARIABLE];
-
-    }//end register()
+    }
 
 
     /**
@@ -53,8 +52,5 @@ class FormStateInputSniff implements Sniff
             $warning = 'Do not use the raw $form_state[\'input\'], use $form_state[\'values\'] instead where possible';
             $phpcsFile->addWarning($warning, $stackPtr, 'Input');
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

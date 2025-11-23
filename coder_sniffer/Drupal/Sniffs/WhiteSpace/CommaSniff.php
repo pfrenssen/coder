@@ -33,8 +33,7 @@ class CommaSniff implements Sniff
     public function register()
     {
         return [T_COMMA];
-
-    }//end register()
+    }
 
 
     /**
@@ -78,8 +77,5 @@ class CommaSniff implements Sniff
                 $phpcsFile->fixer->replaceToken(($stackPtr + 1), ' ');
             }
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

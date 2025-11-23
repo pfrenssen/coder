@@ -30,8 +30,7 @@ class FunctionTriggerErrorSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['trigger_error'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -48,7 +47,7 @@ class FunctionTriggerErrorSniff extends FunctionCall
      * @return void
      */
     public function processFunctionCall(
-        file $phpcsFile,
+        File $phpcsFile,
         $stackPtr,
         $openBracket,
         $closeBracket
@@ -177,13 +176,10 @@ class FunctionTriggerErrorSniff extends FunctionCall
             if (isset($crMatches[4]) === true && empty($crMatches[4]) === false) {
                 $error = "The url '%s' should not end with a period.";
                 $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorPeriodAfterSeeUrl', [$crLink]);
-            } else if (empty($crMatches) === true) {
+            } elseif (empty($crMatches) === true) {
                 $error = "The url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
                 $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrlFormat', [$crLink]);
             }
         }//end if
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

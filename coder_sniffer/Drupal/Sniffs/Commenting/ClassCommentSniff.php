@@ -38,8 +38,7 @@ class ClassCommentSniff implements Sniff
             T_TRAIT,
             T_ENUM,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -118,11 +117,11 @@ class ClassCommentSniff implements Sniff
                 $phpcsFile->fixer->beginChangeset();
                 $comment = '';
                 for ($i = $commentEnd; $tokens[$i]['code'] === T_COMMENT; $i--) {
-                    $comment = ' *'.ltrim($tokens[$i]['content'], '/* ').$comment;
+                    $comment = ' *' . ltrim($tokens[$i]['content'], '/* ') . $comment;
                     $phpcsFile->fixer->replaceToken($i, '');
                 }
 
-                $phpcsFile->fixer->replaceToken($commentEnd, "/**\n".rtrim($comment, "*/\n")."\n */");
+                $phpcsFile->fixer->replaceToken($commentEnd, "/**\n" . rtrim($comment, "*/\n") . "\n */");
                 $phpcsFile->fixer->endChangeset();
             }
 
@@ -167,8 +166,5 @@ class ClassCommentSniff implements Sniff
                 }
             }
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

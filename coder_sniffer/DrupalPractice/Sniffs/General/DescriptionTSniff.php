@@ -31,8 +31,7 @@ class DescriptionTSniff implements Sniff
     public function register()
     {
         return [T_CONSTANT_ENCAPSED_STRING];
-
-    }//end register()
+    }
 
 
     /**
@@ -71,8 +70,5 @@ class DescriptionTSniff implements Sniff
             $warning = '#description values usually have to run through t() for translation';
             $phpcsFile->addWarning($warning, $stringToken, 'DescriptionT');
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

@@ -35,8 +35,7 @@ class PropertyDeclarationSniff implements Sniff
     public function register()
     {
         return [T_VAR];
-
-    }//end register()
+    }
 
 
     /**
@@ -55,8 +54,5 @@ class PropertyDeclarationSniff implements Sniff
         if ($fix === true) {
             $phpcsFile->fixer->replaceToken($stackPtr, 'public');
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

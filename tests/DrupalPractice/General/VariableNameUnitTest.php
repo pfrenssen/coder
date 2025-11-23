@@ -30,8 +30,7 @@ class VariableNameUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -47,8 +46,5 @@ class VariableNameUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [11 => 1];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

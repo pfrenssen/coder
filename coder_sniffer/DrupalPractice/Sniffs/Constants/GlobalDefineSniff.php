@@ -32,8 +32,7 @@ class GlobalDefineSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['define'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -84,8 +83,5 @@ class GlobalDefineSniff extends FunctionCall
 
         $warning = 'Global constants should not be used, move it to a class or interface';
         $phpcsFile->addWarning($warning, $stackPtr, 'GlobalConstant');
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

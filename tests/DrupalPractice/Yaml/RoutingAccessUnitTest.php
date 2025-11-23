@@ -17,9 +17,8 @@ class RoutingAccessUnitTest extends CoderSniffUnitTest
      */
     protected function getTestFiles($testFileBase): array
     {
-        return [__DIR__.'/routing_access_test.routing.yml'];
-
-    }//end getTestFiles()
+        return [__DIR__ . '/routing_access_test.routing.yml'];
+    }
 
 
     /**
@@ -35,8 +34,7 @@ class RoutingAccessUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -55,8 +53,5 @@ class RoutingAccessUnitTest extends CoderSniffUnitTest
             7  => 1,
             28 => 1,
         ];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

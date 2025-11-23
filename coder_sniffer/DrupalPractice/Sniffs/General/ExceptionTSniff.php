@@ -32,8 +32,7 @@ class ExceptionTSniff implements Sniff
     public function register()
     {
         return [T_THROW];
-
-    }//end register()
+    }
 
 
     /**
@@ -64,8 +63,5 @@ class ExceptionTSniff implements Sniff
                 }
             }
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

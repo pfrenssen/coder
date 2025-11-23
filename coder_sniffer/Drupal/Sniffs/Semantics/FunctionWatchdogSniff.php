@@ -30,8 +30,7 @@ class FunctionWatchdogSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['watchdog'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -74,8 +73,5 @@ class FunctionWatchdogSniff extends FunctionCall
             $error = 'Concatenating translatable strings is not allowed, use placeholders instead and only one string literal';
             $phpcsFile->addError($error, $concatFound, 'Concat');
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

@@ -33,8 +33,7 @@ class EmptyLinesSniff implements Sniff
     public function register()
     {
         return [T_WHITESPACE];
-
-    }//end register()
+    }
 
 
     /**
@@ -60,8 +59,5 @@ class EmptyLinesSniff implements Sniff
             $error = 'More than 2 empty lines are not allowed';
             $phpcsFile->addError($error, ($stackPtr + 3), 'EmptyLines');
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

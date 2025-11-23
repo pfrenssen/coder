@@ -21,39 +21,38 @@ class FileCommentUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         switch ($testFile) {
-        case 'FileCommentUnitTest.inc':
-            return [1 => 1];
-        case 'FileCommentUnitTest.1.inc':
-            return [3 => 1];
-        case 'FileCommentUnitTest.2.inc':
-            return [4 => 1];
-        case 'FileCommentUnitTest.3.inc':
-            return [4 => 1];
-        case 'FileCommentUnitTest.4.inc':
-            return [3 => 1];
-        case 'FileCommentUnitTest.5.inc':
-            return [1 => 1];
-        case 'FileCommentUnitTest.6.inc':
-            return [3 => 1];
-        case 'FileCommentUnitTest.7.inc':
-            return [];
-        case 'FileCommentUnitTest.8.inc':
-            return [3 => 1];
-        case 'FileCommentUnitTest.9.inc':
-            return [3 => 1];
-        case 'FileCommentUnitTest.10.inc':
-            return [4 => 1];
-        case 'FileCommentUnitTest.11.inc':
-            return [4 => 1];
-        case 'FileCommentUnitTest.12.inc':
-            return [2 => 1];
-        case 'FileCommentUnitTest.13.inc':
-            return [3 => 1];
+            case 'FileCommentUnitTest.inc':
+                return [1 => 1];
+            case 'FileCommentUnitTest.1.inc':
+                return [3 => 1];
+            case 'FileCommentUnitTest.2.inc':
+                return [4 => 1];
+            case 'FileCommentUnitTest.3.inc':
+                return [4 => 1];
+            case 'FileCommentUnitTest.4.inc':
+                return [3 => 1];
+            case 'FileCommentUnitTest.5.inc':
+                return [1 => 1];
+            case 'FileCommentUnitTest.6.inc':
+                return [3 => 1];
+            case 'FileCommentUnitTest.7.inc':
+                return [];
+            case 'FileCommentUnitTest.8.inc':
+                return [3 => 1];
+            case 'FileCommentUnitTest.9.inc':
+                return [3 => 1];
+            case 'FileCommentUnitTest.10.inc':
+                return [4 => 1];
+            case 'FileCommentUnitTest.11.inc':
+                return [4 => 1];
+            case 'FileCommentUnitTest.12.inc':
+                return [2 => 1];
+            case 'FileCommentUnitTest.13.inc':
+                return [3 => 1];
         }//end switch
 
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -69,8 +68,5 @@ class FileCommentUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

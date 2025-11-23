@@ -32,8 +32,7 @@ class GlobalConstantSniff implements Sniff
     public function register()
     {
         return [T_CONST];
-
-    }//end register()
+    }
 
 
     /**
@@ -76,8 +75,5 @@ class GlobalConstantSniff implements Sniff
 
         $warning = 'Global constants should not be used, move it to a class or interface';
         $phpcsFile->addWarning($warning, $stackPtr, 'GlobalConstant');
-
-    }//end process()
-
-
-}//end class
+    }
+}

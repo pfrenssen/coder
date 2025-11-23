@@ -21,8 +21,7 @@ class ClassFilesUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -38,8 +37,7 @@ class ClassFilesUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -51,9 +49,6 @@ class ClassFilesUnitTest extends CoderSniffUnitTest
      */
     protected function getTestFiles($testFileBase): array
     {
-        return [__DIR__.'/drupal7/class_files.info'];
-
-    }//end getTestFiles()
-
-
-}//end class
+        return [__DIR__ . '/drupal7/class_files.info'];
+    }
+}

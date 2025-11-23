@@ -34,8 +34,7 @@ class TxtFileLineLengthSniff implements Sniff
     public function register()
     {
         return [T_INLINE_HTML];
-
-    }//end register()
+    }
 
 
     /**
@@ -81,8 +80,5 @@ class TxtFileLineLengthSniff implements Sniff
                 }
             }//end if
         }//end if
-
-    }//end process()
-
-
-}//end class
+    }
+}
