@@ -367,6 +367,12 @@ class BadUnitTest extends CoderSniffUnitTest
                 872 => 1,
                 876 => 2,
             ];
+        case 'CaseSemicolonUnitTest.inc':
+            return [
+                1  => 1,
+                13 => 1,
+                17 => 1,
+            ];
         case 'ClassCreateInstanceUnitTest.inc':
             return [
                 3  => 1,
