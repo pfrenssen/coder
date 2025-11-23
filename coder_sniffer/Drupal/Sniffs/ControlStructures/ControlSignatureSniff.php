@@ -301,7 +301,7 @@ class ControlSignatureSniff implements Sniff
             return;
         }
 
-        // Single space after closing brace.#
+        // Single space after closing brace.
         $found = 1;
         if ($tokens[($closer + 1)]['code'] !== T_WHITESPACE) {
             $found = 0;
