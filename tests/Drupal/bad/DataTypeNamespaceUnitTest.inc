@@ -7,7 +7,7 @@ use Some\Namespaced\TestClass;
 /**
  * Test.
  */
-class Test {
+class DataTypeNamespaceUnitTest {
 
   /**
    * Param and Return data types should be fully namespaced.

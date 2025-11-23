@@ -387,6 +387,7 @@ class BadUnitTest extends CoderSniffUnitTest
                 13 => 2,
                 14 => 2,
                 16 => 1,
+                26 => 1,
                 31 => 1,
             ];
         case 'DataTypeNamespaceUnitTest.inc':

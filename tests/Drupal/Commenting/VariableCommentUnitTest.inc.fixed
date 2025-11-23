@@ -58,7 +58,7 @@ class Test {
   /**
    * Property fooBar.
    *
-   * @var Foo|Bar|false|null
+   * @var \Foo|\Bar|false|null
    */
   public Foo|Bar|FALSE|NULL $fooBar;
 
@@ -84,7 +84,7 @@ class Test {
   /**
    * PHPStan constant wildcard.
    *
-   * @var Foo::*
+   * @var \Foo::*
    */
   protected string $constant;
 
