@@ -34,8 +34,7 @@ class FormErrorTSniff extends FunctionCall
             'form_set_error',
             'form_error',
         ];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -63,8 +62,5 @@ class FormErrorTSniff extends FunctionCall
             $warning = 'Form error messages are user facing text and must run through t() for translation';
             $phpcsFile->addWarning($warning, $argument['start'], 'ErrorMessage');
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

@@ -44,7 +44,7 @@ class TInHookSchemaSniff extends FunctionDefinition
 
         $fileName = substr(basename($phpcsFile->getFilename()), 0, -8);
         $tokens   = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['content'] !== ($fileName.'_schema')) {
+        if ($tokens[$stackPtr]['content'] !== ($fileName . '_schema')) {
             return;
         }
 
@@ -76,8 +76,5 @@ class TInHookSchemaSniff extends FunctionDefinition
                 $tokens[$functionPtr]['scope_closer']
             );
         }//end while
-
-    }//end processFunction()
-
-
-}//end class
+    }
+}

@@ -34,8 +34,7 @@ class ValidClassNameUnitTest extends CoderSniffUnitTest
             24 => 1,
             25 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -51,8 +50,5 @@ class ValidClassNameUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

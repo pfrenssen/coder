@@ -32,8 +32,7 @@ class RemoteAddressSniff implements Sniff
     public function register()
     {
         return [T_VARIABLE];
-
-    }//end register()
+    }
 
 
     /**
@@ -53,8 +52,5 @@ class RemoteAddressSniff implements Sniff
             $error = 'Use ip_address() or Drupal::request()->getClientIp() instead of $_SERVER[\'REMOTE_ADDR\']';
             $phpcsFile->addError($error, $stackPtr, 'RemoteAddress');
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

@@ -27,8 +27,7 @@ class DuplicateEntryUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [1 => 1];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -44,8 +43,7 @@ class DuplicateEntryUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -57,9 +55,6 @@ class DuplicateEntryUnitTest extends CoderSniffUnitTest
      */
     protected function getTestFiles($testFileBase): array
     {
-        return [__DIR__.'/drupal7/test.info'];
-
-    }//end getTestFiles()
-
-
-}//end class
+        return [__DIR__ . '/drupal7/test.info'];
+    }
+}

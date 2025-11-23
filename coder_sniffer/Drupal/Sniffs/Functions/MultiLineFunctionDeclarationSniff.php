@@ -26,7 +26,6 @@ use PHP_CodeSniffer\Util\Tokens;
 class MultiLineFunctionDeclarationSniff extends SquizFunctionDeclarationSniff
 {
 
-
     /**
      * The number of spaces code should be indented.
      *
@@ -53,8 +52,7 @@ class MultiLineFunctionDeclarationSniff extends SquizFunctionDeclarationSniff
         $sniff = new OpeningFunctionBraceKernighanRitchieSniff();
         $sniff->checkClosures = true;
         $sniff->process($phpcsFile, $stackPtr);
-
-    }//end processSingleLineDeclaration()
+    }
 
 
     /**
@@ -78,8 +76,7 @@ class MultiLineFunctionDeclarationSniff extends SquizFunctionDeclarationSniff
         }
 
         return true;
-
-    }//end isMultiLineDeclaration()
+    }
 
 
     /**
@@ -122,8 +119,5 @@ class MultiLineFunctionDeclarationSniff extends SquizFunctionDeclarationSniff
                 $phpcsFile->fixer->addContent($lastTrailingComma, ',');
             }
         }
-
-    }//end processMultiLineDeclaration()
-
-
-}//end class
+    }
+}

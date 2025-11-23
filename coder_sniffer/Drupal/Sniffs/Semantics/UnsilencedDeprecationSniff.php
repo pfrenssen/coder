@@ -30,8 +30,7 @@ class UnsilencedDeprecationSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['trigger_error'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -48,7 +47,7 @@ class UnsilencedDeprecationSniff extends FunctionCall
      * @return void
      */
     public function processFunctionCall(
-        file $phpcsFile,
+        File $phpcsFile,
         $stackPtr,
         $openBracket,
         $closeBracket
@@ -74,8 +73,5 @@ class UnsilencedDeprecationSniff extends FunctionCall
                 $phpcsFile->fixer->addContentBefore($stackPtr, '@');
             }
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

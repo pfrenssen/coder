@@ -39,8 +39,7 @@ class ConstantNameSniff implements Sniff
             T_STRING,
             T_CONST,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -82,7 +81,7 @@ class ConstantNameSniff implements Sniff
             if (strpos($constName, $expectedStart) !== 0) {
                 $warning = 'All constants defined by a module must be prefixed with the module\'s name, expected "%s" but found "%s"';
                 $data    = [
-                    $expectedStart."_$constName",
+                    $expectedStart . "_$constName",
                     $constName,
                 ];
                 $phpcsFile->addWarning($warning, $stackPtr, 'ConstConstantStart', $data);
@@ -123,13 +122,10 @@ class ConstantNameSniff implements Sniff
         if (strpos($constName, $expectedStart) !== 0) {
             $warning = 'All constants defined by a module must be prefixed with the module\'s name, expected "%s" but found "%s"';
             $data    = [
-                $expectedStart."_$constName",
+                $expectedStart . "_$constName",
                 $constName,
             ];
             $phpcsFile->addWarning($warning, $stackPtr, 'ConstantStart', $data);
         }//end if
-
-    }//end process()
-
-
-}//end class
+    }
+}

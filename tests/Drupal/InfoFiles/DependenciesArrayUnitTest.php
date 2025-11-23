@@ -24,8 +24,7 @@ class DependenciesArrayUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [3 => 1];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -41,8 +40,7 @@ class DependenciesArrayUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -55,10 +53,7 @@ class DependenciesArrayUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase): array
     {
         return [
-            __DIR__.'/drupal8/dependencies_array.info.yml',
+            __DIR__ . '/drupal8/dependencies_array.info.yml',
         ];
-
-    }//end getTestFiles()
-
-
-}//end class
+    }
+}

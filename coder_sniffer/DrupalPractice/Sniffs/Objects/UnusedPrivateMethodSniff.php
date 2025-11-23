@@ -30,8 +30,7 @@ class UnusedPrivateMethodSniff extends AbstractScopeSniff
     public function __construct()
     {
         parent::__construct([T_CLASS], [T_FUNCTION], false);
-
-    }//end __construct()
+    }
 
 
     /**
@@ -90,7 +89,7 @@ class UnusedPrivateMethodSniff extends AbstractScopeSniff
                 // At this point this is a method call to the private method, so we
                 // can stop.
                 return;
-            } else if ($tokens[$next]['code'] === T_COMMA) {
+            } elseif ($tokens[$next]['code'] === T_COMMA) {
                 $call = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($next + 1), null, true);
                 if ($call === false || substr($tokens[$call]['content'], 1, -1) !== $methodName) {
                     continue;
@@ -105,8 +104,7 @@ class UnusedPrivateMethodSniff extends AbstractScopeSniff
         $warning = 'Unused private method %s()';
         $data    = [$methodName];
         $phpcsFile->addWarning($warning, $stackPtr, 'UnusedMethod', $data);
-
-    }//end processTokenWithinScope()
+    }
 
 
     /**
@@ -120,8 +118,5 @@ class UnusedPrivateMethodSniff extends AbstractScopeSniff
      */
     protected function processTokenOutsideScope(File $phpcsFile, $stackPtr)
     {
-
-    }//end processTokenOutsideScope()
-
-
-}//end class
+    }
+}

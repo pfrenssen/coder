@@ -31,8 +31,7 @@ class DocCommentStarSniff implements Sniff
     public function register()
     {
         return [T_DOC_COMMENT_OPEN_TAG];
-
-    }//end register()
+    }
 
 
     /**
@@ -62,9 +61,9 @@ class DocCommentStarSniff implements Sniff
                     $fix   = $phpcsFile->addFixableError($error, $i, 'StarMissing');
                     if ($fix === true) {
                         if (strpos($tokens[$i]['content'], $phpcsFile->eolChar) !== false) {
-                            $phpcsFile->fixer->replaceToken($i, str_repeat(' ', $tokens[$stackPtr]['column'])."* \n");
+                            $phpcsFile->fixer->replaceToken($i, str_repeat(' ', $tokens[$stackPtr]['column']) . "* \n");
                         } else {
-                            $phpcsFile->fixer->replaceToken($i, str_repeat(' ', $tokens[$stackPtr]['column']).'* ');
+                            $phpcsFile->fixer->replaceToken($i, str_repeat(' ', $tokens[$stackPtr]['column']) . '* ');
                         }
 
                         // Ordering of lines might have changed - stop here. The
@@ -72,18 +71,15 @@ class DocCommentStarSniff implements Sniff
                         return;
                     }
                 }
-            } else if ($tokens[$i]['code'] !== T_DOC_COMMENT_STAR) {
+            } elseif ($tokens[$i]['code'] !== T_DOC_COMMENT_STAR) {
                 $error = 'Doc comment star missing';
                 $fix   = $phpcsFile->addFixableError($error, $i, 'StarMissing');
                 if ($fix === true) {
-                    $phpcsFile->fixer->addContentBefore($i, str_repeat(' ', $tokens[$stackPtr]['column']).'* ');
+                    $phpcsFile->fixer->addContentBefore($i, str_repeat(' ', $tokens[$stackPtr]['column']) . '* ');
                 }
             }//end if
 
             $lastLineChecked = $tokens[$i]['line'];
         }//end for
-
-    }//end process()
-
-
-}//end class
+    }
+}

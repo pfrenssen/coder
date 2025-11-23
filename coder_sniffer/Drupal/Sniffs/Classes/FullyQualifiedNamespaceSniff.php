@@ -35,8 +35,7 @@ class FullyQualifiedNamespaceSniff implements Sniff
             T_NAME_FULLY_QUALIFIED,
             T_NAME_QUALIFIED,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -201,8 +200,5 @@ class FullyQualifiedNamespaceSniff implements Sniff
 
             $phpcsFile->fixer->endChangeset();
         }//end if
-
-    }//end process()
-
-
-}//end class
+    }
+}

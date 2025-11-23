@@ -31,8 +31,7 @@ class SpaceInlineIfSniff implements Sniff
     public function register()
     {
         return [T_INLINE_ELSE];
-
-    }//end register()
+    }
 
 
     /**
@@ -56,8 +55,5 @@ class SpaceInlineIfSniff implements Sniff
                 $phpcsFile->addError($error, $stackPtr, 'SpaceInlineElse');
             }
         }//end if
-
-    }//end process()
-
-
-}//end class
+    }
+}

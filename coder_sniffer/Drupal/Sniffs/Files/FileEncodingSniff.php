@@ -45,8 +45,7 @@ class FileEncodingSniff implements Sniff
             T_INLINE_HTML,
             T_OPEN_TAG,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -81,8 +80,5 @@ class FileEncodingSniff implements Sniff
         }
 
         return $phpcsFile->numTokens;
-
-    }//end process()
-
-
-}//end class
+    }
+}

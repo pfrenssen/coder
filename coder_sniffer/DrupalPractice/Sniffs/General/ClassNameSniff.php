@@ -36,8 +36,7 @@ class ClassNameSniff implements Sniff
             T_CLASS,
             T_INTERFACE,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -89,8 +88,5 @@ class ClassNameSniff implements Sniff
             ];
             $phpcsFile->addWarning($warning, $className, 'ClassPrefix', $errorData);
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

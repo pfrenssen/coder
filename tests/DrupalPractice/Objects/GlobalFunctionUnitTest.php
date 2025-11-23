@@ -21,8 +21,7 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -38,28 +37,27 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         switch ($testFile) {
-        case 'TestForm.php':
-            return [
-                6 => 1,
-                8 => 1,
-            ];
-        case 'ExampleClass.php':
-            return [37 => 1];
-        case 'ExampleClassWithDependencyInjection.php':
-            return [
-                31 => 1,
-                38 => 1,
-            ];
-        case 'ExampleService.php':
-            return [
-                30 => 1,
-                37 => 1,
-            ];
-        default:
-            return [];
+            case 'TestForm.php':
+                return [
+                    6 => 1,
+                    8 => 1,
+                ];
+            case 'ExampleClass.php':
+                return [37 => 1];
+            case 'ExampleClassWithDependencyInjection.php':
+                return [
+                    31 => 1,
+                    38 => 1,
+                ];
+            case 'ExampleService.php':
+                return [
+                    30 => 1,
+                    37 => 1,
+                ];
+            default:
+                return [];
         }//end switch
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -72,16 +70,13 @@ class GlobalFunctionUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase): array
     {
         return [
-            __DIR__.'/drupal8/DeclareT.php',
-            __DIR__.'/drupal8/example.module',
-            __DIR__.'/drupal8/ExampleClass.php',
-            __DIR__.'/drupal8/ExampleClassWithDependencyInjection.php',
-            __DIR__.'/drupal8/ExampleService.php',
-            __DIR__.'/drupal8/TestForm.php',
-            __DIR__.'/drupal7/ExampleMigration.php',
+            __DIR__ . '/drupal8/DeclareT.php',
+            __DIR__ . '/drupal8/example.module',
+            __DIR__ . '/drupal8/ExampleClass.php',
+            __DIR__ . '/drupal8/ExampleClassWithDependencyInjection.php',
+            __DIR__ . '/drupal8/ExampleService.php',
+            __DIR__ . '/drupal8/TestForm.php',
+            __DIR__ . '/drupal7/ExampleMigration.php',
         ];
-
-    }//end getTestFiles()
-
-
-}//end class
+    }
+}

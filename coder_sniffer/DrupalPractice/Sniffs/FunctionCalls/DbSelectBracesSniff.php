@@ -31,8 +31,7 @@ class DbSelectBracesSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['db_select'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -63,8 +62,5 @@ class DbSelectBracesSniff extends FunctionCall
             $warning = 'Do not use {} curly brackets in db_select() table names';
             $phpcsFile->addWarning($warning, $argument['start'], 'DbSelectBrace');
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

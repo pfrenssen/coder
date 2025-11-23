@@ -45,19 +45,16 @@ class InstallHooksSniff extends FunctionDefinition
         $tokens = $phpcsFile->getTokens();
 
         $fileName = substr(basename($phpcsFile->getFilename()), 0, -7);
-        if ($tokens[$stackPtr]['content'] === ($fileName.'_install')
-            || $tokens[$stackPtr]['content'] === ($fileName.'_uninstall')
-            || $tokens[$stackPtr]['content'] === ($fileName.'_requirements')
-            || $tokens[$stackPtr]['content'] === ($fileName.'_schema')
-            || $tokens[$stackPtr]['content'] === ($fileName.'_enable')
-            || $tokens[$stackPtr]['content'] === ($fileName.'_disable')
+        if ($tokens[$stackPtr]['content'] === ($fileName . '_install')
+            || $tokens[$stackPtr]['content'] === ($fileName . '_uninstall')
+            || $tokens[$stackPtr]['content'] === ($fileName . '_requirements')
+            || $tokens[$stackPtr]['content'] === ($fileName . '_schema')
+            || $tokens[$stackPtr]['content'] === ($fileName . '_enable')
+            || $tokens[$stackPtr]['content'] === ($fileName . '_disable')
         ) {
             $error = '%s() is an installation hook and must be declared in an install file';
             $data  = [$tokens[$stackPtr]['content']];
             $phpcsFile->addError($error, $stackPtr, 'InstallHook', $data);
         }
-
-    }//end processFunction()
-
-
-}//end class
+    }
+}

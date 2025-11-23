@@ -36,8 +36,7 @@ class InlineVariableCommentSniff implements Sniff
             T_COMMENT,
             T_DOC_COMMENT_TAG,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -99,7 +98,7 @@ class InlineVariableCommentSniff implements Sniff
                         // Remove all leading hashtags and slashes.
                         $varContent = ltrim($varContent, '/# ');
 
-                        $phpcsFile->fixer->replaceToken($stackPtr, ('/** '.$varContent." */\n"));
+                        $phpcsFile->fixer->replaceToken($stackPtr, ('/** ' . $varContent . " */\n"));
                     }
                 } else {
                     if ($phpcsFile->addFixableWarning($warning, $stackPtr, 'VarInline') === true) {
@@ -144,8 +143,5 @@ class InlineVariableCommentSniff implements Sniff
                 $phpcsFile->addWarning($warning, $varContentPtr, 'VarInlineOrder');
             }
         }//end if
-
-    }//end process()
-
-
-}//end class
+    }
+}

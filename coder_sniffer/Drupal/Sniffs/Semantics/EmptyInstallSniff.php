@@ -44,8 +44,8 @@ class EmptyInstallSniff extends FunctionDefinition
 
         $fileName = substr(basename($phpcsFile->getFilename()), 0, -8);
         $tokens   = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['content'] === ($fileName.'_install')
-            || $tokens[$stackPtr]['content'] === ($fileName.'_uninstall')
+        if ($tokens[$stackPtr]['content'] === ($fileName . '_install')
+            || $tokens[$stackPtr]['content'] === ($fileName . '_uninstall')
         ) {
             // Check if there is a function body.
             $bodyPtr = $phpcsFile->findNext(
@@ -59,8 +59,5 @@ class EmptyInstallSniff extends FunctionDefinition
                 $phpcsFile->addError($error, $stackPtr, 'EmptyInstall');
             }
         }
-
-    }//end processFunction()
-
-
-}//end class
+    }
+}

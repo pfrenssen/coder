@@ -6,6 +6,7 @@
  * @package  PHP_CodeSniffer
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
+
 namespace Drupal\Sniffs\InfoFiles;
 
 use PHP_CodeSniffer\Files\File;
@@ -32,8 +33,7 @@ class DependenciesArraySniff implements Sniff
     public function register()
     {
         return [T_INLINE_HTML];
-
-    }//end register()
+    }
 
 
     /**
@@ -76,8 +76,5 @@ class DependenciesArraySniff implements Sniff
         }
 
         return ($phpcsFile->numTokens + 1);
-
-    }//end process()
-
-
-}//end class
+    }
+}

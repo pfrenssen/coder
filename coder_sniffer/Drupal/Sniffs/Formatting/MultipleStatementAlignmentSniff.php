@@ -24,7 +24,6 @@ use PHP_CodeSniffer\Util\Tokens;
 class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentSniff
 {
 
-
     /**
      * If true, an error will be thrown; otherwise a warning.
      *
@@ -44,7 +43,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
      *
      * @return int
      */
-    public function checkAlignment($phpcsFile, $stackPtr, $end=null)
+    public function checkAlignment($phpcsFile, $stackPtr, $end = null)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -124,7 +123,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
                             } else {
                                 $lastSemi = $assign;
                             }
-                        } else if ($tokens[$assign]['level'] < $tokens[$stackPtr]['level']) {
+                        } elseif ($tokens[$assign]['level'] < $tokens[$stackPtr]['level']) {
                             // Statement is in a different context, so the block is over.
                             break;
                         }
@@ -132,7 +131,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
                 }//end if
 
                 continue;
-            } else if ($assign !== $stackPtr && $tokens[$assign]['line'] === $lastLine) {
+            } elseif ($assign !== $stackPtr && $tokens[$assign]['line'] === $lastLine) {
                 // Skip multiple assignments on the same line. We only need to
                 // try and align the first assignment.
                 continue;
@@ -145,10 +144,10 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
                     $assign   = $this->checkAlignment($phpcsFile, $assign);
                     $lastCode = $assign;
                     continue;
-                } else if ($tokens[$assign]['level'] < $tokens[$stackPtr]['level']) {
+                } elseif ($tokens[$assign]['level'] < $tokens[$stackPtr]['level']) {
                     // We've gone one level up, so the block we are processing is done.
                     break;
-                } else if ($arrayEnd !== null) {
+                } elseif ($arrayEnd !== null) {
                     // Assignments inside arrays are not part of
                     // the original block, so process this new block.
                     $assign   = ($this->checkAlignment($phpcsFile, $assign, $arrayEnd) - 1);
@@ -222,7 +221,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
                         $padding      = 1;
                         $assignColumn = ($varEnd + 1);
                     }
-                } else if ($padding > $assignments[$maxPadding]['expected']) {
+                } elseif ($padding > $assignments[$maxPadding]['expected']) {
                     $maxPadding = $assign;
                 }//end if
             } else {
@@ -284,7 +283,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
                 continue;
             }
 
-            $expectedText = $data['expected'].' space';
+            $expectedText = $data['expected'] . ' space';
             if ($data['expected'] !== 1) {
                 $expectedText .= 's';
             }
@@ -292,7 +291,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
             if ($data['found'] === null) {
                 $foundText = 'a new line';
             } else {
-                $foundText = $data['found'].' space';
+                $foundText = $data['found'] . ' space';
                 if ($data['found'] !== 1) {
                     $foundText .= 's';
                 }
@@ -314,7 +313,7 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
             if ($this->error === true) {
                 $fix = $phpcsFile->addFixableError($error, $assignment, $type, $errorData);
             } else {
-                $fix = $phpcsFile->addFixableWarning($error, $assignment, $type.'Warning', $errorData);
+                $fix = $phpcsFile->addFixableWarning($error, $assignment, $type . 'Warning', $errorData);
             }
 
             $errorGenerated = true;
@@ -342,8 +341,5 @@ class MultipleStatementAlignmentSniff extends GenericMultipleStatementAlignmentS
         } else {
             return $assign;
         }
-
-    }//end checkAlignment()
-
-
-}//end class
+    }
+}

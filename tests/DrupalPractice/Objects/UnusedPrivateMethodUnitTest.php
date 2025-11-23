@@ -21,8 +21,7 @@ class UnusedPrivateMethodUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -38,8 +37,5 @@ class UnusedPrivateMethodUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [15 => 1];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

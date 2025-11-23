@@ -32,8 +32,7 @@ class DataTypeNamespaceSniff implements Sniff
     public function register()
     {
         return [T_USE];
-
-    }//end register()
+    }
 
 
     /**
@@ -93,15 +92,12 @@ class DataTypeNamespaceSniff implements Sniff
                 $data  = [$tokens[$tag]['content']];
                 $fix   = $phpcsFile->addFixableError($error, ($tag + 2), 'DataTypeNamespace', $data);
                 if ($fix === true) {
-                    $replacement = '\\'.$fullNamespace.substr($tokens[($tag + 2)]['content'], strlen($className));
+                    $replacement = '\\' . $fullNamespace . substr($tokens[($tag + 2)]['content'], strlen($className));
                     $phpcsFile->fixer->replaceToken(($tag + 2), $replacement);
                 }
             }
 
             $tag = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($tag + 1));
         }//end while
-
-    }//end process()
-
-
-}//end class
+    }
+}

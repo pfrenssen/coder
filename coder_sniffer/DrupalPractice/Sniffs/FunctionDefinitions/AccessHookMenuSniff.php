@@ -45,7 +45,7 @@ class AccessHookMenuSniff extends FunctionDefinition
 
         $fileName = substr(basename($phpcsFile->getFilename()), 0, -7);
         $tokens   = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['content'] !== ($fileName.'_menu')) {
+        if ($tokens[$stackPtr]['content'] !== ($fileName . '_menu')) {
             return;
         }
 
@@ -95,8 +95,5 @@ class AccessHookMenuSniff extends FunctionDefinition
                 $tokens[$functionPtr]['scope_closer']
             );
         }//end while
-
-    }//end processFunction()
-
-
-}//end class
+    }
+}

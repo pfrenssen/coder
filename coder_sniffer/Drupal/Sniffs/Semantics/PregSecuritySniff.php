@@ -39,8 +39,7 @@ class PregSecuritySniff extends FunctionCall
             'preg_replace_callback',
             'preg_split',
         ];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -82,7 +81,7 @@ class PregSecuritySniff extends FunctionCall
             // Get the delimiter - first char after the enclosing quotes.
             $delimiter = preg_quote(substr($pattern, 1, 1), '/');
             // Check if there is the evil e flag.
-            if (preg_match('/'.$delimiter.'[\w]{0,}e[\w]{0,}$/', substr($pattern, 0, -1)) === 1) {
+            if (preg_match('/' . $delimiter . '[\w]{0,}e[\w]{0,}$/', substr($pattern, 0, -1)) === 1) {
                 $warn = 'Using the e flag in %s is a possible security risk. For details see https://www.drupal.org/node/750148';
                 $phpcsFile->addError(
                     $warn,
@@ -93,8 +92,5 @@ class PregSecuritySniff extends FunctionCall
                 return;
             }
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

@@ -34,8 +34,7 @@ class NamespacedDependencySniff implements Sniff
     public function register()
     {
         return [T_INLINE_HTML];
-
-    }//end register()
+    }
 
 
     /**
@@ -80,7 +79,7 @@ class NamespacedDependencySniff implements Sniff
             if (preg_match('/^[\s]+- [^:]+[\s]*$/', $tokens[$nextLine]['content']) === 1) {
                 $error = 'All dependencies must be prefixed with the project name, for example "drupal:"';
                 $phpcsFile->addWarning($error, $nextLine, 'NonNamespaced');
-            } else if (preg_match('/^[\s]+- [^:]+:[^:]+[\s]*$/', $tokens[$nextLine]['content']) === 0
+            } elseif (preg_match('/^[\s]+- [^:]+:[^:]+[\s]*$/', $tokens[$nextLine]['content']) === 0
                 && preg_match('/^[\s]*#.*$/', $tokens[$nextLine]['content']) === 0
             ) {
                 // Not a dependency line with namespace or comment - stop.
@@ -89,8 +88,5 @@ class NamespacedDependencySniff implements Sniff
 
             $nextLine++;
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

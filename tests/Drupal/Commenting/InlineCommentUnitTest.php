@@ -36,8 +36,7 @@ class InlineCommentUnitTest extends CoderSniffUnitTest
             127 => 1,
             148 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -53,8 +52,5 @@ class InlineCommentUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [16 => 1];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

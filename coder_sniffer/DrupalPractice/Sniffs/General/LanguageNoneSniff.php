@@ -34,8 +34,7 @@ class LanguageNoneSniff implements Sniff
             T_OPEN_SQUARE_BRACKET,
             T_OPEN_SHORT_ARRAY,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -54,8 +53,5 @@ class LanguageNoneSniff implements Sniff
             $warning = "Are you accessing field values here? Then you should use LANGUAGE_NONE instead of 'und'";
             $phpcsFile->addWarning($warning, ($stackPtr + 1), 'Und');
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

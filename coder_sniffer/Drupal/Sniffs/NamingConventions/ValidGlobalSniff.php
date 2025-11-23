@@ -88,8 +88,7 @@ class ValidGlobalSniff implements Sniff
     public function register()
     {
         return [T_GLOBAL];
-
-    }//end register()
+    }
 
 
     /**
@@ -118,8 +117,5 @@ class ValidGlobalSniff implements Sniff
                 $phpcsFile->addError($error, $varToken, 'GlobalUnderScore');
             }
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

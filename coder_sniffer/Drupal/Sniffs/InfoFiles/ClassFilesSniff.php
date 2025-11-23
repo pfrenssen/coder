@@ -32,8 +32,7 @@ class ClassFilesSniff implements Sniff
     public function register()
     {
         return [T_INLINE_HTML];
-
-    }//end register()
+    }
 
 
     /**
@@ -57,7 +56,7 @@ class ClassFilesSniff implements Sniff
         $info     = self::drupalParseInfoFormat($contents);
         if (isset($info['files']) === true && is_array($info['files']) === true) {
             foreach ($info['files'] as $file) {
-                $fileName = dirname($phpcsFile->getFilename()).'/'.$file;
+                $fileName = dirname($phpcsFile->getFilename()) . '/' . $file;
                 if (file_exists($fileName) === false) {
                     // We need to find the position of the offending line in the
                     // info file.
@@ -85,8 +84,7 @@ class ClassFilesSniff implements Sniff
         }//end if
 
         return ($phpcsFile->numTokens + 1);
-
-    }//end process()
+    }
 
 
     /**
@@ -102,14 +100,13 @@ class ClassFilesSniff implements Sniff
     public static function getPtr($key, $value, File $infoFile)
     {
         foreach ($infoFile->getTokens() as $ptr => $tokenInfo) {
-            if (preg_match('@^[\s]*'.preg_quote($key).'[\s]*=[\s]*["\']?'.preg_quote($value).'["\']?@', $tokenInfo['content']) === 1) {
+            if (preg_match('@^[\s]*' . preg_quote($key) . '[\s]*=[\s]*["\']?' . preg_quote($value) . '["\']?@', $tokenInfo['content']) === 1) {
                 return $ptr;
             }
         }
 
         return false;
-
-    }//end getPtr()
+    }
 
 
     /**
@@ -154,7 +151,7 @@ class ClassFilesSniff implements Sniff
                     }
                 }
 
-                $value = stripslashes(substr($value1, 1, -1)).stripslashes(substr($value2, 1, -1)).$value3;
+                $value = stripslashes(substr($value1, 1, -1)) . stripslashes(substr($value2, 1, -1)) . $value3;
 
                 // Parse array syntax.
                 $keys   = preg_split('/\]?\[/', rtrim($key, ']'));
@@ -189,8 +186,5 @@ class ClassFilesSniff implements Sniff
         }//end if
 
         return $info;
-
-    }//end drupalParseInfoFormat()
-
-
-}//end class
+    }
+}

@@ -36,8 +36,7 @@ class ObjectOperatorSpacingSniff implements Sniff
     public function register()
     {
         return [T_OBJECT_OPERATOR];
-
-    }//end register()
+    }
 
 
     /**
@@ -101,8 +100,5 @@ class ObjectOperatorSpacingSniff implements Sniff
                 }
             }
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

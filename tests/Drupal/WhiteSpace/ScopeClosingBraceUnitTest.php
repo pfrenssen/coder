@@ -21,17 +21,16 @@ class ScopeClosingBraceUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         switch ($testFile) {
-        case 'ScopeClosingBraceUnitTest.inc':
-            return [
-                16 => 1,
-                23 => 1,
-                29 => 1,
-            ];
+            case 'ScopeClosingBraceUnitTest.inc':
+                return [
+                    16 => 1,
+                    23 => 1,
+                    29 => 1,
+                ];
         }
 
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -47,8 +46,7 @@ class ScopeClosingBraceUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -63,8 +61,5 @@ class ScopeClosingBraceUnitTest extends CoderSniffUnitTest
         }
 
         return false;
-
-    }//end shouldSkipTest()
-
-
-}//end class
+    }
+}

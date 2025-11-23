@@ -46,8 +46,7 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
             T_TRAIT,
             T_ENUM,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -106,7 +105,7 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
         $openingBrace = $tokens[$stackPtr]['scope_opener'];
         if ($tokens[($openingBrace - 1)]['code'] !== T_WHITESPACE) {
             $length = 0;
-        } else if ($tokens[($openingBrace - 1)]['content'] === "\t") {
+        } elseif ($tokens[($openingBrace - 1)]['content'] === "\t") {
             $length = '\t';
         } else {
             $length = strlen($tokens[($openingBrace - 1)]['content']);
@@ -129,8 +128,7 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
         $this->processOpen($phpcsFile, $stackPtr);
 
         $this->processClose($phpcsFile, $stackPtr);
-
-    }//end process()
+    }
 
 
     /**
@@ -171,7 +169,7 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
                     $phpcsFile->fixer->replaceToken($i, '');
                 }
 
-                $phpcsFile->fixer->replaceToken($closeBrace, $phpcsFile->eolChar.$phpcsFile->eolChar.$tokens[$closeBrace]['content']);
+                $phpcsFile->fixer->replaceToken($closeBrace, $phpcsFile->eolChar . $phpcsFile->eolChar . $tokens[$closeBrace]['content']);
 
                 $phpcsFile->fixer->endChangeset();
             }
@@ -188,8 +186,5 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
             $data  = [$tokens[$stackPtr]['content']];
             $phpcsFile->addError($error, $closeBrace, 'CloseBraceSameLine', $data);
         }
-
-    }//end processClose()
-
-
-}//end class
+    }
+}

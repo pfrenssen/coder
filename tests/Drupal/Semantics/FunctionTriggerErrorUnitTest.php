@@ -21,24 +21,23 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         switch ($testFile) {
-        case 'FunctionTriggerErrorUnitTest.1.inc':
-            return [
-                34 => 1,
-                36 => 1,
-                38 => 1,
-                40 => 1,
-                42 => 1,
-                44 => 1,
-            ];
-        case 'FunctionTriggerErrorUnitTest.2.inc':
-            return [29 => 1];
-        case 'FunctionTriggerErrorUnitTest.3.inc':
-            return [14 => 1];
-        default:
-            return [];
+            case 'FunctionTriggerErrorUnitTest.1.inc':
+                return [
+                    34 => 1,
+                    36 => 1,
+                    38 => 1,
+                    40 => 1,
+                    42 => 1,
+                    44 => 1,
+                ];
+            case 'FunctionTriggerErrorUnitTest.2.inc':
+                return [29 => 1];
+            case 'FunctionTriggerErrorUnitTest.3.inc':
+                return [14 => 1];
+            default:
+                return [];
         }
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -54,29 +53,26 @@ class FunctionTriggerErrorUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         switch ($testFile) {
-        case 'FunctionTriggerErrorUnitTest.1.inc':
-            return [
-                46 => 1,
-                48 => 1,
-                50 => 1,
-                52 => 1,
-                54 => 1,
-                56 => 1,
-                58 => 1,
-                60 => 1,
-                62 => 1,
-                64 => 1,
-                66 => 1,
-                68 => 1,
-                70 => 1,
-            ];
-        case 'FunctionTriggerErrorUnitTest.2.inc':
-        case 'FunctionTriggerErrorUnitTest.3.inc':
-        default:
-            return [];
+            case 'FunctionTriggerErrorUnitTest.1.inc':
+                return [
+                    46 => 1,
+                    48 => 1,
+                    50 => 1,
+                    52 => 1,
+                    54 => 1,
+                    56 => 1,
+                    58 => 1,
+                    60 => 1,
+                    62 => 1,
+                    64 => 1,
+                    66 => 1,
+                    68 => 1,
+                    70 => 1,
+                ];
+            case 'FunctionTriggerErrorUnitTest.2.inc':
+            case 'FunctionTriggerErrorUnitTest.3.inc':
+            default:
+                return [];
         }//end switch
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

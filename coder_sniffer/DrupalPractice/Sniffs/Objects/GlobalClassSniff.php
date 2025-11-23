@@ -95,8 +95,7 @@ class GlobalClassSniff implements Sniff
     public function register()
     {
         return [T_STRING];
-
-    }//end register()
+    }
 
 
     /**
@@ -165,8 +164,7 @@ class GlobalClassSniff implements Sniff
             $tokens[($stackPtr + 2)]['content'],
         ];
         $phpcsFile->addWarning($warning, $stackPtr, 'GlobalClass', $data);
-
-    }//end process()
+    }
 
 
     /**
@@ -220,8 +218,5 @@ class GlobalClassSniff implements Sniff
         }//end while
 
         return $className;
-
-    }//end getFullyQualifiedName()
-
-
-}//end class
+    }
+}

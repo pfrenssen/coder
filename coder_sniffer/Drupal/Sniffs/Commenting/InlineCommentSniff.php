@@ -40,8 +40,7 @@ class InlineCommentSniff implements Sniff
             T_COMMENT,
             T_DOC_COMMENT_OPEN_TAG,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -221,7 +220,7 @@ class InlineCommentSniff implements Sniff
                     $comment,
                 ];
                 $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'TabBefore', $data);
-            } else if ($spaceCount === 0) {
+            } elseif ($spaceCount === 0) {
                 $error = 'No space found before comment text; expected "// %s" but found "%s"';
                 $data  = [
                     substr($comment, 2),
@@ -231,7 +230,7 @@ class InlineCommentSniff implements Sniff
             }//end if
 
             if ($fix === true) {
-                $newComment = '// '.ltrim($tokens[$lastCommentToken]['content'], "/\t ");
+                $newComment = '// ' . ltrim($tokens[$lastCommentToken]['content'], "/\t ");
                 $phpcsFile->fixer->replaceToken($lastCommentToken, $newComment);
             }
 
@@ -263,17 +262,17 @@ class InlineCommentSniff implements Sniff
                                 $error = 'Comment indentation error after %s element, expected %s spaces';
                                 $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'SpacingBefore', [$words[1], ($prevSpaceCount + 2)]);
                                 if ($fix === true) {
-                                    $newComment = '//'.str_repeat(' ', ($prevSpaceCount + 2)).ltrim($tokens[$lastCommentToken]['content'], "/\t ");
+                                    $newComment = '//' . str_repeat(' ', ($prevSpaceCount + 2)) . ltrim($tokens[$lastCommentToken]['content'], "/\t ");
                                     $phpcsFile->fixer->replaceToken($lastCommentToken, $newComment);
                                 }
                             }
-                        } else if ($numberedList === true) {
+                        } elseif ($numberedList === true) {
                             $expectedSpaceCount = ($prevSpaceCount + strlen($words[1]) + 1);
                             if ($spaceCount !== $expectedSpaceCount) {
                                 $error = 'Comment indentation error, expected %s spaces';
                                 $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'SpacingBefore', [$expectedSpaceCount]);
                                 if ($fix === true) {
-                                    $newComment = '//'.str_repeat(' ', $expectedSpaceCount).ltrim($tokens[$lastCommentToken]['content'], "/\t ");
+                                    $newComment = '//' . str_repeat(' ', $expectedSpaceCount) . ltrim($tokens[$lastCommentToken]['content'], "/\t ");
                                     $phpcsFile->fixer->replaceToken($lastCommentToken, $newComment);
                                 }
                             }
@@ -291,7 +290,7 @@ class InlineCommentSniff implements Sniff
                     ];
                     $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'SpacingBefore', $data);
                     if ($fix === true) {
-                        $phpcsFile->fixer->replaceToken($lastCommentToken, '// '.substr($comment, (2 + $spaceCount)).$phpcsFile->eolChar);
+                        $phpcsFile->fixer->replaceToken($lastCommentToken, '// ' . substr($comment, (2 + $spaceCount)) . $phpcsFile->eolChar);
                     }
                 }//end if
             }//end if
@@ -359,7 +358,7 @@ class InlineCommentSniff implements Sniff
                 $error = 'Inline comments must end in %s';
                 $ender = '';
                 foreach ($acceptedClosers as $closerName => $symbol) {
-                    $ender .= ' '.$closerName.',';
+                    $ender .= ' ' . $closerName . ',';
                 }
 
                 $ender = trim($ender, ' ,');
@@ -407,7 +406,7 @@ class InlineCommentSniff implements Sniff
                     if ($tokens[$i]['code'] !== T_WHITESPACE) {
                         return ($lastCommentToken + 1);
                     }
-                } else if ($tokens[$i]['line'] > ($tokens[$lastCommentToken]['line'] + 1)) {
+                } elseif ($tokens[$i]['line'] > ($tokens[$lastCommentToken]['line'] + 1)) {
                     break;
                 }
             }
@@ -429,8 +428,7 @@ class InlineCommentSniff implements Sniff
         }//end if
 
         return ($lastCommentToken + 1);
-
-    }//end process()
+    }
 
 
     /**
@@ -446,7 +444,7 @@ class InlineCommentSniff implements Sniff
     protected function isInCodeExample(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['content'] === '// @code'.$phpcsFile->eolChar) {
+        if ($tokens[$stackPtr]['content'] === '// @code' . $phpcsFile->eolChar) {
             return true;
         }
 
@@ -457,11 +455,11 @@ class InlineCommentSniff implements Sniff
                 return false;
             }
 
-            if ($tokens[$prevComment]['content'] === '// @code'.$phpcsFile->eolChar) {
+            if ($tokens[$prevComment]['content'] === '// @code' . $phpcsFile->eolChar) {
                 return true;
             }
 
-            if ($tokens[$prevComment]['content'] === '// @endcode'.$phpcsFile->eolChar) {
+            if ($tokens[$prevComment]['content'] === '// @endcode' . $phpcsFile->eolChar) {
                 return false;
             }
 
@@ -469,8 +467,5 @@ class InlineCommentSniff implements Sniff
         }
 
         return false;
-
-    }//end isInCodeExample()
-
-
-}//end class
+    }
+}

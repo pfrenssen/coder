@@ -61,8 +61,8 @@ abstract class CoderSniffUnitTest extends TestCase
      */
     public function setUp(): void
     {
-        $this->rootDir  = __DIR__.'/../../';
-        $this->testsDir = __DIR__.'/';
+        $this->rootDir  = __DIR__ . '/../../';
+        $this->testsDir = __DIR__ . '/';
         // Required to pull in all the defines from the tokens file.
         $tokens = new Tokens();
         if (defined('PHP_CODESNIFFER_VERBOSITY') === false) {
@@ -72,8 +72,7 @@ abstract class CoderSniffUnitTest extends TestCase
         if (defined('PHP_CODESNIFFER_CBF') === false) {
             define('PHP_CODESNIFFER_CBF', 0);
         }
-
-    }//end setUp()
+    }
 
 
     /**
@@ -96,7 +95,7 @@ abstract class CoderSniffUnitTest extends TestCase
         foreach ($di as $file) {
             $path = $file->getPathname();
             if (substr($path, 0, strlen($testFileBase)) === $testFileBase) {
-                if ($path !== $testFileBase.'php' && substr($path, -5) !== 'fixed') {
+                if ($path !== $testFileBase . 'php' && substr($path, -5) !== 'fixed') {
                     $testFiles[] = $path;
                 }
             }
@@ -106,8 +105,7 @@ abstract class CoderSniffUnitTest extends TestCase
         sort($testFiles);
 
         return $testFiles;
-
-    }//end getTestFiles()
+    }
 
 
     /**
@@ -118,8 +116,7 @@ abstract class CoderSniffUnitTest extends TestCase
     protected function shouldSkipTest()
     {
         return false;
-
-    }//end shouldSkipTest()
+    }
 
 
     /**
@@ -146,15 +143,15 @@ abstract class CoderSniffUnitTest extends TestCase
             list($standardName) = explode('\\', get_class($this));
         }
 
-        $testFileBase = $this->rootDir.'tests'.DIRECTORY_SEPARATOR.$standardName.DIRECTORY_SEPARATOR.$categoryName.DIRECTORY_SEPARATOR.$sniffName.'UnitTest.';
+        $testFileBase = $this->rootDir . 'tests' . DIRECTORY_SEPARATOR . $standardName . DIRECTORY_SEPARATOR . $categoryName . DIRECTORY_SEPARATOR . $sniffName . 'UnitTest.';
 
-        $this->standardsDir = $this->rootDir.'coder_sniffer'.DIRECTORY_SEPARATOR.$standardName.DIRECTORY_SEPARATOR;
+        $this->standardsDir = $this->rootDir . 'coder_sniffer' . DIRECTORY_SEPARATOR . $standardName . DIRECTORY_SEPARATOR;
         // $testFileBase = $this->testsDir.$categoryName.DIRECTORY_SEPARATOR.$sniffName.'UnitTest.';
         // Get a list of all test files to check.
         $testFiles = $this->getTestFiles($testFileBase);
         $this->assertNotEmpty(
             $testFiles,
-            'No test files found for the '.$sniffCode.' unit test.'
+            'No test files found for the ' . $sniffCode . ' unit test.'
         );
 
         $config        = new Config();
@@ -196,7 +193,7 @@ abstract class CoderSniffUnitTest extends TestCase
                     $phpcsFile = new LocalFile($testFile, $ruleset, $config);
                     $phpcsFile->process();
                 } catch (RuntimeException $e) {
-                    $this->fail('An unexpected exception has been caught: '.$e->getMessage());
+                    $this->fail('An unexpected exception has been caught: ' . $e->getMessage());
                 }
 
                 // Attempt to fix the errors.
@@ -207,7 +204,7 @@ abstract class CoderSniffUnitTest extends TestCase
                 }
 
                 // Check for a .fixed file to check for accuracy of fixes.
-                $fixedFile = $testFile.'.fixed';
+                $fixedFile = $testFile . '.fixed';
                 if (file_exists($fixedFile) === true) {
                     $diff = $phpcsFile->fixer->generateDiff($fixedFile);
                     if (trim($diff) !== '') {
@@ -225,8 +222,7 @@ abstract class CoderSniffUnitTest extends TestCase
         if (empty($failureMessages) === false) {
             $this->fail(implode(PHP_EOL, $failureMessages));
         }
-
-    }//end testSniff()
+    }
 
 
     /**
@@ -276,7 +272,7 @@ abstract class CoderSniffUnitTest extends TestCase
 
                 $errorsTemp = [];
                 foreach ($errors as $foundError) {
-                    $errorsTemp[] = $foundError['message'].' ('.$foundError['source'].')';
+                    $errorsTemp[] = $foundError['message'] . ' (' . $foundError['source'] . ')';
 
                     $source = $foundError['source'];
                     if (in_array($source, $GLOBALS['PHP_CODESNIFFER_SNIFF_CODES']) === false) {
@@ -333,7 +329,7 @@ abstract class CoderSniffUnitTest extends TestCase
 
                 $warningsTemp = [];
                 foreach ($warnings as $warning) {
-                    $warningsTemp[] = $warning['message'].' ('.$warning['source'].')';
+                    $warningsTemp[] = $warning['message'] . ' (' . $warning['source'] . ')';
                 }
 
                 $allProblems[$line]['found_warnings'] = array_merge($foundWarningsTemp, $warningsTemp);
@@ -376,14 +372,14 @@ abstract class CoderSniffUnitTest extends TestCase
             if ($expectedErrors !== $numErrors || $expectedWarnings !== $numWarnings) {
                 $lineMessage     = "[LINE $line]";
                 $expectedMessage = 'Expected ';
-                $foundMessage    = 'in '.basename($testFile).' but found ';
+                $foundMessage    = 'in ' . basename($testFile) . ' but found ';
 
                 if ($expectedErrors !== $numErrors) {
                     $expectedMessage .= "$expectedErrors error(s)";
                     $foundMessage    .= "$numErrors error(s)";
                     if ($numErrors !== 0) {
                         $foundString .= 'error(s)';
-                        $errors      .= implode(PHP_EOL.' -> ', $problems['found_errors']);
+                        $errors      .= implode(PHP_EOL . ' -> ', $problems['found_errors']);
                     }
 
                     if ($expectedWarnings !== $numWarnings) {
@@ -403,16 +399,16 @@ abstract class CoderSniffUnitTest extends TestCase
                     if ($numWarnings !== 0) {
                         $foundString .= 'warning(s)';
                         if (empty($errors) === false) {
-                            $errors .= PHP_EOL.' -> ';
+                            $errors .= PHP_EOL . ' -> ';
                         }
 
-                        $errors .= implode(PHP_EOL.' -> ', $problems['found_warnings']);
+                        $errors .= implode(PHP_EOL . ' -> ', $problems['found_warnings']);
                     }
                 }
 
                 $fullMessage = "$lineMessage $expectedMessage $foundMessage.";
                 if ($errors !== '') {
-                    $fullMessage .= " The $foundString found were:".PHP_EOL." -> $errors";
+                    $fullMessage .= " The $foundString found were:" . PHP_EOL . " -> $errors";
                 }
 
                 $failureMessages[] = $fullMessage;
@@ -420,8 +416,7 @@ abstract class CoderSniffUnitTest extends TestCase
         }//end foreach
 
         return $failureMessages;
-
-    }//end generateFailureMessages()
+    }
 
 
     /**
@@ -452,15 +447,14 @@ abstract class CoderSniffUnitTest extends TestCase
             $sniff = substr($sniff, 0, -8);
         } else {
             throw new \InvalidArgumentException(
-                'The $testClass parameter was not passed a fully qualified sniff(test) class name. Received: '.$testClass
+                'The $testClass parameter was not passed a fully qualified sniff(test) class name. Received: ' . $testClass
             );
         }
 
         $standard = $parts[($partsCount - 4)];
         $category = $parts[($partsCount - 2)];
-        return $standard.'.'.$category.'.'.$sniff;
-
-    }//end getSniffCode()
+        return $standard . '.' . $category . '.' . $sniff;
+    }
 
 
     /**
@@ -473,9 +467,7 @@ abstract class CoderSniffUnitTest extends TestCase
      */
     public function setCliValues($filename, $config)
     {
-        return;
-
-    }//end setCliValues()
+    }
 
 
     /**
@@ -512,8 +504,5 @@ abstract class CoderSniffUnitTest extends TestCase
     protected function checkAllSniffCodes()
     {
         return false;
-
-    }//end checkAllSniffCodes()
-
-
-}//end class
+    }
+}

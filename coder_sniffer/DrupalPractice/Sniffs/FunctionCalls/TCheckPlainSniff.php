@@ -35,8 +35,7 @@ class TCheckPlainSniff extends FunctionCall
             't',
             'watchdog',
         ];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -86,8 +85,5 @@ class TCheckPlainSniff extends FunctionCall
                 }
             }
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

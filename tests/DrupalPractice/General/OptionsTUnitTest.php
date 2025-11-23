@@ -27,8 +27,7 @@ class OptionsTUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -48,8 +47,5 @@ class OptionsTUnitTest extends CoderSniffUnitTest
             31 => 1,
             49 => 1,
         ];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

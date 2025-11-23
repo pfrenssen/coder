@@ -49,8 +49,7 @@ class TodoCommentSniff implements Sniff
             T_DOC_COMMENT_TAG,
             T_DOC_COMMENT_STRING,
         ];
-
-    }//end register()
+    }
 
 
     /**
@@ -71,8 +70,8 @@ class TodoCommentSniff implements Sniff
 
         $tokens = $phpcsFile->getTokens();
         if ($this->debug === true) {
-            echo "\n------\n\$tokens[$stackPtr] = ".print_r($tokens[$stackPtr], true).PHP_EOL;
-            echo 'code = '.$tokens[$stackPtr]['code'].', type = '.$tokens[$stackPtr]['type']."\n";
+            echo "\n------\n\$tokens[$stackPtr] = " . print_r($tokens[$stackPtr], true) . PHP_EOL;
+            echo 'code = ' . $tokens[$stackPtr]['code'] . ', type = ' . $tokens[$stackPtr]['type'] . "\n";
         }
 
         // Standard comments and multi-line comments where the "@" is missing so
@@ -84,7 +83,7 @@ class TodoCommentSniff implements Sniff
             }
 
             $this->checkTodoFormat($phpcsFile, $stackPtr, $comment, $tokens);
-        } else if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT_TAG) {
+        } elseif ($tokens[$stackPtr]['code'] === T_DOC_COMMENT_TAG) {
             // Document comment tag (i.e. comments that begin with "@").
             // Determine if this is related at all and build the full comment line
             // from the various segments that the line is parsed into.
@@ -108,8 +107,7 @@ class TodoCommentSniff implements Sniff
                 $this->checkTodoFormat($phpcsFile, $stackPtr, $comment, $tokens);
             }//end if
         }//end if
-
-    }//end process()
+    }
 
 
     /**
@@ -184,8 +182,5 @@ class TodoCommentSniff implements Sniff
                 }//end if
             }//end if
         }//end if
-
-    }//end checkTodoFormat()
-
-
-}//end class
+    }
+}

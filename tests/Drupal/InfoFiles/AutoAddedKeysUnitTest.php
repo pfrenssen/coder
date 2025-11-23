@@ -25,8 +25,7 @@ class AutoAddedKeysUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -42,8 +41,7 @@ class AutoAddedKeysUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [1 => 3];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -56,11 +54,8 @@ class AutoAddedKeysUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase): array
     {
         return [
-            __DIR__.'/drupal7/test.info',
-            __DIR__.'/drupal8/test.info.yml',
+            __DIR__ . '/drupal7/test.info',
+            __DIR__ . '/drupal8/test.info.yml',
         ];
-
-    }//end getTestFiles()
-
-
-}//end class
+    }
+}

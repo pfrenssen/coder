@@ -32,8 +32,7 @@ class GetRequestDataUnitTest extends CoderSniffUnitTest
             12 => 1,
             13 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -49,8 +48,5 @@ class GetRequestDataUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

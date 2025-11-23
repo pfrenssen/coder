@@ -28,7 +28,7 @@ class GoodUnitTest extends CoderSniffUnitTest
     {
         return [];
 
-    }//end getErrorList()
+    }
 
 
     /**
@@ -45,7 +45,7 @@ class GoodUnitTest extends CoderSniffUnitTest
     {
         return [];
 
-    }//end getWarningList()
+    }
 
 
     /**
@@ -59,7 +59,7 @@ class GoodUnitTest extends CoderSniffUnitTest
     {
         return [__DIR__.'/good.php'];
 
-    }//end getTestFiles()
+    }
 
 
     /**
@@ -72,7 +72,7 @@ class GoodUnitTest extends CoderSniffUnitTest
         // We want to test all sniffs defined in the standard.
         return true;
 
-    }//end checkAllSniffCodes()
+    }
 
 
-}//end class
+}

@@ -27,8 +27,7 @@ class UseGlobalClassUnitTest extends CoderSniffUnitTest
             13 => 1,
             15 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -44,8 +43,5 @@ class UseGlobalClassUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

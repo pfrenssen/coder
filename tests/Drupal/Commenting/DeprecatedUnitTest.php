@@ -39,8 +39,7 @@ class DeprecatedUnitTest extends CoderSniffUnitTest
             // See Url has trailing punctuation which is fixable.
             101 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -71,8 +70,5 @@ class DeprecatedUnitTest extends CoderSniffUnitTest
             // Core version incorrectly formatted.
             81 => 1,
         ];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

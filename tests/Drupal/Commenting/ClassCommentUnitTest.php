@@ -25,8 +25,7 @@ class ClassCommentUnitTest extends CoderSniffUnitTest
             41 => 1,
             48 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -45,8 +44,5 @@ class ClassCommentUnitTest extends CoderSniffUnitTest
             14 => 1,
             21 => 1,
         ];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

@@ -21,8 +21,7 @@ class InlineVariableCommentUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -46,8 +45,5 @@ class InlineVariableCommentUnitTest extends CoderSniffUnitTest
             17 => 1,
             18 => 1,
         ];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

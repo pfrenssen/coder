@@ -25,8 +25,7 @@ class ValidEnumCaseUnitTest extends CoderSniffUnitTest
             7 => 2,
             9 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -42,8 +41,5 @@ class ValidEnumCaseUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

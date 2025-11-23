@@ -34,8 +34,7 @@ class RoutingAccessSniff implements Sniff
     public function register()
     {
         return [T_INLINE_HTML];
-
-    }//end register()
+    }
 
 
     /**
@@ -68,8 +67,5 @@ class RoutingAccessSniff implements Sniff
             $warning = 'The administration page callback should probably use "administer site configuration" - which implies the user can change something - rather than "access administration pages" which is about viewing but not changing configurations.';
             $phpcsFile->addWarning($warning, $stackPtr, 'PermissionFound');
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

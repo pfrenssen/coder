@@ -45,8 +45,7 @@ class DeprecatedSniff implements Sniff
         }
 
         return [T_DOC_COMMENT_TAG];
-
-    }//end register()
+    }
 
 
     /**
@@ -96,7 +95,7 @@ class DeprecatedSniff implements Sniff
 
         // The standard format for the deprecation text is:
         // @deprecated in %in-version% and is removed from %removal-version%. %extra-info%.
-        $standardFormat = "@deprecated in %%deprecation-version%% and is removed from %%removal-version%%. %%extra-info%%.";
+        $standardFormat = '@deprecated in %%deprecation-version%% and is removed from %%removal-version%%. %%extra-info%%.';
 
         // Use (?U) 'ungreedy' before the removal-version so that only the text
         // up to the first dot+space is matched, as there may be more than one
@@ -110,7 +109,7 @@ class DeprecatedSniff implements Sniff
             // The full text does not match the standard. Try to find fixes by
             // testing with a relaxed set of criteria, based on common
             // formatting variations. This is designed for Core fixes only.
-            $error = "The text '@deprecated %s' does not match the standard format: ".$standardFormat;
+            $error = "The text '@deprecated %s' does not match the standard format: " . $standardFormat;
             // All of the standard text should be on the first comment line, so
             // try to match with common formatting errors to allow an automatic
             // fix. If not possible then report a normal error.
@@ -131,9 +130,9 @@ class DeprecatedSniff implements Sniff
                     // It is a Drupal core deprecation and is fixable.
                     if (empty($matchesFix[1]) === false && $this->debug === true) {
                         // For info, to check it is acceptable to remove the text in [1].
-                        echo('DEBUG: File: '.$phpcsFile->path.', line '.$tokens[($stackPtr)]['line'].PHP_EOL);
-                        echo('DEBUG: "@deprecated '.$text1.'"'.PHP_EOL);
-                        echo('DEBUG: Fix will remove: "'.$matchesFix[1].'"'.PHP_EOL);
+                        echo('DEBUG: File: ' . $phpcsFile->path . ', line ' . $tokens[($stackPtr)]['line'] . PHP_EOL);
+                        echo('DEBUG: "@deprecated ' . $text1 . '"' . PHP_EOL);
+                        echo('DEBUG: Fix will remove: "' . $matchesFix[1] . '"' . PHP_EOL);
                     }
 
                     $ver1 = str_Replace(['-dev', 'x'], ['', '0'], trim($matchesFix[5], '.'));
@@ -147,14 +146,14 @@ class DeprecatedSniff implements Sniff
                         $ver2 .= '.0';
                     }
 
-                    $correctedText = trim('in drupal:'.$ver1.' and is removed from drupal:'.$ver2.'. '.trim($matchesFix[14]));
+                    $correctedText = trim('in drupal:' . $ver1 . ' and is removed from drupal:' . $ver2 . '. ' . trim($matchesFix[14]));
                     // If $correctedText is longer than 65 this will make the whole line
                     // exceed 80 so give a warning if running with debug.
                     if (strlen($correctedText) > 65 && $this->debug === true) {
-                        echo('WARNING: File '.$phpcsFile->path.', line '.$tokens[($stackPtr)]['line'].PHP_EOL);
-                        echo('WARNING: Original  = * @deprecated '.$text1.PHP_EOL);
-                        echo('WARNING: Corrected = * @deprecated '.$correctedText.PHP_EOL);
-                        echo('WARNING: New line length '.(strlen($correctedText) + 15).' exceeds standard 80 character limit'.PHP_EOL);
+                        echo('WARNING: File ' . $phpcsFile->path . ', line ' . $tokens[($stackPtr)]['line'] . PHP_EOL);
+                        echo('WARNING: Original  = * @deprecated ' . $text1 . PHP_EOL);
+                        echo('WARNING: Corrected = * @deprecated ' . $correctedText . PHP_EOL);
+                        echo('WARNING: New line length ' . (strlen($correctedText) + 15) . ' exceeds standard 80 character limit' . PHP_EOL);
                     }
 
                     $fix = $phpcsFile->addFixableError($error, $key, 'IncorrectTextLayout', [$fullText]);
@@ -184,7 +183,7 @@ class DeprecatedSniff implements Sniff
             // except for missing extra info. This is a common fault so provide
             // a separate check and message for this.
             if ($matches[3] === '') {
-                $error = 'The @deprecated tag must have %extra-info%. The standard format is: '.str_replace('%%', '%', $standardFormat);
+                $error = 'The @deprecated tag must have %extra-info%. The standard format is: ' . str_replace('%%', '%', $standardFormat);
                 $phpcsFile->addError($error, $stackPtr, 'MissingExtraInfo', []);
             }
         }//end if
@@ -220,12 +219,9 @@ class DeprecatedSniff implements Sniff
                 $content = substr($crLink, 0, -(strlen($matches[4])));
                 $phpcsFile->fixer->replaceToken($string, $content);
             }//end if
-        } else if (empty($matches) === true) {
+        } elseif (empty($matches) === true) {
             $error = "The @see url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
             $phpcsFile->addWarning($error, $seeTag, 'DeprecatedWrongSeeUrlFormat', [$crLink]);
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

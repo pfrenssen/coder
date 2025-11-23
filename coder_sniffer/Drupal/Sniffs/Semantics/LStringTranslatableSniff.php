@@ -30,8 +30,7 @@ class LStringTranslatableSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['l'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -63,8 +62,5 @@ class LStringTranslatableSniff extends FunctionCall
             $error = 'The $text argument to l() should be enclosed within t() so that it is translatable';
             $phpcsFile->addError($error, $stackPtr, 'LArg');
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

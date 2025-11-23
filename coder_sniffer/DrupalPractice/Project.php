@@ -63,8 +63,7 @@ class Project
 
         $cache[$phpcsFile->getFilename()] = $filename;
         return $filename;
-
-    }//end getName()
+    }
 
 
     /**
@@ -108,12 +107,11 @@ class Project
         }
 
         // Sort the info file names and take the shortest info file.
-        usort($infoFiles, [__NAMESPACE__.'\Project', 'compareLength']);
+        usort($infoFiles, [__NAMESPACE__ . '\Project', 'compareLength']);
         $infoFile = $infoFiles[0];
         $cache[$phpcsFile->getFilename()] = $infoFile;
         return $infoFile;
-
-    }//end getInfoFile()
+    }
 
 
     /**
@@ -151,12 +149,11 @@ class Project
         }
 
         // Sort the YML file names and take the shortest info file.
-        usort($ymlFiles, [__NAMESPACE__.'\Project', 'compareLength']);
+        usort($ymlFiles, [__NAMESPACE__ . '\Project', 'compareLength']);
         $ymlFile = $ymlFiles[0];
         $cache[$phpcsFile->getFilename()] = $ymlFile;
         return $ymlFile;
-
-    }//end getServicesYmlFile()
+    }
 
 
     /**
@@ -198,7 +195,7 @@ class Project
 
         $nameQualifiedPtr = $phpcsFile->findNext(T_NAME_QUALIFIED, ($namespacePtr + 1));
         $namespace        = ($phpcsFile->getTokens()[$nameQualifiedPtr]['content'] ?? '');
-        $classNameSpaced  = ltrim($namespace.'\\'.$phpcsFile->getDeclarationName($classPtr), '\\');
+        $classNameSpaced  = ltrim($namespace . '\\' . $phpcsFile->getDeclarationName($classPtr), '\\');
 
         foreach ($services['services'] as $service) {
             if (isset($service['class']) === true
@@ -210,8 +207,7 @@ class Project
         }
 
         return false;
-
-    }//end isServiceClass()
+    }
 
 
     /**
@@ -225,8 +221,7 @@ class Project
     public static function compareLength($a, $b)
     {
         return (strlen($a) - strlen($b));
-
-    }//end compareLength()
+    }
 
 
     /**
@@ -267,11 +262,6 @@ class Project
         }
 
         // Drupal 8 uses the .yml file extension.
-        // @todo Revisit for Drupal 9, but I don't want to do YAML parsing
-        // for now.
         return 8;
-
-    }//end getCoreVersion()
-
-
-}//end class
+    }
+}

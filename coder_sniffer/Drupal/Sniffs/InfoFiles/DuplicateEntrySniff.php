@@ -31,8 +31,7 @@ class DuplicateEntrySniff implements Sniff
     public function register()
     {
         return [T_INLINE_HTML];
-
-    }//end register()
+    }
 
 
     /**
@@ -62,8 +61,7 @@ class DuplicateEntrySniff implements Sniff
         }
 
         return ($phpcsFile->numTokens + 1);
-
-    }//end process()
+    }
 
 
     /**
@@ -109,7 +107,7 @@ class DuplicateEntrySniff implements Sniff
                     }
                 }
 
-                $value = stripslashes(substr($value1, 1, -1)).stripslashes(substr($value2, 1, -1)).$value3;
+                $value = stripslashes(substr($value1, 1, -1)) . stripslashes(substr($value2, 1, -1)) . $value3;
 
                 // Parse array syntax.
                 $keys   = preg_split('/\]?\[/', rtrim($key, ']'));
@@ -148,8 +146,5 @@ class DuplicateEntrySniff implements Sniff
         }//end if
 
         return $duplicates;
-
-    }//end findDuplicateInfoFileEntries()
-
-
-}//end class
+    }
+}

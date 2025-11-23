@@ -31,8 +31,7 @@ class LCheckPlainSniff extends FunctionCall
     public function registerFunctionNames()
     {
         return ['l'];
-
-    }//end registerFunctionNames()
+    }
 
 
     /**
@@ -60,8 +59,5 @@ class LCheckPlainSniff extends FunctionCall
             $warning = 'Do not use check_plain() on the first argument of l(), because l() will sanitize it for you by default';
             $phpcsFile->addWarning($warning, $argument['start'], 'LCheckPlain');
         }
-
-    }//end processFunctionCall()
-
-
-}//end class
+    }
+}

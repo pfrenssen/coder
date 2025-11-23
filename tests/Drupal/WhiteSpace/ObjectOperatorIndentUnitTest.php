@@ -26,8 +26,7 @@ class ObjectOperatorIndentUnitTest extends CoderSniffUnitTest
             28 => 1,
             30 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -43,8 +42,5 @@ class ObjectOperatorIndentUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

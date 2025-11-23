@@ -88,7 +88,7 @@ class LineLengthSniff extends GenericLineLengthSniff
 
             // Drupal 8 annotations can have long translatable descriptions and we
             // allow them to exceed 80 characters.
-            if ($tokens[($stackPtr - 2)]['code'] === T_DOC_COMMENT_STRING
+            if (($tokens[($stackPtr - 2)]['code'] === T_DOC_COMMENT_STRING
                 && (strpos($tokens[($stackPtr - 2)]['content'], '@Translation(') !== false
                 // Also allow anything without whitespace (like URLs) to exceed 80
                 // characters.
@@ -98,7 +98,7 @@ class LineLengthSniff extends GenericLineLengthSniff
                 // Allow long paths or namespaces in annotations such as
                 // "list_builder" = "Drupal\rules\Entity\Controller\RulesReactionListBuilder"
                 // cardinality = \Drupal\webform\WebformHandlerInterface::CARDINALITY_UNLIMITED.
-                || preg_match('#= ("|\')?\S+[\\\\/]\S+("|\')?,*$#', $tokens[($stackPtr - 2)]['content']) === 1)
+                || preg_match('#= ("|\')?\S+[\\\\/]\S+("|\')?,*$#', $tokens[($stackPtr - 2)]['content']) === 1))
                 // Allow @link tags in lists.
                 || strpos($tokens[($stackPtr - 2)]['content'], '- @link') !== false
                 // Allow hook implementation line to exceed 80 characters.
@@ -109,8 +109,7 @@ class LineLengthSniff extends GenericLineLengthSniff
 
             parent::checkLineLength($phpcsFile, $tokens, $stackPtr);
         }//end if
-
-    }//end checkLineLength()
+    }
 
 
     /**
@@ -136,8 +135,5 @@ class LineLengthSniff extends GenericLineLengthSniff
         }
 
         return strlen($currentLineContent);
-
-    }//end getLineLength()
-
-
-}//end class
+    }
+}

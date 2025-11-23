@@ -21,8 +21,7 @@ class ExceptionTUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -41,8 +40,5 @@ class ExceptionTUnitTest extends CoderSniffUnitTest
             6  => 1,
             10 => 1,
         ];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

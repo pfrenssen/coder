@@ -33,8 +33,7 @@ class PostStatementCommentSniff implements Sniff
     public function register()
     {
         return [T_COMMENT];
-
-    }//end register()
+    }
 
 
     /**
@@ -85,8 +84,5 @@ class PostStatementCommentSniff implements Sniff
             $phpcsFile->fixer->replaceToken($stackPtr, $phpcsFile->eolChar);
             $phpcsFile->fixer->endChangeset();
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

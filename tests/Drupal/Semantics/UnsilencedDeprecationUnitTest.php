@@ -21,8 +21,7 @@ class UnsilencedDeprecationUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [19 => 1];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -38,8 +37,5 @@ class UnsilencedDeprecationUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

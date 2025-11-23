@@ -25,8 +25,7 @@ class ClassDeclarationUnitTest extends CoderSniffUnitTest
             19 => 1,
             28 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -42,8 +41,5 @@ class ClassDeclarationUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

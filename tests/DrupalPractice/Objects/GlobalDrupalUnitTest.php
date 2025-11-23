@@ -21,8 +21,7 @@ class GlobalDrupalUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -38,17 +37,16 @@ class GlobalDrupalUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         switch ($testFile) {
-        case 'GlobalDrupalUnitTest.inc':
-            return [6 => 1];
-        case 'ExampleClassWithDependencyInjection.php':
-            return [17 => 1];
-        case 'ExampleService.php':
-            return [16 => 1];
-        default:
-            return [];
+            case 'GlobalDrupalUnitTest.inc':
+                return [6 => 1];
+            case 'ExampleClassWithDependencyInjection.php':
+                return [17 => 1];
+            case 'ExampleService.php':
+                return [16 => 1];
+            default:
+                return [];
         }
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -61,14 +59,11 @@ class GlobalDrupalUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase): array
     {
         return [
-            __DIR__.'/GlobalDrupalUnitTest.inc',
-            __DIR__.'/drupal8/example.module',
-            __DIR__.'/drupal8/ExampleClass.php',
-            __DIR__.'/drupal8/ExampleClassWithDependencyInjection.php',
-            __DIR__.'/drupal8/ExampleService.php',
+            __DIR__ . '/GlobalDrupalUnitTest.inc',
+            __DIR__ . '/drupal8/example.module',
+            __DIR__ . '/drupal8/ExampleClass.php',
+            __DIR__ . '/drupal8/ExampleClassWithDependencyInjection.php',
+            __DIR__ . '/drupal8/ExampleService.php',
         ];
-
-    }//end getTestFiles()
-
-
-}//end class
+    }
+}

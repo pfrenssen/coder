@@ -24,8 +24,7 @@ class RemoteAddressUnitTest extends CoderSniffUnitTest
             12 => 1,
             19 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -41,8 +40,5 @@ class RemoteAddressUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

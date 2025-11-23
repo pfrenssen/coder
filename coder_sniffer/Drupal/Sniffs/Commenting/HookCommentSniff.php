@@ -31,8 +31,7 @@ class HookCommentSniff implements Sniff
     public function register()
     {
         return [T_FUNCTION];
-
-    }//end register()
+    }
 
 
     /**
@@ -122,8 +121,5 @@ class HookCommentSniff implements Sniff
                 $phpcsFile->fixer->replaceToken($short, $newComment);
             }
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

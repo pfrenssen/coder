@@ -27,8 +27,7 @@ class SpaceUnaryOperatorUnitTest extends CoderSniffUnitTest
             6 => 1,
             7 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -44,8 +43,5 @@ class SpaceUnaryOperatorUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

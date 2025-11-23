@@ -34,8 +34,7 @@ class DescriptionSniff implements Sniff
     public function register()
     {
         return [T_INLINE_HTML];
-
-    }//end register()
+    }
 
 
     /**
@@ -76,14 +75,11 @@ class DescriptionSniff implements Sniff
         if (isset($info['description']) === false) {
             $warning = '"Description" property is missing in the info.yml file';
             $phpcsFile->addWarning($warning, $stackPtr, 'Missing');
-        } else if ($info['description'] === '') {
+        } elseif ($info['description'] === '') {
             $warning = '"Description" should not be empty';
             $phpcsFile->addWarning($warning, $stackPtr, 'Empty');
         }
 
         return ($phpcsFile->numTokens + 1);
-
-    }//end process()
-
-
-}//end class
+    }
+}

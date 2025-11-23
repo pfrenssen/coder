@@ -36,8 +36,7 @@ class DocCommentSniff implements Sniff
     public function register()
     {
         return [T_DOC_COMMENT_OPEN_TAG];
-
-    }//end register()
+    }
 
 
     /**
@@ -179,7 +178,7 @@ class DocCommentSniff implements Sniff
                     for ($i = $start; $i < $short; $i++) {
                         if ($tokens[$i]['line'] === $tokens[$start]['line']) {
                             continue;
-                        } else if ($tokens[$i]['line'] === $tokens[$short]['line']) {
+                        } elseif ($tokens[$i]['line'] === $tokens[$short]['line']) {
                             break;
                         }
 
@@ -293,7 +292,7 @@ class DocCommentSniff implements Sniff
                     for ($i = ($shortEnd + 1); $i < $long; $i++) {
                         if ($tokens[$i]['line'] === $tokens[$shortEnd]['line']) {
                             continue;
-                        } else if ($tokens[$i]['line'] === ($tokens[$long]['line'] - 1)) {
+                        } elseif ($tokens[$i]['line'] === ($tokens[$long]['line'] - 1)) {
                             break;
                         }
 
@@ -378,7 +377,7 @@ class DocCommentSniff implements Sniff
                 }
 
                 $indent = str_repeat(' ', $tokens[$stackPtr]['column']);
-                $phpcsFile->fixer->addContent($prev, $phpcsFile->eolChar.$indent.'*'.$phpcsFile->eolChar);
+                $phpcsFile->fixer->addContent($prev, $phpcsFile->eolChar . $indent . '*' . $phpcsFile->eolChar);
                 $phpcsFile->fixer->endChangeset();
             }
         }
@@ -443,7 +442,7 @@ class DocCommentSniff implements Sniff
 
                 // All of the $checkTags sections should be separated by a blank
                 // line both before and after the sections.
-            } else if ($isNewGroup === false
+            } elseif ($isNewGroup === false
                 && (in_array($currentTag, $checkTags) === true || in_array($previousTag, $checkTags) === true)
                 && $previousTag !== $currentTag
                 && in_array($tokens[$prev]['code'], Tokens::PHPCS_ANNOTATION_TOKENS) === false
@@ -451,7 +450,7 @@ class DocCommentSniff implements Sniff
                 $error = 'Separate the %s and %s sections by a blank line.';
                 $fix   = $phpcsFile->addFixableError($error, $tag, 'TagGroupSpacing', [$previousTag, $currentTag]);
                 if ($fix === true) {
-                    $phpcsFile->fixer->replaceToken(($tag - 1), "\n".str_repeat(' ', ($tokens[$tag]['column'] - 3)).'* ');
+                    $phpcsFile->fixer->replaceToken(($tag - 1), "\n" . str_repeat(' ', ($tokens[$tag]['column'] - 3)) . '* ');
                 }
             }//end if
 
@@ -502,7 +501,7 @@ class DocCommentSniff implements Sniff
                         }
 
                         $indent = str_repeat(' ', $tokens[$stackPtr]['column']);
-                        $phpcsFile->fixer->addContent($prev, $phpcsFile->eolChar.$indent.'*'.$phpcsFile->eolChar);
+                        $phpcsFile->fixer->addContent($prev, $phpcsFile->eolChar . $indent . '*' . $phpcsFile->eolChar);
                         $phpcsFile->fixer->endChangeset();
                     }
                 }
@@ -551,8 +550,5 @@ class DocCommentSniff implements Sniff
             $foundTags[$tagName] = true;
             $lastPos = $pos;
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

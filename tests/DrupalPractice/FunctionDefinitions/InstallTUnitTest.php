@@ -27,8 +27,7 @@ class InstallTUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [12 => 1];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -44,8 +43,7 @@ class InstallTUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -57,9 +55,6 @@ class InstallTUnitTest extends CoderSniffUnitTest
      */
     protected function getTestFiles($testFileBase): array
     {
-        return [__DIR__.'/test.install'];
-
-    }//end getTestFiles()
-
-
-}//end class
+        return [__DIR__ . '/test.install'];
+    }
+}

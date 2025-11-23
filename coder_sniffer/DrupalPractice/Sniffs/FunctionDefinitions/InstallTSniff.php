@@ -46,8 +46,8 @@ class InstallTSniff extends FunctionDefinition
 
         $fileName = substr(basename($phpcsFile->getFilename()), 0, -8);
         $tokens   = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['content'] !== ($fileName.'_install')
-            && $tokens[$stackPtr]['content'] !== ($fileName.'_requirements')
+        if ($tokens[$stackPtr]['content'] !== ($fileName . '_install')
+            && $tokens[$stackPtr]['content'] !== ($fileName . '_requirements')
         ) {
             return;
         }
@@ -85,8 +85,5 @@ class InstallTSniff extends FunctionDefinition
                 $tokens[$functionPtr]['scope_closer']
             );
         }//end while
-
-    }//end processFunction()
-
-
-}//end class
+    }
+}

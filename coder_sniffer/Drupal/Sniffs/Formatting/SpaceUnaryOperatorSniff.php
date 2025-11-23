@@ -41,8 +41,7 @@ class SpaceUnaryOperatorSniff implements Sniff
              T_PLUS,
              T_BOOLEAN_NOT,
          ];
-
-    }//end register()
+    }
 
 
     /**
@@ -139,8 +138,5 @@ class SpaceUnaryOperatorSniff implements Sniff
                 }
             }
         }
-
-    }//end process()
-
-
-}//end class
+    }
+}

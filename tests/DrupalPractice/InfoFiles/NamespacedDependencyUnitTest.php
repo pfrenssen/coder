@@ -21,8 +21,7 @@ class NamespacedDependencyUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -38,19 +37,18 @@ class NamespacedDependencyUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         switch ($testFile) {
-        case 'dependencies_test.info.yml':
-            return [
-                9  => 1,
-                11 => 1,
-                13 => 1,
-            ];
-        case 'dependencies_theme.info.yml':
-            return [];
+            case 'dependencies_test.info.yml':
+                return [
+                    9  => 1,
+                    11 => 1,
+                    13 => 1,
+                ];
+            case 'dependencies_theme.info.yml':
+                return [];
         }
 
         return [];
-
-    }//end getWarningList()
+    }
 
 
     /**
@@ -63,11 +61,8 @@ class NamespacedDependencyUnitTest extends CoderSniffUnitTest
     protected function getTestFiles($testFileBase): array
     {
         return [
-            __DIR__.'/dependencies_test.info.yml',
-            __DIR__.'/dependencies_theme.info.yml',
+            __DIR__ . '/dependencies_test.info.yml',
+            __DIR__ . '/dependencies_theme.info.yml',
         ];
-
-    }//end getTestFiles()
-
-
-}//end class
+    }
+}

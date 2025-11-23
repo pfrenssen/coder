@@ -24,8 +24,7 @@ class ObjectOperatorSpacingUnitTest extends CoderSniffUnitTest
             9  => 1,
             10 => 1,
         ];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -41,8 +40,5 @@ class ObjectOperatorSpacingUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

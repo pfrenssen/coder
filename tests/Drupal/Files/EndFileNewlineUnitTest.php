@@ -28,8 +28,7 @@ class EndFileNewlineUnitTest extends CoderSniffUnitTest
             // code line in them).
             return [1 => 1];
         }
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -45,8 +44,5 @@ class EndFileNewlineUnitTest extends CoderSniffUnitTest
     protected function getWarningList(string $testFile): array
     {
         return [];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

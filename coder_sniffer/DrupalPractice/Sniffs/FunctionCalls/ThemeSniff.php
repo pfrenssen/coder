@@ -60,8 +60,5 @@ class ThemeSniff extends FunctionCall
         $themeName = substr($functionName, 6);
         $warning   = "Do not call theme functions directly, use theme('%s', ...) instead";
         $phpcsFile->addWarning($warning, $stackPtr, 'ThemeFunctionDirect', [$themeName]);
-
-    }//end process()
-
-
-}//end class
+    }
+}

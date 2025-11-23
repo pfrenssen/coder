@@ -31,8 +31,7 @@ class OpenTagNewlineSniff implements Sniff
     public function register()
     {
         return [T_OPEN_TAG];
-
-    }//end register()
+    }
 
 
     /**
@@ -80,7 +79,7 @@ class OpenTagNewlineSniff implements Sniff
             if ($tokens[$next]['line'] === 1) {
                 $phpcsFile->fixer->addNewline($stackPtr);
                 $phpcsFile->fixer->addNewline($stackPtr);
-            } else if ($tokens[$next]['line'] === 2) {
+            } elseif ($tokens[$next]['line'] === 2) {
                 $phpcsFile->fixer->addNewline($stackPtr);
             } else {
                 for ($i = ($stackPtr + 1); $i < $next; $i++) {
@@ -94,8 +93,5 @@ class OpenTagNewlineSniff implements Sniff
         }
 
         return ($phpcsFile->numTokens + 1);
-
-    }//end process()
-
-
-}//end class
+    }
+}

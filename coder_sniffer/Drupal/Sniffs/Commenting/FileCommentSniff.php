@@ -38,8 +38,7 @@ class FileCommentSniff implements Sniff
     public function register()
     {
         return [T_OPEN_TAG];
-
-    }//end register()
+    }
 
 
     /**
@@ -122,7 +121,7 @@ class FileCommentSniff implements Sniff
                 // insert a space after the stars.
                 if (strpos($content, '/**') === 0) {
                     $phpcsFile->fixer->replaceToken($commentStart, str_replace('/**', '/** ', $content));
-                } else if (strpos($content, '/*') === 0) {
+                } elseif (strpos($content, '/*') === 0) {
                     // Just turn the /* ... */ style comment into a /** ... */ style
                     // comment.
                     $phpcsFile->fixer->replaceToken($commentStart, str_replace('/*', '/**', $content));
@@ -133,7 +132,7 @@ class FileCommentSniff implements Sniff
             }
 
             return ($phpcsFile->numTokens + 1);
-        } else if ($commentStart === false || $tokens[$commentStart]['code'] !== T_DOC_COMMENT_OPEN_TAG) {
+        } elseif ($commentStart === false || $tokens[$commentStart]['code'] !== T_DOC_COMMENT_OPEN_TAG) {
             $fix = $phpcsFile->addFixableError('Missing file doc comment', 0, 'Missing');
             if ($fix === true) {
                 // Only PHP has a real opening tag, additional newline at the
@@ -231,8 +230,5 @@ class FileCommentSniff implements Sniff
 
         // Ignore the rest of the file.
         return ($phpcsFile->numTokens + 1);
-
-    }//end process()
-
-
-}//end class
+    }
+}

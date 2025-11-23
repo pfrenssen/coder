@@ -21,8 +21,7 @@ class ValidHookNameUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [];
-
-    }//end getErrorList()
+    }
 
 
     /**
@@ -47,8 +46,5 @@ class ValidHookNameUnitTest extends CoderSniffUnitTest
             92  => 1,
             107 => 1,
         ];
-
-    }//end getWarningList()
-
-
-}//end class
+    }
+}

@@ -28,7 +28,7 @@ class BadUnitTest extends CoderSniffUnitTest
     {
         return [];
 
-    }//end getErrorList()
+    }
 
 
     /**
@@ -55,7 +55,7 @@ class BadUnitTest extends CoderSniffUnitTest
 
         return [];
 
-    }//end getWarningList()
+    }
 
 
     /**
@@ -81,7 +81,7 @@ class BadUnitTest extends CoderSniffUnitTest
         sort($testFiles);
         return $testFiles;
 
-    }//end getTestFiles()
+    }
 
 
     /**
@@ -94,7 +94,7 @@ class BadUnitTest extends CoderSniffUnitTest
         // We want to test all sniffs defined in the standard.
         return true;
 
-    }//end checkAllSniffCodes()
+    }
 
 
-}//end class
+}

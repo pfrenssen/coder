@@ -29,8 +29,7 @@ class ProjectUnitTest extends TestCase
         $this->phpcsFile = $this->getMockBuilder('\PHP_CodeSniffer\Files\File')
             ->disableOriginalConstructor()
             ->getMock();
-
-    }//end setUp()
+    }
 
 
     /**
@@ -42,11 +41,10 @@ class ProjectUnitTest extends TestCase
     {
         $this->phpcsFile->expects($this->any())
             ->method('getFilename')
-            ->will($this->returnValue(__DIR__.'/drupal6/test.php'));
+            ->will($this->returnValue(__DIR__ . '/drupal6/test.php'));
 
-        $this->assertEquals(Project::getInfoFile($this->phpcsFile), __DIR__.'/drupal6/testmodule.info');
-
-    }//end testInfoFileDetection()
+        $this->assertEquals(Project::getInfoFile($this->phpcsFile), __DIR__ . '/drupal6/testmodule.info');
+    }
 
 
     /**
@@ -58,11 +56,10 @@ class ProjectUnitTest extends TestCase
     {
         $this->phpcsFile->expects($this->any())
             ->method('getFilename')
-            ->will($this->returnValue(__DIR__.'/drupal6/nested/test.php'));
+            ->will($this->returnValue(__DIR__ . '/drupal6/nested/test.php'));
 
-        $this->assertEquals(Project::getInfoFile($this->phpcsFile), __DIR__.'/drupal6/testmodule.info');
-
-    }//end testInfoFileNestedDetection()
+        $this->assertEquals(Project::getInfoFile($this->phpcsFile), __DIR__ . '/drupal6/testmodule.info');
+    }
 
 
     /**
@@ -82,8 +79,7 @@ class ProjectUnitTest extends TestCase
             ->will($this->returnValue($filename));
 
         $this->assertEquals(Project::getCoreVersion($this->phpcsFile), $coreVersion);
-
-    }//end testCoreVersion()
+    }
 
 
     /**
@@ -95,15 +91,15 @@ class ProjectUnitTest extends TestCase
     {
         return [
             [
-                __DIR__.'/drupal6/nested/test.php',
+                __DIR__ . '/drupal6/nested/test.php',
                 6,
             ],
             [
-                __DIR__.'/drupal7/test.php',
+                __DIR__ . '/drupal7/test.php',
                 7,
             ],
             [
-                __DIR__.'/drupal8/test.php',
+                __DIR__ . '/drupal8/test.php',
                 8,
             ],
             [
@@ -111,12 +107,11 @@ class ProjectUnitTest extends TestCase
                 8,
             ],
             [
-                __DIR__.'/directory.info/test.php',
+                __DIR__ . '/directory.info/test.php',
                 8,
             ],
         ];
-
-    }//end coreVersionProvider()
+    }
 
 
     /**
@@ -136,8 +131,7 @@ class ProjectUnitTest extends TestCase
             ->will($this->returnValue($filename));
 
         $this->assertEquals(Project::getName($this->phpcsFile), $projectname);
-
-    }//end testProjectNameDetection()
+    }
 
 
     /**
@@ -152,27 +146,27 @@ class ProjectUnitTest extends TestCase
     {
         return [
             [
-                __DIR__.'/drupal6/testmodule.info',
+                __DIR__ . '/drupal6/testmodule.info',
                 'testmodule',
             ],
             [
-                __DIR__.'/drupal6/nested/test.php',
+                __DIR__ . '/drupal6/nested/test.php',
                 'testmodule',
             ],
             [
-                __DIR__.'/drupal7/testmodule.info',
+                __DIR__ . '/drupal7/testmodule.info',
                 'testmodule',
             ],
             [
-                __DIR__.'/drupal8/testmodule.info.yml',
+                __DIR__ . '/drupal8/testmodule.info.yml',
                 'testmodule',
             ],
             [
-                __DIR__.'/drupal8/testtheme/testtheme.info.yml',
+                __DIR__ . '/drupal8/testtheme/testtheme.info.yml',
                 'testtheme',
             ],
             [
-                __DIR__.'/drupal8/testtheme/testtheme.theme',
+                __DIR__ . '/drupal8/testtheme/testtheme.theme',
                 'testtheme',
             ],
             [
@@ -180,8 +174,5 @@ class ProjectUnitTest extends TestCase
                 false,
             ],
         ];
-
-    }//end projectNameDetectionProvider()
-
-
-}//end class
+    }
+}
