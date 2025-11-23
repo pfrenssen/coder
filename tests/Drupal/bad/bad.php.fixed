@@ -672,7 +672,7 @@ function test14() {
 /**
  * Return data type documentation must not be the variable name.
  *
- * @return foo
+ * @return \foo
  *   Description bla.
  */
 function test15() {
@@ -690,12 +690,12 @@ function test16() {
 /**
  * Invalid data types.
  *
- * @param mixed $x
+ * @param \type $x
  *   Description here.
  * @param bool $y
  *   Description here.
  *
- * @return unknown_type
+ * @return \unknown_type
  *   Description here.
  */
 function test17($x, $y) {

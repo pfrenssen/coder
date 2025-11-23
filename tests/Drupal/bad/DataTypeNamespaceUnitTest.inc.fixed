@@ -7,18 +7,18 @@ use Some\Namespaced\TestClass;
 /**
  * Test.
  */
-class Test {
+class DataTypeNamespaceUnitTest {
 
   /**
    * Param and Return data types should be fully namespaced.
    *
-   * @param TestClass $y
+   * @param \Some\Namespaced\TestClass $y
    *   Some description.
    *
-   * @return TestClass
+   * @return \Some\Namespaced\TestClass
    *   Yep.
    *
-   * @throws TestClass
+   * @throws \Some\Namespaced\TestClass
    */
   public function test1(TestClass $y) {
     return $y;
@@ -28,7 +28,7 @@ class Test {
    * Inline var data types should be converted.
    */
   public function test2(array $x) {
-    /** @var TestClass $y */
+    /** @var \Some\Namespaced\TestClass $y */
     $y = $x['test'];
     return $y;
   }

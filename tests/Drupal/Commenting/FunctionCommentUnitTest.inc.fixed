@@ -257,11 +257,11 @@ function test21($arg1, $arg2, $arg3) {
  *
  * @param array|bool|float|int|mixed|object|string|resource|callable $arg1
  *   All of the above types are valid.
- * @param array|bool|int|string|null $arg2
+ * @param array|bool|int|\str|null $arg2
  *   All of the above types are invalid.
  * @param array|bool|int|string $arg3
  *   All of the above types are invalid.
- * @param mixed $arg4
+ * @param \type $arg4
  *   All of the above types are invalid.
  * @param false|true|int $arg5
  *   All of the above types are invalid.
@@ -536,7 +536,7 @@ function test37(array $matches, array $sub_key, $to) {
 /**
  * Yield from should be a recognised return statement.
  *
- * @return Generator
+ * @return \Generator
  *   Generator value.
  */
 function test38($a, $b) {
@@ -605,7 +605,7 @@ class Test41 {
  *   NULL.
  * @param float $param8
  *   Float.
- * @param double $param9
+ * @param \double $param9
  *   Double.
  * @param scalar $param10
  *   Scalar.
@@ -685,15 +685,15 @@ function test_return_void2(): void {
 /**
  * PHPStan: General arrays.
  *
- * @param Type[] $param1
+ * @param \Type[] $param1
  *   Parameter.
- * @param array<Type> $param2
+ * @param array<\Type> $param2
  *   Parameter.
- * @param array<int, Type> $param3
+ * @param array<int, \Type> $param3
  *   Parameter.
- * @param non-empty-array<Type> $param4
+ * @param non-empty-array<\Type> $param4
  *   Parameter.
- * @param non-empty-array<int, Type> $param5
+ * @param non-empty-array<int, \Type> $param5
  *   Parameter.
  *
  * @see https://phpstan.org/writing-php-code/phpdoc-types#general-arrays
@@ -702,7 +702,7 @@ function test_arrays(array $param1, array $param2, array $param3, array $param4,
 }
 
 /**
- * @return Type[]
+ * @return \Type[]
  *   Square brackets.
  */
 function test_return_type_array(): array {
@@ -710,7 +710,7 @@ function test_return_type_array(): array {
 }
 
 /**
- * @return array<Type>
+ * @return array<\Type>
  *   Arrow brackets.
  */
 function test_return_arrow_array(): array {
@@ -718,7 +718,7 @@ function test_return_arrow_array(): array {
 }
 
 /**
- * @return array<int, Type>
+ * @return array<int, \Type>
  *   Keyed array.
  */
 function test_return_keyed_array(): array {
@@ -726,7 +726,7 @@ function test_return_keyed_array(): array {
 }
 
 /**
- * @return non-empty-array<Type>
+ * @return non-empty-array<\Type>
  *   Non empty array with type.
  */
 function test_return_non_empty_array(): array {
@@ -734,7 +734,7 @@ function test_return_non_empty_array(): array {
 }
 
 /**
- * @return non-empty-array<int, Type>
+ * @return non-empty-array<int, \Type>
  *   Non empty keyed array with type.
  */
 function test_return_non_empty_keyed_array(): array {
@@ -854,7 +854,7 @@ function test_return_integer_max(): int {
  *
  * @param class-string $param1
  *   Parameter.
- * @param class-string<Foo> $param2
+ * @param class-string<\Foo> $param2
  *   Parameter.
  * @param callable-string $param3
  *   Parameter.
@@ -883,7 +883,7 @@ function test_return_class_string(): string {
 }
 
 /**
- * @return class-string<Foo>
+ * @return class-string<\Foo>
  *   Class string.
  */
 function test_return_class_string_foo(): string {
@@ -933,10 +933,10 @@ function test_return_literal_string(): string {
 /**
  * PHP 8 intersection types are ok.
  *
- * @param Foo&Bar $a
+ * @param \Foo&\Bar $a
  *   Intersection type parameter.
  *
- * @return Foo&Bar
+ * @return \Foo&\Bar
  *   Intersection type return declaration.
  */
 function test_intersection_types(Foo&Bar $a): Foo&Bar {

@@ -26,7 +26,7 @@ class ClassCreateInstanceUnitTest {
   /**
    * Using PHP 7 return type hints is fine.
    *
-   * @return ValidatorInterface[]
+   * @return \ValidatorInterface[]
    *   The validators.
    */
   public function getValidators(): array {
