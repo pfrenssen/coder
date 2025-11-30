@@ -11,8 +11,9 @@
   </rule>
 
   <rule ref="Drupal.Commenting.FileComment">
-    <!-- Do not run this sniff on txt files. -->
+    <!-- Do not run this sniff on txt or yml files. -->
     <exclude-pattern>*.txt</exclude-pattern>
+    <exclude-pattern>*.yml</exclude-pattern>
   </rule>
   <rule ref="Drupal.Commenting.FileComment.SpacingAfterComment">
     <!-- Do not run this sniff on template files. -->

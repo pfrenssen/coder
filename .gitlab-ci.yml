@@ -1,0 +1,50 @@
+################
+# GitLab CI configuration for Coder project
+################
+
+variables:
+  COMPOSER_HOME: "$CI_PROJECT_DIR/.composer"
+
+.test-template:
+  image: php:$PHP_VERSION-alpine
+  before_script:
+    - apk add --no-cache git unzip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - composer install --no-progress --prefer-dist --optimize-autoloader
+  script:
+    - ./vendor/bin/phpunit
+    - ./vendor/bin/phpcs
+    - ./vendor/bin/phpcs -p --standard=tests/Drupal/phpcs-ruleset.xml tests/Drupal/good/ --ignore=tests/Drupal/good/GoodUnitTest.php
+    - ./vendor/bin/phpcs -p --standard=coder_sniffer/DrupalPractice tests/DrupalPractice/good/ --ignore=tests/DrupalPractice/good/GoodUnitTest.php
+
+# PHP 7.4 - 8.4 tests
+test:php:
+  extends: .test-template
+  parallel:
+    matrix:
+      - PHP_VERSION: ["7.2", "7.3", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
+
+# PHPStan analysis
+phpstan:
+  extends: .test-template
+  variables:
+    PHP_VERSION: "8.4"
+  script:
+    - ./vendor/bin/phpstan analyse --memory-limit=256M
+
+# Cspell spell checking
+cspell:
+  image: node:alpine
+  script:
+    - npm install -g cspell
+    - cspell "**/*"
+
+# Drupal core regression tests
+drupal-core:
+  extends: .test-template
+  variables:
+    PHP_VERSION: "8.4"
+  script:
+    - git clone --depth 1 --branch 11.x https://git.drupalcode.org/project/drupal.git drupal
+    - cd drupal/core
+    - ../../vendor/bin/phpcs -p -s --parallel=$(nproc) -d memory_limit=2G

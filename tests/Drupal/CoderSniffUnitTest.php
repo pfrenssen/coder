@@ -156,11 +156,11 @@ abstract class CoderSniffUnitTest extends TestCase
         // Get a list of all test files to check.
         $testFiles = $this->getTestFiles($testFileBase);
 
-        $config        = new Config();
+        // Set a dummy config to not read CLI values during test runs.
+        $config        = new Config(['--']);
         $config->cache = false;
         $GLOBALS['PHP_CODESNIFFER_CONFIG'] = $config;
 
-        // $config->standards = array($standardName);
         $config->ignored   = [];
         $config->standards = [$this->standardsDir];
 
