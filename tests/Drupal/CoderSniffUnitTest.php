@@ -154,11 +154,11 @@ abstract class CoderSniffUnitTest extends TestCase
             'No test files found for the ' . $sniffCode . ' unit test.'
         );
 
-        $config        = new Config();
+        // Set a dummy config to not read CLI values during test runs.
+        $config        = new Config(['--']);
         $config->cache = false;
         $GLOBALS['PHP_CODESNIFFER_CONFIG'] = $config;
 
-        // $config->standards = array($standardName);
         $config->ignored   = [];
         $config->standards = [$this->standardsDir];
 

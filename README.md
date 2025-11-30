@@ -119,10 +119,7 @@ Then execute static analysis:
 
 ## Contributing
 
-1. Make sure an issue exists at https://www.drupal.org/project/issues/coder
-2. Create a [Pull Request](https://help.github.com/articles/using-pull-requests/) against https://github.com/pfrenssen/coder
-3. Post a link to the pull request to the issue on drupal.org and set the issue to
-   "needs review"
+Please [create an issue fork and merge request on drupal.org](https://www.drupal.org/docs/develop/git/using-gitlab-to-contribute-to-drupal).
 
 Thank you!
 
