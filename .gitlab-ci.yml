@@ -17,18 +17,18 @@ variables:
     - ./vendor/bin/phpcs -p --standard=tests/Drupal/phpcs-ruleset.xml tests/Drupal/good/ --ignore=tests/Drupal/good/GoodUnitTest.php
     - ./vendor/bin/phpcs -p --standard=coder_sniffer/DrupalPractice tests/DrupalPractice/good/ --ignore=tests/DrupalPractice/good/GoodUnitTest.php
 
-# PHP 7.4 - 8.4 tests
+# PHP 7.4 - 8.5 tests
 test:php:
   extends: .test-template
   parallel:
     matrix:
-      - PHP_VERSION: ["7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
+      - PHP_VERSION: ["7.4", "8.0", "8.1", "8.2", "8.3", "8.4", "8.5"]
 
 # PHPStan analysis
 phpstan:
   extends: .test-template
   variables:
-    PHP_VERSION: "8.4"
+    PHP_VERSION: "8.5"
   script:
     - ./vendor/bin/phpstan analyse --memory-limit=256M
 
@@ -43,7 +43,7 @@ cspell:
 drupal-core:
   extends: .test-template
   variables:
-    PHP_VERSION: "8.4"
+    PHP_VERSION: "8.5"
   script:
     - git clone --depth 1 --branch 11.x https://git.drupalcode.org/project/drupal.git drupal
     - cd drupal/core
