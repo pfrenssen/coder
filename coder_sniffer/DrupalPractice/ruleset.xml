@@ -16,9 +16,7 @@
     <properties>
       <property name="allowUnusedFunctionParameters" value="true"/>
     </properties>
-  </rule>
-  <rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable">
-    <severity>0</severity>
+    <exclude name="VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable"/>
   </rule>
 
   <!-- Ignore various version control directories. -->
