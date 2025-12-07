@@ -16,9 +16,9 @@
     "require": {
         "php": ">=7.4",
         "ext-mbstring": "*",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1 || ^1.0.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.2",
         "sirbrillig/phpcs-variable-analysis": "^2.13",
-        "slevomat/coding-standard": "^8.24",
+        "slevomat/coding-standard": "^8.25.1",
         "squizlabs/php_codesniffer": "^4.0.1",
         "symfony/yaml": ">=3.4.0"
     },
