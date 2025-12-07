@@ -309,9 +309,9 @@ class BadUnitTest extends CoderSniffUnitTest
                 638 => 1,
                 646 => 2,
                 648 => 1,
-                656 => 2,
+                656 => 1,
                 658 => 1,
-                661 => 2,
+                661 => 1,
                 671 => 1,
                 678 => 1,
                 685 => 1,
@@ -387,14 +387,6 @@ class BadUnitTest extends CoderSniffUnitTest
                 13 => 2,
                 14 => 2,
                 16 => 1,
-                26 => 1,
-                31 => 1,
-            ];
-        case 'DataTypeNamespaceUnitTest.inc':
-            return [
-                15 => 1,
-                18 => 1,
-                21 => 1,
                 31 => 1,
             ];
         case 'ElseIfUnitTest.inc':
@@ -433,12 +425,7 @@ class BadUnitTest extends CoderSniffUnitTest
                 21 => 1,
                 22 => 1,
                 23 => 1,
-                35 => 1,
-                42 => 1,
                 56 => 1,
-                85 => 1,
-                87 => 1,
-                98 => 1,
             ];
         case 'UseLeadingBackslashUnitTest.inc':
             return [

@@ -14,7 +14,7 @@
  * @return bool
  *   Returns FALSE.
  *
- * @throws \Exception
+ * @throws Exception
  *   Thrown when $param is TRUE.
  *
  * @ingroup sniffer
@@ -97,7 +97,7 @@ function test12() {
  * | Unseen University | Mustrum Ridcully | Alberto Malich the Wise | 1281 AM       | Nvnc Id Vides, Nvnc Ne Vides           |
  * phpcs:enable
  *
- * @param \TableNode $organisation_table
+ * @param TableNode $organisation_table
  *   The organisation data.
  *
  * @Given (the following )organisations:

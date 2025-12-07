@@ -19,14 +19,14 @@ class UnusedUseStatementUnitTest {
   /**
    * This data type should be fixed to be fully qualified.
    *
-   * @var \Some\Data\VarName
+   * @var VarName
    */
   protected $x;
 
   /**
    * Aliased type that is otherwise unused.
    *
-   * @var \Some\Data\VarName2
+   * @var AliasVarName2
    */
   protected $y;
 
@@ -69,9 +69,9 @@ class UnusedUseStatementUnitTest {
    * Inline var declarations should also get fixed to the full namespace.
    */
   protected function test6($x) {
-    /** @var \Some\Data\VarName $y */
+    /** @var VarName $y */
     $y = $x['test'];
-    /** @var \Some\Data\VarName2 $z */
+    /** @var AliasVarName2 $z */
     $z = $x['test2'];
     return $y;
   }
@@ -82,7 +82,7 @@ class UnusedUseStatementUnitTest {
    * @param array $x
    *   Some array.
    *
-   * @return \Some\Data\VarName
+   * @return VarName
    *   The variable.
    */
   protected function test7($x) {
