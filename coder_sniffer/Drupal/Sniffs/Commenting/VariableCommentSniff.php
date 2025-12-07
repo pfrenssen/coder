@@ -10,6 +10,7 @@
 namespace Drupal\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\AbstractScopeSniff;
 use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
 use PHP_CodeSniffer\Util\Tokens;
 
@@ -28,6 +29,15 @@ class VariableCommentSniff extends AbstractVariableSniff
 
 
     /**
+     * Only listen to variables within OO scopes.
+     */
+    public function __construct()
+    {
+        AbstractScopeSniff::__construct(Tokens::OO_SCOPE_TOKENS, [T_VARIABLE], false);
+    }
+
+
+    /**
      * Called to process class member vars.
      *
      * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
@@ -36,27 +46,31 @@ class VariableCommentSniff extends AbstractVariableSniff
      *
      * @return void
      */
-    public function processMemberVar(File $phpcsFile, $stackPtr)
+    public function processMemberVar(File $phpcsFile, int $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $ignore = ([
-            T_PUBLIC            => T_PUBLIC,
-            T_PRIVATE           => T_PRIVATE,
-            T_PROTECTED         => T_PROTECTED,
-            T_VAR               => T_VAR,
-            T_STATIC            => T_STATIC,
-            T_READONLY          => T_READONLY,
-            T_WHITESPACE        => T_WHITESPACE,
-            T_NAMESPACE         => T_NAMESPACE,
-            T_NULLABLE          => T_NULLABLE,
-            T_TYPE_UNION        => T_TYPE_UNION,
-            T_TYPE_INTERSECTION => T_TYPE_INTERSECTION,
-            T_NULL              => T_NULL,
-            T_TRUE              => T_TRUE,
-            T_FALSE             => T_FALSE,
-            T_SELF              => T_SELF,
-            T_PARENT            => T_PARENT,
-        ] + Tokens::PHPCS_ANNOTATION_TOKENS + Tokens::NAME_TOKENS);
+
+        $ignore  = Tokens::SCOPE_MODIFIERS;
+        $ignore += Tokens::NAME_TOKENS;
+        $ignore += Tokens::PHPCS_ANNOTATION_TOKENS;
+        $ignore += [
+            T_VAR                    => T_VAR,
+            T_STATIC                 => T_STATIC,
+            T_READONLY               => T_READONLY,
+            T_FINAL                  => T_FINAL,
+            T_ABSTRACT               => T_ABSTRACT,
+            T_WHITESPACE             => T_WHITESPACE,
+            T_NULLABLE               => T_NULLABLE,
+            T_TYPE_UNION             => T_TYPE_UNION,
+            T_TYPE_INTERSECTION      => T_TYPE_INTERSECTION,
+            T_TYPE_OPEN_PARENTHESIS  => T_TYPE_OPEN_PARENTHESIS,
+            T_TYPE_CLOSE_PARENTHESIS => T_TYPE_CLOSE_PARENTHESIS,
+            T_NULL                   => T_NULL,
+            T_TRUE                   => T_TRUE,
+            T_FALSE                  => T_FALSE,
+            T_SELF                   => T_SELF,
+            T_PARENT                 => T_PARENT,
+        ];
 
         for ($commentEnd = ($stackPtr - 1); $commentEnd >= 0; $commentEnd--) {
             if (isset($ignore[$tokens[$commentEnd]['code']]) === true) {
@@ -201,7 +215,7 @@ class VariableCommentSniff extends AbstractVariableSniff
      *
      * @return void
      */
-    protected function processVariable(File $phpcsFile, $stackPtr)
+    protected function processVariable(File $phpcsFile, int $stackPtr)
     {
     }
 
@@ -217,7 +231,7 @@ class VariableCommentSniff extends AbstractVariableSniff
      *
      * @return void
      */
-    protected function processVariableInString(File $phpcsFile, $stackPtr)
+    protected function processVariableInString(File $phpcsFile, int $stackPtr)
     {
     }
 }

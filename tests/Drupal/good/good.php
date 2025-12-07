@@ -1258,3 +1258,14 @@ function pdo_weird_return_type($param) {
  * Comments are allowed to end in 3 dots...
  */
 function comment_test_dots() {}
+
+$x = new class() {
+
+  /**
+   * This is a test comment.
+   *
+   * @var array
+   */
+  public private(set) array $data = [];
+
+};
