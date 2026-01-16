@@ -1269,3 +1269,50 @@ $x = new class() {
   public private(set) array $data = [];
 
 };
+
+// Test mago compatibility with single array value over multiple lines.
+$response = new AjaxResponse();
+$response->addCommand(new InvokeCommand('#edit-field-job-expiration-date-0-value-date', 'val', [$end_value->format(
+  'Y-m-d',
+)]));
+
+foreach ($result['subscriptions'] as $subscription) {
+  $group = $subscription->organization->entity;
+  $context->addCacheableDependency($group);
+  $context->addCacheableDependency($subscription);
+  $context->addCacheTags([
+    'node:'
+      . \Drupal::service('example_organization.organization_helper')->getGroupOrganizationProfile($group)->id(),
+  ]);
+}
+
+$form['frontend'] = [
+  '#type' => 'select',
+  '#required' => FALSE,
+  '#title' => $this->t('Frontend'),
+  '#description_display' => $this->t('Select the frontend'),
+  '#options' =>
+    ['all' => $this->t('All menus'), 'default' => $this->t('Default menus')]
+      + example_common_get_available_frontends(),
+  '#default_value' => $this->getRequest()->query->get('frontend') ?? 'all',
+  '#name' => 'selected-frontend',
+];
+$form['frontend'] = [
+  '#options' =>
+    ['all' => $this->t('All menus'), 'default' => $this->t('Default menus')]
+      + example_common_get_available_frontends()
+      + example2_common_get_available_frontends(),
+];
+
+\Drupal::database()
+  ->insert(DataManager::DATA_TABLE)
+  ->fields(['uid', 'last_sent', 'reminders'], [
+    $user->id(),
+    \Drupal::time()->getCurrentTime()
+      - (($i + 1) * (int) \Drupal::config('example_auth.settings')->get('email_verification_timeout')),
+    $i,
+  ])
+  ->execute();
+
+static::setMessage(t('The combined export file could not be created: @message.', ['@message' =>
+  $e->getMessage()]), 'error');

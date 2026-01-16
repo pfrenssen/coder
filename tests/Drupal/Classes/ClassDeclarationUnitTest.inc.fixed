@@ -51,3 +51,15 @@ class WithManyInterfaces implements
   Interface4 {
 
 }
+
+/**
+ * Having a line break for long class names is fine.
+ */
+class ExampleOrganizationProfileContactPersonPhotoToContactPersonMigration extends
+  ExampleOrganizationProfileContactPersonMigration {}
+
+/**
+ * Having a line break for long interface names is fine.
+ */
+class ExampleOrganizationProfileContactPersonPhotoToContactPersonMigration implements
+  ExampleOrganizationProfileContactPersonMigrationInterface {}

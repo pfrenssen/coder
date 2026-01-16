@@ -159,6 +159,37 @@ class ArraySniff implements Sniff
             return;
         }//end if
 
+        // Check that the closing bracket is on a new line.
+        // We only check this if the first array item starts on a new line,
+        // because we want to allow single value arrays to be on a single line.
+        // For example:
+        // phpcs:disable Squiz.Commenting.InlineComment.SpacingBefore
+        // @code
+        // $value = [
+        //   $something->format(
+        //     'Y'
+        //   )
+        // ];
+        // @endcode
+        // phpcs:enable Squiz.Commenting.InlineComment.SpacingBefore
+        $firstItem = $phpcsFile->findNext(
+            Tokens::EMPTY_TOKENS,
+            ($tokens[$stackPtr][$parenthesisOpener] + 1),
+            $tokens[$stackPtr][$parenthesisCloser],
+            true
+        );
+
+        if ($firstItem !== false
+            && $tokens[$firstItem]['line'] !== $tokens[$tokens[$stackPtr][$parenthesisOpener]]['line']
+            && $tokens[$tokens[$stackPtr][$parenthesisCloser]]['line'] === $tokens[$lastItem]['line']
+        ) {
+            $error = 'Closing parenthesis of array declaration must be on a new line';
+            $fix   = $phpcsFile->addFixableError($error, $tokens[$stackPtr][$parenthesisCloser], 'ArrayClosingIndentation', []);
+            if ($fix === true) {
+                $phpcsFile->fixer->addNewlineBefore($tokens[$stackPtr][$parenthesisCloser]);
+            }
+        }
+
         // Find the first token on this line.
         $firstLineColumn = $tokens[$stackPtr]['column'];
         for ($i = $stackPtr; $i >= 0; $i--) {
@@ -185,14 +216,32 @@ class ArraySniff implements Sniff
             }
         }//end for
 
-        $lineStart = $stackPtr;
+        $lineStart        = $currentLineEnd = $previousLineEnd = $stackPtr;
+        $indentationLevel = 1;
         // Iterate over all lines of this array.
         while ($lineStart < $tokens[$stackPtr][$parenthesisCloser]) {
             // Find next line start.
-            $newLineStart = $lineStart;
-            $currentLine  = $tokens[$newLineStart]['line'];
+            $newLineStart    = $lineStart;
+            $currentLine     = $tokens[$newLineStart]['line'];
+            $previousLineEnd = $currentLineEnd;
+            // Iterate to the start of the next line.
             while ($currentLine >= $tokens[$newLineStart]['line']) {
-                $newLineStart = $phpcsFile->findNext(
+                // Long array syntax: Skip nested arrays, they are checked in a next
+                // run.
+                if ($tokens[$newLineStart]['code'] === T_ARRAY && $newLineStart !== $stackPtr) {
+                    $newLineStart = $tokens[$newLineStart]['parenthesis_closer'];
+                    $currentLine  = $tokens[$newLineStart]['line'];
+                }
+
+                // Short array syntax: Skip nested arrays, they are checked in a next
+                // run.
+                if ($tokens[$newLineStart]['code'] === T_OPEN_SHORT_ARRAY && $newLineStart !== $stackPtr) {
+                    $newLineStart = $tokens[$newLineStart]['bracket_closer'];
+                    $currentLine  = $tokens[$newLineStart]['line'];
+                }
+
+                $currentLineEnd = $newLineStart;
+                $newLineStart   = $phpcsFile->findNext(
                     Tokens::EMPTY_TOKENS,
                     ($newLineStart + 1),
                     ($tokens[$stackPtr][$parenthesisCloser] + 1),
@@ -201,20 +250,6 @@ class ArraySniff implements Sniff
 
                 if ($newLineStart === false) {
                     break 2;
-                }
-
-                // Long array syntax: Skip nested arrays, they are checked in a next
-                // run.
-                if ($tokens[$newLineStart]['code'] === T_ARRAY) {
-                    $newLineStart = $tokens[$newLineStart]['parenthesis_closer'];
-                    $currentLine  = $tokens[$newLineStart]['line'];
-                }
-
-                // Short array syntax: Skip nested arrays, they are checked in a next
-                // run.
-                if ($tokens[$newLineStart]['code'] === T_OPEN_SHORT_ARRAY) {
-                    $newLineStart = $tokens[$newLineStart]['bracket_closer'];
-                    $currentLine  = $tokens[$newLineStart]['line'];
                 }
 
                 // Nested structures such as closures: skip those, they are checked
@@ -254,30 +289,50 @@ class ArraySniff implements Sniff
                 break;
             }
 
-            // Define tokens that require extra indentation when found at the start of a line.
-            // Expects: '->', '?', ':'.
-            $extraIndentTokens = [
-                T_OBJECT_OPERATOR,
-                T_INLINE_THEN,
-                T_INLINE_ELSE,
-            ];
-
-            // Determine whether extra indentation required for the next array line.
-            // True where the line starts with one of the defined extra indent tokens.
-            $extraIndentRequired = (in_array($tokens[$newLineStart]['code'], $extraIndentTokens, true));
-
-            // Determine the expected column, default indentation of +2 spaces.
-            // Where increased nesting required, bump another +2 spaces.
-            $expectedColumn = ($firstLineColumn + 2);
-            if ($extraIndentRequired === true) {
-                $expectedColumn += 2;
+            // Determine whether extra indentation is required for the next array line.
+            switch ($tokens[$currentLineEnd]['code']) {
+                // Reset indentation level to 1 when any previous statements are done.
+                case T_COMMA:
+                case T_OPEN_PARENTHESIS:
+                case T_OPEN_SHORT_ARRAY:
+                    $indentationLevel = 1;
+                    break;
+                // If the array value after a double arrow is on a new line, it
+                // should be indented an extra level.
+                case T_DOUBLE_ARROW:
+                    if ($tokens[$currentLineEnd]['line'] !== $tokens[$stackPtr]['line']) {
+                        $indentationLevel = 2;
+                    }
+                    break;
+                default:
+                    // If the array value was already shifted to a new line and the
+                    // current line is also not finished with the statement, then we
+                    // need to deeper another level.
+                    if ($tokens[$previousLineEnd]['code'] === T_DOUBLE_ARROW) {
+                        $indentationLevel = 3;
+                    } elseif ($indentationLevel === 1
+                        && $tokens[$newLineStart]['code'] !== T_CLOSE_CURLY_BRACKET
+                    ) {
+                        // If the statement is not finished we need to increase the
+                        // indentation level to two.
+                        $indentationLevel = 2;
+                    }
+                    break;
             }
+
+            $expectedColumn = ($firstLineColumn + (2 * $indentationLevel));
 
             if ($tokens[$newLineStart]['column'] !== $expectedColumn) {
                 // Skip lines in nested structures such as a function call within an
                 // array, no defined coding standard for those.
                 $innerNesting = empty($tokens[$newLineStart]['nested_parenthesis']) === false
                     && end($tokens[$newLineStart]['nested_parenthesis']) < $tokens[$stackPtr][$parenthesisCloser];
+
+                // Also check if the token itself is a closing parenthesis for a nested structure.
+                if ($innerNesting === false && $tokens[$newLineStart]['code'] === T_CLOSE_PARENTHESIS) {
+                    $innerNesting = $tokens[$newLineStart]['parenthesis_opener'] > $stackPtr;
+                }
+
                 // Skip lines that are part of a multi-line string.
                 $isMultiLineString = $tokens[($newLineStart - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
                     && substr($tokens[($newLineStart - 1)]['content'], -1) === $phpcsFile->eolChar;

@@ -23,5 +23,5 @@ $array = array(
   'inline_two_elements_ok5' => func(['one-two-three-four'], ['second_array' => 'ends at 92'], 'func ends at 113'),
   'inline_two_elements_not_ok' => func(['one-two'], ['second_array' => 'stops', 'at' => 'column 101'], 'other text'),
   'inline_with_nested_functions_but_array_has_one_element_ok' => t('Tags: @tags', ['@tags' => implode(', ', $tags)]),
-  'inline_one_element_ok' => 'Extends beyond the limit but ok as there is only one element. The array ends at 115'),
+  'inline_one_element_ok' => array('Extends beyond the limit but ok as there is only one element. The array ends at 122'),
 );
