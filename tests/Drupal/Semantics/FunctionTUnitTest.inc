@@ -35,3 +35,33 @@ class Test {
   }
 
 }
+
+// https://www.drupal.org/i/3562081
+// Nowdoc should always be literals.
+$x = t(
+    <<<'TEXT'
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
+    placerat id justo nec porttitor. Maecenas at auctor nisi, vitae tempor
+    nulla. Donec nisl est, hendrerit ac odio id, maximus bibendum sem. In
+    sollicitudin, lorem vitae eleifend congue, nulla enim semper ante, in
+    vulputate libero orci in ligula. Ut facilisis quam augue, sed rhoncus
+    nisl lobortis a. Curabitur tempor lectus ut suscipit venenatis. Donec
+    semper neque eu orci blandit convallis. Morbi arcu turpis, condimentum
+    vitae sollicitudin dapibus, commodo et nisl. Nam sed consectetur enim.
+    Duis a tellus nisi. Fusce egestas varius convallis.
+    TEXT
+);
+$x = t(
+    <<<'TEXT'
+    $not_variable
+    TEXT
+);
+$x = t(
+    <<<TEXT
+    $variable
+    TEXT
+);
+$x = t(
+    <<<'TEXT'
+    TEXT
+);

@@ -74,15 +74,16 @@ class FunctionTSniff extends FunctionCall
             return;
         }
 
-        if ($tokens[$argument['start']]['code'] !== T_CONSTANT_ENCAPSED_STRING) {
+        if ($tokens[$argument['start']]['code'] !== T_CONSTANT_ENCAPSED_STRING
+            && $tokens[$argument['start']]['code'] !== T_START_NOWDOC
+        ) {
             // Not a translatable string literal.
             $warning = 'Only string literals should be passed to t() where possible';
             $phpcsFile->addWarning($warning, $argument['start'], 'NotLiteralString');
             return;
         }
 
-        $string = $tokens[$argument['start']]['content'];
-        if ($string === '""' || $string === "''") {
+        if ($this->isEmptyString($tokens, $argument['start'], $argument['end']) === true) {
             $warning = 'Do not pass empty strings to t()';
             $phpcsFile->addWarning($warning, $argument['start'], 'EmptyString');
             return;
@@ -100,6 +101,7 @@ class FunctionTSniff extends FunctionCall
             }
         }
 
+        $string   = $tokens[$argument['start']]['content'];
         $lastChar = substr($string, -1);
         if ($lastChar === '"' || $lastChar === "'") {
             $message = substr($string, 1, -1);
@@ -172,5 +174,33 @@ class FunctionTSniff extends FunctionCall
         }
 
         return false;
+    }
+
+
+    /**
+     * Checks if the string content at the given position is empty.
+     *
+     * @param array<int, mixed> $tokens The token stack.
+     * @param int               $start  The start position of the argument.
+     * @param int               $end    The end position of the argument.
+     *
+     * @return bool
+     *   True if the string content at the given position is empty; otherwise
+     *   false.
+     */
+    protected function isEmptyString(array $tokens, int $start, int $end): bool
+    {
+        if ($tokens[$start]['code'] === T_CONSTANT_ENCAPSED_STRING) {
+            $content = $tokens[$start]['content'];
+            return $start === $end && ($content === '""' || $content === "''");
+        } else {
+            assert($tokens[$start]['code'] === T_START_NOWDOC);
+            $content = '';
+            for ($i = ($start + 1); $i < $end; $i++) {
+                $content .= $tokens[$i]['content'];
+            }
+
+            return $content === '';
+        }
     }
 }

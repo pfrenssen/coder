@@ -43,6 +43,8 @@ class FunctionTUnitTest extends CoderSniffUnitTest
             26 => 1,
             30 => 1,
             34 => 1,
+            60 => 1,
+            65 => 1,
         ];
     }
 }
