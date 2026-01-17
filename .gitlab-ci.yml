@@ -2,6 +2,10 @@
 # GitLab CI configuration for Coder project
 ################
 
+workflow:
+  rules:
+    - when: always
+
 variables:
   COMPOSER_HOME: "$CI_PROJECT_DIR/.composer"
 
