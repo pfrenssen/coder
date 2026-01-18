@@ -199,15 +199,24 @@ class ArraySniff implements Sniff
                 return;
             }
 
+            // If this is a multi-line string, we need to skip to the start of it.
+            if ($tokens[$i]['code'] === T_CONSTANT_ENCAPSED_STRING
+                && $tokens[($i - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
+            ) {
+                $i--;
+                continue;
+            }
+
+            if (isset(Tokens::HEREDOC_TOKENS[$tokens[$i]['code']]) === true
+                && isset(Tokens::HEREDOC_TOKENS[$tokens[($i - 1)]['code']]) === true
+            ) {
+                $i--;
+                continue;
+            }
+
             // Record the first code token on the line.
             if ($tokens[$i]['code'] !== T_WHITESPACE) {
                 $firstLineColumn = $tokens[$i]['column'];
-                // This could be a multi line string or comment beginning with white
-                // spaces.
-                $trimmed = ltrim($tokens[$i]['content']);
-                if ($trimmed !== $tokens[$i]['content']) {
-                    $firstLineColumn = ($firstLineColumn + strpos($tokens[$i]['content'], $trimmed));
-                }
             }
 
             // It's the start of the line, so we've found our first php token.
@@ -237,6 +246,12 @@ class ArraySniff implements Sniff
                 // run.
                 if ($tokens[$newLineStart]['code'] === T_OPEN_SHORT_ARRAY && $newLineStart !== $stackPtr) {
                     $newLineStart = $tokens[$newLineStart]['bracket_closer'];
+                    $currentLine  = $tokens[$newLineStart]['line'];
+                }
+
+                // Function calls or similar: skip as well.
+                if ($tokens[$newLineStart]['code'] === T_OPEN_PARENTHESIS && isset($tokens[$newLineStart]['parenthesis_owner']) === false) {
+                    $newLineStart = $tokens[$newLineStart]['parenthesis_closer'];
                     $currentLine  = $tokens[$newLineStart]['line'];
                 }
 

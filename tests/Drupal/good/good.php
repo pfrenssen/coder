@@ -201,36 +201,18 @@ $query = db_query("
   SELECT * FROM {foobar} WHERE nid IN (1, 2, 3)
   AND date BETWEEN '%s' AND '%s'
   ", [
-    ':from_date' => $from_date,
-    ':to_date' => $to_date,
-  ]
-);
-$query = db_query("
-  SELECT * FROM {foobar} WHERE nid IN (1, 2, 3)
-  AND date BETWEEN '%s' AND '%s'
-  ", [
-    ':from_date' => $from_date,
-    ':to_date' => $to_date,
-  ]
-);
+  ':from_date' => $from_date,
+  ':to_date' => $to_date,
+]);
 
 // Array with multi line comments.
 $query = db_query("
   SELECT * FROM {foobar} WHERE nid IN (1, 2, 3)
   AND date BETWEEN '%s' AND '%s'", /* comment
   in here */ [
-    ':from_date' => $from_date,
-    ':to_date' => $to_date,
-  ]
-);
-$query = db_query("
-  SELECT * FROM {foobar} WHERE nid IN (1, 2, 3)
-  AND date BETWEEN '%s' AND '%s'", /* comment
-  in here */ [
-    ':from_date' => $from_date,
-    ':to_date' => $to_date,
-  ]
-);
+  ':from_date' => $from_date,
+  ':to_date' => $to_date,
+]);
 
 // Array with multi-line constant string in it.
 $array = [
@@ -1316,3 +1298,41 @@ $form['frontend'] = [
 
 static::setMessage(t('The combined export file could not be created: @message.', ['@message' =>
   $e->getMessage()]), 'error');
+
+$form['account']['notify_message'] = [
+  '#type' => 'container',
+  '#markup' =>
+    '<div class="messages messages--warning">'
+      . t(
+        "By turning this off, no welcome or verification emails will be sent to the account that's being created.",
+      )
+      . '</div>',
+  '#states' => [
+    'visible' => [
+      ':input[name="notify"]' => ['checked' => FALSE],
+    ],
+  ],
+];
+
+/**
+ * Testing indentation.
+ */
+function get_existing_term_names(string $vocabulary, array $term_names): array {
+  $query = $this->database->query('SELECT t.name, t.tid
+    FROM {taxonomy_term_field_data} t
+    WHERE t.vid = :vocabulary
+    AND t.name IN (:termNames[])', [
+    ':vocabulary' => $vocabulary,
+    ':termNames[]' => $term_names,
+  ]);
+  $query = $this->database->query(<<<SQL
+    SELECT t.name, t.tid
+    FROM {taxonomy_term_field_data} t
+    WHERE t.vid = :vocabulary
+    AND t.name IN (:termNames[])
+    SQL, [
+    ':vocabulary' => $vocabulary,
+    ':termNames[]' => $term_names,
+  ]);
+  return $query->fetchAllKeyed();
+}
