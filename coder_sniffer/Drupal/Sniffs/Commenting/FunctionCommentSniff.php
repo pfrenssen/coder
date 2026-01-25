@@ -25,6 +25,13 @@ class FunctionCommentSniff implements Sniff
 {
 
     /**
+     * List of methods that are prohibited to have docblock.
+     *
+     * @var array<string>
+     */
+    public $commentProhibitedFunctions = [];
+
+    /**
      * A map of invalid data types to valid ones for param and return documentation.
      *
      * @var array<string, string>
@@ -105,13 +112,24 @@ class FunctionCommentSniff implements Sniff
             break;
         }//end for
 
-        // Constructor methods are exempt from requiring a docblock.
-        // @see https://www.drupal.org/project/coder/issues/3400560.
         $methodName = $phpcsFile->getDeclarationName($stackPtr);
-        if ($methodName === '__construct'
-            && $tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
+        if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             && $tokens[$commentEnd]['code'] !== T_COMMENT
         ) {
+            if ($methodName === '__construct') {
+                // Constructor methods are exempt from requiring a docblock.
+                // @see https://www.drupal.org/project/coder/issues/3400560.
+                return;
+            }
+        } else if (in_array($methodName, $this->commentProhibitedFunctions, true) === true) {
+            // Method prohibited to have docblock.
+            $fix = $phpcsFile->addFixableError("It's forbidden to document %s function", $stackPtr, 'ForbiddenDocBlock', [$methodName]);
+            if ($fix === true) {
+                for ($i = $tokens[$commentEnd]['comment_opener']; $i <= $commentEnd; $i++) {
+                    $phpcsFile->fixer->replaceToken($i, '');
+                }
+            }
+
             return;
         }
 

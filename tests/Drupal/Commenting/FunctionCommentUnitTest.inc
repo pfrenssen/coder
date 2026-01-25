@@ -3,6 +3,7 @@
 /**
  * @file
  * Some function comment tests.
+ * phpcs:set Drupal.Commenting.FunctionComment commentProhibitedFunctions[] docblock_is_not_allowed
  */
 
 /**
@@ -975,4 +976,14 @@ function return_some_array(): array {
     // Do work.
   });
   return [];
+}
+
+/**
+ * Don't document this function.
+ *
+ * @return bool
+ *   Something.
+ */
+function docblock_is_not_allowed(): bool {
+  return TRUE;
 }
