@@ -976,3 +976,21 @@ function return_some_array(): array {
   });
   return [];
 }
+
+/**
+ * Allow void return comment without description if it is void.
+ *
+ * @return void
+ */
+function allow_void_return_comment() {
+
+}
+
+/**
+ * Test return type void.
+ *
+ * @return void Comment should be on next line.
+ */
+function void_comment() {
+
+}

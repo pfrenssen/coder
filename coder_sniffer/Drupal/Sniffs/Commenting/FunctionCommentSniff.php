@@ -392,7 +392,10 @@ class FunctionCommentSniff implements Sniff
                 }
             }
 
-            if ($comment === '' && $returnType !== '$this' && $returnType !== 'static') {
+            // If the return type is void, then we allow omitting the description.
+            $isVoidReturnType = strtolower(trim($returnType)) === 'void';
+
+            if ($comment === '' && $returnType !== '$this' && $returnType !== 'static' && $isVoidReturnType === false) {
                 if (strpos($returnType, ' ') !== false) {
                     $error = 'Description for the @return value must be on the next line';
                 } else {
