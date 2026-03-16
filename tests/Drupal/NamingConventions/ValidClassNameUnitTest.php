@@ -21,18 +21,22 @@ class ValidClassNameUnitTest extends CoderSniffUnitTest
     protected function getErrorList(string $testFile): array
     {
         return [
-            5  => 2,
-            6  => 1,
+            5  => 1,
+            6  => 2,
             7  => 1,
-            11 => 2,
+            8  => 1,
             12 => 1,
-            13 => 1,
-            17 => 2,
-            18 => 1,
+            13 => 2,
+            14 => 1,
+            15 => 1,
             19 => 1,
-            23 => 2,
-            24 => 1,
-            25 => 1,
+            20 => 2,
+            21 => 1,
+            22 => 1,
+            26 => 1,
+            27 => 2,
+            28 => 1,
+            29 => 1,
         ];
 
     }//end getErrorList()
