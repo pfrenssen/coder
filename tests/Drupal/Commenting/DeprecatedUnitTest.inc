@@ -110,3 +110,13 @@ function w() {
  */
 function meanwhile() {
 }
+
+/**
+ * Test deprecation in doc block with GitLab URL.
+ *
+ * @deprecated in my_project:1.7.0 and is removed from my_project:2.0.0. Use
+ *   bar() instead.
+ * @see https://git.drupalcode.org/project/drupal/-/work_items/123
+ */
+function meanwhile_gitlab() {
+}

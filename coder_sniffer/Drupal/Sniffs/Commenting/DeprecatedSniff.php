@@ -208,19 +208,19 @@ class DeprecatedSniff implements Sniff
         }
 
         // Allow for the alternative 'node' or 'project/aaa/issues' format.
-        preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)([\.\?\;!]*)$]', $crLink, $matches);
-        if (isset($matches[4]) === true && empty($matches[4]) === false) {
-            // If matches[4] is not blank it means that the url is OK but it
+        preg_match('[^http(s*)://(www.drupal.org/(node|project/\w+/issues)|git.drupalcode.org/project/\w+/-/work_items)/(\d+)([\.\?\;!]*)$]', $crLink, $matches);
+        if (isset($matches[5]) === true && empty($matches[5]) === false) {
+            // If matches[5] is not blank it means that the url is OK but it
             // ends with punctuation. This is a common and fixable mistake.
             $error = "The @see url '%s' should not end with punctuation";
             $fix   = $phpcsFile->addFixableError($error, $string, 'DeprecatedPeriodAfterSeeUrl', [$crLink]);
             if ($fix === true) {
                 // Remove all of the the trailing punctuation.
-                $content = substr($crLink, 0, -(strlen($matches[4])));
+                $content = substr($crLink, 0, -(strlen($matches[5])));
                 $phpcsFile->fixer->replaceToken($string, $content);
             }//end if
         } elseif (empty($matches) === true) {
-            $error = "The @see url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
+            $error = "The @see url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n or http(s)://git.drupalcode.org/project/aaa/-/work_items/n";
             $phpcsFile->addWarning($error, $seeTag, 'DeprecatedWrongSeeUrlFormat', [$crLink]);
         }
     }

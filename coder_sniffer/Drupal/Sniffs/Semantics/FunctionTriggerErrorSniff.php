@@ -169,15 +169,15 @@ class FunctionTriggerErrorSniff extends FunctionCall
             // Check the 'See' link.
             $crLink = $matches[6];
             // Allow for the alternative 'node' or 'project/aaa/issues' format.
-            preg_match('[^http(s*)://www.drupal.org/(node|project/\w+/issues)/(\d+)(\.*)$]', $crLink, $crMatches);
+            preg_match('[^http(s*)://(www.drupal.org/(node|project/\w+/issues)|git.drupalcode.org/project/\w+/-/work_items)/(\d+)([\.\?\;!]*)$]', $crLink, $crMatches);
             // If cr_matches[4] is not blank it means that the url is correct
             // but it ends with a period. As this can be a common mistake give a
             // specific message to assist in fixing.
-            if (isset($crMatches[4]) === true && empty($crMatches[4]) === false) {
+            if (isset($crMatches[5]) === true && empty($crMatches[5]) === false) {
                 $error = "The url '%s' should not end with a period.";
                 $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorPeriodAfterSeeUrl', [$crLink]);
             } elseif (empty($crMatches) === true) {
-                $error = "The url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n";
+                $error = "The url '%s' does not match the standard: http(s)://www.drupal.org/node/n or http(s)://www.drupal.org/project/aaa/issues/n or http(s)://git.drupalcode.org/project/aaa/-/work_items/n";
                 $phpcsFile->addWarning($error, $argument['start'], 'TriggerErrorSeeUrlFormat', [$crLink]);
             }
         }//end if

@@ -32,7 +32,7 @@ function foo2() {
 /**
  * Test function three.
  *
- * @deprecated in my_projectl:1.7.0 and is removed from my_project:2.0.0. Use
+ * @deprecated in my_project:1.7.0 and is removed from my_project:2.0.0. Use
  *   bar() instead.
  * @see https://www.drupal.org/node/123
  */
@@ -47,4 +47,15 @@ function foo3() {
 function foo4() {
   // This passes the contrib semantic versioning, relaxed standard.
   @trigger_error('Function foo4() is deprecated in my_project:2.8.0 and will be gone by my_project:3.0.0. See https://www.drupal.org/node/123', E_USER_DEPRECATED);
+}
+
+/**
+ * Test function five with GitLab URL.
+ *
+ * @deprecated in my_project:1.7.0 and is removed from my_project:2.0.0. Use
+ *   bar() instead.
+ * @see https://git.drupalcode.org/project/drupal/-/work_items/123
+ */
+function foo5(): void {
+  @trigger_error('Function foo5() is deprecated in my_project:1.7.0 and is removed from my_project:2.0.0. Use bar() instead. See https://git.drupalcode.org/project/drupal/-/work_items/123', E_USER_DEPRECATED);
 }

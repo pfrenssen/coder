@@ -25,6 +25,7 @@
         "CURLOPT_SSL_VERIFYPEER",
         "datestamp",
         "defgroup",
+        "drupalcode",
         "drush",
         "endcode",
         "endlink",
